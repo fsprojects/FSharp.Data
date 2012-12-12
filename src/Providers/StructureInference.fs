@@ -160,7 +160,7 @@ let subtypePrimitives typ1 typ2 =
   if typ1 = typ2 then Some typ1 
   // If both are convertible to int64, decimal and float, respectively
   elif convertibleTo typeof<int64> typ1 && convertibleTo typeof<int64> typ2 then
-    Some typeof<decimal>
+    Some typeof<int64>
   elif convertibleTo typeof<decimal> typ1 && convertibleTo typeof<decimal> typ2 then
     Some typeof<decimal>
   elif convertibleTo typeof<float> typ1 && convertibleTo typeof<float> typ2 then

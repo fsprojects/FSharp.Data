@@ -164,6 +164,8 @@ module internal JsonTypeBuilder =
   /// generates types for read-only access to the document
   and generateJsonType ctx = function
     | InferedType.Primitive typ -> 
+
+        // Return the JSON value as one of the supported primitive types
         let conv = 
           if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%(ctx.Unpacker json)) @@>
           elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%(ctx.Unpacker json)) @@>
@@ -175,7 +177,8 @@ module internal JsonTypeBuilder =
         typ, conv
 
     | InferedType.Top | InferedType.Null -> 
-        ctx.Representation, fun json -> <@@ (%%json:JsonDocument) @@>
+        // Return the underlying JsonDocument without change
+        ctx.Representation, fun json -> json
 
     | InferedType.Collection (SingletonMap(_, (_, typ))) -> 
         let elementTy, elementConv = generateJsonType ctx typ
@@ -184,6 +187,7 @@ module internal JsonTypeBuilder =
         let convTyp, convFunc = ReflectionHelpers.makeFunc elementConv ctx.Representation
         // Build a function `packer = fun x -> %%(ctx.Packer x)`
         let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer typeof<JsonValue>
+
         // Call `ConvertArray<Representation, 'TRes>(json, packer, mapper)`
         let conv = fun json -> 
           ReflectionHelpers.makeMethodCall 
