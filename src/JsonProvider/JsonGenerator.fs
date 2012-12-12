@@ -44,9 +44,9 @@ type JsonOperations =
         | Some it -> Some (f (packer it))
     | _ -> None
 
-  /// Returns all nodes that match the specified tag
+  /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
-  static member GetMultipleByTypeTag(doc:JsonValue, tag, pack, f) = 
+  static member GetArrayChildrenByTypeTag(doc:JsonValue, tag, pack, f) = 
     let tag = InferedTypeTag.ParseCode tag
     let matchesTag = function
       | JsonValue.Null -> false
@@ -64,17 +64,24 @@ type JsonOperations =
         |> Array.map (pack >> f)
     | _ -> failwith "JSON mismatch: Expected Array node"
 
-  /// Returns a single node that matches the specified tag
-  /// (either directly this element, or if this is an array, searches)
-  static member GetSingleByTypeTag(value:JsonValue, tag) = 
-    // The function may be used both when there is just a single value
-    // (property of a record) or when there is a collection (array)
-    let valueArray =
-      match value with 
-      | JsonValue.Array _ -> value | _ -> JsonValue.Array [value]
-    match JsonOperations.GetMultipleByTypeTag(valueArray, tag, id, id) with
+  /// Returns single or no value from an array matching the specified tag
+  static member TryGetArrayChildByTypeTag(doc:JsonValue, tag, pack, f) = 
+    match JsonOperations.GetArrayChildrenByTypeTag(doc, tag, pack, f) with
+    | [| the |] -> Some the
+    | [| |] -> None
+    | _ -> failwith "JSON mismatch: Expected Array with single or no elements."
+
+  /// Returns a single array children that matches the specified tag
+  static member GetArrayChildByTypeTag(value:JsonValue, tag) = 
+    match JsonOperations.GetArrayChildrenByTypeTag(value, tag, id, id) with
     | [| the |] -> the
     | _ -> failwith "JSON mismatch: Expected single value, but found multiple."
+
+  /// Returns a single or no value by tag type
+  static member TryGetValueByTypeTag(value:JsonValue, tag, pack, f) = 
+    // Build a fake array and reuse `GetArrayChildByTypeTag`
+    let arrayValue = JsonValue.Array [value]
+    JsonOperations.TryGetArrayChildByTypeTag(arrayValue, tag, pack, f) 
 
 // --------------------------------------------------------------------------------------
 // Compile-time components that are used to generate JSON types
@@ -111,9 +118,51 @@ type internal JsonGenerationContext =
 
 module internal JsonTypeBuilder = 
   
+  /// Takes dictionary or a map and succeeds if it contains exactly one value
+  let (|SingletonMap|_|) map = 
+    if Seq.length map <> 1 then None else
+      let (KeyValue(k, v)) = Seq.head map 
+      Some(k, v)
+
+  /// Common code that is shared by code generators that generate 
+  /// "Choice" type. This is parameterized by the types (choices) to generate,
+  /// by functions that get the multiplicity and the type tag for each option
+  /// and also by function that generates the actual code.
+  let rec generateMultipleChoiceType ctx types codeGenerator =
+    // Generate new type for the heterogeneous type
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(typeof<JsonDocument>))
+    ctx.DomainType.AddMember(objectTy)
+        
+    // Generate GetXyz(s) method for every different case
+    // (but skip all Null nodes - we simply ingore them)
+    let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
+    for (KeyValue(kind, (multiplicity, typ))) in types do
+      if kind <> InferedTypeTag.Null then
+        let valTy, valConv = generateJsonType ctx typ
+        let kindCode = kind.Code
+
+        // If it occurs at most once, then generate property (which may 
+        // be optional). For multiple occurrences, generate method
+        match multiplicity with 
+        | InferedMultiplicity.OptionalSingle ->
+            let p = ProvidedProperty(gen kind.NiceName, typedefof<option<_>>.MakeGenericType [| valTy |])
+            p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
+            objectTy.AddMember(p)          
+        | InferedMultiplicity.Single ->
+            let p = ProvidedProperty(gen kind.NiceName, valTy)
+            p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
+            objectTy.AddMember(p)          
+        | InferedMultiplicity.Multiple ->
+            let p = ProvidedMethod(gen ("Get" + NameUtils.pluralize kind.NiceName), [], valTy.MakeArrayType())
+            p.InvokeCode <- codeGenerator (multiplicity, typ) valConv kindCode
+            objectTy.AddMember(p)          
+
+    objectTy :> Type, fun json -> json
+
+
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  let rec generateJsonType ctx = function
+  and generateJsonType ctx = function
     | InferedType.Primitive typ -> 
         let conv = 
           if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%(ctx.Unpacker json)) @@>
@@ -128,7 +177,7 @@ module internal JsonTypeBuilder =
     | InferedType.Top | InferedType.Null -> 
         ctx.Representation, fun json -> <@@ (%%json:JsonDocument) @@>
 
-    | InferedType.Collection typ -> 
+    | InferedType.Collection (SingletonMap(_, (_, typ))) -> 
         let elementTy, elementConv = generateJsonType ctx typ
 
         // Build a function `mapper = fun x -> %%(elementConv x)`
@@ -176,38 +225,40 @@ module internal JsonTypeBuilder =
 
         objectTy :> Type, fun json -> json
 
+    | InferedType.Collection types -> 
+        // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
+        // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
+        generateMultipleChoiceType ctx types (fun info valConv kindCode ->
+          match info with
+          | InferedMultiplicity.Single, _ -> fun (Singleton json) -> 
+              // Generate method that calls `GetArrayChildByTypeTag`
+              valConv (ctx.Packer <@@ JsonOperations.GetArrayChildByTypeTag(%%(ctx.Unpacker json), kindCode) @@>)
+          
+          | InferedMultiplicity.Multiple, _ -> 
+              // Generate method that calls `GetArrayChildrenByTypeTag` 
+              // (unlike the previous easy case, this needs to call conversion function
+              // from the runtime similarly to options and arrays) 
+              let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
+              let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer typeof<JsonValue> 
+              fun (Singleton json) -> 
+                ReflectionHelpers.makeMethodCall typeof<JsonOperations> "GetArrayChildrenByTypeTag"
+                  [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc]
+          
+          | InferedMultiplicity.OptionalSingle, _ -> 
+              // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
+              let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
+              let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer typeof<JsonValue> 
+              fun (Singleton json) -> 
+                ReflectionHelpers.makeMethodCall typeof<JsonOperations> "TryGetArrayChildByTypeTag"
+                  [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc])
+
     | InferedType.Heterogeneous types ->
-        // Generate new type for the heterogeneous type
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(typeof<JsonDocument>))
-        ctx.DomainType.AddMember(objectTy)
-        
-        // Generate GetXyz(s) method for every different case
-        // (but skip all Null nodes - we simply ingore them)
-        let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
-        for (KeyValue(kind, (multiplicity, typ))) in types do
-          if kind <> InferedTypeTag.Null then
-            let valTy, valConv = generateJsonType ctx typ
-            let kindCode = kind.Code
-            match multiplicity with 
-            | InferedMultiplicity.Single ->
-                // Generate method that calls `GetSingleByTypeTag`
-                let p = ProvidedMethod(gen ("Get" + kind.NiceName), [], valTy)
-                p.InvokeCode <- fun (Singleton json) -> 
-                  valConv (ctx.Packer <@@ JsonOperations.GetSingleByTypeTag(%%(ctx.Unpacker json), kindCode) @@>)
-                objectTy.AddMember(p)          
-
-            | InferedMultiplicity.Multiple ->
-                // Generate method that calls `GetMultipleByTypeTag` 
-                // (unlike the previous easy case, this needs to call conversion function
-                // from the runtime similarly to options and arrays) 
-                let p = ProvidedMethod(gen ("Get" + NameUtils.pluralize kind.NiceName), [], valTy.MakeArrayType())
-
-                // Construct function arguments & call `GetMultipleByTypeTag` 
-                let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
-                let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer typeof<JsonValue> 
-                p.InvokeCode <- fun (Singleton json) -> 
-                  ReflectionHelpers.makeMethodCall typeof<JsonOperations> "GetMultipleByTypeTag"
-                    [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc]
-                objectTy.AddMember(p)          
-
-        objectTy :> Type, fun json -> json
+        // Generate a choice type that always calls `GetValueByTypeTag` to 
+        let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
+        generateMultipleChoiceType ctx types (fun info valConv kindCode ->
+          // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
+          let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
+          let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer typeof<JsonValue> 
+          fun (Singleton json) -> 
+            ReflectionHelpers.makeMethodCall typeof<JsonOperations> "TryGetValueByTypeTag"
+              [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc])

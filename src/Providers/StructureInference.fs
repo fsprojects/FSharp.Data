@@ -37,6 +37,7 @@ type InferedProperty =
 /// this type represents the number of occurrences of individual forms
 and InferedMultiplicity = 
   | Single
+  | OptionalSingle
   | Multiple 
 
 /// For heterogeneous types, this represents the tag that defines the form
@@ -48,8 +49,9 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Number 
   | Boolean
   | String
-  // Collections
+  // Collections and sum types
   | Collection 
+  | Heterogeneous
   // Possibly named record
   | Record of string option
 
@@ -57,11 +59,21 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// (one of those listed by `primitiveTypes`) or it can be collection, 
 /// (named) record and heterogeneous type. We also have `Null` type (which is
 /// a subtype of all non-primitive types) and universal `Top` type.
+///
+///  * For collection, we infer the types of different things that appear in 
+///    the collection and how many times they do.
+///
+///  * A heterogeneous type (sum type) is simply a choice containing one
+///    of multiple different possibilities
+///
+/// Why is collection not simply a list of Heterogeneous types? If we used that
+/// we would lose information about multiplicity and so we would not be able
+/// to generate nicer types!
 and InferedType =
   | Primitive of System.Type
   | Record of string option * InferedProperty list
-  | Collection of InferedType
-  | Heterogeneous of Map<InferedTypeTag, InferedMultiplicity * InferedType>
+  | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
+  | Heterogeneous of Map<InferedTypeTag, InferedType>
   | Null
   | Top
 
@@ -76,6 +88,7 @@ type InferedTypeTag with
     | Boolean -> "Boolean"
     | String -> "String"
     | Collection -> "Array"
+    | Heterogeneous -> "Choice"
     | Record None -> "Record"
     | Record (Some name) -> name
   
@@ -93,6 +106,7 @@ type InferedTypeTag with
     | "Boolean" -> Boolean
     | "String" -> String 
     | "Array" -> Collection
+    | "Choice" -> Heterogeneous
     | _ -> failwith "Invalid InferredTypeTag code"
 
 // ------------------------------------------------------------------------------------------------
@@ -107,6 +121,20 @@ let primitiveTypes =
 let isValueType = function
   | Primitive typ -> typ <> typeof<string>
   | _ -> true
+
+/// Returns a tag of a type - a tag represents a 'kind' of type 
+/// (essentially it describes the different bottom types we have)
+let typeTag = function
+  | Record(n, _)-> InferedTypeTag.Record n
+  | Collection _ -> InferedTypeTag.Collection
+  | Null | Top -> InferedTypeTag.Null
+  | Heterogeneous _ -> InferedTypeTag.Heterogeneous
+  | Primitive typ ->
+      if typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal> 
+        then InferedTypeTag.Number
+      elif typ = typeof<bool> then InferedTypeTag.Boolean
+      elif typ = typeof<string> then InferedTypeTag.String
+      else failwith "inferCollectionType: Unknown primitive type"
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.
@@ -156,91 +184,69 @@ let (|SubtypePrimitives|_|) = function
 ///    (numbers or booleans, but not string) then we return the other type.
 ///    Otherwise, we return bottom.
 ///
+/// The contract that should hold about the function is that given two types with the
+/// same `InferedTypeTag`, the result also has the same `InferedTypeTag`. 
+///
 let rec subtypeInfered ot1 ot2 =
   match ot1, ot2 with
   // Subtype of matching types or one of equal types
   | SubtypePrimitives t -> Primitive t
   | Record(n1, t1), Record(n2, t2) when n1 = n2 -> Record(n1, unionRecordTypes t1 t2)
-  | Collection t1, Collection t2 -> inferCollectionType [t1; t2]
+  | Heterogeneous t1, Heterogeneous t2 -> Heterogeneous(unionHeterogeneousTypes t1 t2)
+  | Collection t1, Collection t2 -> Collection(unionCollectionTypes t1 t2)
   | Null, Null -> Null
   
-  // Heterogeneous can be merged with any type
-  // Collections are handled specially because they are merged
-  // into a single heterogeneous option (with multiplicity=Multiple).
-  | Heterogeneous h, Collection other
-  | Collection other, Heterogeneous h 
-  | Heterogeneous h, other 
-  | other, Heterogeneous h ->
-      // We reconstruct a list that matches the heterogeneous type,
-      // add the new one and then merge them
-      [ yield other
-        for (KeyValue(k, (multi, typ))) in h do
-          yield typ
-          if multi = Multiple then yield typ ]
-      |> inferCollectionType
-    
   // Top type can be merged with else
   | t, Top | Top, t -> t
   // Null type can be merged with non-value types
   | t, Null | Null, t when not (isValueType t) -> t
-
-  // Otherwise the types are incompatible
+  // Heterogeneous can be merged with any type
+  | Heterogeneous h, other 
+  | other, Heterogeneous h ->
+      // Add the other type as another option. We should never add
+      // heterogenous type as an option of other heterogeneous type.
+      assert (typeTag other <> InferedTypeTag.Heterogeneous)
+      Heterogeneous(unionHeterogeneousTypes h (Map.ofSeq [typeTag other, other]))
+    
+  // Otherwise the types are incompatible so we build a new heterogeneous type
   | t1, t2 -> 
-      match inferCollectionType [t1; t2] with
-      | (Heterogeneous _) as res -> res
-      | _ -> failwith "subtypeInfered: Expected heterogeneous type."
+      let h1, h2 = Map.ofSeq [typeTag t1, t1], Map.ofSeq [typeTag t2, t2]
+      Heterogeneous(unionHeterogeneousTypes h1 h2)
 
-/// A collection is either `Collection` if all elements have common subtype
-/// or it is `Heterogeneous` when there is no common subtype. We do not return a 
-/// collection of `Heterogeneous` or `Heterogeneous` of collections, because
-/// `Heterogeneous` can automtaically contain collections of things.
-and inferCollectionType (types:seq<_>) = 
-  let typeTag = function
-    | Record(n, _)-> InferedTypeTag.Record n
-    | Collection _ -> InferedTypeTag.Collection
-    | Null | Top -> InferedTypeTag.Null
-    | Heterogeneous _ -> 
-        failwith "inferCollectionType: Unexpected heterogeneous argument"
-    | Primitive typ ->
-        if typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal> 
-          then InferedTypeTag.Number
-        elif typ = typeof<bool> then InferedTypeTag.Boolean
-        elif typ = typeof<string> then InferedTypeTag.String
-        else failwith "inferCollectionType: Unknown primitive type"
 
-  // Group types by their tag (essentially a bottom type)
-  // and create a heterogeneous type 
-  let heterogeneousTypes =
-    types
-    |> Seq.groupBy typeTag
-    |> Seq.map (fun (tag, group) -> 
-        match List.ofSeq group with
-        | [single] -> tag, (Single, single)
-        | multiple -> tag, (Multiple, group |> Seq.fold subtypeInfered Top))
-    |> List.ofSeq
-  match heterogeneousTypes with
-  | [] -> Top
-  | [_, (_, single)] -> Collection single
-  | types -> 
-      // We remove all Null types as post processing which means
-      // that we may return heterogeneous type with just a single case
-      // if there are nulls to be skipped
-      types 
-      |> Map.ofSeq |> Heterogeneous
+/// Given two heterogeneous types, get a single type that can represent all the
+/// types that the two heterogeneous types can. For every tag, 
+and unionHeterogeneousTypes cases1 cases2 =
+  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  |> Seq.map (function
+      | tag, Some (KeyValue(_, t)), None 
+      | tag, None, Some (KeyValue(_, t)) -> tag, t
+      | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> tag, subtypeInfered t1 t2 
+      | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
+  |> Map.ofSeq
 
+/// A collection can contain multiple types - in that case, we do keep 
+/// the multiplicity for each different type tag to generate better types
+/// (this is essentially the same as `unionHeterogeneousTypes`, but 
+/// it also handles the multiplicity)
+and unionCollectionTypes cases1 cases2 = 
+  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  |> Seq.map (function
+      | tag, Some (KeyValue(_, (m, t))), None 
+      | tag, None, Some (KeyValue(_, (m, t))) -> 
+          // If one collection contains thing exactly once
+          // but the other does not contain it, then it is optional
+          tag, ((if m = Single then OptionalSingle else m), t)
+      | tag, Some (KeyValue(_, (m1, t1))), Some (KeyValue(_, (m2, t2))) -> 
+          let m = if m1 = Multiple || m2 = Multiple then Multiple else Single
+          tag, (m, subtypeInfered t1 t2)
+      | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
+  |> Map.ofSeq
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes t1 t2 =
-  // If we return heterogeneous type as a result of a filed
-  // then it will never contain multiple items (this only happens for arrays)
-  let singularize = function
-    | Heterogeneous cases -> 
-        [ for (KeyValue(k, (_, t))) in cases -> k, (Single, t) ]
-        |> Map.ofSeq |> Heterogeneous 
-    | t -> t
-
   Seq.pairBy (fun p -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
       match fst, snd with
@@ -249,6 +255,16 @@ and unionRecordTypes t1 t2 =
       // If both are available, we get their subtype
       | Some p1, Some p2 -> 
           { Name = name; Optional = p1.Optional || p2.Optional
-            Type = singularize (subtypeInfered p1.Type p2.Type) }
+            Type = subtypeInfered p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
   |> List.ofSeq
+
+/// Infer the type of the collection based on multiple sample types
+/// (group the types by tag, count their multiplicity)
+let inferCollectionType types = 
+  types 
+  |> Seq.groupBy typeTag
+  |> Seq.map (fun (tag, types) ->
+      let multiple = if Seq.length types > 1 then Multiple else Single
+      tag, (multiple, Seq.fold subtypeInfered Top types) )
+  |> Map.ofSeq |> Collection
