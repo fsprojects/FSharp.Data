@@ -3,5 +3,4 @@ src/bin/*
 src/obj/*
 tests/bin/*
 tests/obj/*
-docs/*
 *.suo

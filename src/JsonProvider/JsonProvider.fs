@@ -83,6 +83,3 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
   // Register the main type with F# compiler
   do this.AddNamespace(ns, [ jsonProvTy ])
-
-[<assembly:TypeProviderAssembly>]
-do()

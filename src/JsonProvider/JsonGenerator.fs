@@ -120,12 +120,6 @@ type internal JsonGenerationContext =
 
 module internal JsonTypeBuilder = 
   
-  /// Takes dictionary or a map and succeeds if it contains exactly one value
-  let (|SingletonMap|_|) map = 
-    if Seq.length map <> 1 then None else
-      let (KeyValue(k, v)) = Seq.head map 
-      Some(k, v)
-
   /// Common code that is shared by code generators that generate 
   /// "Choice" type. This is parameterized by the types (choices) to generate,
   /// by functions that get the multiplicity and the type tag for each option
@@ -165,7 +159,7 @@ module internal JsonTypeBuilder =
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   and generateJsonType ctx = function
-    | InferedType.Primitive typ -> 
+    | InferedType.Primitive(typ, _) -> 
 
         // Return the JSON value as one of the supported primitive types
         let conv = 
@@ -206,7 +200,7 @@ module internal JsonTypeBuilder =
         for prop in props do
           let propName = prop.Name
           let propTy, getter =
-            if not prop.Optional || (prop.Optional && prop.Type = Primitive typeof<string>) then 
+            if not prop.Optional || (prop.Optional && prop.Type = Primitive(typeof<string>, None)) then 
               // If it is not optional, then we simply return the property
               let valTy, valConv = generateJsonType ctx prop.Type
               valTy, fun (Singleton json) -> 

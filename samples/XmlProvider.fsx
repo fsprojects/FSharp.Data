@@ -5,10 +5,16 @@ This article demonstrates how to use the XML type provider to access XML documen
 in a statically typed way. We first look how the structure is infered and then 
 demonstrate the provider by parsing RSS feed.
 
+The XML type provider provides a statically typed access to XML documents.
+It takes a sample document as an input (or document containing a root XML node with
+multiple child nodes that are used as samples). The generated type can then be used 
+to read files with the same structure. If the loaded file does not match the structure 
+of the sample, an exception may occur (but only when accessing e.g. non-existing element).
+
 ## Introducing the provider
 
-As discussed in the [Type Providers introduction](FSharpData.html), the 
-type provider can be loaded using the following commands
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
+is located in the `../bin` directory, we can load it in F# Interactive as follows:
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type under the cover): *)
 
@@ -20,9 +26,11 @@ open FSharp.Data
 (**
 ### Inferring type from sample
 
-As also discussed in the [introduction](FSharpData.html), the `XmlProvider` type
-is parameterized by a `string` which is _either_ a sample XML string _or_ a file location
-or URL. The following sample generates a type that can read simple XML documents with a root node
+The `XmlProvider<...>` takes one static parameter of type `string`. The parameter can 
+be _either_ a sample XML string _or_ a sample file (relatively to the current folder or online 
+accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
+
+The following sample generates a type that can read simple XML documents with a root node
 containing a two attributes:
 *)
 

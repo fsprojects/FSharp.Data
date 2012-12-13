@@ -9,6 +9,29 @@ open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
+module Seq = 
+  /// Merge two sequences by pairing elements for which
+  /// the specified predicate returns the same key
+  ///
+  /// (If the inputs contain the same keys, then the order
+  /// of the elements is preserved.)
+  let pairBy f first second = 
+    let vals1 = [ for o in first -> f o, o ]
+    let vals2 = [ for o in second -> f o, o ]
+    let d1, d2 = dict vals1, dict vals2
+    let k1, k2 = set d1.Keys, set d2.Keys
+    let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
+    let asOption = function true, v -> Some v | _ -> None
+    [ for k in keys -> 
+        k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
+
+  /// Take at most the specified number of arguments from the sequence
+  let takeMax count input =
+    input 
+    |> Seq.mapi (fun i v -> i, v)
+    |> Seq.takeWhile (fun (i, v) -> i < count)
+    |> Seq.map snd
+
 module internal ReflectionHelpers = 
   open Microsoft.FSharp.Quotations
 
@@ -93,6 +116,12 @@ module GlobalProviderHelpers =
   ///    p.InvokeCode <- fun (Singleton self) -> <@ 1 + 2 @>
   ///
   let (|Singleton|) = function [l] -> l | _ -> failwith "Parameter mismatch"
+
+  /// Takes dictionary or a map and succeeds if it contains exactly one value
+  let (|SingletonMap|_|) map = 
+    if Seq.length map <> 1 then None else
+      let (KeyValue(k, v)) = Seq.head map 
+      Some(k, v)
 
 
 module Conversions = 

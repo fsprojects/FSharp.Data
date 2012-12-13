@@ -5,10 +5,16 @@ This article demonstrates how to use the JSON type provider to access JSON files
 in a statically typed way. We first look how the structure is infered and then 
 demonstrate the provider by parsing data returned by the WorldBank and Twitter.
 
+The JSON type provider provides a statically typed access to JSON documents.
+It takes a sample document as an input (or document containing a JSON array of samples).
+The generated type can then be used to read files with the same structure. If the 
+loaded file does not match the structure of the sample, an exception may occur 
+(but only when accessing e.g. non-existing element).
+
 ## Introducing the provider
 
-As discussed in the [Type Providers introduction](FSharpData.html), the 
-type provider can be loaded by referencing the `FSharp.Data.dll`assembly as follows:: *)
+The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
+is located in the `../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../bin/FSharp.Data.dll"
 open System.IO
@@ -17,9 +23,11 @@ open FSharp.Data
 (**
 ### Inferring type from sample
 
-As also discussed in the [introduction](FSharpData.html), the `XmlProvider` type
-is parameterized by a `string` which is _either_ a sample XML string _or_ a file location
-or URL. The following sample passes small JSON string to the provider:
+The `JsonProvider<...>` takes one static parameter of type `string`. The parameter can 
+be _either_ a sample string _or_ a sample file (relatively to the current folder or online 
+accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
+
+The following sample passes small JSON string to the provider:
 *)
 
 type Simple = JsonProvider<""" { "name":"John", "age":94 } """>

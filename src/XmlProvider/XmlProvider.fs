@@ -83,6 +83,3 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
   // Register the main type with F# compiler
   do this.AddNamespace(ns, [ xmlProvTy ])
-
-[<assembly:TypeProviderAssembly>]
-do()

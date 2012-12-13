@@ -9,20 +9,6 @@ open System.Diagnostics
 open System.Collections.Generic
 
 // --------------------------------------------------------------------------------------
-// Helpers
-
-module Seq = 
-  /// Merge two sequences by pairing elements for which
-  /// the specified predicate returns the same key
-  let pairBy f first second = 
-    let d1 = dict [ for o in first -> f o, o ]
-    let d2 = dict [ for o in second -> f o, o ]
-    let keys = set (Seq.concat [ d1.Keys; d2.Keys ])
-    let asOption = function true, v -> Some v | _ -> None
-    [ for k in keys -> 
-        k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
-        
-// --------------------------------------------------------------------------------------
 // Types that represent the result of the type inference
 // --------------------------------------------------------------------------------------
 
@@ -70,7 +56,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and InferedType =
-  | Primitive of System.Type
+  | Primitive of System.Type * option<System.Type>
   | Record of string option * InferedProperty list
   | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
   | Heterogeneous of Map<InferedTypeTag, InferedType>
@@ -119,7 +105,7 @@ let primitiveTypes =
 
 /// Checks whether a value is a value type (and cannot have null as a value)
 let isValueType = function
-  | Primitive typ -> typ <> typeof<string>
+  | Primitive(typ, _) -> typ <> typeof<string>
   | _ -> true
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
@@ -129,7 +115,7 @@ let typeTag = function
   | Collection _ -> InferedTypeTag.Collection
   | Null | Top -> InferedTypeTag.Null
   | Heterogeneous _ -> InferedTypeTag.Heterogeneous
-  | Primitive typ ->
+  | Primitive(typ, _) ->
       if typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal> 
         then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
@@ -170,7 +156,12 @@ let subtypePrimitives typ1 typ2 =
 
 /// Active pattern that calls `subtypePrimitives` on two primitive types
 let (|SubtypePrimitives|_|) = function
-  | Primitive t1, Primitive t2 -> subtypePrimitives t1 t2
+  | Primitive(t1, u1), Primitive(t2, u2) -> 
+      // Re-annotate with the unit, if it is the same one
+      match subtypePrimitives t1 t2 with
+      | Some(t) when u1 = u2 -> Some(t, u1)
+      | Some(t) -> Some(t, None)
+      | _ -> None
   | _ -> None    
 
 /// Find common subtype of two infered types:
@@ -268,3 +259,15 @@ let inferCollectionType types =
       let multiple = if Seq.length types > 1 then Multiple else Single
       tag, (multiple, Seq.fold subtypeInfered Top types) )
   |> Map.ofSeq |> Collection
+
+/// Infers the type of a simple string value (this is either
+/// the value inside a node or value of an attribute)
+let inferPrimitiveType value unit =
+  match value with 
+  | StringEquals "true" | StringEquals "false"
+  | StringEquals "yes" | StringEquals "no" -> Primitive(typeof<bool>, unit)
+  | Parse Int32.TryParse _ -> Primitive(typeof<int>, unit)
+  | Parse Int64.TryParse _ -> Primitive(typeof<int64>, unit)
+  | Parse Decimal.TryParse _ -> Primitive(typeof<decimal>, unit)
+  | Parse Double.TryParse _ -> Primitive(typeof<float>, unit)
+  | _ -> Primitive(typeof<string>, unit)

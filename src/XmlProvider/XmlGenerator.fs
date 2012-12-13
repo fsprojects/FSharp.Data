@@ -100,7 +100,7 @@ module internal XmlTypeBuilder =
     
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
-    | InferedType.Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive typ }]) ->
+    | InferedType.Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
         let opt = opt && typ <> typeof<string>
         let resTyp, convFunc = Conversions.convertValue "Value" opt typ 
         resTyp, fun xml -> convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
@@ -118,8 +118,8 @@ module internal XmlTypeBuilder =
         // Generate properties for all XML attributes
         for attr in attrs do
           let name = attr.Name
-          let typ = match attr.Type with Primitive t -> t | _ -> failwith "generateXmlType: Expected Primitive type"
-          let opt = attr.Optional && (attr.Type <> Primitive typeof<string>) 
+          let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
+          let opt = attr.Optional && (attr.Type <> Primitive(typeof<string>, None)) 
           let resTyp, convFunc = Conversions.convertValue ("Attribute " + name) opt typ
           
           // Add property with PascalCased name
@@ -137,7 +137,7 @@ module internal XmlTypeBuilder =
             // returns it converted to the right type (or an option)
             for primitive in primitives do 
               match primitive with 
-              | Primitive typ -> 
+              | Primitive(typ, _) -> 
                   // If there may be other primitives or nodes, it is optional
                   let opt = nodes.Count > 0 || primitives.Length > 1
                   let resTyp, convFunc = Conversions.convertValue "Value" opt typ 

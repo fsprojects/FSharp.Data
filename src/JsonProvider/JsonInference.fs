@@ -19,13 +19,13 @@ let rec inferType json =
   match json with
   // Null and primitives without subtyping hiearchies
   | JsonValue.Null -> Null
-  | JsonValue.Boolean _ -> Primitive typeof<bool>
-  | JsonValue.String _ -> Primitive typeof<string>
+  | JsonValue.Boolean _ -> Primitive(typeof<bool>, None)
+  | JsonValue.String _ -> Primitive(typeof<string>, None)
   // For numbers, we test if it is integer and if it fits in smaller range
-  | JsonValue.Number n when inrange Int32.MinValue Int32.MaxValue n && integer n -> Primitive typeof<int>
-  | JsonValue.Number n when inrange Int64.MinValue Int64.MaxValue n && integer n -> Primitive typeof<int64>
-  | JsonValue.Number _ -> Primitive typeof<decimal>
-  | JsonValue.BigNumber _ -> Primitive typeof<float>
+  | JsonValue.Number n when inrange Int32.MinValue Int32.MaxValue n && integer n -> Primitive(typeof<int>, None)
+  | JsonValue.Number n when inrange Int64.MinValue Int64.MaxValue n && integer n -> Primitive(typeof<int64>, None)
+  | JsonValue.Number _ -> Primitive(typeof<decimal>, None)
+  | JsonValue.BigNumber _ -> Primitive(typeof<float>, None)
   // More interesting types 
   | JsonValue.Array ar -> inferCollectionType (Seq.map inferType ar)
   | JsonValue.Object o ->

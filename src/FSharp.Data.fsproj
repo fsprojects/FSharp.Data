@@ -44,6 +44,8 @@
     <Compile Include="XmlProvider\XmlInference.fs" />
     <Compile Include="XmlProvider\XmlGenerator.fs" />
     <Compile Include="XmlProvider\XmlProvider.fs" />
+    <Compile Include="CsvProvider\CsvProvider.fs" />
+    <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
     <Compile Include="Providers.fs" />
   </ItemGroup>
   <ItemGroup>
