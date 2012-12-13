@@ -1,17 +1,14 @@
 ﻿(** 
 # F# Data: JSON Type Provider
 
-The JSON type provider can be used to read JSON documents in a statically typed way.
-The provider takes a sample JSON document (or a JSON document containing an array of
-samples) and infers the structure of the file. The generated type can then be used
-to read files with the same structure. If the loaded file does not match the 
-structure of the sample, an exception may occur (but only when accessing e.g. non-existing
-element).
+This article demonstrates how to use the JSON type provider to access JSON files
+in a statically typed way. We first look how the structure is infered and then 
+demonstrate the provider by parsing data returned by the WorldBank and Twitter.
 
 ## Introducing the provider
 
-The type provider is located in `FSharp.Data.dll`. Assuming the assembly is located
-in `../bin` directory, we can load it and open the `FSharp.Data` namespace as follows: *)
+As discussed in the [Type Providers introduction](FSharpData.html), the 
+type provider can be loaded by referencing the `FSharp.Data.dll`assembly as follows:: *)
 
 #r "../bin/FSharp.Data.dll"
 open System.IO
@@ -20,10 +17,9 @@ open FSharp.Data
 (**
 ### Inferring type from sample
 
-The type provider is represented by a type `JsonProvider` that takes one required `string` 
-parameter. The parameter can be _either_ a sample JSON string _or_ a sample file (relatively to
-the current folder or online accessible via `http` or `https`). It is not likely that this 
-could lead to ambiguities. The following sample passes small JSON string to the provider:
+As also discussed in the [introduction](FSharpData.html), the `XmlProvider` type
+is parameterized by a `string` which is _either_ a sample XML string _or_ a file location
+or URL. The following sample passes small JSON string to the provider:
 *)
 
 type Simple = JsonProvider<""" { "name":"John", "age":94 } """>
@@ -197,7 +193,7 @@ available, we would get `null`.
 
 ## Related articles
 
- * [F# Data: Type Providers](TypeProviders.html) - gives mroe information about other
+ * [F# Data: Type Providers](FSharpData.html) - gives mroe information about other
    type providers in the `FSharp.Data` package.
  * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 
    working with JSON values dynamically.

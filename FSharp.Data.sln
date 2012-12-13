@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +13,10 @@ Global
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EF9FF95-1C75-458A-983A-168E43945913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EF9FF95-1C75-458A-983A-168E43945913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EF9FF95-1C75-458A-983A-168E43945913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EF9FF95-1C75-458A-983A-168E43945913}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

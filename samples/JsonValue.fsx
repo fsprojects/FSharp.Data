@@ -1,5 +1,5 @@
 ﻿(**
-# JSON Parser and Reader
+# F# Data: JSON Parser and Reader
 *)
 
 #r "../bin/FSharp.Data.dll"
@@ -23,6 +23,22 @@ Assuming we have a document that looks as follows:
 
 let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
 let value = JsonValue.Parse(file)
+
+(**
+Given a value, you can write
+
+ * `value.AsInteger` - ?
+ * `value.AsBoolean` - ?
+ * `value?child` - ?
+ * `[ for v in value -> v ]` - ?
+ * `value.Properties` -
+ * `value.InnerText` - 
+*)
+
+
+(** 
+Example that works
+*)
 
 match value with
 | JsonValue.Array [info; data] ->
