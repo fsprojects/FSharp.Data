@@ -8,6 +8,9 @@ let template = File.ReadAllText(templateFile)
 let sources = Path.Combine(__SOURCE_DIRECTORY__, "../samples")
 let output = Path.Combine(__SOURCE_DIRECTORY__, "../docs")
 
+if Directory.Exists(output) |> not then
+  Directory.CreateDirectory(output) |> ignore
+
 Literate.transform template sources output
 
 (*
