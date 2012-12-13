@@ -12,7 +12,9 @@ open ProviderImplementation.StructureInference
 // Runtime components used by the generated JSON types
 // --------------------------------------------------------------------------------------
 
+/// Underlying representation of the generated JSON types
 type JsonDocument private (json:JsonValue) =
+  /// Returns the raw JSON value that is represented by the generated type
   member x.JsonValue = json
   static member Create(json:JsonValue) =
     JsonDocument(json)

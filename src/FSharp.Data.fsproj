@@ -41,6 +41,9 @@
     <Compile Include="JsonProvider\JsonInference.fs" />
     <Compile Include="JsonProvider\JsonGenerator.fs" />
     <Compile Include="JsonProvider\JsonProvider.fs" />
+    <Compile Include="XmlProvider\XmlInference.fs" />
+    <Compile Include="XmlProvider\XmlGenerator.fs" />
+    <Compile Include="XmlProvider\XmlProvider.fs" />
     <Compile Include="Providers.fs" />
   </ItemGroup>
   <ItemGroup>

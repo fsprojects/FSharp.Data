@@ -24,6 +24,7 @@ module internal ReflectionHelpers =
       convMeth.MakeGenericMethod (Array.ofSeq tyargs)
     Expr.Call(convMeth, args)
 
+
 module internal ProviderHelpers =
 
   /// Given a type provider configuration and a name passed by user, open 
@@ -72,8 +73,19 @@ module internal ProviderHelpers =
       watcher.Changed.Add(fun _ -> ownerType.Invalidate())
       watcher.EnableRaisingEvents <- true
 
+
 [<AutoOpen>]
 module GlobalProviderHelpers =
+
+  // Helper active patterns to simplify the inference code
+  let (|StringEquals|_|) (s1:string) s2 = 
+    if s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase) 
+      then Some () else None
+
+  let (|Parse|_|) func value = 
+    match func value with
+    | true, v -> Some v
+    | _ -> None
 
   /// Helper active pattern that can be used when constructing InvokeCode
   /// (to avoid writing pattern matching or incomplete matches):
@@ -81,3 +93,54 @@ module GlobalProviderHelpers =
   ///    p.InvokeCode <- fun (Singleton self) -> <@ 1 + 2 @>
   ///
   let (|Singleton|) = function [l] -> l | _ -> failwith "Parameter mismatch"
+
+
+module Conversions = 
+  open System
+  open System.Globalization
+  open Microsoft.FSharp.Quotations
+
+  /// Convert the result of TryParse to option type
+  let asOption = function true, v -> Some v | _ -> None
+
+  type Operations =
+    // Operations that convert string to supported primitive types
+    static member ConvertString = Option.map (fun (s:string) -> s)
+    static member ConvertInteger = Option.bind (fun s -> 
+      Int32.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+    static member ConvertInteger64 = Option.bind (fun s -> 
+      Int64.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+    static member ConvertDecimal = Option.bind (fun s -> 
+      Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+    static member ConvertFloat = Option.bind (fun s -> 
+      Double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+    static member ConvertBoolean = Option.bind (function 
+        | StringEquals "true" | StringEquals "yes" -> Some true
+        | StringEquals "false" | StringEquals "no" -> Some false
+        | _ -> None)
+
+    /// Operation that extracts the value from an option and reports a
+    /// meaningful error message when the value is not there
+    static member GetNonOptionalAttribute<'T>(name, opt:option<'T>) : 'T = 
+      match opt with 
+      | Some v -> v
+      | None when typeof<'T> = typeof<string> -> Unchecked.defaultof<'T>
+      | _ -> failwithf "Mismatch: %s is missing" name
+
+  /// Creates a function that takes Expr<string option> and converts it to 
+  /// an expression of other type - the type is specified by `typ` and 
+  let convertValue message optional typ = 
+    let returnTyp = if optional then typedefof<option<_>>.MakeGenericType [| typ |] else typ
+    returnTyp, fun e ->
+      let converted = 
+        if typ = typeof<int> then <@@ Operations.ConvertInteger(%%e) @@>
+        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(%%e) @@>
+        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(%%e) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(%%e) @@>
+        elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
+        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
+        else failwith "convertValue: Unsupported primitive type"
+      if not optional then 
+        ReflectionHelpers.makeMethodCall typeof<Operations> "GetNonOptionalAttribute"
+          [ typ ] [ Expr.Value message; converted]
+      else converted
