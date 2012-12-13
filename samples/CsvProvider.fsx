@@ -45,7 +45,7 @@ for row in small.Data do
 (**
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives mroe information about other
+ * [F# Data: Type Providers](FSharpData.html) - gives more information about other
    type providers in the `FSharp.Data` package.
 
 *)

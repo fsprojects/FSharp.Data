@@ -201,7 +201,7 @@ available, we would get `null`.
 
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives mroe information about other
+ * [F# Data: Type Providers](FSharpData.html) - gives more information about other
    type providers in the `FSharp.Data` package.
  * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
