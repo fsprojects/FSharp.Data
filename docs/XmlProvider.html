@@ -14,10 +14,16 @@
 in a statically typed way. We first look how the structure is infered and then 
 demonstrate the provider by parsing RSS feed.</p>
 
+<p>The XML type provider provides a statically typed access to XML documents.
+It takes a sample document as an input (or document containing a root XML node with
+multiple child nodes that are used as samples). The generated type can then be used 
+to read files with the same structure. If the loaded file does not match the structure 
+of the sample, an exception may occur (but only when accessing e.g. non-existing element).</p>
+
 <h2>Introducing the provider</h2>
 
-<p>As discussed in the <a href="FSharpData.html">Type Providers introduction</a>, the 
-type provider can be loaded using the following commands
+<p>The type provider is located in the <code>FSharp.Data.dll</code> assembly. Assuming the assembly 
+is located in the <code>../bin</code> directory, we can load it in F# Interactive as follows:
 (note we also need a reference to <code>System.Xml.Linq</code>, because the provider uses the
 <code>XDocument</code> type under the cover):</p>
 <pre class="fssnip">
@@ -27,9 +33,11 @@ type provider can be loaded using the following commands
 <span class="l">4: </span><span class="k">open</span> <span onmouseout="hideTip(event, 'fstip3', 3)" onmouseover="showTip(event, 'fstip3', 3)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fstip4', 4)" onmouseover="showTip(event, 'fstip4', 4)" class="i">Data</span></pre>
 <h3>Inferring type from sample</h3>
 
-<p>As also discussed in the <a href="FSharpData.html">introduction</a>, the <code>XmlProvider</code> type
-is parameterized by a <code>string</code> which is <em>either</em> a sample XML string <em>or</em> a file location
-or URL. The following sample generates a type that can read simple XML documents with a root node
+<p>The <code>XmlProvider&lt;...&gt;</code> takes one static parameter of type <code>string</code>. The parameter can 
+be <em>either</em> a sample XML string <em>or</em> a sample file (relatively to the current folder or online 
+accessible via <code>http</code> or <code>https</code>). It is not likely that this could lead to ambiguities.</p>
+
+<p>The following sample generates a type that can read simple XML documents with a root node
 containing a two attributes:</p>
 <pre class="fssnip">
 <span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fstip5', 5)" onmouseover="showTip(event, 'fstip5', 5)" class="i">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fstip6', 6)" onmouseover="showTip(event, 'fstip6', 6)" class="i">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s">&lt;</span><span class="s">author</span><span class="s"> </span><span class="s">name</span><span class="s">=</span><span class="s">&quot;</span><span class="s">Paul</span><span class="s"> </span><span class="s">Feyerabend</span><span class="s">&quot;</span><span class="s"> </span><span class="s">born</span><span class="s">=</span><span class="s">&quot;</span><span class="s">1924</span><span class="s">&quot;</span><span class="s"> </span><span class="s">/</span><span class="s">&gt;</span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
