@@ -8,7 +8,7 @@ want to quickly run a simple HTTP request and specify parameters such as method,
 HTTP POST data or additional headers.
 
 The F# Data Library provides a simple `Http` type with two overloaded methods:
-`Download` and `AsyncDownload` that can be used to create a simple request and
+`Request` and `AsyncRequest` that can be used to create a simple request and
 perform it synchronously or asynchronously.
 
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
@@ -25,20 +25,20 @@ open FSharp.Net
 ## Sending simple requests
 
 To send a simple HTTP (GET) request that downloads a specified web page, you 
-can use `Http.Download` and `Http.AsyncDownload` with just a single parameter:
+can use `Http.Request` and `Http.AsyncRequest` with just a single parameter:
 *)
 
 // Download the content of a web site
-Http.Download("http://tomasp.net")
+Http.Request("http://tomasp.net")
 
 // Download web site asynchronously
-async { let! html = Http.AsyncDownload("http://tomasp.net")
+async { let! html = Http.AsyncRequest("http://tomasp.net")
         printfn "%d" html.Length }
 |> Async.Start
 
 (** 
-In the rest of the documentation, we focus at the `Download` method, because
-the use of `AsyncDownload` is exactly the same.
+In the rest of the documentation, we focus at the `Request` method, because
+the use of `AsyncRequest` is exactly the same.
 
 ## Query parameters and headers
 
@@ -48,7 +48,7 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method (which is the default option):
 *)
 
-Http.Download
+Http.Request
   ( "http://httpbin.org/get", 
     query = ["test", "foo"], meth="GET")
 
@@ -65,7 +65,7 @@ provide your API key:
 let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
-Http.Download
+Http.Request
   ( "http://api.themoviedb.org/3/search/movie",
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ "accept", "application/json" ])
@@ -78,7 +78,7 @@ additional data using the `body` parameter. The following example uses the
 [httpbin.org](http://httpbin.org) service which returns the request details:
 *)
 
-Http.Download
+Http.Request
   ( "http://httpbin.org/post", 
     meth="POST", body="test=foo")
 
@@ -88,7 +88,7 @@ but you can change this behaviour by adding `content-type` to the list of header
 using the optional argument `headers`:
 *)
 
-Http.Download
+Http.Request
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/json"],
     meth="POST", body=""" {"test": 42} """)

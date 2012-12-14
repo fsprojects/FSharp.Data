@@ -31,19 +31,19 @@ type Http private() =
     uri
 
   /// Downlaod an HTTP web resource from the specified URL asynchronously
-  static member AsyncDownload(url:string) = async {
+  static member AsyncRequest(url:string) = async {
     use wc = new WebClient()
     return! wc.AsyncDownloadString(enableUriSlashes(Uri(url))) }
 
   /// Downlaod an HTTP web resource from the specified URL
-  static member Download(url:string) = 
+  static member Request(url:string) = 
     use wc = new WebClient()
     wc.DownloadString(enableUriSlashes(Uri(url)))
 
   /// Downlaod an HTTP web resource from the specified URL asynchronously
   /// (allows specifying query string parameters and HTTP headers including
   /// headers that have to be handled specially - such as Accept)
-  static member AsyncDownload(url:string, ?query, ?headers, ?meth, ?body) = async {
+  static member AsyncRequest(url:string, ?query, ?headers, ?meth, ?body) = async {
     let query = defaultArg query []
     let headers = defaultArg headers []
     let meth = (defaultArg meth "GET").ToUpperInvariant()
@@ -87,6 +87,6 @@ type Http private() =
   /// Downlaod an HTTP web resource from the specified URL synchronously
   /// (allows specifying query string parameters and HTTP headers including
   /// headers that have to be handled specially - such as Accept)
-  static member Download(url:string, ?query, ?headers, ?meth, ?body) = 
-    Http.AsyncDownload(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body)
+  static member Request(url:string, ?query, ?headers, ?meth, ?body) = 
+    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body)
     |> Async.RunSynchronously
