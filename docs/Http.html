@@ -1,14 +1,38 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-                        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
   <head>
-    <title id="title">F# Data: HTTP Utilities</title>
+    <meta charset="utf-8">
+    <title>F# Data: HTTP Utilities</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for other data-related tasks.">
+    <meta name="author" content="Tomas Petricek">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
     <link type="text/css" rel="stylesheet" href="content/style.css" />
-    <script type="text/javascript" src="content/tips.js"></script>
+    <script src="content/tips.js" type="text/javascript"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-    <div id="content">
-    <h1>F# Data: HTTP Utilities</h1>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://github.com/tpetricek/FSharp.Data">github page</a></li>
+          <li><a href="http://fsharp.github.com/fsharpx/">fsharpx library</a></li>
+        </ul>
+        <h3 class="muted">F# Data Library</h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          <h1>F# Data: HTTP Utilities</h1>
 
 <p>*)</p>
 
@@ -38,14 +62,38 @@ Refernece the DLL and open <code>FSharp.Net</code>:</p>
 <span class="l">2: </span>  ( <span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">www</span><span class="s">.</span><span class="s">htmlcodetutorial</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">cgi</span><span class="s">-</span><span class="s">bin</span><span class="s">/</span><span class="s">mycgi</span><span class="s">.</span><span class="s">pl</span><span class="s">&quot;</span>, 
 <span class="l">3: </span>    <span class="i">meth</span><span class="o">=</span><span class="s">&quot;</span><span class="s">POST</span><span class="s">&quot;</span>, <span class="i">body</span><span class="o">=</span><span class="s">&quot;</span><span class="s">test</span><span class="s">=</span><span class="s">foo</span><span class="s">&quot;</span>)</pre>
 
-
-    <!-- HTML for Tool Tips -->
-    <div class="tip" id="fstip1">namespace FSharp</div>
+          <div class="tip" id="fstip1">namespace FSharp</div>
 <div class="tip" id="fstip2">namespace FSharp.Net</div>
 <div class="tip" id="fstip3">type Http =<br />&#160;&#160;private new : unit -&gt; Http<br />&#160;&#160;static member AsyncDownload : url:string -&gt; Async&lt;string&gt;<br />&#160;&#160;static member AsyncDownload : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?meth:string * ?body:string -&gt; Async&lt;string&gt;<br />&#160;&#160;static member Download : url:string -&gt; string<br />&#160;&#160;static member Download : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?meth:string * ?body:string -&gt; string<br /><br />Full name: FSharp.Net.Http</div>
 <div class="tip" id="fstip4">static member Http.Download : url:string -&gt; string<br />static member Http.Download : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?meth:string * ?body:string -&gt; string</div>
 <div class="tip" id="fstip5">val query : Linq.QueryBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.query</div>
 
+        </div>
+        <div class="span3">
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="../index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/tpetricek/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            
+            <li class="nav-header">Documentation</li>
+            <li><a href="FSharpData.html">F# Data Library</a></li>
+            <li class="divider"></li>
+            <li><a href="JsonProvider.html">F# Data: JSON Type Provider</a></li>
+            <li><a href="XmlProvider.html">F# Data: XML Type Provider</a></li>
+            <li><a href="CsvProvider.html">F# Data: CSV Type Provider</a></li>
+            <li><a href="WorldBank.html">F# Data: WorldBank Provider</a></li>
+            <li class="divider"></li>
+            <li><a href="JsonValue.html">F# Data: JSON Parser and Reader</a></li>
+            <li><a href="Http.html">F# Data: HTTP Utilities</a></li>
+          </ul>
+
+        </div>
+      </div>
     </div>
+    <a href="https://github.com/tpetricek/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
   </body>
   </html>
