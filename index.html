@@ -31,81 +31,60 @@
       </div>
       <hr>
 
-      <div class="jumbotron">
-        <h1>Searching The Movie Database with F#</h1>
-        <p class="lead">
-          Calling the Movie Database REST API using an F# type provider that generates types based on the apiary.io specification,
-          compiled using the FunScript F# to JavaScript compiler with a type provider for TypeScript definitions. 
-          Enter text to search for:
-        </p>
-      </div>
-
       <div class="row">
-        <div class="span2"></div>
-        <div class="span8">
-          <div class="well well-small hpBanner">
-            <h2>Search movies</h2>
-            <div class="input-append" style="position:relative;padding-right:180px;">
-              <input type="text" class="no-margin" id="searchInput" style="width:100%" />
-              <div class="btn-group">
-                <button class="btn" style="width:140px" id="searchButton">Search movies</button>
-               </div>
-            </div>          
+        <div class="span9" id="main"> 
+          <h1>F# Data: Library for Data Access</h1>
+
+          <p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing JSON files and for sending HTTP requests.</p>
+
+          <div class="row">
+            <div class="span1"></div>
+            <div class="span6">
+              <div class="well well-small" id="nuget">
+                The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
+                To install the library, run the following command in the <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a>:
+                <pre>PM> Install-Package FSharp.Data</pre>
+              </div>
+            </div>
+            <div class="span1"></div>
           </div>
+
+          <h2>Documentation</h2>
+          <p>Foo</p>
+
+          <h2>License</h2>
+
+          <p>The library is available under Apache 2.0. For more information see the 
+          <a href="https://github.com/tpetricek/FSharp.Data/blob/master/README.md">License file</a> in the 
+          GitHub repository.</p>
+
         </div>
-        <div class="span2"></div>
+
+        <div class="span3">
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="index.html">Home page</a></li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
+            <li><a href="https://github.com/tpetricek/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="https://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            
+            <li class="nav-header">Documentation</li>
+            <li><a href="docs/FSharpData.html">F# Data Library</a></li>
+            <li class="divider"></li>
+            <li><a href="docs/JsonProvider.html">F# Data: JSON Type Provider</a></li>
+            <li><a href="docs/XmlProvider.html">F# Data: XML Type Provider</a></li>
+            <li><a href="docs/CsvProvider.html">F# Data: CSV Type Provider</a></li>
+            <li><a href="docs/WorldBank.html">F# Data: WorldBank Provider</a></li>
+            <li class="divider"></li>
+            <li><a href="docs/JsonValue.html">F# Data: JSON Parser and Reader</a></li>
+            <li><a href="docs/Http.html">F# Data: HTTP Utilities</a></li>
+          </ul>
+
+        </div>
       </div>
-
-
-			<div class="modal hide fade" id="detailsDialog">
-				<div class="modal-header">
-					<a href="#" class="close" data-dismiss="modal">&times;</a>
-					<h3 id="dialogTitle"></h3>
-					</div>
-				<div class="modal-body">
-					<div class="divDialogElements">
-            <img id="dialogImage" />
-            <p id="dialogOverview">
-            </p>
-            <h3>Cast</h3>
-            <ul id="dialogCast">
-            </ul>
-					</div>
-			  </div>
-				<div class="modal-footer">
-					<a href="#" class="btn btn-primary" onclick="$('#detailsDialog').modal('hide');">Close</a>
-					</div>
-				</div>
-
-      <h2>Found movies</h2>
-
-      <div id="results">
       </div>
-
-      <div class="mainclearer"></div>
-      <hr />
-
-      <div class="footer">
-        <p>&copy; Tomas Petricek (<a href="http://tomasp.net">tomasp.net</a>) 2012</p>
-      </div>
-
-    </div> <!-- /container -->
-
-
-    <div id="content">
-    <h1>F# Data: Library for Data Access</h1>
-
-<p>TODO</p>
-
-<h2>License</h2>
-
-<p>The library is available under Apache 2.0. For more information see the 
-<a href="https://github.com/tpetricek/FSharp.Data/blob/master/README.md">License file</a> in the 
-GitHub repository.</p>
-
-
-    <!-- HTML for Tool Tips -->
-    
     </div>
 
     <a href="https://github.com/tpetricek/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>

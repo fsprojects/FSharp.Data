@@ -55,6 +55,24 @@ pre, pre code {
   line-height:13pt;
 }
 
+/* Additional formatting for the homepage */
+#nuget { 
+  margin-top:20px;
+  font-size: 11pt; 
+  padding:20px; 
+}
+
+#nuget pre {
+  font-size:11pt;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+  background: #404040;
+  border-style:none;
+  color: #e0e0e0;
+  margin-top:15px;
+}
+
 /* identifier */
 span.i { color:#000000; }
 /* comment */
