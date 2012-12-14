@@ -74,8 +74,8 @@ let createInternetFileCache prefix expiration =
               Debug.WriteLine("Caching: Failed to write file {0} with an exception: {1}", cacheFile, e.Message) }
     
     // Ensure that we can access the file system by writing sample thing to a cache
-    cache.Set("___test", "empty")
-    if cache.TryRetrieve("__test") <> Some "empty" then memoryCache()
+    cache.Set("$$$test$$$", "empty")
+    if cache.TryRetrieve("$$$test$$$") <> Some "empty" then memoryCache()
     else cache 
   with e -> 
     Debug.WriteLine("Caching: Fall back to memory cache, because of an exception: {0}", e.Message)

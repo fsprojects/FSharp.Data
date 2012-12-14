@@ -1,4 +1,8 @@
-﻿namespace ProviderImplementation
+﻿// --------------------------------------------------------------------------------------
+// The World Bank type provider 
+// --------------------------------------------------------------------------------------
+
+namespace ProviderImplementation
 
 open System
 open System.Net
@@ -8,12 +12,16 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.Cache
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
-#if BROWSER
-open System.Windows.Browser
-#else
-open System.Web
-#endif
 
+// TODO: Support Silverlight and other targets
+//
+//   #if BROWSER
+//   open System.Windows.Browser
+//   #else
+open System.Web
+//   #endif
+
+// --------------------------------------------------------------------------------------
 
 [<AutoOpen>]
 module Implementation = 
@@ -253,7 +261,7 @@ type RegionCollection<'T when 'T :> Region> internal (connection: ServiceConnect
 
 type WorldBankData(serviceUrl:string, sources:string) = 
     let sources = sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
-    let restCache = Cache.createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays(1.0))
+    let restCache = Cache.createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays(7.0))
     let connection = new ServiceConnection(restCache,serviceUrl, sources)
     member x.ServiceLocation = serviceUrl
     //member x._GetCountry(countryCode: string) = Country(connection, countryCode)
