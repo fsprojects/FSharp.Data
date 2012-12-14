@@ -26,6 +26,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{EF9F7922
 	ProjectSection(SolutionItems) = preProject
 		tools\build.fsx = tools\build.fsx
 		tools\literate.fsx = tools\literate.fsx
+		tools\template.html = tools\template.html
 	EndProjectSection
 EndProject
 Global

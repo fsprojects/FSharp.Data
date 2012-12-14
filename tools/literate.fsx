@@ -89,5 +89,10 @@ let transform template sources output =
           snippet <- snippet + 1
 
     let heading = match !heading with None -> name | Some h -> h.Trim()
-    let html = String.Format(template, heading, sb.ToString(), formatted.ToolTipHtml)
+    let html = 
+      [ "page-title", heading
+        "document", sb.ToString()
+        "tooltips", formatted.ToolTipHtml ]
+      |> Seq.fold (fun (html:string) (key, value) -> 
+          html.Replace("{" + key + "}", value)) template
     File.WriteAllText(output, html)
