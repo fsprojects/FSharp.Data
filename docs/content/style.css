@@ -2,45 +2,75 @@
 @import url(http://fonts.googleapis.com/css?family=Droid+Sans+Mono);
 
 body {
-  font: 11pt 'Ovo', serif;
-  background:#f0f0f0;
-  padding:0px;
-  margin:0px;
+  font-family: Ovo, serif;
+  padding-top: 0px;
+  padding-bottom: 40px;
 }
 
-h1 { font-size:22pt; }
-h2 { font-size:16pt; }
-h3 { font-size:12pt; }
-
-ul, li {
-  margin: 0px;
-  padding: 0px;
+/* Format the heading - nicer spacing etc. */
+.masthead {
+  overflow: hidden;
+}
+.masthead ul, .masthead li {
+  margin-bottom:0px;
+}
+.masthead .nav li {
+  margin-top: 15px;
+  font-size:110%;
+}
+.masthead h3 {
+  margin-bottom:5px;
+  font-size:170%;
+}
+hr {
+  margin:0px 0px 20px 0px;
 }
 
-li {
-  margin-left: 25px;
+/* Format the right-side menu */
+#menu {
+  margin-top:50px;
+  font-size:11pt;
+  padding-left:20px;
 }
 
-code {
+#menu .nav-header {
+  font-size:12pt;
+  color:#606060;
+  margin-top:20px;
+}
+
+#menu li {
+  line-height:25px;
+}
+
+/* Change font sizes for headings etc. */
+#main h1 { font-size: 26pt; margin:10px 0px 15px 0px; }
+#main h2 { font-size: 20pt; margin:20px 0px 0px 0px; }
+#main h3 { font-size: 14pt; margin:15px 0px 0px 0px; }
+#main p { font-size: 12pt; margin:5px 0px 15px 0px; }
+#main ul { font-size: 12pt; margin-top:10px; }
+#main li { font-size: 12pt; margin: 5px 0px 5px 0px; }
+pre, pre code {
   font: 9pt 'Droid Sans Mono', sans-serif;
-  padding: 2px;
-  background:#f0f0f0;
-}
-pre { 
-  background:#f0f0f0;
-  padding: 10px; 
-}
-pre.fssnip, pre code {
-  font: 9pt 'Droid Sans Mono', sans-serif;
-  line-height:12pt;
+  line-height:13pt;
 }
 
-#content {
-  padding:20px;
-  background:white;
-  margin-left:auto;
-  margin-right:auto;
-  max-width:700px;
+/* Additional formatting for the homepage */
+#nuget { 
+  margin-top:20px;
+  font-size: 11pt; 
+  padding:20px; 
+}
+
+#nuget pre {
+  font-size:11pt;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+  background: #404040;
+  border-style:none;
+  color: #e0e0e0;
+  margin-top:15px;
 }
 
 /* identifier */

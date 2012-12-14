@@ -35,7 +35,7 @@ module internal LiterateUtils =
   
   let rec collectComment comment lines = seq {
     match lines with
-    | (Line(ConcatenatedComments text))::lines ->
+    | (Line(ConcatenatedComments text))::lines when not (text.Trim().StartsWith("//")) ->
         yield! collectComment (comment + "\n" + text) lines
     | lines ->
         let cend = comment.LastIndexOf("*)")
@@ -61,38 +61,45 @@ let transform template sources output =
     // let file = @"C:\Tomas\Projects\FSharp.Data\tools\../samples\JsonProvider.fsx"
     let name = Path.GetFileNameWithoutExtension(file)
     let output = Path.Combine(output, name + ".html")
-    let snippets, _ = formatAgent.ParseSource(file, File.ReadAllText(file))
-    let (Snippet(_, lines)) = match snippets with [| it |] -> it | _ -> failwith "multiple snippets"
+
+    // Update only when needed
+    let changeTime = File.GetLastWriteTime(file)
+    let generateTime = File.GetLastWriteTime(output)
+    if changeTime > generateTime then
+      printfn "Generating '%s.html'" name
+
+      let snippets, _ = formatAgent.ParseSource(file, File.ReadAllText(file))
+      let (Snippet(_, lines)) = match snippets with [| it |] -> it | _ -> failwith "multiple snippets"
   
-    let blocks = collectSnippet [] lines |> List.ofSeq
-    let snippets = 
-      blocks |> List.choose (function
-        | BlockSnippet(lines) -> Some(Snippet("Untitled", lines))
-        | _ -> None) |> Array.ofList
-    let formatted = CodeFormat.FormatHtml(snippets, "fstip")
+      let blocks = collectSnippet [] lines |> List.ofSeq
+      let snippets = 
+        blocks |> List.choose (function
+          | BlockSnippet(lines) -> Some(Snippet("Untitled", lines))
+          | _ -> None) |> Array.ofList
+      let formatted = CodeFormat.FormatHtml(snippets, "fstip")
 
-    let heading = ref None
-    let mutable snippet = 0
-    let sb = Text.StringBuilder()
+      let heading = ref None
+      let mutable snippet = 0
+      let sb = Text.StringBuilder()
 
-    for block in blocks do
-      match block with
-      | BlockComment s -> 
-          let mdoc = Markdown.Parse(s)
-          mdoc.Paragraphs |> Seq.iter (function 
-            | (Heading(1, text)) -> 
-                heading := Some(Markdown.WriteHtml(MarkdownDocument([Span(text)], dict [])))
-            | _ -> ())
-          sb.Append(Markdown.WriteHtml(mdoc)) |> ignore
-      | BlockSnippet _ ->
-          sb.Append(formatted.SnippetsHtml.[snippet].Html) |> ignore
-          snippet <- snippet + 1
+      for block in blocks do
+        match block with
+        | BlockComment s -> 
+            let mdoc = Markdown.Parse(s)
+            mdoc.Paragraphs |> Seq.iter (function 
+              | (Heading(1, text)) -> 
+                  heading := Some(Markdown.WriteHtml(MarkdownDocument([Span(text)], dict [])))
+              | _ -> ())
+            sb.Append(Markdown.WriteHtml(mdoc)) |> ignore
+        | BlockSnippet _ ->
+            sb.Append(formatted.SnippetsHtml.[snippet].Html) |> ignore
+            snippet <- snippet + 1
 
-    let heading = match !heading with None -> name | Some h -> h.Trim()
-    let html = 
-      [ "page-title", heading
-        "document", sb.ToString()
-        "tooltips", formatted.ToolTipHtml ]
-      |> Seq.fold (fun (html:string) (key, value) -> 
-          html.Replace("{" + key + "}", value)) template
-    File.WriteAllText(output, html)
+      let heading = match !heading with None -> name | Some h -> h.Trim()
+      let html = 
+        [ "page-title", heading
+          "document", sb.ToString()
+          "tooltips", formatted.ToolTipHtml ]
+        |> Seq.fold (fun (html:string) (key, value) -> 
+            html.Replace("{" + key + "}", value)) template
+      File.WriteAllText(output, html)

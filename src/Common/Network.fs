@@ -61,6 +61,8 @@ type Http private() =
     for header, value in headers do
       if String.Compare(header, "accept", true, invariant) = 0 then
         req.Accept <- value
+      elif String.Compare(header, "content-type", true, invariant) = 0 then
+        req.ContentType <- value
       else
         req.Headers.Add(header, value) 
 
@@ -68,7 +70,9 @@ type Http private() =
     match body with 
     | Some (text:string) ->
         let postBytes = Encoding.ASCII.GetBytes(text)
-        req.ContentType <- "application/x-www-form-urlencoded";
+        if headers |> Seq.forall (fun (header, _) ->
+          String.Compare(header, "content-type", true, invariant) <> 0) then
+          req.ContentType <- "application/x-www-form-urlencoded"
         req.ContentLength <- int64 postBytes.Length
         use reqStream = req.GetRequestStream() 
         reqStream.Write(postBytes, 0, postBytes.Length)

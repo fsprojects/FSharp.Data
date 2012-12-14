@@ -92,7 +92,7 @@ module internal CsvTypeBuilder =
 type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
-  // Generate namespace and type 'FSharp.Web.JsonProvider'
+  // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm = System.Reflection.Assembly.GetExecutingAssembly()
   let ns = "FSharp.Data"
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))

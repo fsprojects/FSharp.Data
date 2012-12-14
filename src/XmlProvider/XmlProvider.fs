@@ -12,9 +12,7 @@ open System.Collections.Generic
 open ProviderImplementation.ProvidedTypes
 
 open FSharp.Net
-open FSharp.Web
 open ProviderImplementation
-open FSharp.Web.JsonReader
 
 // ----------------------------------------------------------------------------------------------
 
@@ -22,7 +20,7 @@ open FSharp.Web.JsonReader
 type public XmlProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
-  // Generate namespace and type 'FSharp.Web.JsonProvider'
+  // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm = System.Reflection.Assembly.GetExecutingAssembly()
   let ns = "FSharp.Data"
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", Some(typeof<obj>))

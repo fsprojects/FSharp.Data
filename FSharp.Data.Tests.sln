@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 		samples\docs\SmallTest.csv = samples\docs\SmallTest.csv
 		samples\docs\TwitterStream.json = samples\docs\TwitterStream.json
 		samples\docs\WorldBank.json = samples\docs\WorldBank.json
+		samples\docs\Writers.xml = samples\docs\Writers.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{EF9F7922-4570-4D6D-8034-C3582756239B}"

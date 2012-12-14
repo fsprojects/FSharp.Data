@@ -3,8 +3,8 @@
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
 
-open FSharp.Web
-open FSharp.Web.JsonReader
+open FSharp.Data.Json
+open FSharp.Data.Json.JsonReader
 open ProviderImplementation.JsonInference
 open ProviderImplementation.StructureInference
 

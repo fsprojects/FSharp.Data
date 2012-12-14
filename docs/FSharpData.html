@@ -34,25 +34,17 @@
         <div class="span9" id="main">
           <h1>F# Data: Library for Data Access</h1>
 
-<p>The F# Data library implements everything you need to access data in your F# 
-applications and scripts. It includes helpers for parsing JSON files, for sending
-HTTP requests and it implements F# type providers for working with a number of 
-structured formats including:</p>
+<p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to access data 
+in your F# applications and scripts. It implements F# type providers for working with 
+structured file formats and for accessing the WorldBank data. It 
+also includes helpers for parsing JSON files and for sending HTTP requests.</p>
 
-<ul>
-<li>XML documents</li>
-<li>JSON files</li>
-<li>CSV files</li>
-</ul>
+<h2>F# type providers</h2>
 
-<p>This library focuses on providing a simple read-only access to the documents.
-The <a href="https://github.com/fsharp/fsharpx/">FSharpx library</a> provides better support for 
-mutating the documents and also provides additional type providers for registry, file system 
-and other sources.</p>
-
-<h2>Type Providers</h2>
-
-<p>For more information about the type providers for XML and JSON, see the following two articles:</p>
+<p>The type providers for structured file formats infer the structure of a sample 
+document (or a document containing multiple samples). The structure is then used
+to provide easy to use type-safe access to documents that follow the same structure.
+For more information see:</p>
 
 <ul>
 <li><a href="XmlProvider.html">F# Data: XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
@@ -60,10 +52,21 @@ and other sources.</p>
 <li><a href="CsvProvider.html">F# Data: CSV Type Provider</a> - discusses the <code>CsvProvider&lt;..&gt;</code> type</li>
 </ul>
 
-<h2>Data Access Tools</h2>
+<p>In addition, the library also implements a type provider for accessing data from 
+<a href="http://data.worldbank.org/">the WorldBank</a>. The type provider generates types that
+provide easy access to regions, countries and indicators in the data set.</p>
 
-<p>The library also defines several types for working with data that are not type providers.
-For more information about these types, see the following articles:</p>
+<ul>
+<li><a href="WorldBank.html">F# Data: WorldBank Provider</a> - discusses the <code>WorldBank</code> type 
+and the <code>WorldBankProvider&lt;..&gt;</code> type</li>
+</ul>
+
+<h2>Data access tools</h2>
+
+<p>In addition to the F# type providers, the library also defines several types that 
+simplify data access. In particular, it incldues tools for HTTP web requests and a 
+JSON parser with simple dynamic API. For more information about these types, see the 
+following topcs:</p>
 
 <ul>
 <li><a href="JsonValue.html">F# Data: JSON Rarser and Reader</a> - introduces the JSON parser 
@@ -72,11 +75,16 @@ For more information about these types, see the following articles:</p>
 to send simple HTTP web requests.</li>
 </ul>
 
-<h2>License</h2>
+<h2>Related projects</h2>
 
-<p>The library is available under Apache 2.0. For more information see the 
-<a href="https://github.com/tpetricek/FSharp.Data/blob/master/README.md">License file</a> in the 
-GitHub repository.</p>
+<p>This library focuses on providing a simple read-only access to the structured documents
+and other data sources. It does not aim to be a comprehensive collection of F# type 
+providers (which can be used for numerous other purposes). Moreover, this library 
+(currently) does not provide API for <em>creating</em> documents.</p>
+
+<p>If you're interested in other F# type prviders or if you need to mutate or create 
+XML and JSON documents, then the <a href="https://github.com/fsharp/fsharpx/">FSharpx library</a> 
+might be of interest.</p>
 
           
         </div>

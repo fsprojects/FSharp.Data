@@ -6,8 +6,6 @@ namespace ProviderImplementation
 open System
 open System.Xml.Linq
 open System.Globalization
-open FSharp.Web
-open FSharp.Web.JsonReader
 open ProviderImplementation.JsonInference
 open ProviderImplementation.StructureInference
 

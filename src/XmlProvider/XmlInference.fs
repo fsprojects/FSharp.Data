@@ -6,7 +6,6 @@ module ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
-open FSharp.Web
 open ProviderImplementation.StructureInference
   
 /// The type of XML element is always a record with a field

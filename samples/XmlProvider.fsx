@@ -101,23 +101,34 @@ are turned into `int` values and so the `GetValues()` method returns just `int[]
 
 ## Processing philosophers
 
-The following example demonstrates how the type provider works on a simple 
-document that lists authors that write about a specific topic. The following snippet
-defines the sampel input (as `Literal` so that we can pass it to the type provider):
+In this section we look at an example that demonstrates how the type provider works 
+on a simple document that lists authors that write about a specific topic. The 
+sample document [`docs/Writers.xml`](docs/Writers.xml) looks as follows:
+
+    <authors topic="Philosophy of Science">
+      <author name="Paul Feyerabend" born="1924" />
+      <author name="Thomas Kuhn" />
+    </authors> 
+
+At runtime, we use the generated type provider to parse the following string
+(which has the same structure as the sample document with the exception that 
+one of the `author` nodes also contains `died` attribute):
 *)
 
-let [<Literal>] authors = """
-  <authors topic="Philosophy of Science">
-    <author name="Paul Feyerabend" born="1924" />
-    <author name="Thomas Kuhn" />
+let authors = """
+  <authors topic="Philosophy of Mathematics">
+    <author name="Bertrand Russell" />
+    <author name="Ludwig Wittgenstein" born="1889" />
+    <author name="Alfred North Whitehead" died="1947" />
   </authors> """
 
 (**
-Note that the `born` attribute is only available for some of the authors. Using a
-type provider, we can print the file input as follows:
+When initializing the `XmlProvider`, we can pass it a file name (relative
+to the current directory). The `Parse` method takes the data as a string, so
+we can now print the information as follows:
 *)
 
-type Authors = XmlProvider<authors>
+type Authors = XmlProvider<"docs/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -131,6 +142,10 @@ The value `topic` has a property `Topic` (of type `string`) which returns the va
 of the attribute with the same name. It also has a method `GetAuthors()` that returns
 a collection with all the authors. The `Born` property is missing for some authors,
 so it becomes `option<int>` and we need to print it using `Option.iter`.
+
+The `died` attribute was not present in the sample used for the inference, so we
+cannot obtain it in a statically typed way (although it can still be obtained
+dynamically using `author.XElement.Attribute(XName.Get("died"))`).
 
 ## Reading RSS feeds
 

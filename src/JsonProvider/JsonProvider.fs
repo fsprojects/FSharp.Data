@@ -11,9 +11,9 @@ open System.Collections.Generic
 open ProviderImplementation.ProvidedTypes
 
 open FSharp.Net
-open FSharp.Web
+open FSharp.Data.Json
+open FSharp.Data.Json.JsonReader
 open ProviderImplementation
-open FSharp.Web.JsonReader
 
 // ----------------------------------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ open FSharp.Web.JsonReader
 type public JsonProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
-  // Generate namespace and type 'FSharp.Web.JsonProvider'
+  // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm = System.Reflection.Assembly.GetExecutingAssembly()
   let ns = "FSharp.Data"
   let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some(typeof<obj>))
