@@ -7,7 +7,6 @@ module ProviderImplementation.NameUtils
 open System
 open System.Globalization
 open System.Collections.Generic
-open System.Data.Entity.Design.PluralizationServices
 
 // --------------------------------------------------------------------------------------
 // Active patterns & operators for parsing strings
@@ -104,5 +103,5 @@ let trimHtml (s:string) =
   res.ToString().TrimEnd()
 
 /// Return a plural of an English word
-let pluralize (s:string) =
-  PluralizationService.CreateService(CultureInfo("en-US")).Pluralize(s)
+let pluralize s =
+  Pluralizer.toPlural s
