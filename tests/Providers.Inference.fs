@@ -8,12 +8,12 @@ namespace FSharp.Data.Tests
 #r "../bin/FSharp.Data.dll"
 #endif
 
-open FSharp.Web
+open FSharp.Data.Json
 open NUnit.Framework
 open ProviderImplementation
 open ProviderImplementation.StructureInference
 
-module ProviderInfernece = 
+module ProviderInference = 
 
   /// A collection containing just one type
   let SimpleCollection typ = 
