@@ -1,21 +1,22 @@
-﻿(* **********************************************************************************
- *
- * Copyright (c) Microsoft Corporation. All rights reserved.
- *
- * This source code is subject to terms and conditions of the Microsoft Permissive
- * License (MS-PL). A copy of the license can be found in the license.htm file
- * included in this distribution.
- *
- * You must not remove this notice, or any other, from this software.
- *
- * **********************************************************************************)
+﻿// --------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//
+// This source code is subject to terms and conditions of the Microsoft Permissive
+// License (MS-PL). A copy of the license can be found in the license.htm file
+// included in this distribution.
+//
+// You must not remove this notice, or any other, from this software.
+//
+// --------------------------------------------------------------------------------------
 
 module internal ProviderImplementation.Pluralizer
 
 open System
 open System.Collections.Generic
 
-// Based on C# code from http://blogs.msdn.com/b/dmitryr/archive/2007/01/11/simple-english-noun-pluralizer-in-c.aspx (a couple of more rules were added)
+// Pluralization service for nice 'NameUtils.fs' based on C# code from 
+// http://blogs.msdn.com/b/dmitryr/archive/2007/01/11/simple-english-noun-pluralizer-in-c.aspx 
+// (with a couple of more rules were added)
 
 type private SuffixRule = 
     { SingularSuffix : string
