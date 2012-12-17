@@ -2,12 +2,12 @@
 <package >
   <metadata>
     <id>FSharp.Data</id>
-    <version>1.0.2</version>
+    <version>1.0.4</version>
     <authors>Tomas Petricek</authors>
     <owners>Tomas Petricek</owners>
     <licenseUrl>http://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://tpetricek.github.com/FSharp.Data</projectUrl>
-    <!-- <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl> -->
+    <iconUrl>http://tpetricek.github.com/FSharp.Data/docs/content/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Library of F# type providers and data access tools</summary>
     <description>The F# Data library (FSharp.Data.dll) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing JSON files and for sending HTTP requests.</description>
