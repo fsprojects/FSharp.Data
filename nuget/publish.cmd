@@ -1,3 +1,2 @@
 nuget pack
-
-nuget push FSharp.Data.1.0.2.nupkg
+nuget push FSharp.Data.1.0.4.nupkg
