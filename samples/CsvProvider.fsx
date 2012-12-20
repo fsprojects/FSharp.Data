@@ -54,6 +54,11 @@ let wc = new WebClient()
 let data = wc.DownloadString("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 let msft = Stocks.Parse(data)
 
+
+let firstRow = msft.Data |> Seq.head
+// Note that the return type is DateTime
+let quoteDate = firstRow.Date
+
 // Print the prices in the HLOC format
 for row in msft.Data do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
@@ -78,7 +83,7 @@ open System
 open Samples.FSharp.Charting
 
 // Visualize the stock prices
-[ for row in msft.Data -> DateTime.Parse(row.Date), row.Open ]
+[ for row in msft.Data -> row.Date, row.Open ]
 |> Chart.FastLine
 
 (**
@@ -89,9 +94,8 @@ data over the last month:
 // Get last months' prices in HLOC format 
 let recent = 
   [ for row in msft.Data do
-      let dt = DateTime.Parse(row.Date)
-      if dt > DateTime.Now.AddDays(-30.0) then
-        yield dt, row.High, row.Low, row.Open, row.Close ]
+      if row.Date > DateTime.Now.AddDays(-30.0) then
+        yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
 // Visualize prices using Candlestick chart
 Chart.Candlestick(recent).AndYAxis(Max = 30.0, Min = 25.0)
@@ -103,7 +107,7 @@ Another interesting feature of the CSV type provider is that it supports F# unit
 If the header includes the name of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit. 
 
-In this section, we use a simple file [`docs/SimpleTest.csv`](docs/SimpleTest.csv) which
+In this section, we use a simple file [`docs/SmallTest.csv`](docs/SmallTest.csv) which
 looks as follows:
 
     Name,  Distance (metre), Time (second)
@@ -111,7 +115,7 @@ looks as follows:
 
 As you can see, the second and third columns are annotated with `metre` and `second`,
 respectively. To use units of measure in our code, we need to open the namespace with
-standard unit names. Then we pass the `SampleTesxt.csv` file to the type provider as
+standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
 a static argument and load the same file (at runtime):
 *)
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
@@ -133,7 +137,7 @@ for row in small.Data do
 
 (**
 The numerical values of `Distance` and `Time` are both inferred as `decimal` (because they
-are small enough). Thus the type of `speed` becmes `decimal<meter/second>`. The compiler
+are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometers per hour.
 
