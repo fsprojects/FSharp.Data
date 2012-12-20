@@ -8,6 +8,7 @@ namespace FSharp.Data.Tests
 #r "../bin/FSharp.Data.dll"
 #endif
 
+open System
 open FSharp.Data.Json
 open NUnit.Framework
 open ProviderImplementation
@@ -153,3 +154,28 @@ module ProviderInference =
       |> Map.ofSeq |> Collection
     let actual = JsonInference.inferType source
     Assert.AreEqual(expected, actual)
+
+  [<Test>]
+  let ``Inference of DateTime``() = 
+      let source = CsvFile.Parse "date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0"
+      let actual = CsvInference.inferType source Int32.MaxValue
+      let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
+      let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
+      let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
+      let expected = 
+        [ InferedTypeTag.Record None, 
+          (Multiple, Record(None, [ propDate ; propInt ; propFloat ])) ]
+        |> Map.ofSeq |> Collection
+      Assert.AreEqual(expected, actual)
+
+  [<Test>]
+  let ``Inference of DateTime with timestamp``() = 
+      let source = CsvFile.Parse "date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00"
+      let actual = CsvInference.inferType source Int32.MaxValue
+      let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
+      let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
+      let expected = 
+        [ InferedTypeTag.Record None, 
+          (Multiple, Record(None, [ propDate ; propTimestamp ])) ]
+        |> Map.ofSeq |> Collection
+      Assert.AreEqual(expected, actual)

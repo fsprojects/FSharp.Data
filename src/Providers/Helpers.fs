@@ -135,6 +135,8 @@ module Conversions =
   type Operations =
     // Operations that convert string to supported primitive types
     static member ConvertString = Option.map (fun (s:string) -> s)
+    static member ConvertDateTime = Option.bind (fun s -> 
+      DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None) |> asOption)
     static member ConvertInteger = Option.bind (fun s -> 
       Int32.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
     static member ConvertInteger64 = Option.bind (fun s -> 
@@ -154,6 +156,7 @@ module Conversions =
       match opt with 
       | Some v -> v
       | None when typeof<'T> = typeof<string> -> Unchecked.defaultof<'T>
+      | None when typeof<'T> = typeof<DateTime> -> Unchecked.defaultof<'T>
       | _ -> failwithf "Mismatch: %s is missing" name
 
   /// Creates a function that takes Expr<string option> and converts it to 
@@ -168,6 +171,7 @@ module Conversions =
         elif typ = typeof<float> then <@@ Operations.ConvertFloat(%%e) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
+        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(%%e) @@>
         else failwith "convertValue: Unsupported primitive type"
       if not optional then 
         ReflectionHelpers.makeMethodCall typeof<Operations> "GetNonOptionalAttribute"

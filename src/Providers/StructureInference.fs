@@ -35,6 +35,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Number 
   | Boolean
   | String
+  | DateTime
   // Collections and sum types
   | Collection 
   | Heterogeneous
@@ -73,6 +74,7 @@ type InferedTypeTag with
     | Number -> "Number"
     | Boolean -> "Boolean"
     | String -> "String"
+    | DateTime -> "DateTime"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
     | Record None -> "Record"
@@ -91,6 +93,7 @@ type InferedTypeTag with
     | "Number" -> Number 
     | "Boolean" -> Boolean
     | "String" -> String 
+    | "DateTime" -> DateTime
     | "Array" -> Collection
     | "Choice" -> Heterogeneous
     | _ -> failwith "Invalid InferredTypeTag code"
@@ -101,11 +104,11 @@ type InferedTypeTag with
 /// (with names that are returned for heterogeneous types)
 let primitiveTypes =
   [ typeof<int>; typeof<int64>; typeof<float>; 
-    typeof<decimal>; typeof<bool>; typeof<string> ]
+    typeof<decimal>; typeof<bool>; typeof<string> ; typeof<DateTime>]
 
 /// Checks whether a value is a value type (and cannot have null as a value)
 let isValueType = function
-  | Primitive(typ, _) -> typ <> typeof<string>
+  | Primitive(typ, _) -> typ <> typeof<string> || typ <> typeof<DateTime>
   | _ -> true
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
@@ -120,6 +123,7 @@ let typeTag = function
         then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
+      elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       else failwith "inferCollectionType: Unknown primitive type"
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
@@ -270,4 +274,5 @@ let inferPrimitiveType value unit =
   | Parse Int64.TryParse _ -> Primitive(typeof<int64>, unit)
   | Parse Decimal.TryParse _ -> Primitive(typeof<decimal>, unit)
   | Parse Double.TryParse _ -> Primitive(typeof<float>, unit)
+  | Parse DateTime.TryParse _ -> Primitive(typeof<DateTime>, unit)
   | _ -> Primitive(typeof<string>, unit)
