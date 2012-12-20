@@ -104,12 +104,12 @@ type InferedTypeTag with
 /// (with names that are returned for heterogeneous types)
 let primitiveTypes =
   [ typeof<int>; typeof<int64>; typeof<float>; 
-    typeof<decimal>; typeof<bool>; typeof<string> ; typeof<DateTime>]
+    typeof<decimal>; typeof<bool>; typeof<string>; typeof<DateTime> ]
 
 /// Checks whether a value is a value type (and cannot have null as a value)
 let isValueType = function
-  | Primitive(typ, _) -> typ <> typeof<string> || typ <> typeof<DateTime>
-  | _ -> true
+  | Primitive(typ, _) -> typ <> typeof<string> && typ <> typeof<DateTime>
+  | _ -> false
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)

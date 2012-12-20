@@ -121,6 +121,29 @@ module ProviderInference =
     Assert.AreEqual(expected, actual)
 
   [<Test>]
+  let ``Null is not a valid value of int``() =
+    let source = JsonValue.Parse """[ {"a":null}, {"a":123} ]"""
+    let hetero = 
+      [ InferedTypeTag.Null, Null
+        InferedTypeTag.Number, Primitive(typeof<int>, None) ] |> Map.ofSeq
+    let expected =
+      Record(None, [ {Name = "a"; Optional = false; Type = Heterogeneous hetero } ])
+      |> SimpleCollection
+    let actual = JsonInference.inferType source
+    Assert.AreEqual(expected, actual)
+
+  [<Test>]
+  let ``Null is a valid value of record``() =
+    let source = JsonValue.Parse """[ {"a":null}, {"a":{"b": 1}} ]"""
+    let nestedRecord = 
+      Record(None, [{ Name = "b"; Optional = false; Type = Primitive(typeof<int>, None) }])
+    let expected =
+      Record(None, [ {Name = "a"; Optional = false; Type = nestedRecord } ])
+      |> SimpleCollection
+    let actual = JsonInference.inferType source
+    Assert.AreEqual(expected, actual)
+
+  [<Test>]
   let ``Infers mixed fields of a record as heterogeneous type``() =
     let source = JsonValue.Parse """[ {"a":"hi"}, {"a":2} , {"a":2147483648} ]"""
     let cases = 

@@ -54,10 +54,11 @@ let wc = new WebClient()
 let data = wc.DownloadString("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 let msft = Stocks.Parse(data)
 
-
+// Look at the most recent row. Note the 'Date' property
+// is of type 'DateTime' and 'Open' has a type 'decimal'
 let firstRow = msft.Data |> Seq.head
-// Note that the return type is DateTime
-let quoteDate = firstRow.Date
+let lastDate = firstRow.Date
+let lastOpen = firstRow.Open
 
 // Print the prices in the HLOC format
 for row in msft.Data do
@@ -69,15 +70,17 @@ collection of rows. We iterate over the rows using `for` loop. As you can see th
 (generated) type of row has properties such as `High`, `Low` and `Close` that correspond
 to the columns in the CSV file.
 
+As you can see, the type provider also infers types of individual rows. The `Date`
+property is infered to be a `DateTime` (because the values in the sample file can all
+be parsed as dates) while HLOC prices are infered as `decimal`.
+
 ### Charting stock prices
 
 We can use the `FSharpChart` library to draw a simple line chart showing how the price
-of MSFT stocks changes since the company was founded. The type provider used here does
-not support dates, so the `Date` property has a type `string`. We can easily parse it
-using `DateTime.Parse`:
+of MSFT stocks changes since the company was founded:
 *)
 
-// Load the F# chart librar
+// Load the F# chart library
 #load "lib/FSharpChart.fsx"
 open System
 open Samples.FSharp.Charting
