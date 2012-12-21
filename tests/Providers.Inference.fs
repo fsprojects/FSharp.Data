@@ -121,6 +121,19 @@ module ProviderInference =
     Assert.AreEqual(expected, actual)
 
   [<Test>]
+  let ``Null is not a valid value of DateTime``() =
+    // None of the providers currently need to get a subtype of 'null' and
+    // DateTime, so we call 'subtypeInfered' directly to test this property
+    let actual = 
+      ProviderImplementation.StructureInference.subtypeInfered
+        Null (Primitive(typeof<DateTime>, None))
+    let expected = 
+      [ InferedTypeTag.Null, Null
+        InferedTypeTag.DateTime, Primitive(typeof<DateTime>, None) ]
+      |> Map.ofSeq |> Heterogeneous
+    Assert.AreEqual(expected, actual)
+
+  [<Test>]
   let ``Null is not a valid value of int``() =
     let source = JsonValue.Parse """[ {"a":null}, {"a":123} ]"""
     let hetero = 

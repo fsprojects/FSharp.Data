@@ -85,10 +85,11 @@ type InferedTypeTag with
     match x with
     | Record (Some name) -> "Record@" + name
     | _ -> x.NiceName
+
   /// Parses code returned by 'Code' member (to be used in provided code)
   static member ParseCode(str:string) =
     match str with
-    | s when s.StartsWith("Record@") -> Record(Some (s.Substring("Record@".Length)))
+    | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
     | "Record" -> Record None
     | "Number" -> Number 
     | "Boolean" -> Boolean
@@ -108,7 +109,7 @@ let primitiveTypes =
 
 /// Checks whether a value is a value type (and cannot have null as a value)
 let isValueType = function
-  | Primitive(typ, _) -> typ <> typeof<string> && typ <> typeof<DateTime>
+  | Primitive(typ, _) -> typ <> typeof<string>
   | _ -> false
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
