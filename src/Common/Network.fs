@@ -30,6 +30,24 @@ type Http private() =
     flagsFieldInfo.SetValue(uri, flags)
     uri
 
+  /// Read the contents of a stream asynchronously and return it as a string
+  static let asyncReadToEnd (stream:Stream) = async {
+    // Allocate 4kb buffer for downloading dat
+    let buffer = Array.zeroCreate (4 * 1024)
+    use output = new MemoryStream()
+    let reading = ref true
+  
+    while reading.Value do
+      // Download one (at most) 4kb chunk and copy it
+      let! count = stream.AsyncRead(buffer, 0, buffer.Length)
+      output.Write(buffer, 0, count)
+      reading := count > 0
+
+    // Read all data into a string
+    output.Seek(0L, SeekOrigin.Begin) |> ignore
+    use sr = new StreamReader(output)
+    return sr.ReadToEnd() }
+
   /// Downlaod an HTTP web resource from the specified URL asynchronously
   static member AsyncRequest(url:string) = async {
     use wc = new WebClient()
@@ -81,8 +99,7 @@ type Http private() =
     // Send the request and get the response       
     use! resp = req.AsyncGetResponse()
     use stream = resp.GetResponseStream()
-    use sr = new StreamReader(stream)
-    return! sr.ReadToEndAsync() |> Async.AwaitTask }
+    return! asyncReadToEnd stream }
 
   /// Downlaod an HTTP web resource from the specified URL synchronously
   /// (allows specifying query string parameters and HTTP headers including

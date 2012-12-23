@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>FSharp.Data</id>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <authors>Tomas Petricek</authors>
     <owners>Tomas Petricek</owners>
     <licenseUrl>http://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Library of F# type providers and data access tools</summary>
     <description>The F# Data library (FSharp.Data.dll) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing JSON files and for sending HTTP requests.</description>
-    <releaseNotes>CSV provider now supports dates.</releaseNotes>
+    <releaseNotes>Build the library using .NET 4.0</releaseNotes>
     <copyright>Copyright 2012</copyright>
     <tags>F# fsharp data type provider WorldBank CSV XML JSON </tags>
     <dependencies />
