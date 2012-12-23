@@ -1,0 +1,5 @@
+*.suo
+bin/*.dll
+nuget/*
+src/*
+tests/*
