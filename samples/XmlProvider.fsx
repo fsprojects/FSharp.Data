@@ -147,6 +147,56 @@ The `died` attribute was not present in the sample used for the inference, so we
 cannot obtain it in a statically typed way (although it can still be obtained
 dynamically using `author.XElement.Attribute(XName.Get("died"))`).
 
+## Global inference mode
+
+In the examples shown earlier, an element was never (recursively) contained in an
+element of the same name (for example `<author>` never contained another `<author>`).
+However, when we work with documents such as XHTML files, this can often be the case.
+Consider for example, the following sample (a simplified version of 
+[`docs/HtmlBody.xml`](docs/HtmlBody.xml)):
+
+    <div id="root">
+      <span>Main text</span>
+      <div id="first">
+        <div>Second text</div>
+      </div>
+    </div>
+
+Here, a `<div>` element can contain other `<div>` elements and it is quite clear that
+they should all have the same type - we want to be able to write a recursive function
+that processes `<div>` elements. To make this possible, you need to set an optional
+parameter `Global` to `true`:
+*)
+
+type Html = XmlProvider<"docs/HtmlBody.xml", Global=true>
+let html = Html.Load(Path.Combine(__SOURCE_DIRECTORY__, "docs/HtmlBody.xml"))
+
+(**
+When the `Global` parameter is `true`, the type provider _unifies_ all elements of the
+same name. This means that all `<div>` elements have the same type (with a union
+of all attributes and all possible children nodes that appear in the sample document).
+
+The type is located under a type `Html.DomainTypes`, so we can write a `printDiv` function
+that takes `Html.DomainTypes.Div` and acts as follows:
+*)
+
+/// Prints the content of a <div> element
+let rec printDiv (div:Html.DomainTypes.Div) =
+  div.GetSpans() |> Seq.iter (printfn "%s")
+  div.GetDivs() |> Seq.iter printDiv
+  if div.GetSpans().Length = 0 && div.GetDivs().Length = 0 then
+      div.Value |> Option.iter (printfn "%s")
+
+// Print the root <div> element with all children  
+printDiv html
+
+(**
+
+The function first prints all text included as `<span>` (the element never has any
+attributes in our sample, so it is infered as `string`), then it recursively prints
+the content of all `<div>` elements. If the element does not contain nested elements,
+then we print the `Value` (inner text).
+
 ## Reading RSS feeds
 
 To conclude this introduction with a more interesting example, let's look how to parse a

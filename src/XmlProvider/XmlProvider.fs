@@ -45,15 +45,18 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         try XDocument.Parse(args.[0] :?> string) 
         with _ -> failwith "Specified argument is neither a file, nor well-formed XML."
 
+    // Use global inference (unify elements in different locations)
+    let globalInference = args.[1] :?> bool
+
     let infered = 
-      let sampleList = args.[1] :?> bool
+      let sampleList = args.[2] :?> bool
       if not sampleList then
-        XmlInference.inferType sample.Root
+        XmlInference.inferType globalInference sample.Root
       else
-        [ for itm in sample.Root.Descendants() -> XmlInference.inferType itm ]
+        [ for itm in sample.Root.Descendants() -> XmlInference.inferType globalInference itm ]
         |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
 
-    let ctx = XmlGenerationContext.Create(domainTy)
+    let ctx = XmlGenerationContext.Create(domainTy, globalInference)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType ctx infered
     
     // Generate static Parse method
@@ -76,6 +79,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
+      ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) ]
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
 

@@ -58,15 +58,20 @@ type XmlOperations =
 // --------------------------------------------------------------------------------------
 
 open System
+open System.Collections.Generic
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
   { DomainType : ProvidedTypeDefinition
-    UniqueNiceName : string -> string }
-  static member Create(domainTy) =
+    UniqueNiceName : string -> string 
+    UnifyGlobally : bool
+    GeneratedResults : IDictionary<string, System.Type * (Expr -> Expr)> }
+  static member Create(domainTy, unifyGlobally) =
     { DomainType = domainTy
+      GeneratedResults = new Dictionary<_, _>()
+      UnifyGlobally = unifyGlobally
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName }
 
 module internal XmlTypeBuilder = 
@@ -89,12 +94,16 @@ module internal XmlTypeBuilder =
         match collections with
         | [InferedTypeTag.Collection, Collection nodes] -> Some(List.map snd others, nodes)
         | [] -> Some(List.map snd others, Map.empty)
-        | _ -> failwith "generateXmlType: Only one collection type expected"
+        | _ -> failwith "(|ContentType|_|): Only one collection type expected"
     | _ -> None
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   let rec generateXmlType ctx = function
+
+    // If we already generated object for this type, return it
+    | InferedType.Record(Some name, props) when ctx.GeneratedResults.ContainsKey(name) -> 
+        ctx.GeneratedResults.[name]
     
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
@@ -107,6 +116,10 @@ module internal XmlTypeBuilder =
     | InferedType.Record(Some name, props) -> 
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(typeof<XmlElement>))
         ctx.DomainType.AddMember(objectTy)
+
+        // If we unify types globally, then save type for this record
+        if ctx.UnifyGlobally then
+          ctx.GeneratedResults.Add(name, (objectTy :> System.Type, id))
 
         // Split the properties into attributes and a 
         // special property representing the content
@@ -149,39 +162,40 @@ module internal XmlTypeBuilder =
 
             // For every possible child node, generate 'GetXyz()' method (if there
             // is multiple of them) or just a getter property if there is one or none
-            for node in nodes do
-              match node with
-              | (KeyValue(InferedTypeTag.Record(Some name), (multiplicity, typ))) ->
+            objectTy.AddMembersDelayed(fun () ->
+              nodes |> List.ofSeq |> List.map (function
+                | (KeyValue(InferedTypeTag.Record(Some name), (multiplicity, typ))) ->
                   
-                  let childTy, childConv = generateXmlType ctx typ 
-                  match multiplicity with
-                  | InferedMultiplicity.Single ->
-                      let p = ProvidedProperty(NameUtils.nicePascalName name, childTy)
-                      p.GetterCode <- fun (Singleton xml) -> childConv <@@ XmlOperations.GetChild(%%xml, name) @@>
-                      objectTy.AddMember(p)
+                    let childTy, childConv = generateXmlType ctx typ 
+                    match multiplicity with
+                    | InferedMultiplicity.Single ->
+                        let p = ProvidedProperty(NameUtils.nicePascalName name, childTy)
+                        p.GetterCode <- fun (Singleton xml) -> childConv <@@ XmlOperations.GetChild(%%xml, name) @@>
+                        p :> System.Reflection.MemberInfo
 
-                  // For options and arrays, we need to generate call to ConvertArray or ConvertOption
-                  // (because the node may be represented as primitive type - so we cannot just
-                  // return array of XmlElement - it might be for example int[])
-                  | InferedMultiplicity.Multiple ->
-                      let m = ProvidedMethod("Get" + NameUtils.nicePascalName (NameUtils.pluralize name), [], childTy.MakeArrayType())
-                      let convTyp, convFunc = ReflectionHelpers.makeFunc childConv typeof<XmlElement>
-                      m.InvokeCode <- fun (Singleton xml) -> 
-                        ReflectionHelpers.makeMethodCall 
-                          typeof<XmlOperations> "ConvertArray"
-                          [ convTyp ] [ xml; Expr.Value(name); convFunc ]
-                      objectTy.AddMember(m)
+                    // For options and arrays, we need to generate call to ConvertArray or ConvertOption
+                    // (because the node may be represented as primitive type - so we cannot just
+                    // return array of XmlElement - it might be for example int[])
+                    | InferedMultiplicity.Multiple ->
+                        let m = ProvidedMethod("Get" + NameUtils.nicePascalName (NameUtils.pluralize name), [], childTy.MakeArrayType())
+                        let convTyp, convFunc = ReflectionHelpers.makeFunc childConv typeof<XmlElement>
+                        m.InvokeCode <- fun (Singleton xml) -> 
+                          ReflectionHelpers.makeMethodCall 
+                            typeof<XmlOperations> "ConvertArray"
+                            [ convTyp ] [ xml; Expr.Value(name); convFunc ]
+                        m :> System.Reflection.MemberInfo
 
-                  | InferedMultiplicity.OptionalSingle ->
-                      let p = ProvidedProperty(NameUtils.nicePascalName name, typedefof<option<_>>.MakeGenericType [| childTy |])
-                      let convTyp, convFunc = ReflectionHelpers.makeFunc childConv typeof<XmlElement>
-                      p.GetterCode <- fun (Singleton xml) -> 
-                        ReflectionHelpers.makeMethodCall 
-                          typeof<XmlOperations> "ConvertOption"
-                          [ convTyp ] [ xml; Expr.Value(name); convFunc ]
-                      objectTy.AddMember(p)
+                    | InferedMultiplicity.OptionalSingle ->
+                        let p = ProvidedProperty(NameUtils.nicePascalName name, typedefof<option<_>>.MakeGenericType [| childTy |])
+                        let convTyp, convFunc = ReflectionHelpers.makeFunc childConv typeof<XmlElement>
+                        p.GetterCode <- fun (Singleton xml) -> 
+                          ReflectionHelpers.makeMethodCall 
+                            typeof<XmlOperations> "ConvertOption"
+                            [ convTyp ] [ xml; Expr.Value(name); convFunc ]
+                        p :> System.Reflection.MemberInfo
 
-              | _ -> failwith "generateXmlType: Child nodes should be named record types"
+                | _ -> failwith "generateXmlType: Child nodes should be named record types"))
+
         | [_] -> failwith "generateXmlType: Children should be collection or heterogeneous"
         | _::_ -> failwith "generateXmlType: Only one child collection expected"
         | [] -> ()

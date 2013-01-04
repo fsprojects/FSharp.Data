@@ -16,7 +16,7 @@ open System.Collections.Generic
 type InferedProperty =
   { Name : string
     Optional : bool
-    Type : InferedType }
+    mutable Type : InferedType }
 
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
@@ -56,13 +56,30 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// Why is collection not simply a list of Heterogeneous types? If we used that
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
-and InferedType =
+and [<CustomEquality; NoComparison>] InferedType =
   | Primitive of System.Type * option<System.Type>
   | Record of string option * InferedProperty list
   | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
   | Heterogeneous of Map<InferedTypeTag, InferedType>
   | Null
   | Top
+
+  // We need to implement custom equality that returns 'true' when 
+  // values reference the same object (to support recursive types)
+  override x.GetHashCode() = 
+    failwith "InferedType.GetHashCode: Not implemented"
+
+  override x.Equals(y:obj) = 
+    if y :? InferedType then 
+      match x, y :?> InferedType with
+      | a, b when Object.ReferenceEquals(a, b) -> true
+      | Primitive(t1, ot1), Primitive(t2, ot2) -> t1 = t2 && ot1 = ot2
+      | Record(s1, pl1), Record(s2, pl2) -> s1 = s2 && pl1 = pl2
+      | Collection(m1), Collection(m2) -> m1 = m2
+      | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
+      | Null, Null | Top, Top -> true
+      | _ -> false
+    else false
 
 // ------------------------------------------------------------------------------------------------
 // Additional operations for working with the inferred representation
@@ -248,6 +265,10 @@ and unionRecordTypes t1 t2 =
       match fst, snd with
       // If one is missing, return the other, but optional
       | Some p, None | None, Some p -> { p with Optional = true }
+      // If both reference the same object, we return one
+      // (This is needed to support recursive type structures)
+      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) ->
+          p1
       // If both are available, we get their subtype
       | Some p1, Some p2 -> 
           { Name = name; Optional = p1.Optional || p2.Optional
