@@ -22,13 +22,13 @@ open System.Linq.Expressions
 open Microsoft.FSharp.Core.CompilerServices
 
 /// Represents an erased provided parameter
-type internal ProvidedParameter =
+type ProvidedParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType: Type * ?isOut:bool * ?optionalValue:obj -> ProvidedParameter
     member IsParamArray : bool with get,set
 
 /// Represents an erased provided constructor.
-type internal ProvidedConstructor =    
+type ProvidedConstructor =    
     inherit System.Reflection.ConstructorInfo
 
     /// Create a new provided constructor. It is not initially associated with any specific provided type definition.
@@ -61,7 +61,7 @@ type internal ProvidedConstructor =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
     
 
-type internal ProvidedMethod = 
+type ProvidedMethod = 
     inherit System.Reflection.MethodInfo
 
     /// Create a new provided method. It is not initially associated with any specific provided type definition.
@@ -98,7 +98,7 @@ type internal ProvidedMethod =
 
 
 /// Represents an erased provided property.
-type internal ProvidedProperty =
+type ProvidedProperty =
     inherit System.Reflection.PropertyInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -136,7 +136,7 @@ type internal ProvidedProperty =
     member AddAttribute : Type -> unit
 
 /// Represents an erased provided property.
-type internal ProvidedEvent =
+type ProvidedEvent =
     inherit System.Reflection.EventInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -165,7 +165,7 @@ type internal ProvidedEvent =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type internal ProvidedLiteralField =
+type ProvidedLiteralField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -188,7 +188,7 @@ type internal ProvidedLiteralField =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type internal ProvidedField =
+type ProvidedField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -213,7 +213,7 @@ type internal ProvidedField =
 
 /// Provides symbolic provided types
 [<Class>]
-type internal ProvidedTypeBuilder =
+type ProvidedTypeBuilder =
     /// Like typ.MakeGenericType, but will also work with unit-annotated types
     static member MakeGenericType: genericTypeDefinition: System.Type * genericArguments: System.Type list -> System.Type
     /// Like methodInfo.MakeGenericMethod, but will also work with unit-annotated types and provided types
@@ -221,7 +221,7 @@ type internal ProvidedTypeBuilder =
 
 /// Helps create erased provided unit-of-measure annotations.
 [<Class>]
-type internal ProvidedMeasureBuilder =
+type ProvidedMeasureBuilder =
     
     /// The ProvidedMeasureBuilder for building measures.
     static member Default : ProvidedMeasureBuilder
@@ -247,7 +247,7 @@ type internal ProvidedMeasureBuilder =
 
 
 /// Represents a provided static parameter.
-type internal ProvidedStaticParameter =
+type ProvidedStaticParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType:Type * ?parameterDefaultValue:obj -> ProvidedStaticParameter
 
@@ -258,7 +258,7 @@ type internal ProvidedStaticParameter =
     member AddXmlDocDelayed   : xmlDocFunction: (unit -> string) -> unit   
 
 /// Represents a provided type definition.
-type internal ProvidedTypeDefinition =
+type ProvidedTypeDefinition =
     inherit System.Type
 
     /// Create a new provided type definition in a namespace. 
@@ -356,13 +356,13 @@ type ProvidedAssembly =
 type TypeProviderForNamespaces =
 
     /// Initializes a type provider to provide the types in the given namespace.
-    internal new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
+    new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
 
     /// Initializes a type provider 
-    internal new : unit -> TypeProviderForNamespaces
+    new : unit -> TypeProviderForNamespaces
 
     /// Add a namespace of provided types.
-    member internal AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
+    member AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
 
     /// Invalidate the information provided by the provider
     member Invalidate : unit -> unit

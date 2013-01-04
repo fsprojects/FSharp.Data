@@ -105,7 +105,7 @@ open ProviderImplementation.ProvidedTypes
 /// Both properties are needed for other uses of the provider 
 /// (most notably in the Apiary provider)
 ///
-type internal JsonGenerationContext =
+type JsonGenerationContext =
   { DomainType : ProvidedTypeDefinition
     UniqueNiceName : string -> string 
     Representation : Type
@@ -118,7 +118,7 @@ type internal JsonGenerationContext =
       Unpacker = fun e -> <@@ ((%%e):JsonDocument).JsonValue @@>
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName }
 
-module internal JsonTypeBuilder = 
+module JsonTypeBuilder = 
   
   /// Common code that is shared by code generators that generate 
   /// "Choice" type. This is parameterized by the types (choices) to generate,
