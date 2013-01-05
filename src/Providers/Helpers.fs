@@ -144,7 +144,9 @@ module Conversions =
     static member ConvertDecimal = Option.bind (fun s -> 
       Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
     static member ConvertFloat = Option.bind (fun s -> 
-      Double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+      match s with
+      | StringEquals "#N/A" -> Some Double.NaN
+      | _ -> Double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
     static member ConvertBoolean = Option.bind (function 
         | StringEquals "true" | StringEquals "yes" -> Some true
         | StringEquals "false" | StringEquals "no" -> Some false

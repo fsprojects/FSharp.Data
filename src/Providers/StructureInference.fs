@@ -292,6 +292,7 @@ let inferPrimitiveType value unit =
   match value with 
   | StringEquals "true" | StringEquals "false"
   | StringEquals "yes" | StringEquals "no" -> Primitive(typeof<bool>, unit)
+  | StringEquals "#N/A" -> Primitive(typeof<double>, unit)
   | Parse Int32.TryParse _ -> Primitive(typeof<int>, unit)
   | Parse Int64.TryParse _ -> Primitive(typeof<int64>, unit)
   | Parse Decimal.TryParse _ -> Primitive(typeof<decimal>, unit)
