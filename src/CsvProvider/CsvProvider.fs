@@ -24,14 +24,17 @@ type CsvRow internal (data:string[]) =
   member x.Columns = data
 
 // Simple type wrapping CSV data
-type CsvFile private (text:string) =
+type CsvFile private (text:string, ?sep:string) =
   // Cache the sequence of all data lines (all lines but the first)
+  let sep = defaultArg sep ","
   let lines = text.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
-  let lines =  [| for line in lines -> line.Split(',') |]
+  let lines =  [| for line in lines -> line.Split(sep.ToCharArray()) |]
   let data = lines |> Seq.skip 1 |> Seq.map (fun d -> CsvRow(d)) |> Array.ofSeq
   member x.Data = data
   member x.Headers = lines |> Seq.head
-  static member Parse(data) = new CsvFile(data)
+  static member Parse(data, ?sep:string) = 
+    let sep = defaultArg sep ","
+    new CsvFile(data, sep)
 
 // --------------------------------------------------------------------------------------
 // Inference
@@ -106,9 +109,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
     resTy.AddMember(domainTy)
 
+    let separator = args.[1] :?> string
+
     // Infer the schema from a specified file or URI sample
     let sample = 
-      try CsvFile.Parse(ProviderHelpers.readFileInProvider cfg (args.[0] :?> string) )
+      try CsvFile.Parse(ProviderHelpers.readFileInProvider cfg (args.[0] :?> string), separator)
       with _ -> failwith "Specified argument is not a well-formed CSV file."
     let infered = CsvInference.inferType sample Int32.MaxValue
 
@@ -124,21 +129,23 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("source", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(%%source) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(%%source, separator) @@>
     resTy.AddMember(m)
 
     // Generate static Load method
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadAllText(%%source)) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadAllText(%%source), separator) @@>
     resTy.AddMember(m)
 
     // Return the generated type
     resTy
 
   // Add static parameter that specifies the API we want to get (compile-time) 
-  let parameters = [ ProvidedStaticParameter("Sample", typeof<string>) ]
+  let parameters = 
+    [ ProvidedStaticParameter("Sample", typeof<string>) 
+      ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") ]
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler
