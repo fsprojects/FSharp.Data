@@ -156,7 +156,46 @@ following simple calculation:</p>
 <p>The numerical values of <code>Distance</code> and <code>Time</code> are both inferred as <code>decimal</code> (because they
 are small enough). Thus the type of <code>speed</code> becomes <code>decimal&lt;meter/second&gt;</code>. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
-meters per second against a value in kilometers per hour.</p>
+meters per second against a value in kilometers per hour.
+*)</p>
+
+<p>(<em></em></p>
+
+<h2>Using custom separators</h2>
+
+<p>By default, the CSV type provider uses comma (<code>,</code>) as a separator. However, CSV
+files sometime use a different separator character than <code>,</code>. In some European
+countries a semicolon is used. The <code>CsvProvider</code> has an optional paramter where you can 
+specify what to use as separator:</p>
+<pre class="fssnip">
+<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs56', 106)" onmouseover="showTip(event, 'fs56', 106)" class="i">NonDefaultSeparator</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 107)" onmouseover="showTip(event, 'fs7', 107)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">docs</span><span class="s">/</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span><span class="o">&gt;</span>
+<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 108)" onmouseover="showTip(event, 'fs57', 108)" class="i">airFile</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="i">Path</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 110)" onmouseover="showTip(event, 'fs47', 110)" class="i">Combine</span>(<span class="k">__SOURCE_DIRECTORY__</span>, <span class="s">&quot;</span><span class="s">docs</span><span class="s">/</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>)
+<span class="l">3: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs58', 111)" onmouseover="showTip(event, 'fs58', 111)" class="i">airQuality</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs56', 112)" onmouseover="showTip(event, 'fs56', 112)" class="i">NonDefaultSeparator</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 113)" onmouseover="showTip(event, 'fs49', 113)" class="i">Load</span>(<span onmouseout="hideTip(event, 'fs57', 114)" onmouseover="showTip(event, 'fs57', 114)" class="i">airFile</span>)</pre>
+<p>The air quality dataset used above is used in a lots of samples for the Statistical
+Computing language R. A short description of the dataset can be found 
+<a href="http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html">in the R language manual</a>.</p>
+
+<p>It is quite common for statistical datasets that some values are missing. If
+you open the <a href="docs/AirQuality.csv"><code>docs/AirQuality.csv</code></a> file you will see
+that some values for the Ozone observations are marked <code>#N/A</code>. Such values are
+parsed as float and will in F# be marked with <code>Double.NaN</code>.</p>
+<pre class="fssnip">
+<span class="l">1: </span><span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 115)" onmouseover="showTip(event, 'fs22', 115)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs58', 116)" onmouseover="showTip(event, 'fs58', 116)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 117)" onmouseover="showTip(event, 'fs15', 117)" class="i">Data</span> <span class="k">do</span>
+<span class="l">2: </span>  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs22', 118)" onmouseover="showTip(event, 'fs22', 118)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 119)" onmouseover="showTip(event, 'fs59', 119)" class="i">Month</span> <span class="o">&gt;</span> <span class="n">6</span> <span class="k">then</span> 
+<span class="l">3: </span>    <span onmouseout="hideTip(event, 'fs23', 120)" onmouseover="showTip(event, 'fs23', 120)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Temp</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">i</span><span class="s"> </span><span class="s">Ozone</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s"> </span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs22', 121)" onmouseover="showTip(event, 'fs22', 121)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 122)" onmouseover="showTip(event, 'fs60', 122)" class="i">Temp</span> <span onmouseout="hideTip(event, 'fs22', 123)" onmouseover="showTip(event, 'fs22', 123)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 124)" onmouseover="showTip(event, 'fs61', 124)" class="i">Ozone</span></pre>
+<p>The following snippet calculates the mean of the ozone observations
+excluding the <code>Double.NaN</code> values. We first obtain the <code>Ozone</code> property for
+each row, then remove missing values and then use the standard <code>Seq.average</code> function:</p>
+<pre class="fssnip">
+<span class="l">1: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs62', 125)" onmouseover="showTip(event, 'fs62', 125)" class="i">mean</span> <span class="o">=</span> 
+<span class="l">2: </span>  <span onmouseout="hideTip(event, 'fs58', 126)" onmouseover="showTip(event, 'fs58', 126)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 127)" onmouseover="showTip(event, 'fs15', 127)" class="i">Data</span> 
+<span class="l">3: </span>  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs16', 128)" onmouseover="showTip(event, 'fs16', 128)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 129)" onmouseover="showTip(event, 'fs63', 129)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs22', 130)" onmouseover="showTip(event, 'fs22', 130)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs22', 131)" onmouseover="showTip(event, 'fs22', 131)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 132)" onmouseover="showTip(event, 'fs61', 132)" class="i">Ozone</span>) 
+<span class="l">4: </span>  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs16', 133)" onmouseover="showTip(event, 'fs16', 133)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 134)" onmouseover="showTip(event, 'fs64', 134)" class="i">filter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs65', 135)" onmouseover="showTip(event, 'fs65', 135)" class="i">elem</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs66', 136)" onmouseover="showTip(event, 'fs66', 136)" class="i">not</span> (<span onmouseout="hideTip(event, 'fs1', 137)" onmouseover="showTip(event, 'fs1', 137)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 138)" onmouseover="showTip(event, 'fs67', 138)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 139)" onmouseover="showTip(event, 'fs68', 139)" class="i">IsNaN</span>(<span onmouseout="hideTip(event, 'fs65', 140)" onmouseover="showTip(event, 'fs65', 140)" class="i">elem</span>))) 
+<span class="l">5: </span>  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs16', 141)" onmouseover="showTip(event, 'fs16', 141)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 142)" onmouseover="showTip(event, 'fs69', 142)" class="i">average</span> </pre>
+<p>Finally, note that it is also possible to specify multiple different separators
+for the <code>CsvProvider</code>. This might be useful if a file is irregular and contains 
+rows separated by either semicolon or a colon. You can use:
+<code>CsvProvider&lt;"docs/AirQuality.csv", Separator=";,"&gt;</code>.</p>
 
 <h2>Related articles</h2>
 
@@ -177,7 +216,7 @@ type providers in the <code>FSharp.Data</code> package.</li>
 <div class="tip" id="fs10">val data : string<br /><br />Full name: CsvProvider.data</div>
 <div class="tip" id="fs11">WebClient.DownloadString(address: System.Uri) : string<br />WebClient.DownloadString(address: string) : string</div>
 <div class="tip" id="fs12">val msft : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.msft</div>
-<div class="tip" id="fs13">CsvProvider&lt;...&gt;.Parse(source: string) : CsvProvider&lt;...&gt;</div>
+<div class="tip" id="fs13">CsvProvider&lt;...&gt;.Parse(source: string) : CsvProvider&lt;...&gt;<br />static member ProviderImplementation.CsvFile.Parse : data:string * ?sep:string -&gt; ProviderImplementation.CsvFile</div>
 <div class="tip" id="fs14">val firstRow : CsvProvider&lt;...&gt;.DomainTypes.Row<br /><br />Full name: CsvProvider.firstRow</div>
 <div class="tip" id="fs15">property CsvProvider&lt;...&gt;.Data: CsvProvider&lt;...&gt;.DomainTypes.Row []</div>
 <div class="tip" id="fs16">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
@@ -220,6 +259,20 @@ type providers in the <code>FSharp.Data</code> package.</li>
 <div class="tip" id="fs53">[&lt;Measure&gt;]<br />type meter = metre<br /><br />Full name: Microsoft.FSharp.Data.UnitSystems.SI.UnitNames.meter</div>
 <div class="tip" id="fs54">[&lt;Measure&gt;]<br />type second<br /><br />Full name: Microsoft.FSharp.Data.UnitSystems.SI.UnitNames.second</div>
 <div class="tip" id="fs55">property CsvProvider&lt;...&gt;.DomainTypes.Row.Name: string</div>
+<div class="tip" id="fs56">type NonDefaultSeparator = CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.NonDefaultSeparator</div>
+<div class="tip" id="fs57">val airFile : string<br /><br />Full name: CsvProvider.airFile</div>
+<div class="tip" id="fs58">val airQuality : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.airQuality</div>
+<div class="tip" id="fs59">property CsvProvider&lt;...&gt;.DomainTypes.Row.Month: int</div>
+<div class="tip" id="fs60">property CsvProvider&lt;...&gt;.DomainTypes.Row.Temp: int</div>
+<div class="tip" id="fs61">property CsvProvider&lt;...&gt;.DomainTypes.Row.Ozone: float</div>
+<div class="tip" id="fs62">val mean : float<br /><br />Full name: CsvProvider.mean</div>
+<div class="tip" id="fs63">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs64">val filter : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.filter</div>
+<div class="tip" id="fs65">val elem : float</div>
+<div class="tip" id="fs66">val not : value:bool -&gt; bool<br /><br />Full name: Microsoft.FSharp.Core.Operators.not</div>
+<div class="tip" id="fs67">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
+<div class="tip" id="fs68">Double.IsNaN(d: float) : bool</div>
+<div class="tip" id="fs69">val average : source:seq&lt;&#39;T&gt; -&gt; &#39;T (requires member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.average</div>
 
         </div>
         <div class="span3">

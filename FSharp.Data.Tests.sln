@@ -16,7 +16,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA}"
 	ProjectSection(SolutionItems) = preProject
-		samples\docs\airQuality.csv = samples\docs\airQuality.csv
+		samples\docs\AirQuality.csv = samples\docs\AirQuality.csv
 		samples\docs\MSFT.csv = samples\docs\MSFT.csv
 		samples\docs\SmallTest.csv = samples\docs\SmallTest.csv
 		samples\docs\TwitterStream.json = samples\docs\TwitterStream.json

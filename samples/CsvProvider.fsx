@@ -146,35 +146,49 @@ meters per second against a value in kilometers per hour.
 *)
 
 (**
-Sometime data in CSV files is separated with a different character than ','. In some european
-countries a semicolon is used. The CsvProvider has an optional paramter where you can 
-specify what to use as separator.
+## Using custom separators
+By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
+files sometime use a different separator character than `,`. In some European
+countries a semicolon is used. The `CsvProvider` has an optional paramter where you can 
+specify what to use as separator:
 *)
 
-type NonDefaultSeparator = CsvProvider<"docs/airQuality.csv", ";">
-let csvFile = Path.Combine(__SOURCE_DIRECTORY__, "docs/airQuality.csv")
-let airQuality = NonDefaultSeparator.Load(csvFile)
+type NonDefaultSeparator = CsvProvider<"docs/AirQuality.csv", ";">
+let airFile = Path.Combine(__SOURCE_DIRECTORY__, "docs/AirQuality.csv")
+let airQuality = NonDefaultSeparator.Load(airFile)
 
 (**
-The air quality dataset used above is used in lots of samples for the Statistical
-Computing language R. A short description of the dataset can be found here:
-http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html
+The air quality dataset used above is used in a lots of samples for the Statistical
+Computing language R. A short description of the dataset can be found 
+[in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
 It is quite common for statistical datasets that some values are missing. If
-you open the [`docs/airQuality.csv`](docs/airQuality.csv) file you will see
-that some values for the Ozone observations are marked #N/A. Such values are
-parsed as float and will in F# be marked with NaN.
+you open the [`docs/AirQuality.csv`](docs/AirQuality.csv) file you will see
+that some values for the Ozone observations are marked `#N/A`. Such values are
+parsed as float and will in F# be marked with `Double.NaN`.
 *)
-
 for row in airQuality.Data do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
-(** Compute the mean of the ozone observations excluding NaN values *)
+(** 
+The following snippet calculates the mean of the ozone observations
+excluding the `Double.NaN` values. We first obtain the `Ozone` property for
+each row, then remove missing values and then use the standard `Seq.average` function:
+*)
 
-let mean = airQuality.Data |> Seq.map (fun row -> row.Ozone) |> Seq.filter (fun elem -> not (System.Double.IsNaN(elem))) |> Seq.average 
+let mean = 
+  airQuality.Data 
+  |> Seq.map (fun row -> row.Ozone) 
+  |> Seq.filter (fun elem -> not (System.Double.IsNaN(elem))) 
+  |> Seq.average 
 
 (**
+Finally, note that it is also possible to specify multiple different separators
+for the `CsvProvider`. This might be useful if a file is irregular and contains 
+rows separated by either semicolon or a colon. You can use:
+`CsvProvider<"docs/AirQuality.csv", Separator=";,">`.
+
 ## Related articles
 
  * [F# Data: Type Providers](FSharpData.html) - gives more information about other
