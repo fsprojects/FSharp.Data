@@ -143,9 +143,42 @@ The numerical values of `Distance` and `Time` are both inferred as `decimal` (be
 are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometers per hour.
+*)
 
+(**
+Sometime data in CSV files is separated with a different character than ','. In some european
+countries a semicolon is used. The CsvProvider has an optional paramter where you can 
+specify what to use as separator.
+*)
+
+type NonDefaultSeparator = CsvProvider<"docs/airQuality.csv", ";">
+let csvFile = Path.Combine(__SOURCE_DIRECTORY__, "docs/airQuality.csv")
+let airQuality = NonDefaultSeparator.Load(csvFile)
+
+(**
+The air quality dataset used above is used in lots of samples for the Statistical
+Computing language R. A short description of the dataset can be found here:
+http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html
+
+It is quite common for statistical datasets that some values are missing. If
+you open the [`docs/airQuality.csv`](docs/airQuality.csv) file you will see
+that some values for the Ozone observations are marked #N/A. Such values are
+parsed as float and will in F# be marked with NaN.
+*)
+
+for row in airQuality.Data do
+  if row.Month > 6 then 
+    printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
+
+(** Compute the mean of the ozone observations excluding NaN values *)
+
+let mean = airQuality.Data |> Seq.map (fun row -> row.Ozone) |> Seq.filter (fun elem -> not (System.Double.IsNaN(elem))) |> Seq.average 
+
+(**
 ## Related articles
 
  * [F# Data: Type Providers](FSharpData.html) - gives more information about other
    type providers in the `FSharp.Data` package.
 *)
+
+
