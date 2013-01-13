@@ -1,18 +1,12 @@
-﻿// --------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation 2005-2012.
-// --------------------------------------------------------------------------------------
-//
+﻿// Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind. 
 // We disclaim all warranties, either express or implied, including the 
 // warranties of merchantability and fitness for a particular purpose. 
+
+// This file contains a set of helper types and methods for providing types in an implementation 
+// of ITypeProvider.
 //
-// This file contains a set of helper types and methods for providing 
-// types in an implementation of ITypeProvider.
-//
-// This code is a sample for use in conjunction with the F# 3.0 
-// Developer Preview release of September 2011.
-//
-// --------------------------------------------------------------------------------------
+// This code is a sample for use in conjunction with the F# 3.0 Beta release of March 2012
 
 namespace ProviderImplementation.ProvidedTypes
 
@@ -1506,6 +1500,8 @@ type AssemblyGenerator(assemblyFileName) =
                         let targetTy = convType ty
                         if argTy.IsValueType && not targetTy.IsValueType then
                           ilg.Emit(OpCodes.Box, argTy)
+                        elif not argTy.IsValueType && targetTy.IsValueType then
+                          ilg.Emit(OpCodes.Unbox_Any, targetTy)
                         elif not (targetTy.IsAssignableFrom(argTy)) then
                           ilg.Emit(OpCodes.Castclass, targetTy)
                               
@@ -1585,10 +1581,12 @@ type AssemblyGenerator(assemblyFileName) =
                             elif meth.DeclaringType.IsGenericType then 
                                 let gdty = convType (meth.DeclaringType.GetGenericTypeDefinition())
                                 let gdtym = gdty.GetMethods() |> Seq.find (fun x -> x.Name = meth.Name)
-                                assert (gdtym <> null)
-                                let dty = convType meth.DeclaringType
-                                let dtym = TypeBuilder.GetMethod(dty, gdtym)
-                                //System.Reflection.Emit.
+                                assert (gdtym <> null) // ?? will never happen - if method is not found - KeyNotFoundException will be raised
+                                let dtym =
+                                    match convType meth.DeclaringType with
+                                    | :? TypeBuilder as dty -> TypeBuilder.GetMethod(dty, gdtym)
+                                    | dty -> MethodBase.GetMethodFromHandle(meth.MethodHandle, dty.TypeHandle) :?> _
+                                
                                 assert (dtym <> null)
                                 dtym
                             else
