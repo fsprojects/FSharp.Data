@@ -25,12 +25,19 @@ type CsvRow internal (data:string[]) =
 
 // Simple type wrapping CSV data
 type CsvFile private (lines:string seq, ?sep:string) =
-  // Cache the sequence of all data lines (all lines but the first)
   let sep = defaultArg sep ","
-  let lines =  [| for line in lines -> line.Split(sep.ToCharArray()) |]
-  let data = lines |> Seq.skip 1 |> Seq.map (fun d -> CsvRow(d)) |> Array.ofSeq
+  let splitLine (line:string) = line.Split([|sep|],StringSplitOptions.None)
+ 
+  // Cache the sequence of all data lines (all lines but the first)
+  let data = 
+    lines 
+    |> Seq.skip 1
+    |> Seq.map splitLine
+    |> Seq.map (fun d -> CsvRow(d)) 
+    |> Seq.toArray
+
   member x.Data = data
-  member x.Headers = lines |> Seq.head
+  member x.Headers = lines |> Seq.head |> splitLine
   static member Parse(data, ?sep:string) = 
     let sep = defaultArg sep ","
     new CsvFile(data, sep)
