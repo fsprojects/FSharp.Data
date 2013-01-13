@@ -99,7 +99,7 @@ module internal XmlTypeBuilder =
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  let rec generateXmlType ctx = function
+  let rec generateXmlType culture ctx = function
 
     // If we already generated object for this type, return it
     | InferedType.Record(Some name, props) when ctx.GeneratedResults.ContainsKey(name) -> 
@@ -109,7 +109,7 @@ module internal XmlTypeBuilder =
     // then we turn it into a primitive value of type such as int/string/etc.
     | InferedType.Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
         let opt = opt && typ <> typeof<string>
-        let resTyp, convFunc = Conversions.convertValue "Value" opt typ 
+        let resTyp, convFunc = Conversions.convertValue culture "Value" opt typ 
         resTyp, fun xml -> convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
 
     // If the node is more complicated, then we generate a type to represent it properly
@@ -131,7 +131,7 @@ module internal XmlTypeBuilder =
           let name = attr.Name
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
           let opt = attr.Optional && (attr.Type <> Primitive(typeof<string>, None)) 
-          let resTyp, convFunc = Conversions.convertValue ("Attribute " + name) opt typ
+          let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) opt typ
           
           // Add property with PascalCased name
           let p = ProvidedProperty(NameUtils.nicePascalName attr.Name, resTyp)
@@ -151,7 +151,7 @@ module internal XmlTypeBuilder =
               | Primitive(typ, _) -> 
                   // If there may be other primitives or nodes, it is optional
                   let opt = nodes.Count > 0 || primitives.Length > 1
-                  let resTyp, convFunc = Conversions.convertValue "Value" opt typ 
+                  let resTyp, convFunc = Conversions.convertValue culture "Value" opt typ 
                   let name = 
                     if primitives.Length = 1 then "Value" else
                     (typeTag primitive).NiceName + NameUtils.nicePascalName "Value"
@@ -166,7 +166,7 @@ module internal XmlTypeBuilder =
               nodes |> List.ofSeq |> List.map (function
                 | (KeyValue(InferedTypeTag.Record(Some name), (multiplicity, typ))) ->
                   
-                    let childTy, childConv = generateXmlType ctx typ 
+                    let childTy, childConv = generateXmlType culture ctx typ 
                     match multiplicity with
                     | InferedMultiplicity.Single ->
                         let p = ProvidedProperty(NameUtils.nicePascalName name, childTy)

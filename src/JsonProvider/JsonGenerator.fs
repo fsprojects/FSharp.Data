@@ -105,7 +105,7 @@ open ProviderImplementation.ProvidedTypes
 /// Both properties are needed for other uses of the provider 
 /// (most notably in the Apiary provider)
 ///
-type JsonGenerationContext =
+type internal JsonGenerationContext =
   { DomainType : ProvidedTypeDefinition
     UniqueNiceName : string -> string 
     Representation : Type
@@ -124,7 +124,7 @@ module JsonTypeBuilder =
   /// "Choice" type. This is parameterized by the types (choices) to generate,
   /// by functions that get the multiplicity and the type tag for each option
   /// and also by function that generates the actual code.
-  let rec generateMultipleChoiceType ctx types codeGenerator =
+  let rec internal generateMultipleChoiceType ctx types codeGenerator =
     // Generate new type for the heterogeneous type
     let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(typeof<JsonDocument>))
     ctx.DomainType.AddMember(objectTy)
@@ -158,7 +158,7 @@ module JsonTypeBuilder =
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  and generateJsonType ctx = function
+  and internal generateJsonType ctx = function
     | InferedType.Primitive(typ, _) -> 
 
         // Return the JSON value as one of the supported primitive types
