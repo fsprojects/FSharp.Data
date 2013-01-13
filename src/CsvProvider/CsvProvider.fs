@@ -107,6 +107,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
 
   let buildTypes (typeName:string) (args:obj[]) =
+    let fileName = args.[0] :?> string
+    let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
+    ProviderHelpers.watchForChanges this resolvedFileName
 
     // Generate the required type with empty constructor
     let resTy = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<CsvFile>))
@@ -121,7 +124,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     // Infer the schema from a specified file or URI sample
     let sample = 
-      let lines = ProviderHelpers.readLinesInProvider cfg (args.[0] :?> string)
+      let lines = ProviderHelpers.readLinesInProvider cfg fileName
       let text = if inferRows > 0  then Seq.truncate (inferRows+1) lines else lines
       try CsvFile.Parse(text, separator)
       with _ -> failwith "Specified argument is not a well-formed CSV file."

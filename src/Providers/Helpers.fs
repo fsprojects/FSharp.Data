@@ -89,6 +89,11 @@ module internal ProviderHelpers =
          while not textReader.EndOfStream do
              yield textReader.ReadLine()}
 
+  /// Resolves the config filename
+  let findConfigFile resolutionFolder configFileName =
+    if Path.IsPathRooted configFileName then configFileName else 
+    Path.Combine(resolutionFolder, configFileName)
+
   /// If the file is web based, setup an file system watcher that 
   /// invalidates the generated type whenever the file changes
   let watchForChanges (ownerType:TypeProviderForNamespaces) (fileName:string) = 
