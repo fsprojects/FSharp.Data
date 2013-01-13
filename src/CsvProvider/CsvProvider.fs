@@ -34,7 +34,7 @@ type CsvFile private (lines:string seq, ?sep:string) =
     |> Seq.skip 1
     |> Seq.map splitLine
     |> Seq.map (fun d -> CsvRow(d)) 
-    |> Seq.toArray
+    |> Seq.cache
 
   member x.Data = data
   member x.Headers = lines |> Seq.head |> splitLine
@@ -129,9 +129,10 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     let ctx = domainTy
     let methResTy = CsvTypeBuilder.generateCsvType ctx infered
+    let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
 
     // 'Data' proeprty has the generated type
-    let p = ProvidedProperty("Data", methResTy.MakeArrayType())
+    let p = ProvidedProperty("Data", seqType methResTy)
     p.GetterCode <- fun (Singleton self) -> <@@ (%%self : CsvFile).Data @@>
     resTy.AddMember(p)
     
