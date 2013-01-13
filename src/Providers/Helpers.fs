@@ -140,20 +140,26 @@ module Conversions =
   let asOption = function true, v -> Some v | _ -> None
 
   type Operations =
+    static member GetCulture(culture) =
+      if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else
+      Globalization.CultureInfo(culture)
+
     // Operations that convert string to supported primitive types
     static member ConvertString = Option.map (fun (s:string) -> s)
-    static member ConvertDateTime = Option.bind (fun s -> 
-      DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None) |> asOption)
-    static member ConvertInteger = Option.bind (fun s -> 
-      Int32.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
-    static member ConvertInteger64 = Option.bind (fun s -> 
-      Int64.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
-    static member ConvertDecimal = Option.bind (fun s -> 
-      Decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
-    static member ConvertFloat = Option.bind (fun s -> 
-      match s with
-      | StringEquals "#N/A" -> Some Double.NaN
-      | _ -> Double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture) |> asOption)
+    static member ConvertDateTime(culture:string,text) = 
+      Option.bind (fun s -> DateTime.TryParse(s, Operations.GetCulture culture, DateTimeStyles.None) |> asOption) text
+    static member ConvertInteger(culture:string,text) = 
+      Option.bind (fun s -> Int32.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
+    static member ConvertInteger64(culture:string,text) = 
+      Option.bind (fun s -> Int64.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
+    static member ConvertDecimal(culture:string,text) =
+      Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
+    static member ConvertFloat(culture:string,text) = 
+      Option.bind (fun s -> 
+          match s with
+          | StringEquals "#N/A" -> Some Double.NaN
+          | _ -> Double.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption)
+          text
     static member ConvertBoolean = Option.bind (function 
         | StringEquals "true" | StringEquals "yes" -> Some true
         | StringEquals "false" | StringEquals "no" -> Some false
@@ -165,21 +171,20 @@ module Conversions =
       match opt with 
       | Some v -> v
       | None -> Unchecked.defaultof<'T>
-      | _ -> failwithf "Mismatch: %s is missing" name
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
-  let convertValue message optional typ = 
+  let convertValue culture message optional typ = 
     let returnTyp = if optional then typedefof<option<_>>.MakeGenericType [| typ |] else typ
     returnTyp, fun e ->
       let converted = 
-        if typ = typeof<int> then <@@ Operations.ConvertInteger(%%e) @@>
-        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(%%e) @@>
-        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(%%e) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(%%e) @@>
+        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture,%%e) @@>
+        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture,%%e) @@>
+        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture,%%e) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture,%%e) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
-        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(%%e) @@>
+        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture,%%e) @@>
         else failwith "convertValue: Unsupported primitive type"
       if not optional then 
         ReflectionHelpers.makeMethodCall typeof<Operations> "GetNonOptionalAttribute"

@@ -74,7 +74,7 @@ module CsvInference =
 // --------------------------------------------------------------------------------------
 
 module internal CsvTypeBuilder = 
-  let generateCsvType (domainType:ProvidedTypeDefinition) = function
+  let generateCsvType culture (domainType:ProvidedTypeDefinition) = function
     | Collection(SingletonMap(_, (_, Record(_, fields)))) ->
         let objectTy = ProvidedTypeDefinition("Row", Some(typeof<CsvRow>))
         domainType.AddMember(objectTy)
@@ -88,7 +88,7 @@ module internal CsvTypeBuilder =
             | _ -> typeof<string>, typeof<string>
 
           let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
-          let _, conv = Conversions.convertValue field.Name false baseTyp
+          let _, conv = Conversions.convertValue culture field.Name false baseTyp
           p.GetterCode <- fun (Singleton row) -> conv <@@ Some((%%row:CsvRow).Columns.[index]) @@> 
           objectTy.AddMember(p)
 
@@ -116,7 +116,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     resTy.AddMember(domainTy)
 
     let separator = args.[1] :?> string
-    let inferRows = args.[2] :?> int
+    let culture = args.[2] :?> string
+    let inferRows = args.[3] :?> int
 
     // Infer the schema from a specified file or URI sample
     let sample = 
@@ -128,7 +129,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let infered = CsvInference.inferType sample Int32.MaxValue
 
     let ctx = domainTy
-    let methResTy = CsvTypeBuilder.generateCsvType ctx infered
+    let methResTy = CsvTypeBuilder.generateCsvType culture ctx infered
     let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
 
     // 'Data' proeprty has the generated type
@@ -157,11 +158,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>) 
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
+      ProvidedStaticParameter("Culture", typeof<string>, "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 0)]
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
        <param name='Sample'>CSV sample file location</param>
+       <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='Separator'>Column delimiter</param>                     
        <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>"""
 
