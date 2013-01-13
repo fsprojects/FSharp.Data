@@ -164,8 +164,7 @@ module Conversions =
     static member GetNonOptionalAttribute<'T>(name, opt:option<'T>) : 'T = 
       match opt with 
       | Some v -> v
-      | None when typeof<'T> = typeof<string> -> Unchecked.defaultof<'T>
-      | None when typeof<'T> = typeof<DateTime> -> Unchecked.defaultof<'T>
+      | None -> Unchecked.defaultof<'T>
       | _ -> failwithf "Mismatch: %s is missing" name
 
   /// Creates a function that takes Expr<string option> and converts it to 
