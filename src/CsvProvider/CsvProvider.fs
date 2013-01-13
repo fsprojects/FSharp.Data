@@ -139,7 +139,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadAllLines(%%source), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadLines(%%source), separator) @@>
     resTy.AddMember(m)
 
     // Return the generated type
