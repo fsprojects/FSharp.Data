@@ -24,10 +24,9 @@ type CsvRow internal (data:string[]) =
   member x.Columns = data
 
 // Simple type wrapping CSV data
-type CsvFile private (text:string, ?sep:string) =
+type CsvFile private (lines:string seq, ?sep:string) =
   // Cache the sequence of all data lines (all lines but the first)
   let sep = defaultArg sep ","
-  let lines = text.Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries)
   let lines =  [| for line in lines -> line.Split(sep.ToCharArray()) |]
   let data = lines |> Seq.skip 1 |> Seq.map (fun d -> CsvRow(d)) |> Array.ofSeq
   member x.Data = data
@@ -98,7 +97,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm = System.Reflection.Assembly.GetExecutingAssembly()
   let ns = "FSharp.Data"
-  let xmlProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
+  let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
 
   let buildTypes (typeName:string) (args:obj[]) =
 
@@ -110,11 +109,15 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     resTy.AddMember(domainTy)
 
     let separator = args.[1] :?> string
+    let inferRows = args.[2] :?> int
 
     // Infer the schema from a specified file or URI sample
     let sample = 
-      try CsvFile.Parse(ProviderHelpers.readFileInProvider cfg (args.[0] :?> string), separator)
+      let lines = ProviderHelpers.readLinesInProvider cfg (args.[0] :?> string)
+      let text = if inferRows > 0  then Seq.truncate (inferRows+1) lines else lines
+      try CsvFile.Parse(text, separator)
       with _ -> failwith "Specified argument is not a well-formed CSV file."
+
     let infered = CsvInference.inferType sample Int32.MaxValue
 
     let ctx = domainTy
@@ -129,14 +132,14 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("source", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(%%source, separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse((%%source:string).Split([| '\n'; '\r' |], StringSplitOptions.RemoveEmptyEntries), separator) @@>
     resTy.AddMember(m)
 
     // Generate static Load method
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadAllText(%%source), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(File.ReadAllLines(%%source), separator) @@>
     resTy.AddMember(m)
 
     // Return the generated type
@@ -145,8 +148,17 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>) 
-      ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") ]
-  do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
+      ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
+      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 0)]
+
+  let helpText = 
+    """<summary>Typed representation of a CSV file</summary>
+       <param name='Sample'>CSV sample file location</param>
+       <param name='Separator'>Column delimiter</param>                     
+       <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>"""
+
+  do csvProvTy.AddXmlDoc helpText
+  do csvProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler
-  do this.AddNamespace(ns, [ xmlProvTy ])
+  do this.AddNamespace(ns, [ csvProvTy ])

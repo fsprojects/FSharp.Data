@@ -82,6 +82,13 @@ module internal ProviderHelpers =
     use reader = new StreamReader(stream)
     reader.ReadToEnd()
 
+  /// Read a file passed to a type provider into a seq of strings
+  /// (if the file is needed to perform some inference)
+  let readLinesInProvider cfg fileName = 
+    seq {use textReader = new StreamReader(openStreamInProvider cfg fileName)
+         while not textReader.EndOfStream do
+             yield textReader.ReadLine()}
+
   /// If the file is web based, setup an file system watcher that 
   /// invalidates the generated type whenever the file changes
   let watchForChanges (ownerType:TypeProviderForNamespaces) (fileName:string) = 
