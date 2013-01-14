@@ -84,6 +84,15 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Global", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Culture", typeof<string>, "") ]
+
+  let helpText = 
+    """<summary>Typed representation of a XML file</summary>
+       <param name='Sample'>Location of a XML sample file or a string containing sample XML document</param>
+       <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
+       <param name='Global'>If true, the inference unifies all XML elements with the same name</param>                     
+       <param name='SampleList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>"""
+
+  do xmlProvTy.AddXmlDoc helpText
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler

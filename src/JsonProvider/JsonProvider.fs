@@ -79,6 +79,13 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
       ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) ]
+
+  let helpText = 
+    """<summary>Typed representation of a JSON document</summary>
+       <param name='Sample'>Location of a JSON sample file or a string containing sample JSON document</param>
+       <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>"""
+
+  do jsonProvTy.AddXmlDoc helpText
   do jsonProvTy.DefineStaticParameters(parameters, buildTypes)
 
   // Register the main type with F# compiler
