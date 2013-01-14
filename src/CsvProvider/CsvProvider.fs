@@ -132,6 +132,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let infered = CsvInference.inferType sample Int32.MaxValue
 
     let ctx = domainTy
+    let culture = Conversions.Operations.GetCulture culture
     let methResTy = CsvTypeBuilder.generateCsvType culture ctx infered
     let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
 

@@ -145,25 +145,27 @@ module Conversions =
   let asOption = function true, v -> Some v | _ -> None
 
   type Operations =
+    /// Returns CultureInfor matching the specified culture string
+    /// (or InvariantCulture if the argument is null or empty)
     static member GetCulture(culture) =
       if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else
       Globalization.CultureInfo(culture)
 
     // Operations that convert string to supported primitive types
     static member ConvertString = Option.map (fun (s:string) -> s)
-    static member ConvertDateTime(culture:string,text) = 
-      Option.bind (fun s -> DateTime.TryParse(s, Operations.GetCulture culture, DateTimeStyles.None) |> asOption) text
-    static member ConvertInteger(culture:string,text) = 
-      Option.bind (fun s -> Int32.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
-    static member ConvertInteger64(culture:string,text) = 
-      Option.bind (fun s -> Int64.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
-    static member ConvertDecimal(culture:string,text) =
-      Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption) text
-    static member ConvertFloat(culture:string,text) = 
+    static member ConvertDateTime(culture:CultureInfo,text) = 
+      Option.bind (fun s -> DateTime.TryParse(s, culture, DateTimeStyles.None) |> asOption) text
+    static member ConvertInteger(culture:CultureInfo,text) = 
+      Option.bind (fun s -> Int32.TryParse(s, NumberStyles.Any, culture) |> asOption) text
+    static member ConvertInteger64(culture:CultureInfo,text) = 
+      Option.bind (fun s -> Int64.TryParse(s, NumberStyles.Any, culture) |> asOption) text
+    static member ConvertDecimal(culture:CultureInfo,text) =
+      Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Any, culture) |> asOption) text
+    static member ConvertFloat(culture:CultureInfo,text) = 
       Option.bind (fun s -> 
           match s with
           | StringEquals "#N/A" -> Some Double.NaN
-          | _ -> Double.TryParse(s, NumberStyles.Any, Operations.GetCulture culture) |> asOption)
+          | _ -> Double.TryParse(s, NumberStyles.Any, culture) |> asOption)
           text
     static member ConvertBoolean = Option.bind (function 
         | StringEquals "true" | StringEquals "yes" -> Some true

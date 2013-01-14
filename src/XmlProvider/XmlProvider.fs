@@ -58,6 +58,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference)
+    let culture = Conversions.Operations.GetCulture culture
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx infered
     
     // Generate static Parse method
