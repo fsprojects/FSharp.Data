@@ -5,3 +5,4 @@ tests/bin/*
 tests/obj/*
 *.suo
 nuget/*.nupkg
+*.user
