@@ -231,10 +231,19 @@ module Conversions =
 
     /// Operation that extracts the value from an option and reports a
     /// meaningful error message when the value is not there
+    ///
+    /// We could just return defaultof<'T> if the value is None, but that is not
+    /// really correct, because this operation is used when the inference engine
+    /// inferred that the value is always present. The user should update their
+    /// sample to infer it as optional (and get None). If we use defaultof<'T> we
+    /// might return 0 and the user would not be able to distinguish between 0
+    /// and missing value.
     static member GetNonOptionalAttribute<'T>(name:string, opt:option<'T>) : 'T = 
       match opt with 
       | Some v -> v
-      | None -> Unchecked.defaultof<'T>
+      | None when typeof<'T> = typeof<string> -> Unchecked.defaultof<'T>
+      | None when typeof<'T> = typeof<DateTime> -> Unchecked.defaultof<'T>
+      | _ -> failwithf "Mismatch: %s is missing" name
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
