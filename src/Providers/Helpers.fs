@@ -32,6 +32,60 @@ module Seq =
     |> Seq.takeWhile (fun (i, v) -> i < count)
     |> Seq.map snd
 
+// ----------------------------------------------------------------------------------------------
+// Dynamic operator (?) that can be used for constructing quoted F# code without 
+// quotations (to simplify constructing F# quotations in portable libraries - where
+// we need to pass the System.Type of various types as arguments)
+// ----------------------------------------------------------------------------------------------
+
+module QuotationBuilder = 
+  open System.Reflection
+  open Microsoft.FSharp.Quotations
+  open Microsoft.FSharp.Reflection
+
+  let (?) (typ:System.Type) (operation:string) (args1:'T) : 'R = 
+    // Arguments are either Expr or other type - in the second case,
+    // we treat them as Expr.Value (which will only work for primitives)
+    let convertValue (arg:obj) = 
+      match arg with
+      | :? Expr as e -> e
+      | value -> Expr.Value(value, value.GetType())
+
+    let invokeOperation (tyargs:obj, tyargsT) (args:obj, argsT) =
+      // To support (e1, e2, ..) syntax, we use tuples - extract tuple arguments
+      // First, extract type arguments - a list of System.Type values
+      let tyargs = 
+        if tyargsT = typeof<unit> then []
+        elif FSharpType.IsTuple(tyargsT) then
+          [ for f in FSharpValue.GetTupleFields(args) -> f :?> System.Type ]
+        else [ tyargs :?> System.Type ]
+      // Second, extract arguments (which are either Expr values or primitive constants)
+      let args = 
+        if argsT = typeof<unit> then []
+        elif FSharpType.IsTuple(argsT) then
+          [ for f in FSharpValue.GetTupleFields(args) -> convertValue f ]
+        else [ convertValue args ]
+
+      // Find a method that we want to call
+      match typ.GetMember(operation) with 
+      | [| :? MethodInfo as mi |] -> 
+          let mi = 
+            if tyargs = [] then mi
+            else mi.MakeGenericMethod(tyargs |> Array.ofList)
+          if mi.IsStatic then Expr.Call(mi, args)
+          else Expr.Call(List.head args, mi, List.tail args)
+      | _ -> failwithf "Constructing call of the '%s' operation failed." operation
+
+    // If the result is a function, we are called with two tuples as arguments
+    // and the first tuple represents type arguments for a generic function...
+    if FSharpType.IsFunction(typeof<'R>) then
+      let domTyp, res = FSharpType.GetFunctionElements(typeof<'R>)
+      if res <> typeof<Expr> then failwith "QuotationBuilder: The resulting type must be Expr!"
+      FSharpValue.MakeFunction(typeof<'R>, fun args2 ->
+        invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
+    else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
+
+
 module internal ReflectionHelpers = 
   open Microsoft.FSharp.Quotations
 
@@ -47,6 +101,7 @@ module internal ReflectionHelpers =
       convMeth.MakeGenericMethod (Array.ofSeq tyargs)
     Expr.Call(convMeth, args)
 
+// ----------------------------------------------------------------------------------------------
 
 module internal ProviderHelpers =
 
@@ -84,10 +139,8 @@ module internal ProviderHelpers =
 
   /// Read a file passed to a type provider into a seq of strings
   /// (if the file is needed to perform some inference)
-  let readLinesInProvider cfg fileName = 
-    seq {use textReader = new StreamReader(openStreamInProvider cfg fileName)
-         while not textReader.EndOfStream do
-             yield textReader.ReadLine()}
+  let readTextInProvider cfg fileName = 
+    new StreamReader(openStreamInProvider cfg fileName)
 
   /// Resolves the config filename
   let findConfigFile resolutionFolder configFileName =
@@ -135,9 +188,13 @@ module GlobalProviderHelpers =
       let (KeyValue(k, v)) = Seq.head map 
       Some(k, v)
 
+// ----------------------------------------------------------------------------------------------
+// Conversions from string to various primitive types
+// ----------------------------------------------------------------------------------------------
 
 module Conversions = 
   open System
+  open QuotationBuilder
   open System.Globalization
   open Microsoft.FSharp.Quotations
 
@@ -152,7 +209,7 @@ module Conversions =
       Globalization.CultureInfo(culture)
 
     // Operations that convert string to supported primitive types
-    static member ConvertString = Option.map (fun (s:string) -> s)
+    static member ConvertString str = Option.map (fun (s:string) -> s) str
     static member ConvertDateTime(culture:CultureInfo,text) = 
       Option.bind (fun s -> DateTime.TryParse(s, culture, DateTimeStyles.None) |> asOption) text
     static member ConvertInteger(culture:CultureInfo,text) = 
@@ -174,26 +231,26 @@ module Conversions =
 
     /// Operation that extracts the value from an option and reports a
     /// meaningful error message when the value is not there
-    static member GetNonOptionalAttribute<'T>(name, opt:option<'T>) : 'T = 
+    static member GetNonOptionalAttribute<'T>(name:string, opt:option<'T>) : 'T = 
       match opt with 
       | Some v -> v
       | None -> Unchecked.defaultof<'T>
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
-  let convertValue culture message optional typ = 
+  let convertValue (culture:string) (message:string) optional typ = 
     let returnTyp = if optional then typedefof<option<_>>.MakeGenericType [| typ |] else typ
+    let operationsTyp = typeof<Operations>
     returnTyp, fun e ->
-      let converted = 
-        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture,%%e) @@>
-        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture,%%e) @@>
-        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture,%%e) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture,%%e) @@>
-        elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
-        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
-        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture,%%e) @@>
+      let converted : Expr = 
+        if typ = typeof<int> then operationsTyp?ConvertInteger(operationsTyp?GetCulture(culture),e)
+        elif typ = typeof<int64> then operationsTyp?ConvertInteger64(operationsTyp?GetCulture(culture),e)
+        elif typ = typeof<decimal> then operationsTyp?ConvertDecimal(operationsTyp?GetCulture(culture),e)
+        elif typ = typeof<float> then operationsTyp?ConvertFloat(operationsTyp?GetCulture(culture),e)
+        elif typ = typeof<string> then operationsTyp?ConvertString(e)
+        elif typ = typeof<bool> then operationsTyp?ConvertBoolean(e)
+        elif typ = typeof<DateTime> then operationsTyp?ConvertDateTime(operationsTyp?GetCulture(culture),e)
         else failwith "convertValue: Unsupported primitive type"
       if not optional then 
-        ReflectionHelpers.makeMethodCall typeof<Operations> "GetNonOptionalAttribute"
-          [ typ ] [ Expr.Value message; converted]
+        operationsTyp?GetNonOptionalAttribute (typ) (message, converted)
       else converted

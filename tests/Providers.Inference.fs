@@ -9,6 +9,7 @@ namespace FSharp.Data.Tests
 #endif
 
 open System
+open System.IO
 open FSharp.Data.Json
 open NUnit.Framework
 open ProviderImplementation
@@ -193,49 +194,37 @@ module ProviderInference =
 
   [<Test>]
   let ``Inference of DateTime``() = 
-      let source = CsvFile.Parse "date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0"
+      let source = CsvFile.Parse(new StringReader("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0"))
       let actual = CsvInference.inferType source Int32.MaxValue
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
-      let expected = 
-        [ InferedTypeTag.Record None, 
-          (Multiple, Record(None, [ propDate ; propInt ; propFloat ])) ]
-        |> Map.ofSeq |> Collection
+      let expected = Record(None, [ propDate ; propInt ; propFloat ])
       Assert.AreEqual(expected, actual)
 
   [<Test>]
   let ``Inference of DateTime with timestamp``() = 
-      let source = CsvFile.Parse "date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00"
+      let source = CsvFile.Parse(new StringReader("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00"))
       let actual = CsvInference.inferType source Int32.MaxValue
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
-      let expected = 
-        [ InferedTypeTag.Record None, 
-          (Multiple, Record(None, [ propDate ; propTimestamp ])) ]
-        |> Map.ofSeq |> Collection
+      let expected = Record(None, [ propDate ; propTimestamp ])
       Assert.AreEqual(expected, actual)
 
   [<Test>]
   let ``Inference of DateTime with timestamp non default separator``() = 
-      let source = CsvFile.Parse ("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00", ";")
+      let source = CsvFile.Parse(new StringReader("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00"), ";")
       let actual = CsvInference.inferType source Int32.MaxValue
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
-      let expected = 
-        [ InferedTypeTag.Record None, 
-          (Multiple, Record(None, [ propDate ; propTimestamp ])) ]
-        |> Map.ofSeq |> Collection
+      let expected = Record(None, [ propDate ; propTimestamp ])
       Assert.AreEqual(expected, actual)
   
   [<Test>]
   let ``Inference of float with #N/A values and non default separator``() = 
-      let source = CsvFile.Parse ("float;integer\n2.0;2\n#N/A;3\n", ";")
+      let source = CsvFile.Parse(new StringReader("float;integer\n2.0;2\n#N/A;3\n"), ";")
       let actual = CsvInference.inferType source Int32.MaxValue
       let propDate = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
       let propTimestamp = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }
-      let expected = 
-        [ InferedTypeTag.Record None, 
-          (Multiple, Record(None, [ propDate ; propTimestamp ])) ]
-        |> Map.ofSeq |> Collection
+      let expected = Record(None, [ propDate ; propTimestamp ])
       Assert.AreEqual(expected, actual)
