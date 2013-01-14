@@ -25,12 +25,6 @@ let private getAttributes (element:XElement) =
 /// on just attributes and then use a fixed point)
 let inferGlobalType (element:XElement) =
 
-  /// Get the fixed point of 'update' using 'selector' for comparison
-  let rec fixedPoint selector update initial = 
-    let res = update initial
-    if selector res = selector initial then res
-    else fixedPoint selector update res 
-    
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
   let initialTypes =
