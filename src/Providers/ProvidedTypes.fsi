@@ -1,18 +1,13 @@
-﻿// --------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation 2005-2012.
-// --------------------------------------------------------------------------------------
-//
+﻿// Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind. 
 // We disclaim all warranties, either express or implied, including the 
 // warranties of merchantability and fitness for a particular purpose. 
+
+// This file contains a set of helper types and methods for providing types in an implementation 
+// of ITypeProvider.
 //
-// This file contains a set of helper types and methods for providing 
-// types in an implementation of ITypeProvider.
-//
-// This code is a sample for use in conjunction with the F# 3.0 
-// Developer Preview release of September 2011.
-//
-// --------------------------------------------------------------------------------------
+// This code is a sample for use in conjunction with the F# 3.0 Developer Preview release of September 2011.
+
 
 namespace ProviderImplementation.ProvidedTypes
 
@@ -22,13 +17,13 @@ open System.Linq.Expressions
 open Microsoft.FSharp.Core.CompilerServices
 
 /// Represents an erased provided parameter
-type ProvidedParameter =
+type internal ProvidedParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType: Type * ?isOut:bool * ?optionalValue:obj -> ProvidedParameter
     member IsParamArray : bool with get,set
 
 /// Represents an erased provided constructor.
-type ProvidedConstructor =    
+type internal ProvidedConstructor =    
     inherit System.Reflection.ConstructorInfo
 
     /// Create a new provided constructor. It is not initially associated with any specific provided type definition.
@@ -61,7 +56,7 @@ type ProvidedConstructor =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
     
 
-type ProvidedMethod = 
+type internal ProvidedMethod = 
     inherit System.Reflection.MethodInfo
 
     /// Create a new provided method. It is not initially associated with any specific provided type definition.
@@ -98,7 +93,7 @@ type ProvidedMethod =
 
 
 /// Represents an erased provided property.
-type ProvidedProperty =
+type internal ProvidedProperty =
     inherit System.Reflection.PropertyInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -136,7 +131,7 @@ type ProvidedProperty =
     member AddAttribute : Type -> unit
 
 /// Represents an erased provided property.
-type ProvidedEvent =
+type internal ProvidedEvent =
     inherit System.Reflection.EventInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -165,7 +160,7 @@ type ProvidedEvent =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type ProvidedLiteralField =
+type internal ProvidedLiteralField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -188,7 +183,7 @@ type ProvidedLiteralField =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type ProvidedField =
+type internal ProvidedField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -213,7 +208,7 @@ type ProvidedField =
 
 /// Provides symbolic provided types
 [<Class>]
-type ProvidedTypeBuilder =
+type internal ProvidedTypeBuilder =
     /// Like typ.MakeGenericType, but will also work with unit-annotated types
     static member MakeGenericType: genericTypeDefinition: System.Type * genericArguments: System.Type list -> System.Type
     /// Like methodInfo.MakeGenericMethod, but will also work with unit-annotated types and provided types
@@ -221,7 +216,7 @@ type ProvidedTypeBuilder =
 
 /// Helps create erased provided unit-of-measure annotations.
 [<Class>]
-type ProvidedMeasureBuilder =
+type internal ProvidedMeasureBuilder =
     
     /// The ProvidedMeasureBuilder for building measures.
     static member Default : ProvidedMeasureBuilder
@@ -247,7 +242,7 @@ type ProvidedMeasureBuilder =
 
 
 /// Represents a provided static parameter.
-type ProvidedStaticParameter =
+type internal ProvidedStaticParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType:Type * ?parameterDefaultValue:obj -> ProvidedStaticParameter
 
@@ -258,7 +253,7 @@ type ProvidedStaticParameter =
     member AddXmlDocDelayed   : xmlDocFunction: (unit -> string) -> unit   
 
 /// Represents a provided type definition.
-type ProvidedTypeDefinition =
+type internal ProvidedTypeDefinition =
     inherit System.Type
 
     /// Create a new provided type definition in a namespace. 
@@ -356,13 +351,13 @@ type ProvidedAssembly =
 type TypeProviderForNamespaces =
 
     /// Initializes a type provider to provide the types in the given namespace.
-    new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
+    internal new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
 
     /// Initializes a type provider 
-    new : unit -> TypeProviderForNamespaces
+    internal new : unit -> TypeProviderForNamespaces
 
     /// Add a namespace of provided types.
-    member AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
+    member internal AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
 
     /// Invalidate the information provided by the provider
     member Invalidate : unit -> unit
