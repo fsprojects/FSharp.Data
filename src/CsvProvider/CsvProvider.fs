@@ -148,10 +148,6 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
 
   let buildTypes (typeName:string) (args:obj[]) =
-    let fileName = args.[0] :?> string
-    let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
-    ProviderHelpers.watchForChanges this resolvedFileName
-
     // Generate the required type with empty constructor
     let resTy = ProvidedTypeDefinition(asm, ns, typeName, Some(typeof<CsvFile>))
 
@@ -165,8 +161,14 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     // Infer the schema from a specified file or URI sample
     let sample = 
-      let input = ProviderHelpers.readTextInProvider cfg fileName
-      CsvFile.Parse(input, separator)
+      try
+        let fileName = args.[0] :?> string
+        let input = ProviderHelpers.readTextInProvider cfg fileName
+        let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
+        ProviderHelpers.watchForChanges this resolvedFileName
+        CsvFile.Parse(input, separator)
+      with _ ->
+        CsvFile.Parse(new StringReader(args.[0] :?> string))
       
     let infered = CsvInference.inferType sample inferRows
 
