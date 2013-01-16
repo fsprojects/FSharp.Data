@@ -166,6 +166,8 @@ module internal ProviderHelpers =
 module GlobalProviderHelpers =
 
   // Helper active patterns to simplify the inference code
+  let (|Trim|) (s:string) = s.Trim()
+
   let (|StringEquals|_|) (s1:string) s2 = 
     if s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase) 
       then Some () else None
@@ -219,12 +221,13 @@ module Conversions =
     static member ConvertDecimal(culture:CultureInfo,text) =
       Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Any, culture) |> asOption) text
     static member ConvertFloat(culture:CultureInfo,text) = 
-      Option.bind (fun s -> 
-          match s with
+      Option.bind (fun (s:string) -> 
+          match s.Trim() with
           | StringEquals "#N/A" -> Some Double.NaN
           | _ -> Double.TryParse(s, NumberStyles.Any, culture) |> asOption)
           text
-    static member ConvertBoolean = Option.bind (function 
+    static member ConvertBoolean = Option.bind (fun (s:string) ->
+        match s.Trim() with
         | StringEquals "true" | StringEquals "yes" -> Some true
         | StringEquals "false" | StringEquals "no" -> Some false
         | _ -> None)
