@@ -1,8 +1,8 @@
 bin/*
 src/bin/*
 src/obj/*
-tests/bin/*
-tests/obj/*
+tests/FSharp.Data.Tests/bin/*
+tests/FSharp.Data.Tests/obj/*
 *.suo
 nuget/*.nupkg
 *.user
