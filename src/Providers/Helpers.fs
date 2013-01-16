@@ -226,7 +226,7 @@ module Conversions =
           | StringEquals "#N/A" -> Some Double.NaN
           | _ -> Double.TryParse(s, NumberStyles.Any, culture) |> asOption)
           text
-    static member ConvertBoolean = Option.bind (fun (s:string) ->
+    static member ConvertBoolean b = b |> Option.bind (fun (s:string) ->
         match s.Trim() with
         | StringEquals "true" | StringEquals "yes" -> Some true
         | StringEquals "false" | StringEquals "no" -> Some false
