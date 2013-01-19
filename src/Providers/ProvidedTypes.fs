@@ -1910,6 +1910,7 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
+    member __.Namespaces = Seq.readonly otherNamespaces
     member self.Invalidate() = invalidateE.Trigger(self,EventArgs())
     interface ITypeProvider with
         [<CLIEvent>]

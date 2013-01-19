@@ -2,11 +2,34 @@
 // Implements type inference for unstructured documents like XML or JSON
 // --------------------------------------------------------------------------------------
 
-module ProviderImplementation.StructureInference
+module FSharp.Data.StructureInference
 
 open System
 open System.Diagnostics
 open System.Collections.Generic
+
+module Seq = 
+  /// Merge two sequences by pairing elements for which
+  /// the specified predicate returns the same key
+  ///
+  /// (If the inputs contain the same keys, then the order
+  /// of the elements is preserved.)
+  let pairBy f first second = 
+    let vals1 = [ for o in first -> f o, o ]
+    let vals2 = [ for o in second -> f o, o ]
+    let d1, d2 = dict vals1, dict vals2
+    let k1, k2 = set d1.Keys, set d2.Keys
+    let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
+    let asOption = function true, v -> Some v | _ -> None
+    [ for k in keys -> 
+        k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
+
+  /// Take at most the specified number of arguments from the sequence
+  let takeMax count input =
+    input 
+    |> Seq.mapi (fun i v -> i, v)
+    |> Seq.takeWhile (fun (i, v) -> i < count)
+    |> Seq.map snd
 
 // --------------------------------------------------------------------------------------
 // Types that represent the result of the type inference
@@ -285,6 +308,17 @@ let inferCollectionType types =
       let multiple = if Seq.length types > 1 then Multiple else Single
       tag, (multiple, Seq.fold subtypeInfered Top types) )
   |> Map.ofSeq |> Collection
+
+let private (|Trim|) (s:string) = s.Trim()
+
+let private (|StringEquals|_|) (s1:string) s2 = 
+    if s1.Equals(s2, StringComparison.OrdinalIgnoreCase) 
+    then Some () else None
+
+let private (|Parse|_|) func value = 
+    match func value with
+    | true, v -> Some v
+    | _ -> None
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)

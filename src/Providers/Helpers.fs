@@ -9,43 +9,8 @@ open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
-module Seq = 
-  /// Merge two sequences by pairing elements for which
-  /// the specified predicate returns the same key
-  ///
-  /// (If the inputs contain the same keys, then the order
-  /// of the elements is preserved.)
-  let pairBy f first second = 
-    let vals1 = [ for o in first -> f o, o ]
-    let vals2 = [ for o in second -> f o, o ]
-    let d1, d2 = dict vals1, dict vals2
-    let k1, k2 = set d1.Keys, set d2.Keys
-    let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
-    let asOption = function true, v -> Some v | _ -> None
-    [ for k in keys -> 
-        k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
-
-  /// Take at most the specified number of arguments from the sequence
-  let takeMax count input =
-    input 
-    |> Seq.mapi (fun i v -> i, v)
-    |> Seq.takeWhile (fun (i, v) -> i < count)
-    |> Seq.map snd
-
 [<AutoOpen>]
 module ActivePatterns =
-
-  // Helper active patterns to simplify the inference code
-  let (|Trim|) (s:string) = s.Trim()
-
-  let (|StringEquals|_|) (s1:string) s2 = 
-    if s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase) 
-      then Some () else None
-
-  let (|Parse|_|) func value = 
-    match func value with
-    | true, v -> Some v
-    | _ -> None
 
   /// Helper active pattern that can be used when constructing InvokeCode
   /// (to avoid writing pattern matching or incomplete matches):
@@ -60,7 +25,6 @@ module ActivePatterns =
       let (KeyValue(k, v)) = Seq.head map 
       Some(k, v)
 
-
 // ----------------------------------------------------------------------------------------------
 // Dynamic operator (?) that can be used for constructing quoted F# code without 
 // quotations (to simplify constructing F# quotations in portable libraries - where
@@ -68,8 +32,10 @@ module ActivePatterns =
 // ----------------------------------------------------------------------------------------------
 
 module QuotationBuilder = 
+
   open System.Reflection
   open Microsoft.FSharp.Quotations
+  open Microsoft.FSharp.Quotations.Patterns
   open Microsoft.FSharp.Reflection
 
   let (?) (typ:System.Type) (operation:string) (args1:'T) : 'R = 
@@ -86,7 +52,7 @@ module QuotationBuilder =
       let tyargs = 
         if tyargsT = typeof<unit> then []
         elif FSharpType.IsTuple(tyargsT) then
-          [ for f in FSharpValue.GetTupleFields(args) -> f :?> System.Type ]
+          [ for f in FSharpValue.GetTupleFields(tyargs) -> f :?> System.Type ]
         else [ tyargs :?> System.Type ]
       // Second, extract arguments (which are either Expr values or primitive constants)
       let args = 
@@ -118,8 +84,10 @@ module QuotationBuilder =
         invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
     else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
 
+// ----------------------------------------------------------------------------------------------
 
 module internal ReflectionHelpers = 
+
   open Microsoft.FSharp.Quotations
 
   let makeFunc (exprfunc:Expr -> Expr) argType = 
@@ -138,72 +106,8 @@ module internal ReflectionHelpers =
 
 module ProviderHelpers =
 
-  /// If the file is web based, setup an file system watcher that 
-  /// invalidates the generated type whenever the file changes
-  ///
-  /// Asumes that the fileName is a valid file name on the disk
-  /// (and not e.g. a web reference)
-  let private watchForChanges invalidate (fileName:string) = 
-    let path = Path.GetDirectoryName(fileName)
-    let name = Path.GetFileName(fileName)
-    let watcher = new FileSystemWatcher(Filter = name, Path = path)
-    watcher.Changed.Add(fun _ -> invalidate())
-    watcher.EnableRaisingEvents <- true
-
-  /// Resolve the absolute location of a file (or web URL) according to the rules
-  /// used by standard F# type providers as described here:
-  /// https://github.com/fsharp/fsharpx/issues/195#issuecomment-12141785
-  ///
-  ///  * if it is web resource, just return it
-  ///  * if it is full path, just return it
-  ///  * otherwise..
-  ///
-  ///    At design-time:
-  ///      * if the user specified resolution folder, use that
-  ///      * use the default resolution folder
-  ///    At run-time:
-  ///      * if the user specified resolution folder, use that
-  ///      * if it is running in F# interactive (config.IsHostedExecution) 
-  ///        use the default resolution folder
-  ///      * otherwise, use 'CurrentDomain.BaseDirectory'
-  ///
-  /// Returns the resolved file name, together with a flag specifying 
-  /// whether it is web based (and we need WebClient to download it)
-  let private resolveFileLocation 
-      designTime (isHosted, defaultResolutionFolder) resolutionFolder (fileName:string) =
-    
-    let isWeb =
-      fileName.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) ||
-      fileName.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
-
-    match fileName with
-    | url when isWeb -> url, true
-    | fullPath when Path.IsPathRooted fullPath -> fullPath, false
-    | relative ->
-        let root = 
-          if designTime then
-            if not (String.IsNullOrEmpty(resolutionFolder)) then resolutionFolder
-            else defaultResolutionFolder
-          elif isHosted then defaultResolutionFolder
-          else AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
-        Path.Combine(root, relative), false
-
-  /// Given a type provider configuration and a name passed by user, open 
-  /// the file or URL (if it starts with http(s)) and return it as a stream
-  let private asyncOpenStreamInProvider 
-      designTime cfg invalidate resolutionFolder (fileName:string) = async {
-    let resolvedFileOrUri, isWeb = resolveFileLocation designTime cfg resolutionFolder fileName
-
-    // Open network stream or file stream
-    if isWeb then
-      let req = System.Net.WebRequest.Create(Uri(resolvedFileOrUri))
-      let! resp = req.AsyncGetResponse() 
-      return resp.GetResponseStream()
-    else
-      // Open the file, even if it is already opened by another application
-      let file = File.Open(resolvedFileOrUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-      invalidate |> Option.iter (fun f -> watchForChanges f resolvedFileOrUri)
-      return file :> Stream }
+  open System.IO
+  open FSharp.Data.Importing
 
   /// Resolve a location of a file (or a web location) and open it for shared
   /// read, and trigger the specified function whenever the file changes
@@ -213,87 +117,436 @@ module ProviderHelpers =
       |> Async.RunSynchronously
     new StreamReader(stream)
 
-  /// Resolve a location of a file (or a web location) and open it for shared
-  /// read at runtime (do not monitor file changes and use runtime resolution rules)
-  let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder fileName = 
-    let stream = 
-      asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder fileName 
-      |> Async.RunSynchronously
-    new StreamReader(stream)
+// ----------------------------------------------------------------------------------------------
+
+open Microsoft.FSharp.Quotations
+
+type AssemblyReplacer =
+    abstract member ToRuntime : Type -> Type
+    abstract member ToRuntime : Expr -> Expr
+    abstract member ToDesignTime: Expr -> Expr
 
 // ----------------------------------------------------------------------------------------------
 // Conversions from string to various primitive types
 // ----------------------------------------------------------------------------------------------
 
 module Conversions = 
-  open System
-  open QuotationBuilder
-  open System.Globalization
+
   open Microsoft.FSharp.Quotations
-
-  /// Convert the result of TryParse to option type
-  let asOption = function true, v -> Some v | _ -> None
-
-  type Operations =
-    /// Returns CultureInfor matching the specified culture string
-    /// (or InvariantCulture if the argument is null or empty)
-    static member GetCulture(culture) =
-      if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else
-      Globalization.CultureInfo(culture)
-
-    // Operations that convert string to supported primitive types
-    static member ConvertString str = Option.map (fun (s:string) -> s) str
-    static member ConvertDateTime(culture:CultureInfo,text) = 
-      Option.bind (fun s -> DateTime.TryParse(s, culture, DateTimeStyles.None) |> asOption) text
-    static member ConvertInteger(culture:CultureInfo,text) = 
-      Option.bind (fun s -> Int32.TryParse(s, NumberStyles.Any, culture) |> asOption) text
-    static member ConvertInteger64(culture:CultureInfo,text) = 
-      Option.bind (fun s -> Int64.TryParse(s, NumberStyles.Any, culture) |> asOption) text
-    static member ConvertDecimal(culture:CultureInfo,text) =
-      Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Any, culture) |> asOption) text
-    static member ConvertFloat(culture:CultureInfo,text) = 
-      Option.bind (fun (s:string) -> 
-          match s.Trim() with
-          | StringEquals "#N/A" -> Some Double.NaN
-          | _ -> Double.TryParse(s, NumberStyles.Any, culture) |> asOption)
-          text
-    static member ConvertBoolean b = b |> Option.bind (fun (s:string) ->
-        match s.Trim() with
-        | StringEquals "true" | StringEquals "yes" -> Some true
-        | StringEquals "false" | StringEquals "no" -> Some false
-        | _ -> None)
-
-    /// Operation that extracts the value from an option and reports a
-    /// meaningful error message when the value is not there
-    ///
-    /// We could just return defaultof<'T> if the value is None, but that is not
-    /// really correct, because this operation is used when the inference engine
-    /// inferred that the value is always present. The user should update their
-    /// sample to infer it as optional (and get None). If we use defaultof<'T> we
-    /// might return 0 and the user would not be able to distinguish between 0
-    /// and missing value.
-    static member GetNonOptionalAttribute<'T>(name:string, opt:option<'T>) : 'T = 
-      match opt with 
-      | Some v -> v
-      | None when typeof<'T> = typeof<string> -> Unchecked.defaultof<'T>
-      | None when typeof<'T> = typeof<DateTime> -> Unchecked.defaultof<'T>
-      | _ -> failwithf "Mismatch: %s is missing" name
+  open FSharp.Data.Conversions
+  open QuotationBuilder
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
-  let convertValue (culture:string) (message:string) optional typ = 
+  let convertValue (culture:string) (fieldName:string) optional typ (replacer:AssemblyReplacer) = 
     let returnTyp = if optional then typedefof<option<_>>.MakeGenericType [| typ |] else typ
-    let operationsTyp = typeof<Operations>
     returnTyp, fun e ->
-      let converted : Expr = 
-        if typ = typeof<int> then operationsTyp?ConvertInteger(operationsTyp?GetCulture(culture),e)
-        elif typ = typeof<int64> then operationsTyp?ConvertInteger64(operationsTyp?GetCulture(culture),e)
-        elif typ = typeof<decimal> then operationsTyp?ConvertDecimal(operationsTyp?GetCulture(culture),e)
-        elif typ = typeof<float> then operationsTyp?ConvertFloat(operationsTyp?GetCulture(culture),e)
-        elif typ = typeof<string> then operationsTyp?ConvertString(e)
-        elif typ = typeof<bool> then operationsTyp?ConvertBoolean(e)
-        elif typ = typeof<DateTime> then operationsTyp?ConvertDateTime(operationsTyp?GetCulture(culture),e)
+      let converted = 
+        let culture = <@@ Operations.GetCulture(culture) @@>
+        if typ = typeof<int> then <@@ Operations.ConvertInteger(%%culture, %%e) @@>
+        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(%%culture, %%e) @@>
+        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(%%culture, %%e) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(%%culture, %%e) @@>
+        elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
+        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
+        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(%%culture, %%e) @@>
         else failwith "convertValue: Unsupported primitive type"
+        |> replacer.ToRuntime
       if not optional then 
-        operationsTyp?GetNonOptionalAttribute (typ) (message, converted)
+        let operationsTyp = replacer.ToRuntime typeof<Operations>
+        operationsTyp?GetNonOptionalValue (typ) (fieldName, converted)
       else converted
+
+// ----------------------------------------------------------------------------------------------
+        
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module private AssemblyReplacer =
+
+    open System.Collections.Generic
+    open System.Reflection
+    open Microsoft.FSharp.Quotations.ExprShape
+    open Microsoft.FSharp.Quotations.Patterns
+    open Microsoft.FSharp.Reflection
+
+    let private replace (asmMappings : (Assembly * Assembly) list) (original, originalAsm) f =
+        let toAsm = 
+            asmMappings
+            |> Seq.tryPick (fun (fromAsm, toAsm) -> if originalAsm = fromAsm then Some toAsm else None)
+        match toAsm with
+        | Some toAsm -> f toAsm
+        | None -> original
+
+    let private replaceLazy (asmMappings : (Assembly * Assembly) list) (lazyOriginal : 'a Lazy, originalAsm) f =
+        let toAsm = 
+            asmMappings
+            |> Seq.tryPick (fun (fromAsm, toAsm) -> if originalAsm = fromAsm then Some toAsm else None)
+        match toAsm with
+        | Some toAsm -> f toAsm
+        | None -> lazyOriginal.Value
+
+    let private getType (asm:Assembly) (fullName:string) =
+        let fullName = 
+            if fullName.StartsWith("FSI_")
+            then fullName.Substring(fullName.IndexOf('.') + 1)
+            else fullName
+        asm.GetType fullName
+
+    let private replaceType asmMappings (t : Type) =
+        if t.GetType().Name = "ProvidedSymbolType" then t
+        else replace asmMappings (t, t.Assembly) (fun toAsm ->
+            let newT = getType toAsm t.FullName
+            if newT = null then
+                failwithf "Type '%O' not found in '%s'" t toAsm.Location
+            newT)
+
+    let private replaceProperty asmMappings (p : PropertyInfo) =
+        replace asmMappings (p, p.DeclaringType.Assembly) (fun toAsm ->
+            let t = getType toAsm p.DeclaringType.FullName
+            let isStatic = 
+                p.CanRead && p.GetGetMethod().IsStatic || 
+                p.CanWrite && p.GetSetMethod().IsStatic
+            let bindingFlags = BindingFlags.Public ||| BindingFlags.NonPublic ||| 
+                               (if isStatic then BindingFlags.Static else BindingFlags.Instance)
+            let newP = t.GetProperty(p.Name, bindingFlags)
+            if newP = null then
+                failwithf "Property '%O' of type '%O' not found in '%s'" p t toAsm.Location
+            newP)
+    
+    let private replaceMethod asmMappings (m : MethodInfo) =
+        if m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then
+            // these methods don't really exist, so there's no need to replace them
+            m
+        else
+            replace asmMappings (m, m.DeclaringType.Assembly) (fun toAsm ->
+                let t = getType toAsm m.DeclaringType.FullName            
+                let parameterTypes = 
+                    m.GetParameters() 
+                    |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
+                    |> Seq.toArray
+                let newM = t.GetMethod(m.Name, parameterTypes)
+                if newM = null then
+                    failwithf "Method '%O' of type '%O' not found in '%s'" m t toAsm.Location
+                else
+                    newM)
+
+    let private replaceConstructor asmMappings (c : ConstructorInfo) =
+        replace asmMappings (c, c.DeclaringType.Assembly) (fun toAsm ->
+            let t = getType toAsm c.DeclaringType.FullName            
+            let parameterTypes = 
+                c.GetParameters() 
+                |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
+                |> Seq.toArray
+            let newC = t.GetConstructor(parameterTypes)
+            if newC = null then
+                failwithf "Constructor '%O' of type '%O' not found in '%s'" c t toAsm.Location
+            else
+                newC)
+
+    let private replaceUnionCase asmMappings (uci : UnionCaseInfo) exprs =
+        replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), uci.DeclaringType.Assembly) (fun toAsm ->
+            let t = getType toAsm uci.DeclaringType.FullName
+            let constructorMethod = t.GetMethod(uci.Name)
+            if constructorMethod = null then
+                failwithf "Method '%s' of type '%O' not found in '%s'" uci.Name t toAsm.Location
+            Expr.Call (constructorMethod, exprs))
+
+    let private replaceVar asmMappings (varTable: IDictionary<_,_>) reversePass (v: Var) =
+        replace asmMappings (v, v.Type.Assembly) (fun toAsm ->
+            if reversePass then
+                let newVar = Var (v.Name, getType toAsm v.Type.FullName, v.IsMutable)
+                // store the asmMappings as we'll have to revert them later
+                varTable.Add(newVar, v)
+                newVar
+            else
+                varTable.[v])
+    
+    let rec private replaceExpr asmMappings varTable reversePass quotation =
+        let rt = replaceType asmMappings
+        let rp = replaceProperty asmMappings
+        let rm = replaceMethod asmMappings
+        let rc = replaceConstructor asmMappings
+        let ru = replaceUnionCase asmMappings
+        let rv = replaceVar asmMappings varTable reversePass
+        let re = replaceExpr asmMappings varTable reversePass
+        
+        match quotation with
+        | Call (expr, m, exprs) -> 
+            match expr with
+            | Some expr -> Expr.Call (re expr, rm m, List.map re exprs)
+            | None -> Expr.Call (rm m, List.map re exprs)
+        | PropertyGet (expr, p, exprs) -> 
+            match expr with
+            | Some expr -> Expr.PropertyGet (re expr, rp p, List.map re exprs)
+            | None -> Expr.PropertyGet (rp p, List.map re exprs)
+        | NewObject (c, exprs) ->
+            Expr.NewObject (rc c, (List.map re exprs))
+        | NewUnionCase (uci, exprs) ->
+            ru uci (List.map re exprs)
+        | ShapeVar v -> 
+            Expr.Var (rv v)
+        | ShapeLambda (v, expr) -> 
+            Expr.Lambda (rv v, re expr)
+        | ShapeCombination (o, exprs) -> 
+            RebuildShapeCombination (o, List.map re exprs)
+
+    let create asmMappings =
+
+        let asmMappingsReversed = asmMappings |> List.map (fun (a, b) -> b, a)
+        let variablesTable = new Dictionary<_, _>()
+            
+        { new AssemblyReplacer with
+            member __.ToRuntime (t:Type) = t |> replaceType asmMappings
+            member __.ToRuntime (e:Expr) = e |> replaceExpr asmMappings variablesTable false
+            member __.ToDesignTime (e:Expr) = e |> replaceExpr asmMappingsReversed variablesTable true }
+
+// ----------------------------------------------------------------------------------------------
+
+module AssemblyResolver =
+
+    open System.Reflection
+    open System.Runtime.Versioning
+
+    let private (++) a b = Path.Combine(a,b)
+    let private portableFSharpCorePath = 
+        Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
+        ++ "Reference Assemblies" 
+        ++ "Microsoft" 
+        ++ "FSharp" 
+        ++ "3.0" 
+        ++ "Runtime" 
+        ++ ".NETPortable" 
+        ++ "FSharp.Core.dll"
+
+    let private assemblyResolveHandler = ResolveEventHandler(fun _ args ->
+        try 
+            let assemName = AssemblyName(args.Name)
+            if assemName.Name = "FSharp.Core" && assemName.Version.ToString() = "2.3.5.0" then 
+                Assembly.LoadFrom portableFSharpCorePath
+            else 
+                null
+        with e ->  
+            null)
+
+    let mutable initialized = false    
+
+    let init (cfg : TypeProviderConfig) = 
+
+        if not initialized then
+            initialized <- true
+            AppDomain.CurrentDomain.add_AssemblyResolve(assemblyResolveHandler)
+
+        let runtimeAssembly = Assembly.LoadFrom cfg.RuntimeAssembly
+        
+        let targetFrameworkAttr = runtimeAssembly.GetCustomAttribute<TargetFrameworkAttribute>()
+        let isPortable = targetFrameworkAttr.FrameworkName = ".NETPortable,Version=v4.0,Profile=Profile47"
+
+        let asmMappings = [Assembly.GetExecutingAssembly(), runtimeAssembly]
+        let asmMappings = 
+            if isPortable then
+                let fullFSharpCore = typedefof<int list>.Assembly
+                let portableFSharpCore = Assembly.LoadFrom portableFSharpCorePath
+                (fullFSharpCore, portableFSharpCore)::asmMappings
+            else
+                asmMappings
+
+        runtimeAssembly, isPortable, AssemblyReplacer.create asmMappings
+
+// ----------------------------------------------------------------------------------------------
+
+module Debug = 
+
+    open System.Collections.Generic
+    open System.Reflection
+    open System.Text
+    open Microsoft.FSharp.Core.CompilerServices
+    open Microsoft.FSharp.Reflection
+
+    /// Converts a sequence of strings to a single string separated with the delimiters
+    let inline private separatedBy delimiter (items: string seq) = String.Join(delimiter, Array.ofSeq items)
+
+    let generate (resolutionFolder: string) (runtimeAssembly: string) typeProviderConstructor args =
+        let cfg = new TypeProviderConfig(fun _ -> false)
+        cfg.GetType().GetProperty("ResolutionFolder").GetSetMethod(nonPublic = true).Invoke(cfg, [| box resolutionFolder |]) |> ignore
+        cfg.GetType().GetProperty("RuntimeAssembly").GetSetMethod(nonPublic = true).Invoke(cfg, [| box runtimeAssembly |]) |> ignore
+        cfg.GetType().GetProperty("ReferencedAssemblies").GetSetMethod(nonPublic = true).Invoke(cfg, [| box ([||]: string[]) |]) |> ignore        
+
+        let typeProviderForNamespaces = typeProviderConstructor cfg :> TypeProviderForNamespaces
+
+        let providedTypeDefinition = typeProviderForNamespaces.Namespaces |> Seq.head |> snd |> Seq.head
+            
+        match args with
+        | [||] -> providedTypeDefinition
+        | args ->
+            let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
+            providedTypeDefinition.MakeParametricType(typeName, args)
+
+    let private innerPrettyPrint (maxDepth: int option) exclude (t: ProvidedTypeDefinition) =        
+
+        let ns = 
+            [ t.Namespace
+              "Microsoft.FSharp.Core"
+              "Microsoft.FSharp.Core.Operators"
+              "Microsoft.FSharp.Collections"
+              "Microsoft.FSharp.Control"
+              "Microsoft.FSharp.Text" ]
+            |> Set.ofSeq
+
+        let pending = new Queue<_>()
+        let visited = new HashSet<_>()
+
+        let add t =
+            if not (exclude t) && visited.Add t then
+                pending.Enqueue t
+
+        let fullName (t: Type) =
+            let fullName = t.FullName
+            if fullName.StartsWith "FSI_" then
+                fullName.Substring(fullName.IndexOf('.') + 1)
+            else
+                fullName
+
+        let rec toString (t: Type) =
+
+            if t = null then
+                "<NULL>" // happens in the CSV and Freebase providers
+            else
+
+                let hasUnitOfMeasure = t.Name.Contains("[")
+
+                let innerToString (t: Type) =
+                    match t with
+                    | t when t = typeof<bool> -> "bool"
+                    | t when t = typeof<obj> -> "obj"
+                    | t when t = typeof<int> -> "int"
+                    | t when t = typeof<int64> -> "int64"
+                    | t when t = typeof<float> -> "float"
+                    | t when t = typeof<float32> -> "float32"
+                    | t when t = typeof<decimal> -> "decimal"
+                    | t when t = typeof<string> -> "string"
+                    | t when t = typeof<Void> -> "()"
+                    | t when t = typeof<unit> -> "()"
+                    | t when t.IsArray -> (t.GetElementType() |> toString) + "[]"
+                    | :? ProvidedTypeDefinition as t ->
+                        add t
+                        t.Name.Split([| ',' |]).[0]
+                    | t when t.IsGenericType ->            
+                        let args =                 
+                            t.GetGenericArguments() 
+                            |> Seq.map (if hasUnitOfMeasure then (fun t -> t.Name) else toString)
+                            |> separatedBy ", "
+                        let name, reverse = 
+                            match t with
+                            | t when hasUnitOfMeasure -> toString t.UnderlyingSystemType, false
+                            | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
+                            | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
+                            | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
+                            | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
+                            | t when ns.Contains t.Namespace -> t.Name, false
+                            | t -> fullName t, false
+                        let name = name.Split([| '`' |]).[0]
+                        if reverse then
+                            args + " " + name 
+                        else
+                            name + "<" + args + ">"
+                    | t when ns.Contains t.Namespace -> t.Name
+                    | t when t.IsGenericParameter -> t.Name
+                    | t -> fullName t
+
+                let rec warnIfWrongAssembly (t:Type) =
+                    match t with
+                    | :? ProvidedTypeDefinition as t -> ""
+                    | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
+                    | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
+                    | t -> if not t.IsGenericParameter && t.Assembly = Assembly.GetExecutingAssembly() then " [DESIGNTIME]" else ""
+
+                if hasUnitOfMeasure || t.IsGenericParameter || t.DeclaringType = null then
+                    innerToString t + (warnIfWrongAssembly t)
+                else
+                    (toString t.DeclaringType) + "+" + (innerToString t) + (warnIfWrongAssembly t)
+
+        let toSignature (parameters: ParameterInfo[]) =
+            if parameters.Length = 0 then
+                "()"
+            else
+                parameters 
+                |> Seq.map (fun p -> p.Name + ":" + (toString p.ParameterType))
+                |> separatedBy " -> "
+
+        let sb = StringBuilder ()
+        let print (str: string) =
+            sb.Append(str) |> ignore
+        let println() =
+            sb.AppendLine() |> ignore
+                
+        let printMember (memberInfo: MemberInfo) =        
+
+            let print str =
+                print "    "                
+                print str
+                println()
+
+            match memberInfo with
+
+            | :? ProvidedConstructor as cons -> 
+                print <| "new : " + 
+                         (toSignature <| cons.GetParameters()) + " -> " + 
+                         (toString memberInfo.DeclaringType)
+
+            | :? ProvidedLiteralField as field -> 
+                print <| "val " + field.Name + ": " + 
+                         (toString field.FieldType) + " - " + (field.GetRawConstantValue().ToString())
+
+            | :? ProvidedProperty as prop -> 
+                print <| (if prop.IsStatic then "static " else "") + "member " + 
+                         prop.Name + ": " + (toString prop.PropertyType) + 
+                         " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
+
+            | :? ProvidedMethod as m ->
+                if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
+                    print <| (if m.IsStatic then "static " else "") + "member " + 
+                    m.Name + ": " + (toSignature <| m.GetParameters()) + 
+                    " -> " + (toString m.ReturnType)
+
+            | :? ProvidedTypeDefinition as t -> add t
+
+            | _ -> ()
+
+        add t
+
+        let currentDepth = ref 0
+
+        let stop() =
+            match maxDepth with
+            | Some maxDepth -> !currentDepth > maxDepth
+            | None -> false
+
+        while pending.Count <> 0 && not (stop()) do
+            let pendingForThisDepth = new Queue<_>(pending)
+            pending.Clear()
+            while pendingForThisDepth.Count <> 0 do
+                let t = pendingForThisDepth.Dequeue()
+                match t with
+                | t when FSharpType.IsRecord t-> "record "
+                | t when FSharpType.IsModule t -> "module "
+                | t when t.IsValueType -> "struct "
+                | t when t.IsClass && t.IsSealed && t.IsAbstract -> "static class "
+                | t when t.IsClass && t.IsAbstract -> "abstract class "
+                | t when t.IsClass -> "class "
+                | t -> ""
+                |> print
+                print (toString t)
+                if t.BaseType <> typeof<obj> then
+                    print " : "
+                    print (toString t.BaseType)
+                println()
+                t.GetMembers() |> Seq.iter printMember
+                println()
+            currentDepth := !currentDepth + 1
+    
+        sb.ToString()
+
+    let prettyPrint t = innerPrettyPrint None (fun _ -> false) t
+    let prettyPrintWithMaxDepth maxDepth t = innerPrettyPrint (Some maxDepth) (fun _ -> false) t
+    let prettyPrintWithMaxDepthAndExclusions maxDepth exclusions t = 
+        let exclusions = Set.ofSeq exclusions
+        innerPrettyPrint (Some maxDepth) (fun t -> exclusions.Contains t.Name) t

@@ -31,8 +31,14 @@ type JsonValue =
       | JsonValue.Boolean b -> sb.Append(b.ToString().ToLowerInvariant())
       | JsonValue.Number number -> sb.Append(number.ToString(invariant))
       | JsonValue.BigNumber number -> sb.Append(number.ToString(invariant))
+#if PORTABLE
+      | JsonValue.String t ->
+          //TODO PORTABLE
+          sb.Append("\"" + t + "\"")
+#else
       | JsonValue.String t -> 
           sb.Append("\"" + System.Web.HttpUtility.JavaScriptStringEncode(t) + "\"")
+#endif
       | JsonValue.Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
@@ -192,9 +198,14 @@ type private JsonParser(jsonText:string) =
     // Start by parsing the top-level value
     member x.Parse() = parseValue()
 
+open System.IO
+
 type JsonValue with
   /// Parse the specified JSON string
   static member Parse(input:string) = JsonParser(input).Parse()
+  static member Load(stream:Stream) = 
+    use reader = new StreamReader(stream)
+    JsonValue.Parse(reader.ReadToEnd())
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple JSON processing

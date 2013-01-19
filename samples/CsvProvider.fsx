@@ -124,8 +124,7 @@ a static argument and load the same file (at runtime):
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 type Test = CsvProvider<"docs/SmallTest.csv">
-let file = Path.Combine(__SOURCE_DIRECTORY__, "docs/SmallTest.csv")
-let small = Test.Load(file)
+let small = Test.Load("docs/SmallTest.csv")
 
 (**
 As in the previous example the `small` value exposes the rows using the `Data` property.
@@ -154,8 +153,7 @@ specify what to use as separator:
 *)
 
 type NonDefaultSeparator = CsvProvider<"docs/AirQuality.csv", ";">
-let airFile = Path.Combine(__SOURCE_DIRECTORY__, "docs/AirQuality.csv")
-let airQuality = NonDefaultSeparator.Load(airFile)
+let airQuality = NonDefaultSeparator.Load("docs/AirQuality.csv")
 
 (**
 The air quality dataset used above is used in a lots of samples for the Statistical

@@ -123,9 +123,9 @@ let authors = """
   </authors> """
 
 (**
-When initializing the `XmlProvider`, we can pass it a file name (relative
-to the current directory). The `Parse` method takes the data as a string, so
-we can now print the information as follows:
+When initializing the `XmlProvider`, we can pass it a file name or a web url.
+The `Load` method allows reading the data from a file or from a web resource. The
+`Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
 type Authors = XmlProvider<"docs/Writers.xml">
@@ -169,7 +169,7 @@ parameter `Global` to `true`:
 *)
 
 type Html = XmlProvider<"docs/HtmlBody.xml", Global=true>
-let html = Html.Load(Path.Combine(__SOURCE_DIRECTORY__, "docs/HtmlBody.xml"))
+let html = Html.Load("docs/HtmlBody.xml")
 
 (**
 When the `Global` parameter is `true`, the type provider _unifies_ all elements of the
@@ -213,8 +213,7 @@ to construct it - here, we need to use `Parse` again, because `Load` only works 
 files:
 *)
 
-let wc = new System.Net.WebClient()
-let blog = Rss.Parse(wc.DownloadString("http://tomasp.net/blog/rss.aspx"))
+let blog = Rss.Load("http://tomasp.net/blog/rss.aspx")
 
 (**
 Printing the title of the RSS feed together with a list of recent posts is now quite

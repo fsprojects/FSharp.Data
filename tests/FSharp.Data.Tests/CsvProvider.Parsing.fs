@@ -6,7 +6,7 @@ namespace FSharp.Data.Tests
 
 open NUnit.Framework
 open System.IO
-open ProviderImplementation.CsvReader
+open FSharp.Data.Csv.CsvReader
 
 module CsvParser =
 

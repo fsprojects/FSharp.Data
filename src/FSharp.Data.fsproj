@@ -1,70 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <AssemblyName>FSharp.Data</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>6ebfde55-9687-40a9-8c1a-6e204ecb117f</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AllowCrossTargeting>true</AllowCrossTargeting>
+    <RootNamespace>FSharp.Data</RootNamespace>
+    <AssemblyName>FSharp.Data</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <OutputPath>bin\$(Configuration)</OutputPath>
-    <WarningLevel>3</WarningLevel>
-    <ProjectGuid>{6ebfde55-9687-40a9-8c1a-6e204ecb117f}</ProjectGuid>
-    <Name>FSharp.Data.TypeProvider</Name>
+    <Name>FSharp.Data</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <OutputPath>..\bin\v40</OutputPath>
-    <DocumentationFile>
-    </DocumentationFile>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\Debug\FSharp.Data.XML</DocumentationFile>
+    <StartAction>Project</StartAction>
+    <StartProgram>
+    </StartProgram>
+    <StartArguments>
+    </StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\Release\FSharp.Data.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\Network.fs" />
+    <Compile Include="Common\Conversions.fs" />
+    <Compile Include="Common\IO.fs" />
     <Compile Include="Common\Json.fs" />
-    <Compile Include="Providers\ProvidedTypes.fsi" />
-    <Compile Include="Providers\ProvidedTypes.fs" />
-    <Compile Include="Providers\Pluralizer.fs" />
-    <Compile Include="Providers\NameUtils.fs" />
-    <Compile Include="Providers\Helpers.fs" />
-    <Compile Include="Providers\Caching.fs" />
+    <Compile Include="Common\Caching.fs" />
     <Compile Include="Providers\StructureInference.fs" />
-    <Compile Include="JsonProvider\JsonInference.fs" />
-    <Compile Include="JsonProvider\JsonGenerator.fs" />
-    <Compile Include="JsonProvider\JsonProvider.fs" />
-    <Compile Include="XmlProvider\XmlInference.fs" />
-    <Compile Include="XmlProvider\XmlGenerator.fs" />
-    <Compile Include="XmlProvider\XmlProvider.fs" />
-    <Compile Include="CsvProvider\CsvProvider.fs" />
-    <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
-    <Compile Include="Providers.fs" />
+    <Compile Include="JsonProvider\JsonRuntime.fs" />
+    <Compile Include="XmlProvider\XmlRuntime.fs" />
+    <Compile Include="CsvProvider\CsvRuntime.fs" />
+    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
+    <Compile Include="Runtime.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-
-    <Reference Include="System.Core" />
-    <Reference Include="System" />
     <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.5\Microsoft.FSharp.Targets" Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.5\Microsoft.FSharp.Targets')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.5\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets'))" />
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="(!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.5\Microsoft.FSharp.Targets')) And (!Exists('$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets')) And (Exists('$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets'))" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetPath)" "$(TargetDir)..\"</PostBuildEvent>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>

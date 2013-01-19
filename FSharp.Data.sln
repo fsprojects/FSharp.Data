@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable", "src\FSharp.Data.Portable.fsproj", "{993A6EEF-6E82-4964-8F91-BE72CC63D000}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +17,14 @@ Global
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{993A6EEF-6E82-4964-8F91-BE72CC63D000}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

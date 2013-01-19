@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <BaseOutputPath>bin\portable\</BaseOutputPath>
+    <BaseIntermediateOutputPath>obj\portable\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{993a6eef-6e82-4964-8f91-be72cc63d000}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FSharp.Data</RootNamespace>
+    <AssemblyName>FSharp.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile47</TargetFrameworkProfile>
+    <Name>FSharp.Data</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\portable\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\portable\Debug\FSharp.Data.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\portable\Release</OutputPath>
+    <DefineConstants>TRACE;PORTABLE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\portable\Release\FSharp.Data.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Common\Conversions.fs" />
+    <Compile Include="Common\IO.fs" />
+    <Compile Include="Common\Json.fs" />
+    <Compile Include="Common\Caching.fs" />
+    <Compile Include="Providers\StructureInference.fs" />
+    <Compile Include="JsonProvider\JsonRuntime.fs" />
+    <Compile Include="XmlProvider\XmlRuntime.fs" />
+    <Compile Include="CsvProvider\CsvRuntime.fs" />
+    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
+    <Compile Include="Runtime.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <Name>FSharp.Core</Name>
+      <AssemblyName>FSharp.Core.dll</AssemblyName>
+      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\3.0\Runtime\.NETPortable\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\portable"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\portable"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\portable"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

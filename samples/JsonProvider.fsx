@@ -89,8 +89,7 @@ as a schema and as runtime value:
 let [<Literal>] people = """ [{ "name":"John", "age":94 }, { "name":"Tomas" }] """
 type People = JsonProvider<people>
 
-let items = People.Parse(people)
-for item in items do 
+for item in People.Parse(people) do 
   printf "%s " item.Name 
   item.Age |> Option.iter (printf "(%d)")
   printfn ""
@@ -110,8 +109,7 @@ as follows:
 let [<Literal>] values = """ [{"value":94 }, {"value":"Tomas" }] """
 type Values = JsonProvider<values>
 
-let items = Values.Parse(values)
-for item in items do 
+for item in Values.Parse(values) do 
   match item.Value.Number, item.Value.String with
   | Some num, _ -> printfn "Numeric: %d" num
   | _, Some str -> printfn "Text: %s" str
@@ -148,7 +146,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"docs/WorldBank.json">
-let doc = WorldBank.Load(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let doc = WorldBank.Load("docs/WorldBank.json")
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type

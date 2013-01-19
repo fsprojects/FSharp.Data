@@ -90,7 +90,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "/docs/WorldBank.json")
 let value = JsonValue.Parse(file)
 
 (** 
