@@ -32,6 +32,35 @@ module Seq =
     |> Seq.takeWhile (fun (i, v) -> i < count)
     |> Seq.map snd
 
+[<AutoOpen>]
+module ActivePatterns =
+
+  // Helper active patterns to simplify the inference code
+  let (|Trim|) (s:string) = s.Trim()
+
+  let (|StringEquals|_|) (s1:string) s2 = 
+    if s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase) 
+      then Some () else None
+
+  let (|Parse|_|) func value = 
+    match func value with
+    | true, v -> Some v
+    | _ -> None
+
+  /// Helper active pattern that can be used when constructing InvokeCode
+  /// (to avoid writing pattern matching or incomplete matches):
+  ///
+  ///    p.InvokeCode <- fun (Singleton self) -> <@ 1 + 2 @>
+  ///
+  let (|Singleton|) = function [l] -> l | _ -> failwith "Parameter mismatch"
+
+  /// Takes dictionary or a map and succeeds if it contains exactly one value
+  let (|SingletonMap|_|) map = 
+    if Seq.length map <> 1 then None else
+      let (KeyValue(k, v)) = Seq.head map 
+      Some(k, v)
+
+
 // ----------------------------------------------------------------------------------------------
 // Dynamic operator (?) that can be used for constructing quoted F# code without 
 // quotations (to simplify constructing F# quotations in portable libraries - where
@@ -67,14 +96,18 @@ module QuotationBuilder =
         else [ convertValue args ]
 
       // Find a method that we want to call
-      match typ.GetMember(operation) with 
+      let flags = BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static ||| BindingFlags.Instance
+      match typ.GetMember(operation, MemberTypes.All, flags) with 
       | [| :? MethodInfo as mi |] -> 
           let mi = 
             if tyargs = [] then mi
             else mi.MakeGenericMethod(tyargs |> Array.ofList)
           if mi.IsStatic then Expr.Call(mi, args)
           else Expr.Call(List.head args, mi, List.tail args)
-      | _ -> failwithf "Constructing call of the '%s' operation failed." operation
+      | [| :? ConstructorInfo as ci |] ->
+          if tyargs <> [] then failwith "Constructor cannot be generic!"
+          Expr.NewObject(ci, args)
+      | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
     // If the result is a function, we are called with two tuples as arguments
     // and the first tuple represents type arguments for a generic function...
@@ -103,19 +136,63 @@ module internal ReflectionHelpers =
 
 // ----------------------------------------------------------------------------------------------
 
-module internal ProviderHelpers =
+module ProviderHelpers =
 
-  /// Given a type provider configuration and a name passed by user, open 
-  /// the file or URL (if it starts with http(s)) and return it as a stream
-  let asyncOpenStreamInProvider (cfg:TypeProviderConfig) (fileName:string) = async {
+  /// If the file is web based, setup an file system watcher that 
+  /// invalidates the generated type whenever the file changes
+  ///
+  /// Asumes that the fileName is a valid file name on the disk
+  /// (and not e.g. a web reference)
+  let private watchForChanges invalidate (fileName:string) = 
+    let path = Path.GetDirectoryName(fileName)
+    let name = Path.GetFileName(fileName)
+    let watcher = new FileSystemWatcher(Filter = name, Path = path)
+    watcher.Changed.Add(fun _ -> invalidate())
+    watcher.EnableRaisingEvents <- true
 
-    // Resolve the full path or full HTTP address
+  /// Resolve the absolute location of a file (or web URL) according to the rules
+  /// used by standard F# type providers as described here:
+  /// https://github.com/fsharp/fsharpx/issues/195#issuecomment-12141785
+  ///
+  ///  * if it is web resource, just return it
+  ///  * if it is full path, just return it
+  ///  * otherwise..
+  ///
+  ///    At design-time:
+  ///      * if the user specified resolution folder, use that
+  ///      * use the default resolution folder
+  ///    At run-time:
+  ///      * if the user specified resolution folder, use that
+  ///      * if it is running in F# interactive (config.IsHostedExecution) 
+  ///        use the default resolution folder
+  ///      * otherwise, use 'CurrentDomain.BaseDirectory'
+  ///
+  /// Returns the resolved file name, together with a flag specifying 
+  /// whether it is web based (and we need WebClient to download it)
+  let private resolveFileLocation 
+      designTime (isHosted, defaultResolutionFolder) resolutionFolder (fileName:string) =
+    
     let isWeb =
       fileName.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) ||
       fileName.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
-    let resolvedFileOrUri = 
-      if isWeb then fileName
-      else Path.Combine(cfg.ResolutionFolder, fileName)
+
+    match fileName with
+    | url when isWeb -> url, true
+    | fullPath when Path.IsPathRooted fullPath -> fullPath, false
+    | relative ->
+        let root = 
+          if designTime then
+            if not (String.IsNullOrEmpty(resolutionFolder)) then resolutionFolder
+            else defaultResolutionFolder
+          elif isHosted then defaultResolutionFolder
+          else AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
+        Path.Combine(root, relative), false
+
+  /// Given a type provider configuration and a name passed by user, open 
+  /// the file or URL (if it starts with http(s)) and return it as a stream
+  let private asyncOpenStreamInProvider 
+      designTime cfg invalidate resolutionFolder (fileName:string) = async {
+    let resolvedFileOrUri, isWeb = resolveFileLocation designTime cfg resolutionFolder fileName
 
     // Open network stream or file stream
     if isWeb then
@@ -123,72 +200,26 @@ module internal ProviderHelpers =
       let! resp = req.AsyncGetResponse() 
       return resp.GetResponseStream()
     else
-      return File.OpenRead(resolvedFileOrUri) :> Stream }
+      // Open the file, even if it is already opened by another application
+      let file = File.Open(resolvedFileOrUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+      invalidate |> Option.iter (fun f -> watchForChanges f resolvedFileOrUri)
+      return file :> Stream }
 
-  /// Given a type provider configuration and a name passed by user, open 
-  /// the file or URL (if it starts with http(s)) and return it as a stream
-  let openStreamInProvider (cfg:TypeProviderConfig) (fileName:string) = 
-    asyncOpenStreamInProvider cfg fileName |> Async.RunSynchronously
+  /// Resolve a location of a file (or a web location) and open it for shared
+  /// read, and trigger the specified function whenever the file changes
+  let readTextAtDesignTime (cfg:TypeProviderConfig) invalidate resolutionFolder fileName = 
+    let stream = 
+      asyncOpenStreamInProvider true (false, cfg.ResolutionFolder) (Some invalidate) resolutionFolder fileName 
+      |> Async.RunSynchronously
+    new StreamReader(stream)
 
-  /// Read a file passed to a type provider into a string
-  /// (if the file is needed to perform some inference)
-  let readFileInProvider cfg fileName = 
-    use stream = openStreamInProvider cfg fileName
-    use reader = new StreamReader(stream)
-    reader.ReadToEnd()
-
-  /// Read a file passed to a type provider into a seq of strings
-  /// (if the file is needed to perform some inference)
-  let readTextInProvider cfg fileName = 
-    new StreamReader(openStreamInProvider cfg fileName)
-
-  /// Resolves the config filename
-  let findConfigFile resolutionFolder configFileName =
-    if Path.IsPathRooted configFileName then configFileName else 
-    Path.Combine(resolutionFolder, configFileName)
-
-  /// If the file is web based, setup an file system watcher that 
-  /// invalidates the generated type whenever the file changes
-  let watchForChanges (ownerType:TypeProviderForNamespaces) (fileName:string) = 
-    let isWeb =
-      fileName.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) ||
-      fileName.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
-
-    if not isWeb then
-      let path = Path.GetDirectoryName(fileName)
-      let name = Path.GetFileName(fileName)
-      let watcher = new FileSystemWatcher(Filter = name, Path = path)
-      watcher.Changed.Add(fun _ -> ownerType.Invalidate())
-      watcher.EnableRaisingEvents <- true
-
-
-[<AutoOpen>]
-module GlobalProviderHelpers =
-
-  // Helper active patterns to simplify the inference code
-  let (|Trim|) (s:string) = s.Trim()
-
-  let (|StringEquals|_|) (s1:string) s2 = 
-    if s1.Equals(s2, StringComparison.InvariantCultureIgnoreCase) 
-      then Some () else None
-
-  let (|Parse|_|) func value = 
-    match func value with
-    | true, v -> Some v
-    | _ -> None
-
-  /// Helper active pattern that can be used when constructing InvokeCode
-  /// (to avoid writing pattern matching or incomplete matches):
-  ///
-  ///    p.InvokeCode <- fun (Singleton self) -> <@ 1 + 2 @>
-  ///
-  let (|Singleton|) = function [l] -> l | _ -> failwith "Parameter mismatch"
-
-  /// Takes dictionary or a map and succeeds if it contains exactly one value
-  let (|SingletonMap|_|) map = 
-    if Seq.length map <> 1 then None else
-      let (KeyValue(k, v)) = Seq.head map 
-      Some(k, v)
+  /// Resolve a location of a file (or a web location) and open it for shared
+  /// read at runtime (do not monitor file changes and use runtime resolution rules)
+  let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder fileName = 
+    let stream = 
+      asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder fileName 
+      |> Async.RunSynchronously
+    new StreamReader(stream)
 
 // ----------------------------------------------------------------------------------------------
 // Conversions from string to various primitive types

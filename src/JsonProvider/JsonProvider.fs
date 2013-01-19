@@ -41,8 +41,10 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     // Infer the schema from a specified file or URI sample
     let sample = 
       try 
-        let text = ProviderHelpers.readFileInProvider cfg (args.[0] :?> string) 
-        JsonValue.Parse(text)
+        let sample = args.[0] :?> string
+        let resolutionFolder = args.[2] :?> string
+        use reader = ProviderHelpers.readTextAtDesignTime cfg this.Invalidate resolutionFolder sample
+        JsonValue.Parse(reader.ReadToEnd())
       with _ ->
         try JsonValue.Parse(args.[0] :?> string) 
         with _ -> failwith "Specified argument is neither a file, nor well-formed JSON."
@@ -78,10 +80,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
-      ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) ]
+      ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) 
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = null) ]
 
   let helpText = 
     """<summary>Typed representation of a JSON document</summary>
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
        <param name='Sample'>Location of a JSON sample file or a string containing sample JSON document</param>
        <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>"""
 

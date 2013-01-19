@@ -135,6 +135,9 @@ module internal CsvTypeBuilder =
 
 // --------------------------------------------------------------------------------------
 
+open Microsoft.FSharp.Quotations
+open ProviderImplementation.QuotationBuilder
+
 [<TypeProvider>]
 type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
@@ -152,18 +155,17 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
     resTy.AddMember(domainTy)
 
+    let sample = args.[0] :?> string
     let separator = args.[1] :?> string
     let culture = args.[2] :?> string
     let inferRows = args.[3] :?> int
+    let resolutionFolder = args.[4] :?> string
 
     // Infer the schema from a specified file or URI sample
     let sample = 
       try
-        let fileName = args.[0] :?> string
-        let input = ProviderHelpers.readTextInProvider cfg fileName
-        let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
-        ProviderHelpers.watchForChanges this resolvedFileName
-        CsvFile.Parse(input, separator)
+        let reader = ProviderHelpers.readTextAtDesignTime cfg this.Invalidate resolutionFolder sample
+        CsvFile.Parse(reader, separator)
       with _ ->
         CsvFile.Parse(new StringReader(args.[0] :?> string))
       
@@ -172,6 +174,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let ctx = domainTy
     let methResTy = CsvTypeBuilder.generateCsvType culture ctx infered
     let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
+    
+    let providerHelpersTy = Assembly.GetExecutingAssembly().GetType("ProviderImplementation.ProviderHelpers")
+    let csvFileTy = typeof<CsvFile>
 
     // 'Data' proeprty has the generated type
     let p = ProvidedProperty("Data", seqType methResTy)
@@ -182,14 +187,17 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("source", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StringReader(%%source:string), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> 
+      csvFileTy?Parse(typeof<StringReader>?``.ctor``(source), separator)
     resTy.AddMember(m)
 
     // Generate static Load method
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StreamReader(%%source:string), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> 
+      let readerExpr = providerHelpersTy?readTextAtRunTime(cfg.IsHostedExecution, cfg.ResolutionFolder, resolutionFolder, source)
+      csvFileTy?Parse(readerExpr, typeof<string option>?Some(separator))
     resTy.AddMember(m)
 
     // Return the generated type
@@ -200,11 +208,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     [ ProvidedStaticParameter("Sample", typeof<string>) 
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
       ProvidedStaticParameter("Culture", typeof<string>, "")
-      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)]
+      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, "") ]
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
        <param name='Sample'>CSV sample file location</param>
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='Separator'>Column delimiter</param>                     
        <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>"""

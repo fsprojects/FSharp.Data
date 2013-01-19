@@ -45,14 +45,14 @@ get a strongly typed view of the file:
 type Stocks = CsvProvider<"docs/MSFT.csv">
 
 (**
-To get the current stock prices from the live web site, we use `WebClient` to download
-the data and then use the `Parse` method of the generated type to read the CSV data:
+The generated type provides two static methods for loading data. The `Parse` method can be
+used if we have the data in a `string` value. The `Load` method allows reading the data from
+a file or from a web resource. The following sample calls it with a URL that points to 
+a live CSV file on the Yahoo finance web site:
 *)
  
 // Download the stock prices
-let wc = new WebClient()
-let data = wc.DownloadString("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-let msft = Stocks.Parse(data)
+let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
