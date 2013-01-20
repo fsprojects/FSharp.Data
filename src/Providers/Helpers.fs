@@ -222,7 +222,19 @@ module private AssemblyReplacer =
                     m.GetParameters() 
                     |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
                     |> Seq.toArray
-                let newM = t.GetMethod(m.Name, parameterTypes)
+                let newM =
+                    if m.IsGenericMethod then 
+                        let genericMethod = t.GetMethod(m.Name)
+                        if genericMethod = null then 
+                            null
+                        else
+                            let typeArguments = 
+                                m.GetGenericArguments()
+                                |> Seq.map (fun t -> replaceType asmMappings t) 
+                                |> Seq.toArray                        
+                            genericMethod.MakeGenericMethod(typeArguments)
+                    else 
+                        t.GetMethod(m.Name, parameterTypes)
                 if newM = null then
                     failwithf "Method '%O' of type '%O' not found in '%s'" m t toAsm.Location
                 else
