@@ -9,17 +9,15 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
 
-namespace WindownPhone71App
+namespace Silverlight5App
 {
-    public partial class MainPage : PhoneApplicationPage
+    public partial class MainPage : UserControl
     {
-        // Constructor
         public MainPage()
         {
             InitializeComponent();
-            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:false);
+            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:true);
         }
     }
 }

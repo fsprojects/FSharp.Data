@@ -33,7 +33,7 @@ namespace WindowsStoreApp
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            this.listBox.ItemsSource = PortableLibrary.getData();
+            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:false);
         }
     }
 }

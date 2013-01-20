@@ -18,7 +18,7 @@ namespace WindowsPhone8App
         {
             InitializeComponent();
 
-            this.listBox.ItemsSource = PortableLibrary.getData();
+            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:false);
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
