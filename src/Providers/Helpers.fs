@@ -189,18 +189,19 @@ module private AssemblyReplacer =
             if fullName.StartsWith("FSI_")
             then fullName.Substring(fullName.IndexOf('.') + 1)
             else fullName
-        asm.GetType fullName
+        let t = asm.GetType fullName
+        if t = null then
+            failwithf "Type '%O' not found in '%s'" t asm.Location
+        t
 
-    let private replaceType asmMappings (t : Type) =
+    let private replaceType asmMappings (t : Type) =        
         if t.GetType().Name = "ProvidedSymbolType" then t
-        else replace asmMappings (t, t.Assembly) (fun toAsm ->
-            let newT = getType toAsm t.FullName
-            if newT = null then
-                failwithf "Type '%O' not found in '%s'" t toAsm.Location
-            newT)
+        elif t.GetType() = typeof<ProvidedTypeDefinition> then t
+        else replace asmMappings (t, t.Assembly) (fun toAsm -> getType toAsm t.FullName)
 
     let private replaceProperty asmMappings (p : PropertyInfo) =
-        replace asmMappings (p, p.DeclaringType.Assembly) (fun toAsm ->
+        if p.GetType() = typeof<ProvidedProperty> then p
+        else replace asmMappings (p, p.DeclaringType.Assembly) (fun toAsm ->
             let t = getType toAsm p.DeclaringType.FullName
             let isStatic = 
                 p.CanRead && p.GetGetMethod().IsStatic || 
@@ -213,11 +214,9 @@ module private AssemblyReplacer =
             newP)
     
     let private replaceMethod asmMappings (m : MethodInfo) =
-        if m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then
-            // these methods don't really exist, so there's no need to replace them
-            m
-        else
-            replace asmMappings (m, m.DeclaringType.Assembly) (fun toAsm ->
+        if m.GetType() = typeof<ProvidedMethod> then m
+        elif m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then m // these methods don't really exist, so there's no need to replace them
+        else replace asmMappings (m, m.DeclaringType.Assembly) (fun toAsm ->
                 let t = getType toAsm m.DeclaringType.FullName            
                 let parameterTypes = 
                     m.GetParameters() 
@@ -230,7 +229,8 @@ module private AssemblyReplacer =
                     newM)
 
     let private replaceConstructor asmMappings (c : ConstructorInfo) =
-        replace asmMappings (c, c.DeclaringType.Assembly) (fun toAsm ->
+        if c.GetType() = typeof<ProvidedConstructor> then c
+        else replace asmMappings (c, c.DeclaringType.Assembly) (fun toAsm ->
             let t = getType toAsm c.DeclaringType.FullName            
             let parameterTypes = 
                 c.GetParameters() 
@@ -251,7 +251,8 @@ module private AssemblyReplacer =
             Expr.Call (constructorMethod, exprs))
 
     let private replaceVar asmMappings (varTable: IDictionary<_,_>) reversePass (v: Var) =
-        replace asmMappings (v, v.Type.Assembly) (fun toAsm ->
+        if v.Type.GetType() = typeof<ProvidedTypeDefinition> then v
+        else replace asmMappings (v, v.Type.Assembly) (fun toAsm ->
             if reversePass then
                 let newVar = Var (v.Name, getType toAsm v.Type.FullName, v.IsMutable)
                 // store the asmMappings as we'll have to revert them later
@@ -372,7 +373,7 @@ module Debug =
 
         let typeProviderForNamespaces = typeProviderConstructor cfg :> TypeProviderForNamespaces
 
-        let providedTypeDefinition = typeProviderForNamespaces.Namespaces |> Seq.head |> snd |> Seq.head
+        let providedTypeDefinition = typeProviderForNamespaces.Namespaces |> Seq.last |> snd |> Seq.last
             
         match args with
         | [||] -> providedTypeDefinition
@@ -380,7 +381,7 @@ module Debug =
             let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
             providedTypeDefinition.MakeParametricType(typeName, args)
 
-    let private innerPrettyPrint (maxDepth: int option) exclude (t: ProvidedTypeDefinition) =        
+    let private innerPrettyPrint signatureOnly (maxDepth: int option) exclude (t: ProvidedTypeDefinition) =        
 
         let ns = 
             [ t.Namespace
@@ -485,27 +486,61 @@ module Debug =
                 print str
                 println()
 
+            let getMethodBody (m: ProvidedMethod) = 
+                seq { if not m.IsStatic then yield m.DeclaringType.BaseType
+                      for param in m.GetParameters() do yield param.ParameterType }
+                |> Seq.map (fun typ -> Expr.Value(null, typ))
+                |> Array.ofSeq
+                |> m.GetInvokeCodeInternal false
+
+            let getConstructorBody (c: ProvidedConstructor) = 
+                seq { if not c.IsStatic then yield c.DeclaringType.BaseType
+                      for param in c.GetParameters() do yield param.ParameterType }
+                |> Seq.map (fun typ -> Expr.Value(null, typ))
+                |> Array.ofSeq
+                |> c.GetInvokeCodeInternal false
+
             match memberInfo with
 
             | :? ProvidedConstructor as cons -> 
+                let body = 
+                    if signatureOnly then ""
+                    else cons |> getConstructorBody |> sprintf "\n%A\n"
                 print <| "new : " + 
                          (toSignature <| cons.GetParameters()) + " -> " + 
-                         (toString memberInfo.DeclaringType)
+                         (toString memberInfo.DeclaringType) + body
 
             | :? ProvidedLiteralField as field -> 
+                let value = 
+                    if signatureOnly then ""
+                    else field.GetRawConstantValue() |> sprintf "\n%O\n" 
                 print <| "val " + field.Name + ": " + 
-                         (toString field.FieldType) + " - " + (field.GetRawConstantValue().ToString())
-
+                         (toString field.FieldType) + 
+                         value
+                         
             | :? ProvidedProperty as prop -> 
+                let body = 
+                    if signatureOnly then ""
+                    else
+                        let getter = 
+                            if not prop.CanRead then ""
+                            else getMethodBody (prop.GetMethod :?> ProvidedMethod) |> sprintf "\n%A\n"
+                        let setter = 
+                            if not prop.CanWrite then ""
+                            else getMethodBody (prop.SetMethod :?> ProvidedMethod) |> sprintf "\n%A\n"
+                        getter + setter
                 print <| (if prop.IsStatic then "static " else "") + "member " + 
                          prop.Name + ": " + (toString prop.PropertyType) + 
                          " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
 
             | :? ProvidedMethod as m ->
+                let body = 
+                    if signatureOnly then ""
+                    else m |> getMethodBody |> sprintf "\n%A\n"
                 if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
                     print <| (if m.IsStatic then "static " else "") + "member " + 
                     m.Name + ": " + (toSignature <| m.GetParameters()) + 
-                    " -> " + (toString m.ReturnType)
+                    " -> " + (toString m.ReturnType) + body
 
             | :? ProvidedTypeDefinition as t -> add t
 
@@ -545,8 +580,8 @@ module Debug =
     
         sb.ToString()
 
-    let prettyPrint t = innerPrettyPrint None (fun _ -> false) t
-    let prettyPrintWithMaxDepth maxDepth t = innerPrettyPrint (Some maxDepth) (fun _ -> false) t
-    let prettyPrintWithMaxDepthAndExclusions maxDepth exclusions t = 
+    let prettyPrint signatureOnly t = innerPrettyPrint signatureOnly None (fun _ -> false) t
+    let prettyPrintWithMaxDepth signatureOnly maxDepth t = innerPrettyPrint signatureOnly (Some maxDepth) (fun _ -> false) t
+    let prettyPrintWithMaxDepthAndExclusions signatureOnly maxDepth exclusions t = 
         let exclusions = Set.ofSeq exclusions
-        innerPrettyPrint (Some maxDepth) (fun t -> exclusions.Contains t.Name) t
+        innerPrettyPrint signatureOnly (Some maxDepth) (fun t -> exclusions.Contains t.Name) t

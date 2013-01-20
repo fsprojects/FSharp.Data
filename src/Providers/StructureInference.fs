@@ -8,29 +8,22 @@ open System
 open System.Diagnostics
 open System.Collections.Generic
 
-module Seq = 
-  /// Merge two sequences by pairing elements for which
-  /// the specified predicate returns the same key
-  ///
-  /// (If the inputs contain the same keys, then the order
-  /// of the elements is preserved.)
-  let pairBy f first second = 
-    let vals1 = [ for o in first -> f o, o ]
-    let vals2 = [ for o in second -> f o, o ]
-    let d1, d2 = dict vals1, dict vals2
-    let k1, k2 = set d1.Keys, set d2.Keys
-    let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
-    let asOption = function true, v -> Some v | _ -> None
-    [ for k in keys -> 
-        k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
+/// Merge two sequences by pairing elements for which
+/// the specified predicate returns the same key
+///
+/// (If the inputs contain the same keys, then the order
+/// of the elements is preserved.)
+let private pairBy f first second = 
+  let vals1 = [ for o in first -> f o, o ]
+  let vals2 = [ for o in second -> f o, o ]
+  let d1, d2 = dict vals1, dict vals2
+  let k1, k2 = set d1.Keys, set d2.Keys
+  let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
+  let asOption = function true, v -> Some v | _ -> None
+  [ for k in keys -> 
+      k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
 
-  /// Take at most the specified number of arguments from the sequence
-  let takeMax count input =
-    input 
-    |> Seq.mapi (fun i v -> i, v)
-    |> Seq.takeWhile (fun (i, v) -> i < count)
-    |> Seq.map snd
-
+  
 // --------------------------------------------------------------------------------------
 // Types that represent the result of the type inference
 // --------------------------------------------------------------------------------------
@@ -253,7 +246,7 @@ let rec subtypeInfered ot1 ot2 =
 /// Given two heterogeneous types, get a single type that can represent all the
 /// types that the two heterogeneous types can. For every tag, 
 and unionHeterogeneousTypes cases1 cases2 =
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
   |> Seq.map (function
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t
@@ -266,7 +259,7 @@ and unionHeterogeneousTypes cases1 cases2 =
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
 and unionCollectionTypes cases1 cases2 = 
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
   |> Seq.map (function
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
@@ -283,7 +276,7 @@ and unionCollectionTypes cases1 cases2 =
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes t1 t2 =
-  Seq.pairBy (fun p -> p.Name) t1 t2
+  pairBy (fun p -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
       match fst, snd with
       // If one is missing, return the other, but optional

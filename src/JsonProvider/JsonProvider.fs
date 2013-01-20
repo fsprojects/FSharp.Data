@@ -3,9 +3,11 @@
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data
+open FSharp.Data.StructureInference
 open FSharp.Data.Json
+open FSharp.Data.Json.Runtime
 open FSharp.Data.Json.JsonReader
+open FSharp.Data.Importing
 
 // ----------------------------------------------------------------------------------------------
 
@@ -51,7 +53,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         JsonInference.inferType sample
       else
         [ for itm in sample -> JsonInference.inferType itm ]
-        |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
+        |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
     let methResTy, methResConv = JsonTypeBuilder.generateJsonType ctx infered
@@ -78,7 +80,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     m.IsStaticMethod <- true
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = Importing.readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
+    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
                                                                 JsonDocument.Create(JsonValue.Parse(reader.ReadToEnd())) @@>
     resTy.AddMember(m)
 

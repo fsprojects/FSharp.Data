@@ -12,9 +12,9 @@ open System.Text.RegularExpressions
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data
-open FSharp.Data.Csv
+open FSharp.Data.Csv.Runtime
 open FSharp.Data.StructureInference
+open FSharp.Data.Importing
 
 // --------------------------------------------------------------------------------------
 // Inference
@@ -34,9 +34,16 @@ module CsvInference =
         Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
       else None, header)
 
+    /// Take at most the specified number of arguments from the sequence
+    let takeMax count input =
+      input 
+      |> Seq.mapi (fun i v -> i, v)
+      |> Seq.takeWhile (fun (i, v) -> i < count)
+      |> Seq.map snd
+
     // Infer the type of collection using structural inference
     Seq.reduce subtypeInfered
-     (seq { for row in Seq.takeMax count csv.Data ->
+     (seq { for row in takeMax count csv.Data ->
               let fields = 
                 [ for (unit, header), value in Seq.zip headers row.Columns ->
                     let typ = inferPrimitiveType value unit
@@ -132,7 +139,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     m.IsStaticMethod <- true
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> replacer.ToRuntime <@@ let reader = Importing.readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
+    m.InvokeCode <- fun (Singleton location) -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
                                                                        CsvFile.Parse(reader, separator) @@>
     resTy.AddMember(m)
 

@@ -12,7 +12,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Caching
-open FSharp.Data.WorldBank
+open FSharp.Data.WorldBank.Runtime
 
 // --------------------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     yield prop ])
             t
   
-        let worldBankServiceType =
+        let worldBankDataServiceType =
             let t = ProvidedTypeDefinition("WorldBankDataService", baseType=Some (replacer.ToRuntime typeof<WorldBankData>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
                 [ yield ProvidedProperty("Countries", countriesType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetCountries() @@>)) 
@@ -118,41 +118,42 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         let serviceTypesType = 
             let t = ProvidedTypeDefinition("ServiceTypes", baseType=Some typeof<obj>, HideObjectMethods=true)
             t.AddXmlDoc("<summary>Contains the types that describe the data service</summary>")
-            t.AddMembers [ indicatorsType; countryType; regionType; countriesType; regionsType; worldBankServiceType ]
+            t.AddMembers [ indicatorsType; countryType; regionType; countriesType; regionsType; worldBankDataServiceType ]
             t
 
         resTy.AddMember serviceTypesType 
         resTy.AddMembersDelayed (fun () -> 
             [ let urlVal = defaultServiceUrl
               let sourcesVal = sources |> String.concat ";"
-              yield ProvidedMethod ("GetDataContext", [], worldBankServiceType, IsStaticMethod=true,
+              yield ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, IsStaticMethod=true,
                                     InvokeCode = (fun _ -> replacer.ToRuntime <@@ WorldBankData(urlVal, sourcesVal) @@>)) 
-              //TODO: overload to provider serviceUrl
+              //TODO: overload to provide serviceUrl
             ])
 
         resTy
 
-    //TODO PORTABLE
-    do if not isPortable then
+    // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
+    let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
 
-        // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
-        let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
+    let worldBankType = createTypesForSources(defaultSources, "WorldBank", false)
+
+    let paramWorldBankType = 
+        let t = ProvidedTypeDefinition(asm, ns, "WorldBankProvider", Some(typeof<obj>), HideObjectMethods = true)
+        
         let defaultSourcesStr = String.Join(";", defaultSources)
-
-        let worldBankType = createTypesForSources(defaultSources, "WorldBank", false)
-        let paramWorldBankType = ProvidedTypeDefinition(asm, ns, "WorldBankProvider", Some(typeof<obj>), HideObjectMethods = true)
-
-        let sourcesParam = ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
-        let asyncParam = ProvidedStaticParameter("Asynchronous", typeof<bool>, false)
-
         let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
                         <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\"</param>
                         <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
+        t.AddXmlDoc(helpText)
 
-        do paramWorldBankType.AddXmlDoc(helpText)
-        do paramWorldBankType.DefineStaticParameters([sourcesParam; asyncParam], fun typeName providerArgs -> 
+        let parameters =
+            [ ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
+              ProvidedStaticParameter("Asynchronous", typeof<bool>, false) ]
+
+        t.DefineStaticParameters(parameters, fun typeName providerArgs -> 
             let sources = (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
             let isAsync = providerArgs.[1] :?> bool
             createTypesForSources(sources, typeName, isAsync))
-        do 
-            this.AddNamespace(ns, [ worldBankType; paramWorldBankType ])
+        t
+        
+    do this.AddNamespace(ns, [ worldBankType; paramWorldBankType ])

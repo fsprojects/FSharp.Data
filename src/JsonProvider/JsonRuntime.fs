@@ -1,5 +1,6 @@
-﻿namespace FSharp.Data.Json
+﻿namespace FSharp.Data.Json.Runtime
 
+open FSharp.Data.Json
 open FSharp.Data.Json.JsonReader
 open FSharp.Data.StructureInference
 

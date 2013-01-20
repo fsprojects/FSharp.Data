@@ -7,17 +7,23 @@ SetupTesting.generateSetupScript __SOURCE_DIRECTORY__
 open System
 open System.IO
 open ProviderImplementation
-open ProviderImplementation.Debug
 
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "FSharp.Data.dll"
+//let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable" ++ "FSharp.Data.dll"
 
 let generate args = Debug.generate resolutionFolder runtimeAssembly args
 let generateCsv sample separator culture inferRows = generate (fun cfg -> new CsvProvider(cfg)) [| box sample; box separator; box culture; box inferRows; null |] 
 let generateXml sample globl sampleList culture = generate (fun cfg -> new XmlProvider(cfg)) [| box sample; box globl; box sampleList; box culture; null |] 
 let generateJson sample sampleList = generate (fun cfg -> new JsonProvider(cfg)) [| box sample; box sampleList; null |] 
-let generateWorldBank() = generate (fun cfg -> new WorldBankProvider(cfg)) [||] 
+let generateWorldBank sources asynchronous = generate (fun cfg -> new WorldBankProvider(cfg)) [| box sources; box asynchronous |] 
+
+//let signatureOnly = true
+let signatureOnly = false
+
+let prettyPrint t = Debug.prettyPrint signatureOnly t
+let prettyPrintWithMaxDepth maxDepth t = Debug.prettyPrintWithMaxDepth signatureOnly maxDepth t
 
 generateCsv "SmallTest.csv" "" "" Int32.MaxValue
 |> prettyPrint |> Console.WriteLine
@@ -43,5 +49,8 @@ generateJson "WorldBank.json" false
 generateJson "TwitterStream.json" true
 |> prettyPrint |> Console.WriteLine
 
-generateWorldBank()
+generateWorldBank "" false
+|> prettyPrintWithMaxDepth 2 |> Console.WriteLine
+
+generateWorldBank "" true
 |> prettyPrintWithMaxDepth 2 |> Console.WriteLine

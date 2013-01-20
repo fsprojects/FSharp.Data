@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.Xml
+﻿namespace FSharp.Data.Xml.Runtime
 
 open System
 open System.Xml.Linq

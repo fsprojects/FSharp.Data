@@ -4,8 +4,9 @@ open System.IO
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data
-open FSharp.Data.Xml
+open FSharp.Data.StructureInference
+open FSharp.Data.Xml.Runtime
+open FSharp.Data.Importing
 
 // ----------------------------------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         XmlInference.inferType globalInference sample.Root
       else
         [ for itm in sample.Root.Descendants() -> XmlInference.inferType globalInference itm ]
-        |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
+        |> Seq.fold subtypeInfered Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx infered
@@ -81,7 +82,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     m.IsStaticMethod <- true
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = Importing.readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
+    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
                                                                 XmlElement.Create(XDocument.Parse(reader.ReadToEnd()).Root) @@>
     resTy.AddMember(m)
 

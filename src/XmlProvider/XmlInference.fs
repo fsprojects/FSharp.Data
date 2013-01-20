@@ -6,7 +6,6 @@ module ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
-open FSharp.Data
 open FSharp.Data.StructureInference
   
 // The type of XML element is always a record with a field
@@ -35,14 +34,14 @@ let inferGlobalType (element:XElement) =
         // Get attributes for all `name` named elements 
         let attributes =
           [ for el in elements -> getAttributes el ]
-          |> Seq.reduce StructureInference.unionRecordTypes
+          |> Seq.reduce unionRecordTypes
 
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
               if not (String.IsNullOrEmpty(e.Value)) then
                 yield inferPrimitiveType e.Value None ]
-          |> Seq.fold StructureInference.subtypeInfered Top
+          |> Seq.fold subtypeInfered Top
         let body = { Name = ""; Optional = false; Type = bodyType }
 
         let record = Record(Some name.LocalName, body::attributes)

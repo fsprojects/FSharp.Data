@@ -44,6 +44,8 @@ type ProvidedConstructor =
     /// Set the quotation used to compute the implementation of invocations of this constructor.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
+
     /// Set the target and arguments of the base constructor call. Only used for generated types.
     member BaseConstructorCall : (Quotations.Expr list -> ConstructorInfo * Quotations.Expr list) with set
 
@@ -86,6 +88,7 @@ type ProvidedMethod =
     /// Set the quotation used to compute the implementation of invocations of this method.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
 
     /// Add definition location information to the provided type definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit

@@ -9,7 +9,7 @@ open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.JsonInference
 open ProviderImplementation.QuotationBuilder
-open FSharp.Data.Xml
+open FSharp.Data.Xml.Runtime
 open FSharp.Data.StructureInference
 
 /// Context that is used to generate the XML types.
