@@ -184,25 +184,39 @@ module private AssemblyReplacer =
         | Some toAsm -> f toAsm
         | None -> lazyOriginal.Value
 
-    let private getType (asm:Assembly) (fullName:string) =
-        let fullName = 
+    let private getType (asm:Assembly) (t:Type) rt =
+        let getFullName (t:Type) =
+            let fullName = t.FullName        
             if fullName.StartsWith("FSI_")
             then fullName.Substring(fullName.IndexOf('.') + 1)
             else fullName
-        let t = asm.GetType fullName
-        if t = null then
+        let newT =
+            if t.IsGenericType && not t.IsGenericTypeDefinition then 
+                let genericType = t.GetGenericTypeDefinition()
+                let newT = asm.GetType (getFullName genericType)
+                if newT = null then 
+                    null
+                else
+                    let typeArguments = 
+                        t.GetGenericArguments()
+                        |> Seq.map rt
+                        |> Seq.toArray
+                    newT.MakeGenericType(typeArguments)
+            else 
+                asm.GetType (getFullName t)
+        if newT = null then
             failwithf "Type '%O' not found in '%s'" t asm.Location
-        t
+        newT
 
-    let private replaceType asmMappings (t : Type) =        
+    let rec private replaceType asmMappings (t : Type) =        
         if t.GetType().Name = "ProvidedSymbolType" then t
         elif t.GetType() = typeof<ProvidedTypeDefinition> then t
-        else replace asmMappings (t, t.Assembly) (fun toAsm -> getType toAsm t.FullName)
+        else replace asmMappings (t, t.Assembly) (fun toAsm -> getType toAsm t (replaceType asmMappings))
 
     let private replaceProperty asmMappings (p : PropertyInfo) =
         if p.GetType() = typeof<ProvidedProperty> then p
         else replace asmMappings (p, p.DeclaringType.Assembly) (fun toAsm ->
-            let t = getType toAsm p.DeclaringType.FullName
+            let t = getType toAsm p.DeclaringType (replaceType asmMappings)
             let isStatic = 
                 p.CanRead && p.GetGetMethod().IsStatic || 
                 p.CanWrite && p.GetSetMethod().IsStatic
@@ -217,7 +231,7 @@ module private AssemblyReplacer =
         if m.GetType() = typeof<ProvidedMethod> then m
         elif m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then m // these methods don't really exist, so there's no need to replace them
         else replace asmMappings (m, m.DeclaringType.Assembly) (fun toAsm ->
-                let t = getType toAsm m.DeclaringType.FullName            
+                let t = getType toAsm m.DeclaringType (replaceType asmMappings)
                 let parameterTypes = 
                     m.GetParameters() 
                     |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
@@ -243,7 +257,7 @@ module private AssemblyReplacer =
     let private replaceConstructor asmMappings (c : ConstructorInfo) =
         if c.GetType() = typeof<ProvidedConstructor> then c
         else replace asmMappings (c, c.DeclaringType.Assembly) (fun toAsm ->
-            let t = getType toAsm c.DeclaringType.FullName            
+            let t = getType toAsm c.DeclaringType (replaceType asmMappings)
             let parameterTypes = 
                 c.GetParameters() 
                 |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
@@ -256,7 +270,7 @@ module private AssemblyReplacer =
 
     let private replaceUnionCase asmMappings (uci : UnionCaseInfo) exprs =
         replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), uci.DeclaringType.Assembly) (fun toAsm ->
-            let t = getType toAsm uci.DeclaringType.FullName
+            let t = getType toAsm uci.DeclaringType (replaceType asmMappings)
             let constructorMethod = t.GetMethod(uci.Name)
             if constructorMethod = null then
                 failwithf "Method '%s' of type '%O' not found in '%s'" uci.Name t toAsm.Location
@@ -266,7 +280,7 @@ module private AssemblyReplacer =
         if v.Type.GetType() = typeof<ProvidedTypeDefinition> then v
         else replace asmMappings (v, v.Type.Assembly) (fun toAsm ->
             if reversePass then
-                let newVar = Var (v.Name, getType toAsm v.Type.FullName, v.IsMutable)
+                let newVar = Var (v.Name, getType toAsm v.Type (replaceType asmMappings), v.IsMutable)
                 // store the asmMappings as we'll have to revert them later
                 varTable.Add(newVar, v)
                 newVar
