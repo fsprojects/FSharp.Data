@@ -22,7 +22,7 @@ retrieves the percentage of population who attend universities in the UK:
 #r "../bin/FSharp.Data.dll"
 open FSharp.Data
 
-let data = WorldBank.GetDataContext()
+let data = WorldBankData.GetDataContext()
 
 data
   .Countries.``United Kingdom``
@@ -66,7 +66,7 @@ a number of static parameters. If the `Asynchronous` parameter is set to `true` 
 type provider generates all operations as asynchronous:
 *)
 
-type WorldBank = WorldBankProvider<"World Development Indicators", Asynchronous=true>
+type WorldBank = WorldBankDataProvider<"World Development Indicators", Asynchronous=true>
 WorldBank.GetDataContext()
 
 (**

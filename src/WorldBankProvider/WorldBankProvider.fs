@@ -141,10 +141,10 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
         let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
 
-        let worldBankType = createTypesForSources(defaultSources, "WorldBank", false)
+        let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
 
         let paramWorldBankType = 
-            let t = ProvidedTypeDefinition(asm, ns, "WorldBankProvider", Some(typeof<obj>), HideObjectMethods = true)
+            let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some(typeof<obj>), HideObjectMethods = true)
         
             let defaultSourcesStr = String.Join(";", defaultSources)
             let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
