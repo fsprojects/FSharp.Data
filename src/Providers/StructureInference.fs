@@ -13,7 +13,7 @@ open System.Collections.Generic
 ///
 /// (If the inputs contain the same keys, then the order
 /// of the elements is preserved.)
-let private pairBy f first second = 
+let internal pairBy f first second = 
   let vals1 = [ for o in first -> f o, o ]
   let vals2 = [ for o in second -> f o, o ]
   let d1, d2 = dict vals1, dict vals2

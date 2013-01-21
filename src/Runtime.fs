@@ -1,5 +1,9 @@
 ﻿namespace global
 
-[<assembly:Microsoft.FSharp.Core.CompilerServices.TypeProviderAssembly("FSharp.Data.DesignTime")>]
+open System.Runtime.CompilerServices
+open Microsoft.FSharp.Core.CompilerServices
+
+[<assembly:TypeProviderAssembly("FSharp.Data.DesignTime")>]
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.Tests")>]
 do()
 
