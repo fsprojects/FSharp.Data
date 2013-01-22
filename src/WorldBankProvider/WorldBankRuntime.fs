@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.WorldBank.Runtime
+﻿namespace FSharp.Data.RuntimeImplementation.WorldBank
 
 #if PORTABLE
 //TODO PORTABLE

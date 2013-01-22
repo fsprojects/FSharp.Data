@@ -1,8 +1,8 @@
-﻿namespace FSharp.Data.Json.Runtime
+﻿namespace FSharp.Data.RuntimeImplementation
 
 open FSharp.Data.Json
 open FSharp.Data.Json.JsonReader
-open FSharp.Data.StructureInference
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 /// Underlying representation of the generated JSON types
 type JsonDocument private (json:JsonValue) =

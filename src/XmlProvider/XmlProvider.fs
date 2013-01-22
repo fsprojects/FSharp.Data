@@ -4,9 +4,10 @@ open System.IO
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data.StructureInference
-open FSharp.Data.Xml.Runtime
-open FSharp.Data.Importing
+open ProviderImplementation.StructureInference
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 // ----------------------------------------------------------------------------------------------
 

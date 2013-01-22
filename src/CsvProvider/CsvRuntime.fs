@@ -2,7 +2,7 @@
 // CSV type provider runtime components
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Csv.Runtime
+namespace FSharp.Data.RuntimeImplementation
 
 open System
 open System.IO

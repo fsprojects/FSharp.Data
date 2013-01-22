@@ -9,8 +9,9 @@ open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.JsonInference
 open ProviderImplementation.QuotationBuilder
-open FSharp.Data.Xml.Runtime
-open FSharp.Data.StructureInference
+open ProviderImplementation.StructureInference
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =

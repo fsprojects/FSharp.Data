@@ -3,11 +3,12 @@
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data.StructureInference
 open FSharp.Data.Json
-open FSharp.Data.Json.Runtime
 open FSharp.Data.Json.JsonReader
-open FSharp.Data.Importing
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.TypeInference
+open ProviderImplementation.StructureInference
 
 // ----------------------------------------------------------------------------------------------
 

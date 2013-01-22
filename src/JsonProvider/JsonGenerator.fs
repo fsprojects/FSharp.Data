@@ -8,9 +8,10 @@ open Microsoft.FSharp.Quotations
 open ProviderImplementation.JsonInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open ProviderImplementation.StructureInference
 open FSharp.Data.Json
-open FSharp.Data.Json.Runtime
-open FSharp.Data.StructureInference
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 /// Context that is used to generate the JSON types.
 ///

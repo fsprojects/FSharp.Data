@@ -36,8 +36,10 @@
     <DocumentationFile>bin\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\Conversions.fs" />
-    <Compile Include="Common\IO.fs" />
+    <Compile Include="Common\Operations.fs" />
+    <Compile Include="Common\Http.fs" />
+    <Compile Include="Common\DataLoading.fs" />
+    <Compile Include="Common\TypeInference.fs" />
     <Compile Include="Common\Json.fs" />
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
@@ -46,6 +48,7 @@
     <Compile Include="Providers\NameUtils.fs" />
     <Compile Include="Providers\Helpers.fs" />
     <Compile Include="Providers\StructureInference.fs" />
+    <Compile Include="Providers\Debug.fs" />
     <Compile Include="JsonProvider\JsonInference.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="JsonProvider\JsonGenerator.fs" />

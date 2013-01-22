@@ -6,7 +6,9 @@ module ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
-open FSharp.Data.StructureInference
+open FSharp.Data.RuntimeImplementation.TypeInference
+open ProviderImplementation.StructureInference
+
   
 // The type of XML element is always a record with a field
 // for every attribute. If it has some content, then it also 

@@ -10,18 +10,35 @@ namespace FSharp.Data.Tests
 
 open System
 open System.IO
-open NUnit.Framework
-open FSharp.Data
-open FSharp.Data.Csv.Runtime
 open FSharp.Data.Json
-open FSharp.Data.StructureInference
+open NUnit.Framework
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation
+open ProviderImplementation.StructureInference
 
 module ProviderInference = 
 
   /// A collection containing just one type
   let SimpleCollection typ = 
     Collection(Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
+
+  [<Test>]
+  let ``Seq.pairBy helper function works``() = 
+    let actual = Seq.pairBy fst [(2, "a"); (1, "b")] [(1, "A"); (3, "C")]
+    let expected = 
+      [ (1, Some (1, "b"), Some (1, "A"))
+        (2, Some (2, "a"), None)
+        (3, None, Some (3, "C")) ]
+    Assert.AreEqual(set expected, set actual)
+
+  [<Test>]
+  let ``Seq.pairBy helper function preserves order``() = 
+    let actual = Seq.pairBy fst [("one", "a"); ("two", "b")] [("one", "A"); ("two", "B")]
+    let expected = 
+      [ ("one", Some ("one", "a"), Some ("one", "A"))
+        ("two", Some ("two", "b"), Some ("two", "B")) ] 
+    Assert.AreEqual(expected, actual)
 
   [<Test>]
   let ``Finds common subtype of numeric types (decimal)``() =
@@ -111,7 +128,7 @@ module ProviderInference =
     // None of the providers currently need to get a subtype of 'null' and
     // DateTime, so we call 'subtypeInfered' directly to test this property
     let actual = 
-      StructureInference.subtypeInfered
+      ProviderImplementation.StructureInference.subtypeInfered
         Null (Primitive(typeof<DateTime>, None))
     let expected = 
       [ InferedTypeTag.Null, Null

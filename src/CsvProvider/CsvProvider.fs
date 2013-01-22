@@ -12,9 +12,10 @@ open System.Text.RegularExpressions
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data.Csv.Runtime
-open FSharp.Data.StructureInference
-open FSharp.Data.Importing
+open ProviderImplementation.StructureInference
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 // --------------------------------------------------------------------------------------
 // Inference
@@ -34,16 +35,9 @@ module CsvInference =
         Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
       else None, header)
 
-    /// Take at most the specified number of arguments from the sequence
-    let takeMax count input =
-      input 
-      |> Seq.mapi (fun i v -> i, v)
-      |> Seq.takeWhile (fun (i, v) -> i < count)
-      |> Seq.map snd
-
     // Infer the type of collection using structural inference
     Seq.reduce subtypeInfered
-     (seq { for row in takeMax count csv.Data ->
+     (seq { for row in Seq.takeMax count csv.Data ->
               let fields = 
                 [ for (unit, header), value in Seq.zip headers row.Columns ->
                     let typ = inferPrimitiveType value unit

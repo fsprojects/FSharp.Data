@@ -12,7 +12,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Caching
-open FSharp.Data.WorldBank.Runtime
+open FSharp.Data.RuntimeImplementation.WorldBank
 
 // --------------------------------------------------------------------------------------
 
