@@ -23,7 +23,7 @@ type Http private() =
   ///
   static let enableUriSlashes (uri:Uri) =
 #if PORTABLE
-//TODO PORTABLE
+//TODO PORTABLE: enableUriSlashes
 #else
     let uri = Uri(uri.OriginalString)
     let paq = uri.PathAndQuery

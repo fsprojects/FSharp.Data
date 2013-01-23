@@ -4,24 +4,23 @@
 
 module FSharp.Data.Caching
 
-#if PORTABLE
-//TODO PORTABLE
-#else
-open System
-open System.IO
-open System.Net
-open System.Text
-open System.Reflection
-open System.Diagnostics
-open System.Collections.Concurrent
-open System.Security.Cryptography
-        
-// --------------------------------------------------------------------------------------
-
 /// Represents a cache (various implementations are available)
 type ICache<'T> = 
   abstract TryRetrieve : string -> 'T option
   abstract Set : string * 'T -> unit
+
+// --------------------------------------------------------------------------------------
+
+#if PORTABLE
+#else
+
+open System
+open System.Collections.Concurrent
+open System.Diagnostics
+open System.IO
+open System.Net
+open System.Security.Cryptography
+open System.Text
 
 /// Creates a cache that uses in-memory collection
 let memoryCache () = 
@@ -50,7 +49,7 @@ let createInternetFileCache prefix expiration =
   // Get file name for a given string (using hash)
   let cacheFile key = 
     let sha1 = hashString key 
-    let encoded = System.Uri.EscapeDataString sha1
+    let encoded = Uri.EscapeDataString sha1
     Path.Combine(downloadCache, encoded + ".txt")
 
   try

@@ -9,11 +9,52 @@
 namespace FSharp.Data.Json
 
 open System
+open System.IO
 open System.Text
 open System.Globalization
 
+#if PORTABLE
+
+// from https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+
+module private HttpUtility = 
+
+    let JavaScriptStringEncode (value : string) = 
+
+        if String.IsNullOrEmpty value then
+            ""
+        else 
+            let chars = value.ToCharArray() |> Seq.map (fun c -> (int c))
+            let needsEscape = 
+                chars 
+                |> Seq.exists (fun c -> c >= 0 && c <= 31 || c = 34 || c = 39 || c = 60 || c = 62 || c = 92)
+            if not needsEscape then
+                value
+            else
+                let sb = new StringBuilder()
+                for c in chars do
+                    if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
+                        sb.AppendFormat("\\u{0:x4}", c) |> ignore
+                    else 
+                        match c with
+                        | 8 -> sb.Append "\\b"
+                        | 9 -> sb.Append "\\t"
+                        | 10 -> sb.Append "\\n"
+                        | 12 -> sb.Append "\\f"
+                        | 13 -> sb.Append "\\r"
+                        | 34 -> sb.Append "\\\""
+                        | 92 -> sb.Append "\\\\"
+                        | _ -> sb.Append (c)
+                        |> ignore
+                sb.ToString()
+#else
+    
+open System.Web
+
+#endif
+
 /// Represents a JSON value. Large numbers that do not fit in the 
-/// System.Decimal type are represented using the BigNumber case, while
+/// Decimal type are represented using the BigNumber case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
 [<RequireQualifiedAccess>]
 type JsonValue =
@@ -25,20 +66,14 @@ type JsonValue =
   | Boolean of bool
   | Null
   override this.ToString() = 
-    let invariant = System.Globalization.CultureInfo.InvariantCulture
+    let invariant = CultureInfo.InvariantCulture
     let rec serialize (sb:StringBuilder) = function
       | JsonValue.Null -> sb.Append "null"
       | JsonValue.Boolean b -> sb.Append(b.ToString().ToLowerInvariant())
       | JsonValue.Number number -> sb.Append(number.ToString(invariant))
       | JsonValue.BigNumber number -> sb.Append(number.ToString(invariant))
-#if PORTABLE
-      | JsonValue.String t ->
-          //TODO PORTABLE
-          sb.Append("\"" + t + "\"")
-#else
       | JsonValue.String t -> 
-          sb.Append("\"" + System.Web.HttpUtility.JavaScriptStringEncode(t) + "\"")
-#endif
+          sb.Append("\"" + HttpUtility.JavaScriptStringEncode(t) + "\"")
       | JsonValue.Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
@@ -69,13 +104,13 @@ type private JsonParser(jsonText:string) =
       while i < s.Length && (s.[i]=' ' || s.[i]='\t' || s.[i]='\r' || s.[i]='\n') do
         i <- i + 1    
     let isNumChar c = 
-      System.Char.IsDigit c || c='.' || c='e' || c='E' || c='+' || c='-'
+      Char.IsDigit c || c='.' || c='e' || c='E' || c='+' || c='-'
     let throw() = 
       let msg = 
         sprintf 
           "Invalid Json starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
           i (jsonText.[(max 0 (i-10)).. (min (jsonText.Length-1) (i+10))]) jsonText      
-      raise <| new System.Exception(msg)
+      raise <| new Exception(msg)
     let ensure cond = 
       if not cond then throw()  
 
@@ -86,7 +121,7 @@ type private JsonParser(jsonText:string) =
         match s.[i] with
         | '"' -> JsonValue.String(parseString())
         | '-' -> parseNum()
-        | c when System.Char.IsDigit(c) -> parseNum()
+        | c when Char.IsDigit(c) -> parseNum()
         | '{' -> parseObject()
         | '[' -> parseArray()
         | 't' -> parseLiteral("true", JsonValue.Boolean true)
@@ -97,7 +132,7 @@ type private JsonParser(jsonText:string) =
     and parseString() =
         ensure(i < s.Length && s.[i] = '"')
         i <- i + 1
-        let buf = new System.Text.StringBuilder()
+        let buf = new StringBuilder()
         while i < s.Length && s.[i] <> '"' do
             if s.[i] = '\\' then
                 ensure(i+1 < s.Length)
@@ -122,7 +157,7 @@ type private JsonParser(jsonText:string) =
                         uint16 (hexdigit s.[0] * 4096 + hexdigit s.[1] * 256 + hexdigit s.[2] * 16 + hexdigit s.[3])
                     let makeUnicodeChar (c:int) =  [| byte(c % 256); byte(c / 256) |]
                     let bytes = makeUnicodeChar(int(unicodeGraphShort(s.Substring(i+2, 4))))
-                    let chars = System.Text.UnicodeEncoding.Unicode.GetChars(bytes)
+                    let chars = UnicodeEncoding.Unicode.GetChars(bytes)
                     buf.Append(chars) |> ignore
                     i <- i + 4  // the \ and u will also be skipped past further below
                 | _ -> throw()
@@ -139,10 +174,10 @@ type private JsonParser(jsonText:string) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match System.Decimal.TryParse(s.Substring(start,len), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture) with  
+        match Decimal.TryParse(s.Substring(start,len), NumberStyles.Float, CultureInfo.InvariantCulture) with  
         | true, x -> JsonValue.Number x
         | _ -> 
-            match System.Double.TryParse(s.Substring(start,len), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture) with  
+            match Double.TryParse(s.Substring(start,len), NumberStyles.Float, CultureInfo.InvariantCulture) with  
             | true, x -> JsonValue.BigNumber x
             | _ -> throw()
 
@@ -198,8 +233,6 @@ type private JsonParser(jsonText:string) =
     // Start by parsing the top-level value
     member x.Parse() = parseValue()
 
-open System.IO
-
 type JsonValue with
   /// Parse the specified JSON string
   static member Parse(input:string) = JsonParser(input).Parse()
@@ -238,6 +271,7 @@ module JsonReader =
     /// Get a number as a float (assuming that the value is convertible to a float)
     member x.AsFloat = 
       match x with
+      | JsonValue.String s -> Double.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
       | JsonValue.Number n -> float n
       | JsonValue.BigNumber n -> n
       | _ -> failwith "JSON mismatch: Not a number"
@@ -245,6 +279,7 @@ module JsonReader =
     /// Get a number as a decimal (assuming that the value fits in decimal)
     member x.AsDecimal = 
       match x with
+      | JsonValue.String s -> Decimal.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
       | JsonValue.Number n -> n
       | JsonValue.BigNumber n -> decimal n
       | _ -> failwith "JSON mismatch: Not a number"
@@ -252,6 +287,7 @@ module JsonReader =
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger = 
       match x with
+      | JsonValue.String s -> Int32.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
       | JsonValue.Number n -> int n
       | JsonValue.BigNumber n -> int n
       | _ -> failwith "JSON mismatch: Not a number"
@@ -259,6 +295,7 @@ module JsonReader =
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger64 = 
       match x with
+      | JsonValue.String s -> Int64.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
       | JsonValue.Number n -> int64 n 
       | JsonValue.BigNumber n -> int64 n
       | _ -> failwith "JSON mismatch: Not a number"
@@ -266,6 +303,7 @@ module JsonReader =
     /// Get a boolean value of an elements (assuming that the value is a boolean)
     member x.AsBoolean = 
       match x with
+      | JsonValue.String s -> bool.Parse(s)
       | JsonValue.Boolean t -> t
       | _ -> failwith "JSON mismatch: Not a boolean"
 
@@ -284,3 +322,16 @@ module JsonReader =
       match x with
       | JsonValue.Object map -> seq { for (KeyValue(k, v)) in map -> k, v }
       | _ -> failwith "JSON mismatch: Not an object"
+    /// Get all elements of a JSON object (assuming that the value is an array)
+    member x.AsSeq = 
+      match x with
+      | JsonValue.Array things -> things :> seq<_>
+      | _ -> failwith "JSON mismatch: Not an array"
+
+    /// Get a map representing the properties of an object
+    /// (assuming that the value is an object)
+    member x.AsMap = 
+      match x with
+      | JsonValue.Object map -> map
+      | _ -> failwith "JSON mismatch: Not an array"
+

@@ -62,6 +62,21 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             serviceTypesType.AddMember t
             t
 
+        let indicatorsDescriptionsType =
+            let t = ProvidedTypeDefinition("IndicatorsDescriptions", baseType=Some (replacer.ToRuntime typeof<IndicatorsDescriptions>), HideObjectMethods=true)
+            t.AddMembersDelayed (fun () -> 
+                [ for indicator in connection.Indicators do
+                      let indicatorIdVal = indicator.Id
+                      let prop = 
+                          let t = replacer.ToRuntime typeof<IndicatorDescription>
+                          ProvidedProperty
+                            ( indicator.Name, t, IsStatic=false,
+                              GetterCode = conv (fun arg -> <@@ (%%arg : IndicatorsDescriptions)._GetIndicator(indicatorIdVal) @@>))
+                      if not (String.IsNullOrEmpty indicator.Description) then prop.AddXmlDoc(indicator.Description)
+                      yield prop ] )
+            serviceTypesType.AddMember t
+            t
+
         let countryType =
             let t = ProvidedTypeDefinition("Country", baseType=Some (replacer.ToRuntime typeof<Country>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
@@ -82,8 +97,8 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     let prop = 
                         ProvidedProperty
                           ( name, countryType, IsStatic=false,
-                            GetterCode = conv (fun arg -> <@@ (%%arg : CountryCollection<Country>)._GetCountry(countryIdVal, name) @@>))
-                    prop.AddXmlDoc (sprintf "The data for '%s'" country.Name)
+                            GetterCode = conv (fun arg -> <@@ (%%arg : CountryCollection<Country>)._GetCountry(countryIdVal) @@>))
+                    prop.AddXmlDoc (sprintf "The data for country '%s'" country.Name)
                     yield prop ])
             serviceTypesType.AddMember t
             t
@@ -106,7 +121,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             let regionCollectionType = ProvidedTypeBuilder.MakeGenericType(replacer.ToRuntime typedefof<RegionCollection<_>>, [ regionType ])
             let t = ProvidedTypeDefinition("Regions", baseType=Some regionCollectionType, HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
-                [ for (code, name) in connection.Regions do
+                [ for code, name in connection.Regions do
                     let prop = 
                         ProvidedProperty
                           ( name, regionType, IsStatic=false,
@@ -116,15 +131,39 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             serviceTypesType.AddMember t
             t
   
+        let topicType =
+            let t = ProvidedTypeDefinition("Topic", baseType=Some (replacer.ToRuntime typeof<Topic>), HideObjectMethods=true)
+            t.AddMembersDelayed (fun () -> 
+                [ let prop = ProvidedProperty("Indicators", replacer.ToRuntime indicatorsDescriptionsType, IsStatic=false,
+                              GetterCode = conv (fun arg -> <@@ (%%arg : Topic)._GetIndicators() @@>))
+                  prop.AddXmlDoc("<summary>The indicators for the topic</summary>")
+                  yield prop ] )
+            serviceTypesType.AddMember t
+            t
+
+        let topicsType =
+            let topicCollectionType = ProvidedTypeBuilder.MakeGenericType(replacer.ToRuntime typedefof<TopicCollection<_>>, [ topicType ])
+            let t = ProvidedTypeDefinition("Topics", baseType=Some topicCollectionType, HideObjectMethods=true)
+            t.AddMembersDelayed (fun () -> 
+                [ for topic in connection.Topics do
+                    let topicIdVal = topic.Id
+                    let prop = 
+                        ProvidedProperty
+                          ( topic.Name, topicType, IsStatic=false,
+                            GetterCode = conv (fun arg -> <@@ (%%arg : TopicCollection<Topic>)._GetTopic(topicIdVal) @@>))
+                    if not (String.IsNullOrEmpty topic.Description) then prop.AddXmlDoc(topic.Description)
+                    yield prop ])
+            serviceTypesType.AddMember t
+            t
+
         let worldBankDataServiceType =
             let t = ProvidedTypeDefinition("WorldBankDataService", baseType=Some (replacer.ToRuntime typeof<WorldBankData>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
                 [ yield ProvidedProperty("Countries", countriesType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetCountries() @@>)) 
-                  yield ProvidedProperty("Regions", regionsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetRegions() @@>)) ])
+                  yield ProvidedProperty("Regions", regionsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetRegions() @@>))
+                  yield ProvidedProperty("Topics", topicsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetTopics() @@>)) ])
             serviceTypesType.AddMember t
             t
-
-        // TODO: show topics
 
         resTy.AddMembersDelayed (fun () -> 
             [ let urlVal = defaultServiceUrl
@@ -136,30 +175,28 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         resTy
 
-    do if not isPortable then
+    // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
+    let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
 
-        // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
-        let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
+    let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
 
-        let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
-
-        let paramWorldBankType = 
-            let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some(typeof<obj>), HideObjectMethods = true)
+    let paramWorldBankType = 
+        let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some(typeof<obj>), HideObjectMethods = true)
         
-            let defaultSourcesStr = String.Join(";", defaultSources)
-            let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
-                            <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\"</param>
-                            <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
-            t.AddXmlDoc(helpText)
+        let defaultSourcesStr = String.Join(";", defaultSources)
+        let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
+                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\"</param>
+                        <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
+        t.AddXmlDoc(helpText)
 
-            let parameters =
-                [ ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
-                  ProvidedStaticParameter("Asynchronous", typeof<bool>, false) ]
+        let parameters =
+            [ ProvidedStaticParameter("Sources", typeof<string>, defaultSourcesStr)
+              ProvidedStaticParameter("Asynchronous", typeof<bool>, false) ]
 
-            t.DefineStaticParameters(parameters, fun typeName providerArgs -> 
-                let sources = (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
-                let isAsync = providerArgs.[1] :?> bool
-                createTypesForSources(sources, typeName, isAsync))
-            t
+        t.DefineStaticParameters(parameters, fun typeName providerArgs -> 
+            let sources = (providerArgs.[0] :?> string).Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
+            let isAsync = providerArgs.[1] :?> bool
+            createTypesForSources(sources, typeName, isAsync))
+        t
         
-        this.AddNamespace(ns, [ worldBankType; paramWorldBankType ])
+    do this.AddNamespace(ns, [ worldBankType; paramWorldBankType ])
