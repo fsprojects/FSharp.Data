@@ -29,63 +29,71 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     // A type that is used to hide all generated domain types
     let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
-    resTy.AddMember(domainTy)
+    resTy.AddMember domainTy
 
     let sample = args.[0] :?> string
     let globalInference = args.[1] :?> bool
     let sampleList = args.[2] :?> bool
     let culture = args.[3] :?> string
     let resolutionFolder = args.[4] :?> string
+    let isHostedExecution = cfg.IsHostedExecution
+    let defaultResolutionFolder = cfg.ResolutionFolder
 
     // Infer the schema from a specified file or URI sample
-    let sample = 
-      try 
+    let sampleXml, sampleIsUri = 
+      try
         let firstChar = sample.Trim().[0]
         if firstChar = '<' then
-            XDocument.Parse(sample) 
+            XDocument.Parse(sample), false
         else
-            use reader = ProviderHelpers.readTextAtDesignTime cfg this.Invalidate resolutionFolder sample
-            XDocument.Parse(reader.ReadToEnd())
+            try
+                use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
+                XDocument.Parse(reader.ReadToEnd()), true
+            with _ ->
+                XDocument.Parse(sample), false
       with _ ->
-        try XDocument.Parse(sample) 
-        with _ -> failwith "Specified argument is neither a file, nor well-formed XML."
+        failwith "Specified argument is neither a file, nor well-formed XML."
 
-    let infered = 
+    let inferedType = 
       if not sampleList then
-        XmlInference.inferType globalInference sample.Root
+        XmlInference.inferType globalInference sampleXml.Root
       else
-        [ for itm in sample.Root.Descendants() -> XmlInference.inferType globalInference itm ]
+        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType globalInference itm ]
         |> Seq.fold subtypeInfered Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
-    let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx infered
+    let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 
     // Generate static Parse method
-    let args =  [ ProvidedParameter("source", typeof<string>) ]
-    let m = ProvidedMethod("Parse", args, methResTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> methResConv <@@ XmlElement.Create(XDocument.Parse(%%source).Root) @@>
-    resTy.AddMember(m)
+    let args =
+        if not sampleIsUri then
+            [ ProvidedParameter("text", typeof<string>, optionalValue = sample) ]
+        else
+            [ ProvidedParameter("text", typeof<string>) ]
+    let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ XmlElement(XDocument.Parse(%%text).Root) @@>
+    resTy.AddMember m
 
     // Generate static Load stream method
-    let args =  [ ProvidedParameter("stream", typeof<Stream>) ]
-    let m = ProvidedMethod("Load", args, methResTy)
-    m.IsStaticMethod <- true
+    let args = [ ProvidedParameter("stream", typeof<Stream>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ use reader = new StreamReader(%%stream:Stream)
-                                                              XmlElement.Create(XDocument.Parse(reader.ReadToEnd()).Root) @@>
-    resTy.AddMember(m)
+                                                              XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
+    resTy.AddMember m
 
-    // Generate static Load location method
-    let args = [ ProvidedParameter("location", typeof<string>) ]
-    let m = ProvidedMethod("Load", args, methResTy)
-    m.IsStaticMethod <- true
-    let isHostedExecution = cfg.IsHostedExecution
-    let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
-                                                                XmlElement.Create(XDocument.Parse(reader.ReadToEnd()).Root) @@>
-    resTy.AddMember(m)
+    // Generate static Load uri method
+    let args =
+        if sampleIsUri then
+            // TODO: if the uri is a file and we're compiling for a portable library, don't make the uri optional, as it won't work at runtime
+            [ ProvidedParameter("uri", typeof<string>, optionalValue = sample) ]
+        else
+            [ ProvidedParameter("uri", typeof<string>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
+                                                           XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
+    resTy.AddMember m
 
     // Return the generated type
     resTy
@@ -100,7 +108,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
   let helpText = 
     """<summary>Typed representation of a XML file</summary>
-       <param name='Sample'>Location of a XML sample file or a string containing sample XML document</param>
+       <param name='Sample'>Location of a XML sample file or a string containing a sample XML document</param>
        <param name='Global'>If true, the inference unifies all XML elements with the same name</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='SampleList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>

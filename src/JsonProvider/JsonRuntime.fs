@@ -5,11 +5,9 @@ open FSharp.Data.Json.JsonReader
 open FSharp.Data.RuntimeImplementation.TypeInference
 
 /// Underlying representation of the generated JSON types
-type JsonDocument private (json:JsonValue) =
+type JsonDocument (json:JsonValue) =
   /// Returns the raw JSON value that is represented by the generated type
   member x.JsonValue = json
-  static member Create(json:JsonValue) =
-    JsonDocument(json)
 
 type JsonOperations = 
   // Trivial operations that return primitive values

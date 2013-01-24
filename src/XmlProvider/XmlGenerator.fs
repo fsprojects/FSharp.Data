@@ -67,7 +67,7 @@ module internal XmlTypeBuilder =
 
     // If the node is more complicated, then we generate a type to represent it properly
     | InferedType.Record(Some name, props) -> 
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>))
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
 
         // If we unify types globally, then save type for this record

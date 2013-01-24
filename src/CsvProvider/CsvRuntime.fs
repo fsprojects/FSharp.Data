@@ -57,8 +57,9 @@ type CsvRow internal (data:string[]) =
   member x.Columns = data
 
 // Simple type wrapping CSV data
-type CsvFile private (reader:TextReader, sep:string) =
+type CsvFile (reader:TextReader, ?sep:string) =
 
+  let sep = defaultArg sep ""
   let sep = if String.IsNullOrEmpty(sep) then "," else sep
 
   /// Read the input and cache it (we can read input only once)
@@ -68,9 +69,6 @@ type CsvFile private (reader:TextReader, sep:string) =
 
   member x.Data = data
   member x.Headers = headers
-
-  //TODO: this method is not hidden on the generated type, it should
-  static member Parse(reader, ?sep) = new CsvFile(reader, defaultArg sep "")
 
   interface IDisposable with
     member __.Dispose() = reader.Dispose()

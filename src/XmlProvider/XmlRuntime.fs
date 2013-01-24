@@ -5,11 +5,9 @@ open System.Xml.Linq
 open System.Globalization
 
 /// Underlying representation of the generated XML types
-type XmlElement private (node:XElement) =
+type XmlElement (node:XElement) =
   /// Returns the raw XML element that is represented by the generated type
   member x.XElement = node
-  static member Create(node:XElement) =
-    XmlElement(node)
 
 type XmlOperations = 
   // Operations for getting node values and values of attributes
@@ -24,7 +22,7 @@ type XmlOperations =
   // just the value (if we think it is always there)
   static member GetChildrenArray(value:XmlElement, name) =
     [| for c in value.XElement.Elements(XName.Get(name)) ->
-         XmlElement.Create(c) |]
+         XmlElement(c) |]
   static member GetChildOption(value:XmlElement, name) =
     match XmlOperations.GetChildrenArray(value, name) with
     | [| it |] -> Some it

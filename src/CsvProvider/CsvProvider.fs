@@ -45,7 +45,30 @@ module CsvInference =
               Record(None, fields) })
 
 // --------------------------------------------------------------------------------------
-//
+
+module CsvTypeBuilder =
+
+    let generateCsvRowType culture (replacer:AssemblyReplacer) (parentType:ProvidedTypeDefinition) = function
+        | Record(_, fields) ->
+            let objectTy = ProvidedTypeDefinition("Row", Some(replacer.ToRuntime typeof<CsvRow>), HideObjectMethods = true)
+            parentType.AddMember objectTy
+
+            for index, field in fields |> Seq.mapi (fun i v -> i, v) do
+              let baseTyp, propTyp =
+                match field.Type with
+                | Primitive(typ, Some unit) -> 
+                    typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
+                | Primitive(typ, None) -> typ, typ
+                | _ -> typeof<string>, typeof<string>
+
+              let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
+              let _, conv = Conversions.convertValue culture field.Name false baseTyp replacer
+              p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Some((%%row:CsvRow).Columns.[index]) @@>
+              objectTy.AddMember p
+
+            objectTy
+        | _ -> failwith "generateCsvRowType: Type inference returned wrong type"
+
 // --------------------------------------------------------------------------------------
 
 [<TypeProvider>]
@@ -58,84 +81,67 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
 
   let buildTypes (typeName:string) (args:obj[]) =
-    // Generate the required type with empty constructor
-    let resTy = ProvidedTypeDefinition(asm, ns, typeName, Some(replacer.ToRuntime typeof<CsvFile>))
 
-    // A type that is used to hide all generated domain types
-    let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
-    resTy.AddMember(domainTy)
+    // Generate the required type
+    let resTy = ProvidedTypeDefinition(asm, ns, typeName, Some(replacer.ToRuntime typeof<CsvFile>), HideObjectMethods = true)
 
     let sample = args.[0] :?> string
     let separator = args.[1] :?> string
     let culture = args.[2] :?> string
     let inferRows = args.[3] :?> int
     let resolutionFolder = args.[4] :?> string
+    let isHostedExecution = cfg.IsHostedExecution
+    let defaultResolutionFolder = cfg.ResolutionFolder
 
     // Infer the schema from a specified file or URI sample
-    use sample = 
+    let sampleCsv, sampleIsUri = 
       try
-        let reader = ProviderHelpers.readTextAtDesignTime cfg this.Invalidate resolutionFolder sample
-        CsvFile.Parse(reader, separator)
+        let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
+        new CsvFile(reader, separator), true
       with _ ->
-        CsvFile.Parse(new StringReader(sample), separator)
-      
-    let infered = CsvInference.inferType sample inferRows
+        new CsvFile(new StringReader(sample), separator), false
+
+    use sampleCsv = sampleCsv
+
+    let inferedType = CsvInference.inferType sampleCsv inferRows
+    let rowType = CsvTypeBuilder.generateCsvRowType culture replacer resTy inferedType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 
-    let generateCsvType culture (domainType:ProvidedTypeDefinition) = function
-        | Record(_, fields) ->
-            let objectTy = ProvidedTypeDefinition("Row", Some (replacer.ToRuntime typeof<CsvRow>))
-            domainType.AddMember(objectTy)
-
-            for index, field in fields |> Seq.mapi (fun i v -> i, v) do
-              let baseTyp, propTyp =
-                match field.Type with
-                | Primitive(typ, Some unit) -> 
-                    typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
-                | Primitive(typ, None) -> typ, typ
-                | _ -> typeof<string>, typeof<string>
-
-              let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
-              let _, conv = Conversions.convertValue culture field.Name false baseTyp replacer
-              p.GetterCode <- fun (Singleton row) -> conv <@@ Some((%%row:CsvRow).Columns.[index]) @@>
-              objectTy.AddMember(p)
-
-            objectTy
-        | _ -> failwith "generateCsvType: Type inference returned wrong type"
-
-    let ctx = domainTy
-    let methResTy = generateCsvType culture ctx infered
-    let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
-
     // 'Data' property has the generated type
-    let p = ProvidedProperty("Data", seqType methResTy)
+    let p = ProvidedProperty("Data", typedefof<seq<_>>.MakeGenericType[| rowType :> Type |])
     p.GetterCode <- fun (Singleton self) -> replacer.ToRuntime <@@ (%%self : CsvFile).Data @@>
-    resTy.AddMember(p)
+    resTy.AddMember p
     
+    // Generate default constructor
+    let c = ProvidedConstructor []
+    c.InvokeCode <- 
+        if sampleIsUri then
+            //TODO: if portable library and not a web location, don't generate this constructor, as it will throw at runtime
+            fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+                                            new CsvFile(reader, separator) @@>
+        else
+            fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator) @@>            
+    resTy.AddMember c
+
     // Generate static Parse method
-    let args = [ ProvidedParameter("source", typeof<string>) ]
-    let m = ProvidedMethod("Parse", args, resTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> replacer.ToRuntime <@@ CsvFile.Parse(new StringReader(%%source:string), separator) @@>
-    resTy.AddMember(m)
+    let args = [ ProvidedParameter("text", typeof<string>) ]
+    let m = ProvidedMethod("Parse", args, resTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton text) -> replacer.ToRuntime <@@ new CsvFile(new StringReader(%%text:string), separator) @@>
+    resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
-    let m = ProvidedMethod("Load", args, resTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ CsvFile.Parse(new StreamReader(%%stream:Stream), separator) @@>
-    resTy.AddMember(m)
+    let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ new CsvFile(new StreamReader(%%stream:Stream), separator) @@>
+    resTy.AddMember m
 
-    // Generate static Load location method
-    let args = [ ProvidedParameter("location", typeof<string>) ]
-    let m = ProvidedMethod("Load", args, resTy)
-    m.IsStaticMethod <- true
-    let isHostedExecution = cfg.IsHostedExecution
-    let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
-                                                                       CsvFile.Parse(reader, separator) @@>
-    resTy.AddMember(m)
+    // Generate static Load uri method
+    let args = [ ProvidedParameter("uri", typeof<string>) ]
+    let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton uri) -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
+                                                                  new CsvFile(reader, separator) @@>
+    resTy.AddMember m
 
     // Return the generated type
     resTy
@@ -150,7 +156,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
-       <param name='Sample'>CSV sample file location</param>
+       <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document</param>
        <param name='Separator'>Column delimiter</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>

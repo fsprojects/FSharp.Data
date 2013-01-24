@@ -19,14 +19,14 @@ module CsvSimple =
 
   [<Test>]
   let ``Bool column correctly infered and accessed`` () = 
-    let csv = SimpleCsv.Parse(simpleCsv)
+    let csv = new SimpleCsv()
     let first = csv.Data |> Seq.head
     let actual:bool = first.Column1
     Assert.AreEqual(true, actual)
 
   [<Test>]
   let ``Decimal column correctly infered and accessed`` () = 
-    let csv = SimpleCsv.Parse(simpleCsv)
+    let csv = new SimpleCsv()
     let first = csv.Data |> Seq.head
     let actual:decimal = first.Column3
     Assert.AreEqual(3.0M, actual)

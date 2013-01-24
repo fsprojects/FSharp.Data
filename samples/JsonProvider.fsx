@@ -17,7 +17,6 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../bin/FSharp.Data.dll"
-open System.IO
 open FSharp.Data
 
 (**
@@ -82,14 +81,13 @@ Now, let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
-To simplify the sample, we use the `[<Literal>]` attribtue and use the same string
-as a schema and as runtime value:
+If we leave out the parameter to the `Parse` method, the same text used for the schema
+will be used as the runtime value:
 *)
 
-let [<Literal>] people = """ [{ "name":"John", "age":94 }, { "name":"Tomas" }] """
-type People = JsonProvider<people>
+type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
 
-for item in People.Parse(people) do 
+for item in People.Parse() do 
   printf "%s " item.Name 
   item.Age |> Option.iter (printf "(%d)")
   printfn ""
@@ -106,10 +104,9 @@ a record can have multiple different types? In that case, the type provider beha
 as follows: 
 *)
 
-let [<Literal>] values = """ [{"value":94 }, {"value":"Tomas" }] """
-type Values = JsonProvider<values>
+type Values = JsonProvider<""" [{"value":94 }, {"value":"Tomas" }] """>
 
-for item in Values.Parse(values) do 
+for item in Values.Parse() do 
   match item.Value.Number, item.Value.String with
   | Some num, _ -> printfn "Numeric: %d" num
   | _, Some str -> printfn "Text: %s" str

@@ -136,9 +136,9 @@ module ProviderHelpers =
 
   /// Resolve a location of a file (or a web location) and open it for shared
   /// read, and trigger the specified function whenever the file changes
-  let readTextAtDesignTime (cfg:TypeProviderConfig) invalidate resolutionFolder fileName = 
+  let readTextAtDesignTime defaultResolutionFolder invalidate resolutionFolder uri = 
     let stream = 
-      asyncOpenStreamInProvider true (false, cfg.ResolutionFolder) (Some invalidate) resolutionFolder fileName 
+      asyncOpenStreamInProvider true (false, defaultResolutionFolder) (Some invalidate) resolutionFolder uri
       |> Async.RunSynchronously
     new StreamReader(stream)
 
@@ -335,6 +335,8 @@ module private AssemblyReplacer =
         let rv = replaceVar asmMappings varTable reversePass
         let re = replaceExpr asmMappings varTable reversePass
         
+        // this is not exhaustive, it's missing fields, setters, etc...
+        // add more patterns as needed
         match quotation with
         | Call (expr, m, exprs) -> 
             match expr with
@@ -346,6 +348,8 @@ module private AssemblyReplacer =
             | None -> Expr.PropertyGet (rp p, List.map re exprs)
         | NewObject (c, exprs) ->
             Expr.NewObject (rc c, (List.map re exprs))
+        | Coerce (expr, t) ->
+            Expr.Coerce (re expr, rt t)
         | NewUnionCase (uci, exprs) ->
             ru uci (List.map re exprs)
         | ShapeVar v -> 

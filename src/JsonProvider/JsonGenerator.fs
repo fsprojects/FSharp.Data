@@ -34,7 +34,7 @@ type internal JsonGenerationContext =
     Unpacker : Expr -> Expr
     UnpackerStayInDesignTime : Expr -> Expr }
   static member Create(domainTy, replacer) =
-    let packer e = <@@ JsonDocument.Create(%%e) @@>
+    let packer e = <@@ JsonDocument(%%e) @@>
     let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
     { DomainType = domainTy
       Replacer = replacer 
@@ -52,7 +52,7 @@ module JsonTypeBuilder =
   /// and also by function that generates the actual code.
   let rec internal generateMultipleChoiceType ctx types codeGenerator =
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<JsonDocument>))
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<JsonDocument>), HideObjectMethods = true)
     ctx.DomainType.AddMember(objectTy)
         
     // Generate GetXyz(s) method for every different case
@@ -122,7 +122,7 @@ module JsonTypeBuilder =
 
     | InferedType.Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Entity", Some(ctx.Representation))
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Entity", Some(ctx.Representation), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
 
         // Add all record fields as properties

@@ -30,12 +30,12 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  
-        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, baseType=Some typeof<obj>, HideObjectMethods=true)
+        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, baseType=Some typeof<obj>, HideObjectMethods = true)
 
         let conv (expr:Expr->Expr) (args:Expr list) = let arg0 = replacer.ToDesignTime args.[0] in replacer.ToRuntime (expr arg0)
 
         let serviceTypesType = 
-            let t = ProvidedTypeDefinition("ServiceTypes", baseType=Some typeof<obj>, HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("ServiceTypes", baseType=Some typeof<obj>)
             t.AddXmlDoc("<summary>Contains the types that describe the data service</summary>")
             resTy.AddMember t
             t
@@ -50,12 +50,12 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                           let t = replacer.ToRuntime typeof<Async<Indicator>>
                           ProvidedProperty
                             ( indicator.Name, t, IsStatic=false,
-                              GetterCode = conv (fun arg -> <@@ (%%arg : Indicators)._AsyncGetIndicator(indicatorIdVal) @@>))
+                              GetterCode = conv (fun arg -> <@@ ((%%arg : Indicators) :> IIndicators).AsyncGetIndicator(indicatorIdVal) @@>))
                         else
                           let t = replacer.ToRuntime typeof<Indicator>
                           ProvidedProperty
                             ( indicator.Name, t, IsStatic=false,
-                              GetterCode = conv (fun arg -> <@@ (%%arg : Indicators)._GetIndicator(indicatorIdVal) @@>))
+                              GetterCode = conv (fun arg -> <@@ ((%%arg : Indicators) :> IIndicators).GetIndicator(indicatorIdVal) @@>))
 
                       if not (String.IsNullOrEmpty indicator.Description) then prop.AddXmlDoc(indicator.Description)
                       yield prop ] )
@@ -71,7 +71,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                           let t = replacer.ToRuntime typeof<IndicatorDescription>
                           ProvidedProperty
                             ( indicator.Name, t, IsStatic=false,
-                              GetterCode = conv (fun arg -> <@@ (%%arg : IndicatorsDescriptions)._GetIndicator(indicatorIdVal) @@>))
+                              GetterCode = conv (fun arg -> <@@ ((%%arg : IndicatorsDescriptions) :> IIndicatorsDescriptions).GetIndicator(indicatorIdVal) @@>))
                       if not (String.IsNullOrEmpty indicator.Description) then prop.AddXmlDoc(indicator.Description)
                       yield prop ] )
             serviceTypesType.AddMember t
@@ -81,7 +81,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             let t = ProvidedTypeDefinition("Country", baseType=Some (replacer.ToRuntime typeof<Country>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", indicatorsType, IsStatic=false,
-                              GetterCode = conv (fun arg -> <@@ (%%arg : Country)._GetIndicators() @@>))
+                              GetterCode = conv (fun arg -> <@@ ((%%arg : Country) :> ICountry).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the country</summary>")
                   yield prop ] )
             serviceTypesType.AddMember t
@@ -97,7 +97,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     let prop = 
                         ProvidedProperty
                           ( name, countryType, IsStatic=false,
-                            GetterCode = conv (fun arg -> <@@ (%%arg : CountryCollection<Country>)._GetCountry(countryIdVal) @@>))
+                            GetterCode = conv (fun arg -> <@@ ((%%arg : CountryCollection<Country>) :> ICountryCollection).GetCountry(countryIdVal) @@>))
                     prop.AddXmlDoc (sprintf "The data for country '%s'" country.Name)
                     yield prop ])
             serviceTypesType.AddMember t
@@ -107,11 +107,11 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             let t = ProvidedTypeDefinition("Region", baseType=Some (replacer.ToRuntime typeof<Region>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", indicatorsType, IsStatic=false,
-                               GetterCode = conv (fun arg -> <@@ (%%arg : Region)._GetIndicators() @@>))
+                               GetterCode = conv (fun arg -> <@@ ((%%arg : Region) :> IRegion).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the region</summary>")
                   yield prop 
                   let prop = ProvidedProperty("Countries", countriesType, IsStatic=false,
-                               GetterCode = conv (fun arg -> <@@ (%%arg : Region)._GetCountries() @@>))
+                               GetterCode = conv (fun arg -> <@@ ((%%arg : Region) :> IRegion).GetCountries() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the region</summary>")
                   yield prop ] )
             serviceTypesType.AddMember t
@@ -125,7 +125,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     let prop = 
                         ProvidedProperty
                           ( name, regionType, IsStatic=false,
-                            GetterCode = conv (fun arg -> <@@ (%%arg : RegionCollection<Region>)._GetRegion(code) @@>)) 
+                            GetterCode = conv (fun arg -> <@@ ((%%arg : RegionCollection<Region>) :> IRegionCollection).GetRegion(code) @@>)) 
                     prop.AddXmlDoc (sprintf "The data for region '%s'" name)
                     yield prop ])
             serviceTypesType.AddMember t
@@ -135,7 +135,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             let t = ProvidedTypeDefinition("Topic", baseType=Some (replacer.ToRuntime typeof<Topic>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", replacer.ToRuntime indicatorsDescriptionsType, IsStatic=false,
-                              GetterCode = conv (fun arg -> <@@ (%%arg : Topic)._GetIndicators() @@>))
+                              GetterCode = conv (fun arg -> <@@ ((%%arg : Topic) :> ITopic).GetIndicators() @@>))
                   prop.AddXmlDoc("<summary>The indicators for the topic</summary>")
                   yield prop ] )
             serviceTypesType.AddMember t
@@ -150,7 +150,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     let prop = 
                         ProvidedProperty
                           ( topic.Name, topicType, IsStatic=false,
-                            GetterCode = conv (fun arg -> <@@ (%%arg : TopicCollection<Topic>)._GetTopic(topicIdVal) @@>))
+                            GetterCode = conv (fun arg -> <@@ ((%%arg : TopicCollection<Topic>) :> ITopicCollection).GetTopic(topicIdVal) @@>))
                     if not (String.IsNullOrEmpty topic.Description) then prop.AddXmlDoc(topic.Description)
                     yield prop ])
             serviceTypesType.AddMember t
@@ -159,9 +159,9 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         let worldBankDataServiceType =
             let t = ProvidedTypeDefinition("WorldBankDataService", baseType=Some (replacer.ToRuntime typeof<WorldBankData>), HideObjectMethods=true)
             t.AddMembersDelayed (fun () -> 
-                [ yield ProvidedProperty("Countries", countriesType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetCountries() @@>)) 
-                  yield ProvidedProperty("Regions", regionsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetRegions() @@>))
-                  yield ProvidedProperty("Topics", topicsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ (%%arg : WorldBankData)._GetTopics() @@>)) ])
+                [ yield ProvidedProperty("Countries", countriesType, IsStatic=false, GetterCode = conv (fun arg -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
+                  yield ProvidedProperty("Regions", regionsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
+                  yield ProvidedProperty("Topics", topicsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetTopics() @@>)) ])
             serviceTypesType.AddMember t
             t
 

@@ -3,12 +3,12 @@
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.StructureInference
 open FSharp.Data.Json
 open FSharp.Data.Json.JsonReader
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.DataLoading
 open FSharp.Data.RuntimeImplementation.TypeInference
-open ProviderImplementation.StructureInference
 
 // ----------------------------------------------------------------------------------------------
 
@@ -35,55 +35,63 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let sample = args.[0] :?> string
     let sampleList = args.[1] :?> bool
     let resolutionFolder = args.[2] :?> string
+    let isHostedExecution = cfg.IsHostedExecution
+    let defaultResolutionFolder = cfg.ResolutionFolder
 
-    // Infer the schema from a specified file or URI sample    
-    let sample = 
-      try         
+    // Infer the schema from a specified file or URI sampleTextOrUri
+    let sampleJson, sampleIsUri = 
+      try
         let firstChar = sample.Trim().[0]
         if firstChar = '{' || firstChar = '[' then
-            JsonValue.Parse(sample) 
+            JsonValue.Parse(sample), false
         else
-            use reader = ProviderHelpers.readTextAtDesignTime cfg this.Invalidate resolutionFolder sample
-            JsonValue.Parse(reader.ReadToEnd())
+            try
+                use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
+                JsonValue.Parse(reader.ReadToEnd()), true
+            with _ ->
+                JsonValue.Parse(sample), false
       with _ ->
-        try JsonValue.Parse(sample) 
-        with _ -> failwith "Specified argument is neither a file, nor well-formed JSON."
+        failwith "Specified argument is neither a file, nor well-formed JSON."
 
-    let infered = 
+    let inferedType = 
       if not sampleList then
-        JsonInference.inferType sample
+        JsonInference.inferType sampleJson
       else
-        [ for itm in sample -> JsonInference.inferType itm ]
+        [ for itm in sampleJson -> JsonInference.inferType itm ]
         |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
-    let methResTy, methResConv = JsonTypeBuilder.generateJsonType ctx infered
+    let methResTy, methResConv = JsonTypeBuilder.generateJsonType ctx inferedType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
-    
+
     // Generate static Parse method
-    let args = [ ProvidedParameter("source", typeof<string>) ]
-    let m = ProvidedMethod("Parse", args, methResTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> methResConv <@@ JsonDocument.Create(JsonValue.Parse (%%source)) @@>
-    resTy.AddMember(m)
+    let args =
+        if not sampleIsUri then
+            [ ProvidedParameter("text", typeof<string>, optionalValue = sample) ]
+        else
+            [ ProvidedParameter("text", typeof<string>) ]
+    let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ JsonDocument(JsonValue.Parse(%%text)) @@>
+    resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
-    let m = ProvidedMethod("Load", args, methResTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument.Create(JsonValue.Load (%%stream)) @@>
-    resTy.AddMember(m)
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load(%%stream)) @@>
+    resTy.AddMember m
 
-    // Generate static Load location method
-    let args = [ ProvidedParameter("location", typeof<string>) ]
-    let m = ProvidedMethod("Load", args, methResTy)
-    m.IsStaticMethod <- true
-    let isHostedExecution = cfg.IsHostedExecution
-    let defaultResolutionFolder = cfg.ResolutionFolder
-    m.InvokeCode <- fun (Singleton location) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%location
-                                                                JsonDocument.Create(JsonValue.Parse(reader.ReadToEnd())) @@>
-    resTy.AddMember(m)
+    // Generate static Load uri method
+    let args =
+        if sampleIsUri then
+            // TODO: if the uri is a file and we're compiling for a portable library, don't make the uri optional, as it won't work at runtime
+            [ ProvidedParameter("uri", typeof<string>, optionalValue = sample) ]
+        else
+            [ ProvidedParameter("uri", typeof<string>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
+                                                           JsonDocument(JsonValue.Parse(reader.ReadToEnd())) @@>
+    resTy.AddMember m
 
     // Return the generated type
     resTy
@@ -96,7 +104,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
   let helpText = 
     """<summary>Typed representation of a JSON document</summary>
-       <param name='Sample'>Location of a JSON sample file or a string containing sample JSON document</param>
+       <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
        <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 

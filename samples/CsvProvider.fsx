@@ -20,8 +20,6 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 *)
 
 #r "../bin/FSharp.Data.dll"
-open System.IO
-open System.Net
 open FSharp.Data
 
 (**
@@ -119,12 +117,12 @@ looks as follows:
 As you can see, the second and third columns are annotated with `metre` and `second`,
 respectively. To use units of measure in our code, we need to open the namespace with
 standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
-a static argument and load the same file (at runtime):
+a static argument. Also note that in this case we're using the same data at runtime,
+so there's no need to use the Load method, we can just call the default constructor.
 *)
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-type Test = CsvProvider<"docs/SmallTest.csv">
-let small = Test.Load("docs/SmallTest.csv")
+let small = new CsvProvider<"docs/SmallTest.csv">()
 
 (**
 As in the previous example the `small` value exposes the rows using the `Data` property.
@@ -148,12 +146,11 @@ meters per second against a value in kilometers per hour.
 ## Using custom separators
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
-countries a semicolon is used. The `CsvProvider` has an optional paramter where you can 
+countries a semicolon is used. The `CsvProvider` has an optional parameter where you can 
 specify what to use as separator:
 *)
 
-type NonDefaultSeparator = CsvProvider<"docs/AirQuality.csv", ";">
-let airQuality = NonDefaultSeparator.Load("docs/AirQuality.csv")
+let airQuality = new CsvProvider<"docs/AirQuality.csv", ";">()
 
 (**
 The air quality dataset used above is used in a lots of samples for the Statistical

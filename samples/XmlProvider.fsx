@@ -20,7 +20,6 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 
 #r "../bin/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
-open System.IO
 open FSharp.Data
 
 (**
@@ -65,7 +64,7 @@ a primitive value and has no children or attributes.
 
 ### Types for more complex structure
 
-Let's now look at a number of exmaples that have more interesting structrue. First of 
+Let's now look at a number of examples that have more interesting structrue. First of 
 all, what if a node contains some value, but also has some attributes?
 *)
 
@@ -84,14 +83,13 @@ adds property with a (special) name `Value` that returns the content of the elem
 
 Another interesting case is when there are multiple nodes that contain just a 
 primitive value. The following example shows what happens when the root node
-contains multiple `<value>` nodes (we use the `Literal` attribtue so that we
-do not need to repeat the input string):
+contains multiple `<value>` nodes (not tht if we leave out the parameter to the 
+`Parse` method, the same text used for the schema will be used as the runtime value)
 *)
 
-let [<Literal>] test = "<root><value>1</value><value>3</value></root>"
-type Test = XmlProvider<test>
+type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
-Test.Parse(test).GetValues()
+Test.Parse().GetValues()
 |> Seq.iter (printfn "%d")
 
 (**
@@ -169,7 +167,7 @@ parameter `Global` to `true`:
 *)
 
 type Html = XmlProvider<"docs/HtmlBody.xml", Global=true>
-let html = Html.Load("docs/HtmlBody.xml")
+let html = Html.Load()
 
 (**
 When the `Global` parameter is `true`, the type provider _unifies_ all elements of the
@@ -209,11 +207,11 @@ type Rss = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 (**
 This code builds a type `Rss` that represents RSS feed (with the features that are used
 on `http://tomasp.net`). The type `Rss` provides static methods `Parse` and `Load`
-to construct it - here, we need to use `Parse` again, because `Load` only works for 
-files:
+to construct it - here, we don't need to pass the uri again to th `Load` method, 
+as by default it will use to th same uri used for the schema:
 *)
 
-let blog = Rss.Load("http://tomasp.net/blog/rss.aspx")
+let blog = Rss.Load()
 
 (**
 Printing the title of the RSS feed together with a list of recent posts is now quite

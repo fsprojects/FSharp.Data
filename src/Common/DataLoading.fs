@@ -45,21 +45,21 @@ let private watchForChanges invalidate (fileName:string) =
 ///
 /// Returns the resolved file name, together with a flag specifying 
 /// whether it is web based (and we need WebClient to download it)
-let private resolveFileLocation 
+let private resolveUri
     //note: don't remove the type annotations, as some parameters aren't used in the portable version and will become generic, making the type generation fail
-    (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (location:string) =
+    (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (uri:string) =
   
   let isWeb =
-    location.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-    location.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+    uri.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+    uri.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
 
 #if PORTABLE
   if not isWeb then
       failwith "Only web locations are supported on portable profile"
   else
-      location, true
+      uri, true
 #else
-  match location with
+  match uri with
   | url when isWeb -> url, true
   | fullPath when Path.IsPathRooted fullPath -> fullPath, false
   | relative ->
@@ -75,9 +75,9 @@ let private resolveFileLocation
 /// Given a type provider configuration and a name passed by user, open 
 /// the file or URL (if it starts with http(s)) and return it as a stream
 let asyncOpenStreamInProvider 
-    designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder (location:string) = async {
+    designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder (uri:string) = async {
 
-  let resolvedFileOrUri, isWeb = resolveFileLocation designTime cfg resolutionFolder location
+  let resolvedFileOrUri, isWeb = resolveUri designTime cfg resolutionFolder uri
 
   if isWeb then
     let req = WebRequest.Create(Uri(resolvedFileOrUri))
@@ -96,8 +96,8 @@ let asyncOpenStreamInProvider
 
 /// Resolve a location of a file (or a web location) and open it for shared
 /// read at runtime (do not monitor file changes and use runtime resolution rules)
-let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder location = 
+let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder uri = 
   let stream = 
-    asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder location 
+    asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder uri
     |> Async.RunSynchronously
   new StreamReader(stream)

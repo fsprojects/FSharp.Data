@@ -46,7 +46,6 @@ library and plotting the data:
 
 *)
 #load "lib/FSharpChart.fsx"
-open System
 open Samples.FSharp.Charting
 
 data.Countries.``United Kingdom``
