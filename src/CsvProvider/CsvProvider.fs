@@ -8,68 +8,12 @@ open System
 open System.Collections.Generic
 open System.IO
 open System.Reflection
-open System.Text.RegularExpressions
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
-open ProviderImplementation.StructureInference
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.DataLoading
-open FSharp.Data.RuntimeImplementation.TypeInference
-
-// --------------------------------------------------------------------------------------
-// Inference
-// --------------------------------------------------------------------------------------
-
-module CsvInference = 
-  /// Infers the type of a CSV file using the specified number of rows
-  /// (This handles units in the same way as the original MiniCSV provider)
-  let inferType (csv:CsvFile) count culture =
-
-    // Infer the units and names from the headers
-    let headers = csv.Headers |> Seq.map (fun header ->
-      let m = Regex.Match(header, @"(?<field>.+) \((?<unit>.+)\)")
-      if m.Success then
-        let headerName = m.Groups.["field"].Value
-        let unitName = m.Groups.["unit"].Value
-        Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
-      else None, header)
-
-    // Infer the type of collection using structural inference
-    let types = seq {
-        for row in Seq.truncate count csv.Data ->
-            let fields = 
-                [ for (unit, header), value in Seq.zip headers row.Columns ->
-                    let typ = inferPrimitiveType culture value unit
-                    { Name = header; Optional = false; Type = typ } ]
-            Record(None, fields) }
-    Seq.reduce (subtypeInfered InferenceOptions.UseNaNforOptionalDecimal) types
-
-// --------------------------------------------------------------------------------------
-
-module CsvTypeBuilder =
-
-    let generateCsvRowType culture (replacer:AssemblyReplacer) (parentType:ProvidedTypeDefinition) = function
-        | Record(_, fields) ->
-            let objectTy = ProvidedTypeDefinition("Row", Some(replacer.ToRuntime typeof<CsvRow>), HideObjectMethods = true)
-            parentType.AddMember objectTy
-
-            for index, field in fields |> Seq.mapi (fun i v -> i, v) do
-              let baseTyp, propTyp =
-                match field.Type with
-                | Primitive(typ, Some unit) -> 
-                    typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
-                | Primitive(typ, None) -> typ, typ
-                | _ -> typeof<string>, typeof<string>
-
-              let propTyp = if field.Optional then typedefof<option<_>>.MakeGenericType [| propTyp |] else propTyp
-              let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
-              let _, conv = Conversions.convertValue culture field.Name field.Optional baseTyp replacer
-              p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
-              objectTy.AddMember p
-
-            objectTy
-        | _ -> failwith "generateCsvRowType: Type inference returned wrong type"
 
 // --------------------------------------------------------------------------------------
 
@@ -106,8 +50,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     use sampleCsv = sampleCsv
 
-    let inferedType = CsvInference.inferType sampleCsv inferRows cultureInfo
-    let rowType = CsvTypeBuilder.generateCsvRowType culture replacer resTy inferedType
+    let inferedFields = CsvInference.inferFields sampleCsv inferRows cultureInfo
+    let rowType = CsvTypeBuilder.generateCsvRowType culture replacer resTy inferedFields
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 

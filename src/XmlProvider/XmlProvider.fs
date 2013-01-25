@@ -55,14 +55,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       with _ ->
         failwith "Specified argument is neither a file, nor well-formed XML."
 
-    let inferenceOptions = InferenceOptions.None
-
     let inferedType = 
       if not sampleList then
-        XmlInference.inferType cultureInfo inferenceOptions globalInference sampleXml.Root
+        XmlInference.inferType cultureInfo globalInference sampleXml.Root
       else
-        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType cultureInfo inferenceOptions globalInference itm ]
-        |> Seq.fold (subtypeInfered inferenceOptions) Top
+        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType cultureInfo globalInference itm ]
+        |> Seq.fold subtypeInfered Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType

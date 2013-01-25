@@ -11,11 +11,6 @@ open System.Globalization
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference
 
-[<RequireQualifiedAccess>]
-type InferenceOptions =
-| None
-| UseNaNforOptionalDecimal
-
 /// Merge two sequences by pairing elements for which
 /// the specified predicate returns the same key
 ///
@@ -119,13 +114,13 @@ let (|SubtypePrimitives|_|) = function
 /// The contract that should hold about the function is that given two types with the
 /// same `InferedTypeTag`, the result also has the same `InferedTypeTag`. 
 ///
-let rec subtypeInfered opt ot1 ot2 =
+let rec subtypeInfered ot1 ot2 =
   match ot1, ot2 with
   // Subtype of matching types or one of equal types
   | SubtypePrimitives t -> Primitive t
-  | Record(n1, t1), Record(n2, t2) when n1 = n2 -> Record(n1, unionRecordTypes opt t1 t2)
-  | Heterogeneous t1, Heterogeneous t2 -> Heterogeneous(unionHeterogeneousTypes opt t1 t2)
-  | Collection t1, Collection t2 -> Collection(unionCollectionTypes opt t1 t2)
+  | Record(n1, t1), Record(n2, t2) when n1 = n2 -> Record(n1, unionRecordTypes t1 t2)
+  | Heterogeneous t1, Heterogeneous t2 -> Heterogeneous(unionHeterogeneousTypes t1 t2)
+  | Collection t1, Collection t2 -> Collection(unionCollectionTypes t1 t2)
   | Null, Null -> Null
   
   // Top type can be merged with else
@@ -140,21 +135,21 @@ let rec subtypeInfered opt ot1 ot2 =
       // Add the other type as another option. We should never add
       // heterogenous type as an option of other heterogeneous type.
       assert (typeTag other <> InferedTypeTag.Heterogeneous)
-      Heterogeneous(unionHeterogeneousTypes opt h (Map.ofSeq [typeTag other, other]))
+      Heterogeneous(unionHeterogeneousTypes h (Map.ofSeq [typeTag other, other]))
     
   // Otherwise the types are incompatible so we build a new heterogeneous type
   | t1, t2 -> 
       let h1, h2 = Map.ofSeq [typeTag t1, t1], Map.ofSeq [typeTag t2, t2]
-      Heterogeneous(unionHeterogeneousTypes opt h1 h2)
+      Heterogeneous(unionHeterogeneousTypes h1 h2)
 
 /// Given two heterogeneous types, get a single type that can represent all the
 /// types that the two heterogeneous types can. For every tag, 
-and unionHeterogeneousTypes opt cases1 cases2 =
+and unionHeterogeneousTypes cases1 cases2 =
   pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
   |> Seq.map (function
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t
-      | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> tag, subtypeInfered opt t1 t2 
+      | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> tag, subtypeInfered t1 t2 
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofSeq
 
@@ -162,7 +157,7 @@ and unionHeterogeneousTypes opt cases1 cases2 =
 /// the multiplicity for each different type tag to generate better types
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
-and unionCollectionTypes opt cases1 cases2 = 
+and unionCollectionTypes cases1 cases2 = 
   pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
   |> Seq.map (function
       | tag, Some (KeyValue(_, (m, t))), None 
@@ -172,14 +167,14 @@ and unionCollectionTypes opt cases1 cases2 =
           tag, ((if m = Single then OptionalSingle else m), t)
       | tag, Some (KeyValue(_, (m1, t1))), Some (KeyValue(_, (m2, t2))) -> 
           let m = if m1 = Multiple || m2 = Multiple then Multiple else Single
-          tag, (m, subtypeInfered opt t1 t2)
+          tag, (m, subtypeInfered t1 t2)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofSeq
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
-and unionRecordTypes opt t1 t2 =
+and unionRecordTypes t1 t2 =
   pairBy (fun p -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
       
@@ -198,14 +193,7 @@ and unionRecordTypes opt t1 t2 =
           let typ, optional =
               if p1.Type = Null && p2.Type <> Null then p2.Type, true
               elif p2.Type = Null && p1.Type <> Null then p1.Type, true
-              else subtypeInfered opt p1.Type p2.Type, p1.Optional || p2.Optional
-
-          // prefer floats instead of optional decimals
-          let optional, typ = 
-              match optional, typ with
-              | true, Primitive(typ, unit) when 
-                opt = InferenceOptions.UseNaNforOptionalDecimal && typ = typeof<decimal> -> false, Primitive(typeof<float>, unit)
-              | pair -> pair
+              else subtypeInfered p1.Type p2.Type, p1.Optional || p2.Optional
 
           // doesn't make sense to have options of nullable types
           let optional = optional && not (hasNullOrNaN typ)
@@ -218,12 +206,12 @@ and unionRecordTypes opt t1 t2 =
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
-let inferCollectionType opt types = 
+let inferCollectionType types = 
   types 
   |> Seq.groupBy typeTag
   |> Seq.map (fun (tag, types) ->
       let multiple = if Seq.length types > 1 then Multiple else Single
-      tag, (multiple, Seq.fold (subtypeInfered opt) Top types) )
+      tag, (multiple, Seq.fold subtypeInfered Top types) )
   |> Map.ofSeq |> Collection
 
 let private (|StringEquals|_|) (s1:string) s2 = 

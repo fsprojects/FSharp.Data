@@ -55,14 +55,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       with _ ->
         failwith "Specified argument is neither a file, nor well-formed JSON."
 
-    let inferenceOptions = InferenceOptions.None
-
     let inferedType = 
       if not sampleList then
-        JsonInference.inferType inferenceOptions sampleJson
+        JsonInference.inferType sampleJson
       else
-        [ for itm in sampleJson -> JsonInference.inferType inferenceOptions itm ]
-        |> Seq.fold (subtypeInfered inferenceOptions) Top
+        [ for itm in sampleJson -> JsonInference.inferType itm ]
+        |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
     let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType

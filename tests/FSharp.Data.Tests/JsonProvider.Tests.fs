@@ -31,3 +31,9 @@ module JsonNumericFields =
   let ``Reading a required field that is missing throws an exception`` () = 
     let prov = NumericFields.Parse(""" {"b":123} """)
     Assert.Throws<System.Collections.Generic.KeyNotFoundException>(fun () -> prov.A |> ignore) |> ignore
+
+  [<Test>]
+  let ``Optional int correctly infered`` () = 
+    let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.Parse()
+    let i:int option = prov.[0].A
+    Assert.AreEqual(i, Some 123)

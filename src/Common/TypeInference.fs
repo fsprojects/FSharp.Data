@@ -63,8 +63,7 @@ and [<CustomEquality; NoComparison>] InferedType =
 
   // We need to implement custom equality that returns 'true' when 
   // values reference the same object (to support recursive types)
-  override x.GetHashCode() = 
-    failwith "InferedType.GetHashCode: Not implemented"
+  override x.GetHashCode() = -1
 
   override x.Equals(y:obj) = 
     if y :? InferedType then 
