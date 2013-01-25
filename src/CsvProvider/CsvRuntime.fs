@@ -5,7 +5,9 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
+open System.Diagnostics
 open System.IO
+open System.Text
 
 module CsvReader = 
   /// Lazily reads the specified CSV file using the specified separator
@@ -53,8 +55,23 @@ module CsvReader =
     readLines() 
 
 /// Simple type that represents a single CSV row
-type CsvRow internal (data:string[]) =
+[<DebuggerDisplay("{Display}")>]
+[<StructuredFormatDisplay("{Display}")>]
+type CsvRow internal (data:string[], headers:string[]) =
+
   member x.Columns = data
+
+  member private x.Display =
+    let sb = new StringBuilder()
+    let append (s:string) = sb.Append s |> ignore
+    append "{" |> ignore
+    for (header, data) in Seq.zip headers data do
+        append " "
+        append header
+        append " = "
+        append data
+        append " ;"
+    sb.ToString(0, sb.Length - 1) + "}";
 
 // Simple type wrapping CSV data
 type CsvFile (reader:TextReader, ?sep:string) =
@@ -64,8 +81,8 @@ type CsvFile (reader:TextReader, ?sep:string) =
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile reader (sep.ToCharArray()) |> Seq.cache
-  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v))
   let headers = file |> Seq.head
+  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v, headers))  
 
   member x.Data = data
   member x.Headers = headers

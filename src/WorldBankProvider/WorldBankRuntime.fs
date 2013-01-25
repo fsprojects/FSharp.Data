@@ -202,8 +202,8 @@ module Implementation =
              x.GetDataAsync(countryOrRegionCode, indicatorCode) |> Async.RunSynchronously
         member internal __.GetCountriesInRegion region = getCountries ["region", region] |> Async.RunSynchronously
   
-[<DebuggerDisplay("Indicator {Name}")>]
-[<StructuredFormatDisplay("Indicator {Name}")>]
+[<DebuggerDisplay("{Name}")>]
+[<StructuredFormatDisplay("{Name}")>]
 type Indicator internal (connection:ServiceConnection, countryOrRegionCode:string, indicatorCode:string) = 
     let data = connection.GetData(countryOrRegionCode, indicatorCode) |> Seq.cache
     let dataDict = lazy (dict data)
@@ -229,8 +229,8 @@ type Indicator internal (connection:ServiceConnection, countryOrRegionCode:strin
         x |> Seq.tryPick (fun (x,y) -> if time = x then Some y else None)
           |> function None -> 0.0 | Some x -> x
 
-[<DebuggerDisplay("Indicator {Name}")>]
-[<StructuredFormatDisplay("Indicator {Name}")>]
+[<DebuggerDisplay("{Name}")>]
+[<StructuredFormatDisplay("{Name}")>]
 type IndicatorDescription internal (connection:ServiceConnection, topicCode:string, indicatorCode:string) = 
     /// Get the code for the topic of the indicator
     member x.Code = topicCode
@@ -267,8 +267,8 @@ type IndicatorsDescriptions internal (connection:ServiceConnection, topicCode) =
 type ICountry = 
     abstract GetIndicators : unit -> Indicators
 
-[<DebuggerDisplay("Country {Name}")>]
-[<StructuredFormatDisplay("Country {Name}")>]
+[<DebuggerDisplay("{Name}")>]
+[<StructuredFormatDisplay("{Name}")>]
 type Country internal (connection:ServiceConnection, countryCode:string) = 
     let indicators = new Indicators(connection, countryCode)
     /// Get the WorldBank code of the country
@@ -301,8 +301,8 @@ type IRegion =
     abstract GetCountries<'T when 'T :> Country> : unit -> CountryCollection<'T>
     abstract GetIndicators : unit -> Indicators
 
-[<DebuggerDisplay("Region {Name}")>]
-[<StructuredFormatDisplay("Region {Name}")>]
+[<DebuggerDisplay("{Name}")>]
+[<StructuredFormatDisplay("{Name}")>]
 type Region internal (connection:ServiceConnection, regionCode:string) = 
     let indicators = new Indicators(connection, regionCode)
     /// Get the WorldBank code for the region
@@ -325,8 +325,8 @@ type RegionCollection<'T when 'T :> Region> internal (connection: ServiceConnect
 type ITopic = 
     abstract GetIndicators : unit -> IndicatorsDescriptions
 
-[<DebuggerDisplay("Topic {Name}")>]
-[<StructuredFormatDisplay("Topic {Name}")>]
+[<DebuggerDisplay("{Name}")>]
+[<StructuredFormatDisplay("{Name}")>]
 type Topic internal (connection:ServiceConnection, topicCode:string) = 
     let indicatorsDescriptions = new IndicatorsDescriptions(connection, topicCode)
     /// Get the WorldBank code of the topic
