@@ -45,7 +45,7 @@ module Implementation =
         let asInt (json:JsonValue) = json.AsInteger
         let asString (json:JsonValue) = json.AsString
 
-        let retryCount = 5 // TODO: make this a parameter
+        let retryCount = 5
         let parallelIndicatorPageDownloads = 8
 
         // TODO: frequency=M/Q/Y (monthly, quarterly, yearly)
@@ -354,7 +354,6 @@ type IWorldBankData =
 type WorldBankData(serviceUrl:string, sources:string) = 
     let sources = sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
 #if PORTABLE
-    //TODO PORTABLE: caching in WorldBank
     let restCache = 
         { new ICache<_> with 
             member __.Set(_, _) = ()

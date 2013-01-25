@@ -23,7 +23,6 @@ type Http private() =
   ///
   static let enableUriSlashes (uri:Uri) =
 #if PORTABLE
-//TODO PORTABLE: enableUriSlashes
 #else
     let uri = Uri(uri.OriginalString)
     let paq = uri.PathAndQuery
@@ -87,7 +86,6 @@ type Http private() =
         req.ContentType <- value
       else
 #if PORTABLE
-//TODO PORTABLE
         failwith "Only 'accept' and 'content-type' headers are supported on portable profile"
 #else
         req.Headers.Add(header, value) 
@@ -98,7 +96,6 @@ type Http private() =
     | Some (text:string) ->
 #if PORTABLE
         failwith "Body not supported on portable profile"
-//TODO PORTABLE
 #else
         let postBytes = Encoding.UTF8.GetBytes(text)
         if headers |> Seq.forall (fun (header, _) ->
