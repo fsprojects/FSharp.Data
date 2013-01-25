@@ -34,7 +34,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
     let sample = args.[0] :?> string
     let sampleList = args.[1] :?> bool
-    let resolutionFolder = args.[2] :?> string
+    let culture = args.[2] :?> string
+    let cultureInfo = Operations.GetCulture culture
+    let resolutionFolder = args.[3] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -43,25 +45,27 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       try
         let firstChar = sample.Trim().[0]
         if firstChar = '{' || firstChar = '[' then
-            JsonValue.Parse(sample), false
+            JsonValue.Parse(sample, cultureInfo), false
         else
             try
                 use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
-                JsonValue.Parse(reader.ReadToEnd()), true
+                JsonValue.Parse(reader.ReadToEnd(), cultureInfo), true
             with _ ->
-                JsonValue.Parse(sample), false
+                JsonValue.Parse(sample, cultureInfo), false
       with _ ->
         failwith "Specified argument is neither a file, nor well-formed JSON."
 
+    let inferenceOptions = InferenceOptions.None
+
     let inferedType = 
       if not sampleList then
-        JsonInference.inferType sampleJson
+        JsonInference.inferType inferenceOptions sampleJson
       else
-        [ for itm in sampleJson -> JsonInference.inferType itm ]
-        |> Seq.fold subtypeInfered Top
+        [ for itm in sampleJson -> JsonInference.inferType inferenceOptions itm ]
+        |> Seq.fold (subtypeInfered inferenceOptions) Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
-    let methResTy, methResConv = JsonTypeBuilder.generateJsonType ctx inferedType
+    let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 
@@ -72,13 +76,13 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         else
             [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ JsonDocument(JsonValue.Parse(%%text)) @@>
+    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ JsonDocument(JsonValue.Parse(%%text, Operations.GetCulture(culture))) @@>
     resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load(%%stream)) @@>
+    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load(%%stream, Operations.GetCulture(culture))) @@>
     resTy.AddMember m
 
     // Generate static Load uri method
@@ -90,7 +94,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
             [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
-                                                           JsonDocument(JsonValue.Parse(reader.ReadToEnd())) @@>
+                                                           JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
     resTy.AddMember m
 
     // Return the generated type
@@ -100,12 +104,14 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
       ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) 
+      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
     """<summary>Typed representation of a JSON document</summary>
        <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
        <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>
+       <param name='Culture'>The culture used for parsing numbers and dates.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do jsonProvTy.AddXmlDoc helpText

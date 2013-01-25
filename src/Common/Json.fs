@@ -66,12 +66,11 @@ type JsonValue =
   | Boolean of bool
   | Null
   override this.ToString() = 
-    let invariant = CultureInfo.InvariantCulture
     let rec serialize (sb:StringBuilder) = function
       | JsonValue.Null -> sb.Append "null"
       | JsonValue.Boolean b -> sb.Append(b.ToString().ToLowerInvariant())
-      | JsonValue.Number number -> sb.Append(number.ToString(invariant))
-      | JsonValue.BigNumber number -> sb.Append(number.ToString(invariant))
+      | JsonValue.Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
+      | JsonValue.BigNumber number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | JsonValue.String t -> 
           sb.Append("\"" + HttpUtility.JavaScriptStringEncode(t) + "\"")
       | JsonValue.Object properties -> 
@@ -95,7 +94,10 @@ type JsonValue =
 // JSON parser
 // --------------------------------------------------------------------------------------
 
-type private JsonParser(jsonText:string) =
+type private JsonParser(jsonText:string, culture:CultureInfo option) =
+
+    let culture = defaultArg culture CultureInfo.InvariantCulture
+
     let mutable i = 0
     let s = jsonText
 
@@ -174,10 +176,10 @@ type private JsonParser(jsonText:string) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match Decimal.TryParse(s.Substring(start,len), NumberStyles.Float, CultureInfo.InvariantCulture) with  
+        match Decimal.TryParse(s.Substring(start,len), NumberStyles.Number, culture) with  
         | true, x -> JsonValue.Number x
         | _ -> 
-            match Double.TryParse(s.Substring(start,len), NumberStyles.Float, CultureInfo.InvariantCulture) with  
+            match Double.TryParse(s.Substring(start,len), NumberStyles.Float, culture) with  
             | true, x -> JsonValue.BigNumber x
             | _ -> throw()
 
@@ -235,10 +237,10 @@ type private JsonParser(jsonText:string) =
 
 type JsonValue with
   /// Parse the specified JSON string
-  static member Parse(input:string) = JsonParser(input).Parse()
-  static member Load(stream:Stream) = 
+  static member Parse(input:string, ?culture) = JsonParser(input, culture).Parse()
+  static member Load(stream:Stream, ?culture) = 
     use reader = new StreamReader(stream)
-    JsonValue.Parse(reader.ReadToEnd())
+    JsonParser(reader.ReadToEnd(), culture).Parse()
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple JSON processing
@@ -269,36 +271,48 @@ module JsonReader =
       | _ -> failwith "JSON mismatch: Not a string"
 
     /// Get a number as a float (assuming that the value is convertible to a float)
-    member x.AsFloat = 
+    member x.AsFloatWithCulture(culture) = 
       match x with
-      | JsonValue.String s -> Double.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
+      | JsonValue.String s -> Double.Parse(s, NumberStyles.Float, culture)
       | JsonValue.Number n -> float n
       | JsonValue.BigNumber n -> n
       | _ -> failwith "JSON mismatch: Not a number"
 
+    /// Get a number as a float (assuming that the value is convertible to a float)
+    member x.AsFloat = x.AsFloatWithCulture(CultureInfo.InvariantCulture)
+
     /// Get a number as a decimal (assuming that the value fits in decimal)
-    member x.AsDecimal = 
+    member x.AsDecimalWithCulture(culture) = 
       match x with
-      | JsonValue.String s -> Decimal.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
+      | JsonValue.String s -> Decimal.Parse(s, NumberStyles.Number, culture)
       | JsonValue.Number n -> n
       | JsonValue.BigNumber n -> decimal n
       | _ -> failwith "JSON mismatch: Not a number"
 
+    /// Get a number as a decimal (assuming that the value fits in decimal)
+    member x.AsDecimal = x.AsDecimalWithCulture(CultureInfo.InvariantCulture)
+
     /// Get a number as an integer (assuming that the value fits in integer)
-    member x.AsInteger = 
+    member x.AsIntegerWithCulture(culture) = 
       match x with
-      | JsonValue.String s -> Int32.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
+      | JsonValue.String s -> Int32.Parse(s, NumberStyles.Integer, culture)
       | JsonValue.Number n -> int n
       | JsonValue.BigNumber n -> int n
       | _ -> failwith "JSON mismatch: Not a number"
 
     /// Get a number as an integer (assuming that the value fits in integer)
-    member x.AsInteger64 = 
+    member x.AsInteger = x.AsIntegerWithCulture(CultureInfo.InvariantCulture)
+
+    /// Get a number as a 64-bits integer (assuming that the value fits in 64-bits integer)
+    member x.AsInteger64WithCulture(culture) = 
       match x with
-      | JsonValue.String s -> Int64.Parse(s, NumberStyles.Any, CultureInfo.InvariantCulture)
+      | JsonValue.String s -> Int64.Parse(s, NumberStyles.Integer, culture)
       | JsonValue.Number n -> int64 n 
       | JsonValue.BigNumber n -> int64 n
       | _ -> failwith "JSON mismatch: Not a number"
+
+    /// Get a number as a 64-bits integer (assuming that the value fits in 64-bits integer)
+    member x.AsInteger64 = x.AsInteger64WithCulture(CultureInfo.InvariantCulture)
 
     /// Get a boolean value of an elements (assuming that the value is a boolean)
     member x.AsBoolean = 
@@ -322,16 +336,3 @@ module JsonReader =
       match x with
       | JsonValue.Object map -> seq { for (KeyValue(k, v)) in map -> k, v }
       | _ -> failwith "JSON mismatch: Not an object"
-    /// Get all elements of a JSON object (assuming that the value is an array)
-    member x.AsSeq = 
-      match x with
-      | JsonValue.Array things -> things :> seq<_>
-      | _ -> failwith "JSON mismatch: Not an array"
-
-    /// Get a map representing the properties of an object
-    /// (assuming that the value is an object)
-    member x.AsMap = 
-      match x with
-      | JsonValue.Object map -> map
-      | _ -> failwith "JSON mismatch: Not an array"
-

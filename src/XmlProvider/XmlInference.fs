@@ -9,23 +9,22 @@ open System.Xml.Linq
 open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation.StructureInference
 
-  
 // The type of XML element is always a record with a field
 // for every attribute. If it has some content, then it also 
 // contains a special field named "" which is either a collection
 // (of other records etc.) or a primitive with the type of the content
 
 /// Generates record fields for all attributes
-let private getAttributes (element:XElement) =
+let private getAttributes culture (element:XElement) =
   [ for attr in element.Attributes() do
       yield { Name = attr.Name.LocalName; Optional = false; 
-              Type = inferPrimitiveType attr.Value None } ]
+              Type = inferPrimitiveType culture attr.Value None } ]
 
 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType (element:XElement) =
+let inferGlobalType culture opt (element:XElement) =
 
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
@@ -35,15 +34,16 @@ let inferGlobalType (element:XElement) =
     |> Seq.map (fun (name, elements) ->
         // Get attributes for all `name` named elements 
         let attributes =
-          [ for el in elements -> getAttributes el ]
-          |> Seq.reduce unionRecordTypes
+          elements
+          |> Seq.map (getAttributes culture)
+          |> Seq.reduce (unionRecordTypes opt)
 
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
               if not (String.IsNullOrEmpty(e.Value)) then
-                yield inferPrimitiveType e.Value None ]
-          |> Seq.fold subtypeInfered Top
+                yield inferPrimitiveType culture e.Value None ]
+          |> Seq.fold (subtypeInfered opt) Top
         let body = { Name = ""; Optional = false; Type = bodyType }
 
         let record = Record(Some name.LocalName, body::attributes)
@@ -63,7 +63,7 @@ let inferGlobalType (element:XElement) =
           let children = [ for e in elements.Elements() -> assignment.[e.Name.LocalName] |> snd ]
           let bodyType = 
             if children = [] then body.Type
-            else subtypeInfered (inferCollectionType children) body.Type
+            else subtypeInfered opt (inferCollectionType opt children) body.Type
           changed <- changed || (body.Type <> bodyType)
           body.Type <- bodyType
       | _ -> failwith "inferGlobalType: Expected Record type with a name"
@@ -73,26 +73,26 @@ let inferGlobalType (element:XElement) =
 
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
-let rec inferLocalType (element:XElement) = 
+let rec inferLocalType culture opt (element:XElement) = 
   let props = 
     [ // Generate record fields for attributes
-      yield! getAttributes element
+      yield! getAttributes culture element
       
       // If it has children, add collection content
       let children = element.Elements()
       if Seq.length children > 0 then
-        let collection = inferCollectionType (Seq.map inferLocalType children)
+        let collection = inferCollectionType opt (Seq.map (inferLocalType culture opt) children)
         yield { Name = ""; Optional = false; Type = collection } 
 
       // If it has value, add primtiive content
       elif not (String.IsNullOrEmpty(element.Value)) then
-        let primitive = inferPrimitiveType element.Value None
+        let primitive = inferPrimitiveType culture element.Value None
         yield { Name = ""; Optional = false; Type = primitive } ]  
   Record(Some element.Name.LocalName, props)
 
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType globalInference (element:XElement) = 
-  if globalInference then inferGlobalType element
-  else inferLocalType element
+let inferType culture opt globalInference (element:XElement) = 
+  if globalInference then inferGlobalType culture opt element
+  else inferLocalType culture opt element

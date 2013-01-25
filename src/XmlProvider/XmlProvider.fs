@@ -35,6 +35,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let globalInference = args.[1] :?> bool
     let sampleList = args.[2] :?> bool
     let culture = args.[3] :?> string
+    let cultureInfo = Operations.GetCulture culture
     let resolutionFolder = args.[4] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
@@ -54,12 +55,14 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       with _ ->
         failwith "Specified argument is neither a file, nor well-formed XML."
 
+    let inferenceOptions = InferenceOptions.None
+
     let inferedType = 
       if not sampleList then
-        XmlInference.inferType globalInference sampleXml.Root
+        XmlInference.inferType cultureInfo inferenceOptions globalInference sampleXml.Root
       else
-        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType globalInference itm ]
-        |> Seq.fold subtypeInfered Top
+        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType cultureInfo inferenceOptions globalInference itm ]
+        |> Seq.fold (subtypeInfered inferenceOptions) Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType

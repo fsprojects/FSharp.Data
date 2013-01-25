@@ -13,6 +13,7 @@ type InferedProperty =
   { Name : string
     Optional : bool
     mutable Type : InferedType }
+  override x.ToString() = sprintf "%A" x
 
 /// For heterogeneous types (types that have multiple possible forms
 /// such as differently named XML nodes or records and arrays mixed together)
@@ -53,7 +54,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison>] InferedType =
-  | Primitive of System.Type * option<System.Type>
+  | Primitive of System.Type * (*unit*)option<System.Type>
   | Record of string option * InferedProperty list
   | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
   | Heterogeneous of Map<InferedTypeTag, InferedType>
@@ -76,6 +77,8 @@ and [<CustomEquality; NoComparison>] InferedType =
       | Null, Null | Top, Top -> true
       | _ -> false
     else false
+
+  override x.ToString() = sprintf "%A" x
 
 // ------------------------------------------------------------------------------------------------
 // Additional operations for working with the inferred representation

@@ -14,7 +14,7 @@ open ProviderImplementation.StructureInference
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
-let rec inferType json = 
+let rec inferType opt json = 
   let inline inrange lo hi v = (v >= decimal lo) && (v <= decimal hi)
   let inline integer v = Math.Round(v:decimal) = v
 
@@ -29,9 +29,9 @@ let rec inferType json =
   | JsonValue.Number _ -> Primitive(typeof<decimal>, None)
   | JsonValue.BigNumber _ -> Primitive(typeof<float>, None)
   // More interesting types 
-  | JsonValue.Array ar -> inferCollectionType (Seq.map inferType ar)
+  | JsonValue.Array ar -> inferCollectionType opt (Seq.map (inferType opt) ar)
   | JsonValue.Object o ->
       let props = 
         [ for (KeyValue(k, v)) in o -> 
-            { Name = k; Optional = false; Type = inferType v } ]
+            { Name = k; Optional = false; Type = (inferType opt) v } ]
       Record(None, props)

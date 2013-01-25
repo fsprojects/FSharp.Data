@@ -10,6 +10,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
 module Seq = 
+
   /// Merge two sequences by pairing elements for which
   /// the specified predicate returns the same key
   ///
@@ -24,13 +25,6 @@ module Seq =
     let asOption = function true, v -> Some v | _ -> None
     [ for k in keys -> 
         k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
-
-  /// Take at most the specified number of arguments from the sequence
-  let takeMax count input =
-    input 
-    |> Seq.mapi (fun i v -> i, v)
-    |> Seq.takeWhile (fun (i, v) -> i < count)
-    |> Seq.map snd
 
 // ----------------------------------------------------------------------------------------------
 

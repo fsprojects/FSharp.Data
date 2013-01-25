@@ -1,5 +1,6 @@
 ﻿namespace FSharp.Data.RuntimeImplementation
 
+open System.Globalization
 open FSharp.Data.Json
 open FSharp.Data.Json.JsonReader
 open FSharp.Data.RuntimeImplementation.TypeInference
@@ -13,10 +14,10 @@ type JsonOperations =
   // Trivial operations that return primitive values
   static member GetString(value:JsonValue) = value.AsString
   static member GetBoolean(value:JsonValue) = value.AsBoolean
-  static member GetFloat(value:JsonValue) = value.AsFloat
-  static member GetDecimal(value:JsonValue) = value.AsDecimal
-  static member GetInteger(value:JsonValue) = value.AsInteger
-  static member GetInteger64(value:JsonValue) = value.AsInteger64
+  static member GetFloat(value:JsonValue, culture:CultureInfo) = value.AsFloatWithCulture(culture)
+  static member GetDecimal(value:JsonValue, culture:CultureInfo) = value.AsDecimalWithCulture(culture)
+  static member GetInteger(value:JsonValue, culture:CultureInfo) = value.AsIntegerWithCulture(culture)
+  static member GetInteger64(value:JsonValue, culture:CultureInfo) = value.AsInteger64WithCulture(culture)
   static member GetProperty(doc:JsonValue, name) = (?) doc name
 
   /// Converts JSON array to array of target types

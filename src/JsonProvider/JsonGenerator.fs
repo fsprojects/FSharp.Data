@@ -50,7 +50,7 @@ module JsonTypeBuilder =
   /// "Choice" type. This is parameterized by the types (choices) to generate,
   /// by functions that get the multiplicity and the type tag for each option
   /// and also by function that generates the actual code.
-  let rec internal generateMultipleChoiceType ctx types codeGenerator =
+  let rec internal generateMultipleChoiceType culture ctx types codeGenerator =
     // Generate new type for the heterogeneous type
     let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<JsonDocument>), HideObjectMethods = true)
     ctx.DomainType.AddMember(objectTy)
@@ -60,7 +60,7 @@ module JsonTypeBuilder =
     let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
     for (KeyValue(kind, (multiplicity, typ))) in types do
       if kind <> InferedTypeTag.Null then
-        let valTy, valConv = generateJsonType ctx typ
+        let valTy, valConv = generateJsonType culture ctx typ
         let kindCode = kind.Code
 
         // If it occurs at most once, then generate property (which may 
@@ -84,27 +84,27 @@ module JsonTypeBuilder =
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  and internal generateJsonType ctx = function
-    | InferedType.Primitive(typ, _) -> 
+  and internal generateJsonType culture ctx = function
+    | Primitive(typ, _) -> 
 
         // Return the JSON value as one of the supported primitive types
         let conv = 
-          if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%json) @@>
-          elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%json) @@>
-          elif typ = typeof<decimal> then fun json -> <@@ JsonOperations.GetDecimal(%%json) @@>
-          elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json) @@>
+          if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%json, Operations.GetCulture(culture)) @@>
+          elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%json, Operations.GetCulture(culture)) @@>
+          elif typ = typeof<decimal> then fun json -> <@@ JsonOperations.GetDecimal(%%json, Operations.GetCulture(culture)) @@>
+          elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, Operations.GetCulture(culture)) @@>
           elif typ = typeof<string> then fun json -> <@@ JsonOperations.GetString(%%json) @@>
           elif typ = typeof<bool> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
           else failwith "generateJsonType: Unsupported primitive type"
         let conv = ctx.UnpackerStayInDesignTime >> conv >> ctx.Replacer.ToRuntime
         typ, conv
 
-    | InferedType.Top | InferedType.Null -> 
+    | Top | Null -> 
         // Return the underlying JsonDocument without change
         ctx.Representation, fun (json:Expr) -> ctx.Replacer.ToRuntime json
 
-    | InferedType.Collection (SingletonMap(_, (_, typ))) -> 
-        let elementTy, elementConv = generateJsonType ctx typ
+    | Collection (SingletonMap(_, (_, typ))) -> 
+        let elementTy, elementConv = generateJsonType culture ctx typ
 
         // Build a function `mapper = fun x -> %%(elementConv x)`
         let convTyp, convFunc = ReflectionHelpers.makeFunc elementConv ctx.Representation
@@ -120,7 +120,7 @@ module JsonTypeBuilder =
         
         elementTy.MakeArrayType(), conv
 
-    | InferedType.Record(_, props) -> 
+    | Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Entity", Some(ctx.Representation), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
@@ -131,12 +131,12 @@ module JsonTypeBuilder =
           let propTy, getter =
             if not prop.Optional || (prop.Optional && prop.Type = Primitive(typeof<string>, None)) then 
               // If it is not optional, then we simply return the property
-              let valTy, valConv = generateJsonType ctx prop.Type
+              let valTy, valConv = generateJsonType culture ctx prop.Type
               valTy, fun (Singleton json) -> 
                 valConv (ctx.Packer <@@ JsonOperations.GetProperty(%%(ctx.UnpackerStayInDesignTime json), propName) @@>)
             else
               // If it is optional, then we generate code similar to arrays
-              let valTy, valConv = generateJsonType ctx prop.Type
+              let valTy, valConv = generateJsonType culture ctx prop.Type
               let optValTy = typedefof<option<_>>.MakeGenericType [| valTy |]
 
               // Construct function arguments & call `ConvertOptionalProperty` 
@@ -156,10 +156,10 @@ module JsonTypeBuilder =
 
         objectTy :> Type, ctx.Replacer.ToRuntime
 
-    | InferedType.Collection types -> 
+    | Collection types -> 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
-        generateMultipleChoiceType ctx types (fun info valConv kindCode ->
+        generateMultipleChoiceType culture ctx types (fun info valConv kindCode ->
           match info with
           | InferedMultiplicity.Single, _ -> fun (Singleton json) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
@@ -187,10 +187,10 @@ module JsonTypeBuilder =
                   [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc])
                 //operationsTyp?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, Expr.Value kindCode, packFunc, convFunc))
 
-    | InferedType.Heterogeneous types ->
+    | Heterogeneous types ->
         // Generate a choice type that always calls `GetValueByTypeTag` to 
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
-        generateMultipleChoiceType ctx types (fun info valConv kindCode ->
+        generateMultipleChoiceType culture ctx types (fun info valConv kindCode ->
           // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
           let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
           let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)

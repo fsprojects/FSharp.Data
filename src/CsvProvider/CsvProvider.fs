@@ -24,7 +24,7 @@ open FSharp.Data.RuntimeImplementation.TypeInference
 module CsvInference = 
   /// Infers the type of a CSV file using the specified number of rows
   /// (This handles units in the same way as the original MiniCSV provider)
-  let inferType (csv:CsvFile) count =
+  let inferType (csv:CsvFile) count culture =
 
     // Infer the units and names from the headers
     let headers = csv.Headers |> Seq.map (fun header ->
@@ -36,13 +36,14 @@ module CsvInference =
       else None, header)
 
     // Infer the type of collection using structural inference
-    Seq.reduce subtypeInfered
-     (seq { for row in Seq.takeMax count csv.Data ->
-              let fields = 
+    let types = seq {
+        for row in Seq.truncate count csv.Data ->
+            let fields = 
                 [ for (unit, header), value in Seq.zip headers row.Columns ->
-                    let typ = inferPrimitiveType value unit
+                    let typ = inferPrimitiveType culture value unit
                     { Name = header; Optional = false; Type = typ } ]
-              Record(None, fields) })
+            Record(None, fields) }
+    Seq.reduce (subtypeInfered InferenceOptions.UseNaNforOptionalDecimal) types
 
 // --------------------------------------------------------------------------------------
 
@@ -61,9 +62,10 @@ module CsvTypeBuilder =
                 | Primitive(typ, None) -> typ, typ
                 | _ -> typeof<string>, typeof<string>
 
+              let propTyp = if field.Optional then typedefof<option<_>>.MakeGenericType [| propTyp |] else propTyp
               let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
-              let _, conv = Conversions.convertValue culture field.Name false baseTyp replacer
-              p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Some((%%row:CsvRow).Columns.[index]) @@>
+              let _, conv = Conversions.convertValue culture field.Name field.Optional baseTyp replacer
+              p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
               objectTy.AddMember p
 
             objectTy
@@ -88,6 +90,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let sample = args.[0] :?> string
     let separator = args.[1] :?> string
     let culture = args.[2] :?> string
+    let cultureInfo = Operations.GetCulture culture
     let inferRows = args.[3] :?> int
     let resolutionFolder = args.[4] :?> string
     let isHostedExecution = cfg.IsHostedExecution
@@ -103,7 +106,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     use sampleCsv = sampleCsv
 
-    let inferedType = CsvInference.inferType sampleCsv inferRows
+    let inferedType = CsvInference.inferType sampleCsv inferRows cultureInfo
     let rowType = CsvTypeBuilder.generateCsvRowType culture replacer resTy inferedType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s

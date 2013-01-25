@@ -55,18 +55,17 @@ module internal XmlTypeBuilder =
   let rec generateXmlType culture ctx = function
 
     // If we already generated object for this type, return it
-    | InferedType.Record(Some name, props) when ctx.GeneratedResults.ContainsKey(name) -> 
+    | Record(Some name, props) when ctx.GeneratedResults.ContainsKey(name) -> 
         ctx.GeneratedResults.[name]
     
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
-    | InferedType.Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
-        let opt = opt && typ <> typeof<string>
+    | Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
         let resTyp, convFunc = Conversions.convertValue culture "Value" opt typ ctx.Replacer
         resTyp, fun xml -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
 
     // If the node is more complicated, then we generate a type to represent it properly
-    | InferedType.Record(Some name, props) -> 
+    | Record(Some name, props) -> 
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
 
@@ -83,6 +82,7 @@ module internal XmlTypeBuilder =
         for attr in attrs do
           let name = attr.Name
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
+          //TODO: this should be checked inside type inference, not here
           let opt = attr.Optional && (attr.Type <> Primitive(typeof<string>, None)) 
           let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) opt typ ctx.Replacer
           
