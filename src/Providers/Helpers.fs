@@ -187,7 +187,7 @@ module private AssemblyReplacer =
     open Microsoft.FSharp.Quotations.Patterns
     open Microsoft.FSharp.Reflection
 
-    let private replace (asmMappings : (Assembly * Assembly) list) (original, originalAsms : Assembly list) f =
+    let private replace asmMappings (original, originalAsms) f =
         let toAsm = 
             asmMappings
             |> Seq.tryPick (fun (fromAsm, toAsm) -> 
@@ -202,10 +202,17 @@ module private AssemblyReplacer =
         | Some toAsm -> f toAsm
         | None -> original
 
-    let private replaceLazy (asmMappings : (Assembly * Assembly) list) (lazyOriginal : 'a Lazy, originalAsm) f =
+    let private replaceLazy asmMappings (lazyOriginal : 'a Lazy, originalAsms) f =
         let toAsm = 
             asmMappings
-            |> Seq.tryPick (fun (fromAsm, toAsm) -> if originalAsm = fromAsm then Some toAsm else None)
+            |> Seq.tryPick (fun (fromAsm, toAsm) -> 
+                if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then                
+                    if fromAsm = originalAsms.Head then 
+                        Some toAsm 
+                    else 
+                        Some originalAsms.Head
+                else 
+                    None)
         match toAsm with
         | Some toAsm -> f toAsm
         | None -> lazyOriginal.Value
@@ -302,7 +309,7 @@ module private AssemblyReplacer =
                 newC)
 
     let private replaceUnionCase asmMappings (uci : UnionCaseInfo) exprs =
-        replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), uci.DeclaringType.Assembly) (fun toAsm ->
+        replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), getAssemblies uci.DeclaringType) (fun toAsm ->
             let t = getType toAsm uci.DeclaringType (replaceType asmMappings)
             let constructorMethod = t.GetMethod(uci.Name)
             if constructorMethod = null then
