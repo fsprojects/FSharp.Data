@@ -129,7 +129,7 @@ module JsonTypeBuilder =
         for prop in props do
           let propName = prop.Name
           let propTy, getter =
-            if not prop.Optional || (prop.Optional && prop.Type = Primitive(typeof<string>, None)) then 
+            if not prop.Optional then 
               // If it is not optional, then we simply return the property
               let valTy, valConv = generateJsonType culture ctx prop.Type
               valTy, fun (Singleton json) -> 

@@ -186,7 +186,7 @@ and unionRecordTypes opt t1 t2 =
       match fst, snd with
       
       // If one is missing, return the other, but optional
-      | Some p, None | None, Some p -> { p with Optional = true }
+      | Some p, None | None, Some p -> if hasNullOrNaN p.Type then p else { p with Optional = true }
       
       // If both reference the same object, we return one
       // (This is needed to support recursive type structures)

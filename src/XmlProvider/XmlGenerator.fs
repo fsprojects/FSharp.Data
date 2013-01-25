@@ -82,9 +82,7 @@ module internal XmlTypeBuilder =
         for attr in attrs do
           let name = attr.Name
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
-          //TODO: this should be checked inside type inference, not here
-          let opt = attr.Optional && (attr.Type <> Primitive(typeof<string>, None)) 
-          let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) opt typ ctx.Replacer
+          let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) attr.Optional typ ctx.Replacer
           
           // Add property with PascalCased name
           let p = ProvidedProperty(NameUtils.nicePascalName attr.Name, resTyp)
