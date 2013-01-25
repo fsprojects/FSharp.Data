@@ -71,6 +71,6 @@ let getData forSilverlight = seq {
 
     yield! getCsvData forSilverlight
 
-    //if not forSilverlight then
-    yield! getWorldBankData()
+    if not forSilverlight then
+        yield! getWorldBankData()
 }
