@@ -12,7 +12,7 @@ let msftCsv = """Date,Open,High,Low,Close,Volume,Adj Close
 2012-01-17,28.40,28.65,28.17,28.26,72395300,28.26
 2012-01-13,27.93,28.25,27.79,28.25,60196100,28.25"""
 
-let writersXml = """<authors topic="Philosophy of Science">
+let authorsXml = """<authors topic="Philosophy of Science">
   <author name="Paul Feyerabend" born="1924" />
   <author name="Thomas Kuhn" />
 </authors>"""
