@@ -149,6 +149,9 @@ type AssemblyReplacer =
 // Conversions from string to various primitive types
 // ----------------------------------------------------------------------------------------------
 
+[<RequireQualifiedAccess>]
+type TypeWrapper = None | Option | Nullable
+
 module Conversions = 
 
   open Microsoft.FSharp.Quotations
@@ -157,24 +160,29 @@ module Conversions =
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
-  let convertValue (culture:string) (fieldName:string) optional typ (replacer:AssemblyReplacer) = 
-    let returnTyp = if optional then typedefof<option<_>>.MakeGenericType [| typ |] else typ
+  let convertValue (culture:string) (fieldName:string) typeWrapper typ (replacer:AssemblyReplacer) = 
+
+    let returnTyp = 
+        match typeWrapper with
+        | TypeWrapper.None -> typ
+        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| typ |]
+        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| typ |]
+
     returnTyp, fun e ->
       let converted = 
-        let culture = <@@ Operations.GetCulture(culture) @@>
-        if typ = typeof<int> then <@@ Operations.ConvertInteger(%%culture, %%e) @@>
-        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(%%culture, %%e) @@>
-        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(%%culture, %%e) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(%%culture, %%e) @@>
+        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%e) @@>
+        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%e) @@>
+        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%e) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, %%e) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
-        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(%%culture, %%e) @@>
+        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%e) @@>
         else failwith "convertValue: Unsupported primitive type"
-        |> replacer.ToRuntime
-      if not optional then 
-        let operationsTyp = replacer.ToRuntime typeof<Operations>
-        operationsTyp?GetNonOptionalValue (typ) (fieldName, converted)
-      else converted
+      match typeWrapper with
+      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (fieldName, converted)
+      | TypeWrapper.Option -> converted
+      | TypeWrapper.Nullable -> typeof<Operations>?ToNullable (typ) converted
+      |> replacer.ToRuntime
 
 // ----------------------------------------------------------------------------------------------
         

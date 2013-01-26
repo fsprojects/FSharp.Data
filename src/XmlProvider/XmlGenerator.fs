@@ -61,7 +61,7 @@ module internal XmlTypeBuilder =
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
     | Record(Some name, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
-        let resTyp, convFunc = Conversions.convertValue culture "Value" opt typ ctx.Replacer
+        let resTyp, convFunc = Conversions.convertValue culture "Value" (if opt then TypeWrapper.Option else TypeWrapper.None) typ ctx.Replacer
         resTyp, fun xml -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
 
     // If the node is more complicated, then we generate a type to represent it properly
@@ -82,7 +82,7 @@ module internal XmlTypeBuilder =
         for attr in attrs do
           let name = attr.Name
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
-          let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) attr.Optional typ ctx.Replacer
+          let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) (if attr.Optional then TypeWrapper.Option else TypeWrapper.None) typ ctx.Replacer
           
           // Add property with PascalCased name
           let p = ProvidedProperty(NameUtils.nicePascalName attr.Name, resTyp)
@@ -102,7 +102,7 @@ module internal XmlTypeBuilder =
               | Primitive(typ, _) -> 
                   // If there may be other primitives or nodes, it is optional
                   let opt = nodes.Count > 0 || primitives.Length > 1
-                  let resTyp, convFunc = Conversions.convertValue culture "Value" opt typ ctx.Replacer
+                  let resTyp, convFunc = Conversions.convertValue culture "Value" (if opt then TypeWrapper.Option else TypeWrapper.None) typ ctx.Replacer
                   let name = 
                     if primitives.Length = 1 then "Value" else
                     (typeTag primitive).NiceName + NameUtils.nicePascalName "Value"

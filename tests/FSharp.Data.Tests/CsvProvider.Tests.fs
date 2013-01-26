@@ -49,21 +49,21 @@ float1,float2,float3,float4,int,float5,float6,date
     let f2:float = row.Float2
     let f3:float = row.Float3
     let f4:float = row.Float4
-    let i:option<int> = row.Int
+    let i:Nullable<int> = row.Int
     let f5:float = row.Float5
     let f6:float = row.Float6
-    let d:option<DateTime> = row.Date
+    let d:Nullable<DateTime> = row.Date
     
-    let expected = 1.0, 1.0, 1.0, 1.0, (None:option<int>), Double.NaN, Double.NaN, (None:option<DateTime>)
+    let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, Nullable<DateTime>()
     let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date    
     Assert.AreEqual(expected, actual)
 
     let row = rows.[1]
-    let expected = 2.0, Double.NaN, Double.NaN, 1.0, Some 1, 1.0, Double.NaN, Some(new DateTime(2010, 01,10)) 
+    let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Nullable(new DateTime(2010, 01,10)) 
     let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
     Assert.AreEqual(expected, actual)
 
     let row = rows.[2]
-    let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Some 1, Double.NaN, 2.0, (None:option<DateTime>)
+    let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, Nullable<DateTime>()
     let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
     Assert.AreEqual(expected, actual)

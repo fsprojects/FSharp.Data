@@ -22,32 +22,45 @@ module private Helpers =
 
 type Operations =
 
-  static member AsOption(str) =
+  static member AsOption str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
-  static member GetCulture(culture) =
-    if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else
-    Globalization.CultureInfo(culture)
+  static member GetCulture culture =
+    if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else Globalization.CultureInfo(culture)
 
   // Operations that convert string to supported primitive types
-  static member ConvertString str = Option.map (fun (s:string) -> s.Trim()) str
-  static member ConvertDateTime(culture:CultureInfo, text) = 
-    Option.bind (fun (s:string) -> DateTime.TryParse(s, culture, DateTimeStyles.None) |> asOption) text
-  static member ConvertInteger(culture:CultureInfo, text) = 
-    Option.bind (fun (s:string) -> Int32.TryParse(s, NumberStyles.Integer, culture) |> asOption) text
-  static member ConvertInteger64(culture:CultureInfo, text) = 
-    Option.bind (fun (s:string) -> Int64.TryParse(s, NumberStyles.Integer, culture) |> asOption) text
-  static member ConvertDecimal(culture:CultureInfo, text) =
-    Option.bind (fun (s:string) -> Decimal.TryParse(s, NumberStyles.Number, culture) |> asOption) text
-  static member ConvertFloat(culture:CultureInfo, text) = 
-    Option.bind (fun (s:string) -> 
+  static member ConvertString text = 
+    text
+    |> Option.map (fun (s:string) -> s.Trim())
+
+  static member ConvertDateTime(culture, text) = 
+    text
+    |> Option.bind (fun s -> DateTime.TryParse(s, Operations.GetCulture(culture), DateTimeStyles.None) |> asOption)
+
+  static member ConvertInteger(culture, text) = 
+    text
+    |> Option.bind (fun s -> Int32.TryParse(s, NumberStyles.Integer, Operations.GetCulture(culture)) |> asOption)
+  
+  static member ConvertInteger64(culture, text) = 
+    text
+    |> Option.bind (fun s -> Int64.TryParse(s, NumberStyles.Integer, Operations.GetCulture(culture)) |> asOption)
+  
+  static member ConvertDecimal(culture, text) =
+    text
+    |> Option.bind (fun s -> Decimal.TryParse(s, NumberStyles.Number, Operations.GetCulture(culture)) |> asOption)
+  
+  static member ConvertFloat(culture, text) = 
+    text
+    |> Option.bind (fun (s:string) -> 
         match s.Trim() with
         | StringEquals "#N/A" -> Some Double.NaN
-        | _ -> Double.TryParse(s, NumberStyles.Float, culture) |> asOption)
-        text
-  static member ConvertBoolean b = b |> Option.bind (fun (s:string) ->
+        | _ -> Double.TryParse(s, NumberStyles.Float, Operations.GetCulture(culture)) |> asOption)
+  
+  static member ConvertBoolean text = 
+    text
+    |> Option.bind (fun (s:string) ->
       match s.Trim() with
       | StringEquals "true" | StringEquals "yes" -> Some true
       | StringEquals "false" | StringEquals "no" -> Some false
@@ -68,3 +81,9 @@ type Operations =
     | None when typeof<'T> = typeof<double> -> box Double.NaN :?> 'T
     | None when typeof<'T> = typeof<string> -> box "" :?> 'T
     | _ -> failwithf "Mismatch: %s is missing" name
+
+  static member ToNullable opt =
+    match opt with 
+    | Some v -> Nullable v
+    | _ -> Nullable()
+    

@@ -3,6 +3,7 @@
 // --------------------------------------------------------------------------------------
 namespace ProviderImplementation
 
+open System
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation.ProvidedTypes
@@ -22,9 +23,8 @@ module internal CsvTypeBuilder =
                 | Primitive(typ, None) -> typ, typ
                 | _ -> typeof<string>, typeof<string>
 
-            let propTyp = if field.Optional then typedefof<option<_>>.MakeGenericType [| propTyp |] else propTyp
-            let p = ProvidedProperty(NameUtils.nicePascalName field.Name, propTyp)
-            let _, conv = Conversions.convertValue culture field.Name field.Optional baseTyp replacer
+            let typ, conv = Conversions.convertValue culture field.Name (if field.Optional then TypeWrapper.Nullable else TypeWrapper.None) baseTyp replacer
+            let p = ProvidedProperty(NameUtils.nicePascalName field.Name, typ)
             p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
             objectTy.AddMember p
 
