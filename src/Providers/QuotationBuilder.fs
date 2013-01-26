@@ -1,0 +1,62 @@
+﻿// ----------------------------------------------------------------------------------------------
+// Dynamic operator (?) that can be used for constructing quoted F# code without 
+// quotations (to simplify constructing F# quotations in portable libraries - where
+// we need to pass the System.Type of various types as arguments)
+// ----------------------------------------------------------------------------------------------
+
+module ProviderImplementation.QuotationBuilder
+
+open System
+open System.Reflection
+open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Quotations.Patterns
+open Microsoft.FSharp.Reflection
+
+let (?) (typ:Type) (operation:string) (args1:'T) : 'R = 
+  // Arguments are either Expr or other type - in the second case,
+  // we treat them as Expr.Value (which will only work for primitives)
+  let convertValue (arg:obj) = 
+    match arg with
+    | :? Expr as e -> e
+    | value -> Expr.Value(value, value.GetType())
+
+  let invokeOperation (tyargs:obj, tyargsT) (args:obj, argsT) =
+    // To support (e1, e2, ..) syntax, we use tuples - extract tuple arguments
+    // First, extract type arguments - a list of System.Type values
+    let tyargs = 
+      if tyargsT = typeof<unit> then []
+      elif FSharpType.IsTuple(tyargsT) then
+        [ for f in FSharpValue.GetTupleFields(tyargs) -> f :?> Type ]
+      else [ tyargs :?> Type ]
+    // Second, extract arguments (which are either Expr values or primitive constants)
+    let args = 
+      if argsT = typeof<unit> then []
+      elif FSharpType.IsTuple(argsT) then
+        [ for f in FSharpValue.GetTupleFields(args) -> convertValue f ]
+      else [ convertValue args ]
+
+    // Find a method that we want to call
+    let flags = BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static ||| BindingFlags.Instance
+    match typ.GetMember(operation, MemberTypes.All, flags) with 
+    | [| :? MethodInfo as mi |] -> 
+        let mi = 
+          if tyargs = [] then mi
+          else mi.MakeGenericMethod(tyargs |> Array.ofList)
+        if mi.IsStatic then Expr.Call(mi, args)
+        else Expr.Call(List.head args, mi, List.tail args)
+    | [| :? ConstructorInfo as ci |] ->
+        if tyargs <> [] then failwith "Constructor cannot be generic!"
+        Expr.NewObject(ci, args)
+    | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
+
+  // If the result is a function, we are called with two tuples as arguments
+  // and the first tuple represents type arguments for a generic function...
+  if FSharpType.IsFunction(typeof<'R>) then
+    let domTyp, res = FSharpType.GetFunctionElements(typeof<'R>)
+    if res <> typeof<Expr> then failwith "QuotationBuilder: The resulting type must be Expr!"
+    FSharpValue.MakeFunction(typeof<'R>, fun args2 ->
+      invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
+  else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
+
+
+

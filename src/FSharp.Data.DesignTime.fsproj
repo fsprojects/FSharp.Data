@@ -46,6 +46,8 @@
     <Compile Include="Providers\ProvidedTypes.fs" />
     <Compile Include="Providers\Pluralizer.fs" />
     <Compile Include="Providers\NameUtils.fs" />
+    <Compile Include="Providers\QuotationBuilder.fs" />
+    <Compile Include="Providers\AssemblyReplacer.fs" />
     <Compile Include="Providers\Helpers.fs" />
     <Compile Include="Providers\StructureInference.fs" />
     <Compile Include="Providers\Debug.fs" />
