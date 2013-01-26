@@ -10,9 +10,11 @@ type XmlElement (node:XElement) =
   member x.XElement = node
 
 type XmlOperations = 
+
   // Operations for getting node values and values of attributes
   static member TryGetValue(xml:XmlElement) = 
     if String.IsNullOrEmpty(xml.XElement.Value) then None else Some xml.XElement.Value
+
   static member TryGetAttribute(xml:XmlElement, name) = 
     let attr = xml.XElement.Attribute(XName.Get(name))
     if attr = null then None else Some attr.Value
@@ -36,7 +38,8 @@ type XmlOperations =
   // Functions that transform specified chidlrens using a transformation
   // function - we need a version for array and option
   // (This is used e.g. when transforming `<a>1</a><a>2</a>` to `int[]`)
-  static member ConvertArray<'R>(xml:XmlElement, name, f:XmlElement -> 'R) : 'R[] = 
-    XmlOperations.GetChildrenArray(xml, name) |> Array.map f
-  static member ConvertOptional<'R>(xml:XmlElement, name, f:XmlElement -> 'R) =
-    XmlOperations.GetChildOption(xml, name) |> Option.map f
+  static member ConvertArray<'R>(xml:XmlElement, name, f:Func<XmlElement,'R>) : 'R[] = 
+    XmlOperations.GetChildrenArray(xml, name) |> Array.map f.Invoke
+
+  static member ConvertOptional<'R>(xml:XmlElement, name, f:Func<XmlElement,'R>) =
+    XmlOperations.GetChildOption(xml, name) |> Option.map f.Invoke

@@ -1,13 +1,10 @@
 ﻿module PortableLibrary
 
 open FSharp.Data
+open PortableLibrarySampleData
 
 type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
-type StocksCsv = CsvProvider<"../docs/MSFT.csv">
-type DetailedXml = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
 type WorldBankJson = JsonProvider<"../docs/WorldBank.json">
-type AuthorsXml = XmlProvider<"../docs/Writers.xml">
-
 
 let getJsonData() = seq {
 
@@ -15,40 +12,42 @@ let getJsonData() = seq {
     yield simple.Age.ToString()
     yield simple.Name
 
-//    let doc = WorldBankJson.Load(worldBankJsonStream)
-//
-//    let info = doc.Record
-//    yield sprintf "Showing page %d of %d. Total records %d" info.Page info.Pages info.Total
-//
-//     Print all data points
-//    for record in doc.Array do
-//      if record.Value <> null then
-//        yield sprintf "%d: %f" (int record.Date) (float record.Value)
+    let doc = WorldBankJson.Parse(worldBankJson)
+
+    let info = doc.Record
+    yield sprintf "Showing page %d of %d. Total records %d" info.Page info.Pages info.Total
+
+    // Print all data points
+    for record in doc.Array do
+      if record.Value <> null then
+        yield sprintf "%d: %f" (int record.Date) (float record.Value)
 }
+
+type DetailedXml = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
+type AuthorsXml = XmlProvider<"../docs/Writers.xml">
 
 let getXmlData() = seq {
 
     let info = DetailedXml.Parse("""<author><name full="false">Thomas Kuhn</name></author>""")
     yield sprintf "%s (full=%b)" info.Name.Value info.Name.Full
 
-//    let topic = AuthorsXml.Load(writerXmlStream)
-//
-//    yield topic.Topic
-//    for author in topic.GetAuthors() do
-//      yield sprintf " - %s" author.Name 
-//      match author.Born with
-//      | Some born -> yield sprintf " (%d)" born
-//      | None -> ()
+    let topic = AuthorsXml.Parse(writersXml)
+
+    yield topic.Topic
+    for author in topic.GetAuthors() do
+      yield sprintf " - %s" author.Name 
+      match author.Born with
+      | Some born -> yield sprintf " (%d)" born
+      | None -> ()
 }
+
+type StocksCsv = CsvProvider<"../docs/MSFT.csv">
 
 let getCsvData forSilverlight = seq {
 
     let msft = 
         if forSilverlight then
-            let data = """Date,Open,High,Low,Close,Volume,Adj Close
-2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
-2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50"""
-            StocksCsv.Parse(data)
+            StocksCsv.Parse(msftCsv)
         else
             StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
     for row in msft.Data |> Seq.truncate 10 do

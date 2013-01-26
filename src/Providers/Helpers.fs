@@ -109,18 +109,11 @@ module internal ReflectionHelpers =
 
   open Microsoft.FSharp.Quotations
 
-  let makeFunc (exprfunc:Expr -> Expr) argType = 
+  let makeDelegate (exprfunc:Expr -> Expr) argType = 
     let var = Var.Global("t", argType)
     let convBody = exprfunc (Expr.Var var)
-    convBody.Type, Expr.Lambda(var, convBody)
+    convBody.Type, Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType [| argType; convBody.Type |], [var], convBody)
         
-  let makeMethodCall (typ:Type) name tyargs args =
-    let convMeth = typ.GetMethod(name)
-    let convMeth = 
-      if tyargs = [] then convMeth else
-      convMeth.MakeGenericMethod (Array.ofSeq tyargs)
-    Expr.Call(convMeth, args)
-
 // ----------------------------------------------------------------------------------------------
 
 module ProviderHelpers =
@@ -356,11 +349,13 @@ module private AssemblyReplacer =
             | Some expr -> Expr.PropertyGet (re expr, rp p, List.map re exprs)
             | None -> Expr.PropertyGet (rp p, List.map re exprs)
         | NewObject (c, exprs) ->
-            Expr.NewObject (rc c, (List.map re exprs))
+            Expr.NewObject (rc c, List.map re exprs)
         | Coerce (expr, t) ->
             Expr.Coerce (re expr, rt t)
         | NewUnionCase (uci, exprs) ->
             ru uci (List.map re exprs)
+        | NewDelegate (t, vars, expr) ->
+            Expr.NewDelegate (rt t, List.map rv vars, re expr)
         | ShapeVar v -> 
             Expr.Var (rv v)
         | ShapeLambda (v, expr) -> 

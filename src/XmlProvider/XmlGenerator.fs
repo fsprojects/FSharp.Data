@@ -5,6 +5,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Reflection
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.JsonInference
@@ -122,30 +123,26 @@ module internal XmlTypeBuilder =
                     | InferedMultiplicity.Single ->
                         let p = ProvidedProperty(NameUtils.nicePascalName name, childTy)
                         p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in childConv <@@ XmlOperations.GetChild(%%xml, name) @@>
-                        p :> System.Reflection.MemberInfo
+                        p :> MemberInfo
 
                     // For options and arrays, we need to generate call to ConvertArray or ConvertOption
                     // (because the node may be represented as primitive type - so we cannot just
                     // return array of XmlElement - it might be for example int[])
                     | InferedMultiplicity.Multiple ->
                         let m = ProvidedMethod("Get" + NameUtils.nicePascalName (NameUtils.pluralize name), [], childTy.MakeArrayType())
-                        let convTyp, convFunc = ReflectionHelpers.makeFunc childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+                        let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         m.InvokeCode <- fun (Singleton xml) -> 
                           let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
-                          ReflectionHelpers.makeMethodCall operationsTyp "ConvertArray"
-                            [ convTyp ] [ xml; Expr.Value(name); convFunc ]
-                          //operationsTyp?ConvertArray (convTyp) (xml, Expr.Value(name), convFunc)
-                        m :> System.Reflection.MemberInfo
+                          operationsTyp?ConvertArray (convTyp) (xml, name, convFunc)
+                        m :> MemberInfo
 
                     | InferedMultiplicity.OptionalSingle ->
                         let p = ProvidedProperty(NameUtils.nicePascalName name, typedefof<option<_>>.MakeGenericType [| childTy |])
-                        let convTyp, convFunc = ReflectionHelpers.makeFunc childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+                        let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         p.GetterCode <- fun (Singleton xml) -> 
                           let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
-                          ReflectionHelpers.makeMethodCall operationsTyp "ConvertOption"
-                            [ convTyp ] [ xml; Expr.Value(name); convFunc ]
-                          //operationsTyp?ConvertOption (convTyp) (xml, Expr.Value(name), convFunc)
-                        p :> System.Reflection.MemberInfo
+                          operationsTyp?ConvertOption (convTyp) (xml, name, convFunc)
+                        p :> MemberInfo
 
                 | _ -> failwith "generateXmlType: Child nodes should be named record types"))
 

@@ -107,16 +107,14 @@ module JsonTypeBuilder =
         let elementTy, elementConv = generateJsonType culture ctx typ
 
         // Build a function `mapper = fun x -> %%(elementConv x)`
-        let convTyp, convFunc = ReflectionHelpers.makeFunc elementConv ctx.Representation
+        let convTyp, convFunc = ReflectionHelpers.makeDelegate elementConv ctx.Representation
         // Build a function `packer = fun x -> %%(ctx.Packer x)`
-        let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+        let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
 
         // Call `ConvertArray<Representation, 'TRes>(json, packer, mapper)`
         let conv = fun json -> 
           let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-          ReflectionHelpers.makeMethodCall operationsTyp "ConvertArray"
-            [ ctx.Representation; convTyp ] [ ctx.Unpacker json; packFunc; convFunc ]
-          //operationsTyp?ConvertArray (ctx.Representation, convTyp) (ctx.Unpacker json, packFunc, convFunc)
+          operationsTyp?ConvertArray (ctx.Representation, convTyp) (ctx.Unpacker json, packFunc, convFunc)
         
         elementTy.MakeArrayType(), conv
 
@@ -140,13 +138,11 @@ module JsonTypeBuilder =
               let optValTy = typedefof<option<_>>.MakeGenericType [| valTy |]
 
               // Construct function arguments & call `ConvertOptionalProperty` 
-              let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+              let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
+              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
               let conv = fun (Singleton json) -> 
                 let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-                ReflectionHelpers.makeMethodCall operationsTyp "ConvertOptionalProperty"
-                  [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value propName; packFunc; convFunc]
-                //operationsTyp?ConvertOptionalProperty (ctx.Representation, convTyp) (ctx.Unpacker json, Expr.Value propName, packFunc, convFunc)
+                operationsTyp?ConvertOptionalProperty (ctx.Representation, convTyp) (ctx.Unpacker json, propName, packFunc, convFunc)
               optValTy, conv
 
           // Add property with PascalCased name
@@ -169,33 +165,27 @@ module JsonTypeBuilder =
               // Generate method that calls `GetArrayChildrenByTypeTag` 
               // (unlike the previous easy case, this needs to call conversion function
               // from the runtime similarly to options and arrays) 
-              let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+              let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
+              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
               fun (Singleton json) -> 
                 let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-                ReflectionHelpers.makeMethodCall operationsTyp "GetArrayChildrenByTypeTag"
-                  [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc]
-                //operationsTyp?GetArrayChildrenByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, Expr.Value kindCode, packFunc, convFunc)
+                operationsTyp?GetArrayChildrenByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc)
           
           | InferedMultiplicity.OptionalSingle, _ -> 
               // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
-              let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+              let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
+              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
               fun (Singleton json) -> 
                 let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-                ReflectionHelpers.makeMethodCall operationsTyp "TryGetArrayChildByTypeTag"
-                  [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc])
-                //operationsTyp?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, Expr.Value kindCode, packFunc, convFunc))
+                operationsTyp?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
 
     | Heterogeneous types ->
         // Generate a choice type that always calls `GetValueByTypeTag` to 
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
         generateMultipleChoiceType culture ctx types (fun info valConv kindCode ->
           // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
-          let convTyp, convFunc = ReflectionHelpers.makeFunc valConv ctx.Representation
-          let _, packFunc = ReflectionHelpers.makeFunc ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+          let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
+          let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
           fun (Singleton json) -> 
             let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-            ReflectionHelpers.makeMethodCall operationsTyp "TryGetValueByTypeTag"
-              [ ctx.Representation; convTyp ] [ctx.Unpacker json; Expr.Value kindCode; packFunc; convFunc])
-            //operationsTyp?TryGetValueByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, Expr.Value kindCode, packFunc, convFunc))
+            operationsTyp?TryGetValueByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
