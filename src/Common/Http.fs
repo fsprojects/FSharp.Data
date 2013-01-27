@@ -118,3 +118,38 @@ type Http private() =
   static member Request(url:string, ?query, ?headers, ?meth, ?body) = 
     Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body)
     |> Async.RunSynchronously
+
+// --------------------------------------------------------------------------------------
+
+module internal HttpUtility = 
+
+    // from https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+
+    let javaScriptStringEncode (value : string) = 
+
+        if String.IsNullOrEmpty value then
+            ""
+        else 
+            let chars = value.ToCharArray() |> Seq.map (fun c -> (int c))
+            let needsEscape = 
+                chars 
+                |> Seq.exists (fun c -> c >= 0 && c <= 31 || c = 34 || c = 39 || c = 60 || c = 62 || c = 92)
+            if not needsEscape then
+                value
+            else
+                let sb = new StringBuilder()
+                for c in chars do
+                    if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
+                        sb.AppendFormat("\\u{0:x4}", c) |> ignore
+                    else 
+                        match c with
+                        | 8 -> sb.Append "\\b"
+                        | 9 -> sb.Append "\\t"
+                        | 10 -> sb.Append "\\n"
+                        | 12 -> sb.Append "\\f"
+                        | 13 -> sb.Append "\\r"
+                        | 34 -> sb.Append "\\\""
+                        | 92 -> sb.Append "\\\\"
+                        | _ -> sb.Append (c)
+                        |> ignore
+                sb.ToString()

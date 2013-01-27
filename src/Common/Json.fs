@@ -12,43 +12,7 @@ open System
 open System.IO
 open System.Text
 open System.Globalization
-
-// --------------------------------------------------------------------------------------
-
-module private HttpUtility = 
-
-    // from https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
-
-    let JavaScriptStringEncode (value : string) = 
-
-        if String.IsNullOrEmpty value then
-            ""
-        else 
-            let chars = value.ToCharArray() |> Seq.map (fun c -> (int c))
-            let needsEscape = 
-                chars 
-                |> Seq.exists (fun c -> c >= 0 && c <= 31 || c = 34 || c = 39 || c = 60 || c = 62 || c = 92)
-            if not needsEscape then
-                value
-            else
-                let sb = new StringBuilder()
-                for c in chars do
-                    if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
-                        sb.AppendFormat("\\u{0:x4}", c) |> ignore
-                    else 
-                        match c with
-                        | 8 -> sb.Append "\\b"
-                        | 9 -> sb.Append "\\t"
-                        | 10 -> sb.Append "\\n"
-                        | 12 -> sb.Append "\\f"
-                        | 13 -> sb.Append "\\r"
-                        | 34 -> sb.Append "\\\""
-                        | 92 -> sb.Append "\\\\"
-                        | _ -> sb.Append (c)
-                        |> ignore
-                sb.ToString()
-
-// --------------------------------------------------------------------------------------
+open FSharp.Net.HttpUtility
 
 /// Represents a JSON value. Large numbers that do not fit in the 
 /// Decimal type are represented using the BigNumber case, while
@@ -71,7 +35,7 @@ type JsonValue =
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | BigNumber number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
-          sb.Append("\"" + HttpUtility.JavaScriptStringEncode(s) + "\"")
+          sb.Append("\"" + javaScriptStringEncode(s) + "\"")
       | Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
