@@ -5,7 +5,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.DataLoading
 open FSharp.Data.RuntimeImplementation.TypeInference
@@ -57,9 +57,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
     let inferedType = 
       if not sampleList then
-        JsonInference.inferType sampleJson
+        JsonInference.inferType cultureInfo sampleJson
       else
-        [ for itm in sampleJson -> JsonInference.inferType itm ]
+        [ for itm in sampleJson -> JsonInference.inferType cultureInfo itm ]
         |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)

@@ -8,6 +8,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Globalization
 open System.Reflection
 open System.Linq
 open Microsoft.FSharp.Core.CompilerServices
@@ -436,9 +437,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
           let snapshotDate = (providerArgs.[5] :?> string)
           let snapshotDate = 
               match snapshotDate with 
-              | "now" -> System.DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") 
+              | "now" -> DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss") 
               | null | "" | "none"  -> snapshotDate
-              | _ -> try ignore(System.DateTime.Parse(snapshotDate)); snapshotDate with e -> failwith ("invalid snapshot date" + e.Message)
+              | _ -> try ignore(DateTime.Parse(snapshotDate, CultureInfo.InvariantCulture, DateTimeStyles.None)); snapshotDate with e -> failwith ("invalid snapshot date" + e.Message)
 
           let useLocalCache = (providerArgs.[6] :?> bool)
           let proxyPrefix = (providerArgs.[7] :?> string)

@@ -23,6 +23,8 @@ module ProviderInference =
   let SimpleCollection typ = 
     Collection(Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
 
+  let culture = Operations.GetCulture ""
+
   [<Test>]
   let ``Seq.pairBy helper function works``() = 
     let actual = Seq.pairBy fst [(2, "a"); (1, "b")] [(1, "A"); (3, "C")]
@@ -44,14 +46,14 @@ module ProviderInference =
   let ``Finds common subtype of numeric types (decimal)``() =
     let source = JsonValue.Parse """[ 10, 10.23 ]"""
     let expected = SimpleCollection(Primitive(typeof<decimal>, None))
-    let actual = JsonInference.inferType  source
+    let actual = JsonInference.inferType culture  source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
   let ``Finds common subtype of numeric types (int64)``() =
     let source = JsonValue.Parse """[ 10, 2147483648 ]"""
     let expected = SimpleCollection(Primitive(typeof<int64>, None))
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -61,7 +63,7 @@ module ProviderInference =
       [ InferedTypeTag.Number, (Single, Primitive(typeof<int>, None))
         InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
       |> Map.ofSeq |> Collection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -72,14 +74,14 @@ module ProviderInference =
         InferedTypeTag.Number, (Single, Primitive(typeof<int>, None))
         InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
       |> Map.ofSeq |> Collection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
   let ``Finds common subtype of numeric types (float)``() =
     let source = JsonValue.Parse """[ 10, 10.23, 79228162514264337593543950336 ]"""
     let expected = SimpleCollection(Primitive(typeof<float>, None))
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -90,7 +92,7 @@ module ProviderInference =
         InferedTypeTag.Record None, 
           (Single, Record(None, [ { Name="a"; Optional=false; Type=Primitive(typeof<int>, None) } ])) ]
       |> Map.ofSeq |> Collection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -100,7 +102,7 @@ module ProviderInference =
       Record(None, [ {Name = "a"; Optional = true; Type = Primitive(typeof<bool>, None) }
                      {Name = "b"; Optional = true; Type = Primitive(typeof<decimal>, None) } ])
       |> SimpleCollection |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
       
   [<Test>]
@@ -111,7 +113,7 @@ module ProviderInference =
                      {Name = "b"; Optional = false; Type = Primitive(typeof<string>, None) }
                      {Name = "c"; Optional = true; Type = Primitive(typeof<bool>, None) }])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -120,7 +122,7 @@ module ProviderInference =
     let expected =
       Record(None, [ {Name = "a"; Optional = false; Type = Primitive(typeof<string>, None) } ])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -142,7 +144,7 @@ module ProviderInference =
     let expected =
       Record(None, [ {Name = "a"; Optional = true; Type = Primitive(typeof<int>, None) } ])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -153,7 +155,7 @@ module ProviderInference =
     let expected =
       Record(None, [ {Name = "a"; Optional = true; Type = nestedRecord } ])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -165,7 +167,7 @@ module ProviderInference =
     let expected = 
       Record(None, [ { Name = "a"; Optional = false; Type = Heterogeneous cases }])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -177,7 +179,7 @@ module ProviderInference =
     let expected = 
       Record(None, [ { Name = "a"; Optional = true; Type = Primitive(typeof<int>, None) }])
       |> SimpleCollection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
 
   [<Test>]
@@ -188,10 +190,8 @@ module ProviderInference =
       [ InferedTypeTag.Collection, (Single, SimpleCollection(Record(None, [prop])))
         InferedTypeTag.Number, (Single, Primitive(typeof<int>, None)) ]
       |> Map.ofSeq |> Collection
-    let actual = JsonInference.inferType source
+    let actual = JsonInference.inferType culture source
     Assert.AreEqual(expected, actual)
-
-  let culture = Operations.GetCulture ""
 
   [<Test>]
   let ``Inference of DateTime``() = 

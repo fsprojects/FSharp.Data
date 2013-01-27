@@ -150,6 +150,6 @@ module internal HttpUtility =
                         | 13 -> sb.Append "\\r"
                         | 34 -> sb.Append "\\\""
                         | 92 -> sb.Append "\\\\"
-                        | _ -> sb.Append (c)
+                        | _ -> sb.Append (char c)
                         |> ignore
                 sb.ToString()

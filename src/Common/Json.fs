@@ -12,6 +12,7 @@ open System
 open System.IO
 open System.Text
 open System.Globalization
+open FSharp.Data.RuntimeImplementation
 open FSharp.Net.HttpUtility
 
 /// Represents a JSON value. Large numbers that do not fit in the 
@@ -54,20 +55,32 @@ type JsonValue =
 
     (serialize (new StringBuilder()) this).ToString()
 
-  /// Get the string value of an elements (assuming that the value is a string)
+  /// Get the string value of an element (assuming that the value is a string)
   static member asString x = 
     match x with
     | JsonValue.String s -> s
     | JsonValue.Null -> null
     | JsonValue.Boolean b -> if b then "true" else "false"
-    | j -> failwithf "JSON mismatch: Not a string - %A" j
+    | _ -> failwithf "JSON mismatch: Not a string - %A" x
+
+  /// Get the datetime value of an element (assuming that the value is a string)
+  static member asDateTime(x, ?culture) = 
+    match x with
+    | JsonValue.String s -> 
+        match Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) s with 
+        | Some d -> d
+        | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
+    | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
 
     /// Get a number as a float (assuming that the value is convertible to a float)
   static member asFloat(x, ?culture) = 
     match x with
     | JsonValue.BigNumber n -> n
     | JsonValue.Number n -> float n
-    | JsonValue.String s -> Double.Parse(s, NumberStyles.Float, defaultArg culture CultureInfo.InvariantCulture)
+    | JsonValue.String s -> 
+        match Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) s with
+        | Some n -> n
+        | _ -> failwithf "JSON mismatch: Not a number - %A" x
     | _ -> failwithf "JSON mismatch: Not a number - %A" x
 
   /// Get a number as a decimal (assuming that the value fits in decimal)
@@ -75,7 +88,10 @@ type JsonValue =
     match x with
     | JsonValue.Number n -> n
     | JsonValue.BigNumber n -> decimal n
-    | JsonValue.String s -> Decimal.Parse(s, NumberStyles.Number, defaultArg culture CultureInfo.InvariantCulture)
+    | JsonValue.String s -> 
+        match Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) s with
+        | Some n -> n
+        | _ -> failwithf "JSON mismatch: Not a number - %A" x
     | _ -> failwithf "JSON mismatch: Not a number - %A" x
 
   /// Get a number as an integer (assuming that the value fits in integer)
@@ -83,22 +99,31 @@ type JsonValue =
     match x with
     | JsonValue.Number n -> int n
     | JsonValue.BigNumber n -> int n
-    | JsonValue.String s -> Int32.Parse(s, NumberStyles.Integer, defaultArg culture CultureInfo.InvariantCulture)
+    | JsonValue.String s -> 
+        match Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) s with
+        | Some n -> n
+        | _ -> failwithf "JSON mismatch: Not a number - %A" x
     | _ -> failwithf "JSON mismatch: Not a number - %A" x
 
-  /// Get a number as a 64-bits integer (assuming that the value fits in 64-bits integer)
+  /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
   static member asInteger64(x, ?culture) = 
     match x with
     | JsonValue.Number n -> int64 n 
     | JsonValue.BigNumber n -> int64 n
-    | JsonValue.String s -> Int64.Parse(s, NumberStyles.Integer, defaultArg culture CultureInfo.InvariantCulture)
+    | JsonValue.String s -> 
+        match Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) s with
+        | Some n -> n
+        | _ -> failwithf "JSON mismatch: Not a number - %A" x
     | _ -> failwithf "JSON mismatch: Not a number - %A" x
 
-  /// Get a boolean value of an element (assuming that the value is a boolean)
-  static member asBoolean x = 
+  /// Get the boolean value of an element (assuming that the value is a boolean)
+  static member asBoolean(x, ?culture) = 
     match x with
     | JsonValue.Boolean t -> t
-    | JsonValue.String s -> let s = s.ToLowerInvariant() in s = "true" || s = "yes"
+    | JsonValue.String s -> 
+        match Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) s with
+        | Some n -> n
+        | _ -> failwithf "JSON mismatch: Not a number - %A" x
     | _ -> failwithf "JSON mismatch: Not a boolean - %A" x
 
   /// Get property of a JSON object (assuming that the value is an object)
@@ -209,11 +234,11 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match Decimal.TryParse(s.Substring(start,len), NumberStyles.Number, culture) with  
-        | true, x -> JsonValue.Number x
+        match Operations.AsDecimal culture (s.Substring(start,len)) with  
+        | Some x -> JsonValue.Number x
         | _ -> 
-            match Double.TryParse(s.Substring(start,len), NumberStyles.Float, culture) with  
-            | true, x -> JsonValue.BigNumber x
+            match Operations.AsFloat culture (s.Substring(start,len)) with  
+            | Some x -> JsonValue.BigNumber x
             | _ -> throw()
 
     and parsePair() =
@@ -281,7 +306,7 @@ type JsonValue with
 
 /// Adds extension methods that can be used to get work with the JSON value
 /// in a less safe, but shorter way. The module also provides dynamic operator
-module JsonReader = 
+module Extensions = 
 
   /// Get property of a JSON object (assuming that the value is an object)
   let (?) jsonObject property = JsonValue.getProperty property jsonObject
@@ -291,8 +316,11 @@ module JsonReader =
     /// Get all elements of a JSON object (assuming that the value is an array)
     member x.GetEnumerator() = (JsonValue.asArray x :> seq<_>).GetEnumerator()
 
-    /// Get the string value of an elements (assuming that the value is a string)
+    /// Get the string value of an element (assuming that the value is a string)
     member x.AsString = JsonValue.asString x
+
+    /// Get the datetime value of an element (assuming that the value is a string)
+    member x.AsDateTime = JsonValue.asDateTime x
 
     /// Get a number as a float (assuming that the value is convertible to a float)
     member x.AsFloat = JsonValue.asFloat x
@@ -303,11 +331,11 @@ module JsonReader =
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger = JsonValue.asInteger x
 
-    /// Get a number as a 64-bits integer (assuming that the value fits in 64-bits integer)
-    member x.AsInteger64 = JsonValue.asInteger64
+    /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
+    member x.AsInteger64 = JsonValue.asInteger64 x
 
-    /// Get a boolean value of an elements (assuming that the value is a boolean)
-    member x.AsBoolean = JsonValue.asBoolean
+    /// Get the boolean value of an element (assuming that the value is a boolean)
+    member x.AsBoolean = JsonValue.asBoolean x
 
     /// Get inner text of an element - this includes just string nodes and
     /// string nodes in an array (e.g. multi-line string represented as array)

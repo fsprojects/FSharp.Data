@@ -6,7 +6,7 @@ open System.Diagnostics
 open System.Globalization
 open System.Net
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.Caching
 open FSharp.Net
 

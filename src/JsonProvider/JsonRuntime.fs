@@ -13,6 +13,7 @@ type JsonDocument (json:JsonValue) =
 type JsonOperations = 
   // Trivial operations that return primitive values
   static member GetString(value) = JsonValue.asString value
+  static member GetDateTime(value) = JsonValue.asDateTime value
   static member GetBoolean(value) = JsonValue.asBoolean value
   static member GetFloat(value, culture) = JsonValue.asFloat(value, Operations.GetCulture(culture))
   static member GetDecimal(value, culture) = JsonValue.asDecimal(value, Operations.GetCulture(culture))

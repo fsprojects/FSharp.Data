@@ -61,7 +61,7 @@ module private AssemblyReplacer =
                 |> Seq.filter (fun t -> t.FullName.EndsWith name)
                 |> Seq.last
             else
-                asm.GetType (getFullName t)
+                asm.GetType name
         let newT =
             if t.IsGenericType && not t.IsGenericTypeDefinition then 
                 let genericType = t.GetGenericTypeDefinition()

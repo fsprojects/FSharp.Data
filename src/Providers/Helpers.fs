@@ -114,7 +114,7 @@ module Conversions =
         elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%e) @@>
         elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, %%e) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
-        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(%%e) @@>
+        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%e) @@>
         elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%e) @@>
         else failwith "convertValue: Unsupported primitive type"
       match typeWrapper with

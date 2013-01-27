@@ -15,7 +15,7 @@ open System
 open System.Collections.Generic
 open System.Text
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
 
 [<AutoOpen>]
 module Utilities = 

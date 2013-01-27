@@ -54,11 +54,12 @@ let getJsonData() = seq {
             Description = ""
             SubItems = seq { 
                 for record in doc.Array do
-                    if record.Value <> null then 
-                        yield { Title = record.Date
-                                SubTitle = record.Value
-                                Description = ""
-                                Content = "" } } }
+                    match record.Value with
+                    | Some value -> yield { Title = record.Date.ToString()
+                                            SubTitle = value.ToString()
+                                            Description = ""
+                                            Content = "" }
+                    | None -> () } }
 }
 
 type SimpleXml = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">

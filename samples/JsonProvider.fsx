@@ -161,8 +161,9 @@ printfn "Showing page %d of %d. Total records %d"
 
 // Print all data points
 for record in doc.Array do
-  if record.Value <> null then
-    printfn "%d: %f" (int record.Date) (float record.Value)
+  match record.Value with
+  | Some value -> printfn "%d: %f" (int record.Date) (float value)
+  | None -> ()
 
 (**
 When printing the data points, some of them might be missing. Previously, this was handled

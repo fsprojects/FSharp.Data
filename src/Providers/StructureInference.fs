@@ -214,35 +214,20 @@ let inferCollectionType types =
       tag, (multiple, Seq.fold subtypeInfered Top types) )
   |> Map.ofSeq |> Collection
 
-let private (|StringEquals|_|) (s1:string) s2 = 
-    if s1.Equals(s2, StringComparison.OrdinalIgnoreCase) 
-    then Some () else None
-
-let private (|Parse|_|) func value = 
-    match func value with
-    | true, v -> Some v
-    | _ -> None
-
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
 let inferPrimitiveType culture (value : string) unit =
 
-    let int32TryParse value = Int32.TryParse(value, NumberStyles.Integer, culture)
-    let int64TryParse value = Int64.TryParse(value, NumberStyles.Integer, culture)
-    let decimalTryParse value = Decimal.TryParse(value, NumberStyles.Number, culture)
-    let doubleTryParse value = Double.TryParse(value, NumberStyles.Float, culture)
-    let dateTimeTryParse value = DateTime.TryParse(value, culture, DateTimeStyles.None)
+    let (|Parse|_|) func value = func culture value
 
-    if String.IsNullOrEmpty value then 
+    if String.IsNullOrWhiteSpace value then 
         Null
     else   
-        match value.Trim() with 
-        | StringEquals "true" | StringEquals "false" | StringEquals "yes" | StringEquals "no" -> 
-            Primitive(typeof<bool>, unit)
-        | StringEquals "#N/A" -> Primitive(typeof<float>, unit)
-        | Parse int32TryParse _ -> Primitive(typeof<int>, unit)
-        | Parse int64TryParse _ -> Primitive(typeof<int64>, unit)
-        | Parse decimalTryParse _ -> Primitive(typeof<decimal>, unit)
-        | Parse doubleTryParse _ -> Primitive(typeof<float>, unit)
-        | Parse dateTimeTryParse _ -> Primitive(typeof<DateTime>, unit)
+        match value with 
+        | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
+        | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
+        | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
+        | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
+        | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
+        | Parse Operations.AsDateTime _ -> Primitive(typeof<DateTime>, unit)
         | _ -> Primitive(typeof<string>, unit)
