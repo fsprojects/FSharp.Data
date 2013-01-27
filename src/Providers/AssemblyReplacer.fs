@@ -51,13 +51,21 @@ module private AssemblyReplacer =
     let private getType (asm:Assembly) (t:Type) rt =
         let getFullName (t:Type) =
             let fullName = t.FullName        
-            if fullName.StartsWith("FSI_")
-            then fullName.Substring(fullName.IndexOf('.') + 1)
-            else fullName
+            if fullName.StartsWith("FSI_") then 
+                fullName.Substring(fullName.IndexOf('.') + 1)
+            else 
+                fullName
+        let getType name =
+            if asm.GetName().Name = "FSI-ASSEMBLY" then
+                asm.GetTypes() 
+                |> Seq.filter (fun t -> t.FullName.EndsWith name)
+                |> Seq.last
+            else
+                asm.GetType (getFullName t)
         let newT =
             if t.IsGenericType && not t.IsGenericTypeDefinition then 
                 let genericType = t.GetGenericTypeDefinition()
-                let newT = asm.GetType (getFullName genericType)
+                let newT = getType (getFullName genericType)
                 if newT = null then 
                     null
                 else
@@ -67,7 +75,7 @@ module private AssemblyReplacer =
                         |> Seq.toArray
                     newT.MakeGenericType(typeArguments)
             else 
-                asm.GetType (getFullName t)
+                getType (getFullName t)
         if newT = null then
             failwithf "Type '%O' not found in '%s'" t asm.Location
         newT
@@ -97,6 +105,17 @@ module private AssemblyReplacer =
             if newP = null then
                 failwithf "Property '%O' of type '%O' not found in '%s'" p t toAsm.Location
             newP)
+
+    let private replaceField asmMappings (f : FieldInfo) =
+        if f.GetType() = typeof<ProvidedField> then f
+        else replace asmMappings (f, getAssemblies f.DeclaringType) (fun toAsm ->
+            let t = getType toAsm f.DeclaringType (replaceType asmMappings)
+            let bindingFlags = (if f.IsPublic then BindingFlags.Public else BindingFlags.NonPublic) ||| 
+                               (if f.IsStatic then BindingFlags.Static else BindingFlags.Instance)
+            let newF = t.GetField(f.Name, bindingFlags)
+            if newF = null then
+                failwithf "Field '%O' of type '%O' not found in '%s'" f t toAsm.Location
+            newF)
     
     let private replaceMethod asmMappings (m : MethodInfo) =
         if m.GetType() = typeof<ProvidedMethod> then m
@@ -161,23 +180,26 @@ module private AssemblyReplacer =
     let rec private replaceExpr asmMappings varTable reversePass quotation =
         let rt = replaceType asmMappings
         let rp = replaceProperty asmMappings
+        let rf = replaceField asmMappings
         let rm = replaceMethod asmMappings
         let rc = replaceConstructor asmMappings
         let ru = replaceUnionCase asmMappings
         let rv = replaceVar asmMappings varTable reversePass
         let re = replaceExpr asmMappings varTable reversePass
         
-        // this is not exhaustive, it's missing fields, setters, etc...
-        // add more patterns as needed
         match quotation with
-        | Call (expr, m, exprs) -> 
-            match expr with
-            | Some expr -> Expr.Call (re expr, rm m, List.map re exprs)
-            | None -> Expr.Call (rm m, List.map re exprs)
-        | PropertyGet (expr, p, exprs) -> 
-            match expr with
-            | Some expr -> Expr.PropertyGet (re expr, rp p, List.map re exprs)
-            | None -> Expr.PropertyGet (rp p, List.map re exprs)
+        | Call (obj, m, args) -> 
+            match obj with
+            | Some obj -> Expr.Call (re obj, rm m, List.map re args)
+            | None -> Expr.Call (rm m, List.map re args)
+        | PropertyGet (obj, p, indexArgs) -> 
+            match obj with
+            | Some obj -> Expr.PropertyGet (re obj, rp p, List.map re indexArgs)
+            | None -> Expr.PropertyGet (rp p, List.map re indexArgs)
+        | PropertySet (obj, p, indexArgs, value) -> 
+            match obj with
+            | Some obj -> Expr.PropertySet (re obj, rp p, re value, List.map re indexArgs)
+            | None -> Expr.PropertySet (rp p, re value, List.map re indexArgs)
         | NewObject (c, exprs) ->
             Expr.NewObject (rc c, List.map re exprs)
         | Coerce (expr, t) ->
@@ -186,6 +208,14 @@ module private AssemblyReplacer =
             ru uci (List.map re exprs)
         | NewDelegate (t, vars, expr) ->
             Expr.NewDelegate (rt t, List.map rv vars, re expr)
+        | FieldGet (obj, f) -> 
+            match obj with
+            | Some obj -> Expr.FieldGet (re obj, rf f)
+            | None -> Expr.FieldGet (rf f)
+        | FieldSet (obj, f, value) -> 
+            match obj with
+            | Some obj -> Expr.FieldSet (re obj, rf f, re value)
+            | None -> Expr.FieldSet (rf f, re value)
         | ShapeVar v -> 
             Expr.Var (rv v)
         | ShapeLambda (v, expr) -> 
