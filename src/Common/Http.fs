@@ -22,7 +22,7 @@ type Http private() =
   ///  [1]: http://stackoverflow.com/questions/781205/getting-a-url-with-an-url-encoded-slash
   ///
   static let enableUriSlashes (uri:Uri) =
-#if PORTABLE
+#if FX_NO_URI_WORKAROUND
 #else
     let uri = Uri(uri.OriginalString)
     let paq = uri.PathAndQuery
@@ -74,7 +74,8 @@ type Http private() =
     let query = 
       [ for (k, v) in query -> k + "=" + v ]
       |> String.concat "&"
-    let req = HttpWebRequest.Create(enableUriSlashes(Uri(url + "?" + query))) 
+    let url = if query = "" then url else url + "?" + query
+    let req = HttpWebRequest.Create(enableUriSlashes(Uri url)) 
     let req = req :?> HttpWebRequest
     req.Method <- meth
     
@@ -85,8 +86,8 @@ type Http private() =
       elif String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) = 0 then
         req.ContentType <- value
       else
-#if PORTABLE
-        failwith "Only 'accept' and 'content-type' headers are supported on portable profile"
+#if FX_NO_WEBHEADERS_ADD
+        req.Headers.[header] <- value
 #else
         req.Headers.Add(header, value) 
 #endif
@@ -94,17 +95,16 @@ type Http private() =
     // If we want to set some body, encode it with POST data as array of bytes
     match body with 
     | Some (text:string) ->
-#if PORTABLE
-        failwith "Body not supported on portable profile"
-#else
         let postBytes = Encoding.UTF8.GetBytes(text)
-        if headers |> Seq.forall (fun (header, _) ->
-          String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0) then
+        if headers |> Seq.forall (fun (header, _) -> String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0) then
           req.ContentType <- "application/x-www-form-urlencoded"
+#if FX_NO_WEBREQUEST_CONTENTLENGTH
+#else
         req.ContentLength <- int64 postBytes.Length
-        use reqStream = req.GetRequestStream() 
-        reqStream.Write(postBytes, 0, postBytes.Length)
 #endif
+        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
+        output.Flush()
     | _ -> ()
     
     // Send the request and get the response       

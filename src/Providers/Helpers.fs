@@ -9,6 +9,8 @@ open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 
+// ----------------------------------------------------------------------------------------------
+
 module Seq = 
 
   /// Merge two sequences by pairing elements for which
@@ -25,6 +27,18 @@ module Seq =
     let asOption = function true, v -> Some v | _ -> None
     [ for k in keys -> 
         k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
+
+module List = 
+
+    let headAndTail l = match l with [] -> invalidArg "l" "empty list" | h::t -> (h,t)
+
+    let frontAndBack l = 
+        let rec loop acc l = 
+            match l with
+            | [] -> invalidArg "l" "empty list" 
+            | [h] -> List.rev acc,h
+            | h::t -> loop  (h::acc) t
+        loop [] l
 
 // ----------------------------------------------------------------------------------------------
 
@@ -85,13 +99,13 @@ module Conversions =
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `typ` and 
-  let convertValue (culture:string) (fieldName:string) typeWrapper typ (replacer:AssemblyReplacer) = 
+  let convertValue (culture:string) (fieldName:string) typeWrapper (typ, typWithMeasure) (replacer:AssemblyReplacer) = 
 
     let returnTyp = 
         match typeWrapper with
-        | TypeWrapper.None -> typ
-        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| typ |]
-        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| typ |]
+        | TypeWrapper.None -> typWithMeasure
+        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| typWithMeasure |]
+        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| typWithMeasure |]
 
     returnTyp, fun e ->
       let converted = 
@@ -145,8 +159,29 @@ module AssemblyResolver =
             initialized <- true
             AppDomain.CurrentDomain.add_AssemblyResolve(assemblyResolveHandler)
 
-        let runtimeAssembly = Assembly.LoadFrom cfg.RuntimeAssembly
-        
+#if FX_NO_ASSEMBLY_LOAD_FROM
+        let onUiThread f = 
+            if System.Windows.Deployment.Current.Dispatcher.CheckAccess() then 
+                f() 
+            else
+                let resultTask = System.Threading.Tasks.TaskCompletionSource<'T>()
+                System.Windows.Deployment.Current.Dispatcher.BeginInvoke(Action(fun () -> try resultTask.SetResult (f()) with err -> resultTask.SetException err)) |> ignore
+                resultTask.Task.Result
+
+        let runtimeAssembly = 
+            onUiThread (fun () ->
+                let assemblyPart = System.Windows.AssemblyPart()
+                let FileStreamReadShim(fileName) = 
+                    match System.Windows.Application.GetResourceStream(System.Uri(fileName,System.UriKind.Relative)) with 
+                    | null -> System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().OpenFile(fileName, System.IO.FileMode.Open) :> System.IO.Stream 
+                    | resStream -> resStream.Stream
+                let assemblyStream = FileStreamReadShim cfg.RuntimeAssembly
+                
+                assemblyPart.Load(assemblyStream))
+#else
+        let runtimeAssembly = Assembly.LoadFrom(cfg.RuntimeAssembly)
+#endif        
+
         let targetFrameworkAttr = runtimeAssembly.GetCustomAttribute<TargetFrameworkAttribute>()
         let isPortable = targetFrameworkAttr.FrameworkName = ".NETPortable,Version=v4.0,Profile=Profile47"
 

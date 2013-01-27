@@ -23,7 +23,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\portable\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;PORTABLE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FX_NO_WEBREQUEST_CONTENTLENGTH;FX_NO_WEBHEADERS_ADD;FX_NO_CUSTOMTYPEDESCRIPTOR;FX_NO_LOCAL_FILESYSTEM;FX_NO_CUSTOMATTRIBUTEDATA;FX_NO_CONCURRENT;FX_NO_URI_WORKAROUND</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\portable\Debug\FSharp.Data.XML</DocumentationFile>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\portable\Release</OutputPath>
-    <DefineConstants>TRACE;PORTABLE</DefineConstants>
+    <DefineConstants>TRACE;FX_NO_WEBREQUEST_CONTENTLENGTH;FX_NO_WEBHEADERS_ADD;FX_NO_CUSTOMTYPEDESCRIPTOR;FX_NO_LOCAL_FILESYSTEM;FX_NO_CUSTOMATTRIBUTEDATA;FX_NO_CONCURRENT;FX_NO_URI_WORKAROUND</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\portable\Release\FSharp.Data.XML</DocumentationFile>
   </PropertyGroup>
@@ -47,6 +47,9 @@
     <Compile Include="XmlProvider\XmlRuntime.fs" />
     <Compile Include="CsvProvider\CsvRuntime.fs" />
     <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
+    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
+    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
+    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
     <Compile Include="Runtime.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,6 @@
 open System
 open System.Globalization
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
 open FSharp.Data.RuntimeImplementation.TypeInference
 
 /// Underlying representation of the generated JSON types
@@ -13,30 +12,23 @@ type JsonDocument (json:JsonValue) =
 
 type JsonOperations = 
   // Trivial operations that return primitive values
-  static member GetString(value:JsonValue) = value.AsString
-  static member GetBoolean(value:JsonValue) = value.AsBoolean
-  static member GetFloat(value:JsonValue, culture:CultureInfo) = value.AsFloatWithCulture(culture)
-  static member GetDecimal(value:JsonValue, culture:CultureInfo) = value.AsDecimalWithCulture(culture)
-  static member GetInteger(value:JsonValue, culture:CultureInfo) = value.AsIntegerWithCulture(culture)
-  static member GetInteger64(value:JsonValue, culture:CultureInfo) = value.AsInteger64WithCulture(culture)
-  static member GetProperty(doc:JsonValue, name) = (?) doc name
+  static member GetString(value) = JsonValue.asString value
+  static member GetBoolean(value) = JsonValue.asBoolean value
+  static member GetFloat(value, culture) = JsonValue.asFloat(value, Operations.GetCulture(culture))
+  static member GetDecimal(value, culture) = JsonValue.asDecimal(value, Operations.GetCulture(culture))
+  static member GetInteger(value, culture) = JsonValue.asInteger(value, Operations.GetCulture(culture))
+  static member GetInteger64(value, culture) = JsonValue.asInteger64(value, Operations.GetCulture(culture))
+  static member GetProperty(value, name) = JsonValue.getProperty name value
 
   /// Converts JSON array to array of target types
   /// The `packer` function rebuilds representation type (such as
   /// `JsonDocument`) which is then passed to projection function `f`.
-  static member ConvertArray<'P, 'R>
-      (value:JsonValue, packer:Func<JsonValue,'P>, f:Func<'P,'R>) : 'R[] = 
-    [| for v in value -> f.Invoke (packer.Invoke (v)) |]
+  static member ConvertArray(value, packer:Func<_,_>, f:Func<_,_>) = 
+    value |> JsonValue.asArray |> Array.map (packer.Invoke >> f.Invoke)
 
   /// Get optional property of a specified type
-  static member ConvertOptionalProperty<'P, 'R>
-      (doc:JsonValue, name, packer:Func<JsonValue,'P>, f:Func<'P,'R>) : 'R option = 
-    match doc with 
-    | JsonValue.Object o -> 
-        match o.TryFind name with
-        | None | Some JsonValue.Null -> None
-        | Some it -> Some (f.Invoke (packer.Invoke it))
-    | _ -> None
+  static member ConvertOptionalProperty(value, name, packer:Func<_,_>, f:Func<_,_>) =     
+    value |> JsonValue.tryGetProperty name |> Option.map (packer.Invoke >> f.Invoke)
 
   /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
@@ -53,8 +45,7 @@ type JsonOperations =
     match doc with
     | JsonValue.Array ar ->
         ar 
-        |> List.filter matchesTag 
-        |> Array.ofList
+        |> Array.filter matchesTag 
         |> Array.map (pack.Invoke >> f.Invoke)
     | _ -> failwith "JSON mismatch: Expected Array node"
 
@@ -74,5 +65,5 @@ type JsonOperations =
   /// Returns a single or no value by tag type
   static member TryGetValueByTypeTag(value:JsonValue, tag, pack, f) = 
     // Build a fake array and reuse `GetArrayChildByTypeTag`
-    let arrayValue = JsonValue.Array [value]
+    let arrayValue = JsonValue.Array [| value |]
     JsonOperations.TryGetArrayChildByTypeTag(arrayValue, tag, pack, f) 

@@ -99,7 +99,7 @@ and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
 *)
 match value with
-| JsonValue.Array [info; data] ->
+| JsonValue.Array [| info; data |] ->
     // Print overall information
     let page, pages, total = info?page, info?pages, info?total
     printfn 

@@ -65,6 +65,10 @@
     <Compile Include="CsvProvider\CsvProvider.fs" />
     <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
     <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
+    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
+    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
+    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
+    <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
     <Compile Include="Providers.fs" />
     <None Include="Test.fsx" />
   </ItemGroup>

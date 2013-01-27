@@ -11,7 +11,7 @@ open System.Text
 open System.Reflection
 open System.Collections.Generic
 
-#if PORTABLE
+#if FX_NO_LOCAL_FILESYSTEM
 #else
 /// If the file is not web based, setup an file system watcher that 
 /// invalidates the generated type whenever the file changes
@@ -53,9 +53,9 @@ let private resolveUri
     uri.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
     uri.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
 
-#if PORTABLE
+#if FX_NO_LOCAL_FILESYSTEM
   if not isWeb then
-      failwith "Only web locations are supported on portable profile"
+      failwith "Only web locations are supported"
   else
       uri, true
 #else
@@ -74,7 +74,7 @@ let private resolveUri
 
 /// Given a type provider configuration and a name passed by user, open 
 /// the file or URL (if it starts with http(s)) and return it as a stream
-let asyncOpenStreamInProvider 
+let internal asyncOpenStreamInProvider 
     designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder (uri:string) = async {
 
   let resolvedFileOrUri, isWeb = resolveUri designTime cfg resolutionFolder uri
@@ -84,8 +84,8 @@ let asyncOpenStreamInProvider
     let! resp = req.AsyncGetResponse() 
     return resp.GetResponseStream()
   else
-#if PORTABLE
-    return failwith "Only web locations are supported on portable profile"
+#if FX_NO_LOCAL_FILESYSTEM
+    return failwith "Only web locations are supported"
 #else
     // Open the file, even if it is already opened by another application
     let file = File.Open(resolvedFileOrUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)

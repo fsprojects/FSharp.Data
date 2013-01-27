@@ -89,10 +89,10 @@ module JsonTypeBuilder =
 
         // Return the JSON value as one of the supported primitive types
         let conv = 
-          if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%json, Operations.GetCulture(culture)) @@>
-          elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%json, Operations.GetCulture(culture)) @@>
-          elif typ = typeof<decimal> then fun json -> <@@ JsonOperations.GetDecimal(%%json, Operations.GetCulture(culture)) @@>
-          elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, Operations.GetCulture(culture)) @@>
+          if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%json, culture) @@>
+          elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%json, culture) @@>
+          elif typ = typeof<decimal> then fun json -> <@@ JsonOperations.GetDecimal(%%json, culture) @@>
+          elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, culture) @@>
           elif typ = typeof<string> then fun json -> <@@ JsonOperations.GetString(%%json) @@>
           elif typ = typeof<bool> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
           else failwith "generateJsonType: Unsupported primitive type"

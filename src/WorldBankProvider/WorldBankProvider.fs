@@ -11,7 +11,7 @@ open System.Web
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data.Caching
+open FSharp.Data.RuntimeImplementation.Caching
 open FSharp.Data.RuntimeImplementation.WorldBank
 
 // --------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
-    let restCache = createInternetFileCache "WorldBankSchema" (TimeSpan.FromDays(7.0))
+    let restCache, _ = createInternetFileCache "WorldBankSchema"
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
 
@@ -170,7 +170,6 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
               let sourcesVal = sources |> String.concat ";"
               yield ProvidedMethod ("GetDataContext", [], worldBankDataServiceType, IsStaticMethod=true,
                                     InvokeCode = (fun _ -> replacer.ToRuntime <@@ WorldBankData(urlVal, sourcesVal) @@>)) 
-              //TODO: overload to provide serviceUrl
             ])
 
         resTy

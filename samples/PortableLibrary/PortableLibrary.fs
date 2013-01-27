@@ -15,6 +15,27 @@ type Item =
       Description : string
       SubItems : SubItem seq }
 
+type StocksCsv = CsvProvider<"../docs/MSFT.csv">
+
+let getCsvData forSilverlight = seq {
+
+    let msft = 
+        if forSilverlight then
+            StocksCsv.Parse(msftCsv)
+        else
+            StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+
+    yield { Title = "MSFT Stock CSV"
+            SubTitle = ""
+            Description = ""
+            SubItems = seq { 
+                for row in msft.Data |> Seq.truncate 10 do
+                    yield { Title = sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
+                            SubTitle = ""
+                            Description = ""
+                            Content = "" } } }
+}
+
 type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
 type WorldBankJson = JsonProvider<"../docs/WorldBank.json">
 
@@ -65,27 +86,6 @@ let getXmlData() = seq {
                             Content = "" } } }
 }
 
-type StocksCsv = CsvProvider<"../docs/MSFT.csv">
-
-let getCsvData forSilverlight = seq {
-
-    let msft = 
-        if forSilverlight then
-            StocksCsv.Parse(msftCsv)
-        else
-            StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-
-    yield { Title = "MSFT Stock CSV"
-            SubTitle = ""
-            Description = ""
-            SubItems = seq { 
-                for row in msft.Data |> Seq.truncate 10 do
-                    yield { Title = sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
-                            SubTitle = ""
-                            Description = ""
-                            Content = "" } } }
-}
-
 let getWorldBankData() = seq {
 
     let wb = WorldBankData.GetDataContext()
@@ -101,15 +101,28 @@ let getWorldBankData() = seq {
                             Content = "" } } }
 }
 
+let getFreebaseData() = seq {
+
+    let fb = FreebaseData.GetDataContext()
+    yield { Title = "Asteroids"
+            SubTitle = ""
+            Description = ""
+            SubItems = seq { 
+                for a in fb.``Science and Technology``.Astronomy.Asteroids |> Seq.truncate 10 do
+                    yield { Title = a.Name
+                            SubTitle = ""
+                            Description = a.Description |> String.concat "\n"
+                            Content = a.Blurb |> String.concat "\n" } } }
+}
+
 let getData forSilverlight = seq {
+
+    yield! getCsvData forSilverlight
 
     yield! getJsonData()
     
     if not forSilverlight then
         yield! getXmlData()
-
-    yield! getCsvData forSilverlight
-
-    if not forSilverlight then
         yield! getWorldBankData()
+        yield! getFreebaseData()
 }

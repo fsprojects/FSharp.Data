@@ -16,14 +16,14 @@ module internal CsvTypeBuilder =
         parentType.AddMember objectTy
 
         for index, field in fields |> Seq.mapi (fun i v -> i, v) do
-            let baseTyp, propTyp =
+            let typ, typWithMeasure =
                 match field.Type with
                 | Primitive(typ, Some unit) -> 
                     typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
                 | Primitive(typ, None) -> typ, typ
                 | _ -> typeof<string>, typeof<string>
 
-            let typ, conv = Conversions.convertValue culture field.Name (if field.Optional then TypeWrapper.Nullable else TypeWrapper.None) baseTyp replacer
+            let typ, conv = Conversions.convertValue culture field.Name (if field.Optional then TypeWrapper.Nullable else TypeWrapper.None) (typ, typWithMeasure) replacer
             let p = ProvidedProperty(NameUtils.nicePascalName field.Name, typ)
             p.GetterCode <- fun (Singleton row) -> let row = replacer.ToDesignTime row in conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
             objectTy.AddMember p
