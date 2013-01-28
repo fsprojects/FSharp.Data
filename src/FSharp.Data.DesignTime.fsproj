@@ -22,9 +22,11 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\FSharp.Data.DesignTime.XML</DocumentationFile>
-    <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe</StartProgram>
-    <StartArguments>D:\Gustavo\Forks\FSharp.Data\FSharp.Data.Tests.sln</StartArguments>
+    <StartAction>Project</StartAction>
+    <StartProgram>
+    </StartProgram>
+    <StartArguments>
+    </StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -88,12 +90,21 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\portable"
+    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\portable"
+
 copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\portable"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\portable"</PostBuildEvent>
+
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\portable"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\v40"
+
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\v40"
+
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\v40"
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin"
+
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin"
+
+copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
