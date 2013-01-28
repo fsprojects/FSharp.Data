@@ -95,9 +95,15 @@ type Http private() =
     // If we want to set some body, encode it with POST data as array of bytes
     match body with 
     | Some (text:string) ->
-        let postBytes = Encoding.UTF8.GetBytes(text)
-        if headers |> Seq.forall (fun (header, _) -> String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0) then
+        // Set default content type if it is not specified by the user
+        let hasContentType = 
+          headers |> Seq.exists (fun (header, _) -> 
+            String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0)
+        if not hasContentType then
           req.ContentType <- "application/x-www-form-urlencoded"
+
+        // Write the body 
+        let postBytes = Encoding.UTF8.GetBytes(text)
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
 #else
         req.ContentLength <- int64 postBytes.Length
@@ -121,35 +127,40 @@ type Http private() =
 
 // --------------------------------------------------------------------------------------
 
-module internal HttpUtility = 
+// We cannot use HttpUtility from System.Web on a portable version,
+// so we reimplement the encoding of JavaScript strings...
+module private HttpUtility = 
 
-    // from https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+  // Encode characters that are not valid in JS string. The implementation is based
+  // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+  // (but we use just a single iteration and create StringBuilder as needed)
+  let JavaScriptStringEncode (value : string) = 
+    if String.IsNullOrEmpty value then "" else 
+      let chars = value.ToCharArray() 
+      
+      // We only create StringBuilder when we find a character that 
+      // we actually need to encode (and then we copy all skipped chars)
+      let sb = ref null 
+      let inline ensureBuilder i = 
+        if !sb = null then 
+          sb := new StringBuilder(value.Length + 5)
+          (!sb).Append(value.Substring(0, i - 1))
+        else !sb
 
-    let javaScriptStringEncode (value : string) = 
-
-        if String.IsNullOrEmpty value then
-            ""
-        else 
-            let chars = value.ToCharArray() |> Seq.map (fun c -> (int c))
-            let needsEscape = 
-                chars 
-                |> Seq.exists (fun c -> c >= 0 && c <= 31 || c = 34 || c = 39 || c = 60 || c = 62 || c = 92)
-            if not needsEscape then
-                value
-            else
-                let sb = new StringBuilder()
-                for c in chars do
-                    if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
-                        sb.AppendFormat("\\u{0:x4}", c) |> ignore
-                    else 
-                        match c with
-                        | 8 -> sb.Append "\\b"
-                        | 9 -> sb.Append "\\t"
-                        | 10 -> sb.Append "\\n"
-                        | 12 -> sb.Append "\\f"
-                        | 13 -> sb.Append "\\r"
-                        | 34 -> sb.Append "\\\""
-                        | 92 -> sb.Append "\\\\"
-                        | _ -> sb.Append (char c)
-                        |> ignore
-                sb.ToString()
+      // Iterate over characters and encode 
+      for i in 0 .. chars.Length - 1 do 
+          let c = int (chars.[i])
+          if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
+              (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
+          else 
+              match c with
+              | 8 -> (ensureBuilder i).Append "\\b"|> ignore
+              | 9 -> (ensureBuilder i).Append "\\t"|> ignore
+              | 10 -> (ensureBuilder i).Append "\\n"|> ignore
+              | 12 -> (ensureBuilder i).Append "\\f"|> ignore
+              | 13 -> (ensureBuilder i).Append "\\r"|> ignore
+              | 34 -> (ensureBuilder i).Append "\\\""|> ignore
+              | 92 -> (ensureBuilder i).Append "\\\\" |> ignore
+              | _ -> if !sb <> null then (!sb).Append(char c) |> ignore
+      if !sb = null then value else
+        (ensureBuilder chars.Length).ToString()

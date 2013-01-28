@@ -29,10 +29,15 @@ module private Helpers =
   
 type Operations = 
 
+  /// Turns empty or null string value into None, otherwise returns Some
   static member AsOption str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
+  /// Parse date time using either MS JSON format or using ISO 8601
+  /// that is, either "Date(<msec-since-1/1/1970>)" or something
+  /// along the lines of "2013-01-28T00:37Z"
   static member AsDateTime culture (text:string) =
+    // Try parse Microsoft style format
     let matchesMS = msDateRegex.Value.Match (text.Trim())
     if matchesMS.Success then
       matchesMS.Groups.[1].Value 
@@ -40,16 +45,18 @@ type Operations =
       |> DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds 
       |> Some
     else
-        let dateTimeStylesForUtc = function
-          | true -> DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal
-          | false -> DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces            
-        let matches = iso8601Regex.Value.Match(text)
-        if matches.Success then
-          let parsed, d = DateTime.TryParse(text, culture, dateTimeStylesForUtc matches.Groups.["IsUTC"].Success)
-          if parsed then Some d else None
-        else
-          None
+      // Try parse the ISO format
+      let matches = iso8601Regex.Value.Match(text)
+      let format = 
+        if matches.Groups.["IsUTC"].Success 
+        then DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal
+        else DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces            
+      if matches.Success then
+        let parsed, d = DateTime.TryParse(text, culture, format)
+        if parsed then Some d else None
+      else None
 
+  // Try parse string into standard types and returns None if failed
   static member AsInteger culture text = 
     Int32.TryParse(text, NumberStyles.Integer, culture) |> asOption
   
@@ -73,7 +80,8 @@ type Operations =
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
   static member GetCulture culture =
-    if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture else Globalization.CultureInfo(culture)
+    if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture 
+    else Globalization.CultureInfo(culture)
 
   // Operations that convert string to supported primitive types
   static member ConvertString text = 
@@ -113,6 +121,8 @@ type Operations =
     | None when typeof<'T> = typeof<string> -> box "" :?> 'T
     | _ -> failwithf "Mismatch: %s is missing" name
 
+  /// Turn an F# option type Option<'T> containing a primitive 
+  /// value type into a .NET type Nullable<'T>
   static member ToNullable opt =
     match opt with 
     | Some v -> Nullable v
