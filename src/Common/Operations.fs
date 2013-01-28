@@ -1,8 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation 2005-2011.
-// This sample code is provided "as is" without warranty of any kind. 
-// We disclaim all warranties, either express or implied, including the 
-// warranties of merchantability and fitness for a particular purpose. 
+// Helper operations for converting converting string values to other types
 // --------------------------------------------------------------------------------------
 
 namespace FSharp.Data.RuntimeImplementation
@@ -68,19 +65,11 @@ type Operations =
     | _ -> Double.TryParse(text, NumberStyles.Float, culture) |> asOption
   
   static member AsBoolean culture (text:string) = 
-#if FX_NO_BOOL_TOSTRING_CULTURE
     match text.Trim() with
     | StringEquals "true" | StringEquals "yes" -> Some true
     | StringEquals "false" | StringEquals "no" -> Some false
     | _ -> None
-#else
-    let localizedTrueString = true.ToString(culture)
-    let localizedFalseString = true.ToString(culture)
-    match text.Trim() with
-    | StringEquals "true" | StringEquals "yes" | StringEquals localizedTrueString -> Some true
-    | StringEquals "false" | StringEquals "no" | StringEquals localizedFalseString -> Some false
-    | _ -> None
-#endif
+
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
   static member GetCulture culture =
