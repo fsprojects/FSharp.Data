@@ -812,7 +812,7 @@ module internal QueryImplementation =
                     let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
                     let typeId = getBaseTypeId queryData
                     let query = sprintf "{ '/type/object/type' : '%s' %s }" typeId queryText 
-                    let count = source.FreebaseDataConnection.Connection.Query<int>(query, JsonValue.asInteger)
+                    let count = source.FreebaseDataConnection.Connection.Query<int>(query, fun j -> j.AsInteger())
                     box count  :?> 'T
                 | _ ->
                     whenAllElseFails e }

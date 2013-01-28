@@ -26,21 +26,21 @@ module Utilities =
     type JsonValue with
 
         member this.GetStringValWithKey s = 
-            this |> JsonValue.getProperty s |> JsonValue.asString
+            this.GetProperty(s).AsString()
 
         member this.GetOptionalStringValWithKey(s, ?dflt) = 
-            let strOption = this |> JsonValue.tryGetProperty s |> Option.map JsonValue.asString
+            let strOption = this.TryGetProperty(s) |> Option.map (fun j -> j.AsString())
             defaultArg strOption (defaultArg dflt "")
 
         member this.GetArrayValWithKey s = 
-            this |> JsonValue.getProperty s |> JsonValue.asArray
+            this.GetProperty(s).AsArray()
 
         member this.GetOptionalArrayValWithKey s = 
-            let arrayOption = this |> JsonValue.tryGetProperty s |> Option.map JsonValue.asArray
+            let arrayOption = this.TryGetProperty(s) |> Option.map (fun j -> j.AsArray())
             defaultArg arrayOption [| |]
 
-        static member GetArrayVal f j = 
-            j |> JsonValue.asArray |> Array.map f
+        static member GetArrayVal f (j:JsonValue) = 
+            j.AsArray() |> Array.map f
     
 type FreebaseResult<'TResult> = 
     { Code:string
@@ -165,7 +165,7 @@ type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCache
         try 
             let resultText = queryRawText queryUrl
             let fbr = JsonValue.Parse resultText
-            let result = fbr |> FreebaseResult<string>.FromJson JsonValue.asString
+            let result = fbr |> FreebaseResult<string>.FromJson (fun j -> j.AsString())
             Some result.Result
         with e -> None
             

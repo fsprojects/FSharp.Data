@@ -13,24 +13,24 @@ type JsonDocument (json:JsonValue) =
 
 type JsonOperations = 
   // Trivial operations that return primitive values
-  static member GetString(value) = JsonValue.asString value
-  static member GetDateTime(value) = JsonValue.asDateTime value
-  static member GetBoolean(value) = JsonValue.asBoolean value
-  static member GetFloat(value, culture) = JsonValue.asFloat(value, Operations.GetCulture(culture))
-  static member GetDecimal(value, culture) = JsonValue.asDecimal(value, Operations.GetCulture(culture))
-  static member GetInteger(value, culture) = JsonValue.asInteger(value, Operations.GetCulture(culture))
-  static member GetInteger64(value, culture) = JsonValue.asInteger64(value, Operations.GetCulture(culture))
-  static member GetProperty(value, name) = JsonValue.getProperty name value
+  static member GetString(value:JsonValue) = value.AsString()
+  static member GetDateTime(value:JsonValue) = value.AsDateTime()
+  static member GetBoolean(value:JsonValue) = value.AsBoolean()
+  static member GetFloat(value:JsonValue, culture) = value.AsFloat(Operations.GetCulture(culture))
+  static member GetDecimal(value:JsonValue, culture) = value.AsDecimal(Operations.GetCulture(culture))
+  static member GetInteger(value:JsonValue, culture) = value.AsInteger(Operations.GetCulture(culture))
+  static member GetInteger64(value:JsonValue, culture) = value.AsInteger64(Operations.GetCulture(culture))
+  static member GetProperty(value:JsonValue, name) = value.GetProperty(name)
 
   /// Converts JSON array to array of target types
   /// The `packer` function rebuilds representation type (such as
   /// `JsonDocument`) which is then passed to projection function `f`.
-  static member ConvertArray(value, packer:Func<_,_>, f:Func<_,_>) = 
-    value |> JsonValue.asArray |> Array.map (packer.Invoke >> f.Invoke)
+  static member ConvertArray(value:JsonValue, packer:Func<_,_>, f:Func<_,_>) = 
+    value.AsArray() |> Array.map (packer.Invoke >> f.Invoke)
 
   /// Get optional property of a specified type
-  static member ConvertOptionalProperty(value, name, packer:Func<_,_>, f:Func<_,_>) =     
-    value |> JsonValue.tryGetProperty name |> Option.map (packer.Invoke >> f.Invoke)
+  static member ConvertOptionalProperty(value:JsonValue, name, packer:Func<_,_>, f:Func<_,_>) =     
+    value.TryGetProperty(name) |> Option.map (packer.Invoke >> f.Invoke)
 
   /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
