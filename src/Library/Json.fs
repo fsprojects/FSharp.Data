@@ -16,7 +16,7 @@ open System.Globalization
 open System.Xml.Linq
 open FSharp.Data
 open FSharp.Data.RuntimeImplementation
-open FSharp.Net.HttpUtility
+open ProviderImplementation.HttpUtility
 
 /// Represents a JSON value. Large numbers that do not fit in the 
 /// Decimal type are represented using the BigNumber case, while
@@ -39,7 +39,7 @@ type JsonValue =
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | BigNumber number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
-          sb.Append("\"" + javaScriptStringEncode(s) + "\"")
+          sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
       | Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore

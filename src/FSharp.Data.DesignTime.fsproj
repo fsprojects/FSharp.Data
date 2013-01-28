@@ -36,16 +36,17 @@
     <DocumentationFile>bin\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\Operations.fs" />
-    <Compile Include="Common\Http.fs" />
-    <Compile Include="Common\DataLoading.fs" />
-    <Compile Include="Common\TypeInference.fs" />
-    <Compile Include="Common\Pluralizer.fs" />
-    <Compile Include="Common\NameUtils.fs" />
-    <Compile Include="Common\Json.fs" />
+    <Compile Include="Common\ProviderFileSystem.fs" />
+    <Compile Include="Common\StructuralTypes.fs" />
+    <Compile Include="Common\HttpUtils.fs" />
+    <Compile Include="Common\Conversions.fs" />
     <Compile Include="Common\Caching.fs" />
+    <Compile Include="Library\Http.fs" />
+    <Compile Include="Library\Json.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
     <Compile Include="Providers\ProvidedTypes.fs" />
+    <Compile Include="Providers\Pluralizer.fs" />
+    <Compile Include="Providers\NameUtils.fs" />
     <Compile Include="Providers\QuotationBuilder.fs" />
     <Compile Include="Providers\AssemblyReplacer.fs" />
     <Compile Include="Providers\Helpers.fs" />
