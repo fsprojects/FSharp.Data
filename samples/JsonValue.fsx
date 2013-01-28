@@ -47,7 +47,7 @@ namespace. Once opened, we can write:
  * `value.AsString()` returns the value as a string
  * `value.AsDateTime()` parse the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
-    `Date(...)` format used by Microsoft.
+    `Date(...)` format containing number of milliseconds since 1/1/1970.
  * `value?child` used dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
     `value.[child]`.
