@@ -230,7 +230,10 @@ module Extensions =
       | JsonValue.Null -> [| |]
       | _ -> failwithf "JSON mismatch: Not an array - %A" x
 
+    /// Assuming the value is an array, get the value at a specified index
     member x.Item with get(index) = x.AsArray().[index]
+    /// Assuming the value is an object, get value with the specified name
+    member x.Item with get(prpoertyName) = x.GetProperty(prpoertyName)
 
     /// Get all elements of a JSON object (assuming that the value is an array)
     member x.GetEnumerator() = x.AsArray().GetEnumerator()
