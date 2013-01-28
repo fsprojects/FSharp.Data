@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------
-// CSV type provider runtime components
+// CSV type provider - runtime components (parsing and type representing CSV)
 // --------------------------------------------------------------------------------------
 
 namespace FSharp.Data.RuntimeImplementation
@@ -9,7 +9,9 @@ open System.Diagnostics
 open System.IO
 open System.Text
 
-module CsvReader = 
+// Parser for the CSV format 
+module private CsvReader = 
+
   /// Lazily reads the specified CSV file using the specified separator
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
@@ -54,6 +56,7 @@ module CsvReader =
   
     readLines() 
 
+
 /// Simple type that represents a single CSV row
 [<DebuggerDisplay("{Display}")>]
 [<StructuredFormatDisplay("{Display}")>]
@@ -61,17 +64,18 @@ type CsvRow internal (data:string[], headers:string[]) =
 
   member x.Columns = data
 
+  /// Format the CSV row in the style of F# records
   member private x.Display =
     let sb = new StringBuilder()
     let append (s:string) = sb.Append s |> ignore
-    append "{" |> ignore
+    append "{" 
     for (header, data) in Seq.zip headers data do
-        append " "
-        append header
-        append " = "
-        append data
-        append " ;"
-    sb.ToString(0, sb.Length - 1) + "}";
+      append " "
+      append header
+      append " = "
+      append data
+      append " ;"
+    sb.ToString(0, sb.Length - 1) + "}"
 
 // Simple type wrapping CSV data
 type CsvFile (reader:TextReader, ?sep:string) =

@@ -1,13 +1,18 @@
-﻿// Copyright (c) Microsoft Corporation 2005-2012.
-// This sample code is provided "as is" without warranty of any kind. 
-// We disclaim all warranties, either express or implied, including the 
-// warranties of merchantability and fitness for a particular purpose. 
+﻿// --------------------------------------------------------------------------------------
+// Freebase type provider 
+// --------------------------------------------------------------------------------------
+// This file contains an object model for Freebase schema information
 //
 // This file contains a table of data of units of measure 
 // downloaded from www.freebase.com itself. See www.freebase.com 
 // for terms and conditions of use.
+// --------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation 2005-2012.
+// This sample code is provided "as is" without warranty of any kind. 
+// We disclaim all warranties, either express or implied, including the 
+// warranties of merchantability and fitness for a particular purpose. 
+// --------------------------------------------------------------------------------------
 
-/// This file contains an object model for Freebase schema information
 module internal FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
 
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests

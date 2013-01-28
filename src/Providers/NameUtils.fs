@@ -47,11 +47,7 @@ let nicePascalName (s:string) =
   // Split string into segments and turn them to PascalCase
   seq { for i1, i2 in restart 0 do 
           let sub = s.Substring(i1, i2 - i1) 
-#if FX_STRING_NOT_CHAR_SEQ
-          if Seq.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-#else
-          if Seq.forall Char.IsLetterOrDigit sub then
-#endif
+          if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
             yield sub.[0].ToString().ToUpper() + sub.ToLower().Substring(1) }
   |> String.concat ""
 

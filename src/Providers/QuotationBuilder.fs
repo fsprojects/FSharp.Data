@@ -1,7 +1,5 @@
 ﻿// ----------------------------------------------------------------------------------------------
-// Dynamic operator (?) that can be used for constructing quoted F# code without 
-// quotations (to simplify constructing F# quotations in portable libraries - where
-// we need to pass the System.Type of various types as arguments)
+// Utilities for building F# quotations without quotation literals
 // ----------------------------------------------------------------------------------------------
 
 module ProviderImplementation.QuotationBuilder
@@ -12,6 +10,18 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 
+/// Dynamic operator (?) that can be used for constructing quoted F# code without 
+/// quotations (to simplify constructing F# quotations in portable libraries - where
+/// we need to pass the System.Type of various types as arguments)
+///
+/// There are two possible uses:
+///    typ?Name tyArgs args
+///    typ?Name args
+///
+/// In the first case, tyArgs is a sequence of type arguments for method `Name`.
+/// Actual arguments can be either expression (Expr<'T>) or primitive values, whic
+/// are automatically wrapped using Expr.Value.
+///
 let (?) (typ:Type) (operation:string) (args1:'T) : 'R = 
   // Arguments are either Expr or other type - in the second case,
   // we treat them as Expr.Value (which will only work for primitives)

@@ -1,4 +1,7 @@
-﻿namespace FSharp.Data.RuntimeImplementation
+﻿// --------------------------------------------------------------------------------------
+// JSON type provider - methods that are called from the generated erased code
+// --------------------------------------------------------------------------------------
+namespace FSharp.Data.RuntimeImplementation
 
 open System
 open System.Globalization

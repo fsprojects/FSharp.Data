@@ -1,4 +1,7 @@
-﻿namespace FSharp.Data.RuntimeImplementation
+﻿// --------------------------------------------------------------------------------------
+// XML type provider - methods & types used by the generated erased code
+// --------------------------------------------------------------------------------------
+namespace FSharp.Data.RuntimeImplementation
 
 open System
 open System.Xml.Linq
@@ -9,6 +12,8 @@ type XmlElement (node:XElement) =
   /// Returns the raw XML element that is represented by the generated type
   member x.XElement = node
 
+
+/// Static helper methods called from the generated code
 type XmlOperations = 
 
   // Operations for getting node values and values of attributes
@@ -25,11 +30,13 @@ type XmlOperations =
   static member GetChildrenArray(value:XmlElement, name) =
     [| for c in value.XElement.Elements(XName.Get(name)) ->
          XmlElement(c) |]
+  
   static member GetChildOption(value:XmlElement, name) =
     match XmlOperations.GetChildrenArray(value, name) with
     | [| it |] -> Some it
     | [| |] -> None
     | _ -> failwithf "XML mismatch: More than single '%s' child" name
+
   static member GetChild(value:XmlElement, name) =
     match XmlOperations.GetChildrenArray(value, name) with
     | [| it |] -> it

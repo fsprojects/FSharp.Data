@@ -1,4 +1,8 @@
-﻿namespace FSharp.Data.RuntimeImplementation.WorldBank
+﻿// --------------------------------------------------------------------------------------
+// WorldBank type provider - runtime components 
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.Data.RuntimeImplementation.WorldBank
 
 open System
 open System.Collections
