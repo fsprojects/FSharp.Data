@@ -49,7 +49,11 @@ namespace. Once opened, we can write:
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `Date(...)` format used by Microsoft.
  * `value?child` used dynamic operator to obtain a record member named `child`;
-    alternatively, you can also use `value.GetProperty(child)` or `value.TryGetProperty(child)`.
+    alternatively, you can also use `value.GetProperty(child)` or an indexer
+    `value.[child]`.
+ * `value.TryGetProperty(child)` can be used to safely obtain a record member 
+    (if the member is missing or the value is not a record then, `TryGetProperty` 
+    returns `None`).
  * `[ for v in value -> v ]` treats `value` as a collection and iterates over it;
    alternatively, it is possible to cobtain all elements as an array using 
    `value.AsArray()`.
