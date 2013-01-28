@@ -17,7 +17,17 @@
     <dependencies />
   </metadata>
   <files>
-    <file src="..\bin\v40\FSharp.Data.dll" target="lib/net40" />
-    <file src="..\bin\v40\FSharp.Data.pdb" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.dll" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.pdb" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.xml" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.DesignTime.dll" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.DesignTime.pdb" target="lib/net40" />
+    <file src="..\bin\FSharp.Data.DesignTime.xml" target="lib/net40" />
+    <file src="..\bin\Portable\FSharp.Data.dll" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.pdb" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.xml" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
   </files>
 </package>

@@ -9,7 +9,7 @@
 //
 // --------------------------------------------------------------------------------------
 
-module internal ProviderImplementation.Pluralizer
+module internal FSharp.Data.Pluralizer
 
 open System
 open System.Collections.Generic

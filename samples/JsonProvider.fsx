@@ -17,7 +17,6 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../bin/FSharp.Data.dll"
-open System.IO
 open FSharp.Data
 
 (**
@@ -82,15 +81,12 @@ Now, let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
-To simplify the sample, we use the `[<Literal>]` attribtue and use the same string
-as a schema and as runtime value:
+If we want to just use the same text used for the schema at runtime, we can use the `GetSample` method:
 *)
 
-let [<Literal>] people = """ [{ "name":"John", "age":94 }, { "name":"Tomas" }] """
-type People = JsonProvider<people>
+type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
 
-let items = People.Parse(people)
-for item in items do 
+for item in People.GetSample() do 
   printf "%s " item.Name 
   item.Age |> Option.iter (printf "(%d)")
   printfn ""
@@ -107,11 +103,9 @@ a record can have multiple different types? In that case, the type provider beha
 as follows: 
 *)
 
-let [<Literal>] values = """ [{"value":94 }, {"value":"Tomas" }] """
-type Values = JsonProvider<values>
+type Values = JsonProvider<""" [{"value":94 }, {"value":"Tomas" }] """>
 
-let items = Values.Parse(values)
-for item in items do 
+for item in Values.GetSample() do 
   match item.Value.Number, item.Value.String with
   | Some num, _ -> printfn "Numeric: %d" num
   | _, Some str -> printfn "Text: %s" str
@@ -148,7 +142,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"docs/WorldBank.json">
-let doc = WorldBank.Load(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let doc = WorldBank.Load("docs/WorldBank.json")
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
@@ -166,8 +160,9 @@ printfn "Showing page %d of %d. Total records %d"
 
 // Print all data points
 for record in doc.Array do
-  if record.Value <> null then
-    printfn "%d: %f" (int record.Date) (float record.Value)
+  match record.Value with
+  | Some value -> printfn "%d: %f" (int record.Date) (float value)
+  | None -> ()
 
 (**
 When printing the data points, some of them might be missing. Previously, this was handled

@@ -7,115 +7,25 @@ module ProviderImplementation.StructureInference
 open System
 open System.Diagnostics
 open System.Collections.Generic
+open System.Globalization
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.TypeInference
 
-// --------------------------------------------------------------------------------------
-// Types that represent the result of the type inference
-// --------------------------------------------------------------------------------------
-
-/// A property of a record has a name and type and may be optional
-type InferedProperty =
-  { Name : string
-    Optional : bool
-    mutable Type : InferedType }
-
-/// For heterogeneous types (types that have multiple possible forms
-/// such as differently named XML nodes or records and arrays mixed together)
-/// this type represents the number of occurrences of individual forms
-and InferedMultiplicity = 
-  | Single
-  | OptionalSingle
-  | Multiple 
-
-/// For heterogeneous types, this represents the tag that defines the form
-/// (that is either primitive type, collection, named record etc.)
-and [<RequireQualifiedAccess>] InferedTypeTag = 
-  // Unknown type
-  | Null
-  // Primitive types
-  | Number 
-  | Boolean
-  | String
-  | DateTime
-  // Collections and sum types
-  | Collection 
-  | Heterogeneous
-  // Possibly named record
-  | Record of string option
-
-/// Represents inferred structural type. A type may be either primitive type
-/// (one of those listed by `primitiveTypes`) or it can be collection, 
-/// (named) record and heterogeneous type. We also have `Null` type (which is
-/// a subtype of all non-primitive types) and universal `Top` type.
+/// Merge two sequences by pairing elements for which
+/// the specified predicate returns the same key
 ///
-///  * For collection, we infer the types of different things that appear in 
-///    the collection and how many times they do.
-///
-///  * A heterogeneous type (sum type) is simply a choice containing one
-///    of multiple different possibilities
-///
-/// Why is collection not simply a list of Heterogeneous types? If we used that
-/// we would lose information about multiplicity and so we would not be able
-/// to generate nicer types!
-and [<CustomEquality; NoComparison>] InferedType =
-  | Primitive of System.Type * option<System.Type>
-  | Record of string option * InferedProperty list
-  | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
-  | Heterogeneous of Map<InferedTypeTag, InferedType>
-  | Null
-  | Top
-
-  // We need to implement custom equality that returns 'true' when 
-  // values reference the same object (to support recursive types)
-  override x.GetHashCode() = 
-    failwith "InferedType.GetHashCode: Not implemented"
-
-  override x.Equals(y:obj) = 
-    if y :? InferedType then 
-      match x, y :?> InferedType with
-      | a, b when Object.ReferenceEquals(a, b) -> true
-      | Primitive(t1, ot1), Primitive(t2, ot2) -> t1 = t2 && ot1 = ot2
-      | Record(s1, pl1), Record(s2, pl2) -> s1 = s2 && pl1 = pl2
-      | Collection(m1), Collection(m2) -> m1 = m2
-      | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
-      | Null, Null | Top, Top -> true
-      | _ -> false
-    else false
-
-// ------------------------------------------------------------------------------------------------
-// Additional operations for working with the inferred representation
-
-type InferedTypeTag with
-  member x.NiceName = 
-    match x with
-    | Null -> failwith "Null nodes should be skipped."
-    | Number -> "Number"
-    | Boolean -> "Boolean"
-    | String -> "String"
-    | DateTime -> "DateTime"
-    | Collection -> "Array"
-    | Heterogeneous -> "Choice"
-    | Record None -> "Record"
-    | Record (Some name) -> name
+/// (If the inputs contain the same keys, then the order
+/// of the elements is preserved.)
+let internal pairBy f first second = 
+  let vals1 = [ for o in first -> f o, o ]
+  let vals2 = [ for o in second -> f o, o ]
+  let d1, d2 = dict vals1, dict vals2
+  let k1, k2 = set d1.Keys, set d2.Keys
+  let keys = List.map fst vals1 @ (List.ofSeq (k2 - k1))
+  let asOption = function true, v -> Some v | _ -> None
+  [ for k in keys -> 
+      k, asOption (d1.TryGetValue(k)), asOption (d2.TryGetValue(k)) ]
   
-  /// Converts tag to string code that can be passed to generated code
-  member x.Code = 
-    match x with
-    | Record (Some name) -> "Record@" + name
-    | _ -> x.NiceName
-
-  /// Parses code returned by 'Code' member (to be used in provided code)
-  static member ParseCode(str:string) =
-    match str with
-    | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
-    | "Record" -> Record None
-    | "Number" -> Number 
-    | "Boolean" -> Boolean
-    | "String" -> String 
-    | "DateTime" -> DateTime
-    | "Array" -> Collection
-    | "Choice" -> Heterogeneous
-    | _ -> failwith "Invalid InferredTypeTag code"
-
 // ------------------------------------------------------------------------------------------------
 
 /// List of primitive types that can be returned as a result of the inference
@@ -127,6 +37,10 @@ let primitiveTypes =
 /// Checks whether a value is a value type (and cannot have null as a value)
 let isValueType = function
   | Primitive(typ, _) -> typ <> typeof<string>
+  | _ -> false
+
+let hasNullOrNaN = function
+  | Primitive(typ, _) as t -> typ = typeof<float> || not (isValueType t)
   | _ -> false
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
@@ -147,10 +61,10 @@ let typeTag = function
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.
 ///
-///   double :> decimal :> int64 :> int
+///   float :> decimal :> int64 :> int
 ///
 /// This means that e.g. `int` is a subtype of `decimal` and so all `int` values
-/// are also `decimal` (and `double`) values, but not the other way round.
+/// are also `decimal` (and `float`) values, but not the other way round.
 let subtypePrimitives typ1 typ2 = 
   Debug.Assert(Seq.exists ((=) typ1) primitiveTypes)
   Debug.Assert(Seq.exists ((=) typ2) primitiveTypes)
@@ -211,8 +125,10 @@ let rec subtypeInfered ot1 ot2 =
   
   // Top type can be merged with else
   | t, Top | Top, t -> t
+  
   // Null type can be merged with non-value types
-  | t, Null | Null, t when not (isValueType t) -> t
+  | t, Null | Null, t when hasNullOrNaN t -> t
+  
   // Heterogeneous can be merged with any type
   | Heterogeneous h, other 
   | other, Heterogeneous h ->
@@ -226,11 +142,10 @@ let rec subtypeInfered ot1 ot2 =
       let h1, h2 = Map.ofSeq [typeTag t1, t1], Map.ofSeq [typeTag t2, t2]
       Heterogeneous(unionHeterogeneousTypes h1 h2)
 
-
 /// Given two heterogeneous types, get a single type that can represent all the
 /// types that the two heterogeneous types can. For every tag, 
 and unionHeterogeneousTypes cases1 cases2 =
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
   |> Seq.map (function
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t
@@ -243,7 +158,7 @@ and unionHeterogeneousTypes cases1 cases2 =
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
 and unionCollectionTypes cases1 cases2 = 
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
   |> Seq.map (function
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
@@ -260,20 +175,33 @@ and unionCollectionTypes cases1 cases2 =
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes t1 t2 =
-  Seq.pairBy (fun p -> p.Name) t1 t2
+  pairBy (fun p -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
+      
       match fst, snd with
+      
       // If one is missing, return the other, but optional
-      | Some p, None | None, Some p -> { p with Optional = true }
+      | Some p, None | None, Some p -> if hasNullOrNaN p.Type then p else { p with Optional = true }
+      
       // If both reference the same object, we return one
       // (This is needed to support recursive type structures)
-      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) ->
-          p1
+      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) -> p1
+
       // If both are available, we get their subtype
       | Some p1, Some p2 -> 
-          { Name = name; Optional = p1.Optional || p2.Optional
-            Type = subtypeInfered p1.Type p2.Type }
+
+          let typ, optional =
+              if p1.Type = Null && p2.Type <> Null then p2.Type, true
+              elif p2.Type = Null && p1.Type <> Null then p1.Type, true
+              else subtypeInfered p1.Type p2.Type, p1.Optional || p2.Optional
+
+          // doesn't make sense to have options of nullable types
+          let optional = optional && not (hasNullOrNaN typ)
+
+          { Name = name; Optional = optional; Type = typ }
+
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
+
   |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
@@ -288,14 +216,18 @@ let inferCollectionType types =
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
-let inferPrimitiveType value unit =
-  match value with 
-  | Trim(StringEquals "true" | StringEquals "false" | StringEquals "yes" | StringEquals "no") -> 
-      Primitive(typeof<bool>, unit)
-  | Trim(StringEquals "#N/A") -> Primitive(typeof<double>, unit)
-  | Parse Int32.TryParse _ -> Primitive(typeof<int>, unit)
-  | Parse Int64.TryParse _ -> Primitive(typeof<int64>, unit)
-  | Parse Decimal.TryParse _ -> Primitive(typeof<decimal>, unit)
-  | Parse Double.TryParse _ -> Primitive(typeof<float>, unit)
-  | Parse DateTime.TryParse _ -> Primitive(typeof<DateTime>, unit)
-  | _ -> Primitive(typeof<string>, unit)
+let inferPrimitiveType culture (value : string) unit =
+
+    let (|Parse|_|) func value = func culture value
+
+    if String.IsNullOrWhiteSpace value then 
+        Null
+    else   
+        match value with 
+        | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
+        | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
+        | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
+        | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
+        | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
+        | Parse Operations.AsDateTime _ -> Primitive(typeof<DateTime>, unit)
+        | _ -> Primitive(typeof<string>, unit)

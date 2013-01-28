@@ -415,7 +415,7 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f ->  transQuotationToCode isGenerated f
+        | Some f -> transQuotationToCode isGenerated f
         | None -> failwith (sprintf "ProvidedMethod: no invoker for %s on type %s" this.Name (if declaringType=null then "<not yet known type>" else declaringType.FullName))
    // Implement overloads
     override this.GetParameters() = argParams |> Array.ofList
@@ -485,7 +485,8 @@ type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:Provide
         and set x = isStatic <- x
 
     member this.GetterCode 
-        with set  (q:Quotations.Expr list -> Quotations.Expr) = 
+        with get() = Option.get getterCode
+        and set (q:Quotations.Expr list -> Quotations.Expr) = 
             if not getter.IsValueCreated then getterCode <- Some q else failwith "ProvidedProperty: getter MethodInfo has already been created"
 
     member this.SetterCode 
@@ -1910,6 +1911,7 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
+    member __.Namespaces = Seq.readonly otherNamespaces
     member self.Invalidate() = invalidateE.Trigger(self,EventArgs())
     interface ITypeProvider with
         [<CLIEvent>]
