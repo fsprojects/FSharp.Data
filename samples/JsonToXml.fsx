@@ -8,35 +8,33 @@ open System.Xml.Linq
 open FSharp.Data.Json
 
 /// Creates a json representation of the xml
-static member fromXml (xml:XElement) =
+let fromXml (xml:XElement) =
       
   let rec createObject (elem:XElement) =
 
-    let j = 
-      JsonValue.Object
-      (JsonValue.emptyObject, elem.Attributes()) 
-      ||> Seq.fold (fun j attr -> j.Add(attr.Name.LocalName, attr.Value)) 
-      |> ref
+    let attrs = 
+      [ for attr in elem.Attributes() ->
+          (attr.Name.LocalName, JsonValue.String attr.Value) ]
 
     let createArray xelems =
-      (JsonValue.emptyArray, xelems) ||> Seq.fold (fun j xelem -> j.Add(createObject xelem)) 
+      [| for xelem in xelems -> createObject xelem |]
+      |> JsonValue.Array
 
-    elem.Elements()
-    |> Seq.groupBy (fun x -> x.Name.LocalName)
-    |> Seq.iter (fun (key, childs) ->
-      match Seq.toList childs with
-      | [child] -> j := (!j).Add(NameUtils.singularize key, createObject child)
-      | children -> j := (!j).Add(NameUtils.pluralize key, createArray children))
+    let children =
+      let groups = elem.Elements() |> Seq.groupBy (fun x -> x.Name.LocalName)
+      [ for (key, childs) in groups ->
+          match Seq.toList childs with
+          | [child] -> key, createObject child
+          | children -> key + "s", createArray children ]
         
-    !j
+    attrs @ children
+    |> Map.ofSeq
+    |> JsonValue.Object
       
   createObject xml
 
-/// Creates a json representation of the xml
-static member fromXml (xml:XDocument) = JsonValue.fromXml xml.Root
-
 /// Creates a xml representation of the JsonValue (only valid on Objects and Arrays)
-member x.ToXml() =
+let toXml(x:JsonValue) =
   let attr name value = XAttribute(XName.Get name, value) :> XObject
   let elem name (value:obj) = XElement(XName.Get name, value) :> XObject
   let rec toXml = function
