@@ -6,12 +6,15 @@
 //
 // A simple F# portable parser for JSON data
 // --------------------------------------------------------------------------------------
+
 namespace FSharp.Data.Json
 
 open System
 open System.IO
 open System.Text
 open System.Globalization
+open System.Xml.Linq
+open FSharp.Data
 open FSharp.Data.RuntimeImplementation
 open FSharp.Net.HttpUtility
 
@@ -54,99 +57,6 @@ type JsonValue =
           sb.Append "]"
 
     (serialize (new StringBuilder()) this).ToString()
-
-  /// Get the string value of an element (assuming that the value is a string)
-  static member asString x = 
-    match x with
-    | JsonValue.String s -> s
-    | JsonValue.Null -> null
-    | JsonValue.Boolean b -> if b then "true" else "false"
-    | _ -> failwithf "JSON mismatch: Not a string - %A" x
-
-  /// Get the datetime value of an element (assuming that the value is a string)
-  static member asDateTime(x, ?culture) = 
-    match x with
-    | JsonValue.String s -> 
-        match Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) s with 
-        | Some d -> d
-        | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
-    | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
-
-    /// Get a number as a float (assuming that the value is convertible to a float)
-  static member asFloat(x, ?culture) = 
-    match x with
-    | JsonValue.BigNumber n -> n
-    | JsonValue.Number n -> float n
-    | JsonValue.String s -> 
-        match Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) s with
-        | Some n -> n
-        | _ -> failwithf "JSON mismatch: Not a number - %A" x
-    | _ -> failwithf "JSON mismatch: Not a number - %A" x
-
-  /// Get a number as a decimal (assuming that the value fits in decimal)
-  static member asDecimal(x, ?culture) = 
-    match x with
-    | JsonValue.Number n -> n
-    | JsonValue.BigNumber n -> decimal n
-    | JsonValue.String s -> 
-        match Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) s with
-        | Some n -> n
-        | _ -> failwithf "JSON mismatch: Not a number - %A" x
-    | _ -> failwithf "JSON mismatch: Not a number - %A" x
-
-  /// Get a number as an integer (assuming that the value fits in integer)
-  static member asInteger(x, ?culture) = 
-    match x with
-    | JsonValue.Number n -> int n
-    | JsonValue.BigNumber n -> int n
-    | JsonValue.String s -> 
-        match Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) s with
-        | Some n -> n
-        | _ -> failwithf "JSON mismatch: Not a number - %A" x
-    | _ -> failwithf "JSON mismatch: Not a number - %A" x
-
-  /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
-  static member asInteger64(x, ?culture) = 
-    match x with
-    | JsonValue.Number n -> int64 n 
-    | JsonValue.BigNumber n -> int64 n
-    | JsonValue.String s -> 
-        match Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) s with
-        | Some n -> n
-        | _ -> failwithf "JSON mismatch: Not a number - %A" x
-    | _ -> failwithf "JSON mismatch: Not a number - %A" x
-
-  /// Get the boolean value of an element (assuming that the value is a boolean)
-  static member asBoolean(x, ?culture) = 
-    match x with
-    | JsonValue.Boolean t -> t
-    | JsonValue.String s -> 
-        match Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) s with
-        | Some n -> n
-        | _ -> failwithf "JSON mismatch: Not a number - %A" x
-    | _ -> failwithf "JSON mismatch: Not a boolean - %A" x
-
-  /// Get property of a JSON object (assuming that the value is an object)
-  static member getProperty propertyName x = 
-    match x with
-    | JsonValue.Object properties -> 
-        match Map.tryFind propertyName properties with 
-        | Some res -> res
-        | None -> failwithf "JSON mismatch: Didn't find property '%s' in %A" propertyName x
-    | _ -> failwithf "JSON mismatch: Not an object - %A" x
-
-  /// Get property of a JSON object if that the value is an object and if the property is present
-  static member tryGetProperty propertyName x = 
-    match x with
-    | JsonValue.Object properties -> Map.tryFind propertyName properties |> Option.bind (function Null -> None | j -> Some j)
-    | _ -> None
-
-  /// Get all elements of a JSON object (assuming that the value is an array)
-  static member asArray x = 
-    match x with
-    | JsonValue.Array elements -> elements
-    | JsonValue.Null -> [| |]
-    | _ -> failwithf "JSON mismatch: Not an array - %A" x
 
 // --------------------------------------------------------------------------------------
 // JSON parser
@@ -294,8 +204,11 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
     member x.Parse() = parseValue()
 
 type JsonValue with
+
   /// Parse the specified JSON string
   static member Parse(input:string, ?culture) = JsonParser(input, culture).Parse()
+
+  /// Loads JSON from the specified stream
   static member Load(stream:Stream, ?culture) = 
     use reader = new StreamReader(stream)
     JsonParser(reader.ReadToEnd(), culture).Parse()
@@ -308,11 +221,123 @@ type JsonValue with
 /// in a less safe, but shorter way. The module also provides dynamic operator
 module Extensions = 
 
-  /// Get property of a JSON object (assuming that the value is an object)
-  let (?) jsonObject property = JsonValue.getProperty property jsonObject
-
   type JsonValue with
-    
+
+    // ----------------------------------------------------------------------------------
+    // static members: follow Module.camelCase convention
+    // the reason they're not defined in a JsonValue module instead of being static 
+    // members on a type extension is to do the following without compromising the syntax:
+    // * allow to use optional parameters for culture
+    // * allow to use operator overloading for the different json value types
+    // ----------------------------------------------------------------------------------
+
+    /// Get the string value of an element (assuming that the value is a string)
+    static member asString x = 
+      match x with
+      | JsonValue.String s -> s
+      | JsonValue.Null -> null
+      | JsonValue.Boolean b -> if b then "true" else "false"
+      | _ -> failwithf "JSON mismatch: Not a string - %A" x
+  
+    /// Get the datetime value of an element (assuming that the value is a string)
+    static member asDateTime(x, ?culture) = 
+      match x with
+      | JsonValue.String s -> 
+          match Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) s with 
+          | Some d -> d
+          | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
+      | _ -> failwithf "JSON mismatch: Not a datetime - %A" x
+  
+      /// Get a number as a float (assuming that the value is convertible to a float)
+    static member asFloat(x, ?culture) = 
+      match x with
+      | JsonValue.BigNumber n -> n
+      | JsonValue.Number n -> float n
+      | JsonValue.String s -> 
+          match Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a number - %A" x
+      | _ -> failwithf "JSON mismatch: Not a number - %A" x
+  
+    /// Get a number as a decimal (assuming that the value fits in decimal)
+    static member asDecimal(x, ?culture) = 
+      match x with
+      | JsonValue.Number n -> n
+      | JsonValue.BigNumber n -> decimal n
+      | JsonValue.String s -> 
+          match Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a number - %A" x
+      | _ -> failwithf "JSON mismatch: Not a number - %A" x
+  
+    /// Get a number as an integer (assuming that the value fits in integer)
+    static member asInteger(x, ?culture) = 
+      match x with
+      | JsonValue.Number n -> int n
+      | JsonValue.BigNumber n -> int n
+      | JsonValue.String s -> 
+          match Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a number - %A" x
+      | _ -> failwithf "JSON mismatch: Not a number - %A" x
+  
+    /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
+    static member asInteger64(x, ?culture) = 
+      match x with
+      | JsonValue.Number n -> int64 n 
+      | JsonValue.BigNumber n -> int64 n
+      | JsonValue.String s -> 
+          match Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a number - %A" x
+      | _ -> failwithf "JSON mismatch: Not a number - %A" x
+  
+    /// Get the boolean value of an element (assuming that the value is a boolean)
+    static member asBoolean(x, ?culture) = 
+      match x with
+      | JsonValue.Boolean t -> t
+      | JsonValue.String s -> 
+          match Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a number - %A" x
+      | _ -> failwithf "JSON mismatch: Not a boolean - %A" x
+  
+    /// Get property of a JSON object (assuming that the value is an object)
+    static member getProperty propertyName x = 
+      match x with
+      | JsonValue.Object properties -> 
+          match Map.tryFind propertyName properties with 
+          | Some res -> res
+          | None -> failwithf "JSON mismatch: Didn't find property '%s' in %A" propertyName x
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+  
+    /// Get property of a JSON object if that the value is an object and if the property is present
+    static member tryGetProperty propertyName x = 
+      match x with
+      | JsonValue.Object properties -> Map.tryFind propertyName properties |> Option.bind (function JsonValue.Null -> None | j -> Some j)
+      | _ -> None
+  
+    /// Get all elements of a JSON object (assuming that the value is an array)
+    static member asArray x = 
+      match x with
+      | JsonValue.Array elements -> elements
+      | JsonValue.Null -> [| |]
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+
+    /// A JsonValue.Object without properties
+    static member emptyObject = JsonValue.Object Map.empty
+  
+    /// A JsonValue.Object without elements
+    static member emptyArray = JsonValue.Array [| |]
+  
+    // ----------------------------------------------------------------------------------
+    // instance getters: make them properties and not methods to have nicer syntax
+    // that implies always using the invariant culture
+    // ----------------------------------------------------------------------------------
+
+    member x.Item
+      with get(index) = (JsonValue.asArray x).[index]
+
     /// Get all elements of a JSON object (assuming that the value is an array)
     member x.GetEnumerator() = (JsonValue.asArray x :> seq<_>).GetEnumerator()
 
@@ -352,3 +377,132 @@ module Extensions =
       match x with
       | JsonValue.Object map -> Map.toSeq map
       | _ -> failwithf "JSON mismatch: Not an object - %A" x
+
+    // ----------------------------------------------------------------------------------
+    // instance constructors: make them methods properties and not methods to have nicer syntax
+    // that implies always using the invariant culture
+    // ----------------------------------------------------------------------------------
+
+    /// Adds a property (assuming that the value is an object)
+    member x.Add(propertyName, value) =
+      match x with
+      | JsonValue.Object properties -> properties.Add(propertyName, value) |> JsonValue.Object
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+
+    /// Adds a String property (assuming that the value is an object)
+    member x.Add(propertyName, value) =
+      match x with
+      | JsonValue.Object properties -> properties.Add(propertyName, JsonValue.String value) |> JsonValue.Object
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+  
+    /// Adds a Number property (assuming that the value is an object)
+    member x.Add(propertyName, value) =
+      match x with
+      | JsonValue.Object properties -> properties.Add(propertyName, JsonValue.Number value) |> JsonValue.Object
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+  
+    /// Adds a BigNumber property (assuming that the value is an object)
+    member x.Add(propertyName, value) =
+      match x with
+      | JsonValue.Object properties -> properties.Add(propertyName, JsonValue.BigNumber value) |> JsonValue.Object
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+  
+    /// Adds a Boolean property (assuming that the value is an object)
+    member x.Add(propertyName, value) =
+      match x with
+      | JsonValue.Object properties -> properties.Add(propertyName, JsonValue.Boolean value) |> JsonValue.Object
+      | _ -> failwithf "JSON mismatch: Not an object - %A" x
+
+    /// Adds an element (assuming that the value is an array)
+    member x.Add(value) =
+      match x with
+      | JsonValue.Array elements -> Array.append elements [| value |] |> JsonValue.Array
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+  
+    /// Adds a String element (assuming that the value is an array)
+    member x.Add(value) =
+      match x with
+      | JsonValue.Array elements -> Array.append elements [| JsonValue.String value |] |> JsonValue.Array
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+  
+    /// Adds a Number element (assuming that the value is an array)
+    member x.Add(value) =
+      match x with
+      | JsonValue.Array elements -> Array.append elements [| JsonValue.Number value |] |> JsonValue.Array
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+  
+    /// Adds a BigNumber element (assuming that the value is an array)
+    member x.Add(value) =
+      match x with
+      | JsonValue.Array elements -> Array.append elements [| JsonValue.BigNumber value |] |> JsonValue.Array
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+  
+    /// Adds a Boolean element (assuming that the value is an array)
+    member x.Add(value) =
+      match x with
+      | JsonValue.Array elements -> Array.append elements [| JsonValue.Boolean value |] |> JsonValue.Array
+      | _ -> failwithf "JSON mismatch: Not an array - %A" x
+
+    // ----------------------------------------------------------------------------------
+    // xml conversions
+    // ----------------------------------------------------------------------------------
+
+    /// Creates a json representation of the xml
+    static member fromXml (xml:XElement) =
+      
+      let rec createObject (elem:XElement) =
+
+        let j = 
+          (JsonValue.emptyObject, elem.Attributes()) 
+          ||> Seq.fold (fun j attr -> j.Add(attr.Name.LocalName, attr.Value)) 
+          |> ref
+
+        let createArray xelems =
+          (JsonValue.emptyArray, xelems) ||> Seq.fold (fun j xelem -> j.Add(createObject xelem)) 
+
+        elem.Elements()
+        |> Seq.groupBy (fun x -> x.Name.LocalName)
+        |> Seq.iter (fun (key, childs) ->
+          match Seq.toList childs with
+          | [child] -> j := (!j).Add(NameUtils.singularize key, createObject child)
+          | children -> j := (!j).Add(NameUtils.pluralize key, createArray children))
+        
+        !j
+      
+      createObject xml
+
+    /// Creates a json representation of the xml
+    static member fromXml (xml:XDocument) = JsonValue.fromXml xml.Root
+
+    /// Creates a xml representation of the JsonValue (only valid on Objects and Arrays)
+    member x.ToXml() =
+      let attr name value = XAttribute(XName.Get name, value) :> XObject
+      let elem name (value:obj) = XElement(XName.Get name, value) :> XObject
+      let rec toXml = function
+        | JsonValue.Null -> null
+        | JsonValue.Boolean b -> b :> obj
+        | JsonValue.Number number -> number :> obj
+        | JsonValue.BigNumber number -> number :> obj
+        | JsonValue.String s -> s :> obj
+        | JsonValue.Object properties -> 
+          properties |> Seq.map (fun (KeyValue(key,value)) ->
+            match value with
+            | JsonValue.String s -> attr key s
+            | JsonValue.Boolean b -> attr key b
+            | JsonValue.Number n -> attr key n
+            | JsonValue.BigNumber n -> attr key n
+            | _ -> elem key (toXml value)) :> obj
+        | JsonValue.Array elements -> 
+          elements |> Seq.map (fun item -> elem "item" (toXml item)) :> obj
+      (toXml x) :?> XObject seq
+
+  /// Get property of a JSON object (assuming that the value is an object)
+  let (?) jsonObject property = JsonValue.getProperty property jsonObject
+
+  type XDocument with
+    /// Creates a json representation of the xml
+    member this.ToJson() = JsonValue.fromXml this
+
+  type XElement with
+    /// Creates a json representation of the xml
+    member this.ToJson() = JsonValue.fromXml this

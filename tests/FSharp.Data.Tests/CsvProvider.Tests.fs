@@ -5,8 +5,10 @@
 module FSharp.Data.Tests.CsvProvider.Tests
 
 open NUnit.Framework
+open FsUnit
 open System
 open System.IO
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 open FSharp.Data
 
 let [<Literal>] simpleCsv = """
@@ -65,3 +67,13 @@ let ``Inference of numbers with empty values`` () =
   let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, Nullable<DateTime>()
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   Assert.AreEqual(expected, actual)
+
+type SmallCsv = CsvProvider<"SmallTest.csv">
+
+[<Test>] 
+let ``Can create type for small document``() =
+    let row1 = (new SmallCsv()).Data |> Seq.head 
+
+    row1.Distance |> should equal 50.<metre>
+    let time = row1.Time
+    time |> should equal 3.7<second>

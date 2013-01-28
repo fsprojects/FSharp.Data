@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.JsonValue.ParserTests
+﻿module FSharp.Data.Tests.JsonValue.ParseTests
 
 open NUnit.Framework
 open System
@@ -117,14 +117,14 @@ let ``Can parse document with booleans``() =
 [<Test>] 
 let ``Can parse document with null``() =    
     let j = JsonValue.Parse "{ \"items\": [{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}] }"
-    let jArray = j?items |> JsonValue.asArray
+    let jArray = j?items
     jArray.[0]?id.AsString |> should equal "Open"
     jArray.[1] |> should equal JsonValue.Null
     jArray.[2]?id.AsString |> should equal "Pause"
 
 [<Test>] 
 let ``Can parse array in outermost scope``() =
-    let jArray = JsonValue.Parse "[{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}]" |> JsonValue.asArray
+    let jArray = JsonValue.Parse "[{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}]"
     jArray.[0]?id.AsString |> should equal "Open"
     jArray.[1] |> should equal JsonValue.Null
     jArray.[2]?id.AsString |> should equal "Pause"
@@ -137,7 +137,7 @@ let ``Can parse a string from twitter api without throwing an error``() =
 
 [<Test>]
 let ``Can parse array of numbers``() = 
-    let j = JsonValue.Parse "[1, 2, 3]" |> JsonValue.asArray
+    let j = JsonValue.Parse "[1, 2, 3]"
     j.[0] |> should equal (JsonValue.Number 1m)
     j.[1] |> should equal (JsonValue.Number 2m)
     j.[2] |> should equal (JsonValue.Number 3m)
@@ -150,7 +150,7 @@ let ``Quotes in strings are property escaped``() =
 
 [<Test>]
 let ``Can parse simple array``() = 
-    let j = JsonValue.Parse "[\"Adam\",\"Eve\",\"Bonnie\",\"Clyde\",\"Donald\",\"Daisy\",\"Han\",\"Leia\"]" |> JsonValue.asArray
+    let j = JsonValue.Parse "[\"Adam\",\"Eve\",\"Bonnie\",\"Clyde\",\"Donald\",\"Daisy\",\"Han\",\"Leia\"]"
     j.[0]  |> should equal (JsonValue.String "Adam")
     j.[1] |> should equal (JsonValue.String "Eve")
     j.[2] |> should equal (JsonValue.String "Bonnie")
@@ -158,9 +158,8 @@ let ``Can parse simple array``() =
 
 [<Test>]
 let ``Can parse nested array``() = 
-    let j = JsonValue.Parse "[ [\"Adam\", \"Eve\"], [\"Bonnie\", \"Clyde\"], [\"Donald\", \"Daisy\"], [\"Han\", \"Leia\"] ]" |> JsonValue.asArray
-    let j x y = (j.[x] |> JsonValue.asArray).[y]
-    j 0 0 |> should equal (JsonValue.String "Adam")
-    j 0 1 |> should equal (JsonValue.String "Eve")
-    j 1 0 |> should equal (JsonValue.String "Bonnie")
-    j 1 1 |> should equal (JsonValue.String "Clyde")
+    let j = JsonValue.Parse "[ [\"Adam\", \"Eve\"], [\"Bonnie\", \"Clyde\"], [\"Donald\", \"Daisy\"], [\"Han\", \"Leia\"] ]"
+    j.[0].[0] |> should equal (JsonValue.String "Adam")
+    j.[0].[1] |> should equal (JsonValue.String "Eve")
+    j.[1].[0] |> should equal (JsonValue.String "Bonnie")
+    j.[1].[1] |> should equal (JsonValue.String "Clyde")

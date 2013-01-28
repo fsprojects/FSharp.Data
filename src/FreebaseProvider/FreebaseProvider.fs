@@ -15,6 +15,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open FSharp.Data
 open FSharp.Data.RuntimeImplementation.Caching
 open FSharp.Data.RuntimeImplementation.Freebase
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests

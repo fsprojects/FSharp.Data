@@ -68,11 +68,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 
     // Generate static Parse method
-    let args =
-        if not sampleIsUri then
-            [ ProvidedParameter("text", typeof<string>, optionalValue = sample) ]
-        else
-            [ ProvidedParameter("text", typeof<string>) ]
+    let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton text) -> methResConv <@@ XmlElement(XDocument.Parse(%%text).Root) @@>
     resTy.AddMember m
@@ -85,16 +81,23 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     resTy.AddMember m
 
     // Generate static Load uri method
-    let args =
-        if sampleIsUri then
-            // TODO: if the uri is a file and we're compiling for a portable library, don't make the uri optional, as it won't work at runtime
-            [ ProvidedParameter("uri", typeof<string>, optionalValue = sample) ]
-        else
-            [ ProvidedParameter("uri", typeof<string>) ]
+    let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
                                                            XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
     resTy.AddMember m
+
+    if not sampleList then
+        // Generate static GetSample method
+        let m = ProvidedMethod("GetSample", [],  methResTy, IsStaticMethod = true)
+        m.InvokeCode <- fun _ -> 
+            if sampleIsUri then
+                <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+                    XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
+            else
+                <@@ XmlElement(XDocument.Parse(sample).Root) @@>
+            |> methResConv
+        resTy.AddMember m
 
     // Return the generated type
     resTy

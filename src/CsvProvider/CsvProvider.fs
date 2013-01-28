@@ -64,7 +64,6 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let c = ProvidedConstructor []
     c.InvokeCode <- 
         if sampleIsUri then
-            //TODO: if portable library and not a web location, don't generate this constructor, as it will throw at runtime
             fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
                                             new CsvFile(reader, separator) @@>
         else

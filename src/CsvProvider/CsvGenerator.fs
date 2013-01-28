@@ -4,6 +4,7 @@
 namespace ProviderImplementation
 
 open System
+open FSharp.Data
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation.ProvidedTypes

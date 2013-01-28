@@ -11,6 +11,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.JsonInference
 open ProviderImplementation.QuotationBuilder
 open ProviderImplementation.StructureInference
+open FSharp.Data
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference
 

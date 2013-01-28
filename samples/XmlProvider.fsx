@@ -89,7 +89,7 @@ contains multiple `<value>` nodes (not tht if we leave out the parameter to the
 
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
-Test.Parse().GetValues()
+Test.GetSample().GetValues()
 |> Seq.iter (printfn "%d")
 
 (**
@@ -167,7 +167,7 @@ parameter `Global` to `true`:
 *)
 
 type Html = XmlProvider<"docs/HtmlBody.xml", Global=true>
-let html = Html.Load()
+let html = Html.GetSample()
 
 (**
 When the `Global` parameter is `true`, the type provider _unifies_ all elements of the
@@ -207,11 +207,11 @@ type Rss = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 (**
 This code builds a type `Rss` that represents RSS feed (with the features that are used
 on `http://tomasp.net`). The type `Rss` provides static methods `Parse` and `Load`
-to construct it - here, we don't need to pass the uri again to th `Load` method, 
-as by default it will use to th same uri used for the schema:
+to construct it - here, we just want to reuse the same uri of the schema, so we
+use the `GetSample` static method:
 *)
 
-let blog = Rss.Load()
+let blog = Rss.GetSample()
 
 (**
 Printing the title of the RSS feed together with a list of recent posts is now quite

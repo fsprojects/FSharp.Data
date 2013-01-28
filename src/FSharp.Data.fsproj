@@ -42,6 +42,8 @@
     <Compile Include="Common\Http.fs" />
     <Compile Include="Common\DataLoading.fs" />
     <Compile Include="Common\TypeInference.fs" />
+    <Compile Include="Common\Pluralizer.fs" />
+    <Compile Include="Common\NameUtils.fs" />
     <Compile Include="Common\Json.fs" />
     <Compile Include="Common\Caching.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />

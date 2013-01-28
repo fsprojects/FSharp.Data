@@ -9,6 +9,7 @@ open ProviderImplementation.JsonInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 open ProviderImplementation.StructureInference
+open FSharp.Data
 open FSharp.Data.Json
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference

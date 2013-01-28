@@ -81,13 +81,12 @@ Now, let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
-If we leave out the parameter to the `Parse` method, the same text used for the schema
-will be used as the runtime value:
+If we want to just use the same text used for the schema at runtime, we can use the `GetSample` method:
 *)
 
 type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
 
-for item in People.Parse() do 
+for item in People.GetSample() do 
   printf "%s " item.Name 
   item.Age |> Option.iter (printf "(%d)")
   printfn ""
@@ -106,7 +105,7 @@ as follows:
 
 type Values = JsonProvider<""" [{"value":94 }, {"value":"Tomas" }] """>
 
-for item in Values.Parse() do 
+for item in Values.GetSample() do 
   match item.Value.Number, item.Value.String with
   | Some num, _ -> printfn "Numeric: %d" num
   | _, Some str -> printfn "Text: %s" str

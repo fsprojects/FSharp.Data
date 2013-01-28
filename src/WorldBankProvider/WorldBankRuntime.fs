@@ -75,7 +75,7 @@ module Implementation =
                                   worldBankRequest retryCount funcs (args@["page", string (page+i)]) ]
                     let docs = docs |> Array.map JsonValue.Parse
                     Debug.WriteLine (sprintf "[WorldBank] geting page count")
-                    let pages = (JsonValue.asArray docs.[0]).[0]?pages |> JsonValue.asInteger
+                    let pages = docs.[0].[0]?pages.AsInteger
                     Debug.WriteLine (sprintf "[WorldBank] got page count = %d" pages)
                     if (pages < page + parallelPages) then 
                         return Array.toList docs
@@ -88,16 +88,16 @@ module Implementation =
             async { let! docs = getDocuments ["indicator"] [] 1 parallelIndicatorPageDownloads
                     return 
                         [ for doc in docs do
-                            for ind in (JsonValue.asArray doc).[1] do
-                                let id = ind?id |> JsonValue.asString
-                                let name = (ind?name |> JsonValue.asString).Trim([|'"'|]).Trim()
-                                let sourceName = ind?source?value |> JsonValue.asString
+                            for ind in doc.[1] do
+                                let id = ind?id.AsString
+                                let name = (ind?name.AsString).Trim([|'"'|]).Trim()
+                                let sourceName = ind?source?value.AsString
                                 if sources |> List.exists (fun source -> String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then 
                                     let topicIds = Seq.toList <| seq {
                                         for item in ind?topics do
-                                            yield item?id |> JsonValue.asString
+                                            yield item?id.AsString
                                     }
-                                    let sourceNote = ind?sourceNote |> JsonValue.asString
+                                    let sourceNote = ind?sourceNote.AsString
                                     yield { Id = id
                                             Name = name
                                             TopicIds = topicIds
@@ -108,10 +108,10 @@ module Implementation =
             async { let! docs = getDocuments ["topic"] [] 1 1
                     return 
                         [ for doc in docs do
-                            for topic in (JsonValue.asArray doc).[1] do
-                                let id = topic?id |> JsonValue.asString
-                                let name = topic?value |> JsonValue.asString
-                                let sourceNote = topic?sourceNote |> JsonValue.asString
+                            for topic in doc.[1] do
+                                let id = topic?id.AsString
+                                let name = topic?value.AsString
+                                let sourceNote = topic?sourceNote.AsString
                                 yield { Id = id
                                         Name = name
                                         Description = sourceNote } ] }
@@ -120,28 +120,28 @@ module Implementation =
             async { let! docs = getDocuments ["country"] args 1 1
                     return 
                         [ for doc in docs do
-                            for country in (JsonValue.asArray doc).[1] do
-                                let region = country?region?value |> JsonValue.asString
-                                yield { Id = country?id |> JsonValue.asString
-                                        Name = country?name |> JsonValue.asString
-                                        CapitalCity = country?capitalCity |> JsonValue.asString
+                            for country in doc.[1] do
+                                let region = country?region?value.AsString
+                                yield { Id = country?id.AsString
+                                        Name = country?name.AsString
+                                        CapitalCity = country?capitalCity.AsString
                                         Region = region } ] }
 
         let getRegions() = 
             async { let! docs = getDocuments ["region"] [] 1 1
                     return 
                         [ for doc in docs do
-                            for ind in (JsonValue.asArray doc).[1] do
-                                yield ind?code |> JsonValue.asString,
-                                      ind?name |> JsonValue.asString ] }
+                            for ind in doc.[1] do
+                                yield ind?code.AsString,
+                                      ind?name.AsString ] }
 
         let getData funcs args key = 
             async { let! docs = getDocuments funcs args 1 1
                     return
                         [ for doc in docs do
-                            for ind in (JsonValue.asArray doc).[1] do
+                            for ind in doc.[1] do
                                 yield ind |> JsonValue.getProperty key |> JsonValue.asString,
-                                      ind?value |> JsonValue.asString ] }
+                                      ind?value.AsString ] }
 
         /// At compile time, download the schema
         let topics = lazy (getTopics() |> Async.RunSynchronously)

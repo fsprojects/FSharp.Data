@@ -33,6 +33,6 @@ let ``Reading a required field that is missing throws an exception`` () =
 
 [<Test>]
 let ``Optional int correctly infered`` () = 
-  let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.Parse()
+  let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSample()
   let i:int option = prov.[0].A
   Assert.AreEqual(i, Some 123)

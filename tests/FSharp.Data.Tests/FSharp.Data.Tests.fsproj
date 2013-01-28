@@ -40,13 +40,62 @@
     <Compile Include="FsUnit.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
+    <Compile Include="NameUtils.Tests.fs" />
+    <Content Include="SmallTest.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="CsvProvider.Parsing.fs" />
     <Compile Include="CsvProvider.Tests.fs" />
-    <Compile Include="JsonProvider.Tests.fs" />
     <Compile Include="FreebaseProvider.FifaTests.fs" />
     <Compile Include="FreebaseProvider.ChemistryTests.fs" />
     <Compile Include="FreebaseProvider.BiologyTests.fs" />
+    <Content Include="projects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Philosophy.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="XmlProvider.Reader.Tests.fs" />
+    <Compile Include="XmlProvider.Writer.Tests.fs" />
+    <Compile Include="XmlProvider.ProjectFile.Tests.fs" />
+    <Compile Include="XmlProvider.DocumentOverride.Tests.fs" />
+    <Content Include="OptionValues.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SimpleArray.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DoubleNested.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Nested.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Simple.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WikiData.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Empty.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="projects.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Dates.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="JsonValue.ParseTests.fs" />
+    <Compile Include="JsonValue.SerializationTests.fs" />
+    <Compile Include="JsonValue.XmlConversionTests.fs" />
+    <Compile Include="JsonProvider.Tests.fs" />
+    <Compile Include="JsonProvider.Reader.Tests.fs" />
+    <Compile Include="JsonProvider.Writer.Tests.fs" />
+    <Compile Include="JsonProvider.WikiSample.Tests.fs" />
+    <Compile Include="JsonProvider.DocumentOverride.Tests.fs" />
+    <Compile Include="JsonProvider.ProjectFile.Tests.fs" />
+    <Compile Include="JsonProvider.Dates.Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.CodeFormat">
@@ -74,6 +123,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

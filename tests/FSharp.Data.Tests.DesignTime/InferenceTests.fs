@@ -1,7 +1,7 @@
 ﻿// --------------------------------------------------------------------------------------
 // Tests for a utility that generates nice PascalCase and camelCase names for members
 // --------------------------------------------------------------------------------------
-namespace FSharp.Data.Tests
+namespace FSharp.Data.Tests.DesignTime
 
 #if INTERACTIVE
 #r "../packages/NUnit.2.6.2/lib/nunit.framework.dll"
@@ -17,7 +17,7 @@ open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation
 open ProviderImplementation.StructureInference
 
-module ProviderInference = 
+module InferenceTests = 
 
   /// A collection containing just one type
   let SimpleCollection typ = 
