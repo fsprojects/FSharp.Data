@@ -43,7 +43,7 @@ type JsonValue =
       | Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
-          for KeyValue(k, v) in properties do
+          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> k) do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             sb.AppendFormat("\"{0}\":", k)  |> ignore
             serialize sb v |> ignore
@@ -485,7 +485,9 @@ module Extensions =
         | JsonValue.BigNumber number -> number :> obj
         | JsonValue.String s -> s :> obj
         | JsonValue.Object properties -> 
-          properties |> Seq.map (fun (KeyValue(key,value)) ->
+          properties 
+          |> Seq.sortBy (fun (KeyValue(k, v)) -> k)
+          |> Seq.map (fun (KeyValue(key,value)) ->
             match value with
             | JsonValue.String s -> attr key s
             | JsonValue.Boolean b -> attr key b

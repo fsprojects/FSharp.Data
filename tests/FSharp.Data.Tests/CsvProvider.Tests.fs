@@ -23,14 +23,14 @@ let ``Bool column correctly infered and accessed`` () =
   let csv = new SimpleCsv()
   let first = csv.Data |> Seq.head
   let actual:bool = first.Column1
-  Assert.AreEqual(true, actual)
+  actual |> should be True
 
 [<Test>]
 let ``Decimal column correctly infered and accessed`` () = 
   let csv = new SimpleCsv()
   let first = csv.Data |> Seq.head
   let actual:decimal = first.Column3
-  Assert.AreEqual(3.0M, actual)
+  actual |> should equal 3.0M
 
 let [<Literal>] csvWithEmptyValues = """
 float1,float2,float3,float4,int,float5,float6,date
@@ -56,17 +56,17 @@ let ``Inference of numbers with empty values`` () =
   
   let expected = 1.0, 1.0, 1.0, 1.0, Nullable<int>(), Double.NaN, Double.NaN, Nullable<DateTime>()
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date    
-  Assert.AreEqual(expected, actual)
+  actual |> should equal expected
 
   let row = rows.[1]
   let expected = 2.0, Double.NaN, Double.NaN, 1.0, Nullable 1, 1.0, Double.NaN, Nullable(new DateTime(2010, 01,10)) 
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
-  Assert.AreEqual(expected, actual)
+  actual |> should equal expected
 
   let row = rows.[2]
   let expected = Double.NaN, Double.NaN, 2.0, Double.NaN, Nullable 1, Double.NaN, 2.0, Nullable<DateTime>()
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
-  Assert.AreEqual(expected, actual)
+  actual |> should equal expected
 
 type SmallCsv = CsvProvider<"SmallTest.csv">
 

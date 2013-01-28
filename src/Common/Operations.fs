@@ -27,9 +27,8 @@ module private Helpers =
 #else
     RegexOptions.Compiled
 #endif
-  let msDateRegex = lazy (new Regex(@"^\\\/Date\((-?\d+)(?:-\d+)?\)\\\/$", regexOptions))
-  let iso8601Regex = lazy (new Regex(@"^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?((?<IsUTC>[zZ])|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$", regexOptions))
-  
+  let msDateRegex = lazy (new Regex(@"^/Date\((-?\d+)(?:-\d+)?\)/$", regexOptions))
+
 type Operations = 
 
   static member AsOption str =
@@ -43,15 +42,14 @@ type Operations =
       |> DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds 
       |> Some
     else
-        let dateTimeStylesForUtc = function
-          | true -> DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal
-          | false -> DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces            
-        let matches = iso8601Regex.Value.Match(text)
-        if matches.Success then
-          let parsed, d = DateTime.TryParse(text, culture, dateTimeStylesForUtc matches.Groups.["IsUTC"].Success)
-          if parsed then Some d else None
-        else
-          None
+        let dateTimeStyles = 
+            if text.IndexOf("Z", StringComparison.OrdinalIgnoreCase) <> -1 then
+                DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal ||| DateTimeStyles.AllowWhiteSpaces
+            else
+                DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces
+        match DateTime.TryParse(text, culture, dateTimeStyles) with
+        | true, d -> Some d
+        | _ -> None
 
   static member AsInteger culture text = 
     Int32.TryParse(text, NumberStyles.Integer, culture) |> asOption

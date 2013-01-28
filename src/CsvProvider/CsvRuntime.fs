@@ -5,7 +5,7 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
-open System.Diagnostics
+open System.ComponentModel
 open System.IO
 open System.Text
 
@@ -55,10 +55,10 @@ module CsvReader =
     readLines() 
 
 /// Simple type that represents a single CSV row
-[<DebuggerDisplay("{Display}")>]
 [<StructuredFormatDisplay("{Display}")>]
 type CsvRow internal (data:string[], headers:string[]) =
 
+  /// The raw data
   member x.Columns = data
 
   member private x.Display =
@@ -73,6 +73,9 @@ type CsvRow internal (data:string[], headers:string[]) =
         append " ;"
     sb.ToString(0, sb.Length - 1) + "}";
 
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  override x.ToString() = x.Display
+
 // Simple type wrapping CSV data
 type CsvFile (reader:TextReader, ?sep:string) =
 
@@ -82,7 +85,7 @@ type CsvFile (reader:TextReader, ?sep:string) =
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile reader (sep.ToCharArray()) |> Seq.cache
   let headers = file |> Seq.head
-  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v, headers))  
+  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v, headers)) |> Seq.cache
 
   member x.Data = data
   member x.Headers = headers
