@@ -1,7 +1,6 @@
-﻿module ProviderImplementation.Providers
-open Microsoft.FSharp.Core.CompilerServices
+﻿namespace global
+
 open System.Runtime.CompilerServices
 
-[<assembly:TypeProviderAssembly>]
 [<assembly:InternalsVisibleToAttribute("FSharp.Data.Experimental")>]
 do()

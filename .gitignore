@@ -1,8 +1,7 @@
-bin/*
-src/bin/*
-src/obj/*
-tests/FSharp.Data.Tests/bin/*
-tests/FSharp.Data.Tests/obj/*
+bin
+obj
+ClientBin
 *.suo
 nuget/*.nupkg
 *.user
+__setup__.fsx

@@ -34,10 +34,10 @@ The parsed value can be processed using pattern matching - the `JsonValue` type
 is a discriminated union with cases such as `Record`, `Collection` and other that
 can be used to examine the structure.
 
-## Using JSON reader extensions
+## Using JSON  extensions
 
 We do not cover this technique in this introduction. Instead, we look at a number
-of extensions that become available after opening the `FSharp.Data.Json.JsonReader` 
+of extensions that become available after opening the `FSharp.Data.Json.Extensions` 
 namespace. Once opened, we can write:
 
  * `value.AsBoolean` returns the value as Boolean if it is either `true` or `false`
@@ -53,7 +53,7 @@ namespace. Once opened, we can write:
 
 The following example shows how to process the sample JSON value:
 *)
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
 
 // Print name and birth year
 printfn "%s (%d)" info?name.AsString info?born.AsInteger
@@ -90,7 +90,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "/docs/WorldBank.json")
 let value = JsonValue.Parse(file)
 
 (** 
@@ -99,7 +99,7 @@ and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
 *)
 match value with
-| JsonValue.Array [info; data] ->
+| JsonValue.Array [| info; data |] ->
     // Print overall information
     let page, pages, total = info?page, info?pages, info?total
     printfn 
