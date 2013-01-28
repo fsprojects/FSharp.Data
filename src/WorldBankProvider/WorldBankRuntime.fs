@@ -135,12 +135,12 @@ module Implementation =
                                 yield ind?code.AsString,
                                       ind?name.AsString ] }
 
-        let getData funcs args key = 
+        let getData funcs args (key:string) = 
             async { let! docs = getDocuments funcs args 1 1
                     return
                         [ for doc in docs do
                             for ind in doc.[1] do
-                                yield ind |> JsonValue.getProperty key |> JsonValue.asString,
+                                yield ind.[key].AsString,
                                       ind?value.AsString ] }
 
         /// At compile time, download the schema

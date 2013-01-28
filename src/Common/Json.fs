@@ -338,6 +338,9 @@ module Extensions =
     member x.Item
       with get(index) = (JsonValue.asArray x).[index]
 
+    member x.Item
+      with get(propertName) = JsonValue.getProperty propertName x
+
     /// Get all elements of a JSON object (assuming that the value is an array)
     member x.GetEnumerator() = (JsonValue.asArray x :> seq<_>).GetEnumerator()
 
