@@ -2,6 +2,7 @@ bin
 obj
 ClientBin
 *.suo
+docs/*.html
 nuget/*.nupkg
 *.user
 __setup__.fsx
