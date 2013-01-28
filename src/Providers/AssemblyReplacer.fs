@@ -103,8 +103,9 @@ module private AssemblyReplacer =
       let isStatic = 
         p.CanRead && p.GetGetMethod().IsStatic || 
         p.CanWrite && p.GetSetMethod().IsStatic
-      let bindingFlags = BindingFlags.Public ||| BindingFlags.NonPublic ||| 
-                 (if isStatic then BindingFlags.Static else BindingFlags.Instance)
+      let bindingFlags = 
+        BindingFlags.Public ||| BindingFlags.NonPublic ||| 
+          (if isStatic then BindingFlags.Static else BindingFlags.Instance)
       let newP = t.GetProperty(p.Name, bindingFlags)
       if newP = null then
         failwithf "Property '%O' of type '%O' not found in '%s'" p t toAsm.Location
@@ -114,8 +115,9 @@ module private AssemblyReplacer =
     if f.GetType() = typeof<ProvidedField> then f
     else replace asmMappings (f, getAssemblies f.DeclaringType) (fun toAsm ->
       let t = getType toAsm f.DeclaringType (replaceType asmMappings)
-      let bindingFlags = (if f.IsPublic then BindingFlags.Public else BindingFlags.NonPublic) ||| 
-                 (if f.IsStatic then BindingFlags.Static else BindingFlags.Instance)
+      let bindingFlags = 
+        (if f.IsPublic then BindingFlags.Public else BindingFlags.NonPublic) ||| 
+        (if f.IsStatic then BindingFlags.Static else BindingFlags.Instance)
       let newF = t.GetField(f.Name, bindingFlags)
       if newF = null then
         failwithf "Field '%O' of type '%O' not found in '%s'" f t toAsm.Location
