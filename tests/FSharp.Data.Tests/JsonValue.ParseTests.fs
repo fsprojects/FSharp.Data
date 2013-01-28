@@ -11,7 +11,7 @@ open FsUnit
 [<Test>]
 let ``Can parse empty document``() = 
     let j = JsonValue.Parse "{}"
-    j |> should equal (JsonValue.Object Map.empty)
+    j |> should equal JsonValue.emptyObject
 
 [<Test>] 
 let ``Can parse document with single property``() =
@@ -32,7 +32,7 @@ let ``Can parse document with text and float``() =
 
 [<Test>]
 let ``Can parse document with date``() =
-    let j = JsonValue.Parse "{\"anniversary\": \"\\\\/Date(869080830450)\\\\/\"}"
+    let j = JsonValue.Parse "{\"anniversary\": \"\\/Date(869080830450)\\/\"}"
     j?anniversary.AsDateTime |> should equal (new DateTime(1997, 07, 16, 19, 20, 30, 450, DateTimeKind.Utc))
     j?anniversary.AsDateTime.Kind |> should equal DateTimeKind.Utc
 
@@ -119,14 +119,14 @@ let ``Can parse document with null``() =
     let j = JsonValue.Parse "{ \"items\": [{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}] }"
     let jArray = j?items
     jArray.[0]?id.AsString |> should equal "Open"
-    jArray.[1] |> should equal JsonValue.Null
+    jArray.[1]             |> should equal JsonValue.Null
     jArray.[2]?id.AsString |> should equal "Pause"
 
 [<Test>] 
 let ``Can parse array in outermost scope``() =
     let jArray = JsonValue.Parse "[{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}]"
     jArray.[0]?id.AsString |> should equal "Open"
-    jArray.[1] |> should equal JsonValue.Null
+    jArray.[1]             |> should equal JsonValue.Null
     jArray.[2]?id.AsString |> should equal "Pause"
 
 [<Test>]
@@ -151,7 +151,7 @@ let ``Quotes in strings are property escaped``() =
 [<Test>]
 let ``Can parse simple array``() = 
     let j = JsonValue.Parse "[\"Adam\",\"Eve\",\"Bonnie\",\"Clyde\",\"Donald\",\"Daisy\",\"Han\",\"Leia\"]"
-    j.[0]  |> should equal (JsonValue.String "Adam")
+    j.[0] |> should equal (JsonValue.String "Adam")
     j.[1] |> should equal (JsonValue.String "Eve")
     j.[2] |> should equal (JsonValue.String "Bonnie")
     j.[3] |> should equal (JsonValue.String "Clyde")

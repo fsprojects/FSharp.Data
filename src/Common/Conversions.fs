@@ -24,9 +24,8 @@ module private Helpers =
 #else
     RegexOptions.Compiled
 #endif
-  let msDateRegex = lazy (new Regex(@"^\\\/Date\((-?\d+)(?:-\d+)?\)\\\/$", regexOptions))
-  let iso8601Regex = lazy (new Regex(@"^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?((?<IsUTC>[zZ])|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$", regexOptions))
-  
+  let msDateRegex = lazy (new Regex(@"^/Date\((-?\d+)(?:-\d+)?\)/$", regexOptions))
+
 type Operations = 
 
   /// Turns empty or null string value into None, otherwise returns Some
@@ -37,7 +36,7 @@ type Operations =
   /// that is, either "Date(<msec-since-1/1/1970>)" or something
   /// along the lines of "2013-01-28T00:37Z"
   static member AsDateTime culture (text:string) =
-    // Try parse Microsoft style format
+    // Try parse "Date(<msec>)" style format
     let matchesMS = msDateRegex.Value.Match (text.Trim())
     if matchesMS.Success then
       matchesMS.Groups.[1].Value 
@@ -45,16 +44,16 @@ type Operations =
       |> DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds 
       |> Some
     else
-      // Try parse the ISO format
-      let matches = iso8601Regex.Value.Match(text)
-      let format = 
-        if matches.Groups.["IsUTC"].Success 
-        then DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal
-        else DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces            
-      if matches.Success then
-        let parsed, d = DateTime.TryParse(text, culture, format)
-        if parsed then Some d else None
-      else None
+      // Parse ISO 8601 format, fixing time zone if needed
+      let dateTimeStyles = 
+        if text.IndexOf("Z", StringComparison.OrdinalIgnoreCase) <> -1 then
+          DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal 
+            ||| DateTimeStyles.AllowWhiteSpaces
+        else
+          DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces
+      match DateTime.TryParse(text, culture, dateTimeStyles) with
+      | true, d -> Some d
+      | _ -> None
 
   // Try parse string into standard types and returns None if failed
   static member AsInteger culture text = 

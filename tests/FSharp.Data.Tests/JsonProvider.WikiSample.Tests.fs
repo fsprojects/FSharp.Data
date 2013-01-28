@@ -59,4 +59,4 @@ let ``Can load empty json file and fails on property access``() =
         document.FirstName |> ignore
     with
     | _ -> failed := true
-    Assert.IsTrue !failed
+    !failed |> should be True

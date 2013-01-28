@@ -24,7 +24,10 @@ let rec inferType culture json =
   | JsonValue.Boolean _ -> Primitive(typeof<bool>, None)
   | JsonValue.String s -> 
     //check again if it's a date or number
-    inferPrimitiveType culture s None
+    match inferPrimitiveType culture s None with
+     //In this case it's not Null, it's an empty string as the "" were there explicetly, unlike the other providers
+    | Null -> Primitive(typeof<string>, None)
+    | t -> t
   // For numbers, we test if it is integer and if it fits in smaller range
   | JsonValue.Number n when inrange Int32.MinValue Int32.MaxValue n && integer n -> Primitive(typeof<int>, None)
   | JsonValue.Number n when inrange Int64.MinValue Int64.MaxValue n && integer n -> Primitive(typeof<int64>, None)

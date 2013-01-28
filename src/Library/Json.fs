@@ -43,7 +43,7 @@ type JsonValue =
       | Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
-          for KeyValue(k, v) in properties do
+          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> k) do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             sb.AppendFormat("\"{0}\":", k)  |> ignore
             serialize sb v |> ignore

@@ -4,14 +4,28 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
+open System.ComponentModel
 open System.Xml.Linq
 open System.Globalization
 
 /// Underlying representation of the generated XML types
+[<StructuredFormatDisplay("{XElement}")>]
 type XmlElement (node:XElement) =
+
   /// Returns the raw XML element that is represented by the generated type
   member x.XElement = node
 
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  override x.Equals(y) =
+    match y with
+    | :? XmlElement as y -> x.XElement = y.XElement
+    | _ -> false 
+  
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  override x.GetHashCode() = x.XElement.GetHashCode()
+
+  [<EditorBrowsable(EditorBrowsableState.Never)>]
+  override x.ToString() = x.XElement.ToString()
 
 /// Static helper methods called from the generated code
 type XmlOperations = 

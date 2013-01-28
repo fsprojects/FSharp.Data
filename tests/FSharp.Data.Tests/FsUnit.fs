@@ -1,7 +1,10 @@
 ﻿module FsUnit
+
+open System.Diagnostics
 open NUnit.Framework
 open NUnit.Framework.Constraints
 
+[<DebuggerNonUserCode>]
 let should (f : 'a -> #Constraint) x (y : obj) =
     let c = f x
     let y =
@@ -15,8 +18,7 @@ let equal x = new EqualConstraint(x)
 // like "should equal", but validates same-type
 let shouldEqual (x: 'a) (y: 'a) = Assert.AreEqual(x, y, sprintf "Expected: %A\nActual: %A" x y)
 
-// overriding a standard language function is not cool
-//let not x = new NotConstraint(x)
+let notEqual x = new NotConstraint(new EqualConstraint(x))
 
 let contain x = new ContainsConstraint(x)
 

@@ -44,7 +44,9 @@ let toXml(x:JsonValue) =
     | JsonValue.BigNumber number -> number :> obj
     | JsonValue.String s -> s :> obj
     | JsonValue.Object properties -> 
-      properties |> Seq.map (fun (KeyValue(key,value)) ->
+        properties 
+        |> Seq.sortBy (fun (KeyValue(k, v)) -> k)
+        |> Seq.map (fun (KeyValue(key,value)) ->
         match value with
         | JsonValue.String s -> attr key s
         | JsonValue.Boolean b -> attr key b
@@ -52,6 +54,7 @@ let toXml(x:JsonValue) =
         | JsonValue.BigNumber n -> attr key n
         | _ -> elem key (toXml value)) :> obj
     | JsonValue.Array elements -> 
-      elements |> Seq.map (fun item -> elem "item" (toXml item)) :> obj
+        elements 
+        |> Seq.map (fun item -> elem "item" (toXml item)) :> obj
   (toXml x) :?> XObject seq
 
