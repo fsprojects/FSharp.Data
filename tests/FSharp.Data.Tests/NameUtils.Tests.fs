@@ -10,56 +10,56 @@ open FSharp.Data.NameUtils
 
 [<Test>]
 let ``Formats empty string as PascalCase`` () = 
-  Assert.AreEqual("", nicePascalName "")
+  nicePascalName "" |> should equal ""
 
 [<Test>]
 let ``Formats empty string as camelCase`` () = 
-  Assert.AreEqual("", niceCamelName "")
+  niceCamelName "" |> should equal ""
 
 [<Test>]
 let ``Removes non-character symbols`` () = 
-  Assert.AreEqual("Hello", nicePascalName "__hello__")
-  Assert.AreEqual("hello", niceCamelName "__hello__")
+  nicePascalName "__hello__" |> should equal "Hello"
+  niceCamelName "__hello__"  |> should equal "hello"
 
 [<Test>]
 let ``Makes first letter uppercase`` () = 
-  Assert.AreEqual("Abc", nicePascalName "abc")
-  Assert.AreEqual("abc", niceCamelName "abc")
+  nicePascalName "abc" |> should equal "Abc"
+  niceCamelName "abc"  |> should equal "abc"
 
 [<Test>]
 let ``Detects word after underscore`` () = 
-  Assert.AreEqual("HelloWorld", nicePascalName "hello_world")
-  Assert.AreEqual("helloWorld", niceCamelName "hello_world")
+  nicePascalName "hello_world" |> should equal "HelloWorld"
+  niceCamelName "hello_world"  |> should equal "helloWorld"
 
 [<Test>]
 let ``Detects word after case change`` () = 
-  Assert.AreEqual("HelloWorld", nicePascalName "helloWorld")
-  Assert.AreEqual("helloWorld", niceCamelName "helloWorld")
+  nicePascalName "helloWorld" |> should equal "HelloWorld"
+  niceCamelName "helloWorld"  |> should equal "helloWorld"
 
 [<Test>]
 let ``No new word after numbers`` () = 
-  Assert.AreEqual("Hello123world", nicePascalName "hello123world")
-  Assert.AreEqual("hello123world", niceCamelName "hello123world")
+  nicePascalName "hello123world" |> should equal "Hello123world"
+  niceCamelName "hello123world"  |> should equal "hello123world"
 
 [<Test>]
 let ``Removes exclamation mark`` () = 
-  Assert.AreEqual("Hello123", nicePascalName "hello!123") 
-  Assert.AreEqual("hello123", niceCamelName "hello!123") 
+  nicePascalName "hello!123" |> should equal "Hello123" 
+  niceCamelName "hello!123"  |> should equal "hello123"
 
 [<Test>]
 let ``Handles long and ugly names`` () = 
-  Assert.AreEqual("HelloWorld123HelloOmg", nicePascalName "HelloWorld123_hello__@__omg")
-  Assert.AreEqual("helloWorld123HelloOmg", niceCamelName "HelloWorld123_hello__@__omg")
+  nicePascalName "HelloWorld123_hello__@__omg" |> should equal "HelloWorld123HelloOmg"
+  niceCamelName "HelloWorld123_hello__@__omg"  |> should equal "helloWorld123HelloOmg"
 
 [<Test>]
 let ``Unique generator generates unique names`` () = 
   let gen = uniqueGenerator nicePascalName
   let names = [ for i in 0 .. 100 -> gen "test" ]
-  Assert.AreEqual(Seq.length (set names), Seq.length names)
+  Seq.length names  |> should equal (Seq.length (set names))
 
 [<Test>]
 let ``Trims HTML tags from string`` () = 
-  Assert.AreEqual("hello world", trimHtml "<b>hello</b><em>world</em>")
+  trimHtml "<b>hello</b><em>world</em>" |> should equal "hello world"
 
 [<Test>]
 let ``Can pluralize names``() =

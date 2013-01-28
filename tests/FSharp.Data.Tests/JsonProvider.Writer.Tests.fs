@@ -71,13 +71,13 @@ type AuthorsJSON = JsonProvider<"""{ "authors": [{ "name": "Steffen" }, { "name"
 
 [<Test>]
 let ``Can serialize the json``() =
-    let inlined = new AuthorsJSON()
+    let inlined = AuthorsJSON.GetSample()
     let json = inlined.ToString()
-    json |> should equal """{"authors":[{"name":"Steffen"},{"size":42.42,"isCool":true,"age":29,"name":"Tomas"}]}"""
+    json |> should equal """{"authors":[{"name":"Steffen"},{"age":29,"isCool":true,"name":"Tomas","size":42.42}]}"""
 
 [<Test>]
 let ``Can convert the json to xml``() =
     let inlined = AuthorsJSON.GetSample()
     let xml = inlined.JsonValue.ToXml() |> Seq.head 
-    let expectedXml = XDocument.Parse("<authors><item name=\"Steffen\" /><item size=\"42.42\" isCool=\"true\" age=\"29\" name=\"Tomas\" /></authors>")
+    let expectedXml = XDocument.Parse("<authors><item name=\"Steffen\" /><item age=\"29\" isCool=\"true\" name=\"Tomas\" size=\"42.42\" /></authors>")
     xml.ToString() |> should equal (expectedXml.ToString())

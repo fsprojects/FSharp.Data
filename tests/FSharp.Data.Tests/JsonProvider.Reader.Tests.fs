@@ -121,25 +121,28 @@ let ``Can parse optional values in arrays``() =
 
 [<Test>]
 let ``Can compare typed JSON documents``() = 
-    let simple1 = SimpleJSON()
-    let simple2 = SimpleJSON()
-    let nested = NestedJSON()
+    let simple1 = SimpleJSON.GetSample()
+    let simple2 = SimpleJSON.GetSample()
+    let nested = NestedJSON.GetSample()
 
-    Assert.AreEqual(simple1,simple2)
-    Assert.AreNotEqual(nested,simple2)
+    simple1 |> should equal simple2
+    nested |> should notEqual simple2
 
 type JsonArray = JsonProvider<"""["Adam","Eve","Bonnie","Clyde","Donald","Daisy","Han","Leia"]""">
 
 [<Test>]
 let ``Can parse simple array``() = 
-    let inlined = JsonArray()    
-    inlined.ToString()
-      |> should equal """["Adam","Eve","Bonnie","Clyde","Donald","Daisy","Han","Leia"]"""
+    let inlined = JsonArray.GetSample()
+    inlined
+      |> should equal [|"Adam";"Eve";"Bonnie";"Clyde";"Donald";"Daisy";"Han";"Leia"|]
 
 type MultipleJsonArray = JsonProvider<"""[["Adam","Eve"],["Bonnie","Clyde"],["Donald","Daisy"],["Han","Leia"]]""">
 
 [<Test>]
 let ``Can parse multidimensional arrays``() = 
-    let inlined = MultipleJsonArray()
-    inlined.ToString()
-      |> should equal """[["Adam","Eve"],["Bonnie","Clyde"],["Donald","Daisy"],["Han","Leia"]]"""
+    let inlined = MultipleJsonArray.GetSample()
+    inlined
+      |> should equal [| [|"Adam";"Eve"|]
+                         [|"Bonnie";"Clyde"|]
+                         [|"Donald";"Daisy"|]
+                         [|"Han";"Leia"|] |]

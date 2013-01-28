@@ -41,6 +41,7 @@ let isValueType = function
 
 let hasNullOrNaN = function
   | Primitive(typ, _) as t -> typ = typeof<float> || not (isValueType t)
+  | Null -> true
   | _ -> false
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
