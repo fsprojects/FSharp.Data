@@ -19,13 +19,13 @@ open FSharp.Data.RuntimeImplementation
 open ProviderImplementation.HttpUtility
 
 /// Represents a JSON value. Large numbers that do not fit in the 
-/// Decimal type are represented using the BigNumber case, while
+/// Decimal type are represented using the Float case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
 [<RequireQualifiedAccess>]
 type JsonValue =
   | String of string
   | Number of decimal
-  | BigNumber of float 
+  | Float of float 
   | Object of Map<string, JsonValue>
   | Array of JsonValue[]
   | Boolean of bool
@@ -37,7 +37,7 @@ type JsonValue =
       | Null -> sb.Append "null"
       | Boolean b -> sb.Append(b.ToString().ToLowerInvariant())
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
-      | BigNumber number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
+      | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
           sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
       | Object properties -> 
@@ -148,7 +148,7 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
         | Some x -> JsonValue.Number x
         | _ -> 
             match Operations.AsFloat culture (s.Substring(start,len)) with  
-            | Some x -> JsonValue.BigNumber x
+            | Some x -> JsonValue.Float x
             | _ -> throw()
 
     and parsePair() =
@@ -256,7 +256,7 @@ module Extensions =
     /// Get a number as a float (assuming that the value is convertible to a float)
     member x.AsFloat(?culture) = 
       match x with
-      | JsonValue.BigNumber n -> n
+      | JsonValue.Float n -> n
       | JsonValue.Number n -> float n
       | JsonValue.String s -> 
           match Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) s with
@@ -268,7 +268,7 @@ module Extensions =
     member x.AsDecimal(?culture) = 
       match x with
       | JsonValue.Number n -> n
-      | JsonValue.BigNumber n -> decimal n
+      | JsonValue.Float n -> decimal n
       | JsonValue.String s -> 
           match Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) s with
           | Some n -> n
@@ -279,7 +279,7 @@ module Extensions =
     member x.AsInteger(?culture) = 
       match x with
       | JsonValue.Number n -> int n
-      | JsonValue.BigNumber n -> int n
+      | JsonValue.Float n -> int n
       | JsonValue.String s -> 
           match Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) s with
           | Some n -> n
@@ -290,7 +290,7 @@ module Extensions =
     member x.AsInteger64(?culture) = 
       match x with
       | JsonValue.Number n -> int64 n 
-      | JsonValue.BigNumber n -> int64 n
+      | JsonValue.Float n -> int64 n
       | JsonValue.String s -> 
           match Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) s with
           | Some n -> n

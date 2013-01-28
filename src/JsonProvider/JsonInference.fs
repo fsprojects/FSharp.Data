@@ -29,7 +29,7 @@ let rec inferType culture json =
   | JsonValue.Number n when inrange Int32.MinValue Int32.MaxValue n && integer n -> Primitive(typeof<int>, None)
   | JsonValue.Number n when inrange Int64.MinValue Int64.MaxValue n && integer n -> Primitive(typeof<int64>, None)
   | JsonValue.Number _ -> Primitive(typeof<decimal>, None)
-  | JsonValue.BigNumber _ -> Primitive(typeof<float>, None)
+  | JsonValue.Float _ -> Primitive(typeof<float>, None)
   // More interesting types 
   | JsonValue.Array ar -> inferCollectionType (Seq.map (inferType culture) ar)
   | JsonValue.Object o ->

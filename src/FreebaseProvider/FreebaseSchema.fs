@@ -33,7 +33,7 @@ module Utilities =
         | JsonValue.Null -> null
         | JsonValue.Boolean b -> b :> obj
         | JsonValue.Number n -> n :> obj
-        | JsonValue.BigNumber n -> n :> obj
+        | JsonValue.Float n -> n :> obj
         | JsonValue.Array a -> Array.map convJsonPrimValue a :> obj
         | _ -> failwith (sprintf "unexpected structured JSON value %+A" jsonValue)
 

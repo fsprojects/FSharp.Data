@@ -40,7 +40,7 @@ type JsonOperations =
       | JsonValue.Null -> false
       | JsonValue.Boolean _ -> tag = InferedTypeTag.Boolean
       | JsonValue.Number _ -> tag = InferedTypeTag.Number
-      | JsonValue.BigNumber _ -> tag = InferedTypeTag.Number
+      | JsonValue.Float _ -> tag = InferedTypeTag.Number
       | JsonValue.Array _ -> tag = InferedTypeTag.Collection
       | JsonValue.Object _ -> tag = InferedTypeTag.Record None
       | JsonValue.String _ -> tag = InferedTypeTag.String
