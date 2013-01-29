@@ -41,7 +41,7 @@ let toXml(x:JsonValue) =
     | JsonValue.Null -> null
     | JsonValue.Boolean b -> b :> obj
     | JsonValue.Number number -> number :> obj
-    | JsonValue.BigNumber number -> number :> obj
+    | JsonValue.Float number -> number :> obj
     | JsonValue.String s -> s :> obj
     | JsonValue.Object properties -> 
         properties 
@@ -51,7 +51,7 @@ let toXml(x:JsonValue) =
         | JsonValue.String s -> attr key s
         | JsonValue.Boolean b -> attr key b
         | JsonValue.Number n -> attr key n
-        | JsonValue.BigNumber n -> attr key n
+        | JsonValue.Float n -> attr key n
         | _ -> elem key (toXml value)) :> obj
     | JsonValue.Array elements -> 
         elements 
