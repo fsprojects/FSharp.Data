@@ -68,7 +68,7 @@ let ``Inference of numbers with empty values`` () =
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> should equal expected
 
-type SmallCsv = CsvProvider<"SmallTest.csv">
+type SmallCsv = CsvProvider<"Data/SmallTest.csv">
 
 [<Test>] 
 let ``Can create type for small document``() =

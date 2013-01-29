@@ -4,7 +4,7 @@ open NUnit.Framework
 open FSharp.Data
 open FsUnit
 
-type Project = XmlProvider<"projects.xml">
+type Project = XmlProvider<"Data/projects.xml">
 
 [<Test>]
 let ``Can access the background title``() =

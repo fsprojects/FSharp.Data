@@ -53,7 +53,7 @@ let ``Can parse wiki sample``() =
 
 [<Test>]
 let ``Can load empty json file and fails on property access``() = 
-    let document = WikiSample.Load("Empty.json")
+    let document = WikiSample.Load("Data/Empty.json")
     let failed = ref false
     try
         document.FirstName |> ignore

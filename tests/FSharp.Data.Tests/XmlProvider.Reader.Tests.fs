@@ -12,7 +12,7 @@ let ``Can get author name in inlined xml``() =
     author.Name |> should equal "Ludwig"
     author.Surname |> should equal "Wittgenstein"
 
-type philosophyType = XmlProvider<"Philosophy.xml">
+type philosophyType = XmlProvider<"Data/Philosophy.xml">
 let authors = philosophyType.GetSample().GetAuthors()
 
 [<Test>]

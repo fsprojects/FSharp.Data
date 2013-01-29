@@ -5,7 +5,7 @@ open FSharp.Data
 open FsUnit
 open System
 
-type DateJSON = JsonProvider<"Dates.json">
+type DateJSON = JsonProvider<"Data/Dates.json">
 
 [<Test>]
 let ``Can parse microsoft format dates``() = 

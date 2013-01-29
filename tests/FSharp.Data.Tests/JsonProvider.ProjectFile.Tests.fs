@@ -4,7 +4,7 @@ open NUnit.Framework
 open FSharp.Data
 open FsUnit
 
-type Project = JsonProvider<"projects.json">
+type Project = JsonProvider<"Data/projects.json">
 
 [<Test>]
 let ``Can access the background title``() =

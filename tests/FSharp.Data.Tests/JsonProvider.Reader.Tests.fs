@@ -24,7 +24,7 @@ let ``Can parse inlined properties``() =
 
 [<Test>]
 let ``Can parse inlined properties but read from file``() = 
-    let person = InlinedJSON.Load("Simple.json")
+    let person = InlinedJSON.Load("Data/Simple.json")
 
     person.FirstName
     |> should equal "John"
@@ -39,7 +39,7 @@ let ``Can parse inlined properties but read from file``() =
     |> should equal true
 
 
-type SimpleJSON = JsonProvider<"Simple.json">
+type SimpleJSON = JsonProvider<"Data/Simple.json">
 
 let simple = SimpleJSON.GetSample()
 
@@ -57,7 +57,7 @@ let ``Can parse properties``() =
     simple.IsCool
     |> should equal true
 
-type NestedJSON = JsonProvider<"Nested.json">
+type NestedJSON = JsonProvider<"Data/Nested.json">
 
 let nested = NestedJSON.GetSample()
 
@@ -75,7 +75,7 @@ let ``Can parse nested properties``() =
     nested.Main.IsCool
     |> should equal true
 
-type DoubleNestedJSON = JsonProvider<"DoubleNested.json">
+type DoubleNestedJSON = JsonProvider<"Data/DoubleNested.json">
 
 let doubleNested = DoubleNestedJSON.GetSample()
 
@@ -87,7 +87,7 @@ let ``Can parse double nested properties``() =
     doubleNested.Main.Nested.NestedTitle
     |> should equal "sub"
 
-type SimpleArrayJSON = JsonProvider<"SimpleArray.json">
+type SimpleArrayJSON = JsonProvider<"Data/SimpleArray.json">
 
 let simpleArray = SimpleArrayJSON.GetSample()
 
@@ -100,7 +100,7 @@ let ``Can parse simple arrays``() =
     items.[1].Id
     |> should equal "Pause"
 
-type OptionalValuesInJSON = JsonProvider<"OptionValues.json">
+type OptionalValuesInJSON = JsonProvider<"Data/OptionValues.json">
 
 let optionalValuesInJSON = OptionalValuesInJSON.GetSample()
 
