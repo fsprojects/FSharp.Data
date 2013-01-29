@@ -44,9 +44,9 @@ let toXml(x:JsonValue) =
     | JsonValue.Float number -> number :> obj
     | JsonValue.String s -> s :> obj
     | JsonValue.Object properties -> 
-        properties 
-        |> Seq.sortBy (fun (KeyValue(k, v)) -> k)
-        |> Seq.map (fun (KeyValue(key,value)) ->
+      properties 
+      |> Seq.sortBy (fun (KeyValue(k, v)) -> k)
+      |> Seq.map (fun (KeyValue(key,value)) ->
         match value with
         | JsonValue.String s -> attr key s
         | JsonValue.Boolean b -> attr key b
@@ -57,4 +57,3 @@ let toXml(x:JsonValue) =
         elements 
         |> Seq.map (fun item -> elem "item" (toXml item)) :> obj
   (toXml x) :?> XObject seq
-

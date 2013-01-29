@@ -2,7 +2,7 @@
 // Tools for generating nice member names that follow F# & .NET naming conventions
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.NameUtils
+module ProviderImplementation.NameUtils
 
 open System
 open System.Globalization
@@ -68,7 +68,7 @@ let niceCamelName (s:string) =
 ///     let n1 = gen "sample-name"
 ///     let n2 = gen "sample-name"
 ///
-let internal uniqueGenerator niceName =
+let uniqueGenerator niceName =
   let dict = new Dictionary<_, _>()
   (fun name ->
       let name = niceName name
@@ -82,7 +82,7 @@ let internal uniqueGenerator niceName =
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive 
 /// implementation that is somewhat faster than regular expression.)
-let internal trimHtml (s:string) = 
+let trimHtml (s:string) = 
   let chars = s.ToCharArray()
   let res = new Text.StringBuilder()
 

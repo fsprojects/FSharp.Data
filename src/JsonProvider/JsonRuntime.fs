@@ -30,7 +30,7 @@ type JsonDocument (json:JsonValue) =
 type JsonOperations = 
   // Trivial operations that return primitive values
   static member GetString(value:JsonValue) = value.AsString()
-  static member GetDateTime(value:JsonValue) = value.AsDateTime()
+  static member GetDateTime(value:JsonValue, culture) = value.AsDateTime(Operations.GetCulture(culture))
   static member GetBoolean(value:JsonValue) = value.AsBoolean()
   static member GetFloat(value:JsonValue, culture) = value.AsFloat(Operations.GetCulture(culture))
   static member GetDecimal(value:JsonValue, culture) = value.AsDecimal(Operations.GetCulture(culture))
