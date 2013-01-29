@@ -5,7 +5,7 @@ open FsUnit
 open System.Xml.Linq
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
-
+(*
 [<Test>]
 let ``Can serialize Json to XML``() =
     let text = "{\"items\": [{\"id\": \"Open\"}, null, {\"id\": 25}]}"
@@ -29,3 +29,4 @@ let ``Can serialize XML to Json``() =
     let generatedJSON = xml.ToJson()
     let expectedJSON = "{\"items\":[{\"id\":\"Open\"},{},{\"id\":\"25\"}]}"
     generatedJSON.ToString() |> should equal expectedJSON
+*)

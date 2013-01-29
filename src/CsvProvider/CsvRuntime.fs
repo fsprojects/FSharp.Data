@@ -10,7 +10,7 @@ open System.IO
 open System.Text
 
 // Parser for the CSV format 
-module private CsvReader = 
+module internal CsvReader = 
 
   /// Lazily reads the specified CSV file using the specified separator
   /// (Handles most of the RFC 4180 - most notably quoted values and also

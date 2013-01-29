@@ -24,13 +24,13 @@ module internal HttpUtility =
       let inline ensureBuilder i = 
         if !sb = null then 
           sb := new StringBuilder(value.Length + 5)
-          (!sb).Append(value.Substring(0, i - 1))
+          (!sb).Append(value.Substring(0, i))
         else !sb
 
       // Iterate over characters and encode 
       for i in 0 .. chars.Length - 1 do 
         let c = int (chars.[i])
-        if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 39 || c = 60 || c = 62 then
+        if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 38 || c = 39 || c = 60 || c = 62 then
           (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
         else 
           match c with

@@ -30,7 +30,7 @@ let ``Reading a required field that is null throws an exception`` () =
 [<Test>]
 let ``Reading a required field that is missing throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"b":123} """)
-  (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
+  (fun () -> prov.A |> ignore)|> should throw typeof<System.Collections.Generic.KeyNotFoundException>
 
 [<Test>]
 let ``Optional int correctly infered`` () = 

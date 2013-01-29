@@ -9,22 +9,20 @@ let toString x = x.ToString()
 
 [<Test>]
 let ``Can serialize empty document``() = 
-    JsonValue.emptyObject.ToString() 
+    (JsonValue.Object Map.empty).ToString() 
     |> should equal "{}"
 
 [<Test>] 
 let ``Can serialize document with single property``() =
-    JsonValue.emptyObject
-        .Add("firstName", "John")
-        .ToString()
+    ( [ "firstName", JsonValue.String "John" ]
+      |> Map.ofSeq |> JsonValue.Object ).ToString()
     |> should equal "{\"firstName\":\"John\"}"
 
 [<Test>] 
 let ``Can serialize document with booleans``() =
-    JsonValue.emptyObject
-        .Add("aa", true)
-        .Add("bb", false)
-        .ToString()
+    ( [ "aa", JsonValue.Boolean true
+        "bb", JsonValue.Boolean false ]
+      |> Map.ofSeq |> JsonValue.Object ).ToString()
     |> should equal "{\"aa\":true,\"bb\":false}"
 
 [<Test>]
