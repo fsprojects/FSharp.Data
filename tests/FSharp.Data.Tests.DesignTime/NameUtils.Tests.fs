@@ -6,7 +6,7 @@ module FSharp.Data.Tests.NameUtils.Tests
 
 open FsUnit
 open NUnit.Framework
-open FSharp.Data.NameUtils
+open ProviderImplementation.NameUtils
 
 [<Test>]
 let ``Formats empty string as PascalCase`` () = 
