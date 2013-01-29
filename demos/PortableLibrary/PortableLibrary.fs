@@ -15,7 +15,7 @@ type Item =
       Description : string
       SubItems : SubItem seq }
 
-type StocksCsv = CsvProvider<"../docs/MSFT.csv">
+type StocksCsv = CsvProvider<"../../samples/docs/MSFT.csv">
 
 let getCsvData forSilverlight = seq {
 
@@ -37,7 +37,7 @@ let getCsvData forSilverlight = seq {
 }
 
 type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
-type WorldBankJson = JsonProvider<"../docs/WorldBank.json">
+type WorldBankJson = JsonProvider<"../../samples/docs/WorldBank.json">
 
 let getJsonData() = seq {
 
@@ -63,7 +63,7 @@ let getJsonData() = seq {
 }
 
 type SimpleXml = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
-type AuthorsXml = XmlProvider<"../docs/Writers.xml">
+type AuthorsXml = XmlProvider<"../../samples/docs/Writers.xml">
 
 let getXmlData() = seq {
 
