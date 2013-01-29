@@ -43,32 +43,37 @@ type AssemblyReplacer =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AssemblyReplacer =
 
-  // we use a list for asmMappings because the Assembly type is not
-  // an IComparable and can't be stored in a map
+  // We use a list for asmMappings because the Assembly type is not an IComparable and can't be stored in a map
+  // In the originalsAsms list the first assembly has to be the assembly of the outer type
   let private replace asmMappings (original, originalAsms) f =
     let toAsm = 
       asmMappings
       |> Seq.tryPick (fun (fromAsm, toAsm) -> 
         if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then        
-          if fromAsm = originalAsms.Head then 
-            Some toAsm 
-          else 
-            Some originalAsms.Head
+          // if we found a replacement for the outer type assembly, return it
+          if fromAsm = originalAsms.Head then Some toAsm 
+          // otherwise just return the original assembly of the outer type,
+          // to signal that it needs to be visited, but it doesn't make sense
+          // to replace it with toAsm, because that is from one of the inner types
+          else Some originalAsms.Head
         else 
           None)
     match toAsm with
     | Some toAsm -> f toAsm
     | None -> original
 
+  // A lazy version of the previous method to avoid doing unneeded work in the discriminated unions case
   let private replaceLazy asmMappings (lazyOriginal : 'a Lazy, originalAsms) f =
     let toAsm = 
       asmMappings
       |> Seq.tryPick (fun (fromAsm, toAsm) -> 
         if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then        
-          if fromAsm = originalAsms.Head then 
-            Some toAsm 
-          else 
-            Some originalAsms.Head
+          // if we found a replacement for the outer type assembly, return it
+          if fromAsm = originalAsms.Head then Some toAsm 
+          // otherwise just return the original assembly of the outer type,
+          // to signal that it needs to be visited, but it doesn't make sense
+          // to replace it with toAsm, because that is from one of the inner types
+          else Some originalAsms.Head
         else 
           None)
     match toAsm with
