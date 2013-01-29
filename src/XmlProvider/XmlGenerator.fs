@@ -83,7 +83,7 @@ module internal XmlTypeBuilder =
         // Generate properties for all XML attributes
         for attr in attrs do
           let name = attr.Name
-          let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
+          let typ = match attr.Type with Null -> typeof<string> | Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
           let resTyp, convFunc = Conversions.convertValue culture ("Attribute " + name) (if attr.Optional then TypeWrapper.Option else TypeWrapper.None) (typ, typ) ctx.Replacer
           
           // Add property with PascalCased name
