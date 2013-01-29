@@ -36,3 +36,10 @@ let ``Jim should have a last name of Smith``() =
 [<Test>]
 let ``Jim should have an age of 24``() = 
     nextPerson.Age |> should equal 24
+
+
+let testXml = XmlProvider<""" <foo a="" /> """>.GetSample()
+
+[<Test>]
+let ``Type of attribute with empty value is string`` = 
+  testXml.A |> shouldEqual ""

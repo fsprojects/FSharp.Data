@@ -82,10 +82,10 @@
     <Compile Include="JsonValue.XmlConversionTests.fs" />
     <Compile Include="CsvProvider.Parsing.fs" />
     <Compile Include="CsvProvider.Tests.fs" />
+    <Compile Include="XmlProvider.Tests.fs" />
     <Compile Include="XmlProvider.Reader.Tests.fs" />
     <Compile Include="XmlProvider.Writer.Tests.fs" />
     <Compile Include="XmlProvider.ProjectFile.Tests.fs" />
-    <Compile Include="XmlProvider.DocumentOverride.Tests.fs" />
     <Compile Include="JsonProvider.Tests.fs" />
     <Compile Include="JsonProvider.Reader.Tests.fs" />
     <Compile Include="JsonProvider.Writer.Tests.fs" />
