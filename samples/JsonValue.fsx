@@ -34,7 +34,7 @@ The parsed value can be processed using pattern matching - the `JsonValue` type
 is a discriminated union with cases such as `Record`, `Collection` and other that
 can be used to examine the structure.
 
-## Using JSON  extensions
+## Using JSON extensions
 
 We do not cover this technique in this introduction. Instead, we look at a number
 of extensions that become available after opening the `FSharp.Data.Json.Extensions` 
@@ -47,7 +47,7 @@ namespace. Once opened, we can write:
  * `value.AsString()` returns the value as a string
  * `value.AsDateTime()` parse the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
-    `Date(...)` format containing number of milliseconds since 1/1/1970.
+    `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
  * `value?child` used dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
     `value.[child]`.
