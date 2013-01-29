@@ -6,7 +6,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 open FSharp.Data.RuntimeImplementation.TypeInference
 
 // ----------------------------------------------------------------------------------------------
@@ -40,20 +40,17 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
-    // Infer the schema from a specified file or URI sample
+    // Infer the schema from a specified uri or inline text
     let sampleXml, sampleIsUri = 
       try
-        let firstChar = sample.Trim().[0]
-        if firstChar = '<' then
+        match ProviderHelpers.tryGetUri sample with
+        | Some uri ->
+            use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
+            XDocument.Parse(reader.ReadToEnd()), true
+        | None ->
             XDocument.Parse(sample), false
-        else
-            try
-                use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
-                XDocument.Parse(reader.ReadToEnd()), true
-            with _ ->
-                XDocument.Parse(sample), false
-      with _ ->
-        failwith "Specified argument is neither a file, nor well-formed XML."
+      with e ->
+        failwithf "Specified argument is neither a file, nor well-formed XML: %s" e.Message
 
     let inferedType = 
       if not sampleList then
@@ -88,16 +85,16 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     resTy.AddMember m
 
     if not sampleList then
-        // Generate static GetSample method
-        let m = ProvidedMethod("GetSample", [],  methResTy, IsStaticMethod = true)
-        m.InvokeCode <- fun _ -> 
-            if sampleIsUri then
-                <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-                    XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
-            else
-                <@@ XmlElement(XDocument.Parse(sample).Root) @@>
-            |> methResConv
-        resTy.AddMember m
+      // Generate static GetSample method
+      let m = ProvidedMethod("GetSample", [],  methResTy, IsStaticMethod = true)
+      m.InvokeCode <- fun _ -> 
+        (if sampleIsUri then
+          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+              XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
+         else
+          <@@ XmlElement(XDocument.Parse(sample).Root) @@>)
+        |> methResConv
+      resTy.AddMember m
 
     // Return the generated type
     resTy

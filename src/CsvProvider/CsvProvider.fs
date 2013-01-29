@@ -13,7 +13,7 @@ open Microsoft.FSharp.Quotations
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
 // --------------------------------------------------------------------------------------
 
@@ -40,13 +40,17 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
-    // Infer the schema from a specified file or URI sample
+    // Infer the schema from a specified uri or inline text
     let sampleCsv, sampleIsUri = 
       try
-        let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
-        new CsvFile(reader, separator), true
-      with _ ->
-        new CsvFile(new StringReader(sample), separator), false
+        match ProviderHelpers.tryGetUri sample with
+        | Some uri ->
+            let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
+            new CsvFile(reader, separator), true
+        | None ->
+            new CsvFile(new StringReader(sample), separator), false
+      with e ->
+        failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
 
     use sampleCsv = sampleCsv
 
@@ -63,11 +67,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     // Generate default constructor
     let c = ProvidedConstructor []
     c.InvokeCode <- 
-        if sampleIsUri then
-            fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-                                            new CsvFile(reader, separator) @@>
-        else
-            fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator) @@>            
+      if sampleIsUri then
+        fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+                                        new CsvFile(reader, separator) @@>
+      else
+        fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator) @@>            
     resTy.AddMember c
 
     // Generate static Parse method
