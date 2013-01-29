@@ -74,7 +74,7 @@ module internal ReflectionHelpers =
 module ProviderHelpers =
 
   open System.IO
-  open FSharp.Data.RuntimeImplementation.DataLoading
+  open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
   /// Resolve a location of a file (or a web location) and open it for shared
   /// read, and trigger the specified function whenever the file changes
@@ -83,6 +83,17 @@ module ProviderHelpers =
       asyncOpenStreamInProvider true (false, defaultResolutionFolder) (Some invalidate) resolutionFolder uri
       |> Async.RunSynchronously
     new StreamReader(stream)
+
+  let invalidChars = Array.append (Path.GetInvalidPathChars()) (@"{}[],".ToCharArray()) |> set
+
+  let tryGetUri str =
+    match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
+    | false, _ -> None
+    | true, uri ->
+        if not uri.IsAbsoluteUri && (str |> Seq.exists (fun c -> invalidChars.Contains c)) then
+            None
+        else
+            Some uri
 
 // ----------------------------------------------------------------------------------------------
 // Conversions from string to various primitive types

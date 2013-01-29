@@ -7,7 +7,7 @@ open ProviderImplementation.StructureInference
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.DataLoading
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 open FSharp.Data.RuntimeImplementation.TypeInference
 
 // ----------------------------------------------------------------------------------------------
@@ -40,20 +40,17 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
-    // Infer the schema from a specified file or URI sampleTextOrUri
+    // Infer the schema from a specified uri or inline text
     let sampleJson, sampleIsUri = 
       try
-        let firstChar = sample.Trim().[0]
-        if firstChar = '{' || firstChar = '[' then
+        match ProviderHelpers.tryGetUri sample with
+        | Some uri ->
+            use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
+            JsonValue.Parse(reader.ReadToEnd(), cultureInfo), true
+        | None ->
             JsonValue.Parse(sample, cultureInfo), false
-        else
-            try
-                use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder sample
-                JsonValue.Parse(reader.ReadToEnd(), cultureInfo), true
-            with _ ->
-                JsonValue.Parse(sample, cultureInfo), false
-      with _ ->
-        failwith "Specified argument is neither a file, nor well-formed JSON."
+      with e ->
+        failwithf "Specified argument is neither a file, nor well-formed JSON: %s" e.Message
 
     let inferedType = 
       if not sampleList then
@@ -87,16 +84,16 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     resTy.AddMember m
 
     if not sampleList then
-        // Generate static GetSample method
-        let m = ProvidedMethod("GetSample", [], methResTy, IsStaticMethod = true)
-        m.InvokeCode <- fun _ -> 
-            if sampleIsUri then
-                <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-                    JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
-            else
-                <@@ JsonDocument(JsonValue.Parse(sample, Operations.GetCulture(culture))) @@>
-            |> methResConv
-        resTy.AddMember m
+      // Generate static GetSample method
+      let m = ProvidedMethod("GetSample", [], methResTy, IsStaticMethod = true)
+      m.InvokeCode <- fun _ -> 
+        (if sampleIsUri then
+          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+              JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
+         else
+          <@@ JsonDocument(JsonValue.Parse(sample, Operations.GetCulture(culture))) @@>)
+        |> methResConv
+      resTy.AddMember m
 
     // Return the generated type
     resTy
