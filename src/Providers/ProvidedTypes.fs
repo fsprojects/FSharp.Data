@@ -450,7 +450,6 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:ProvidedParameter list) = 
     inherit System.Reflection.PropertyInfo()
     // State
-
     let parameters = defaultArg parameters []
     let mutable declaringType = null
     let mutable isStatic = false

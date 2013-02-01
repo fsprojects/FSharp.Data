@@ -179,10 +179,10 @@ module Debug =
                     else
                         let getter = 
                             if not prop.CanRead then ""
-                            else getMethodBody (prop.GetMethod :?> ProvidedMethod) |> sprintf "\n%A\n"
+                            else getMethodBody (prop.GetGetMethod() :?> ProvidedMethod) |> sprintf "\n%A\n"
                         let setter = 
                             if not prop.CanWrite then ""
-                            else getMethodBody (prop.SetMethod :?> ProvidedMethod) |> sprintf "\n%A\n"
+                            else getMethodBody (prop.GetSetMethod() :?> ProvidedMethod) |> sprintf "\n%A\n"
                         getter + setter
                 print <| (if prop.IsStatic then "static " else "") + "member " + 
                          prop.Name + ": " + (toString prop.PropertyType) + 
