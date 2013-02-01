@@ -10,20 +10,25 @@ open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 
+let headerRegex = new Regex(@"(?<field>.+) \((?<unit>.+)\)", RegexOptions.Compiled)
+
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
 let inferFields (csv:CsvFile) count culture =
   
     // Infer the units and names from the headers
-    let headers = csv.Headers |> Seq.map (fun header ->
-        let m = Regex.Match(header, @"(?<field>.+) \((?<unit>.+)\)")
+    let headers = csv.Headers |> Array.map (fun header ->
+        let m = headerRegex.Match(header)
         if m.Success then
             let headerName = m.Groups.["field"].Value
             let unitName = m.Groups.["unit"].Value
             Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
         else None, header)
 
-    let rows = Seq.truncate count csv.Data
+    let rows = 
+        if count > 0 then Seq.truncate count csv.Data
+        else csv.Data
+
     let rows = 
         if Seq.isEmpty rows then CsvRow([| for i in 1..csv.Headers.Length -> ""|], csv.Headers) |> Seq.singleton 
         else rows
