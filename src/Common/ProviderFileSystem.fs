@@ -86,8 +86,8 @@ let internal asyncOpenStreamInProvider
     return failwith "Only web locations are supported"
 #else
     // Open the file, even if it is already opened by another application
-    let file = File.Open(resolvedUri.AbsolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-    invalidate |> Option.iter (fun f -> watchForChanges f resolvedUri.AbsolutePath)
+    let file = File.Open(resolvedUri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+    invalidate |> Option.iter (fun f -> watchForChanges f resolvedUri.OriginalString)
     return file :> Stream
 #endif
 }
