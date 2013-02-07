@@ -33,15 +33,9 @@ module internal CsvTypeBuilder =
   ///  - Fields of type 'T + null' for any other T become option<T>
   ///  - All other types are simply strings.
   ///
-  let generateCsvRowType culture (replacer:AssemblyReplacer) (parentType:ProvidedTypeDefinition) typ =
+  let generateCsvRowProperties culture (replacer:AssemblyReplacer) typ = [
     match typ with 
     | Record(_, fields) ->
-
-      // Generate a type representing Rows
-      let baseTy = Some(replacer.ToRuntime typeof<CsvRow>)
-      let objectTy = ProvidedTypeDefinition("Row", baseTy, HideObjectMethods = true)
-      parentType.AddMember(objectTy)
-
       for index, field in fields |> Seq.mapi (fun i v -> i, v) do
         
         // The inference engine assigns some value to all fields
@@ -77,7 +71,6 @@ module internal CsvTypeBuilder =
         p.GetterCode <- fun (Singleton row) -> 
           let row = replacer.ToDesignTime row 
           conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
-        objectTy.AddMember p
+        yield p
 
-      objectTy
-    | _ -> failwith "generateCsvRowType: Expected record type."
+    | _ -> failwith "generateCsvRowType: Expected record type." ]

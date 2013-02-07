@@ -52,10 +52,12 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
 
-    use sampleCsv = sampleCsv
-
-    let inferedFields = CsvInference.inferFields sampleCsv inferRows cultureInfo
-    let rowType = CsvTypeBuilder.generateCsvRowType culture replacer resTy inferedFields
+    let rowType = ProvidedTypeDefinition("Row", Some(replacer.ToRuntime typeof<CsvRow>), HideObjectMethods = true)
+    rowType.AddMembersDelayed(fun () ->
+      use sampleCsv = sampleCsv
+      let inferedFields = CsvInference.inferFields sampleCsv inferRows cultureInfo
+      CsvTypeBuilder.generateCsvRowProperties culture replacer inferedFields)
+    resTy.AddMember rowType
 
     let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
 
@@ -101,7 +103,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     [ ProvidedStaticParameter("Sample", typeof<string>) 
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)
+      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
@@ -109,7 +111,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document</param>
        <param name='Separator'>Column delimiter</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
-       <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>
+       <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do csvProvTy.AddXmlDoc helpText

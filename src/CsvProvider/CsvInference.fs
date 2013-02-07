@@ -11,13 +11,22 @@ open FSharp.Data.RuntimeImplementation.TypeInference
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 
+// Compiled regex is not supported in Silverlight
+let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+  RegexOptions.None
+#else
+  RegexOptions.Compiled
+#endif
+let headerRegex = new Regex(@"(?<field>.+) \((?<unit>.+)\)", regexOptions)
+
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
 let inferFields (csv:CsvFile) count culture =
   
   // Infer the units and names from the headers
   let headers = csv.Headers |> Seq.map (fun header ->
-    let m = Regex.Match(header, @"(?<field>.+) \((?<unit>.+)\)")
+    let m = headerRegex.Match(header)
     if m.Success then
       let headerName = m.Groups.["field"].Value
       let unitName = m.Groups.["unit"].Value
@@ -26,10 +35,10 @@ let inferFields (csv:CsvFile) count culture =
 
   // If we have no data, generate empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
-  let rows = Seq.truncate count csv.Data
   let rows = 
-    if Seq.isEmpty rows then CsvRow([| for i in 1..csv.Headers.Length -> ""|], csv.Headers) |> Seq.singleton 
-    else rows
+    if Seq.isEmpty csv.Data then CsvRow([| for i in 1..csv.Headers.Length -> ""|], csv.Headers) |> Seq.singleton 
+    elif count > 0 then Seq.truncate count csv.Data
+    else csv.Data
 
   // Infer the type of collection using structural inference
   let types = seq {

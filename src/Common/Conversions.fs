@@ -47,14 +47,13 @@ type Operations =
       |> Some
     else
       // Parse ISO 8601 format, fixing time zone if needed
-      let dateTimeStyles = 
-        if text.IndexOf("Z", StringComparison.OrdinalIgnoreCase) <> -1 then
-          DateTimeStyles.AssumeUniversal ||| DateTimeStyles.AdjustToUniversal 
-            ||| DateTimeStyles.AllowWhiteSpaces
-        else
-          DateTimeStyles.AssumeLocal ||| DateTimeStyles.AllowWhiteSpaces
+      let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
       match DateTime.TryParse(text, culture, dateTimeStyles) with
-      | true, d -> Some d
+      | true, d ->
+          if d.Kind = DateTimeKind.Unspecified then 
+            new DateTime(d.Ticks, DateTimeKind.Local) |> Some
+          else 
+            Some d
       | _ -> None
 
   // Try parse string into standard types and returns None if failed
