@@ -18,7 +18,6 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 
 #r "../bin/FSharp.Data.dll"
 open FSharp.Data
-
 (**
 ### Inferring type from sample
 
@@ -160,14 +159,15 @@ printfn "Showing page %d of %d. Total records %d"
 
 // Print all data points
 for record in doc.Array do
-  if record.Value <> null then
-    printfn "%d: %f" (int record.Date) (float record.Value)
+  record.Value.Number |> Option.iter (fun value ->
+    printfn "%d: %f" record.Date value)
 
 (**
-When printing the data points, some of them might be missing. Previously, this was handled
-using the `option` type, but in this case, the type is `string` and F# strings can have 
-`null` as a value, so the provider just returns a `string` which may be `null`. We can easily
-test that and print only available data.
+When printing the data points, some of the values might be missing (in the input, the value
+is `null` instead of a valid number). This is another example of a heterogeenous type - 
+the type is either `Number` or some other type (representing `null` value). This means
+that `record.Value` has a `Number` property (when the value is a number) and we can use
+it to print the result only when the data point is available.
 
 ## Parsing Twitter stream
 
@@ -184,14 +184,13 @@ let text = (*[omit:(omitted)]*)""" {"in_reply_to_status_id_str":null,"text":"\u5
 let tweet = Tweet.Parse(text)
 
 printfn "%s (retweeted %d times)\n:%s"
-  tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text
+  tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
 
 (**
 After creating the `Tweet` type, we parse a single sample tweet and print some details about the
 tweet. As you can see, the `tweet.User` property has been inferred as optional (meaning that a 
 tweet might not have an author?) so we unsafely get the value using the `Value` property.
-The `RetweetCount` property may also be missing and `Text` is a `string` so if it was not
-available, we would get `null`.
+The `RetweetCount` and `Text` properties may be also missing, so we also access them unsafely.
 
 ## Related articles
 
