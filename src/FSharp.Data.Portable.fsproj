@@ -67,18 +67,13 @@
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\portable"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\portable"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\portable"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+  </Target> -->
+    <Target Name="AfterBuild">
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin\portable" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
