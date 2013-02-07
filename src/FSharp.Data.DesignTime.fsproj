@@ -89,28 +89,21 @@
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
-  <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\portable"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\portable"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\portable"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin\v40"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin\v40"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin\v40"
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).dll" "$(SolutionDir)bin"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).pdb" "$(SolutionDir)bin"
-
-copy /Y "$(ProjectDir)$(OutDir)$(TargetName).xml" "$(SolutionDir)bin"</PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-  </Target>
+  </Target> -->
   <Target Name="AfterBuild">
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin\portable" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable" />
+
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin\v40" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\v40" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\v40" />
+
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin" />
   </Target>
-  -->
 </Project>
