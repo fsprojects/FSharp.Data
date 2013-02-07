@@ -43,6 +43,9 @@
     <Content Include="Data/DnbHistoriskeKurser.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/file with spaces.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/projects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

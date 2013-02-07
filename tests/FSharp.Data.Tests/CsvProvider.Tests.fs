@@ -74,15 +74,21 @@ let ``Inference of numbers with empty values`` () =
   let actual = row.Float1, row.Float2, row.Float3, row.Float4, row.Int, row.Float5, row.Float6, row.Date
   actual |> shouldEqual expected
 
-type SmallCsv = CsvProvider<"Data/SmallTest.csv">
-
 [<Test>] 
 let ``Can create type for small document``() =
-    let row1 = (new SmallCsv()).Data |> Seq.head 
+  let csv = new CsvProvider<"Data/SmallTest.csv">()
+  let row1 = csv.Data |> Seq.head 
+  row1.Distance |> should equal 50.<metre>
+  let time = row1.Time
+  time |> should equal 3.7<second>
 
-    row1.Distance |> should equal 50.<metre>
-    let time = row1.Time
-    time |> should equal 3.7<second>
+[<Test>] 
+let ``Can parse sample file with whitespace in the name``() =
+  let csv = new CsvProvider<"Data/file with spaces.csv">()
+  let row1 = csv.Data |> Seq.head 
+  row1.Distance |> should equal 50.<metre>
+  let time = row1.Time
+  time |> should equal 3.7<second>
 
 [<Test>]
 let ``Infers type of an emtpy CSV file`` () = 
