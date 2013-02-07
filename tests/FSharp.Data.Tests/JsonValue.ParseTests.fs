@@ -89,15 +89,36 @@ let ``Can parse completely invalid, but close, date as string``() =
     j?anniversary.AsString() |> should equal "2010-02-18T16.5:23.35:4"
 
 [<Test>] 
-let ``Can parse document with fractional numbers``() =
-    let originalCulture = Thread.CurrentThread.CurrentCulture
-    // use a culture that uses ',' instead o '.' for decimal separators
-    Thread.CurrentThread.CurrentCulture <- new CultureInfo("pt-PT") 
-    try 
-      let j = JsonValue.Parse "{ \"age\": 25.5}"
-      j?age.AsFloat() |> should equal 25.5
-    finally
-      Thread.CurrentThread.CurrentCulture <- originalCulture
+[<SetCulture("pt-PT")>]
+let ``Can parse floats in different cultures``() =
+    let j = JsonValue.Parse "{ \"age\": 25.5}"
+    j?age.AsFloat() |> should equal 25.5
+    let j = JsonValue.Parse "{ \"age\": \"25.5\"}"
+    j?age.AsFloat() |> should equal 25.5
+    let j = JsonValue.Parse("{ \"age\": 25,5}", CultureInfo.CurrentCulture)
+    j?age.AsFloat(CultureInfo.CurrentCulture) |> should equal 25.5
+    let j = JsonValue.Parse("{ \"age\": \"25,5\"}", CultureInfo.CurrentCulture)
+    j?age.AsFloat(CultureInfo.CurrentCulture) |> should equal 25.5
+
+[<Test>] 
+[<SetCulture("pt-PT")>]
+let ``Can parse decimals in different cultures``() =
+    let j = JsonValue.Parse "{ \"age\": 25.5}"
+    j?age.AsDecimal() |> should equal 25.5m
+    let j = JsonValue.Parse "{ \"age\": \"25.5\"}"
+    j?age.AsDecimal() |> should equal 25.5m
+    let j = JsonValue.Parse("{ \"age\": 25,5}", CultureInfo.CurrentCulture)
+    j?age.AsDecimal(CultureInfo.CurrentCulture) |> should equal 25.5m
+    let j = JsonValue.Parse("{ \"age\": \"25,5\"}", CultureInfo.CurrentCulture)
+    j?age.AsDecimal(CultureInfo.CurrentCulture) |> should equal 25.5m
+
+[<Test>] 
+[<SetCulture("pt-PT")>]
+let ``Can parse dates in different cultures``() =
+    let j = JsonValue.Parse "{ \"birthdate\": \"01/02/2000\"}"
+    j?birthdate.AsDateTime().Month |> should equal 1
+    let j = JsonValue.Parse("{ \"birthdate\": \"01/02/2000\"}", CultureInfo.CurrentCulture)
+    j?birthdate.AsDateTime(CultureInfo.CurrentCulture).Month |> should equal 2
 
 [<Test>]
 let ``Can parse nested document`` () =

@@ -77,3 +77,9 @@ let ``Can create type for small document``() =
     row1.Distance |> should equal 50.<metre>
     let time = row1.Time
     time |> should equal 3.7<second>
+
+[<Test>]
+let ``Infers type of an emtpy CSV file`` () = 
+  let csv = new CsvProvider<"Column1, Column2">()
+  let actual : string list = [ for r in csv.Data -> r.Column1 ]
+  actual |> shouldEqual []

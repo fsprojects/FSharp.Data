@@ -24,6 +24,8 @@ module private Helpers =
 #else
     RegexOptions.Compiled
 #endif
+  // note on the regex we have /Date()/ and not \/Date()\/ because the \/ escaping 
+  // is already taken care of before AsDateTime is called
   let msDateRegex = lazy (new Regex(@"^/Date\((-?\d+)(?:-\d+)?\)/$", regexOptions))
 
 type Operations = 
@@ -32,8 +34,8 @@ type Operations =
   static member AsOption str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
-  /// Parse date time using either MS JSON format or using ISO 8601
-  /// that is, either "Date(<msec-since-1/1/1970>)" or something
+  /// Parse date time using either the JSON milliseconds format or using ISO 8601
+  /// that is, either "\/Date(<msec-since-1/1/1970>)\/" or something
   /// along the lines of "2013-01-28T00:37Z"
   static member AsDateTime culture (text:string) =
     // Try parse "Date(<msec>)" style format

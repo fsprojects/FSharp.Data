@@ -23,10 +23,17 @@ let inferFields (csv:CsvFile) count culture =
       let unitName = m.Groups.["unit"].Value
       Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
     else None, header)
-  
+
+  // If we have no data, generate empty row with empty strings, 
+  // so that we get a type with all the properties (returning string values)
+  let rows = Seq.truncate count csv.Data
+  let rows = 
+    if Seq.isEmpty rows then CsvRow([| for i in 1..csv.Headers.Length -> ""|], csv.Headers) |> Seq.singleton 
+    else rows
+
   // Infer the type of collection using structural inference
   let types = seq {
-    for row in Seq.truncate count csv.Data ->
+    for row in rows ->
       let fields = 
         [ for (unit, header), value in Seq.zip headers row.Columns ->
             // Treat empty values as 'null' values. The inference will

@@ -71,15 +71,16 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
 
     // Helper functions
     let skipWhitespace() =
-      while i < s.Length && (s.[i]=' ' || s.[i]='\t' || s.[i]='\r' || s.[i]='\n') do
-        i <- i + 1    
+      while i < s.Length && Char.IsWhiteSpace s.[i] do
+        i <- i + 1
+    let decimalSeparator = culture.NumberFormat.NumberDecimalSeparator.ToCharArray() |> Seq.exactlyOne
     let isNumChar c = 
-      Char.IsDigit c || c='.' || c='e' || c='E' || c='+' || c='-'
+      Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
     let throw() = 
       let msg = 
         sprintf 
           "Invalid Json starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
-          i (jsonText.[(max 0 (i-10)).. (min (jsonText.Length-1) (i+10))]) jsonText      
+          i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) jsonText      
       raise <| new Exception(msg)
     let ensure cond = 
       if not cond then throw()  
@@ -323,7 +324,7 @@ module Extensions =
     /// (assuming that the value is an object)
     member x.Properties = 
       match x with
-      | JsonValue.Object map -> Map.toSeq map
+      | JsonValue.Object map -> Map.toSeq map |> Seq.sortBy fst
       | _ -> failwithf "JSON mismatch: Not an object - %A" x
 
     /// Try get property of a JSON object. Returns None if the value is not
@@ -339,14 +340,10 @@ module Extensions =
     member x.GetProperty(propertyName) = 
       match x with
       | JsonValue.Object properties -> 
-          Map.find propertyName properties
+          match Map.tryFind propertyName properties with 
+          | Some res -> res
+          | None -> failwithf "JSON mismatch: Didn't find property '%s' in %A" propertyName x
       | _ -> failwithf "JSON mismatch: Not an object - %A" x
 
   /// Get property of a JSON object (assuming that the value is an object)
-  let (?) jsonObject propertyName = 
-    match jsonObject with
-    | JsonValue.Object properties -> 
-        match Map.tryFind propertyName properties with 
-        | Some res -> res
-        | None -> failwithf "JSON mismatch: Didn't find property '%s' in %A" propertyName jsonObject
-    | _ -> failwithf "JSON mismatch: Not an object - %A" jsonObject
+  let (?) (jsonObject:JsonValue) propertyName = jsonObject.GetProperty(propertyName)

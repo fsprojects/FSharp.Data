@@ -2,14 +2,14 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.RuntimeImplementation.DataLoading
+module FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Net
 open System.Text
 open System.Reflection
-open System.Collections.Generic
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
@@ -47,21 +47,19 @@ let private watchForChanges invalidate (fileName:string) =
 /// whether it is web based (and we need WebClient to download it)
 let private resolveUri
     //note: don't remove the type annotations, as some parameters aren't used in the portable version and will become generic, making the type generation fail
-    (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (uri:string) =
-  
-  let isWeb =
-    uri.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-    uri.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+    (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (uri:Uri) =
 
 #if FX_NO_LOCAL_FILESYSTEM
-  if not isWeb then
-      failwith "Only web locations are supported"
-  else
+  let isWeb = uri.IsAbsoluteUri && not uri.IsUnc
+  if isWeb then
       uri, true
+  else
+      failwith "Only web locations are supported"
 #else
+  let isWeb = uri.IsAbsoluteUri && (not uri.IsUnc && not uri.IsFile)
   match uri with
   | url when isWeb -> url, true
-  | fullPath when Path.IsPathRooted fullPath -> fullPath, false
+  | fullPath when uri.IsAbsoluteUri -> fullPath, false
   | relative ->
       let root = 
         if designTime then
@@ -69,18 +67,18 @@ let private resolveUri
           else defaultResolutionFolder
         elif isHosted then defaultResolutionFolder
         else AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
-      Path.Combine(root, relative), false
+      Uri(Path.Combine(root, relative.OriginalString), UriKind.Absolute), false
 #endif
 
 /// Given a type provider configuration and a name passed by user, open 
-/// the file or URL (if it starts with http(s)) and return it as a stream
+/// the uri and return it as a stream
 let internal asyncOpenStreamInProvider 
-    designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder (uri:string) = async {
+    designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder uri = async {
 
-  let resolvedFileOrUri, isWeb = resolveUri designTime cfg resolutionFolder uri
+  let resolvedUri, isWeb = resolveUri designTime cfg resolutionFolder uri
 
   if isWeb then
-    let req = WebRequest.Create(Uri(resolvedFileOrUri))
+    let req = WebRequest.Create(resolvedUri)
     let! resp = req.AsyncGetResponse() 
     return resp.GetResponseStream()
   else
@@ -88,8 +86,8 @@ let internal asyncOpenStreamInProvider
     return failwith "Only web locations are supported"
 #else
     // Open the file, even if it is already opened by another application
-    let file = File.Open(resolvedFileOrUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-    invalidate |> Option.iter (fun f -> watchForChanges f resolvedFileOrUri)
+    let file = File.Open(resolvedUri.AbsolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+    invalidate |> Option.iter (fun f -> watchForChanges f resolvedUri.AbsolutePath)
     return file :> Stream
 #endif
 }
@@ -97,7 +95,10 @@ let internal asyncOpenStreamInProvider
 /// Resolve a location of a file (or a web location) and open it for shared
 /// read at runtime (do not monitor file changes and use runtime resolution rules)
 let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder uri = 
-  let stream = 
-    asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder uri
-    |> Async.RunSynchronously
-  new StreamReader(stream)
+  match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
+  | false, _ -> failwithf "Invalid uri: %s" uri
+  | true, uri ->
+      let stream = 
+        asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder uri
+        |> Async.RunSynchronously
+      new StreamReader(stream)

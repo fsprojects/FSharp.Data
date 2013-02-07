@@ -98,7 +98,7 @@ data set, it is inferred as `option<int>`. The above sample uses `Option.iter` t
 the value only when it is available.
 
 In the previous case, the values of individual properties had common type - `string` 
-for the `Name` proprety and numeric type for `Age`. However, what if the property of
+for the `Name` property and numeric type for `Age`. However, what if the property of
 a record can have multiple different types? In that case, the type provider behaves
 as follows: 
 *)
