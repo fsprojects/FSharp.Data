@@ -214,5 +214,9 @@ let inferPrimitiveType culture (value : string) unit =
   | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
   | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
   | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
-  | Parse Operations.AsDateTime _ -> Primitive(typeof<DateTime>, unit)
+  | Parse Operations.AsDateTime _ 
+        // If this can be considered a decimal under the invariant culture, 
+        // it's a safer bet to consider it a string than a DateTime
+        when Operations.AsDecimal CultureInfo.InvariantCulture value = None -> 
+      Primitive(typeof<DateTime>, unit)
   | _ -> Primitive(typeof<string>, unit)
