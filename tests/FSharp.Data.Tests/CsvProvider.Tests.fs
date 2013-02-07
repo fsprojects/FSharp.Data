@@ -4,6 +4,12 @@
 
 module FSharp.Data.Tests.CsvProvider.Tests
 
+#if INTERACTIVE
+#r "../../bin/FSharp.Data.dll"
+#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#load "../Common/FsUnit.fs"
+#endif
+
 open NUnit.Framework
 open FsUnit
 open System
@@ -83,3 +89,9 @@ let ``Infers type of an emtpy CSV file`` () =
   let csv = new CsvProvider<"Column1, Column2">()
   let actual : string list = [ for r in csv.Data -> r.Column1 ]
   actual |> shouldEqual []
+
+[<Test>]
+let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
+  let csv = new CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>()
+  let row = csv.Data |> Seq.head
+  (row.Dato, row.Usd) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")

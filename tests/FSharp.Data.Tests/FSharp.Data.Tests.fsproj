@@ -40,6 +40,9 @@
     <Content Include="Data/SmallTest.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/DnbHistoriskeKurser.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/projects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
