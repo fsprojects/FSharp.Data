@@ -35,5 +35,5 @@ let ``Reading a required field that is missing throws an exception`` () =
 [<Test>]
 let ``Optional int correctly infered`` () = 
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSample()
-  let i:int option = prov.[0].A
+  let i = prov.[0].A.Number
   i |> should equal (Some 123)

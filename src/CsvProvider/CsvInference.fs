@@ -4,6 +4,7 @@
 
 module ProviderImplementation.CsvInference
 
+open System
 open System.Text.RegularExpressions
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.TypeInference
@@ -28,16 +29,13 @@ let inferFields (csv:CsvFile) count culture =
     for row in Seq.truncate count csv.Data ->
       let fields = 
         [ for (unit, header), value in Seq.zip headers row.Columns ->
-            let typ = inferPrimitiveType culture value unit
+            // Treat empty values as 'null' values. The inference will
+            // infer heterogeneous types e.g. 'null + int', which are then 
+            // truned into Nullable<int> (etc.) in the CSV type generator
+            let typ = 
+              if String.IsNullOrWhiteSpace(value) then Null
+              else inferPrimitiveType culture value unit
             { Name = header; Optional = false; Type = typ } ]
       Record(None, fields) }
- 
-  let typ = Seq.reduce subtypeInfered types  
-   
-  let convertOptionalDecimalToFloat = function
-  | { Name = name; Optional = true; Type = Primitive(t, unit) } when t = typeof<decimal> -> { Name = name; Optional = false; Type = Primitive(typeof<float>, unit) }
-  | p -> p
 
-  match typ with
-  | Record(_, fields) -> List.map convertOptionalDecimalToFloat fields
-  | _ -> failwith "generateCsvRowType: Type inference returned wrong type"
+  Seq.reduce subtypeInfered types  

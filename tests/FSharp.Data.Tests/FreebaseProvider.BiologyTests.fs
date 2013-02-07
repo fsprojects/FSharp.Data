@@ -1,5 +1,11 @@
 ﻿module FSharp.Data.Tests.FreebaseProvider.BiologyTests
 
+#if INTERACTIVE
+#r "../../bin/FSharp.Data.dll"
+#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#load "../Common/FsUnit.fs"
+#endif
+
 open NUnit.Framework
 open FsUnit
 open System

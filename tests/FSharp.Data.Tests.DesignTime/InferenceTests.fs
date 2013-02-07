@@ -4,10 +4,12 @@
 namespace FSharp.Data.Tests.DesignTime
 
 #if INTERACTIVE
-#r "../packages/NUnit.2.6.2/lib/nunit.framework.dll"
-#r "../bin/FSharp.Data.dll"
+#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#r "../../bin/FSharp.Data.DesignTime.dll"
+#load "../Common/FsUnit.fs"
 #endif
 
+open FsUnit
 open System
 open System.IO
 open FSharp.Data.Json
@@ -23,6 +25,10 @@ module InferenceTests =
   let SimpleCollection typ = 
     Collection(Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
 
+  /// Returns a heterogeneous type that allows the specified type or null type
+  let WithNull typ = 
+    Heterogeneous(Map.ofSeq [typeTag typ, typ; typeTag Null, Null])
+
   let culture = Operations.GetCulture ""
 
   [<Test>]
@@ -32,7 +38,7 @@ module InferenceTests =
       [ (1, Some (1, "b"), Some (1, "A"))
         (2, Some (2, "a"), None)
         (3, None, Some (3, "C")) ]
-    Assert.AreEqual(set expected, set actual)
+    set actual |> shouldEqual (set expected)
 
   [<Test>]
   let ``Seq.pairBy helper function preserves order``() = 
@@ -40,21 +46,21 @@ module InferenceTests =
     let expected = 
       [ ("one", Some ("one", "a"), Some ("one", "A"))
         ("two", Some ("two", "b"), Some ("two", "B")) ] 
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Finds common subtype of numeric types (decimal)``() =
     let source = JsonValue.Parse """[ 10, 10.23 ]"""
     let expected = SimpleCollection(Primitive(typeof<decimal>, None))
     let actual = JsonInference.inferType culture  source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Finds common subtype of numeric types (int64)``() =
     let source = JsonValue.Parse """[ 10, 2147483648 ]"""
     let expected = SimpleCollection(Primitive(typeof<int64>, None))
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Infers heterogeneous type of primitives``() =
@@ -64,7 +70,7 @@ module InferenceTests =
         InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
       |> Map.ofSeq |> Collection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Infers heterogeneous type of primitives and nulls``() =
@@ -75,14 +81,14 @@ module InferenceTests =
         InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
       |> Map.ofSeq |> Collection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Finds common subtype of numeric types (float)``() =
     let source = JsonValue.Parse """[ 10, 10.23, 79228162514264337593543950336 ]"""
     let expected = SimpleCollection(Primitive(typeof<float>, None))
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Infers heterogeneous type of primitives and records``() =
@@ -93,7 +99,7 @@ module InferenceTests =
           (Single, Record(None, [ { Name="a"; Optional=false; Type=Primitive(typeof<int>, None) } ])) ]
       |> Map.ofSeq |> Collection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Merges types in a collection of collections``() =
@@ -103,18 +109,18 @@ module InferenceTests =
                      {Name = "b"; Optional = true; Type = Primitive(typeof<decimal>, None) } ])
       |> SimpleCollection |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
       
   [<Test>]
   let ``Unions properties of records in a collection``() =
     let source = JsonValue.Parse """[ {"a":1, "b":""}, {"a":1.2, "c":true} ]"""
     let expected =
       Record(None, [ {Name = "a"; Optional = false; Type = Primitive(typeof<decimal>, None) }
-                     {Name = "b"; Optional = false; Type = Primitive(typeof<string>, None) }
+                     {Name = "b"; Optional = true; Type = Primitive(typeof<string>, None) }
                      {Name = "c"; Optional = true; Type = Primitive(typeof<bool>, None) }])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Null is a valid value of string``() =
@@ -123,12 +129,10 @@ module InferenceTests =
       Record(None, [ {Name = "a"; Optional = false; Type = Primitive(typeof<string>, None) } ])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Null is not a valid value of DateTime``() =
-    // None of the providers currently need to get a subtype of 'null' and
-    // DateTime, so we call 'subtypeInfered' directly to test this property
     let actual = 
       ProviderImplementation.StructureInference.subtypeInfered
         Null (Primitive(typeof<DateTime>, None))
@@ -136,16 +140,16 @@ module InferenceTests =
       [ InferedTypeTag.Null, Null
         InferedTypeTag.DateTime, Primitive(typeof<DateTime>, None) ]
       |> Map.ofSeq |> Heterogeneous
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
-  let ``Null is a valid value of int option``() =
+  let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``() =
     let source = JsonValue.Parse """[ {"a":null}, {"a":123} ]"""
     let expected =
-      Record(None, [ {Name = "a"; Optional = true; Type = Primitive(typeof<int>, None) } ])
+      Record(None, [ {Name = "a"; Optional = false; Type = WithNull(Primitive(typeof<int>, None)) } ])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Null is a valid value of record``() =
@@ -153,10 +157,10 @@ module InferenceTests =
     let nestedRecord = 
       Record(None, [{ Name = "b"; Optional = false; Type = Primitive(typeof<int>, None) }])
     let expected =
-      Record(None, [ {Name = "a"; Optional = true; Type = nestedRecord } ])
+      Record(None, [ {Name = "a"; Optional = false; Type = nestedRecord } ])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Infers mixed fields of a record as heterogeneous type``() =
@@ -168,19 +172,19 @@ module InferenceTests =
       Record(None, [ { Name = "a"; Optional = false; Type = Heterogeneous cases }])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
-  let ``Infers mixed fields of a record with nulls as optional``() =
+  let ``Infers mixed fields of a record as heterogeneous type with nulls (2.)``() =
     let source = JsonValue.Parse """[ {"a":null}, {"a":2} , {"a":3} ]"""
     let cases = 
       Map.ofSeq [ InferedTypeTag.Null, Null
                   InferedTypeTag.Number, Primitive(typeof<int>, None) ]
     let expected = 
-      Record(None, [ { Name = "a"; Optional = true; Type = Primitive(typeof<int>, None) }])
+      Record(None, [ { Name = "a"; Optional = false; Type = WithNull(Primitive(typeof<int>, None)) }])
       |> SimpleCollection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Inference of multiple nulls works``() = 
@@ -191,7 +195,7 @@ module InferenceTests =
         InferedTypeTag.Number, (Single, Primitive(typeof<int>, None)) ]
       |> Map.ofSeq |> Collection
     let actual = JsonInference.inferType culture source
-    Assert.AreEqual(expected, actual)
+    actual |> shouldEqual expected
 
   [<Test>]
   let ``Inference of DateTime``() = 
@@ -200,8 +204,8 @@ module InferenceTests =
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
-      let expected = [ propDate ; propInt ; propFloat ]
-      Assert.AreEqual(expected, actual)
+      let expected = Record(None, [ propDate ; propInt ; propFloat ])
+      actual |> shouldEqual expected
 
   [<Test>]
   let ``Inference of DateTime with timestamp``() = 
@@ -209,8 +213,8 @@ module InferenceTests =
       let actual = CsvInference.inferFields source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
-      let expected = [ propDate ; propTimestamp ]
-      Assert.AreEqual(expected, actual)
+      let expected = Record(None, [ propDate ; propTimestamp ])
+      actual |> shouldEqual expected
 
   [<Test>]
   let ``Inference of DateTime with timestamp non default separator``() = 
@@ -218,8 +222,8 @@ module InferenceTests =
       let actual = CsvInference.inferFields source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
-      let expected = [ propDate ; propTimestamp ]
-      Assert.AreEqual(expected, actual)
+      let expected = Record(None, [ propDate ; propTimestamp ])
+      actual |> shouldEqual expected
   
   [<Test>]
   let ``Inference of float with #N/A values and non default separator``() = 
@@ -227,20 +231,21 @@ module InferenceTests =
       let actual = CsvInference.inferFields source Int32.MaxValue culture
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
       let propInteger = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }
-      let expected = [ propFloat ; propInteger ]
-      Assert.AreEqual(expected, actual)
+      let expected = Record(None, [ propFloat ; propInteger ])
+      actual |> shouldEqual expected
 
   [<Test>]
   let ``Inference of numbers with empty values``() = 
       let source = new CsvFile(new StringReader("float1,float2,float3,float4,int,float5,float6,date\n1,1,1,1,,,,\n2.0,#N/A,,1,1,1,,2010-01-10\n,,2.0,#N/A,1,#N/A,2.0,"))
       let actual = CsvInference.inferFields source Int32.MaxValue culture
-      let propFloat1 = { Name = "float1"; Optional = false; Type = Primitive(typeof<float>, None) }
-      let propFloat2 = { Name = "float2"; Optional = false; Type = Primitive(typeof<float>, None) }
-      let propFloat3 = { Name = "float3"; Optional = false; Type = Primitive(typeof<float>, None) }
+      let propFloat1 = { Name = "float1"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
+      let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
+      let propFloat3 = { Name = "float3"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
       let propFloat4 = { Name = "float4"; Optional = false; Type = Primitive(typeof<float>, None) }
-      let propInt = { Name = "int"; Optional = true; Type = Primitive(typeof<int>, None) }
-      let propFloat5 = { Name = "float5"; Optional = false; Type = Primitive(typeof<float>, None) }
-      let propFloat6 = { Name = "float6"; Optional = false; Type = Primitive(typeof<float>, None) }
-      let date = { Name = "date"; Optional = true; Type = Primitive(typeof<DateTime>, None) }
-      let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; date ]
-      Assert.AreEqual(expected, actual)
+      let propInt =    { Name = "int";    Optional = false; Type = WithNull(Primitive(typeof<int>, None)) }
+      let propFloat5 = { Name = "float5"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
+      let propFloat6 = { Name = "float6"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
+      let date = { Name = "date"; Optional = false; Type = WithNull(Primitive(typeof<DateTime>, None)) }
+      let expected = Record(None, [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; date ])
+      actual |> shouldEqual expected
+

@@ -39,11 +39,6 @@ let isValueType = function
   | Primitive(typ, _) -> typ <> typeof<string>
   | _ -> false
 
-let hasNullOrNaN = function
-  | Primitive(typ, _) as t -> typ = typeof<float> || not (isValueType t)
-  | Null -> true
-  | _ -> false
-
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)
 let typeTag = function
@@ -126,10 +121,8 @@ let rec subtypeInfered ot1 ot2 =
   
   // Top type can be merged with else
   | t, Top | Top, t -> t
-  
   // Null type can be merged with non-value types
-  | t, Null | Null, t when hasNullOrNaN t -> t
-  
+  | t, Null | Null, t when not (isValueType t) -> t
   // Heterogeneous can be merged with any type
   | Heterogeneous h, other 
   | other, Heterogeneous h ->
@@ -142,6 +135,7 @@ let rec subtypeInfered ot1 ot2 =
   | t1, t2 -> 
       let h1, h2 = Map.ofSeq [typeTag t1, t1], Map.ofSeq [typeTag t2, t2]
       Heterogeneous(unionHeterogeneousTypes h1 h2)
+
 
 /// Given two heterogeneous types, get a single type that can represent all the
 /// types that the two heterogeneous types can. For every tag, 
@@ -178,31 +172,18 @@ and unionCollectionTypes cases1 cases2 =
 and unionRecordTypes t1 t2 =
   pairBy (fun p -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
-      
       match fst, snd with
-      
       // If one is missing, return the other, but optional
-      | Some p, None | None, Some p -> if hasNullOrNaN p.Type then p else { p with Optional = true }
-      
+      | Some p, None | None, Some p -> { p with Optional = true }
       // If both reference the same object, we return one
       // (This is needed to support recursive type structures)
-      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) -> p1
-
+      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) ->
+          p1
       // If both are available, we get their subtype
       | Some p1, Some p2 -> 
-
-          let typ, optional =
-              if p1.Type = Null && p2.Type <> Null then p2.Type, true
-              elif p2.Type = Null && p1.Type <> Null then p1.Type, true
-              else subtypeInfered p1.Type p2.Type, p1.Optional || p2.Optional
-
-          // doesn't make sense to have options of nullable types
-          let optional = optional && not (hasNullOrNaN typ)
-
-          { Name = name; Optional = optional; Type = typ }
-
+          { Name = name; Optional = p1.Optional || p2.Optional
+            Type = subtypeInfered p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
-
   |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
@@ -219,16 +200,19 @@ let inferCollectionType types =
 /// the value inside a node or value of an attribute)
 let inferPrimitiveType culture (value : string) unit =
 
-    let (|Parse|_|) func value = func culture value
+  // Helper for calling Operations.AsXyz functions
+  let (|Parse|_|) func value = func culture value
 
-    if String.IsNullOrWhiteSpace value then 
-        Null
-    else   
-        match value with 
-        | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
-        | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
-        | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
-        | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
-        | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
-        | Parse Operations.AsDateTime _ -> Primitive(typeof<DateTime>, unit)
-        | _ -> Primitive(typeof<string>, unit)
+  // This always returns Primitive, unless the value is `null`. We do not
+  // return `null` if the value is just empty string, because we do not want
+  // to infer the type of XML attributes or JSON fields as `Null` when they
+  // are perfectly valid (empty) strings. This is handled differently in CSV.
+  match value with
+  | null -> Null
+  | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
+  | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
+  | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
+  | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
+  | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
+  | Parse Operations.AsDateTime _ -> Primitive(typeof<DateTime>, unit)
+  | _ -> Primitive(typeof<string>, unit)
