@@ -17,13 +17,9 @@ type Item =
 
 type StocksCsv = CsvProvider<"../../samples/docs/MSFT.csv">
 
-let getCsvData forSilverlight = seq {
+let getCsvData() = seq {
 
-    let msft = 
-        if forSilverlight then
-            StocksCsv.Parse(msftCsv)
-        else
-            StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+    let msft = StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
     yield { Title = "MSFT Stock CSV"
             SubTitle = ""
@@ -54,7 +50,7 @@ let getJsonData() = seq {
             Description = ""
             SubItems = seq { 
                 for record in doc.Array do
-                    match record.Value with
+                    match record.Value.Number with
                     | Some value -> yield { Title = record.Date.ToString()
                                             SubTitle = value.ToString()
                                             Description = ""
@@ -118,12 +114,19 @@ let getFreebaseData() = seq {
 
 let getData forSilverlight = seq {
 
-    yield! getCsvData forSilverlight
-
+    yield! getCsvData()
     yield! getJsonData()
-    
     if not forSilverlight then
         yield! getXmlData()
-        yield! getWorldBankData()
+    yield! getWorldBankData()
+    if not forSilverlight then
         yield! getFreebaseData()
 }
+
+let populateDataAsync forSilverlight (add:System.Action<_>) = 
+    let synchronizationContext = System.Threading.SynchronizationContext.Current
+    async { 
+        for item in getData forSilverlight do
+            synchronizationContext.Post((fun _ -> add.Invoke item), null) |> ignore
+    }
+    |> Async.Start

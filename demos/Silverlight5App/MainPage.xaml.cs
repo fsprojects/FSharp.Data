@@ -1,23 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Windows;
+using System.Net.Browser;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace Silverlight5App
 {
     public partial class MainPage : UserControl
     {
+        public class Handler : IWebRequestCreate
+        {
+            public WebRequest Create(Uri uri)
+            {
+                return WebRequestCreator.ClientHttp.Create(new Uri("http://localhost:3234/Proxy.ashx?" + Uri.EscapeUriString(uri.OriginalString)));
+            }
+        }
+
         public MainPage()
         {
             InitializeComponent();
-            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:true);
+
+            HttpWebRequest.RegisterPrefix("http://", new Handler());
+
+            PortableLibrary.populateDataAsync(true, item => this.tree.Items.Add(item));
         }
     }
 }

@@ -19,7 +19,7 @@ namespace WindownPhone71App
         public MainPage()
         {
             InitializeComponent();
-            this.listBox.ItemsSource = PortableLibrary.getData(forSilverlight:false);
+            PortableLibrary.populateDataAsync(false, item => this.listBox.Items.Add(item));
         }
     }
 }
