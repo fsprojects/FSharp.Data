@@ -7,7 +7,6 @@ namespace ProviderImplementation
 open System
 open System.Net
 open System.Xml.Linq
-open System.Web
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
@@ -20,7 +19,7 @@ open FSharp.Data.RuntimeImplementation.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit TypeProviderForNamespaces()
 
-    let asm, isPortable, replacer = AssemblyResolver.init cfg
+    let asm, replacer = AssemblyResolver.init cfg
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"

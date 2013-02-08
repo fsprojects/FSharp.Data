@@ -145,7 +145,11 @@ module internal Misc =
         member __.AddAttribute(attrData : CustomAttributeData) = customAttributes.Add(attrData)
         member __.AddAttributeWithNoParameter(ty : System.Type) = 
             let attrData = {
-                new CustomAttributeData() with
+#if FX_NO_CUSTOMATTRIBUTEDATA
+                new IProvidedCustomAttributeData with 
+#else
+                new CustomAttributeData() with 
+#endif
                 member __.Constructor =  ty.GetConstructor(Type.EmptyTypes)
                 member __.ConstructorArguments = upcast [|  |]
                 member __.NamedArguments = upcast [| |] 
@@ -1632,7 +1636,7 @@ type AssemblyGenerator(assemblyFileName) =
                             | :? bool as x -> ilg.Emit(OpCodes.Ldc_I4, if x then 1 else 0)
                             | :? float32 as x -> ilg.Emit(OpCodes.Ldc_R4, x)
                             | :? float as x -> ilg.Emit(OpCodes.Ldc_R8, x)
-#if BROWSER
+#if FX_NO_GET_ENUM_UNDERLYING_TYPE
 #else
                             | :? System.Enum as x when x.GetType().GetEnumUnderlyingType() = typeof<int32> -> ilg.Emit(OpCodes.Ldc_I4, unbox<int32> v)
 #endif
@@ -1788,7 +1792,7 @@ type AssemblyGenerator(assemblyFileName) =
 #else
         assembly.Save (Path.GetFileName assemblyFileName)
 #endif
-        printfn "final bytes in '%s'" assemblyFileName
+        System.Diagnostics.Debug.WriteLine (sprintf "final bytes in '%s'" assemblyFileName)
 
         let assemblyLoadedInMemory = assemblyMainModule.Assembly 
 
@@ -1860,8 +1864,12 @@ module Local =
                 //             failwith (sprintf "Unknown type '%s' in namespace '%s' (contains %s)" typeName namespaceName typenames)    
         }
 
-
+#if FX_NO_LOCAL_FILESYSTEM
+type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) =
+#else
 type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) as this =
+#endif
+
     let otherNamespaces = ResizeArray<string * list<ProvidedTypeDefinition>>()
 
     let providedNamespaces = 

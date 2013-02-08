@@ -127,8 +127,11 @@ type ProvidedProperty =
     /// Add definition location information to the provided type definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
+#if FX_NO_CUSTOMATTRIBUTEDATA
+#else
     /// Add attribute to property
     member AddAttributeData : CustomAttributeData -> unit
+#endif
 
     /// Add attribute to property
     member AddAttribute : Type -> unit

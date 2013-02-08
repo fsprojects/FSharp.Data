@@ -17,7 +17,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm, isPortable, replacer = AssemblyResolver.init cfg
+  let asm, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some(typeof<obj>))
 

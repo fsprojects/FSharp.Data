@@ -138,6 +138,33 @@ module Conversions =
 
 module AssemblyResolver =
 
+#if SILVERLIGHT
+
+    let onUiThread f = 
+        if System.Windows.Deployment.Current.Dispatcher.CheckAccess() then 
+            f() 
+        else
+            let resultTask = System.Threading.Tasks.TaskCompletionSource<'T>()
+            System.Windows.Deployment.Current.Dispatcher.BeginInvoke(Action(fun () -> try resultTask.SetResult (f()) with err -> resultTask.SetException err)) |> ignore
+            resultTask.Task.Result
+
+    let init (cfg : TypeProviderConfig) = 
+
+        let runtimeAssembly = 
+            onUiThread (fun () ->
+                let assemblyPart = System.Windows.AssemblyPart()
+                let FileStreamReadShim(fileName) = 
+                    match System.Windows.Application.GetResourceStream(System.Uri(fileName,System.UriKind.Relative)) with 
+                    | null -> System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().OpenFile(fileName, System.IO.FileMode.Open) :> System.IO.Stream 
+                    | resStream -> resStream.Stream
+                let assemblyStream = FileStreamReadShim cfg.RuntimeAssembly
+            
+                assemblyPart.Load(assemblyStream))
+
+        runtimeAssembly, AssemblyReplacer.create []
+
+#else
+
     open System.Reflection
     open System.Runtime.Versioning
 
@@ -170,28 +197,7 @@ module AssemblyResolver =
             initialized <- true
             AppDomain.CurrentDomain.add_AssemblyResolve(assemblyResolveHandler)
 
-#if FX_NO_ASSEMBLY_LOAD_FROM
-        let onUiThread f = 
-            if System.Windows.Deployment.Current.Dispatcher.CheckAccess() then 
-                f() 
-            else
-                let resultTask = System.Threading.Tasks.TaskCompletionSource<'T>()
-                System.Windows.Deployment.Current.Dispatcher.BeginInvoke(Action(fun () -> try resultTask.SetResult (f()) with err -> resultTask.SetException err)) |> ignore
-                resultTask.Task.Result
-
-        let runtimeAssembly = 
-            onUiThread (fun () ->
-                let assemblyPart = System.Windows.AssemblyPart()
-                let FileStreamReadShim(fileName) = 
-                    match System.Windows.Application.GetResourceStream(System.Uri(fileName,System.UriKind.Relative)) with 
-                    | null -> System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().OpenFile(fileName, System.IO.FileMode.Open) :> System.IO.Stream 
-                    | resStream -> resStream.Stream
-                let assemblyStream = FileStreamReadShim cfg.RuntimeAssembly
-                
-                assemblyPart.Load(assemblyStream))
-#else
         let runtimeAssembly = Assembly.LoadFrom(cfg.RuntimeAssembly)
-#endif        
 
         let targetFrameworkAttr = runtimeAssembly.GetCustomAttribute<TargetFrameworkAttribute>()
         let isPortable = targetFrameworkAttr.FrameworkName = ".NETPortable,Version=v4.0,Profile=Profile47"
@@ -205,4 +211,5 @@ module AssemblyResolver =
             else
                 asmMappings
 
-        runtimeAssembly, isPortable, AssemblyReplacer.create asmMappings
+        runtimeAssembly, AssemblyReplacer.create asmMappings
+#endif

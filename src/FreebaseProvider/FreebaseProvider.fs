@@ -24,7 +24,7 @@ open FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
 /// Find the handles in the Freebase type provider runtime DLL. 
 type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
-    let runtimeAssembly, isPortable, replacer = AssemblyResolver.init config
+    let runtimeAssembly, replacer = AssemblyResolver.init config
 
     member val FreebaseDataContextType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseDataContext")
     member val FreebaseIndividualsType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseIndividuals")
@@ -58,7 +58,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             // If the domain already contains spaces then we might as well make its type have a space before Domain since quoting will be required anyway.
             (if domainName.Contains(" ") then domainName+" Domain" else domainName+"Domain") |> tidyName
 
-    #if NO_SECURITY_ELEMENT_ESCAPE
+    #if FX_NO_SECURITY_ELEMENT_ESCAPE
         let xmlDoc (text:string) = "<summary>" + text + "</summary>"
     #else
         let xmlDoc text = "<summary>" + System.Security.SecurityElement.Escape text + "</summary>"

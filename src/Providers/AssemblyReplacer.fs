@@ -90,7 +90,7 @@ module AssemblyReplacer =
       else 
         fullName
     let getType fullName =
-      if asm.GetName().Name = "FSI-ASSEMBLY" then
+      if asm.FullName.StartsWith "FSI-ASSEMBLY" then
         // when F# Interactive is the host of the design time assembly,
         // for each type in the runtime assembly there might be multiple
         // versions (FSI_0001.FullTypeName, FSI_0002.FullTypeName, etc).
