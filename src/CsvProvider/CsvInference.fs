@@ -25,7 +25,7 @@ let headerRegex = new Regex(@"(?<field>.+) \((?<unit>.+)\)", regexOptions)
 let inferFields (csv:CsvFile) count culture =
   
   // Infer the units and names from the headers
-  let headers = csv.Headers |> Seq.map (fun header ->
+  let headers = csv.Headers |> Array.map (fun header ->
     let m = headerRegex.Match(header)
     if m.Success then
       let headerName = m.Groups.["field"].Value
