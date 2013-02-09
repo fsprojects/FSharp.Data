@@ -27,8 +27,8 @@ let generateJson sample sampleList culture =
 let generateWorldBank sources asynchronous = 
     generate (fun cfg -> new WorldBankProvider(cfg)) [| box sources; box asynchronous |] 
 
-let generateFreebase apiKeyParam serviceUrlParam numIndividualsParam useUnitsParam pluralizeParam snapshotDateParam localCacheParam proxyPrefixParam allowQueryEvaluateOnClientSideParam = 
-    generate (fun cfg -> new FreebaseTypeProvider(cfg)) [| box apiKeyParam ; box serviceUrlParam ; box numIndividualsParam ; box useUnitsParam ; box pluralizeParam ; box snapshotDateParam ; box localCacheParam ; box proxyPrefixParam ; box allowQueryEvaluateOnClientSideParam |] 
+let generateFreebase apiKeyParam serviceUrlParam numIndividualsParam useUnitsParam pluralizeParam snapshotDateParam localCacheParam allowQueryEvaluateOnClientSideParam = 
+    generate (fun cfg -> new FreebaseTypeProvider(cfg)) [| box apiKeyParam ; box serviceUrlParam ; box numIndividualsParam ; box useUnitsParam ; box pluralizeParam ; box snapshotDateParam ; box localCacheParam ; box allowQueryEvaluateOnClientSideParam |] 
 
 let signatureOnly = true
 //let signatureOnly = false
@@ -66,6 +66,6 @@ generateWorldBank "" false
 generateWorldBank "" true
 |> prettyPrintWithMaxDepth 2 |> Console.WriteLine
 
-generateFreebase "none" "https://www.googleapis.com/freebase/v1" 10 true true "now" true "" true
+generateFreebase "none" "https://www.googleapis.com/freebase/v1" 10 true true "now" true true
 |> prettyPrintWithMaxDepth 2
 |> Console.WriteLine

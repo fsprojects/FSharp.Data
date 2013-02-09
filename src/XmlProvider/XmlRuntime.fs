@@ -10,7 +10,13 @@ open System.Globalization
 
 /// Underlying representation of the generated XML types
 [<StructuredFormatDisplay("{XElement}")>]
+
+#if SILVERLIGHT
+type XmlElement (node:obj) =
+  let node = node :?> XElement
+#else
 type XmlElement (node:XElement) =
+#endif
 
   /// Returns the raw XML element that is represented by the generated type
   member x.XElement = node

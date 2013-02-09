@@ -22,10 +22,6 @@ open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.Caching
 open FSharp.Net
 
-#if BROWSER
-open System.Windows.Browser // HttpUtility
-#endif
-
 [<AutoOpen>]
 module Utilities = 
 
@@ -61,7 +57,7 @@ type FreebaseResult<'TResult> =
 
 let isStringNone s = String.IsNullOrEmpty s || s = "none"        
 
-type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
+type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
     let snapshotDate = if isStringNone snapshotDate then None else Some snapshotDate
     let sendingRequest = Event<Uri>()
     let localCache, localCacheLocation = createInternetFileCache localCacheName 
@@ -106,9 +102,6 @@ type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCache
             match snapshotDate with 
             | None -> url
             | Some d -> url + "&as_of_time=" + d
-#if BROWSER
-        let url = if isStringNone proxy then url else proxy + HttpUtility.UrlEncode url
-#endif
         match getCache().TryRetrieve url with
         | Some resultText -> resultText
         | None ->
@@ -135,7 +128,6 @@ type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCache
 
     member __.LocalCacheLocation = localCacheLocation
     member __.SendingRequest = sendingRequest.Publish
-    member __.Proxy = proxy
     member __.UseLocalCache with get() = useLocalCache and set v = useLocalCache <- v
     member __.ServiceUrl with get() = serviceUrl and set v = serviceUrl  <- v
     member __.SnapshotDate = snapshotDate
