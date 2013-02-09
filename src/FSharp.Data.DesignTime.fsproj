@@ -45,6 +45,7 @@
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
+    <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
     <Compile Include="Providers\ProvidedTypes.fs" />
     <Compile Include="Providers\Pluralizer.fs" />
