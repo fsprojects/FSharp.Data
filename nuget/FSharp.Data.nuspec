@@ -29,5 +29,11 @@
     <file src="..\bin\Portable\FSharp.Data.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
     <file src="..\bin\Portable\FSharp.Data.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
     <file src="..\bin\Portable\FSharp.Data.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\Portable\FSharp.Data.dll" target="lib/sl5" />
+    <file src="..\bin\Portable\FSharp.Data.pdb" target="lib/sl5" />
+    <file src="..\bin\Portable\FSharp.Data.xml" target="lib/sl5" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.dll" target="lib/sl5" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.pdb" target="lib/sl5" />
+    <file src="..\bin\Portable\FSharp.Data.DesignTime.xml" target="lib/sl5" />
   </files>
 </package>

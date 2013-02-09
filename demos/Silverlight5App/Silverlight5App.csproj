@@ -100,9 +100,9 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PortableLibrary\PortableLibrary.fsproj">
-      <Project>{16a25dcf-99b5-4b95-b4ac-a32ade9c62a7}</Project>
-      <Name>PortableLibrary</Name>
+    <ProjectReference Include="..\Silverlight5Library\Silverlight5Library.fsproj">
+      <Project>{617faff4-e691-4d49-9b9b-6943967160fc}</Project>
+      <Name>Silverlight5Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

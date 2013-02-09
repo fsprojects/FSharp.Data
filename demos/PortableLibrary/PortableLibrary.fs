@@ -36,7 +36,7 @@ type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
 type WorldBankJson = JsonProvider<"../../samples/docs/WorldBank.json">
 
 let getJsonData() = seq {
-
+    new System.Xml.Linq.XElement(System.Xml.Linq.XName.Get "aaa") |> ignore
     let simple = SimpleJson.Parse(""" { "name":"Tomas", "age":4 } """)
     yield { Title = "Simple Json"
             SubTitle = simple.Name
@@ -112,21 +112,22 @@ let getFreebaseData() = seq {
                             Content = a.Blurb |> String.concat "\n" } } }
 }
 
-let getData forSilverlight = seq {
+let getData() = seq {
 
     yield! getCsvData()
     yield! getJsonData()
-    if not forSilverlight then
-        yield! getXmlData()
+#if SILVERLIGHT
+#else
+    yield! getXmlData()
+#endif
     yield! getWorldBankData()
-    if not forSilverlight then
-        yield! getFreebaseData()
+    yield! getFreebaseData()
 }
 
-let populateDataAsync forSilverlight (add:System.Action<_>) = 
+let populateDataAsync (add:System.Action<_>) = 
     let synchronizationContext = System.Threading.SynchronizationContext.Current
     async { 
-        for item in getData forSilverlight do
+        for item in getData() do
             synchronizationContext.Post((fun _ -> add.Invoke item), null) |> ignore
     }
     |> Async.Start

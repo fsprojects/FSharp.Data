@@ -20,8 +20,9 @@ namespace Silverlight5App
             InitializeComponent();
 
             HttpWebRequest.RegisterPrefix("http://", new Handler());
+            HttpWebRequest.RegisterPrefix("https://", new Handler());
 
-            PortableLibrary.populateDataAsync(true, item => this.tree.Items.Add(item));
+            PortableLibrary.populateDataAsync(item => this.tree.Items.Add(item));
         }
     }
 }

@@ -257,7 +257,7 @@ namespace WindowsStoreApp.Data
         public SampleDataSource()
         {
             int i = 0;
-            PortableLibrary.populateDataAsync(false, item =>
+            PortableLibrary.populateDataAsync(item =>
             {
                 var group = new SampleDataGroup(i++.ToString(), item.Title, item.SubTitle, null, item.Description);
                 foreach (var subItem in item.SubItems)

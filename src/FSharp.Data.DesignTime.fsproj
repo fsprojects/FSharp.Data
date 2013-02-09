@@ -100,6 +100,9 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin\v40" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\v40" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\v40" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin\sl5" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\sl5" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\sl5" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).dll" DestinationFolder="$(SolutionDir)bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin" />

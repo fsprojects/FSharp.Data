@@ -166,50 +166,100 @@ module AssemblyResolver =
 #else
 
     open System.Reflection
-    open System.Runtime.Versioning
 
     let private (++) a b = Path.Combine(a,b)
-    let private portableFSharpCorePath = 
+
+    let private referenceAssembliesPath = 
         Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
         ++ "Reference Assemblies" 
         ++ "Microsoft" 
+
+    let private fsharpPortableAssembliesPath = 
+        referenceAssembliesPath
         ++ "FSharp" 
         ++ "3.0" 
         ++ "Runtime" 
+        ++ ".NETPortable"
+
+    let private frameworkPortableAssembliesPath = 
+        referenceAssembliesPath
+        ++ "Framework" 
         ++ ".NETPortable" 
-        ++ "FSharp.Core.dll"
+        ++ "v4.0" 
+        ++ "Profile" 
+        ++ "Profile47" 
 
-    let private assemblyResolveHandler = ResolveEventHandler(fun _ args ->
-        try 
-            let assemName = AssemblyName(args.Name)
-            if assemName.Name = "FSharp.Core" && assemName.Version.ToString() = "2.3.5.0" then 
-                Assembly.LoadFrom portableFSharpCorePath
-            else 
-                null
-        with e ->  
-            null)
+    let private silverlightAssembliesPath = 
+        referenceAssembliesPath
+        ++ "Framework" 
+        ++ "Silverlight" 
+        ++ "v5.0" 
 
-    let mutable initialized = false    
+    let private silverlightSdkAssembliesPath = 
+        Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
+        ++ "Microsoft SDKs" 
+        ++ "Silverlight" 
+        ++ "v5.0" 
+        ++ "Libraries"
+        ++ "Client"
+
+    let private fullAssemblies = 
+        AppDomain.CurrentDomain.GetAssemblies()
+        |> Seq.map (fun asm -> asm.GetName().Name, asm)
+        |> Map.ofSeq
+
+    let private getAssembly (asmName:AssemblyName) reflectionOnly = 
+        let folder = 
+            match asmName.Name, asmName.Version.ToString() with
+            | "FSharp.Core", "2.3.5.0" -> fsharpPortableAssembliesPath
+            | "System.Xml.Linq", "5.0.5.0" -> silverlightSdkAssembliesPath
+            | _, "5.0.5.0" -> silverlightAssembliesPath
+            | _, "2.0.5.0" -> frameworkPortableAssembliesPath
+            | _, _ -> null
+        if folder = null then 
+            null
+        else
+            let assemblyPath = folder ++ (asmName.Name + ".dll")
+            if File.Exists assemblyPath then
+                if reflectionOnly then Assembly.ReflectionOnlyLoadFrom assemblyPath
+                else Assembly.LoadFrom assemblyPath 
+            else null
+
+    let mutable private initialized = false    
 
     let init (cfg : TypeProviderConfig) = 
 
         if not initialized then
             initialized <- true
-            AppDomain.CurrentDomain.add_AssemblyResolve(assemblyResolveHandler)
+            AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
+            AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
+        
+        let isPortable = cfg.SystemRuntimeAssemblyVersion = new Version(2, 0, 5, 0)
+        let isSilverlight = cfg.SystemRuntimeAssemblyVersion = new Version(5, 0, 5, 0)
+                
+        let runtimeAssembly = 
+            if isSilverlight then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
+            else Assembly.LoadFrom cfg.RuntimeAssembly
 
-        let runtimeAssembly = Assembly.LoadFrom(cfg.RuntimeAssembly)
+        let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
-        let targetFrameworkAttr = runtimeAssembly.GetCustomAttribute<TargetFrameworkAttribute>()
-        let isPortable = targetFrameworkAttr.FrameworkName = ".NETPortable,Version=v4.0,Profile=Profile47"
-
-        let asmMappings = [Assembly.GetExecutingAssembly(), runtimeAssembly]
         let asmMappings = 
-            if isPortable then
-                let fullFSharpCore = typedefof<int list>.Assembly
-                let portableFSharpCore = Assembly.LoadFrom portableFSharpCorePath
-                (fullFSharpCore, portableFSharpCore)::asmMappings
+            if isPortable || isSilverlight then
+                let portableAsmsPairs = 
+                    runtimeAssembly.GetReferencedAssemblies()
+                    |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
+                    |> Seq.choose (fun asmName -> 
+                        fullAssemblies.TryFind asmName.Name
+                        |> Option.bind (fun fullAsm ->
+                            // Ideally we would always use reflectionOnly as true, but that creates problems in Windows 8 apps with the System.Core.dll version
+                            let portableAsm = getAssembly asmName isSilverlight
+                            if portableAsm <> null && portableAsm.FullName <> fullAsm.FullName then Some (fullAsm, portableAsm)
+                            else None))
+                    |> Seq.toList
+                runtimeAssemblyPair::portableAsmsPairs
             else
-                asmMappings
+                [runtimeAssemblyPair]
 
         runtimeAssembly, AssemblyReplacer.create asmMappings
+
 #endif
