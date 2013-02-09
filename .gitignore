@@ -3,6 +3,7 @@ obj
 ClientBin
 *.suo
 docs/*.html
+docs/docs
 nuget/*.nupkg
 *.user
 __setup__.fsx

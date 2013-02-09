@@ -54,44 +54,15 @@ module DocumentationTests =
   // Core API documentation
 
   [<Test>]
-  let ``Documentation for CsvProvider.fsx generated correctly``() = 
-    processFile "CsvProvider.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for FSharpData.fsx generated correctly``() = 
-    processFile "FSharpData.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for Http.fsx generated correctly``() = 
-    processFile "Http.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for JsonProvider.fsx generated correctly``() = 
-    processFile "JsonProvider.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for WorldBank.fsx generated correctly``() = 
-    processFile "WorldBank.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for XmlProvider.fsx generated correctly``() = 
-    processFile "XmlProvider.fsx"
-    |> should equal 0
-
-  [<Test>]
-  let ``Documentation for JsonValue.fsx generated correctly``() = 
-    processFile "JsonValue.fsx"
-    |> should equal 0
-
-  // ------------------------------------------------------------------------------------
-  // Additional documentation
-
-  [<Test>]
-  let ``Documentation for JsonToXml.fsx generated correctly``() = 
-    processFile "JsonToXml.fsx"
+  [<TestCase "CsvProvider.fsx">]
+  [<TestCase "Freebase.fsx">]
+  [<TestCase "FSharpData.fsx">]
+  [<TestCase "Http.fsx">]
+  [<TestCase "JsonProvider.fsx">]
+  [<TestCase "JsonToXml.fsx">]
+  [<TestCase "JsonValue.fsx">]
+  [<TestCase "WorldBank.fsx">]
+  [<TestCase "XmlProvider.fsx">]
+  let ``Documentation generated correctly`` file = 
+    processFile file
     |> should equal 0
