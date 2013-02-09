@@ -851,15 +851,15 @@ type FreebaseSendingRequestArgs(uri: System.Uri) =
     member x.RequestUri = uri
 
 /// Contains public entry points called by provided code.
-type public FreebaseDataContext internal (apiKey:string, proxyPrefix:string,serviceUrl:string, useUnits:bool, snapshotDate:string, useLocalCache: bool, allowQueryEvaluateOnClientSide: bool) = 
+type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useUnits:bool, snapshotDate:string, useLocalCache: bool, allowQueryEvaluateOnClientSide: bool) = 
     let localCacheName = "FreebaseRuntime"
-    let fbQueries = new FreebaseQueries(apiKey, proxyPrefix,serviceUrl, localCacheName, snapshotDate, useLocalCache)
+    let fbQueries = new FreebaseQueries(apiKey, serviceUrl, localCacheName, snapshotDate, useLocalCache)
     let fbSchema = new FreebaseSchemaConnection(fbQueries)
     let fbDataConn = new FreebaseDataConnection(fbQueries, fbSchema, useUnits, allowQueryEvaluateOnClientSide)
     let settings = FreebaseDataContextSettings (fbQueries,fbDataConn)
     member __.DataContext = settings
     /// Create a data context
-    static member _Create(apiKey,proxyPrefix,serviceUrl, useUnits,snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey,proxyPrefix,serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
+    static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
     /// Get the object which represents the Freebase domain with the given object id.
     member public __._GetDomainCategoryById(domainCategoryId:string) : FreebaseDomainCategory = FreebaseDomainCategory(fbDataConn, domainCategoryId)
     

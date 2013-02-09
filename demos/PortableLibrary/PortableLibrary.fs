@@ -17,13 +17,9 @@ type Item =
 
 type StocksCsv = CsvProvider<"../../samples/docs/MSFT.csv">
 
-let getCsvData forSilverlight = seq {
+let getCsvData() = seq {
 
-    let msft = 
-        if forSilverlight then
-            StocksCsv.Parse(msftCsv)
-        else
-            StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+    let msft = StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
     yield { Title = "MSFT Stock CSV"
             SubTitle = ""
@@ -40,7 +36,7 @@ type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
 type WorldBankJson = JsonProvider<"../../samples/docs/WorldBank.json">
 
 let getJsonData() = seq {
-
+    new System.Xml.Linq.XElement(System.Xml.Linq.XName.Get "aaa") |> ignore
     let simple = SimpleJson.Parse(""" { "name":"Tomas", "age":4 } """)
     yield { Title = "Simple Json"
             SubTitle = simple.Name
@@ -54,7 +50,7 @@ let getJsonData() = seq {
             Description = ""
             SubItems = seq { 
                 for record in doc.Array do
-                    match record.Value with
+                    match record.Value.Number with
                     | Some value -> yield { Title = record.Date.ToString()
                                             SubTitle = value.ToString()
                                             Description = ""
@@ -116,14 +112,22 @@ let getFreebaseData() = seq {
                             Content = a.Blurb |> String.concat "\n" } } }
 }
 
-let getData forSilverlight = seq {
+let getData() = seq {
 
-    yield! getCsvData forSilverlight
-
+    yield! getCsvData()
     yield! getJsonData()
-    
-    if not forSilverlight then
-        yield! getXmlData()
-        yield! getWorldBankData()
-        yield! getFreebaseData()
+#if SILVERLIGHT
+#else
+    yield! getXmlData()
+#endif
+    yield! getWorldBankData()
+    yield! getFreebaseData()
 }
+
+let populateDataAsync (add:System.Action<_>) = 
+    let synchronizationContext = System.Threading.SynchronizationContext.Current
+    async { 
+        for item in getData() do
+            synchronizationContext.Post((fun _ -> add.Invoke item), null) |> ignore
+    }
+    |> Async.Start
