@@ -80,6 +80,7 @@ type FreebaseProperty =
         | "/type/enumeration" -> Some (typeof<string>, true)
         | "/type/rawstring" -> Some (typeof<string>, true)
         | "/type/text" -> Some (typeof<string>, true)
+        | "/type/uri" ->  Some (typeof<string>, true)
         | "/type/float" -> Some (typeof<double>, false)
         | "/type/int" -> Some (typeof<int>, false)
         | "/type/datetime" -> Some(typeof<string>, true) // Not System.DateTime because, for example, "1776" is a freebase DateTime, as is 9000BC. 
