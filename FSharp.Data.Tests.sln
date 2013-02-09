@@ -4,6 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
 		samples\CsvProvider.fsx = samples\CsvProvider.fsx
+		samples\Freebase.fsx = samples\Freebase.fsx
 		samples\FSharpData.fsx = samples\FSharpData.fsx
 		samples\Http.fsx = samples\Http.fsx
 		samples\JsonProvider.fsx = samples\JsonProvider.fsx
