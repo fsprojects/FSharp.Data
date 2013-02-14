@@ -145,7 +145,7 @@ including the API key:
 let API_KEY = "<enter your freebase-enabled google API key here, you will get errors before you do>"
 
 type FreebaseDataWithKey = FreebaseDataProvider<Key=API_KEY>
-let data = FreebaseDataWithKey.GetDataContext()
+let dataWithKey = FreebaseDataWithKey.GetDataContext()
 
 (**
 ## Related articles

@@ -100,7 +100,7 @@ type Http private() =
         // Set default content type if it is not specified by the user
         let hasContentType = 
           headers |> Seq.exists (fun (header, _) -> 
-            String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0)
+            String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) = 0)
         if not hasContentType then
           req.ContentType <- "application/x-www-form-urlencoded"
 

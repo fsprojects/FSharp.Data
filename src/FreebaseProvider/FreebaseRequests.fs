@@ -55,6 +55,13 @@ type FreebaseResult<'TResult> =
           Result = f fbr?result
           Message = fbr.GetOptionalStringValWithKey "message" }
 
+type FreebaseWebException(e:WebException, domain, reason, message, extendedHelp) = 
+    inherit WebException(sprintf "%s Domain: %s Reason: %s" e.Message domain reason, e, e.Status, e.Response)
+    member __.Domain = domain
+    member __.Reason = reason
+    member __.FreebaseMessage = message
+    member __.ExtendedHelp = extendedHelp
+
 let isStringNone s = String.IsNullOrEmpty s || s = "none"        
 
 type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
@@ -105,18 +112,38 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
         match getCache().TryRetrieve url with
         | Some resultText -> resultText
         | None ->
-          let resultText = 
+          let getResultText() = 
             if url.Length > 1500 && url.Contains "?"  then 
                 let idx = url.IndexOf '?'
                 let content = url.[idx + 1 .. ] 
                 let shortUrl = url.[0.. idx - 1]
                 //printfn "post, shortUrl = '%s'" shortUrl
                 //printfn "post, content = '%s'" content
-                Http.Request(shortUrl, meth = "POST", body = content)
+                Http.Request(shortUrl, meth = "POST", headers = [ "X-HTTP-Method-Override", "GET" ], body = content)
             else
                 Http.Request(url)
-          getCache().Set(url,resultText)
-          resultText
+          try
+            let resultText = getResultText()
+            getCache().Set(url, resultText)
+            resultText
+          with 
+            | :? WebException as exn -> 
+                if exn.Response = null then reraise()
+                let freebaseExn =
+                    try
+                        use responseStream = exn.Response.GetResponseStream()
+                        use streamReader = new StreamReader(responseStream)
+                        let response = streamReader.ReadToEnd() |> JsonValue.Parse 
+                        let error = response.GetProperty("error").GetArrayValWithKey("errors").[0]
+                        let domain = error.GetStringValWithKey("domain")
+                        let reason = error.GetStringValWithKey("reason")
+                        let message  = error.GetStringValWithKey("message")
+                        let extendedHelp = error.GetOptionalStringValWithKey("extendedHelp")
+                        Some <| FreebaseWebException(exn, domain, reason, message, extendedHelp)
+                    with _ -> None
+                match freebaseExn with
+                | Some e -> raise e
+                | None -> reraise()
 
     let queryString(queryUrl, fromJson) : FreebaseResult<'T> = 
         let resultText = queryRawText queryUrl

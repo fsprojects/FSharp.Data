@@ -103,6 +103,7 @@
     <Compile Include="FreebaseProvider.ChemistryTests.fs" />
     <Compile Include="FreebaseProvider.BiologyTests.fs" />
     <Compile Include="FreebaseProvider.WebPageTests.fs" />
+    <Compile Include="FreebaseProvider.AstronomyTests.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
