@@ -83,9 +83,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
         let domains = 
             lazy 
                 [ for nsk in fbSchema.GetDomainStructure().NamespaceKeys do 
-                    if String.IsNullOrWhiteSpace nsk.Namespace.Hidden then
-                     if nsk.Namespace.NamespaceKinds |> Array.exists (fun s -> s = "/type/domain") then
-                      yield nsk.Namespace ]
+                    if nsk.Namespace.Hidden <> "true" then
+                      if nsk.Namespace.NamespaceKinds |> Array.exists (fun s -> s = "/type/domain") then
+                        yield nsk.Namespace ]
                 |> Seq.distinctBy (fun nsp -> (nsp.Id, nsp.DomainName))
 
         let domainCategories = lazy  fbSchema.GetDomainCategories() 
