@@ -151,6 +151,7 @@ type FreebaseNamespaceKey =
     static member FromJson(fbr:JsonValue) = 
         { Value = fbr.GetStringValWithKey("value") 
           Namespace = fbr.GetProperty("namespace") |> FreebaseDomain.FromJson }
+    override x.ToString() = x.Namespace.ToString()
 
 /// The element type returned by GetDomainStructure.
 type FreebaseDomainStructure = 
