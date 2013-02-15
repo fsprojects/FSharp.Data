@@ -410,7 +410,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     let snapshotDateParam   = ProvidedStaticParameter("SnapshotDate",      typeof<string>, defaultSnapshotDate)
     let serviceUrlParam   = ProvidedStaticParameter("ServiceUrl",      typeof<string>, defaultServiceUrl)
     let localCacheParam   = ProvidedStaticParameter("LocalCache",      typeof<bool>, defaultLocalSchemaCache)
-    let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowQueryEvaluateOnClientSide",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
+    let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowLocalQueryEvaluation",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
 
     let helpText = "<summary>Typed representation of Freebase data with additional configuration parameters</summary>
                     <param name='Key'>The API key for the MQL metadata service (default: " + defaultApiKey + ")</param>
