@@ -99,11 +99,7 @@
     <Compile Include="JsonProvider.DocumentOverride.Tests.fs" />
     <Compile Include="JsonProvider.ProjectFile.Tests.fs" />
     <Compile Include="JsonProvider.Dates.Tests.fs" />
-    <Compile Include="FreebaseProvider.FifaTests.fs" />
-    <Compile Include="FreebaseProvider.ChemistryTests.fs" />
-    <Compile Include="FreebaseProvider.BiologyTests.fs" />
-    <Compile Include="FreebaseProvider.WebPageTests.fs" />
-    <Compile Include="FreebaseProvider.AstronomyTests.fs" />
+    <Compile Include="FreebaseProvider.Tests.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
