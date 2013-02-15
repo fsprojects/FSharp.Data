@@ -85,3 +85,14 @@ let ``Can execute > 1500 chars MQL query``() =
             |> Seq.toList
     someStarDistances |> Seq.head |> fst |> should equal "Arcturus"
 
+[<Test>]
+let ``Can access olympics info``() =
+    
+    let firstOlympicCity = 
+        query { for game in data.Commons.Olympics.``Olympic games`` do
+                sortBy game.``End date``
+                for city in game.``Host City`` do 
+                select city
+                head }
+
+    firstOlympicCity.Name |> should equal "Athens"
