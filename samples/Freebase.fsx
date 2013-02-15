@@ -132,6 +132,13 @@ topBooksWithNameContaining "1984" |> Seq.toList
 
 (**
 
+You can see the MQL queries that are being made by subscribing to the `SendingRequest` event
+*)
+
+data.DataContext.SendingRequest.Add (fun e -> printfn "request: %A" e.RequestUri)
+
+(**
+
 ## Providing an API key
 
 The Freebase API is rate limited, and initially you are using some quota available for debugging purposes.
