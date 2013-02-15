@@ -21,16 +21,23 @@ open FSharp.Data.RuntimeImplementation.Freebase
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
 
+type RFreebaseDomain = FSharp.Data.RuntimeImplementation.Freebase.FreebaseDomain
+type RFreebaseDomainCategory = FSharp.Data.RuntimeImplementation.Freebase.FreebaseDomainCategory
+
 /// Find the handles in the Freebase type provider runtime DLL. 
 type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
     let runtimeAssembly, replacer = AssemblyResolver.init config
 
-    member val FreebaseDataContextType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseDataContext")
-    member val FreebaseIndividualsType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseIndividuals")
-    member val FreebaseObjectType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.IFreebaseObject")
-    member val FreebaseDomainType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseDomain")
-    member val FreebaseDomainCategoryType = runtimeAssembly.GetType("FSharp.Data.RuntimeImplementation.Freebase.FreebaseDomainCategory")
+    member val FreebaseDataContextType =     typeof<FreebaseDataContext>     |> replacer.ToRuntime
+    member val IFreebaseDataContextType =    typeof<IFreebaseDataContext>    |> replacer.ToRuntime
+    member val FreebaseIndividualsType =     typeof<FreebaseIndividuals>     |> replacer.ToRuntime
+    member val IFreebaseIndividualsType =    typeof<IFreebaseIndividuals>    |> replacer.ToRuntime
+    member val IFreebaseObjectType =         typeof<IFreebaseObject>         |> replacer.ToRuntime
+    member val FreebaseDomainType =          typeof<RFreebaseDomain>         |> replacer.ToRuntime
+    member val IFreebaseDomainType =         typeof<IFreebaseDomain>         |> replacer.ToRuntime
+    member val FreebaseDomainCategoryType =  typeof<RFreebaseDomainCategory> |> replacer.ToRuntime
+    member val IFreebaseDomainCategoryType = typeof<IFreebaseDomainCategory> |> replacer.ToRuntime
 
     member this.RuntimeAssembly = runtimeAssembly
 
@@ -66,19 +73,19 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
 
         let blurbOfId id = fbSchema.GetBlurbById id |> String.concat " "  
 
-        let createDataContext = fbRuntimeInfo.FreebaseDataContextType.GetMethod("_Create")
-        let getDomainCategoryById = fbRuntimeInfo.FreebaseDataContextType.GetMethod("_GetDomainCategoryById")
-        let getDomainById = fbRuntimeInfo.FreebaseDomainCategoryType.GetMethod("_GetDomainById")
-        let getObjectsOfTypeId = fbRuntimeInfo.FreebaseDomainType.GetMethod("_GetObjectsOfTypeId")
-        let getIndividualsObject = fbRuntimeInfo.FreebaseIndividualsType.GetMethod("_GetIndividualsObject")
-        let getIndividualById = fbRuntimeInfo.FreebaseIndividualsType.GetMethod("_GetIndividualById")
+        let createDataContext = fbRuntimeInfo.FreebaseDataContextType.GetMethod "_Create"
+        let getDomainCategoryById = fbRuntimeInfo.IFreebaseDataContextType.GetMethod "GetDomainCategoryById"
+        let getDomainById = fbRuntimeInfo.IFreebaseDomainCategoryType.GetMethod "GetDomainById"
+        let getObjectsOfTypeId = fbRuntimeInfo.IFreebaseDomainType.GetMethod "GetObjectsOfTypeId"
+        let getIndividualsObject = fbRuntimeInfo.FreebaseIndividualsType.GetMethod "_GetIndividualsObject"
+        let getIndividualById = fbRuntimeInfo.IFreebaseIndividualsType.GetMethod "GetIndividualById"
 
         let domains = 
             lazy 
                 [ for nsk in fbSchema.GetDomainStructure().NamespaceKeys do 
-                    if String.IsNullOrWhiteSpace nsk.Namespace.Hidden then
-                     if nsk.Namespace.NamespaceKinds |> Array.exists (fun s -> s = "/type/domain") then
-                      yield nsk.Namespace ]
+                    if nsk.Namespace.Hidden <> "true" then
+                      if nsk.Namespace.NamespaceKinds |> Array.exists (fun s -> s = "/type/domain") then
+                        yield nsk.Namespace ]
                 |> Seq.distinctBy (fun nsp -> (nsp.Id, nsp.DomainName))
 
         let domainCategories = lazy  fbSchema.GetDomainCategories() 
@@ -185,10 +192,10 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                   for (property:FreebaseProperty) in typeWithProperties.Properties do
                     if not (String.IsNullOrEmpty property.PropertyName) then 
                         let staticPropertyType = property.FSharpPropertyType(fbSchema, refinedFSharpTypeOfFreebaseProperty, tryFindRefinedTypeForFreebaseType, makeDesignTimeNullableTy, makeDesignTimeSeqTy)
-                        let runtimePropertyType = property.FSharpPropertyRuntimeType(fbSchema, fbRuntimeInfo.FreebaseObjectType)
+                        let runtimePropertyType = property.FSharpPropertyRuntimeType(fbSchema, fbRuntimeInfo.IFreebaseObjectType)
                         let p = ProvidedProperty(property.PropertyName, staticPropertyType,
                                                  GetterCode = (fun args -> 
-                                                      let meth = fbRuntimeInfo.FreebaseObjectType.GetMethod "GetPropertyByIdTyped"
+                                                      let meth = fbRuntimeInfo.IFreebaseObjectType.GetMethod "GetPropertyByIdTyped"
                                                       let meth = meth.MakeGenericMethod [| runtimePropertyType |]
                                                       Expr.Call(args.[0],meth,[Expr.Value typeWithProperties.Id; Expr.Value property.Id])))
 
@@ -229,9 +236,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                 let declaringType = (theDataTypesClassForDomain, path) ||> List.fold findOrCreateEnclosingType
                 //printfn "FreebaseProvider: creating item type, typeName='%A', fullPath='%A', domainId '%+A', declaringType.Name = '%s'" typeName fullPath domainId declaringType.Name
                 let itemType = 
-                    let t = ProvidedTypeDefinition(typeName, baseType=Some fbRuntimeInfo.FreebaseObjectType, HideObjectMethods=true)
+                    let t = ProvidedTypeDefinition(typeName, baseType=Some fbRuntimeInfo.IFreebaseObjectType, HideObjectMethods=true)
                     t.SetAttributes (TypeAttributes.Public ||| TypeAttributes.Interface ||| enum (int32 TypeProviderTypeAttributes.IsErased))
-                    t.AddInterfaceImplementationsDelayed(fun () -> [fbRuntimeInfo.FreebaseObjectType])
+                    t.AddInterfaceImplementationsDelayed(fun () -> [fbRuntimeInfo.IFreebaseObjectType])
                     t.AddMembersDelayed (fun () -> makeMembersForFreebaseType fbType)
                     t.AddInterfaceImplementationsDelayed(fun () -> 
                       [ for ity in fbType.IncludedTypes do 
@@ -410,7 +417,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     let snapshotDateParam   = ProvidedStaticParameter("SnapshotDate",      typeof<string>, defaultSnapshotDate)
     let serviceUrlParam   = ProvidedStaticParameter("ServiceUrl",      typeof<string>, defaultServiceUrl)
     let localCacheParam   = ProvidedStaticParameter("LocalCache",      typeof<bool>, defaultLocalSchemaCache)
-    let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowQueryEvaluateOnClientSide",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
+    let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowLocalQueryEvaluation",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
 
     let helpText = "<summary>Typed representation of Freebase data with additional configuration parameters</summary>
                     <param name='Key'>The API key for the MQL metadata service (default: " + defaultApiKey + ")</param>

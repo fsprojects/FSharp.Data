@@ -56,7 +56,14 @@ type FreebaseResult<'TResult> =
           Message = fbr.GetOptionalStringValWithKey "message" }
 
 type FreebaseWebException(e:WebException, domain, reason, message, extendedHelp) = 
-    inherit WebException(sprintf "%s Domain: %s Reason: %s" e.Message domain reason, e, e.Status, e.Response)
+    inherit WebException(
+        (if String.IsNullOrEmpty extendedHelp then
+             sprintf "%s (Domain='%s' Reason='%s')" message domain reason
+         else
+             sprintf "%s (Domain='%s' Reason='%s' ExtendedHelp='%s')" message domain reason extendedHelp),
+        e, 
+        e.Status, 
+        e.Response)
     member __.Domain = domain
     member __.Reason = reason
     member __.FreebaseMessage = message
