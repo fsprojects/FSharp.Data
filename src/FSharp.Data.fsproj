@@ -54,6 +54,7 @@
     <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
     <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
     <Compile Include="Runtime.fs" />
+    <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

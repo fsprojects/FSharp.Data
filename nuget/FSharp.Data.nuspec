@@ -1,16 +1,16 @@
-<?xml version="1.0"?>
-<package >
-  <metadata>
-    <id>FSharp.Data</id>
-    <version>1.0.14</version>
-    <authors>Tomas Petricek</authors>
-    <owners>Tomas Petricek</owners>
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>@project@</id>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
     <licenseUrl>http://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
     <projectUrl>http://tpetricek.github.com/FSharp.Data</projectUrl>
     <iconUrl>http://tpetricek.github.com/FSharp.Data/docs/content/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>Library of F# type providers and data access tools</summary>
-    <description>The F# Data library (FSharp.Data.dll) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing JSON files and for sending HTTP requests.</description>
+    <summary>@summary@</summary>
+    <description>@description@</description>
     <releaseNotes>Support for Portable Class Libraries and Silverlight. Added Freebase provider. Improvements to the CSV provider. Performance improvements when handling large files.</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>F# fsharp data type provider WorldBank Freebase CSV XML JSON</tags>

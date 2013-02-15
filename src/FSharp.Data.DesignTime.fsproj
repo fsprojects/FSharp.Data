@@ -74,6 +74,7 @@
     <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
     <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
     <Compile Include="Providers.fs" />
+    <Compile Include="AssemblyInfo.DesignTime.fs" />
     <None Include="Test.fsx" />
   </ItemGroup>
   <ItemGroup>
