@@ -51,6 +51,7 @@ type FreebaseDomainId =
     static member FromJson(fbr:JsonValue) = 
         { Id = fbr.GetStringValWithKey("/type/object/id")
           DomainName = fbr.GetStringValWithKey("/type/object/name")  }
+    override x.ToString() = x.DomainName
 
 type FreebaseProperty = 
     { Id:string
@@ -142,6 +143,7 @@ type FreebaseDomain =
           DomainName = fbr.GetStringValWithKey("/type/object/name") 
           NamespaceKinds = fbr.GetArrayValWithKey("/type/object/type") |> Array.map (fun j -> j.AsString())
           Hidden = fbr.GetStringValWithKey("/freebase/domain_profile/hidden") }
+    override x.ToString() = x.DomainName
 
 type FreebaseNamespaceKey = 
     { Value:string
@@ -149,6 +151,7 @@ type FreebaseNamespaceKey =
     static member FromJson(fbr:JsonValue) = 
         { Value = fbr.GetStringValWithKey("value") 
           Namespace = fbr.GetProperty("namespace") |> FreebaseDomain.FromJson }
+    override x.ToString() = x.Namespace.ToString()
 
 /// The element type returned by GetDomainStructure.
 type FreebaseDomainStructure = 
@@ -167,6 +170,7 @@ type FreebaseDomainCategory =
         { Id = fbr.GetStringValWithKey("/type/object/id") 
           Name = fbr.GetStringValWithKey("/type/object/name") 
           Domains = fbr.GetArrayValWithKey("/freebase/domain_category/domains") |> Array.map FreebaseDomainId.FromJson }
+    override x.ToString() = x.Name
 
 type DocumentationById = 
     { Id:string

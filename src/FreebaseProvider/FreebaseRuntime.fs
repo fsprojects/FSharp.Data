@@ -786,25 +786,39 @@ module internal QueryImplementation =
                 | _ ->
                     whenAllElseFails e }
 
+type IFreebaseDomain =
+    abstract Id : string
+    abstract GetObjectsOfTypeId : typeId:string -> IQueryable<IFreebaseObject>
+
 /// Represents the contents of a Freebase namespace
 type public FreebaseDomain internal (fbDataConn,domainId:string) =
-    member fs._Id = domainId
-    /// Get all the Freebase objects which have the given Freebase type id.
-    member public __._GetObjectsOfTypeId (typeId:string) : IQueryable<IFreebaseObject> =
-        QueryImplementation.FreebaseQueryable.Create (typeId, fbDataConn)
+    interface IFreebaseDomain with
+        member __.Id = domainId
+        /// Get all the Freebase objects which have the given Freebase type id.
+        member __.GetObjectsOfTypeId typeId =
+            QueryImplementation.FreebaseQueryable.Create (typeId, fbDataConn)
+
+type IFreebaseDomainCategory =
+    abstract Id : string
+    abstract GetDomainById : domainId:string -> FreebaseDomain
 
 /// Represents the contents of a Freebase namespace
 type public FreebaseDomainCategory internal (fbDataConn, domainCategoryId) =
-    /// Get all the Freebase objects which have the given Freebase type id.
-    /// Get the object which represents the Freebase domain with the given object id.
-    member public __._GetDomainById(domainId:string) : FreebaseDomain = FreebaseDomain(fbDataConn, domainId)
-    member fs._Id = domainCategoryId
+    interface IFreebaseDomainCategory with
+        /// Get all the Freebase objects which have the given Freebase type id.
+        /// Get the object which represents the Freebase domain with the given object id.
+        member __.GetDomainById domainId = FreebaseDomain(fbDataConn, domainId)
+        member __.Id = domainCategoryId
+
+type IFreebaseIndividuals =
+    abstract GetIndividualById : typeId:string * objId:string -> IFreebaseObject
 
 type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) = 
     /// Get all the Freebase objects which have the given type id and object id.
-    member public __._GetIndividualById (typeId:string,objId:string) : IFreebaseObject =
-        let objData = fbDataConn.GetInitialDataForKnownObject(typeId,objId)
-        FreebaseObject(fbDataConn,objData,typeId) :> IFreebaseObject
+    interface IFreebaseIndividuals with 
+        member __.GetIndividualById (typeId, objId) =
+            let objData = fbDataConn.GetInitialDataForKnownObject(typeId,objId)
+            FreebaseObject(fbDataConn,objData,typeId) :> _
 
     /// Get all the Freebase objects which have the given Freebase type id.
     static member public _GetIndividualsObject (collectionObj:obj) =
@@ -814,6 +828,9 @@ type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) =
 
 type FreebaseSendingRequestArgs(uri: System.Uri) = 
     member x.RequestUri = uri
+
+type IFreebaseDataContext =
+    abstract GetDomainCategoryById : domainCategoryId:string -> FreebaseDomainCategory
 
 /// Contains public entry points called by provided code.
 type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useUnits:bool, snapshotDate:string, useLocalCache: bool, allowQueryEvaluateOnClientSide: bool) = 
@@ -826,8 +843,8 @@ type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useU
     /// Create a data context
     static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
     /// Get the object which represents the Freebase domain with the given object id.
-    member public __._GetDomainCategoryById(domainCategoryId:string) : FreebaseDomainCategory = FreebaseDomainCategory(fbDataConn, domainCategoryId)
-    
+    interface IFreebaseDataContext with member __.GetDomainCategoryById(domainCategoryId) = FreebaseDomainCategory(fbDataConn, domainCategoryId)
+
 and FreebaseDataContextSettings internal (fbQueries,fbDataConn) = 
     let sendingRequest = fbQueries.SendingRequest  |> Event.map (fun uri -> FreebaseSendingRequestArgs(uri))
 
