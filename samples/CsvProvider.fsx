@@ -196,6 +196,13 @@ let airQualityUnit = AirQualityWithUnits.Load(airFile)
 for row in airQualityUnit.Data do
     printfn "Temp: %i Ozone: %f " row.Temp row.OzoneInLangleys
 
+type MKOnline = CsvProvider<"D:/Appdev/nti/Tests/Eon.Nti.Tests/ExampleData/MKOnline_WindProductionActuals", 
+                            Separator=";", 
+                            Culture="sv-SE", SkipRows = 7>
+
+let mkonline = MKOnline.Load("D:/Appdev/nti/Tests/Eon.Nti.Tests/ExampleData/MKOnline_WindProductionActuals")
+(mkonline.Data |> Seq.head).
+
 (**
 The above example also show the usage of the skip rows parameter. This parameter is intended to be used to skip legals, comments and other non-data related items
 that may appear at the top of csv files.

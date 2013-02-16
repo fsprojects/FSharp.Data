@@ -74,11 +74,13 @@ type CsvFile private (input:TextReader, headers:string, skipRow:int, sep:string)
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile input (sep.ToCharArray()) |> Seq.cache
-  let data = file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v))
+  let data = 
+    if String.IsNullOrEmpty(headers)
+    then file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v))
+    else file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v))
   let headers = 
     if String.IsNullOrEmpty(headers)
-    then 
-        file |> Seq.head
+    then file |> Seq.skip (skipRow - 1) |> Seq.head
     else
         use sr = new StringReader(headers)
         CsvReader.readLine [] [] (sep.ToCharArray()) sr |> List.rev |> Array.ofList

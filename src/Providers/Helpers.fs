@@ -115,7 +115,10 @@ module internal ProviderHelpers =
       fileName.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase)
     let resolvedFileOrUri = 
       if isWeb then fileName
-      else Path.Combine(cfg.ResolutionFolder, fileName)
+      else 
+            if Path.IsPathRooted(fileName)
+            then fileName
+            else Path.Combine(cfg.ResolutionFolder, fileName)
 
     // Open network stream or file stream
     if isWeb then
