@@ -20,68 +20,75 @@ open ProviderImplementation.StructureInference
 // --------------------------------------------------------------------------------------
 
 module CsvReader = 
+
+  let inline (|Char|) (n:int) = char n
+  let inline (|Separator|_|) sep (n:int) = if Array.exists ((=) (char n)) sep then Some() else None
+
+  /// Read quoted string value until the end (ends with end of stream or
+  /// the " character, which can be encoded using double ")
+  let rec readString chars (reader:TextReader) = 
+    match reader.Read() with
+    | -1 -> chars
+    | Char '"' when reader.Peek() = int '"' ->
+        reader.Read() |> ignore
+        readString ('"'::chars) reader
+    | Char '"' -> chars
+    | Char c -> readString (c::chars) reader
+  
+  /// Reads a line with data that are separated using specified Separators
+  /// and may be quoted. Ends with newline or end of input.
+  let rec readLine data chars sep (reader:TextReader) = 
+    match reader.Read() with
+    | -1 | Char '\r' | Char '\n' -> 
+        let item = new String(chars |> List.rev |> Array.ofList)
+        item::data
+    | Separator sep -> 
+        let item = new String(chars |> List.rev |> Array.ofList)
+        readLine (item::data) [] sep reader
+    | Char '"' ->
+        readLine data (readString chars reader) sep reader
+    | Char c ->
+        readLine data (c::chars) sep reader
+
+  /// Reads multiple lines from the input, skipping newline characters
+  let rec readLines sep (reader:TextReader) = seq {
+    match reader.Peek() with
+    | -1 -> ()
+    | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines sep reader
+    | _ -> 
+        yield readLine [] [] sep reader |> List.rev |> Array.ofList
+        yield! readLines sep reader }
+
   /// Lazily reads the specified CSV file using the specified separator
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
   let readCsvFile (reader:TextReader) sep =
-    let inline (|Char|) (n:int) = char n
-    let inline (|Separator|_|) (n:int) = if Array.exists ((=) (char n)) sep then Some() else None
-
-    /// Read quoted string value until the end (ends with end of stream or
-    /// the " character, which can be encoded using double ")
-    let rec readString chars = 
-      match reader.Read() with
-      | -1 -> chars
-      | Char '"' when reader.Peek() = int '"' ->
-          reader.Read() |> ignore
-          readString ('"'::chars)
-      | Char '"' -> chars
-      | Char c -> readString (c::chars)
-  
-    /// Reads a line with data that are separated using specified Separators
-    /// and may be quoted. Ends with newline or end of input.
-    let rec readLine data chars = 
-      match reader.Read() with
-      | -1 | Char '\r' | Char '\n' -> 
-          let item = new String(chars |> List.rev |> Array.ofList)
-          item::data
-      | Separator -> 
-          let item = new String(chars |> List.rev |> Array.ofList)
-          readLine (item::data) [] 
-      | Char '"' ->
-          readLine data (readString chars)
-      | Char c ->
-          readLine data (c::chars)
-
-    /// Reads multiple lines from the input, skipping newline characters
-    let rec readLines () = seq {
-      match reader.Peek() with
-      | -1 -> ()
-      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines()
-      | _ -> 
-          yield readLine [] [] |> List.rev |> Array.ofList
-          yield! readLines() }
-  
-    readLines() 
+    readLines sep reader
 
 /// Simple type that represents a single CSV row
 type CsvRow internal (data:string[]) =
   member x.Columns = data
 
 // Simple type wrapping CSV data
-type CsvFile private (input:TextReader, sep:string) =
+type CsvFile private (input:TextReader, headers:string, sep:string) =
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile input (sep.ToCharArray()) |> Seq.cache
   let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v))
-  let headers = file |> Seq.head
+  let headers = 
+    if String.IsNullOrEmpty(headers)
+    then 
+        file |> Seq.head
+    else
+        use sr = new StringReader(headers)
+        CsvReader.readLine [] [] (sep.ToCharArray()) sr |> List.rev |> Array.ofList
 
   member x.Data = data
   member x.Headers = headers
-  static member Parse(data, ?sep:string) = 
+  static member Parse(data, headers, ?sep:string) = 
     let sep = defaultArg sep ","
     let sep = if String.IsNullOrEmpty(sep) then "," else sep
-    new CsvFile(data, sep)
+    new CsvFile(data, headers, sep)
 
 // --------------------------------------------------------------------------------------
 // Inference
@@ -158,6 +165,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let separator = args.[1] :?> string
     let culture = args.[2] :?> string
     let inferRows = args.[3] :?> int
+    let headers = args.[4] :?> string
 
     // Infer the schema from a specified file or URI sample
     let sample = 
@@ -166,9 +174,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         let input = ProviderHelpers.readTextInProvider cfg fileName
         let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
         ProviderHelpers.watchForChanges this resolvedFileName
-        CsvFile.Parse(input, separator)
+        CsvFile.Parse(input, headers, separator)
       with _ ->
-        CsvFile.Parse(new StringReader(args.[0] :?> string))
+        CsvFile.Parse(new StringReader(args.[0] :?> string), headers, separator)
       
     let infered = CsvInference.inferType sample inferRows
 
@@ -203,7 +211,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     [ ProvidedStaticParameter("Sample", typeof<string>) 
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
       ProvidedStaticParameter("Culture", typeof<string>, "")
-      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)]
+      ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)
+      ProvidedStaticParameter("Headers", typeof<string>, parameterDefaultValue = "")
+    ]
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
