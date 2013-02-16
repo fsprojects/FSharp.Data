@@ -70,11 +70,11 @@ type CsvRow internal (data:string[]) =
   member x.Columns = data
 
 // Simple type wrapping CSV data
-type CsvFile private (input:TextReader, headers:string, sep:string) =
+type CsvFile private (input:TextReader, headers:string, skipRow:int, sep:string) =
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile input (sep.ToCharArray()) |> Seq.cache
-  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v))
+  let data = file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v))
   let headers = 
     if String.IsNullOrEmpty(headers)
     then 
@@ -85,10 +85,12 @@ type CsvFile private (input:TextReader, headers:string, sep:string) =
 
   member x.Data = data
   member x.Headers = headers
-  static member Parse(data, headers, ?sep:string) = 
+  static member Parse(data, ?skipRow:int, ?sep:string, ?headers:string) = 
     let sep = defaultArg sep ","
     let sep = if String.IsNullOrEmpty(sep) then "," else sep
-    new CsvFile(data, headers, sep)
+    let headers = defaultArg headers ""
+    let skipRow = defaultArg skipRow 1
+    new CsvFile(data, headers, skipRow, sep)
 
 // --------------------------------------------------------------------------------------
 // Inference
@@ -166,6 +168,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let culture = args.[2] :?> string
     let inferRows = args.[3] :?> int
     let headers = args.[4] :?> string
+    let skipRows = args.[5] :?> int
 
     // Infer the schema from a specified file or URI sample
     let sample = 
@@ -174,9 +177,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         let input = ProviderHelpers.readTextInProvider cfg fileName
         let resolvedFileName = ProviderHelpers.findConfigFile cfg.ResolutionFolder fileName
         ProviderHelpers.watchForChanges this resolvedFileName
-        CsvFile.Parse(input, headers, separator)
+        CsvFile.Parse(input, skipRows, separator, headers)
       with _ ->
-        CsvFile.Parse(new StringReader(args.[0] :?> string), headers, separator)
+        CsvFile.Parse(new StringReader(args.[0] :?> string), skipRows, separator, headers)
       
     let infered = CsvInference.inferType sample inferRows
 
@@ -193,14 +196,14 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("source", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StringReader(%%source:string), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StringReader(%%source:string), skipRows, separator) @@>
     resTy.AddMember(m)
 
     // Generate static Load method
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
     m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StreamReader(%%source:string), separator) @@>
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StreamReader(%%source:string), skipRows, separator) @@>
     resTy.AddMember(m)
 
     // Return the generated type
@@ -213,6 +216,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Culture", typeof<string>, "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = Int32.MaxValue)
       ProvidedStaticParameter("Headers", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 1)
     ]
 
   let helpText = 
@@ -220,7 +224,10 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Sample'>CSV sample file location</param>
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='Separator'>Column delimiter</param>                     
-       <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>"""
+       <param name='InferRows'>Number of rows to use for inference. If this is zero (the default), all rows are used.</param>
+       <param name='Headers'>The column headers to use if none are present in the file, or override the inferred headers</param>
+       <param name='SkipRows'>The number of rows to skip (default: 1 (header row)). This is often used in conjunction with Headers. When no headers are in the file then this should be set to 0 so all data is consumed</param>
+       """
 
   do csvProvTy.AddXmlDoc helpText
   do csvProvTy.DefineStaticParameters(parameters, buildTypes)
