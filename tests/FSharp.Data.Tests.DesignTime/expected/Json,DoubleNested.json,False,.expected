@@ -1,0 +1,19 @@
+class JsonProvider
+    new : () -> JsonProvider
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member GetSample: () -> JsonProvider+DomainTypes+Entity
+
+class JsonProvider+DomainTypes
+
+class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+    member Main: JsonProvider+DomainTypes+Entity1 with get
+
+class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
+    member Nested: JsonProvider+DomainTypes+Entity2 with get
+    member Title: string with get
+
+class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
+    member NestedTitle: string with get
+

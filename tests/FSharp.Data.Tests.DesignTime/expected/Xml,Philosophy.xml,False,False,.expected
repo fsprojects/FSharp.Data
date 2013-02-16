@@ -1,0 +1,25 @@
+class XmlProvider
+    new : () -> XmlProvider
+    static member Parse: text:string -> XmlProvider+DomainTypes+Authors
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Authors
+    static member Load: uri:string -> XmlProvider+DomainTypes+Authors
+    static member GetSample: () -> XmlProvider+DomainTypes+Authors
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+Authors : FDR.XmlElement
+    member GetAuthors: () -> XmlProvider+DomainTypes+Author[]
+
+class XmlProvider+DomainTypes+Author : FDR.XmlElement
+    member Name: string with get
+    member Surname: string with get
+    member Birth: int option with get
+    member GetBooks: () -> XmlProvider+DomainTypes+Book[]
+    member Manuscript: XmlProvider+DomainTypes+Manuscript option with get
+
+class XmlProvider+DomainTypes+Book : FDR.XmlElement
+    member Title: string with get
+
+class XmlProvider+DomainTypes+Manuscript : FDR.XmlElement
+    member Title: string with get
+

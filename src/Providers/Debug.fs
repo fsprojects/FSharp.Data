@@ -97,6 +97,7 @@ module Debug =
                             | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
                             | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
                             | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
+                            | t when t.Name = "FSharpAsync`1" -> "async", true
                             | t when ns.Contains t.Namespace -> t.Name, false
                             | t -> fullName t, false
                         let name = name.Split([| '`' |]).[0]

@@ -1,0 +1,15 @@
+class XmlProvider
+    new : () -> XmlProvider
+    static member Parse: text:string -> XmlProvider+DomainTypes+Div
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Div
+    static member Load: uri:string -> XmlProvider+DomainTypes+Div
+    static member GetSample: () -> XmlProvider+DomainTypes+Div
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+Div : FDR.XmlElement
+    member Id: string option with get
+    member Value: string option with get
+    member GetDivs: () -> XmlProvider+DomainTypes+Div[]
+    member GetSpans: () -> string[]
+

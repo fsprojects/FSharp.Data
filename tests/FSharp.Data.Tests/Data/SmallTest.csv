@@ -1,4 +1,4 @@
-﻿Distance (metre),Time (second)
-50,3.7
-100,5.2
-150,6.4
+﻿Name, Distance (metre),Time (second)
+First, 50.0,3.7
+Second, 100.0,5.2
+Third, 150.0,6.4

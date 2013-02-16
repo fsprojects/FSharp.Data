@@ -96,10 +96,12 @@ module Implementation =
                                 let id = ind?id.AsString()
                                 let name = (ind?name.AsString()).Trim([|'"'|]).Trim()
                                 let sourceName = ind?source?value.AsString()
-                                if sources |> List.exists (fun source -> String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then 
+                                if sources = [] || sources |> List.exists (fun source -> String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then 
                                     let topicIds = Seq.toList <| seq {
                                         for item in ind?topics do
-                                            yield item?id.AsString()
+                                            match item.TryGetProperty("id") with
+                                            | Some id -> yield id.AsString()
+                                            | None -> ()
                                     }
                                     let sourceNote = ind?sourceNote.AsString()
                                     yield { Id = id
