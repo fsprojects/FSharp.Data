@@ -201,6 +201,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse(new StringReader(%%source:string), skipRows, separator) @@>
     resTy.AddMember(m)
 
+    // Generate static overloaded Parse method to accept TextReader
+    let args = [ ProvidedParameter("source", typeof<TextReader>) ]
+    let m = ProvidedMethod("Parse", args, resTy)
+    m.IsStaticMethod <- true
+    m.InvokeCode <- fun (Singleton source) -> <@@ CsvFile.Parse((%%source:TextReader), skipRows, separator) @@>
+    resTy.AddMember(m)
+
     // Generate static Load method
     let args =  [ ProvidedParameter("path", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy)
