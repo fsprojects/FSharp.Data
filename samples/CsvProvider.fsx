@@ -184,6 +184,27 @@ let mean =
   |> Seq.average 
 
 (**
+##Overriding headers and number of rows extracted.
+Using the previous example we can override the headers specified in the document by providing a Headers parameter, which is seperated in the
+same way as the file. 
+
+*)
+
+type AirQualityWithUnits = CsvProvider<"docs/AirQuality.csv",";", Headers="OzoneInLangleys;Solar.R;Wind;Temp;Month;Day", SkipRows = 150>
+let airQualityUnit = AirQualityWithUnits.Load(airFile)
+
+for row in airQualityUnit.Data do
+    printfn "Temp: %i Ozone: %f " row.Temp row.OzoneInLangleys
+
+(**
+The above example also show the usage of the skip rows parameter. This parameter is intended to be used to skip legals, comments and other non-data related items
+that may appear at the top of csv files.
+
+**Caution** when using the SkipRows parameter and inferring headers, if you skip past the line in the file containing the headers you will not get any
+property names, just a vanilla CsvRow.
+*)
+
+(**
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains 
 rows separated by either semicolon or a colon. You can use:
