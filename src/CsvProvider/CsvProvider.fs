@@ -42,7 +42,7 @@ module CsvReader =
     | -1 | Char '\r' | Char '\n' -> 
         let item = new String(chars |> List.rev |> Array.ofList)
         item::data
-    | Separator sep -> 
+    | Separator sep  ->
         let item = new String(chars |> List.rev |> Array.ofList)
         readLine (item::data) [] sep reader
     | Char '"' ->
@@ -84,6 +84,7 @@ type CsvFile private (input:TextReader, headers:string, skipRow:int, sep:string)
     else
         use sr = new StringReader(headers)
         CsvReader.readLine [] [] (sep.ToCharArray()) sr |> List.rev |> Array.ofList
+    |> Seq.filter (fun h -> not <| String.IsNullOrEmpty(h) && not <| String.IsNullOrWhiteSpace(h))
 
   member x.Data = data
   member x.Headers = headers

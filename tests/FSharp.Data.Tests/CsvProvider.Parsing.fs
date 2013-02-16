@@ -58,4 +58,3 @@ module CsvParser =
     let actual = readCsvFile sr [| ',' |] |> Array.ofSeq
     let expected = [|[|"12"; "a\n\rb"|]; [|"123"; "\"hello\" world"|]|]
     Assert.AreEqual(expected, actual)
-
