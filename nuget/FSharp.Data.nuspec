@@ -11,9 +11,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>
-    <releaseNotes>Support for Portable Class Libraries and Silverlight. Added Freebase provider. Improvements to the CSV provider. Performance improvements when handling large files.</releaseNotes>
+    <releaseNotes>@releaseNotes@</releaseNotes>
     <copyright>Copyright 2013</copyright>
-    <tags>F# fsharp data type provider WorldBank Freebase CSV XML JSON</tags>
+    <tags>@tags@</tags>
     <dependencies />
   </metadata>
   <files>

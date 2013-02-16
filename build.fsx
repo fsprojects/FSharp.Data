@@ -79,8 +79,8 @@ Target "NuGet" (fun _ ->
             Summary = summary
             Description = description
             Version = version
-            //ReleaseNotes = releaseNotes
-            //Tags = tags
+            ReleaseNotes = releaseNotes
+            Tags = tags
             OutputPath = "bin"
             ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
