@@ -53,16 +53,13 @@ module DocumentationTests =
   // ------------------------------------------------------------------------------------
   // Core API documentation
 
+  let docFiles = 
+    Directory.EnumerateFiles sources 
+    |> Seq.map Path.GetFileName
+    |> Seq.filter (fun f -> Path.GetExtension f = ".fsx")
+  
   [<Test>]
-  [<TestCase "CsvProvider.fsx">]
-  [<TestCase "Freebase.fsx">]
-  [<TestCase "FSharpData.fsx">]
-  [<TestCase "Http.fsx">]
-  [<TestCase "JsonProvider.fsx">]
-  [<TestCase "JsonToXml.fsx">]
-  [<TestCase "JsonValue.fsx">]
-  [<TestCase "WorldBank.fsx">]
-  [<TestCase "XmlProvider.fsx">]
-  let ``Documentation generated correctly`` file = 
+  [<TestCaseSource "docFiles">]
+  let ``Documentation generated correctly `` file = 
     processFile file
     |> should equal 0

@@ -1,0 +1,368 @@
+class JsonProvider
+    new : () -> JsonProvider
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+
+class JsonProvider+DomainTypes
+
+class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+    member Contributors: FDR.JsonDocument option with get
+    member Coordinates: JsonProvider+DomainTypes+Entity1 option with get
+    member CreatedAt: string option with get
+    member Entities: JsonProvider+DomainTypes+Entity2 option with get
+    member Favorited: bool option with get
+    member Geo: JsonProvider+DomainTypes+Entity12 option with get
+    member Id: int64 option with get
+    member IdStr: int64 option with get
+    member InReplyToScreenName: string option with get
+    member InReplyToStatusId: JsonProvider+DomainTypes+Choice option with get
+    member InReplyToStatusIdStr: JsonProvider+DomainTypes+Choice1 option with get
+    member InReplyToUserId: JsonProvider+DomainTypes+Choice2 option with get
+    member InReplyToUserIdStr: JsonProvider+DomainTypes+Choice3 option with get
+    member Place: JsonProvider+DomainTypes+Entity13 option with get
+    member RetweetCount: int option with get
+    member Retweeted: bool option with get
+    member Source: string option with get
+    member Text: string option with get
+    member Truncated: bool option with get
+    member User: JsonProvider+DomainTypes+Entity16 option with get
+    member PossiblySensitive: bool option with get
+    member PossiblySensitiveEditable: bool option with get
+    member RetweetedStatus: JsonProvider+DomainTypes+Entity17 option with get
+    member Delete: JsonProvider+DomainTypes+Entity29 option with get
+
+class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
+    member Coordinates: decimal[] with get
+    member Type: string with get
+
+class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
+    member Hashtags: JsonProvider+DomainTypes+Entity3[] with get
+    member Urls: JsonProvider+DomainTypes+Entity4[] with get
+    member UserMentions: JsonProvider+DomainTypes+Entity5[] with get
+    member Media: JsonProvider+DomainTypes+Entity6[] option with get
+
+class JsonProvider+DomainTypes+Entity3 : FDR.JsonDocument
+    member Indices: int[] with get
+    member Text: string with get
+
+class JsonProvider+DomainTypes+Entity4 : FDR.JsonDocument
+    member DisplayUrl: string with get
+    member ExpandedUrl: string with get
+    member Indices: int[] with get
+    member Url: string with get
+
+class JsonProvider+DomainTypes+Entity5 : FDR.JsonDocument
+    member Id: int with get
+    member IdStr: int with get
+    member Indices: int[] with get
+    member Name: string with get
+    member ScreenName: string with get
+
+class JsonProvider+DomainTypes+Entity6 : FDR.JsonDocument
+    member DisplayUrl: string with get
+    member ExpandedUrl: string with get
+    member Id: int64 with get
+    member IdStr: int64 with get
+    member Indices: int[] with get
+    member MediaUrl: string with get
+    member MediaUrlHttps: string with get
+    member Sizes: JsonProvider+DomainTypes+Entity7 with get
+    member Type: string with get
+    member Url: string with get
+
+class JsonProvider+DomainTypes+Entity7 : FDR.JsonDocument
+    member Large: JsonProvider+DomainTypes+Entity8 with get
+    member Medium: JsonProvider+DomainTypes+Entity9 with get
+    member Small: JsonProvider+DomainTypes+Entity10 with get
+    member Thumb: JsonProvider+DomainTypes+Entity11 with get
+
+class JsonProvider+DomainTypes+Entity8 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity9 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity10 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity11 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity12 : FDR.JsonDocument
+    member Coordinates: decimal[] with get
+    member Type: string with get
+
+class JsonProvider+DomainTypes+Choice : FDR.JsonDocument
+    member Number: int64 option with get
+
+class JsonProvider+DomainTypes+Choice1 : FDR.JsonDocument
+    member Number: int64 option with get
+
+class JsonProvider+DomainTypes+Choice2 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Choice3 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Entity13 : FDR.JsonDocument
+    member Attributes: JsonProvider+DomainTypes+Entity14 with get
+    member BoundingBox: JsonProvider+DomainTypes+Entity15 with get
+    member Country: string with get
+    member CountryCode: string with get
+    member FullName: string with get
+    member Id: string with get
+    member Name: string with get
+    member PlaceType: string with get
+    member Url: string with get
+
+class JsonProvider+DomainTypes+Entity14 : FDR.JsonDocument
+
+class JsonProvider+DomainTypes+Entity15 : FDR.JsonDocument
+    member Coordinates: decimal[][][] with get
+    member Type: string with get
+
+class JsonProvider+DomainTypes+Entity16 : FDR.JsonDocument
+    member ContributorsEnabled: bool with get
+    member CreatedAt: string with get
+    member DefaultProfile: bool with get
+    member DefaultProfileImage: bool with get
+    member Description: string with get
+    member FavouritesCount: int with get
+    member FollowRequestSent: FDR.JsonDocument with get
+    member FollowersCount: int with get
+    member Following: FDR.JsonDocument with get
+    member FriendsCount: int with get
+    member GeoEnabled: bool with get
+    member Id: int with get
+    member IdStr: int with get
+    member IsTranslator: bool with get
+    member Lang: string with get
+    member ListedCount: int with get
+    member Location: JsonProvider+DomainTypes+Choice4 with get
+    member Name: string with get
+    member Notifications: FDR.JsonDocument with get
+    member ProfileBackgroundColor: JsonProvider+DomainTypes+Choice5 with get
+    member ProfileBackgroundImageUrl: string with get
+    member ProfileBackgroundImageUrlHttps: string with get
+    member ProfileBackgroundTile: bool with get
+    member ProfileBannerUrl: string option with get
+    member ProfileImageUrl: string with get
+    member ProfileImageUrlHttps: string with get
+    member ProfileLinkColor: JsonProvider+DomainTypes+Choice6 with get
+    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+Choice7 with get
+    member ProfileSidebarFillColor: JsonProvider+DomainTypes+Choice8 with get
+    member ProfileTextColor: JsonProvider+DomainTypes+Choice9 with get
+    member ProfileUseBackgroundImage: bool with get
+    member Protected: bool with get
+    member ScreenName: string with get
+    member StatusesCount: int with get
+    member TimeZone: string with get
+    member Url: string with get
+    member UtcOffset: JsonProvider+DomainTypes+Choice10 with get
+    member Verified: bool with get
+
+class JsonProvider+DomainTypes+Choice4 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice5 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice6 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice7 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice8 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice9 : FDR.JsonDocument
+    member Number: float option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice10 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Entity17 : FDR.JsonDocument
+    member Contributors: FDR.JsonDocument with get
+    member Coordinates: FDR.JsonDocument with get
+    member CreatedAt: string with get
+    member Entities: JsonProvider+DomainTypes+Entity18 with get
+    member Favorited: bool with get
+    member Geo: FDR.JsonDocument with get
+    member Id: int64 with get
+    member IdStr: int64 with get
+    member InReplyToScreenName: string with get
+    member InReplyToStatusId: JsonProvider+DomainTypes+Choice11 with get
+    member InReplyToStatusIdStr: JsonProvider+DomainTypes+Choice12 with get
+    member InReplyToUserId: JsonProvider+DomainTypes+Choice13 with get
+    member InReplyToUserIdStr: JsonProvider+DomainTypes+Choice14 with get
+    member Place: FDR.JsonDocument with get
+    member RetweetCount: int with get
+    member Retweeted: bool with get
+    member Source: string with get
+    member Text: string with get
+    member Truncated: bool with get
+    member User: JsonProvider+DomainTypes+Entity28 with get
+    member PossiblySensitive: bool option with get
+    member PossiblySensitiveEditable: bool option with get
+
+class JsonProvider+DomainTypes+Entity18 : FDR.JsonDocument
+    member Hashtags: JsonProvider+DomainTypes+Entity19[] with get
+    member Urls: JsonProvider+DomainTypes+Entity20[] with get
+    member UserMentions: JsonProvider+DomainTypes+Entity21[] with get
+    member Media: JsonProvider+DomainTypes+Entity22[] option with get
+
+class JsonProvider+DomainTypes+Entity19 : FDR.JsonDocument
+    member Indices: int[] with get
+    member Text: string with get
+
+class JsonProvider+DomainTypes+Entity20 : FDR.JsonDocument
+    member DisplayUrl: string with get
+    member ExpandedUrl: string with get
+    member Indices: int[] with get
+    member Url: string with get
+
+class JsonProvider+DomainTypes+Entity21 : FDR.JsonDocument
+    member Id: int with get
+    member IdStr: int with get
+    member Indices: int[] with get
+    member Name: string with get
+    member ScreenName: string with get
+
+class JsonProvider+DomainTypes+Entity22 : FDR.JsonDocument
+    member DisplayUrl: string with get
+    member ExpandedUrl: string with get
+    member Id: int64 with get
+    member IdStr: int64 with get
+    member Indices: int[] with get
+    member MediaUrl: string with get
+    member MediaUrlHttps: string with get
+    member Sizes: JsonProvider+DomainTypes+Entity23 with get
+    member Type: string with get
+    member Url: string with get
+
+class JsonProvider+DomainTypes+Entity23 : FDR.JsonDocument
+    member Large: JsonProvider+DomainTypes+Entity24 with get
+    member Medium: JsonProvider+DomainTypes+Entity25 with get
+    member Small: JsonProvider+DomainTypes+Entity26 with get
+    member Thumb: JsonProvider+DomainTypes+Entity27 with get
+
+class JsonProvider+DomainTypes+Entity24 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity25 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity26 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Entity27 : FDR.JsonDocument
+    member H: int with get
+    member Resize: string with get
+    member W: int with get
+
+class JsonProvider+DomainTypes+Choice11 : FDR.JsonDocument
+    member Number: int64 option with get
+
+class JsonProvider+DomainTypes+Choice12 : FDR.JsonDocument
+    member Number: int64 option with get
+
+class JsonProvider+DomainTypes+Choice13 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Choice14 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Entity28 : FDR.JsonDocument
+    member ContributorsEnabled: bool with get
+    member CreatedAt: string with get
+    member DefaultProfile: bool with get
+    member DefaultProfileImage: bool with get
+    member Description: string with get
+    member FavouritesCount: int with get
+    member FollowRequestSent: FDR.JsonDocument with get
+    member FollowersCount: int with get
+    member Following: FDR.JsonDocument with get
+    member FriendsCount: int with get
+    member GeoEnabled: bool with get
+    member Id: int with get
+    member IdStr: int with get
+    member IsTranslator: bool with get
+    member Lang: string with get
+    member ListedCount: int with get
+    member Location: string with get
+    member Name: string with get
+    member Notifications: FDR.JsonDocument with get
+    member ProfileBackgroundColor: JsonProvider+DomainTypes+Choice15 with get
+    member ProfileBackgroundImageUrl: string with get
+    member ProfileBackgroundImageUrlHttps: string with get
+    member ProfileBackgroundTile: bool with get
+    member ProfileImageUrl: string with get
+    member ProfileImageUrlHttps: string with get
+    member ProfileLinkColor: JsonProvider+DomainTypes+Choice16 with get
+    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+Choice17 with get
+    member ProfileSidebarFillColor: JsonProvider+DomainTypes+Choice18 with get
+    member ProfileTextColor: JsonProvider+DomainTypes+Choice19 with get
+    member ProfileUseBackgroundImage: bool with get
+    member Protected: bool with get
+    member ScreenName: string with get
+    member StatusesCount: int with get
+    member TimeZone: string with get
+    member Url: string with get
+    member UtcOffset: JsonProvider+DomainTypes+Choice20 with get
+    member Verified: bool with get
+    member ProfileBannerUrl: string option with get
+
+class JsonProvider+DomainTypes+Choice15 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice16 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice17 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice18 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice19 : FDR.JsonDocument
+    member Number: int option with get
+    member String: string option with get
+
+class JsonProvider+DomainTypes+Choice20 : FDR.JsonDocument
+    member Number: int option with get
+
+class JsonProvider+DomainTypes+Entity29 : FDR.JsonDocument
+    member Status: JsonProvider+DomainTypes+Entity30 with get
+
+class JsonProvider+DomainTypes+Entity30 : FDR.JsonDocument
+    member Id: int64 with get
+    member IdStr: int64 with get
+    member UserId: int with get
+    member UserIdStr: int with get
+

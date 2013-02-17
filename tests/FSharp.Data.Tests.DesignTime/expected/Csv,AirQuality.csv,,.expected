@@ -1,0 +1,10 @@
+class CsvProvider : FDR.CsvFile
+    member Data: CsvProvider+Row seq with get
+    new : () -> CsvProvider
+    static member Parse: text:string -> CsvProvider
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    static member Load: uri:string -> CsvProvider
+
+class CsvProvider+Row : FDR.CsvRow
+    member OzoneSolarWindTempMonthDay: string with get
+

@@ -411,21 +411,21 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     let freebaseType = createTypes(defaultApiKey, defaultServiceUrl, "FreebaseData", defaultNumIndividuals, defaultUseUnits,defaultPluralize, defaultSnapshotDate, defaultLocalSchemaCache, defaultAllowQueryEvaluateOnClientSide)
     let paramFreebaseType   = ProvidedTypeDefinition(fbRuntimeInfo.RuntimeAssembly, rootNamespace, "FreebaseDataProvider", Some(typeof<obj>), HideObjectMethods = true)
     let apiKeyParam = ProvidedStaticParameter("Key",    typeof<string>, defaultApiKey)
+    let serviceUrlParam   = ProvidedStaticParameter("ServiceUrl",      typeof<string>, defaultServiceUrl)
     let numIndividualsParam = ProvidedStaticParameter("NumIndividuals",    typeof<int>, defaultNumIndividuals)
     let useUnitsParam       = ProvidedStaticParameter("UseUnitsOfMeasure", typeof<bool>,defaultUseUnits)
-    let pluralizeParam      = ProvidedStaticParameter("Pluralize",         typeof<int>,defaultPluralize)
+    let pluralizeParam      = ProvidedStaticParameter("Pluralize",         typeof<bool>,defaultPluralize)
     let snapshotDateParam   = ProvidedStaticParameter("SnapshotDate",      typeof<string>, defaultSnapshotDate)
-    let serviceUrlParam   = ProvidedStaticParameter("ServiceUrl",      typeof<string>, defaultServiceUrl)
     let localCacheParam   = ProvidedStaticParameter("LocalCache",      typeof<bool>, defaultLocalSchemaCache)
     let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowLocalQueryEvaluation",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
 
     let helpText = "<summary>Typed representation of Freebase data with additional configuration parameters</summary>
                     <param name='Key'>The API key for the MQL metadata service (default: " + defaultApiKey + ")</param>
+                    <param name='ServiceUrl'>The service URL for the MQL metadata service (default: " + defaultServiceUrl + ")</param>
                     <param name='NumIndividuals'>The maximum number of sample individuals for each Freebase type (default: " + string defaultNumIndividuals + ")</param>
                     <param name='UseUnitsOfMeasure'>Use the unit-of-measure annotations from the data source metadata (default: " + sprintf "%b" defaultUseUnits + ")</param>
                     <param name='Pluralize'>Use adhoc rules to pluralize the names of types when forming names of collections (default: " + sprintf "%b" defaultPluralize + ")</param>
                     <param name='SnapshotDate'>Use a snapshot of the web data store at the given date and/or time in ISO8601 format, e.g., 2012-01-18, 2012-09-15T21:11:32. A value of 'now' indicates the compile time of the code. (default: no snapshot)</param>
-                    <param name='ServiceUrl'>The service URL for the MQL metadata service (default: " + defaultServiceUrl + ")</param>
                     <param name='LocalCache'>Use a persistent local cache for schema requests. Also provides the default for whether a persistent local cache is used at runtime. A per-session cache is always used for schema data but it will not persist if this is set to 'false'. (default: true)</param>
                     <param name='AllowLocalQueryEvaluation'>Allow local evalution of some parts of a query. If false, then an exception will be raised if a query can't be evaluated fully on the server. If true, data sets may be implicitly brought to the client for processing. (default: " + (sprintf "%b" defaultAllowQueryEvaluateOnClientSide) + ")</param>"
     do paramFreebaseType.AddXmlDoc(helpText)
