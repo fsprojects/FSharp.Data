@@ -90,7 +90,7 @@ type CsvFile (reader:TextReader, ?headers:string, ?skipRow:int, ?sep:string) =
   let sep = defaultArg sep ""
   let sep = if String.IsNullOrEmpty(sep) then "," else sep
   let headerDefns = defaultArg headers ""
-  let skipRow = defaultArg skipRow 1
+  let skipRow = defaultArg skipRow 0
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile reader (sep.ToCharArray()) |> Seq.cache
@@ -99,18 +99,22 @@ type CsvFile (reader:TextReader, ?headers:string, ?skipRow:int, ?sep:string) =
     if Seq.isEmpty file then
       failwithf "Invalid CSV file: header row not found" 
 
-  let headers = 
+  let headers =
      if String.IsNullOrEmpty(headerDefns)
-     then file |> Seq.skip (skipRow - 1) |> Seq.head
+     then file |> Seq.skip skipRow |> Seq.head
      else
          use sr = new StringReader(headerDefns)
          CsvReader.readLine [] [] (sep.ToCharArray()) sr |> List.rev |> Array.ofList
-     |> Seq.filter (fun h -> not <| String.IsNullOrEmpty(h) && not <| String.IsNullOrWhiteSpace(h))
+     |> Seq.mapi (fun i h -> 
+                    if not <| String.IsNullOrEmpty(h) && not <| String.IsNullOrWhiteSpace(h)
+                    then h
+                    else sprintf "Unknown%d" i
+                 )
      |> Seq.toArray
 
   let data = 
     if String.IsNullOrEmpty(headerDefns)
-    then file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v, headers))
+    then file |> Seq.skip (skipRow + 1) |> Seq.map (fun v -> CsvRow(v, headers))
     else file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v, headers))
 
  

@@ -194,8 +194,9 @@ for row in airQualitySkipped.Data do
 The above example also show the usage of the skip rows parameter. This parameter is intended to be used to skip legals, comments and other non-data related items
 that may appear at the top of csv files.
 
-**Caution** when using the SkipRows parameter and inferring headers, if you skip past the line in the file containing the headers you will not get any
-property names, just a vanilla CsvRow.
+**Caution** when using the SkipLines parameter and inferring headers, if you skip past the line in the file containing the headers you will not get any
+property names, just a vanilla CsvRow. Also when both headers and skipLines parameters are specified you will need to include the header row in the SkipLines, other wise it will 
+infer the types to be the types of the header row. 
 *)
 
 (**

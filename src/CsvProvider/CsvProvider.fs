@@ -114,7 +114,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("Headers", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("SkipLines", typeof<int>, parameterDefaultValue = 1)]
+      ProvidedStaticParameter("SkipLines", typeof<int>, parameterDefaultValue = 0)]
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
@@ -124,7 +124,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
        <param name='Headers'>The column headers to use if none are present in the file, or override the inferred headers</param>
-       <param name='SkipLines'>The number of lines to skip (default: 1 -> header). This is often used in conjunction with Headers. When no headers are in the file then this should be set to 0 so all data is consumed</param>"""
+       <param name='SkipLines'>The number of lines to skip (default: 0). This is often used in conjunction with Headers. When no headers are in the file then this should be set to 0 so all data is consumed</param>"""
 
   do csvProvTy.AddXmlDoc helpText
   do csvProvTy.DefineStaticParameters(parameters, buildTypes)
