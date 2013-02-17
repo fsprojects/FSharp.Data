@@ -19,41 +19,6 @@ open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
 open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests
 
-/// Extension members for operations permitted in queries of the Freebase service
-[<AutoOpen>]
-module public FreebaseOperators = 
-    open System
-
-    type System.String with 
-        /// A Freebase query operation that represents a perl-style match of a string, e.g. "book club", "book*", "*book", "*book*", "^book", "book$", "* book *", "book-club", "book\-club". See http://www.freebase.com/docs/mql/ch03.html#directives.
-        [<CompiledName("ApproximatelyMatches")>]
-        member s.ApproximatelyMatches(_pat:string) : bool = failwith "'ApproximatelyMatches' may only be used in a query executed on the Freebase server."
-
-        /// A Freebase query operation that represents approximately matching one of the given strings. See http://www.freebase.com/docs/mql/ch03.html#directives.
-        [<CompiledName("ApproximatelyOneOf")>]
-        member s.ApproximatelyOneOf([<ParamArray>] args:string[]) : bool = 
-            if args.Length = 0 then false
-            else failwith "'ApproximatelyOneOf' may only be used in a query executed on the server. It must be given at least one value."
-
-    type System.Linq.IQueryable<'T> with 
-       /// A Freebase query operation returning an approximate count of the items satisfying a query.
-       [<CompiledName("ApproximateCount")>]
-       member s.ApproximateCount() : int = 
-           // Uses the standard LINQ technique to fold the operator into the query
-           let m = match <@ Unchecked.defaultof<System.Linq.IQueryable<'T>>.ApproximateCount() @> with Quotations.Patterns.Call(None, mb, _) -> mb | _ -> failwith "unexpected"
-           let expr = System.Linq.Expressions.Expression.Call(null,m,[| s.Expression |])
-           s.Provider.Execute<int32>(expr)
-
-       /// Synonym for LINQ's Count
-       // Included so you don't have to open System.LINQ to use the queries
-       [<CompiledName("Count")>]
-       member s.Count() : int =  System.Linq.Queryable.Count(s)
-
-       /// Synonym for LINQ's Where
-       // Included so you don't have to open System.LINQ to use the queries
-       [<CompiledName("Where")>]
-       member s.Where(p:System.Linq.Expressions.Expression<System.Func<_,_>>) =  System.Linq.Queryable.Where(s,p)
-
 /// Represents data for a single object
 type internal FreebasePropertyBag(dict : IDictionary<string,JsonValue>) =
         
@@ -821,25 +786,39 @@ module internal QueryImplementation =
                 | _ ->
                     whenAllElseFails e }
 
+type IFreebaseDomain =
+    abstract Id : string
+    abstract GetObjectsOfTypeId : typeId:string -> IQueryable<IFreebaseObject>
+
 /// Represents the contents of a Freebase namespace
 type public FreebaseDomain internal (fbDataConn,domainId:string) =
-    member fs._Id = domainId
-    /// Get all the Freebase objects which have the given Freebase type id.
-    member public __._GetObjectsOfTypeId (typeId:string) : IQueryable<IFreebaseObject> =
-        QueryImplementation.FreebaseQueryable.Create (typeId, fbDataConn)
+    interface IFreebaseDomain with
+        member __.Id = domainId
+        /// Get all the Freebase objects which have the given Freebase type id.
+        member __.GetObjectsOfTypeId typeId =
+            QueryImplementation.FreebaseQueryable.Create (typeId, fbDataConn)
+
+type IFreebaseDomainCategory =
+    abstract Id : string
+    abstract GetDomainById : domainId:string -> FreebaseDomain
 
 /// Represents the contents of a Freebase namespace
 type public FreebaseDomainCategory internal (fbDataConn, domainCategoryId) =
-    /// Get all the Freebase objects which have the given Freebase type id.
-    /// Get the object which represents the Freebase domain with the given object id.
-    member public __._GetDomainById(domainId:string) : FreebaseDomain = FreebaseDomain(fbDataConn, domainId)
-    member fs._Id = domainCategoryId
+    interface IFreebaseDomainCategory with
+        /// Get all the Freebase objects which have the given Freebase type id.
+        /// Get the object which represents the Freebase domain with the given object id.
+        member __.GetDomainById domainId = FreebaseDomain(fbDataConn, domainId)
+        member __.Id = domainCategoryId
+
+type IFreebaseIndividuals =
+    abstract GetIndividualById : typeId:string * objId:string -> IFreebaseObject
 
 type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) = 
     /// Get all the Freebase objects which have the given type id and object id.
-    member public __._GetIndividualById (typeId:string,objId:string) : IFreebaseObject =
-        let objData = fbDataConn.GetInitialDataForKnownObject(typeId,objId)
-        FreebaseObject(fbDataConn,objData,typeId) :> IFreebaseObject
+    interface IFreebaseIndividuals with 
+        member __.GetIndividualById (typeId, objId) =
+            let objData = fbDataConn.GetInitialDataForKnownObject(typeId,objId)
+            FreebaseObject(fbDataConn,objData,typeId) :> _
 
     /// Get all the Freebase objects which have the given Freebase type id.
     static member public _GetIndividualsObject (collectionObj:obj) =
@@ -850,19 +829,22 @@ type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) =
 type FreebaseSendingRequestArgs(uri: System.Uri) = 
     member x.RequestUri = uri
 
+type IFreebaseDataContext =
+    abstract GetDomainCategoryById : domainCategoryId:string -> FreebaseDomainCategory
+
 /// Contains public entry points called by provided code.
-type public FreebaseDataContext internal (apiKey:string, proxyPrefix:string,serviceUrl:string, useUnits:bool, snapshotDate:string, useLocalCache: bool, allowQueryEvaluateOnClientSide: bool) = 
+type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useUnits:bool, snapshotDate:string, useLocalCache: bool, allowQueryEvaluateOnClientSide: bool) = 
     let localCacheName = "FreebaseRuntime"
-    let fbQueries = new FreebaseQueries(apiKey, proxyPrefix,serviceUrl, localCacheName, snapshotDate, useLocalCache)
+    let fbQueries = new FreebaseQueries(apiKey, serviceUrl, localCacheName, snapshotDate, useLocalCache)
     let fbSchema = new FreebaseSchemaConnection(fbQueries)
     let fbDataConn = new FreebaseDataConnection(fbQueries, fbSchema, useUnits, allowQueryEvaluateOnClientSide)
     let settings = FreebaseDataContextSettings (fbQueries,fbDataConn)
     member __.DataContext = settings
     /// Create a data context
-    static member _Create(apiKey,proxyPrefix,serviceUrl, useUnits,snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey,proxyPrefix,serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
+    static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
     /// Get the object which represents the Freebase domain with the given object id.
-    member public __._GetDomainCategoryById(domainCategoryId:string) : FreebaseDomainCategory = FreebaseDomainCategory(fbDataConn, domainCategoryId)
-    
+    interface IFreebaseDataContext with member __.GetDomainCategoryById(domainCategoryId) = FreebaseDomainCategory(fbDataConn, domainCategoryId)
+
 and FreebaseDataContextSettings internal (fbQueries,fbDataConn) = 
     let sendingRequest = fbQueries.SendingRequest  |> Event.map (fun uri -> FreebaseSendingRequestArgs(uri))
 

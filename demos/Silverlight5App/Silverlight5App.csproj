@@ -67,7 +67,14 @@
       <HintPath>$(TargetFrameworkDirectory)System.Core.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="System.Windows.Controls, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Windows.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq, Version=5.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Xml.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
@@ -93,9 +100,9 @@
     <None Include="Properties\AppManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PortableLibrary\PortableLibrary.fsproj">
-      <Project>{16a25dcf-99b5-4b95-b4ac-a32ade9c62a7}</Project>
-      <Name>PortableLibrary</Name>
+    <ProjectReference Include="..\Silverlight5Library\Silverlight5Library.fsproj">
+      <Project>{617faff4-e691-4d49-9b9b-6943967160fc}</Project>
+      <Name>Silverlight5Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

@@ -18,11 +18,13 @@ For more information see:
  * [F# Data: CSV Type Provider](CsvProvider.html) - discusses the `CsvProvider<..>` type
 
 In addition, the library also implements a type provider for accessing data from 
-[the WorldBank](http://data.worldbank.org/). The type provider generates types that
-provide easy access to regions, countries and indicators in the data set.
+[the WorldBank](http://data.worldbank.org/) and [Freebase graph database](http://www.freebase.com/).
 
- * [F# Data: WorldBank Provider](WorldBank.html) - discusses the `WorldBank` type 
-   and the `WorldBankProvider<..>` type
+ * [F# Data: WorldBank Provider](WorldBank.html) - discusses the `WorldBankData` type 
+   and the `WorldBankDataProvider<..>` type
+
+ * [F# Data: Freebase Provider](Freebase.html) - discusses the `FreebaseData` type 
+   and the `FreebaseDataProvider<..>` type
 
 ## Data access tools
  
@@ -43,7 +45,7 @@ and other data sources. It does not aim to be a comprehensive collection of F# t
 providers (which can be used for numerous other purposes). Moreover, this library 
 (currently) does not provide API for _creating_ documents.
 
-If you're interested in other F# type prviders or if you need to mutate or create 
+If you're interested in other F# type providers or if you need to mutate or create 
 XML and JSON documents, then the [FSharpx library](https://github.com/fsharp/fsharpx/) 
 might be of interest. 
 *)

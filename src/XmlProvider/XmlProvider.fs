@@ -16,7 +16,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.XmlProvider'
-  let asm, isPortable, replacer = AssemblyResolver.init cfg
+  let asm, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", Some(typeof<obj>))
 

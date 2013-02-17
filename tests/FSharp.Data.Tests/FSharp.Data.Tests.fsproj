@@ -37,6 +37,12 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <ItemGroup>
+    <Content Include="Data/AirQuality.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data/MSFT.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/SmallTest.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -44,6 +50,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/file with spaces.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data/HtmlBody.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data/Writers.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/projects.xml">
@@ -79,6 +91,12 @@
     <Content Include="Data/Dates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/WorldBank.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data/TwitterStream.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
@@ -99,9 +117,7 @@
     <Compile Include="JsonProvider.DocumentOverride.Tests.fs" />
     <Compile Include="JsonProvider.ProjectFile.Tests.fs" />
     <Compile Include="JsonProvider.Dates.Tests.fs" />
-    <Compile Include="FreebaseProvider.FifaTests.fs" />
-    <Compile Include="FreebaseProvider.ChemistryTests.fs" />
-    <Compile Include="FreebaseProvider.BiologyTests.fs" />
+    <Compile Include="FreebaseProvider.Tests.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>

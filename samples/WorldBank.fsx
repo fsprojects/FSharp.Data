@@ -60,7 +60,7 @@ value as a Y value.
 
 If you need to download large amount of data or if you need to run the operation without
 blockin the caller, then you probably want to use F# asynchronous workflows to perform
-the operation. The F# Data Library also provides `WorldBankProvider` type which takes
+the operation. The F# Data Library also provides the `WorldBankDataProvider` type which takes
 a number of static parameters. If the `Asynchronous` parameter is set to `true` then the
 type provider generates all operations as asynchronous:
 *)
@@ -116,7 +116,7 @@ and then creates a single composed chart using `Chart.Combine`.
 
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives mroe information about other
+ * [F# Data: Type Providers](FSharpData.html) - gives more information about other
    type providers in the `FSharp.Data` package.
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) - The Data Science
    tutorial on Try F# uses the WorldBank type provider in numerous examples.

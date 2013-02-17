@@ -22,7 +22,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, isPortable, replacer = AssemblyResolver.init cfg
+  let asm, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some(typeof<obj>))
 

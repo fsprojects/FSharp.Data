@@ -257,14 +257,15 @@ namespace WindowsStoreApp.Data
         public SampleDataSource()
         {
             int i = 0;
-            foreach (var item in PortableLibrary.getData(forSilverlight: false))
+            PortableLibrary.populateDataAsync(item =>
             {
                 var group = new SampleDataGroup(i++.ToString(), item.Title, item.SubTitle, null, item.Description);
-                foreach (var subItem in item.SubItems) {
+                foreach (var subItem in item.SubItems)
+                {
                     group.Items.Add(new SampleDataItem(i++.ToString(), subItem.Title, subItem.SubTitle, null, subItem.Description, subItem.Content, group));
                 }
                 AllGroups.Add(group);
-            }
+            });
         }
 
         //public SampleDataSource()

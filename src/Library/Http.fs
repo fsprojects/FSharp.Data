@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
@@ -58,6 +58,7 @@ type Http private() =
 
   /// Download an HTTP web resource from the specified URL asynchronously
   static member AsyncRequest(url:string) = async {
+    // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
     let req = WebRequest.Create(enableUriSlashes(Uri(url)))
     let! resp = req.AsyncGetResponse() 
     use stream = resp.GetResponseStream()
@@ -80,7 +81,8 @@ type Http private() =
       [ for (k, v) in query -> k + "=" + v ]
       |> String.concat "&"
     let url = if query = "" then url else url + "?" + query
-    let req = HttpWebRequest.Create(enableUriSlashes(Uri url)) 
+    // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
+    let req = WebRequest.Create(enableUriSlashes(Uri url)) 
     let req = req :?> HttpWebRequest
     req.Method <- meth
     
@@ -103,7 +105,7 @@ type Http private() =
         // Set default content type if it is not specified by the user
         let hasContentType = 
           headers |> Seq.exists (fun (header, _) -> 
-            String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) <> 0)
+            String.Compare(header, "content-type", StringComparison.OrdinalIgnoreCase) = 0)
         if not hasContentType then
           req.ContentType <- "application/x-www-form-urlencoded"
 

@@ -22,10 +22,6 @@ open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.Caching
 open FSharp.Net
 
-#if BROWSER
-open System.Windows.Browser // HttpUtility
-#endif
-
 [<AutoOpen>]
 module Utilities = 
 
@@ -59,9 +55,23 @@ type FreebaseResult<'TResult> =
           Result = f fbr?result
           Message = fbr.GetOptionalStringValWithKey "message" }
 
+type FreebaseWebException(e:WebException, domain, reason, message, extendedHelp) = 
+    inherit WebException(
+        (if String.IsNullOrEmpty extendedHelp then
+             sprintf "%s (Domain='%s' Reason='%s')" message domain reason
+         else
+             sprintf "%s (Domain='%s' Reason='%s' ExtendedHelp='%s')" message domain reason extendedHelp),
+        e, 
+        e.Status, 
+        e.Response)
+    member __.Domain = domain
+    member __.Reason = reason
+    member __.FreebaseMessage = message
+    member __.ExtendedHelp = extendedHelp
+
 let isStringNone s = String.IsNullOrEmpty s || s = "none"        
 
-type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
+type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
     let snapshotDate = if isStringNone snapshotDate then None else Some snapshotDate
     let sendingRequest = Event<Uri>()
     let localCache, localCacheLocation = createInternetFileCache localCacheName 
@@ -106,24 +116,41 @@ type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCache
             match snapshotDate with 
             | None -> url
             | Some d -> url + "&as_of_time=" + d
-#if BROWSER
-        let url = if isStringNone proxy then url else proxy + HttpUtility.UrlEncode url
-#endif
         match getCache().TryRetrieve url with
         | Some resultText -> resultText
         | None ->
-          let resultText = 
+          let getResultText() = 
             if url.Length > 1500 && url.Contains "?"  then 
                 let idx = url.IndexOf '?'
                 let content = url.[idx + 1 .. ] 
                 let shortUrl = url.[0.. idx - 1]
                 //printfn "post, shortUrl = '%s'" shortUrl
                 //printfn "post, content = '%s'" content
-                Http.Request(shortUrl, meth = "POST", body = content)
+                Http.Request(shortUrl, meth = "POST", headers = [ "X-HTTP-Method-Override", "GET" ], body = content)
             else
                 Http.Request(url)
-          getCache().Set(url,resultText)
-          resultText
+          try
+            let resultText = getResultText()
+            getCache().Set(url, resultText)
+            resultText
+          with 
+            | :? WebException as exn -> 
+                if exn.Response = null then reraise()
+                let freebaseExn =
+                    try
+                        use responseStream = exn.Response.GetResponseStream()
+                        use streamReader = new StreamReader(responseStream)
+                        let response = streamReader.ReadToEnd() |> JsonValue.Parse 
+                        let error = response.GetProperty("error").GetArrayValWithKey("errors").[0]
+                        let domain = error.GetStringValWithKey("domain")
+                        let reason = error.GetStringValWithKey("reason")
+                        let message  = error.GetStringValWithKey("message")
+                        let extendedHelp = error.GetOptionalStringValWithKey("extendedHelp")
+                        Some <| FreebaseWebException(exn, domain, reason, message, extendedHelp)
+                    with _ -> None
+                match freebaseExn with
+                | Some e -> raise e
+                | None -> reraise()
 
     let queryString(queryUrl, fromJson) : FreebaseResult<'T> = 
         let resultText = queryRawText queryUrl
@@ -135,7 +162,6 @@ type FreebaseQueries(apiKey: string, proxy:string, serviceUrl:string, localCache
 
     member __.LocalCacheLocation = localCacheLocation
     member __.SendingRequest = sendingRequest.Publish
-    member __.Proxy = proxy
     member __.UseLocalCache with get() = useLocalCache and set v = useLocalCache <- v
     member __.ServiceUrl with get() = serviceUrl and set v = serviceUrl  <- v
     member __.SnapshotDate = snapshotDate

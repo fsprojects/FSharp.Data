@@ -7,7 +7,6 @@ namespace ProviderImplementation
 open System
 open System.Net
 open System.Xml.Linq
-open System.Web
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
@@ -20,7 +19,7 @@ open FSharp.Data.RuntimeImplementation.WorldBank
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
     inherit TypeProviderForNamespaces()
 
-    let asm, isPortable, replacer = AssemblyResolver.init cfg
+    let asm, replacer = AssemblyResolver.init cfg
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
@@ -184,7 +183,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         
         let defaultSourcesStr = String.Join(";", defaultSources)
         let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
-                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\"</param>
+                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\". If an empty string is specified, includes all data sources.</param>
                         <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
         t.AddXmlDoc(helpText)
 
