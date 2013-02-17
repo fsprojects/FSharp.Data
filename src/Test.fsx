@@ -91,3 +91,9 @@ Freebase { Key = "none"
            LocalCache = true 
            AllowLocalQueryEvaluation = true }
 |> generate |> prettyPrintWithMaxDepth 3 |> Console.WriteLine
+
+Apiary { ApiName = "themoviedb" }
+|> generate |> prettyPrint |> Console.WriteLine
+
+Apiary { ApiName = "fssnip" }
+|> generate |> prettyPrint |> Console.WriteLine

@@ -5,12 +5,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>b85f245b-3fb9-4253-8251-16f98f05b6ec</ProjectGuid>
+    <ProjectGuid>{736f3762-88f1-4a5c-a494-e3443da9bd8f}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FSharp.Data.DesignTime</RootNamespace>
-    <AssemblyName>FSharp.Data.DesignTime</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>FSharp.Data.DesignTime</Name>
+    <RootNamespace>FSharp.Data.Experimental</RootNamespace>
+    <AssemblyName>FSharp.Data.Experimental</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <Name>FSharp.Data.Experimental</Name>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -19,9 +19,9 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;EXPERIMENTAL</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\FSharp.Data.Experimental.XML</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -33,49 +33,20 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;EXPERIMENTAL</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\FSharp.Data.Experimental.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\ProviderFileSystem.fs" />
     <Compile Include="Common\StructuralTypes.fs" />
     <Compile Include="Common\HttpUtils.fs" />
     <Compile Include="Common\Conversions.fs" />
-    <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\FreebaseOperators.fs" />
-    <Compile Include="Providers\ProvidedTypes.fsi" />
-    <Compile Include="Providers\ProvidedTypes.fs" />
-    <Compile Include="Providers\Pluralizer.fs" />
-    <Compile Include="Providers\NameUtils.fs" />
-    <Compile Include="Providers\QuotationBuilder.fs" />
-    <Compile Include="Providers\AssemblyReplacer.fs" />
-    <Compile Include="Providers\Helpers.fs" />
-    <Compile Include="Providers\StructureInference.fs" />
-    <Compile Include="Providers\Debug.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
-    <Compile Include="JsonProvider\JsonInference.fs" />
-    <Compile Include="JsonProvider\JsonGenerator.fs" />
-    <Compile Include="JsonProvider\JsonProvider.fs" />
-    <Compile Include="XmlProvider\XmlRuntime.fs" />
-    <Compile Include="XmlProvider\XmlInference.fs" />
-    <Compile Include="XmlProvider\XmlGenerator.fs" />
-    <Compile Include="XmlProvider\XmlProvider.fs" />
-    <Compile Include="CsvProvider\CsvRuntime.fs" />
-    <Compile Include="CsvProvider\CsvInference.fs" />
-    <Compile Include="CsvProvider\CsvGenerator.fs" />
-    <Compile Include="CsvProvider\CsvProvider.fs" />
-    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
-    <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
-    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
-    <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
-    <Compile Include="TypeProviderInstantiation.fs" />
-    <Compile Include="AssemblyInfo.DesignTime.fs" />
-    <None Include="Test.fsx" />
+    <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
+    <Compile Include="Runtime.fs" />
+    <Compile Include="AssemblyInfo.Experimental.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -83,8 +54,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -94,17 +63,11 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-  </Target> -->
+  </Target>  -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\v40" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\v40" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\v40" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\sl5" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\sl5" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\sl5" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin" />

@@ -8,7 +8,7 @@ open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 // ----------------------------------------------------------------------------------------------
 

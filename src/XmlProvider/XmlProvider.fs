@@ -7,7 +7,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 // ----------------------------------------------------------------------------------------------
 

@@ -12,7 +12,7 @@ open ProviderImplementation.StructureInference
 open FSharp.Data
 open FSharp.Data.Json
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Context that is used to generate the JSON types.
 ///
@@ -37,13 +37,15 @@ type internal JsonGenerationContext =
   static member Create(domainTy, replacer) =
     let packer e = <@@ JsonDocument(%%e) @@>
     let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
+    JsonGenerationContext.Create(domainTy, typeof<JsonDocument>, replacer, packer, unpacker, NameUtils.uniqueGenerator NameUtils.nicePascalName)
+  static member internal Create(domainTy, representation, replacer, packer, unpacker, uniqueNiceName) =
     { DomainType = domainTy
       Replacer = replacer 
-      Representation = replacer.ToRuntime typeof<JsonDocument>
+      Representation = replacer.ToRuntime representation
       Packer = replacer.ToDesignTime >> packer >> replacer.ToRuntime 
       Unpacker = replacer.ToDesignTime >> unpacker >> replacer.ToRuntime
       UnpackerStayInDesignTime = replacer.ToDesignTime >> unpacker
-      UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName }
+      UniqueNiceName = uniqueNiceName }
 
 module JsonTypeBuilder = 
   
@@ -53,7 +55,7 @@ module JsonTypeBuilder =
   /// and also by function that generates the actual code.
   let rec internal generateMultipleChoiceType culture ctx types codeGenerator =
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<JsonDocument>), HideObjectMethods = true)
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Representation), HideObjectMethods = true)
     ctx.DomainType.AddMember(objectTy)
         
     // Generate GetXyz(s) method for every different case

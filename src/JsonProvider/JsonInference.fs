@@ -7,7 +7,7 @@ module ProviderImplementation.JsonInference
 open System
 open FSharp.Data.Json
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.StructureInference
 
 /// Infer type of a JSON value - this is simple function because most of the
