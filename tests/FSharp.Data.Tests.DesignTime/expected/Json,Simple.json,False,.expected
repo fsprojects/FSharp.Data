@@ -1,0 +1,15 @@
+class JsonProvider
+    new : () -> JsonProvider
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member GetSample: () -> JsonProvider+DomainTypes+Entity
+
+class JsonProvider+DomainTypes
+
+class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+    member Age: int with get
+    member FirstName: string with get
+    member IsCool: bool with get
+    member LastName: string with get
+

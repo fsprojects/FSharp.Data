@@ -183,7 +183,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         
         let defaultSourcesStr = String.Join(";", defaultSources)
         let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
-                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\"</param>
+                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\". If an empty string is specified, includes all data sources.</param>
                         <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
         t.AddXmlDoc(helpText)
 

@@ -1,0 +1,39 @@
+class XmlProvider
+    new : () -> XmlProvider
+    static member Parse: text:string -> XmlProvider+DomainTypes+Rss
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Rss
+    static member Load: uri:string -> XmlProvider+DomainTypes+Rss
+    static member GetSample: () -> XmlProvider+DomainTypes+Rss
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+Rss : FDR.XmlElement
+    member Version: decimal with get
+    member Value: string option with get
+    member Channel: XmlProvider+DomainTypes+Channel with get
+
+class XmlProvider+DomainTypes+Channel : FDR.XmlElement
+    member Value: string option with get
+    member Copyright: string with get
+    member Description: string with get
+    member GetItems: () -> XmlProvider+DomainTypes+Item[]
+    member Link: string with get
+    member Title: string with get
+
+class XmlProvider+DomainTypes+Item : FDR.XmlElement
+    member Value: string option with get
+    member GetCreators: () -> XmlProvider+DomainTypes+Creator[]
+    member GetDescriptions: () -> string[]
+    member GetLinks: () -> string[]
+    member GetPubDates: () -> System.DateTime[]
+    member GetSummaries: () -> XmlProvider+DomainTypes+Summary[]
+    member GetTitles: () -> string[]
+
+class XmlProvider+DomainTypes+Creator : FDR.XmlElement
+    member Dc: string with get
+    member Value: string with get
+
+class XmlProvider+DomainTypes+Summary : FDR.XmlElement
+    member Eex: string with get
+    member Value: string with get
+

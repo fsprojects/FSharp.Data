@@ -1,0 +1,22 @@
+class XmlProvider
+    new : () -> XmlProvider
+    static member Parse: text:string -> XmlProvider+DomainTypes+Ordercontainer
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Ordercontainer
+    static member Load: uri:string -> XmlProvider+DomainTypes+Ordercontainer
+    static member GetSample: () -> XmlProvider+DomainTypes+Ordercontainer
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+Ordercontainer : FDR.XmlElement
+    member Backgrounds: XmlProvider+DomainTypes+Backgrounds with get
+    member Project: XmlProvider+DomainTypes+Project with get
+
+class XmlProvider+DomainTypes+Backgrounds : FDR.XmlElement
+    member Background: XmlProvider+DomainTypes+Background with get
+
+class XmlProvider+DomainTypes+Project : FDR.XmlElement
+    member Title: string with get
+
+class XmlProvider+DomainTypes+Background : FDR.XmlElement
+    member Title: string with get
+

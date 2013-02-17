@@ -1,0 +1,20 @@
+class CsvProvider : FDR.CsvFile
+    member Data: CsvProvider+Row seq with get
+    new : () -> CsvProvider
+    static member Parse: text:string -> CsvProvider
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    static member Load: uri:string -> CsvProvider
+
+class CsvProvider+Row : FDR.CsvRow
+    member Dato: System.DateTime with get
+    member Usd: string with get
+    member Eur: string with get
+    member Sek: string with get
+    member Dkk: string with get
+    member Gbp: string with get
+    member Chf: string with get
+    member Jpy: string with get
+    member Cad: string with get
+    member Isk: string with get
+    member Aud: string with get
+
