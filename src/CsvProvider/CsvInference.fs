@@ -7,7 +7,7 @@ module ProviderImplementation.CsvInference
 open System
 open System.Text.RegularExpressions
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 

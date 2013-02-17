@@ -12,7 +12,7 @@ open ProviderImplementation.StructureInference
 open FSharp.Data
 open FSharp.Data.Json
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Context that is used to generate the JSON types.
 ///
