@@ -23,10 +23,17 @@ let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
   in your F# applications and scripts. It implements F# type providers for working with
-  structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It
-  also includes helpers for parsing JSON files and for sending HTTP requests."""
-
+  structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase
+  data. It also includes helpers for parsing JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data type provider WorldBank Freebase CSV XML JSON"
+
+let projectExperimental = "FSharp.Data.Experimental"
+let summaryExperimental = summary + " (experimental extensions)"
+let tagsExperimental = tags + " Apiary"
+let descriptionExperimental = description + """"
+  This package (FSharp.Data.Experimental.dll) adds additional type providers that are work
+  in progress and do not match high quality standards yet. Currently, it includes type provider
+  for Apiary.io."""
 
 // Read additional information from the release notes document
 let releaseNotes, version = 
@@ -40,19 +47,17 @@ let releaseNotes, version =
 
 Target "AssemblyInfo" (fun _ ->
 
-    CreateFSharpAssemblyInfo "src/AssemblyInfo.fs"
-        [Attribute.Title "FSharp.Data"
-         Attribute.Product project
-         Attribute.Description summary
-         Attribute.Version version
-         Attribute.FileVersion version]
-
-    CreateFSharpAssemblyInfo "src/AssemblyInfo.DesignTime.fs"
-        [Attribute.Title "FSharp.Data.DesignTime"
-         Attribute.Product project
-         Attribute.Description summary
-         Attribute.Version version
-         Attribute.FileVersion version]
+    ["src/AssemblyInfo.fs", "FSharp.Data", project
+     "src/AssemblyInfo.DesignTime.fs", "FSharp.Data.DesignTime", project
+     "src/AssemblyInfo.Experimental.fs", "FSharp.Data.Experimental", projectExperimental
+     "src/AssemblyInfo.Experimental.DesignTime.fs", "FSharp.Data.Experimental.DesignTime", projectExperimental]
+    |> Seq.iter (fun (fileName, title, project) ->
+        CreateFSharpAssemblyInfo fileName
+            [Attribute.Title title
+             Attribute.Product project
+             Attribute.Description summary
+             Attribute.Version version
+             Attribute.FileVersion version])
 )
 
 // --------------------------------------------------------------------------------------
@@ -67,7 +72,7 @@ Target "Clean" (fun _ ->
 // of the runtime library & desktop + Silverlight version of design time library)
 
 Target "Build" (fun _ ->
-    (files ["FSharp.Data.sln"; "FSharp.Data.Tests.sln"])
+    (files ["FSharp.Data.sln"; "FSharp.Data.Experimental.sln"; "FSharp.Data.Tests.sln"])
     |> MSBuildRelease "" "Build"
     |> ignore
 )
@@ -105,6 +110,7 @@ Target "NuGet" (fun _ ->
 
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let descriptionExperimental = descriptionExperimental.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let nugetPath = "tools/Nuget/nuget.exe"
 
     NuGet (fun p -> 
@@ -122,6 +128,23 @@ Target "NuGet" (fun _ ->
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
         "nuget/FSharp.Data.nuspec"
+
+    NuGet (fun p -> 
+        { p with   
+            Authors = authors
+            Project = projectExperimental
+            Summary = summaryExperimental
+            Description = descriptionExperimental
+            Version = version
+            ReleaseNotes = releaseNotes
+            Tags = tags
+            OutputPath = "bin"
+            ToolPath = nugetPath
+            AccessKey = getBuildParamOrDefault "nugetkey" ""
+            Publish = hasBuildParam "nugetkey"
+            Dependencies = [] })
+        "nuget/FSharp.Data.Experimental.nuspec"
+
 )
 
 // --------------------------------------------------------------------------------------

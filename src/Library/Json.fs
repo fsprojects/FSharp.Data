@@ -13,7 +13,6 @@ open System
 open System.IO
 open System.Text
 open System.Globalization
-open System.Xml.Linq
 open FSharp.Data
 open FSharp.Data.RuntimeImplementation
 open ProviderImplementation.HttpUtility

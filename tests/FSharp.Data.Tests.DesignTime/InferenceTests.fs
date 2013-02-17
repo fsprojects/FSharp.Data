@@ -15,7 +15,7 @@ open System.IO
 open FSharp.Data.Json
 open NUnit.Framework
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.StructureInference
 

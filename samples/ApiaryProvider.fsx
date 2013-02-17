@@ -3,9 +3,7 @@
 
 *)
 
-#I "../bin"
-#r "FSharp.Data.dll"
-#r "FSharp.Data.Experimental.dll"
+#r "../bin/FSharp.Data.Experimental.dll"
 open System.IO
 open FSharp.Data
 
@@ -25,8 +23,7 @@ let person = db.Person.GetPerson("8784")
 person.PlaceOfBirth
 
 for cast in person.Credits().Cast do
-  printfn "%s (as %s)" cast.Title cast.Character
-
+  printfn "%s (as %s)" cast.Title.String.Value cast.Character
 
 async { let! v = db.Search.AsyncMovie(query=["query","batman"])
         printfn "%A" v.Results }

@@ -11,7 +11,8 @@ open System.Collections.Generic
 
 open FSharp.Net
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
+open FSharp.Data.RuntimeImplementation.Caching
 
 /// Discriminated union that distinguish between function nodes 
 /// (with info & name, but no subtrees) modules (with name & sub-elements)
@@ -25,7 +26,7 @@ type RestApi<'T> =
 module ApiarySchema =
   let download = 
     // Cache for storing downloaded specifications
-    let cache = Cache.memoryCache()
+    let cache = createInMemoryCache()
     fun uri ->
       match cache.TryRetrieve(uri) with
       | Some html -> html
@@ -43,7 +44,7 @@ module ApiarySchema =
   let private downloadOperations name =
     let uri = sprintf "http://api.apiary.io/blueprint/resources/%s" name
     let doc = JsonValue.Parse(download uri)
-    [ for r in doc?resources -> r?``method``.AsString, r?url.AsString ]
+    [ for r in doc?resources -> r?``method``.AsString(), r?url.AsString() ]
 
   /// Split path into components separated by slash
   let getPathComponents (path:string) = 

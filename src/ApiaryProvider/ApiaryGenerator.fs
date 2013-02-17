@@ -1,129 +1,34 @@
 ﻿// --------------------------------------------------------------------------------------
-// Apiary type provider - runtime components and type builder
+// Apiary type provider - type builder
 // --------------------------------------------------------------------------------------
-//#nowarn "58"
+
 namespace ProviderImplementation
 
 open System
-open FSharp.Net
-open FSharp.Data.Json
-
-// ----------------------------------------------------------------------------------------------
-// Runtime components used by the generated Apiary code
-// ----------------------------------------------------------------------------------------------
-
-module ApiaryUtils =
-  let formatHeaders headers = 
-    [ for h, v in headers -> h + ":" + v ] |> String.concat "\n"
-  let parseHeaders (headers:string) = 
-    [ for h in headers.Split('\n') do
-        if String.IsNullOrEmpty(h) |> not then
-          match h.Split(':') with
-          | [| h; v |] -> yield h, v
-          | _ -> failwithf "Wrong headers: '%s'" headers ]
-  let emptyIfNull (l:'T list) = 
-    if System.Object.Equals(Unchecked.defaultof<'T list>, l) then [] else l
-
-type OperationArguments = 
-  { Method:string
-    Path:string
-    Arguments:(string * string)[]
-    Headers:(string * string)[]
-    Query:(string * string)[] }
-
-/// Underlying representation of the generated JSON types
-type ApiaryDocument private (json:JsonValue, context:InternalApiaryContext option) =
-  member x.JsonValue = json
-  member x.Context = context.Value
-  static member Create(json:JsonValue) =
-    ApiaryDocument(json, None)
-  static member Create(json:JsonValue, context) =
-    ApiaryDocument(json, Some context)
-
-and ApiaryOperations = 
-  abstract InvokeOperation : OperationArguments -> ApiaryDocument
-  abstract AsyncInvokeOperation : OperationArguments -> Async<ApiaryDocument>
-
-and InternalApiaryContext private 
-    (rootUrl:string, queries:seq<_>, headers:seq<_>, arguments:seq<string * string>) = 
-  let globalQuery = ResizeArray<_>(queries)
-  let globalHeaders = ResizeArray<_>(headers)
-  let globalArguments = arguments
-  
-  new (rootUrl) = 
-    InternalApiaryContext(rootUrl, [], [], [])
-
-  member internal x.GlobalQuery = globalQuery
-  member internal x.GlobalHeaders = globalHeaders
-  interface ApiaryOperations with
-    member x.AsyncInvokeOperation
-      ({ Method = meth; Path = path; Arguments = arguments;
-         Headers = headers; Query = query }) = async {
-
-      // Replace parameters in the path with actual arguments
-      let allArguments = Seq.concat [globalArguments; Seq.ofArray arguments]
-      let path = allArguments |> Seq.fold (fun (path:string) (key, value) -> 
-        path.Replace(key, value)) path
-
-      // Run the HTTP request
-      let allheaders = [ yield! headers; yield! globalHeaders ]
-      let allquery = [ yield! query; yield! globalQuery ]
-      if String.Compare(meth, "get", true, Globalization.CultureInfo.InvariantCulture) = 0 then
-        let! res = Http.AsyncRequest(rootUrl + path, headers = allheaders, query = allquery)
-
-        // Create context that captures all arguments already specified
-        let context = InternalApiaryContext(rootUrl, globalQuery, globalHeaders, allArguments)
-        return ApiaryDocument.Create(JsonValue.Parse(res), context)
-      else
-        return failwith "Only GET supported" }
-
-    member x.InvokeOperation(arguments) =
-      (x :> ApiaryOperations).AsyncInvokeOperation(arguments) |> Async.RunSynchronously
-
-type ApiaryContext(rootUrl) =
-  inherit InternalApiaryContext(rootUrl)
-  member x.AddQueryParam(key:string, value:string) =
-    x.GlobalQuery.Add( (key, value) )  
-  member x.AddHeader(key:string, value:string) =
-    x.GlobalHeaders.Add( (key, value) )  
-
-type ApiaryRuntime =
-  static member ProcessParameters(reqHeaders, headers, query) =
-    let headers = ApiaryUtils.parseHeaders reqHeaders @ (ApiaryUtils.emptyIfNull headers)
-    let query = ApiaryUtils.emptyIfNull query
-    Array.ofSeq headers, Array.ofSeq query
-  
-// ----------------------------------------------------------------------------------------------
-// Compile-time components that are used to generate Apiary types
-// ----------------------------------------------------------------------------------------------
-
-open System
-open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Quotations
-open FSharp.Net
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.Apiary
+open FSharp.Data.RuntimeImplementation.StructuralTypes
+open ProviderImplementation.ProvidedTypes
 
 type internal ApiaryGenerationContext =
   { DomainType : ProvidedTypeDefinition
+    Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
     ApiName : string 
     ApiaryContextSelector : Expr -> Expr }
-  static member Create(apiName, domainTy) =
+  static member Create(apiName, domainTy, replacer) =
     { DomainType = domainTy; ApiName = apiName
+      Replacer = replacer 
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
       ApiaryContextSelector = fun e -> <@@ (%%e : ApiaryContext) :> InternalApiaryContext @@> }
   member x.JsonContext = 
-    { JsonGenerationContext.DomainType = x.DomainType
-      Representation = typeof<ApiaryDocument>
-      Packer = fun e -> <@@ ApiaryDocument.Create(%%e) @@>
-      Unpacker = fun e -> <@@ ((%%e):ApiaryDocument).JsonValue @@>
-      UniqueNiceName = x.UniqueNiceName }
+    let packer e = <@@ ApiaryDocument(%%e) @@>
+    let unpacker e = <@@ ((%%e):ApiaryDocument).JsonValue @@>
+    JsonGenerationContext.Create(x.DomainType, typeof<ApiaryDocument>, x.Replacer, packer, unpacker, x.UniqueNiceName)
 
-type ApiaryGenerationHelper = 
-  static member AsyncMap<'T, 'R>(work:Async<'T>, f:'T -> 'R) = 
-    async { let! v = work in return f v }
-    
 module internal ApiaryTypeBuilder = 
 
   /// Given a specification (returned by the apiary.io service) 
@@ -131,15 +36,15 @@ module internal ApiaryTypeBuilder =
   ///
   /// TODO: Lots of room for improvement here (pattern matching based
   /// on error codes, handle other file formats like XML...)
-  let generateMembersForJsonResult (ctx:ApiaryGenerationContext) spec =
+  let generateMembersForJsonResult culture (ctx:ApiaryGenerationContext) spec =
     let samples = 
-      [ for example in spec?outgoing do
-          if example?status.AsString = "200" then 
+      [ for example in spec?responses do
+          if example?status.AsInteger() = 200 then 
             let source = example?body.InnerText
             yield JsonValue.Parse source ]
-    [ for itm in samples -> JsonInference.inferType itm ]
-    |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
-    |> JsonTypeBuilder.generateJsonType ctx.JsonContext
+    [ for itm in samples -> JsonInference.inferType (Operations.GetCulture culture) itm ]
+    |> Seq.fold StructureInference.subtypeInfered InferedType.Top
+    |> JsonTypeBuilder.generateJsonType culture ctx.JsonContext
 
   let ensureGeneratedType ctx (entityTy:Type) = 
     match entityTy with
@@ -156,7 +61,7 @@ module internal ApiaryTypeBuilder =
   /// Generates formatted string with headers that must be
   /// passed to a call according to apiary.io specification
   let generateHeadersForCall spec =
-    [ for h, v in spec?incoming?headers.Properties -> h, v.AsString ]
+    [ for h, v in spec?request?headers.Properties -> h, v.AsString() ]
     |> ApiaryUtils.formatHeaders
 
   /// Arguments that are appended to all methods (to allow passing additional info)
@@ -207,6 +112,7 @@ module internal ApiaryTypeBuilder =
     let asyncM = ProvidedMethod("Async" + name, providedArgs, asyncResTy)
     let normalM = ProvidedMethod(name, providedArgs, resultTy)
     normalM.InvokeCode <- fun parameters ->
+      let parameters = parameters |> Seq.map ctx.Replacer.ToDesignTime 
       <@@ let apiCtx, args = %(makeInvokeCode parameters)
           apiCtx.InvokeOperation(args) @@>
       |> bodyResConv
@@ -215,25 +121,26 @@ module internal ApiaryTypeBuilder =
     // the mapping not on the result (as above) but inside async block. So we
     // generate function and apply 'ApiaryGenerationHelper.AsyncMap(work, f)'
     let asyncMap (asyncWork:Expr) =
-      let mi = typeof<ApiaryGenerationHelper>.GetMethod("AsyncMap")
+      let mi = (ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>).GetMethod("AsyncMap")
       let resultTy = 
         // It may sound reasonable to use 'resultTy' as the generic type, but then
         // 'MakeGenericMethod' does not work, so we find the erased type
         if resultTy :? ProvidedTypeDefinition then
           resultTy.BaseType else resultTy
-      let mi = mi.MakeGenericMethod(typeof<ApiaryDocument>, resultTy)
+      let mi = mi.MakeGenericMethod(ctx.Replacer.ToRuntime typeof<ApiaryDocument>, resultTy)
       let convFuncExpr = 
-        let v = Var.Global("doc", typeof<ApiaryDocument>)
+        let v = Var.Global("doc", ctx.Replacer.ToRuntime typeof<ApiaryDocument>)
         Expr.Lambda(v, bodyResConv (Expr.Var(v)))
-      Expr.Call(mi, [asyncWork; convFuncExpr])
+      Expr.Call(mi, [ctx.Replacer.ToRuntime asyncWork; convFuncExpr])
 
     asyncM.InvokeCode <- fun parameters ->
-      <@@ let apiCtx, argszz = %(makeInvokeCode parameters)
-          apiCtx.AsyncInvokeOperation(argszz) @@>
+      let parameters = parameters |> Seq.map ctx.Replacer.ToDesignTime 
+      <@@ let apiCtx, args = %(makeInvokeCode parameters)
+          apiCtx.AsyncInvokeOperation(args) @@>
       |> asyncMap
 
-    asyncM.AddXmlDoc(NameUtils.trimHtml spec?description.AsString)
-    normalM.AddXmlDoc(NameUtils.trimHtml spec?description.AsString)
+    asyncM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
+    normalM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
     [asyncM; normalM]
 
   /// This is the main recursive function that generates type for a "RestApi" specification. 
@@ -249,23 +156,23 @@ module internal ApiaryTypeBuilder =
   ///    a type representing the entity. All nested functions of the entity
   ///    are added to this type (and at runtime we need to keep arguments around)
   ///
-  let rec generateSchema ctx (parent:ProvidedTypeDefinition) = function
+  let rec generateSchema culture ctx (parent:ProvidedTypeDefinition) = function
     | Module(name, nested) ->          
         // Generate new type for the nested module
-        let nestedTyp = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Type"), Some(typeof<InternalApiaryContext>))
+        let nestedTyp = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Type"), Some(ctx.Replacer.ToRuntime typeof<InternalApiaryContext>))
         ctx.DomainType.AddMember(nestedTyp)
         // Add the new module as nested property of the parent
         let p = ProvidedProperty(NameUtils.nicePascalName name, nestedTyp)
-        p.GetterCode <- fun (Singleton self) -> ctx.ApiaryContextSelector self
+        p.GetterCode <- fun (Singleton self) -> ctx.Replacer.ToRuntime (ctx.ApiaryContextSelector (ctx.Replacer.ToDesignTime self))
         parent.AddMember(p) 
         // Add all nested operations to this type
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ %%self:InternalApiaryContext @@> }
-        nested |> Seq.iter (generateSchema ctx nestedTyp)
+        nested |> Seq.iter (generateSchema culture ctx nestedTyp)
 
     | Function(name, (meth, path)) ->
         // Generate method that calls the function
         let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
-        let methResTy, methResConv = generateMembersForJsonResult ctx spec
+        let methResTy, methResConv = generateMembersForJsonResult culture ctx spec
 
         generateOperations ctx (NameUtils.nicePascalName name) ([], meth, path, spec) methResTy methResConv
         |> Seq.iter parent.AddMember
@@ -274,7 +181,7 @@ module internal ApiaryTypeBuilder =
         // Generate new type representing the entity
         // (but it needs to be generated type because we want to add members)
         let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
-        let entityTy, entityConv = generateMembersForJsonResult ctx spec
+        let entityTy, entityConv = generateMembersForJsonResult culture ctx spec
         let entityTy = ensureGeneratedType ctx entityTy  
         
         // Generate method that obtains the entity
@@ -283,7 +190,7 @@ module internal ApiaryTypeBuilder =
 
         // Add all nested operations to this type
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ (%%self:ApiaryDocument).Context @@> }
-        nested |> Seq.iter (generateSchema ctx entityTy)
+        nested |> Seq.iter (generateSchema culture ctx entityTy)
 
     | Entity(name, _, nested) -> 
         // Silently ignore...
