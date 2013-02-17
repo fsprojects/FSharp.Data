@@ -70,7 +70,7 @@ module Implementation =
                         Debug.WriteLine (sprintf "[WorldBank] error: %s" (e.ToString()))
                         if attempt > 0 then
                             return! worldBankRequest (attempt - 1) funcs args
-                        else return! failwithf "failed to request '%s'" url }
+                        else return! failwithf "Failed to request '%s'. Error: %A" url (e.ToString()) }
 
         let rec getDocuments funcs args page parallelPages = 
             async { let! docs = 

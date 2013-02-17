@@ -15,6 +15,10 @@ open System.Collections.Generic
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
 
+  /// Are we currently running on Mono?
+  /// (Mono does not have the issue with encoding slashes in URLs, so we do not need workaround)
+  static let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
   /// Returns a clone of a System.Uri object that allows URL encoded slashes.
   /// (This is an ugly hack using Reflection, but it is the best way to do this
   /// in a type provider. See [this StackOverflow answer][1].
@@ -24,6 +28,7 @@ type Http private() =
   static let enableUriSlashes (uri:Uri) =
 #if FX_NO_URI_WORKAROUND
 #else
+    if runningOnMono then uri else
     let uri = Uri(uri.OriginalString)
     let paq = uri.PathAndQuery
     let flagsFieldInfo = typeof<Uri>.GetField("m_Flags", BindingFlags.Instance ||| BindingFlags.NonPublic)
