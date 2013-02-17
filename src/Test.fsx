@@ -13,8 +13,8 @@ let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "FSharp.Data.dll"
 //let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable" ++ "FSharp.Data.dll"
 
-let signatureOnly = true
-//let signatureOnly = false
+//let signatureOnly = true
+let signatureOnly = false
 
 let generate (inst:TypeProviderInstantiation) = inst.generateType resolutionFolder runtimeAssembly
 let prettyPrint t = Debug.prettyPrint signatureOnly t
