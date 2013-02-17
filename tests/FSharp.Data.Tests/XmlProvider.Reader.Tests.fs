@@ -36,7 +36,11 @@ let ``Can get Descartes books in philosophy.xml``() =
     books.[0].Title |> should equal "Tractatus Logico-Philosophicus"
     books.[1].Title |> should equal "Philosophical Investigations"
 
-    
+[<Test>]
+let ``Can get manuscripts in philosophy.xml``() = 
+    authors.[0].Manuscript.Value.Title |> should equal "Notes on Logic"
+    authors.[1].Manuscript |> should equal None
+ 
 let topicDocument = XmlProvider<"""<topics><topic><title>My Topic Title</title></topic><topic><title>Another Topic Title</title></topic></topics>""">.GetSample()
 
 [<Test>]

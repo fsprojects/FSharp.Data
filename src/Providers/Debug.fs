@@ -142,16 +142,29 @@ module Debug =
                 print str
                 println()
 
+            let rec getTypeErasedTo (t:Type) =
+                if t :? ProvidedTypeDefinition then
+                    t.BaseType
+                elif t.GetGenericArguments() |> Seq.exists (fun t -> t :? ProvidedTypeDefinition) then
+                     let genericTypeDefinition = t.GetGenericTypeDefinition()
+                     let genericArguments = 
+                        t.GetGenericArguments()
+                        |> Seq.map getTypeErasedTo
+                        |> Seq.toArray
+                     genericTypeDefinition.MakeGenericType(genericArguments)
+                else
+                    t
+
             let getMethodBody (m: ProvidedMethod) = 
-                seq { if not m.IsStatic then yield m.DeclaringType.BaseType
-                      for param in m.GetParameters() do yield param.ParameterType }
+                seq { if not m.IsStatic then yield (getTypeErasedTo m.DeclaringType.BaseType)
+                      for param in m.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> m.GetInvokeCodeInternal false
 
             let getConstructorBody (c: ProvidedConstructor) = 
-                seq { if not c.IsStatic then yield c.DeclaringType.BaseType
-                      for param in c.GetParameters() do yield param.ParameterType }
+                seq { if not c.IsStatic then yield (getTypeErasedTo c.DeclaringType.BaseType)
+                      for param in c.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> c.GetInvokeCodeInternal false

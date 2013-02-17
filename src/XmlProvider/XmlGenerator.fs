@@ -142,7 +142,7 @@ module internal XmlTypeBuilder =
                         let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         p.GetterCode <- fun (Singleton xml) -> 
                           let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
-                          operationsTyp?ConvertOption (convTyp) (xml, name, convFunc)
+                          operationsTyp?ConvertOptional (convTyp) (xml, name, convFunc)
                         p :> MemberInfo
 
                 | _ -> failwith "generateXmlType: Child nodes should be named record types"))
