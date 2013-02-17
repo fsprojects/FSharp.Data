@@ -206,6 +206,12 @@ module AssemblyResolver =
     let private fullAssemblies = 
         AppDomain.CurrentDomain.GetAssemblies()
         |> Seq.map (fun asm -> asm.GetName().Name, asm)
+        // If there are dups, Map.ofSeq will take the last one. When the portable version
+        // is already loaded, it will be the last one and replace the full version on the
+        // map. We don't want that, so we use distinct to only keep the first version of
+        // each assembly (assumes CurrentDomain.GetAssemblies() returns assemblies in
+        // load order, must check if that's also true for Mono)
+        |> Seq.distinctBy fst 
         |> Map.ofSeq
 
     let private getAssembly (asmName:AssemblyName) reflectionOnly = 
@@ -256,6 +262,8 @@ module AssemblyResolver =
                             if portableAsm <> null && portableAsm.FullName <> fullAsm.FullName then Some (fullAsm, portableAsm)
                             else None))
                     |> Seq.toList
+                if portableAsmsPairs = [] then
+                    failwithf "Something went wrong when creating the assembly mappings"
                 runtimeAssemblyPair::portableAsmsPairs
             else
                 [runtimeAssemblyPair]
