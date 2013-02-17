@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>FSharp.Data.Experimental</id>
+    <version>1.0.1</version>
+    <authors>Tomas Petricek</authors>
+    <owners>Tomas Petricek</owners>
+    <licenseUrl>http://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://tpetricek.github.com/FSharp.Data</projectUrl>
+    <iconUrl>http://tpetricek.github.com/FSharp.Data/docs/content/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>Library of F# type providers and data access tools (experimental extensions)</summary>
+    <description>The F# Data library (FSharp.Data.dll) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. This package (FSharp.Data.Experimental.dll) adds additional type providers that are work in progrss and do not match high quality standards yet. Currently, it includes type provider for Apiary.io.</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>F# fsharp data type provider WorldBank CSV XML JSON </tags>
+    <dependencies>
+      <dependency id="FSharp.Data" version="1.0.9" />
+    </dependencies>
+    <references>
+      <reference file="FSharp.Data.Experimental.dll" />
+    </references>
+  </metadata>
+  <files>
+    <file src="..\bin\v40\FSharp.Data.dll" target="lib/net40" />
+    <file src="..\bin\v40\FSharp.Data.pdb" target="lib/net40" />
+    <file src="..\bin\v40\FSharp.Data.Experimental.dll" target="lib/net40" />
+    <file src="..\bin\v40\FSharp.Data.Experimental.pdb" target="lib/net40" />
+  </files>
+</package>
