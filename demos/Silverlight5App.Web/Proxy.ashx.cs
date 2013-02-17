@@ -21,8 +21,38 @@ namespace Silverlight5App.Web
             }
 
             // Create web request
-            WebRequest webRequest = WebRequest.Create(new Uri(uri));
+            var webRequest = WebRequest.CreateHttp(new Uri(uri));
+
+            foreach (string key in context.Request.Headers.Keys)
+            {
+                var value = context.Request.Headers[key];
+                var h = key.ToLowerInvariant();
+                if (h == "accept")
+                {
+                    webRequest.Accept = value;
+                }
+                else if (h == "content-type")
+                {
+                    webRequest.ContentType = value;
+                }
+                else if (h != "connection" && h != "host" && h != "referer" && h != "user-agent" && h != "content-length")
+                {
+                    webRequest.Headers.Add(key, value);
+                }
+            }
+
             webRequest.Method = context.Request.HttpMethod;
+            if (webRequest.Method == "POST")
+            {
+                webRequest.ContentLength = context.Request.ContentLength;
+                using (var writer = new StreamWriter(webRequest.GetRequestStream()))
+                {
+                    using (var reader = new StreamReader(context.Request.InputStream))
+                    {
+                        writer.Write(reader.ReadToEnd());
+                    }
+                }
+            }
 
             // Send the request to the server
             WebResponse serverResponse = null;
