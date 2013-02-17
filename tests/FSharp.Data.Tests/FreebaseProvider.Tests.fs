@@ -14,7 +14,7 @@ open FSharp.Data
 open FSharp.Data.FreebaseOperators
 
 
-let data = FreebaseDataProvider<Key="AIzaSyDMIsdXlcqLc0bjhTRhf2AKBKQ6WOq7icI">.GetDataContext()
+let data = FreebaseData.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
