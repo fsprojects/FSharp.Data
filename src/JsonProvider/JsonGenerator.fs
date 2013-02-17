@@ -55,7 +55,7 @@ module JsonTypeBuilder =
   /// and also by function that generates the actual code.
   let rec internal generateMultipleChoiceType culture ctx types codeGenerator =
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<JsonDocument>), HideObjectMethods = true)
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Representation), HideObjectMethods = true)
     ctx.DomainType.AddMember(objectTy)
         
     // Generate GetXyz(s) method for every different case
