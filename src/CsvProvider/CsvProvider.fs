@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------
 // CSV type provider (inference engine and code generator)
 // --------------------------------------------------------------------------------------
 
@@ -39,6 +39,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let resolutionFolder = args.[4] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
+    let headers = args.[5] :?> string
+    let skipLines = args.[6] :?> int
 
     // Infer the schema from a specified uri or inline text
     let sampleCsv, sampleIsUri = 
@@ -46,9 +48,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
             let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            new CsvFile(reader, separator), true
+            new CsvFile(reader, headers, skipLines, separator), true
         | None ->
-            new CsvFile(new StringReader(sample), separator), false
+            new CsvFile(new StringReader(sample), headers, skipLines, separator), false
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
 
@@ -71,28 +73,34 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     c.InvokeCode <- 
       if sampleIsUri then
         fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-                                        new CsvFile(reader, separator) @@>
+                                        new CsvFile(reader, headers, skipLines, separator) @@>
       else
-        fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator) @@>            
+        fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), headers, skipLines, separator) @@>            
     resTy.AddMember c
 
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton text) -> replacer.ToRuntime <@@ new CsvFile(new StringReader(%%text:string), separator) @@>
+    m.InvokeCode <- fun (Singleton text) -> replacer.ToRuntime <@@ new CsvFile(new StringReader(%%text:string), headers, skipLines, separator) @@>
     resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ new CsvFile(new StreamReader(%%stream:Stream), separator) @@>
+    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ new CsvFile(new StreamReader(%%stream:Stream), headers, skipLines, separator) @@>
+    resTy.AddMember m
+
+    // Generate static Load stream method
+    let args = [ ProvidedParameter("textReader", typeof<TextReader>) ]
+    let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton textReader) -> replacer.ToRuntime <@@ new CsvFile((%%textReader:TextReader), headers, skipLines, separator) @@>
     resTy.AddMember m
 
     // Generate static Load uri method
     let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
-                                                                  new CsvFile(reader, separator) @@>
+                                                                  new CsvFile(reader, headers, skipLines, separator) @@>
     resTy.AddMember m
 
     // Return the generated type
@@ -104,7 +112,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("Headers", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("SkipLines", typeof<int>, parameterDefaultValue = 0)]
 
   let helpText = 
     """<summary>Typed representation of a CSV file</summary>
@@ -112,7 +122,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Separator'>Column delimiter</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used.</param>
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
+       <param name='Headers'>The column headers to use if none are present in the file, or override the inferred headers</param>
+       <param name='SkipLines'>The number of lines to skip (default: 0). This is often used in conjunction with Headers. When no headers are in the file then this should be set to 0 so all data is consumed</param>"""
 
   do csvProvTy.AddXmlDoc helpText
   do csvProvTy.DefineStaticParameters(parameters, buildTypes)

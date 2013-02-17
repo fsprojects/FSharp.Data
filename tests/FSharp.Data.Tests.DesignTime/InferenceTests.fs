@@ -218,7 +218,7 @@ module InferenceTests =
 
   [<Test>]
   let ``Inference of DateTime with timestamp non default separator``() = 
-      let source = new CsvFile(new StringReader("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00"), ";")
+      let source = new CsvFile(new StringReader("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00"), sep= ";")
       let actual = CsvInference.inferFields source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
@@ -227,7 +227,7 @@ module InferenceTests =
   
   [<Test>]
   let ``Inference of float with #N/A values and non default separator``() = 
-      let source = new CsvFile(new StringReader("float;integer\n2.0;2\n#N/A;3\n"), ";")
+      let source = new CsvFile(new StringReader("float;integer\n2.0;2\n#N/A;3\n"),sep= ";")
       let actual = CsvInference.inferFields source Int32.MaxValue culture
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
       let propInteger = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }

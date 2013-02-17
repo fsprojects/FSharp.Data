@@ -101,3 +101,63 @@ let ``Does not treat invariant culture number such as 3.14 as a date in cultures
   let csv = new CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>()
   let row = csv.Data |> Seq.head
   (row.Dato, row.Usd) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
+ 
+let [<Literal>] simpleCsvNoHeaders = """
+TRUE,no,3
+"yes", "false", 1.92 """
+
+  
+[<Test>]
+let ``Bool column correctly infered and accessed when headers are given in provider`` () = 
+    let csv = new CsvProvider<simpleCsvNoHeaders, Headers = "Col1,Col2,Col3">()
+    let first = csv.Data |> Seq.head
+    let actual:bool = first.Col1
+    Assert.AreEqual(true, actual)
+
+[<Test>]
+let ``Decimal column correctly infered and accessed when headers are given in provider`` () = 
+    let csv = new CsvProvider<simpleCsvNoHeaders, Headers = "Col1,Col2,Col3">()
+    let first = csv.Data |> Seq.head
+    let actual:decimal = first.Col3
+    Assert.AreEqual(3.0M, actual)
+
+[<Test>]
+let ``Can skip rows with no headers``() =
+   let csv = new CsvProvider<simpleCsvNoHeaders, Headers = "Col1,Col2,Col3", SkipLines=1>()
+   let first = csv.Data |> Seq.head
+   let actual:decimal = first.Col3
+   Assert.AreEqual(1.92M, actual)  
+
+let [<Literal>] csvWithLinesToignore = """
+  ignorethis
+  ignorethis
+  Column1,Column2,Column3
+  TRUE,no,3
+  "yes", "false", 1.92 """
+
+
+[<Test>]
+let ``Can skip lines and still infer headers``() =
+   let csv = new CsvProvider<csvWithLinesToignore, SkipLines=2>()
+   let first = csv.Data |> Seq.head
+   let actual:decimal = first.Column3
+   Assert.AreEqual(3M, actual)  
+
+[<Test>]
+let ``Can skip lines and override headers``() =
+   let csv = new CsvProvider<csvWithLinesToignore, Headers="Col1,Col2,Col3", SkipLines=3>()
+   let first = csv.Data |> Seq.head
+   let actual:decimal = first.Col3
+   Assert.AreEqual(3M, actual)  
+
+let [<Literal>] csvWithExtraComma = """
+  Column1,Column2,Column3,
+  TRUE,no,3,
+  "yes", "false", 1.92, """
+
+[<Test>]
+let ``Names columns with no names as Unknownx``() =
+   let csv = new CsvProvider<csvWithExtraComma>()
+   let first = csv.Data |> Seq.head
+   let actual = first.Unknown3
+   Assert.AreEqual("", actual)  

@@ -57,4 +57,3 @@ let ``Quoted strings parsed correctly`` () =
   let actual = readCsvFile sr [| ',' |] |> Array.ofSeq
   let expected = [|[|"12"; "a\n\rb"|]; [|"123"; "\"hello\" world"|]|]
   actual |> should equal expected
-

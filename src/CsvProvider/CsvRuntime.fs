@@ -9,52 +9,52 @@ open System.ComponentModel
 open System.IO
 open System.Text
 
-// Parser for the CSV format 
-module internal CsvReader = 
+module CsvReader = 
+
+  let inline (|Char|) (n:int) = char n
+  let inline (|Separator|_|) sep (n:int) = if Array.exists ((=) (char n)) sep then Some() else None
+
+  /// Read quoted string value until the end (ends with end of stream or
+  /// the " character, which can be encoded using double ")
+  let rec readString chars (reader:TextReader) = 
+    match reader.Read() with
+    | -1 -> chars
+    | Char '"' when reader.Peek() = int '"' ->
+        reader.Read() |> ignore
+        readString ('"'::chars) reader
+    | Char '"' -> chars
+    | Char c -> readString (c::chars) reader
+  
+  /// Reads a line with data that are separated using specified Separators
+  /// and may be quoted. Ends with newline or end of input.
+  let rec readLine data chars sep (reader:TextReader) = 
+    match reader.Read() with
+    | -1 | Char '\r' | Char '\n' -> 
+        let item = new String(chars |> List.rev |> Array.ofList)
+        item::data
+    | Separator sep  ->
+        let item = new String(chars |> List.rev |> Array.ofList)
+        readLine (item::data) [] sep reader
+    | Char '"' ->
+        readLine data (readString chars reader) sep reader
+    | Char c ->
+        readLine data (c::chars) sep reader
+
+  /// Reads multiple lines from the input, skipping newline characters
+  let rec readLines sep (reader:TextReader) = seq {
+    match reader.Peek() with
+    | -1 -> ()
+    | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines sep reader
+    | _ -> 
+        yield readLine [] [] sep reader |> List.rev |> Array.ofList
+        yield! readLines sep reader }
 
   /// Lazily reads the specified CSV file using the specified separator
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
   let readCsvFile (reader:TextReader) sep =
-    let inline (|Char|) (n:int) = char n
-    let inline (|Separator|_|) (n:int) = if Array.exists ((=) (char n)) sep then Some() else None
+    readLines sep reader
 
-    /// Read quoted string value until the end (ends with end of stream or
-    /// the " character, which can be encoded using double ")
-    let rec readString chars = 
-      match reader.Read() with
-      | -1 -> chars
-      | Char '"' when reader.Peek() = int '"' ->
-          reader.Read() |> ignore
-          readString ('"'::chars)
-      | Char '"' -> chars
-      | Char c -> readString (c::chars)
-  
-    /// Reads a line with data that are separated using specified Separators
-    /// and may be quoted. Ends with newline or end of input.
-    let rec readLine data chars = 
-      match reader.Read() with
-      | -1 | Char '\r' | Char '\n' -> 
-          let item = new String(chars |> List.rev |> Array.ofList)
-          item::data
-      | Separator -> 
-          let item = new String(chars |> List.rev |> Array.ofList)
-          readLine (item::data) [] 
-      | Char '"' ->
-          readLine data (readString chars)
-      | Char c ->
-          readLine data (c::chars)
-
-    /// Reads multiple lines from the input, skipping newline characters
-    let rec readLines () = seq {
-      match reader.Peek() with
-      | -1 -> ()
-      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines()
-      | _ -> 
-          yield readLine [] [] |> List.rev |> Array.ofList
-          yield! readLines() }
-  
-    readLines() 
 
 
 /// Simple type that represents a single CSV row
@@ -85,10 +85,12 @@ type CsvRow internal (data:string[], headers:string[]) =
   override x.ToString() = x.Display
 
 // Simple type wrapping CSV data
-type CsvFile (reader:TextReader, ?sep:string) =
+type CsvFile (reader:TextReader, ?headers:string, ?skipRow:int, ?sep:string) =
 
   let sep = defaultArg sep ""
   let sep = if String.IsNullOrEmpty(sep) then "," else sep
+  let headerDefns = defaultArg headers ""
+  let skipRow = defaultArg skipRow 0
 
   /// Read the input and cache it (we can read input only once)
   let file = CsvReader.readCsvFile reader (sep.ToCharArray()) |> Seq.cache
@@ -97,9 +99,25 @@ type CsvFile (reader:TextReader, ?sep:string) =
     if Seq.isEmpty file then
       failwithf "Invalid CSV file: header row not found" 
 
-  let headers = file |> Seq.head
+  let headers =
+     if String.IsNullOrEmpty(headerDefns)
+     then file |> Seq.skip skipRow |> Seq.head
+     else
+         use sr = new StringReader(headerDefns)
+         CsvReader.readLine [] [] (sep.ToCharArray()) sr |> List.rev |> Array.ofList
+     |> Seq.mapi (fun i h -> 
+                    if not <| String.IsNullOrEmpty(h) && not <| String.IsNullOrWhiteSpace(h)
+                    then h
+                    else sprintf "Unknown%d" i
+                 )
+     |> Seq.toArray
 
-  let data = file |> Seq.skip 1 |> Seq.map (fun v -> CsvRow(v, headers)) |> Seq.cache
+  let data = 
+    if String.IsNullOrEmpty(headerDefns)
+    then file |> Seq.skip (skipRow + 1) |> Seq.map (fun v -> CsvRow(v, headers))
+    else file |> Seq.skip skipRow |> Seq.map (fun v -> CsvRow(v, headers))
+
+ 
 
   member x.Data = data
   member x.Headers = headers
