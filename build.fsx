@@ -1,3 +1,7 @@
+// --------------------------------------------------------------------------------------
+// FAKE build script 
+// --------------------------------------------------------------------------------------
+
 #r @"tools\FAKE\tools\FakeLib.dll"
 
 open System
@@ -6,18 +10,33 @@ open Fake
 open Fake.AssemblyInfoFile
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-let files includes = { BaseDirectories = [__SOURCE_DIRECTORY__]; Includes = includes; Excludes = [] } |> Scan
 
+let files includes = 
+  { BaseDirectories = [__SOURCE_DIRECTORY__]
+    Includes = includes
+    Excludes = [] } |> Scan
+
+// Information about the project to be used at NuGet and in AssemblyInfo files
 let project = "FSharp.Data"
 let authors = ["Tomas Petricek"]
 let summary = "Library of F# type providers and data access tools"
-let description = "The F# Data library (FSharp.Data.dll) implements everything you need to access data in your F# applications and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing JSON files and for sending HTTP requests."
+let description = """
+  The F# Data library (FSharp.Data.dll) implements everything you need to access data
+  in your F# applications and scripts. It implements F# type providers for working with
+  structured file formats (CSV, JSON and XML) and for accessing the WorldBank data. It
+  also includes helpers for parsing JSON files and for sending HTTP requests."""
+
 let tags = "F# fsharp data type provider WorldBank Freebase CSV XML JSON"
 
+// Read additional information from the release notes document
 let releaseNotes, version = 
     let lastItem = File.ReadLines "RELEASE_NOTES.md" |> Seq.last
     let firstDash = lastItem.IndexOf('-')
-    lastItem.Substring(firstDash + 1 ).Trim(), lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim()
+    ( lastItem.Substring(firstDash + 1 ).Trim(), 
+      lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim() )
+
+// --------------------------------------------------------------------------------------
+// Generate assembly info files with the right version & up-to-date information
 
 Target "AssemblyInfo" (fun _ ->
 
@@ -36,9 +55,16 @@ Target "AssemblyInfo" (fun _ ->
          Attribute.FileVersion version]
 )
 
+// --------------------------------------------------------------------------------------
+// Clean build results
+
 Target "Clean" (fun _ ->
     CleanDirs ["bin"]
 )
+
+// --------------------------------------------------------------------------------------
+// Build library (builds Visual Studio solution, which builds multiple versions
+// of the runtime library & desktop + Silverlight version of design time library)
 
 Target "Build" (fun _ ->
     (files ["FSharp.Data.sln"; "FSharp.Data.Tests.sln"])
@@ -46,9 +72,13 @@ Target "Build" (fun _ ->
     |> ignore
 )
 
+// --------------------------------------------------------------------------------------
+// Run the unit tests using test runner & kill test runner when complete
+
 Target "RunTests" (fun _ ->
 
-    // will get NUnit.Runner if not present
+    // Will get NUnit.Runner NuGet package if not present
+    // (needed to run tests using the 'NUnit' target)
     RestorePackages()
 
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
@@ -68,8 +98,13 @@ FinalTarget "CloseTestRunner" (fun _ ->
     ProcessHelper.killProcess "nunit-agent.exe"
 )
 
+// --------------------------------------------------------------------------------------
+// Build a NuGet package
+
 Target "NuGet" (fun _ ->
 
+    // Format the description to fit on a single line (remove \r\n and double-spaces)
+    let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let nugetPath = "tools/Nuget/nuget.exe"
 
     NuGet (fun p -> 
@@ -89,6 +124,9 @@ Target "NuGet" (fun _ ->
         "nuget/FSharp.Data.nuspec"
 )
 
+// --------------------------------------------------------------------------------------
+// Run all targets by default. Invoke 'build target=<Target>' to verride
+
 Target "All" DoNothing
 
 "Clean"
@@ -98,5 +136,4 @@ Target "All" DoNothing
   ==> "NuGet"
   ==> "All"
 
-// Invoke 'build target=<Target>' to override
 Run <| getBuildParamOrDefault "target" "All"

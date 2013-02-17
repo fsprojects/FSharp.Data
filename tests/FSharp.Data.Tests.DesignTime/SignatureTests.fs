@@ -115,9 +115,12 @@ let generateAllExpected() =
         let output = testCase.Dump resolutionFolder runtimeAssembly signatureOnly
         File.WriteAllText(getExpectedPath testCase, output)
 
+let normalizeEndings (str:string) =
+  str.Replace("\r\n", "\n").Replace("\r", "\n")
+
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
-    let output = testCase.Dump resolutionFolder runtimeAssembly signatureOnly
+    let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
+    let output = testCase.Dump resolutionFolder runtimeAssembly signatureOnly |> normalizeEndings 
     output |> should equal expected
