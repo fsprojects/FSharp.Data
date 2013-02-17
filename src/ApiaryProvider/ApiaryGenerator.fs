@@ -63,17 +63,16 @@ module internal ApiaryTypeBuilder =
   let generateHeadersForCall spec =
     [ for h, v in spec?request?headers.Properties -> h, v.AsString() ]
     |> ApiaryUtils.formatHeaders
-
-  /// Arguments that are appended to all methods (to allow passing additional info)
-  let additionalArgs = 
-    [ ProvidedParameter("query", typeof<list<string*string>>, optionalValue=null)
-      ProvidedParameter("headers", typeof<list<string*string>>, optionalValue=null) ] 
-
   
   /// Generates method that invokes a specified operation or retrieves
   /// an entity given some arguments (which can contain additional methods)
   /// This code also generates an asynchronous version of the operation
   let generateOperations ctx name (args, meth, path, spec) resultTy bodyResConv =
+
+    /// Arguments that are appended to all methods (to allow passing additional info)
+    let additionalArgs = 
+      [ ProvidedParameter("query", ctx.Replacer.ToRuntime typeof<list<string*string>>, optionalValue=null)
+        ProvidedParameter("headers", ctx.Replacer.ToRuntime typeof<list<string*string>>, optionalValue=null) ] 
 
     // Headers required by the apiary specification
     let reqHeaders = generateHeadersForCall spec
