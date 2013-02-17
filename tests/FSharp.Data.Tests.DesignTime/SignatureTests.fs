@@ -104,20 +104,39 @@ let expectedDirectory = __SOURCE_DIRECTORY__ ++ "expected"
 let getExpectedPath testCase = 
     expectedDirectory ++ (testCase.ToString().Replace("://", "_").Replace("/", "_") + ".expected")
 
-let signatureOnly = true
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "bin" ++ "FSharp.Data.dll"
+let portableRuntimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "bin" ++ "portable" ++ "FSharp.Data.dll"
+let silverlightRuntimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ ".." ++ "bin" ++ "sl5" ++ "FSharp.Data.dll"
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly signatureOnly
+        let output = testCase.Dump resolutionFolder runtimeAssembly true
         File.WriteAllText(getExpectedPath testCase, output)
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    let output = testCase.Dump resolutionFolder runtimeAssembly signatureOnly
+    let output = testCase.Dump resolutionFolder runtimeAssembly true
     output |> should equal expected
+
+[<Test>]
+[<TestCaseSource "testCases">]
+let ``Generating expressions works `` (testCase:TestCase) = 
+    let expected = getExpectedPath testCase |> File.ReadAllText 
+    testCase.Dump resolutionFolder runtimeAssembly false |> ignore
+
+[<Test>]
+[<TestCaseSource "testCases">]
+let ``Generating expressions works in portable `` (testCase:TestCase) = 
+    let expected = getExpectedPath testCase |> File.ReadAllText 
+    testCase.Dump resolutionFolder portableRuntimeAssembly false |> ignore
+
+[<Test>]
+[<TestCaseSource "testCases">]
+let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
+    let expected = getExpectedPath testCase |> File.ReadAllText 
+    testCase.Dump resolutionFolder silverlightRuntimeAssembly false |> ignore
