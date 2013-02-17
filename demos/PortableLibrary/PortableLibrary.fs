@@ -19,7 +19,7 @@ type StocksCsv = CsvProvider<"../../samples/docs/MSFT.csv">
 
 let getCsvData() = seq {
 
-    let msft = StocksCsv.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+    let msft = StocksCsv.Load "http://ichart.finance.yahoo.com/table.csv?s=MSFT"
 
     yield { Title = "MSFT Stock CSV"
             SubTitle = ""
@@ -32,44 +32,29 @@ let getCsvData() = seq {
                             Content = "" } } }
 }
 
-type SimpleJson = JsonProvider<""" { "name":"John", "age":94 } """>
-type WorldBankJson = JsonProvider<"../../samples/docs/WorldBank.json">
+type GitHubJson = JsonProvider<"../../tests/FSharp.Data.Tests/data/GitHub.json">
 
 let getJsonData() = seq {
-    new System.Xml.Linq.XElement(System.Xml.Linq.XName.Get "aaa") |> ignore
-    let simple = SimpleJson.Parse(""" { "name":"Tomas", "age":4 } """)
-    yield { Title = "Simple Json"
-            SubTitle = simple.Name
-            Description = simple.Age.ToString()
-            SubItems = [] }
 
-    let doc = WorldBankJson.Parse(worldBankJson)
-    let info = doc.Record
-    yield { Title = "World Bank JSON"
-            SubTitle = sprintf "Showing page %d of %d. Total records %d" info.Page info.Pages info.Total
+    let issues = GitHubJson.Parse gitHubJson
+    
+    yield { Title = "GitHub Issues for FSharp.Data"
+            SubTitle = ""
             Description = ""
             SubItems = seq { 
-                for record in doc.Array do
-                    match record.Value.Number with
-                    | Some value -> yield { Title = record.Date.ToString()
-                                            SubTitle = value.ToString()
-                                            Description = ""
-                                            Content = "" }
-                    | None -> () } }
+                for issue in issues |> Seq.truncate 10 do
+                    yield { Title = issue.Title
+                            SubTitle = issue.Number.ToString()
+                            Description = issue.User.Login
+                            Content = issue.Body } } }
 }
 
-type SimpleXml = XmlProvider<"""<author><name full="true">Karl Popper</name></author>""">
 type AuthorsXml = XmlProvider<"../../samples/docs/Writers.xml">
 
 let getXmlData() = seq {
 
-    let info = SimpleXml.Parse("""<author><name full="false">Thomas Kuhn</name></author>""")
-    yield { Title = "Simple XML"
-            SubTitle = info.Name.Value
-            Description = sprintf "(full=%b)" info.Name.Full
-            SubItems = [] }
+    let topic = AuthorsXml.Parse authorsXml
 
-    let topic = AuthorsXml.Parse(authorsXml)
     yield { Title = "Authors XML"
             SubTitle = topic.Topic
             Description = ""
@@ -101,6 +86,7 @@ let getWorldBankData() = seq {
 let getFreebaseData() = seq {
 
     let fb = FreebaseData.GetDataContext()
+
     yield { Title = "Asteroids"
             SubTitle = ""
             Description = ""
@@ -110,6 +96,24 @@ let getFreebaseData() = seq {
                             SubTitle = ""
                             Description = a.Description |> String.concat "\n"
                             Content = a.Blurb |> String.concat "\n" } } }
+}
+
+let getApiaryData() = seq {
+
+    let db = new ApiaryProvider<"themoviedb">("http://api.themoviedb.org")
+    db.AddQueryParam("api_key", "6ce0ef5b176501f8c07c634dfa933cff")
+
+    let movies = db.Search.Movie(query=["query","batman"]).Results
+
+    yield { Title = "Batman Movies"
+            SubTitle = ""
+            Description = ""
+            SubItems = seq { 
+                for movie in movies |> Seq.truncate 10 do
+                    yield { Title = movie.Title
+                            SubTitle = ""
+                            Description = ""
+                            Content = movie.OriginalTitle } } }
 }
 
 let getData() = seq {
@@ -122,6 +126,7 @@ let getData() = seq {
 #endif
     yield! getWorldBankData()
     yield! getFreebaseData()
+    yield! getApiaryData()
 }
 
 let populateDataAsync (add:System.Action<_>) = 
