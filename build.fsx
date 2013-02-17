@@ -27,13 +27,14 @@ let description = """
   data. It also includes helpers for parsing JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data type provider WorldBank Freebase CSV XML JSON"
 
+// Information for the project containing experimental providers
 let projectExperimental = "FSharp.Data.Experimental"
 let summaryExperimental = summary + " (experimental extensions)"
 let tagsExperimental = tags + " Apiary"
 let descriptionExperimental = description + """"
   This package (FSharp.Data.Experimental.dll) adds additional type providers that are work
-  in progress and do not match high quality standards yet. Currently, it includes type provider
-  for Apiary.io."""
+  in progress and do not match high quality standards yet. Currently, it includes a type 
+  provider for Apiary.io."""
 
 // Read additional information from the release notes document
 let releaseNotes, version = 
@@ -46,18 +47,20 @@ let releaseNotes, version =
 // Generate assembly info files with the right version & up-to-date information
 
 Target "AssemblyInfo" (fun _ ->
-
-    ["src/AssemblyInfo.fs", "FSharp.Data", project
-     "src/AssemblyInfo.DesignTime.fs", "FSharp.Data.DesignTime", project
-     "src/AssemblyInfo.Experimental.fs", "FSharp.Data.Experimental", projectExperimental
-     "src/AssemblyInfo.Experimental.DesignTime.fs", "FSharp.Data.Experimental.DesignTime", projectExperimental]
-    |> Seq.iter (fun (fileName, title, project) ->
+    [ ("src/AssemblyInfo.fs", "FSharp.Data", project, summary)
+      ("src/AssemblyInfo.DesignTime.fs", "FSharp.Data.DesignTime", project, summary)
+      ( "src/AssemblyInfo.Experimental.fs", "FSharp.Data.Experimental", 
+        projectExperimental, summaryExperimental )
+      ( "src/AssemblyInfo.Experimental.DesignTime.fs", 
+        "FSharp.Data.Experimental.DesignTime", projectExperimental,
+        summaryExperimental) ]
+    |> Seq.iter (fun (fileName, title, project, summary) ->
         CreateFSharpAssemblyInfo fileName
-            [Attribute.Title title
+           [ Attribute.Title title
              Attribute.Product project
              Attribute.Description summary
              Attribute.Version version
-             Attribute.FileVersion version])
+             Attribute.FileVersion version] )
 )
 
 // --------------------------------------------------------------------------------------
