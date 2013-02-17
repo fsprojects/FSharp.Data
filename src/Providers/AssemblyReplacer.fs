@@ -250,6 +250,12 @@ module AssemblyReplacer =
         Expr.Coerce (re expr, rt t)
     | NewUnionCase (uci, exprs) ->
         ru uci (List.map re exprs)
+    | NewRecord (t, exprs) ->
+        Expr.NewRecord (rt t, List.map re exprs)
+    | NewTuple (exprs) ->
+        Expr.NewTuple (List.map re exprs)
+    | TupleGet (expr, i) ->
+        Expr.TupleGet (re expr, i)
     | NewDelegate (t, vars, expr) ->
         Expr.NewDelegate (rt t, List.map rv vars, re expr)
     | FieldGet (obj, f) -> 
