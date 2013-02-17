@@ -2,32 +2,38 @@
 // Tests for the CSV parsing code
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Tests
+module FSharp.Data.Tests.JsonProvider.Tests
 
 open NUnit.Framework
+open FsUnit
+open System
 open System.IO
 open FSharp.Data
 
-module JsonNumericFields =
+type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
 
-  type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
+[<Test>]
+let ``Decimal required field is read correctly`` () = 
+  let prov = NumericFields.Parse(""" {"a":123} """)
+  prov.A |> should equal 123M
 
-  [<Test>]
-  let ``Decimal required field is read correctly`` () = 
-    let prov = NumericFields.Parse(""" {"a":123} """)
-    Assert.AreEqual(123M, prov.A)
+[<Test>]
+let ``Decimal optional field is read as None`` () = 
+  let prov = NumericFields.Parse(""" {"a":123} """)
+  prov.B |> should equal None
 
-  [<Test>]
-  let ``Decimal optional field is read as None`` () = 
-    let prov = NumericFields.Parse(""" {"a":123} """)
-    Assert.AreEqual(None, prov.B)
+[<Test>]
+let ``Reading a required field that is null throws an exception`` () = 
+  let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
+  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
 
-  [<Test>]
-  let ``Reading a required field that is null throws an exception`` () = 
-    let prov = NumericFields.Parse(""" {"a":null, "b":123} """)
-    Assert.Throws<System.Exception>(fun () -> prov.A |> ignore) |> ignore
+[<Test>]
+let ``Reading a required field that is missing throws an exception`` () = 
+  let prov = NumericFields.Parse(""" {"b":123} """)
+  (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
 
-  [<Test>]
-  let ``Reading a required field that is missing throws an exception`` () = 
-    let prov = NumericFields.Parse(""" {"b":123} """)
-    Assert.Throws<System.Collections.Generic.KeyNotFoundException>(fun () -> prov.A |> ignore) |> ignore
+[<Test>]
+let ``Optional int correctly infered`` () = 
+  let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSample()
+  let i = prov.[0].A.Number
+  i |> should equal (Some 123)

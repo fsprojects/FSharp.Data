@@ -20,8 +20,6 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 *)
 
 #r "../bin/FSharp.Data.dll"
-open System.IO
-open System.Net
 open FSharp.Data
 
 (**
@@ -45,14 +43,14 @@ get a strongly typed view of the file:
 type Stocks = CsvProvider<"docs/MSFT.csv">
 
 (**
-To get the current stock prices from the live web site, we use `WebClient` to download
-the data and then use the `Parse` method of the generated type to read the CSV data:
+The generated type provides two static methods for loading data. The `Parse` method can be
+used if we have the data in a `string` value. The `Load` method allows reading the data from
+a file or from a web resource. The following sample calls it with a URL that points to 
+a live CSV file on the Yahoo finance web site:
 *)
  
 // Download the stock prices
-let wc = new WebClient()
-let data = wc.DownloadString("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
-let msft = Stocks.Parse(data)
+let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -119,13 +117,12 @@ looks as follows:
 As you can see, the second and third columns are annotated with `metre` and `second`,
 respectively. To use units of measure in our code, we need to open the namespace with
 standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
-a static argument and load the same file (at runtime):
+a static argument. Also note that in this case we're using the same data at runtime,
+so there's no need to use the Load method, we can just call the default constructor.
 *)
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-type Test = CsvProvider<"docs/SmallTest.csv">
-let file = Path.Combine(__SOURCE_DIRECTORY__, "docs/SmallTest.csv")
-let small = Test.Load(file)
+let small = new CsvProvider<"docs/SmallTest.csv">()
 
 (**
 As in the previous example the `small` value exposes the rows using the `Data` property.
@@ -149,13 +146,11 @@ meters per second against a value in kilometers per hour.
 ## Using custom separators
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
-countries a semicolon is used. The `CsvProvider` has an optional paramter where you can 
+countries a semicolon is used. The `CsvProvider` has an optional parameter where you can 
 specify what to use as separator:
 *)
 
-type NonDefaultSeparator = CsvProvider<"docs/AirQuality.csv", ";">
-let airFile = Path.Combine(__SOURCE_DIRECTORY__, "docs/AirQuality.csv")
-let airQuality = NonDefaultSeparator.Load(airFile)
+let airQuality = new CsvProvider<"docs/AirQuality.csv", ";">()
 
 (**
 The air quality dataset used above is used in a lots of samples for the Statistical
@@ -190,10 +185,9 @@ same way as the file.
 
 *)
 
-type AirQualityWithUnits = CsvProvider<"docs/AirQuality.csv",";", Headers="OzoneInLangleys;Solar.R;Wind;Temp;Month;Day", SkipRows = 150>
-let airQualityUnit = AirQualityWithUnits.Load(airFile)
+let airQualitySkipped = new CsvProvider<"docs/AirQuality.csv",";", Headers="OzoneInLangleys;Solar.R;Wind;Temp;Month;Day", SkipLines = 150>()
 
-for row in airQualityUnit.Data do
+for row in airQualitySkipped.Data do
     printfn "Temp: %i Ozone: %f " row.Temp row.OzoneInLangleys
 
 (**

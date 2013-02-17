@@ -145,7 +145,11 @@ module internal Misc =
         member __.AddAttribute(attrData : CustomAttributeData) = customAttributes.Add(attrData)
         member __.AddAttributeWithNoParameter(ty : System.Type) = 
             let attrData = {
-                new CustomAttributeData() with
+#if FX_NO_CUSTOMATTRIBUTEDATA
+                new IProvidedCustomAttributeData with 
+#else
+                new CustomAttributeData() with 
+#endif
                 member __.Constructor =  ty.GetConstructor(Type.EmptyTypes)
                 member __.ConstructorArguments = upcast [|  |]
                 member __.NamedArguments = upcast [| |] 
@@ -415,7 +419,7 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f ->  transQuotationToCode isGenerated f
+        | Some f -> transQuotationToCode isGenerated f
         | None -> failwith (sprintf "ProvidedMethod: no invoker for %s on type %s" this.Name (if declaringType=null then "<not yet known type>" else declaringType.FullName))
    // Implement overloads
     override this.GetParameters() = argParams |> Array.ofList
@@ -450,7 +454,6 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:ProvidedParameter list) = 
     inherit System.Reflection.PropertyInfo()
     // State
-
     let parameters = defaultArg parameters []
     let mutable declaringType = null
     let mutable isStatic = false
@@ -485,7 +488,8 @@ type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:Provide
         and set x = isStatic <- x
 
     member this.GetterCode 
-        with set  (q:Quotations.Expr list -> Quotations.Expr) = 
+        with get() = Option.get getterCode
+        and set (q:Quotations.Expr list -> Quotations.Expr) = 
             if not getter.IsValueCreated then getterCode <- Some q else failwith "ProvidedProperty: getter MethodInfo has already been created"
 
     member this.SetterCode 
@@ -1632,7 +1636,7 @@ type AssemblyGenerator(assemblyFileName) =
                             | :? bool as x -> ilg.Emit(OpCodes.Ldc_I4, if x then 1 else 0)
                             | :? float32 as x -> ilg.Emit(OpCodes.Ldc_R4, x)
                             | :? float as x -> ilg.Emit(OpCodes.Ldc_R8, x)
-#if BROWSER
+#if FX_NO_GET_ENUM_UNDERLYING_TYPE
 #else
                             | :? System.Enum as x when x.GetType().GetEnumUnderlyingType() = typeof<int32> -> ilg.Emit(OpCodes.Ldc_I4, unbox<int32> v)
 #endif
@@ -1788,7 +1792,7 @@ type AssemblyGenerator(assemblyFileName) =
 #else
         assembly.Save (Path.GetFileName assemblyFileName)
 #endif
-        printfn "final bytes in '%s'" assemblyFileName
+        System.Diagnostics.Debug.WriteLine (sprintf "final bytes in '%s'" assemblyFileName)
 
         let assemblyLoadedInMemory = assemblyMainModule.Assembly 
 
@@ -1860,8 +1864,12 @@ module Local =
                 //             failwith (sprintf "Unknown type '%s' in namespace '%s' (contains %s)" typeName namespaceName typenames)    
         }
 
-
+#if FX_NO_LOCAL_FILESYSTEM
+type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) =
+#else
 type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) as this =
+#endif
+
     let otherNamespaces = ResizeArray<string * list<ProvidedTypeDefinition>>()
 
     let providedNamespaces = 
@@ -1910,6 +1918,7 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
+    member __.Namespaces = Seq.readonly otherNamespaces
     member self.Invalidate() = invalidateE.Trigger(self,EventArgs())
     interface ITypeProvider with
         [<CLIEvent>]

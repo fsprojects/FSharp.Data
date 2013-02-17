@@ -1,19 +1,14 @@
 ﻿namespace ProviderImplementation
 
-open System
 open System.IO
-open System.Linq.Expressions
-open System.Reflection
-open System.Globalization
 open Microsoft.FSharp.Core.CompilerServices
-open Microsoft.FSharp.Quotations
-open System.Collections.Generic
 open ProviderImplementation.ProvidedTypes
-
-open FSharp.Net
+open ProviderImplementation.StructureInference
 open FSharp.Data.Json
-open FSharp.Data.Json.JsonReader
-open ProviderImplementation
+open FSharp.Data.Json.Extensions
+open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
+open FSharp.Data.RuntimeImplementation.TypeInference
 
 // ----------------------------------------------------------------------------------------------
 
@@ -22,7 +17,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm = System.Reflection.Assembly.GetExecutingAssembly()
+  let asm, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some(typeof<obj>))
 
@@ -37,40 +32,68 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
     resTy.AddMember(domainTy)
 
+    let sample = args.[0] :?> string
+    let sampleList = args.[1] :?> bool
+    let culture = args.[2] :?> string
+    let cultureInfo = Operations.GetCulture culture
+    let resolutionFolder = args.[3] :?> string
+    let isHostedExecution = cfg.IsHostedExecution
+    let defaultResolutionFolder = cfg.ResolutionFolder
 
-    // Infer the schema from a specified file or URI sample
-    let sample = 
-      try 
-        let text = ProviderHelpers.readFileInProvider cfg (args.[0] :?> string) 
-        JsonValue.Parse(text)
-      with _ ->
-        try JsonValue.Parse(args.[0] :?> string) 
-        with _ -> failwith "Specified argument is neither a file, nor well-formed JSON."
+    // Infer the schema from a specified uri or inline text
+    let sampleJson, sampleIsUri = 
+      try
+        match ProviderHelpers.tryGetUri sample with
+        | Some uri ->
+            use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
+            JsonValue.Parse(reader.ReadToEnd(), cultureInfo), true
+        | None ->
+            JsonValue.Parse(sample, cultureInfo), false
+      with e ->
+        failwithf "Specified argument is neither a file, nor well-formed JSON: %s" e.Message
 
-    let infered = 
-      let sampleList = args.[1] :?> bool
+    let inferedType = 
       if not sampleList then
-        JsonInference.inferType sample
+        JsonInference.inferType cultureInfo sampleJson
       else
-        [ for itm in sample -> JsonInference.inferType itm ]
-        |> Seq.fold StructureInference.subtypeInfered StructureInference.Top
+        [ for itm in sampleJson -> JsonInference.inferType cultureInfo itm ]
+        |> Seq.fold subtypeInfered Top
 
-    let ctx = JsonGenerationContext.Create(domainTy)
-    let methResTy, methResConv = JsonTypeBuilder.generateJsonType ctx infered
-    
+    let ctx = JsonGenerationContext.Create(domainTy, replacer)
+    let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType
+
+    let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
+
     // Generate static Parse method
-    let args =  [ ProvidedParameter("source", typeof<string>) ]
-    let m = ProvidedMethod("Parse", args, methResTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> methResConv <@@ JsonDocument.Create(JsonValue.Parse (%%source)) @@>
-    resTy.AddMember(m)
+    let args = [ ProvidedParameter("text", typeof<string>) ]
+    let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ JsonDocument(JsonValue.Parse(%%text, Operations.GetCulture(culture))) @@>
+    resTy.AddMember m
 
-    // Generate static Load method
-    let args =  [ ProvidedParameter("path", typeof<string>) ]
-    let m = ProvidedMethod("Load", args, methResTy)
-    m.IsStaticMethod <- true
-    m.InvokeCode <- fun (Singleton source) -> methResConv <@@ JsonDocument.Create(JsonValue.Parse (File.ReadAllText(%%source))) @@>
-    resTy.AddMember(m)
+    // Generate static Load stream method
+    let args = [ ProvidedParameter("stream", typeof<Stream>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load(%%stream, Operations.GetCulture(culture))) @@>
+    resTy.AddMember m
+
+    // Generate static Load uri method
+    let args = [ ProvidedParameter("uri", typeof<string>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
+                                                           JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
+    resTy.AddMember m
+
+    if not sampleList then
+      // Generate static GetSample method
+      let m = ProvidedMethod("GetSample", [], methResTy, IsStaticMethod = true)
+      m.InvokeCode <- fun _ -> 
+        (if sampleIsUri then
+          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+              JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
+         else
+          <@@ JsonDocument(JsonValue.Parse(sample, Operations.GetCulture(culture))) @@>)
+        |> methResConv
+      resTy.AddMember m
 
     // Return the generated type
     resTy
@@ -78,12 +101,16 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
-      ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) ]
+      ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) 
+      ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
     """<summary>Typed representation of a JSON document</summary>
-       <param name='Sample'>Location of a JSON sample file or a string containing sample JSON document</param>
-       <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>"""
+       <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
+       <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>
+       <param name='Culture'>The culture used for parsing numbers and dates.</param>
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do jsonProvTy.AddXmlDoc helpText
   do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

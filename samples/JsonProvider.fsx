@@ -17,9 +17,7 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../bin/FSharp.Data.dll"
-open System.IO
 open FSharp.Data
-
 (**
 ### Inferring type from sample
 
@@ -82,15 +80,12 @@ Now, let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
-To simplify the sample, we use the `[<Literal>]` attribtue and use the same string
-as a schema and as runtime value:
+If we want to just use the same text used for the schema at runtime, we can use the `GetSample` method:
 *)
 
-let [<Literal>] people = """ [{ "name":"John", "age":94 }, { "name":"Tomas" }] """
-type People = JsonProvider<people>
+type People = JsonProvider<""" [{ "name":"John", "age":94 }, { "name":"Tomas" }] """>
 
-let items = People.Parse(people)
-for item in items do 
+for item in People.GetSample() do 
   printf "%s " item.Name 
   item.Age |> Option.iter (printf "(%d)")
   printfn ""
@@ -102,16 +97,14 @@ data set, it is inferred as `option<int>`. The above sample uses `Option.iter` t
 the value only when it is available.
 
 In the previous case, the values of individual properties had common type - `string` 
-for the `Name` proprety and numeric type for `Age`. However, what if the property of
+for the `Name` property and numeric type for `Age`. However, what if the property of
 a record can have multiple different types? In that case, the type provider behaves
 as follows: 
 *)
 
-let [<Literal>] values = """ [{"value":94 }, {"value":"Tomas" }] """
-type Values = JsonProvider<values>
+type Values = JsonProvider<""" [{"value":94 }, {"value":"Tomas" }] """>
 
-let items = Values.Parse(values)
-for item in items do 
+for item in Values.GetSample() do 
   match item.Value.Number, item.Value.String with
   | Some num, _ -> printfn "Numeric: %d" num
   | _, Some str -> printfn "Text: %s" str
@@ -148,7 +141,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"docs/WorldBank.json">
-let doc = WorldBank.Load(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let doc = WorldBank.Load("docs/WorldBank.json")
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
@@ -166,14 +159,15 @@ printfn "Showing page %d of %d. Total records %d"
 
 // Print all data points
 for record in doc.Array do
-  if record.Value <> null then
-    printfn "%d: %f" (int record.Date) (float record.Value)
+  record.Value.Number |> Option.iter (fun value ->
+    printfn "%d: %f" record.Date value)
 
 (**
-When printing the data points, some of them might be missing. Previously, this was handled
-using the `option` type, but in this case, the type is `string` and F# strings can have 
-`null` as a value, so the provider just returns a `string` which may be `null`. We can easily
-test that and print only available data.
+When printing the data points, some of the values might be missing (in the input, the value
+is `null` instead of a valid number). This is another example of a heterogeenous type - 
+the type is either `Number` or some other type (representing `null` value). This means
+that `record.Value` has a `Number` property (when the value is a number) and we can use
+it to print the result only when the data point is available.
 
 ## Parsing Twitter stream
 
@@ -190,14 +184,13 @@ let text = (*[omit:(omitted)]*)""" {"in_reply_to_status_id_str":null,"text":"\u5
 let tweet = Tweet.Parse(text)
 
 printfn "%s (retweeted %d times)\n:%s"
-  tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text
+  tweet.User.Value.Name tweet.RetweetCount.Value tweet.Text.Value
 
 (**
 After creating the `Tweet` type, we parse a single sample tweet and print some details about the
 tweet. As you can see, the `tweet.User` property has been inferred as optional (meaning that a 
 tweet might not have an author?) so we unsafely get the value using the `Value` property.
-The `RetweetCount` property may also be missing and `Text` is a `string` so if it was not
-available, we would get `null`.
+The `RetweetCount` and `Text` properties may be also missing, so we also access them unsafely.
 
 ## Related articles
 

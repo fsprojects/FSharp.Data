@@ -34,33 +34,46 @@ The parsed value can be processed using pattern matching - the `JsonValue` type
 is a discriminated union with cases such as `Record`, `Collection` and other that
 can be used to examine the structure.
 
-## Using JSON reader extensions
+## Using JSON extensions
 
 We do not cover this technique in this introduction. Instead, we look at a number
-of extensions that become available after opening the `FSharp.Data.Json.JsonReader` 
+of extensions that become available after opening the `FSharp.Data.Json.Extensions` 
 namespace. Once opened, we can write:
 
- * `value.AsBoolean` returns the value as Boolean if it is either `true` or `false`
- * `value.AsInteger` returns the value as integer if it is numeric and can be
-   converted to an integer; `value.AsInteger64`, `value.AsDecimal` and
-   `value.AsFloat` behave similarly.
- * `value.AsString` returns the value as a string
- * `value?child` used dynamic operator to obtain a record member named `child`
- * `[ for v in value -> v ]` treats `value` as a collection and iterates over it
+ * `value.AsBoolean()` returns the value as Boolean if it is either `true` or `false`
+ * `value.AsInteger()` returns the value as integer if it is numeric and can be
+   converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
+   `value.AsFloat()` behave similarly.
+ * `value.AsString()` returns the value as a string
+ * `value.AsDateTime()` parse the string as a `DateTime` value using either the
+    [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
+    `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
+ * `value?child` used dynamic operator to obtain a record member named `child`;
+    alternatively, you can also use `value.GetProperty(child)` or an indexer
+    `value.[child]`.
+ * `value.TryGetProperty(child)` can be used to safely obtain a record member 
+    (if the member is missing or the value is not a record then, `TryGetProperty` 
+    returns `None`).
+ * `[ for v in value -> v ]` treats `value` as a collection and iterates over it;
+   alternatively, it is possible to cobtain all elements as an array using 
+   `value.AsArray()`.
  * `value.Properties` returns a list of all properties of a record node
  * `value.InnerText` concatenates all text or text in an array 
    (representing e.g. multi-line string)
 
+Methods that may need to parse a numeric value or date (such as `AsFloat` and
+`AsDateTime`)
 The following example shows how to process the sample JSON value:
 *)
-open FSharp.Data.Json.JsonReader
+open FSharp.Data.Json.Extensions
 
 // Print name and birth year
-printfn "%s (%d)" info?name.AsString info?born.AsInteger
+let n = info?name
+printfn "%s (%d)" (info?name.AsString()) (info?born.AsInteger())
 
 // Print names of all siblings
 for sib in info?siblings do
-  printfn "%s" sib.AsString
+  printfn "%s" (sib.AsString())
 
 (**
 Note that the `JsonValue` type does not actually implement the `IEnumerable<'T>` 
@@ -90,7 +103,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "\\docs\\WorldBank.json")
+let file = File.ReadAllText(__SOURCE_DIRECTORY__ + "/docs/WorldBank.json")
 let value = JsonValue.Parse(file)
 
 (** 
@@ -99,18 +112,18 @@ and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
 *)
 match value with
-| JsonValue.Array [info; data] ->
+| JsonValue.Array [| info; data |] ->
     // Print overall information
     let page, pages, total = info?page, info?pages, info?total
     printfn 
       "Showing page %d of %d. Total records %d" 
-      page.AsInteger pages.AsInteger total.AsInteger
+      (page.AsInteger()) (pages.AsInteger()) (total.AsInteger())
     
     // Print every non-null data point
     for record in data do
       if record?value <> JsonValue.Null then
-        printfn "%d: %f" (int record?date.AsString) 
-                         (float record?value.AsString)
+        printfn "%d: %f" (record?date.AsInteger()) 
+                         (record?value.AsFloat())
 | _ -> printfn "failed"
 
 (**
@@ -119,9 +132,10 @@ above, the value may be `null`. In that case, we want to skipt the data point.
 To check whether the property is `null` we simply compare it with `JsonValue.Null`.
 
 Also note that the `date` and `value` properties are formatted as strings 
-(e.g. `"1990"`) instead of numbers (e.g. `1990`) so we use standard F# 
-functions `int` and `float` to convert the value obtained using `AsString`.
-
+in the source file (e.g. `"1990"`) instead of numbers (e.g. `1990`). When you try
+accessing the value as an integer or float, the `JsonValue` automatically parses
+the string into the desired format. In general, the API attempts to be as tolerant
+as possible when parsing the file.
 
 ## Related articles
 
