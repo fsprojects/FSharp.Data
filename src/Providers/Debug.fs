@@ -163,8 +163,7 @@ module Debug =
                 |> m.GetInvokeCodeInternal false
 
             let getConstructorBody (c: ProvidedConstructor) = 
-                seq { if not c.IsStatic then yield (getTypeErasedTo c.DeclaringType.BaseType)
-                      for param in c.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
+                seq { for param in c.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> c.GetInvokeCodeInternal false
