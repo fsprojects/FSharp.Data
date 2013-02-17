@@ -18,7 +18,7 @@ let files includes =
 
 // Information about the project to be used at NuGet and in AssemblyInfo files
 let project = "FSharp.Data"
-let authors = ["Tomas Petricek"]
+let authors = ["Tomas Petricek, Gustavo Guerra"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data

@@ -10,4 +10,4 @@
 * 1.0.11 - Support for different culture settings and CSV parsing according to RFC standard.
 * 1.0.12 - Minor update in missing fields handling.
 * 1.0.13 - Fix boolean parsing bug and improve CSV provider.
-* 1.0.14 - Support for Portable Class Libraries and Silverlight. Added Freebase provider. Improvements to the CSV provider. Performance improvements when handling large files.
+* 1.1.0 - Support for Portable Class Libraries and Silverlight. Added Freebase provider. Improvements to the CSV provider. Performance improvements when handling large files.
