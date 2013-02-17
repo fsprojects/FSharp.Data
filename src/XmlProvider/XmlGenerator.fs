@@ -13,7 +13,7 @@ open ProviderImplementation.QuotationBuilder
 open ProviderImplementation.StructureInference
 open FSharp.Data
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =

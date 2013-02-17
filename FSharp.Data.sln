@@ -4,10 +4,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{70754A36-47AC-4DC8-B24F-1A931554F4BF} = {70754A36-47AC-4DC8-B24F-1A931554F4BF}
+		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
+		{993A6EEF-6E82-4964-8F91-BE72CC63D000} = {993A6EEF-6E82-4964-8F91-BE72CC63D000}
+	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable", "src\FSharp.Data.Portable.fsproj", "{993A6EEF-6E82-4964-8F91-BE72CC63D000}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime.Silverlight", "src\FSharp.Data.DesignTime.Silverlight.fsproj", "{AD03F725-3AE4-4369-907F-58D8563B4AB4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{70754A36-47AC-4DC8-B24F-1A931554F4BF} = {70754A36-47AC-4DC8-B24F-1A931554F4BF}
+	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Silverlight", "src\FSharp.Data.Silverlight.fsproj", "{70754A36-47AC-4DC8-B24F-1A931554F4BF}"
 EndProject

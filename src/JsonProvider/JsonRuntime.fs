@@ -8,7 +8,7 @@ open System.ComponentModel
 open System.Globalization
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Underlying representation of the generated JSON types
 [<StructuredFormatDisplay("{JsonValue}")>]

@@ -9,7 +9,7 @@ open System.Diagnostics
 open System.Collections.Generic
 open System.Globalization
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Merge two sequences by pairing elements for which
 /// the specified predicate returns the same key

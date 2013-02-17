@@ -5,12 +5,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>b85f245b-3fb9-4253-8251-16f98f05b6ec</ProjectGuid>
+    <ProjectGuid>{3db6653e-5e17-4c81-a0ef-83810b47c350}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>FSharp.Data.DesignTime</RootNamespace>
-    <AssemblyName>FSharp.Data.DesignTime</AssemblyName>
+    <RootNamespace>FSharp.Data.Experimental.DesignTime</RootNamespace>
+    <AssemblyName>FSharp.Data.Experimental.DesignTime</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>FSharp.Data.DesignTime</Name>
+    <Name>FSharp.Data.Experimental.DesignTime</Name>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -19,9 +19,9 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;EXPERIMENTAL</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -33,9 +33,9 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;EXPERIMENTAL</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ProviderFileSystem.fs" />
@@ -45,7 +45,6 @@
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
     <Compile Include="Providers\ProvidedTypes.fs" />
     <Compile Include="Providers\Pluralizer.fs" />
@@ -58,23 +57,12 @@
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="JsonProvider\JsonInference.fs" />
     <Compile Include="JsonProvider\JsonGenerator.fs" />
-    <Compile Include="JsonProvider\JsonProvider.fs" />
-    <Compile Include="XmlProvider\XmlRuntime.fs" />
-    <Compile Include="XmlProvider\XmlInference.fs" />
-    <Compile Include="XmlProvider\XmlGenerator.fs" />
-    <Compile Include="XmlProvider\XmlProvider.fs" />
-    <Compile Include="CsvProvider\CsvRuntime.fs" />
-    <Compile Include="CsvProvider\CsvInference.fs" />
-    <Compile Include="CsvProvider\CsvGenerator.fs" />
-    <Compile Include="CsvProvider\CsvProvider.fs" />
-    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
-    <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
-    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
-    <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
+    <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
+    <Compile Include="ApiaryProvider\ApiarySchema.fs" />
+    <Compile Include="ApiaryProvider\ApiaryGenerator.fs" />
+    <Compile Include="ApiaryProvider\ApiaryProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
-    <Compile Include="AssemblyInfo.DesignTime.fs" />
+    <Compile Include="AssemblyInfo.Experimental.DesignTime.fs" />
     <None Include="Test.fsx" />
   </ItemGroup>
   <ItemGroup>
@@ -83,8 +71,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

@@ -6,7 +6,7 @@ namespace ProviderImplementation
 open System
 open FSharp.Data
 open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.TypeInference
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
 
 module internal CsvTypeBuilder =

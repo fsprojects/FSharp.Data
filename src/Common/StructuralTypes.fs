@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.RuntimeImplementation.TypeInference
+﻿namespace FSharp.Data.RuntimeImplementation.StructuralTypes
 
 open System
 open System.Diagnostics

@@ -3,7 +3,7 @@
 
 The F# Data library (`FSharp.Data.dll`) implements everything you need to access data 
 in your F# applications and scripts. It implements F# type providers for working with 
-structured file formats and for accessing the WorldBank data. It 
+structured file formats and for accessing the WorldBank and Freebase data. It 
 also includes helpers for parsing JSON files and for sending HTTP requests.
 
 ## F# type providers
