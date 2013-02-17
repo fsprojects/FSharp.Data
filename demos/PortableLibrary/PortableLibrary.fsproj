@@ -40,6 +40,9 @@
     <Reference Include="FSharp.Data">
       <HintPath>..\..\bin\portable\FSharp.Data.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Data.Experimental">
+      <HintPath>..\..\bin\portable\FSharp.Data.Experimental.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PortableLibrarySampleData.fs" />
