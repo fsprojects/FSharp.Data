@@ -35,7 +35,7 @@ type JsonValue =
 
     let rec serialize (sb:StringBuilder) = function
       | Null -> sb.Append "null"
-      | Boolean b -> sb.Append(b.ToString().ToLowerInvariant())
+      | Boolean b -> sb.Append(if b then "true" else "false")
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
@@ -239,12 +239,14 @@ module Extensions =
     /// Get all elements of a JSON object (assuming that the value is an array)
     member x.GetEnumerator() = x.AsArray().GetEnumerator()
 
-    /// Get the string value of an element (assuming that the value is a string)
-    member x.AsString() =
+    /// Get the string value of an element (assuming that the value is a scalar)
+    member x.AsString(?culture) =
       match x with
       | JsonValue.String s -> s
       | JsonValue.Null -> null
       | JsonValue.Boolean b -> if b then "true" else "false"
+      | JsonValue.Number n -> n.ToString (defaultArg culture CultureInfo.InvariantCulture)
+      | JsonValue.Float f -> f.ToString (defaultArg culture CultureInfo.InvariantCulture)
       | _ -> failwithf "JSON mismatch: Not a string - %A" x
 
     /// Get the datetime value of an element (assuming that the value is a string
