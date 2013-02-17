@@ -210,6 +210,14 @@ module AssemblyReplacer =
         failwithf "Method '%s' of type '%O' not found in '%s'" uci.Name t toAsm.Location
       Expr.Call (constructorMethod, exprs))
 
+  let private replaceRecord asmMappings (t:Type) exprs =
+    replaceLazy asmMappings (lazy (Expr.NewRecord (t, exprs)), getAssemblies t) (fun toAsm ->
+      let t = getType toAsm t (replaceType asmMappings)
+      let c = t.GetConstructors() |> Seq.exactlyOne
+      if c = null then
+        failwithf "Constructor of record type '%O' not found in '%s'" t toAsm.Location
+      Expr.NewObject (c, exprs))
+
   let private replaceVar asmMappings (varTable: IDictionary<_,_>) reversePass (v: Var) =
     if v.Type.GetType() = typeof<ProvidedTypeDefinition> then v
     else replace asmMappings (v, getAssemblies v.Type) (fun toAsm ->
@@ -237,6 +245,7 @@ module AssemblyReplacer =
     let rm = replaceMethod asmMappings
     let rc = replaceConstructor asmMappings
     let ru = replaceUnionCase asmMappings
+    let rr = replaceRecord asmMappings
     let rv = replaceVar asmMappings varTable reversePass
     let re = replaceExpr asmMappings varTable reversePass
     
@@ -260,7 +269,7 @@ module AssemblyReplacer =
     | NewUnionCase (uci, exprs) ->
         ru uci (List.map re exprs)
     | NewRecord (t, exprs) ->
-        Expr.NewRecord (rt t, List.map re exprs)
+        rr t (List.map re exprs)
     | NewTuple (exprs) ->
         Expr.NewTuple (List.map re exprs)
     | TupleGet (expr, i) ->

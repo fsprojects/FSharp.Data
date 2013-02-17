@@ -3,6 +3,7 @@ module FSharp.Data.Tests.Experimental.DesignTime.SignatureTests
 #else
 module FSharp.Data.Tests.DesignTime.SignatureTests
 #endif
+
 #if INTERACTIVE
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"

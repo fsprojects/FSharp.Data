@@ -10,8 +10,12 @@ open ProviderImplementation
 
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
-let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "FSharp.Data.dll"
-//let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable" ++ "FSharp.Data.dll"
+#if EXPERIMENTAL
+let assemblyName = "FSharp.Data.Experimental.dll"
+#else
+let assemblyName = "FSharp.Data.dll"
+#endif
+let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
 
 //let signatureOnly = true
 let signatureOnly = false
@@ -19,6 +23,16 @@ let signatureOnly = false
 let generate (inst:TypeProviderInstantiation) = inst.generateType resolutionFolder runtimeAssembly
 let prettyPrint t = Debug.prettyPrint signatureOnly t
 let prettyPrintWithMaxDepth maxDepth t = Debug.prettyPrintWithMaxDepth signatureOnly maxDepth t
+
+#if EXPERIMENTAL
+
+Apiary { ApiName = "themoviedb" }
+|> generate |> prettyPrint |> Console.WriteLine
+
+Apiary { ApiName = "fssnip" }
+|> generate |> prettyPrint |> Console.WriteLine
+
+#else
 
 Csv { Sample = "SmallTest.csv"
       Separator = "" 
@@ -92,8 +106,4 @@ Freebase { Key = "none"
            AllowLocalQueryEvaluation = true }
 |> generate |> prettyPrintWithMaxDepth 3 |> Console.WriteLine
 
-Apiary { ApiName = "themoviedb" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Apiary { ApiName = "fssnip" }
-|> generate |> prettyPrint |> Console.WriteLine
+#endif
