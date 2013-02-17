@@ -36,6 +36,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.DesignTim
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{514D9830-63C2-458C-8712-E97A7A071EB9}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

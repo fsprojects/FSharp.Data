@@ -1,2 +1,1 @@
-nuget pack FSharp.Data.nuspec
-nuget push FSharp.Data.1.0.14.nupkg
+@for %%f in (..\bin\*.nupkg) do @..\tools\NuGet\NuGet.exe push %%f

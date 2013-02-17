@@ -53,6 +53,7 @@
     <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
     <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
     <Compile Include="Runtime.fs" />
+    <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=2.3.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

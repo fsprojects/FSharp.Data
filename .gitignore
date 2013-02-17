@@ -7,3 +7,8 @@ docs/docs
 nuget/*.nupkg
 *.user
 __setup__.fsx
+tools/FAKE
+src/AssemblyInfo.fs
+src/AssemblyInfo.DesignTime.fs
+TestResults.xml
+packages/NUnit.Runners.2.6.2
