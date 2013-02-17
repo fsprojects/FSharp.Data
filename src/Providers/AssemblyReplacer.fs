@@ -213,13 +213,22 @@ module AssemblyReplacer =
   let private replaceVar asmMappings (varTable: IDictionary<_,_>) reversePass (v: Var) =
     if v.Type.GetType() = typeof<ProvidedTypeDefinition> then v
     else replace asmMappings (v, getAssemblies v.Type) (fun toAsm ->
+      let createNewVar() = 
+        Var (v.Name, getType toAsm v.Type (replaceType asmMappings), v.IsMutable)
       if reversePass then
-        let newVar = Var (v.Name, getType toAsm v.Type (replaceType asmMappings), v.IsMutable)
+        let newVar = createNewVar()
         // store the original var as we'll have to revert to it later
         varTable.Add(newVar, v)
         newVar
       else
-        varTable.[v])
+        match varTable.TryGetValue v with
+        | true, v -> v
+        | false, _ -> 
+            // It's a variable local to the quotation
+            let newVar = createNewVar()
+            // store it so we reuse it from now on
+            varTable.Add(v, newVar)
+            newVar)
   
   let rec private replaceExpr asmMappings varTable reversePass quotation =
     let rt = replaceType asmMappings
