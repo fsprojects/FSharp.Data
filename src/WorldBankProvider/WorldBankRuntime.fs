@@ -275,7 +275,7 @@ type Country internal (connection:ServiceConnection, countryCode:string) =
     interface ICountry with member x.GetIndicators() = indicators
 
 type ICountryCollection =
-    abstract GetCountry : countryCode:string -> Country
+    abstract GetCountry : countryCode:string * countryName:string -> Country
 
 type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConnection, regionCodeOpt) = 
     let items = 
@@ -288,7 +288,7 @@ type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConne
                   yield Country(connection, country.Id) :?> 'T }  
     interface seq<'T> with member x.GetEnumerator() = items.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
-    interface ICountryCollection with member x.GetCountry(countryCode) = Country(connection, countryCode)
+    interface ICountryCollection with member x.GetCountry(countryCode, countryName) = Country(connection, countryCode)
     
 type IRegion =
     abstract GetCountries<'T when 'T :> Country> : unit -> CountryCollection<'T>

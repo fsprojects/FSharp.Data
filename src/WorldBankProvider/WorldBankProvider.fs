@@ -96,7 +96,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
                     let prop = 
                         ProvidedProperty
                           ( name, countryType, IsStatic=false,
-                            GetterCode = conv (fun arg -> <@@ ((%%arg : CountryCollection<Country>) :> ICountryCollection).GetCountry(countryIdVal) @@>))
+                            GetterCode = conv (fun arg -> <@@ ((%%arg : CountryCollection<Country>) :> ICountryCollection).GetCountry(countryIdVal, name) @@>))
                     prop.AddXmlDoc (sprintf "The data for country '%s'" country.Name)
                     yield prop ])
             serviceTypesType.AddMember t
