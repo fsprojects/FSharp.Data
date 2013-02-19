@@ -120,7 +120,10 @@ module internal ApiaryTypeBuilder =
     // the mapping not on the result (as above) but inside async block. So we
     // generate function and apply 'ApiaryGenerationHelper.AsyncMap(work, f)'
     let asyncMap (asyncWork:Expr) =
-      let mi = (ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>).GetMethod("AsyncMap")
+      let (?) = ProviderImplementation.QuotationBuilder.(?)
+      let apiaryGenTy = ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>
+      let apiaryDocTy = ctx.Replacer.ToRuntime typeof<ApiaryDocument>
+
       let resultTy = 
         // If we just used 'resultTy' (as it is), then the method information
         // returned by MakeGenericMethod cannot be used in Expr.Call, because
@@ -138,12 +141,11 @@ module internal ApiaryTypeBuilder =
                 typ.BaseType.MakeArrayType()
             | _ -> failwith "asyncMap: Unsupported ProvidedSymbolType" 
         | _ -> resultTy
-      let mi = mi.MakeGenericMethod(ctx.Replacer.ToRuntime typeof<ApiaryDocument>, resultTy)
-      let convFuncExpr = 
-        let v = Var.Global("doc", ctx.Replacer.ToRuntime typeof<ApiaryDocument>)
-        //Expr.Lambda(v, Expr.Coerce(bodyResConv (Expr.Var(v)), resultTy))
-        Expr.Lambda(v, bodyResConv (Expr.Var(v)))
-      Expr.Call(mi, [ctx.Replacer.ToRuntime asyncWork; convFuncExpr])
+
+      let asyncWork = ctx.Replacer.ToRuntime asyncWork
+      let _, convFunc = ReflectionHelpers.makeDelegate bodyResConv apiaryDocTy
+      apiaryGenTy?AsyncMap (apiaryDocTy, resultTy) (asyncWork, convFunc)
+
 
     asyncM.InvokeCode <- fun parameters ->
       let parameters = parameters |> Seq.map ctx.Replacer.ToDesignTime 

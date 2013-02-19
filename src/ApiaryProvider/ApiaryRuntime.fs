@@ -102,6 +102,6 @@ type ApiaryRuntime =
     Array.ofSeq headers, Array.ofSeq query
 
 type ApiaryGenerationHelper = 
-  static member AsyncMap<'T, 'R>(work:Async<'T>, f:'T -> 'R) = 
-    async { let! v = work in return f v }
+  static member AsyncMap<'T, 'R>(work:Async<'T>, f:Func<'T, 'R>) = 
+    async { let! v = work in return f.Invoke v }
     
