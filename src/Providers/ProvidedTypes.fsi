@@ -211,6 +211,27 @@ type ProvidedField =
     /// Add definition location information to the provided field definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
+/// Represents the type constructor in a provided symbol type.
+type SymbolKind = 
+    | SDArray 
+    | Array of int 
+    | Pointer 
+    | ByRef 
+    | Generic of System.Type 
+    | FSharpTypeAbbreviation of (System.Reflection.Assembly * string * string[])
+
+/// Represents an array or other symbolic type involving a provided type as the argument.
+/// See the type provider spec for the methods that must be implemented.
+/// Note that the type provider specification does not require us to implement pointer-equality for provided types.
+[<Class>]
+type ProvidedSymbolType =
+    inherit System.Type
+
+    /// Returns the kind of this symbolic type
+    member Kind : SymbolKind
+    /// Return the provided types used as arguments of this symbolic type
+    member Args : list<System.Type>
+
 
 /// Provides symbolic provided types
 [<Class>]

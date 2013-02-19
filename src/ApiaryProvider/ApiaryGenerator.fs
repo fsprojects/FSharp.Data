@@ -122,13 +122,26 @@ module internal ApiaryTypeBuilder =
     let asyncMap (asyncWork:Expr) =
       let mi = (ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>).GetMethod("AsyncMap")
       let resultTy = 
-        // It may sound reasonable to use 'resultTy' as the generic type, but then
-        // 'MakeGenericMethod' does not work, so we find the erased type
-        if resultTy :? ProvidedTypeDefinition then
-          resultTy.BaseType else resultTy
+        // If we just used 'resultTy' (as it is), then the method information
+        // returned by MakeGenericMethod cannot be used in Expr.Call, because
+        // it does not support GetParameters method (doh!)
+        //
+        // We emulate the F# type provider type erasure mechanism to get the 
+        // actual (erased) type and use _that_ as our generic type (because
+        // that is System.RuntimeType). We erase ProvidedTypes to their base
+        // and we erase array of provided type to array of base type.
+        match resultTy with 
+        | :? ProvidedTypeDefinition -> resultTy.BaseType 
+        | :? ProvidedSymbolType as sym ->
+            match sym.Kind, sym.Args with
+            | SymbolKind.SDArray, [typ] ->
+                typ.BaseType.MakeArrayType()
+            | _ -> failwith "asyncMap: Unsupported ProvidedSymbolType" 
+        | _ -> resultTy
       let mi = mi.MakeGenericMethod(ctx.Replacer.ToRuntime typeof<ApiaryDocument>, resultTy)
       let convFuncExpr = 
         let v = Var.Global("doc", ctx.Replacer.ToRuntime typeof<ApiaryDocument>)
+        //Expr.Lambda(v, Expr.Coerce(bodyResConv (Expr.Var(v)), resultTy))
         Expr.Lambda(v, bodyResConv (Expr.Var(v)))
       Expr.Call(mi, [ctx.Replacer.ToRuntime asyncWork; convFuncExpr])
 
