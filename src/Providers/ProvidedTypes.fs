@@ -98,7 +98,7 @@ module internal Misc =
                             CustomAttributeNamedArgument(typeof<TypeProviderDefinitionLocationAttribute>.GetProperty("Line"), CustomAttributeTypedArgument(typeof<int>, line)) ;
                             CustomAttributeNamedArgument(typeof<TypeProviderDefinitionLocationAttribute>.GetProperty("Column"), CustomAttributeTypedArgument(typeof<int>, column)) 
                         |] }
-    let mkObsoleteAttributeCustomAttributeData(message:string) = 
+    let mkObsoleteAttributeCustomAttributeData(message:string, isError: bool) = 
 #if FX_NO_CUSTOMATTRIBUTEDATA
         { new IProvidedCustomAttributeData with 
 #else
@@ -106,7 +106,8 @@ module internal Misc =
 #endif
                 member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 1)
                 member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message)  |]
-                member __.NamedArguments = upcast [| |] }
+                member __.NamedArguments = 
+                    upcast [| if isError then yield  CustomAttributeNamedArgument(typeof<ObsoleteAttribute>.GetProperty("IsError"), CustomAttributeTypedArgument(typeof<bool>, isError)) |] }
 
     type CustomAttributesImpl() =
         let customAttributes = ResizeArray<CustomAttributeData>()
@@ -132,7 +133,7 @@ module internal Misc =
                   yield! customAttributes |]
 
         member __.AddDefinitionLocation(line:int,column:int,filePath:string) = customAttributes.Add(mkDefinitionLocationAttributeCustomAttributeData(line, column, filePath))
-        member __.AddObsolete(msg : string) = obsoleteMessage <- Some msg
+        member __.AddObsolete(msg : string, isError) = obsoleteMessage <- Some (msg,isError)
         member __.HasParamArray with get() = hasParamArray and set(v) = hasParamArray <- v
         member __.AddXmlDocComputed(xmlDoc : unit -> string) = xmlDocAlwaysRecomputed <- Some xmlDoc
         member __.AddXmlDocDelayed(xmlDoc : unit -> string) = xmlDocDelayed <- Some xmlDoc
@@ -142,19 +143,6 @@ module internal Misc =
             [| yield! customAttributesOnce.Force()
                match xmlDocAlwaysRecomputed with None -> () | Some f -> customAttributes.Add(mkXmlDocCustomAttributeData (f()))  |]
             :> IList<_>
-        member __.AddAttribute(attrData : CustomAttributeData) = customAttributes.Add(attrData)
-        member __.AddAttributeWithNoParameter(ty : System.Type) = 
-            let attrData = {
-#if FX_NO_CUSTOMATTRIBUTEDATA
-                new IProvidedCustomAttributeData with 
-#else
-                new CustomAttributeData() with 
-#endif
-                member __.Constructor =  ty.GetConstructor(Type.EmptyTypes)
-                member __.ConstructorArguments = upcast [|  |]
-                member __.NamedArguments = upcast [| |] 
-            }        
-            __.AddAttribute(attrData)
 
     let transExpr isGenerated q =     
         let rec trans q = 
@@ -216,12 +204,35 @@ module internal Misc =
                 let tagNumber = uc.Tag
                 trans <@@ (%%(tagExpr) : int) = tagNumber @@>
 
+            // Explicitly handle weird byref variables in lets (used to populate out parameters), since the generic handlers can't deal with byrefs
+            | Quotations.Patterns.Let(v,vexpr,bexpr) when v.Type.IsByRef ->
+
+                // the binding must have leaves that are themselves variables (due to the limited support for byrefs in expressions)
+                // therefore, we can perform inlining to translate this to a form that can be compiled
+                inlineByref v vexpr bexpr
+
             // Handle the generic cases
             | Quotations.ExprShape.ShapeLambda(v,body) -> 
                 Quotations.Expr.Lambda(v, trans body)
             | Quotations.ExprShape.ShapeCombination(comb,args) -> 
                 Quotations.ExprShape.RebuildShapeCombination(comb,List.map trans args)
             | Quotations.ExprShape.ShapeVar _ -> q
+        and inlineByref v vexpr bexpr =
+            match vexpr with
+            | Quotations.Patterns.Sequential(e',vexpr') ->
+                (* let v = (e'; vexpr') in bexpr => e'; let v = vexpr' in bexpr *)
+                Quotations.Expr.Sequential(e', inlineByref v vexpr' bexpr)
+                |> trans
+            | Quotations.Patterns.IfThenElse(c,b1,b2) ->
+                (* let v = if c then b1 else b2 in bexpr => if c then let v = b1 in bexpr else let v = b2 in bexpr *)
+                Quotations.Expr.IfThenElse(c, inlineByref v b1 bexpr, inlineByref v b2 bexpr)
+                |> trans
+            | Quotations.Patterns.Var _ -> 
+                (* let v = v1 in bexpr => bexpr[v/v1] *)
+                bexpr.Substitute(fun v' -> if v = v' then Some vexpr else None)
+                |> trans
+            | _ -> 
+                failwith (sprintf "Unexpected byref binding: %A = %A" v vexpr)
         and transValue (v : obj, tyOfValue : Type, expectedTy : Type) = 
             let rec transArray (o : Array, ty : Type) = 
                 let elemTy = ty.GetElementType()
@@ -330,7 +341,7 @@ type ProvidedConstructor(parameters : ProvidedParameter list) =
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
@@ -395,7 +406,7 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
 #if FX_NO_CUSTOMATTRIBUTEDATA
@@ -454,6 +465,7 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:ProvidedParameter list) = 
     inherit System.Reflection.PropertyInfo()
     // State
+
     let parameters = defaultArg parameters []
     let mutable declaringType = null
     let mutable isStatic = false
@@ -472,11 +484,9 @@ type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:Provide
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
-    member this.AddAttributeData(attrData : CustomAttributeData) = customAttributesImpl.AddAttribute(attrData)
-    member this.AddAttribute(attrType : Type) = customAttributesImpl.AddAttributeWithNoParameter(attrType)
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
@@ -581,7 +591,7 @@ type ProvidedLiteralField(fieldName:string,fieldType:Type,literalValue:obj) =
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
 #if FX_NO_CUSTOMATTRIBUTEDATA
@@ -619,7 +629,7 @@ type ProvidedField(fieldName:string,fieldType:Type) =
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
 #if FX_NO_CUSTOMATTRIBUTEDATA
@@ -891,7 +901,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
         enum (int32 TypeProviderTypeAttributes.IsErased)
 
 
-    let mutable baseType   = baseType
+    let mutable baseType   =  lazy baseType
     let mutable membersKnown   = ResizeArray<MemberInfo>()
     let mutable membersQueue   = ResizeArray<(unit -> list<MemberInfo>)>()       
     let mutable staticParams = [ ] 
@@ -981,7 +991,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.AddXmlDocComputed xmlDoc                    = customAttributesImpl.AddXmlDocComputed xmlDoc
     member this.AddXmlDocDelayed xmlDoc                     = customAttributesImpl.AddXmlDocDelayed xmlDoc
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
-    member this.AddObsoleteAttribute msg                    = customAttributesImpl.AddObsolete msg
+    member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
@@ -996,7 +1006,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     new (className,baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
     // state ops
 
-    member this.SetBaseType t = baseType <- Some t
+    member this.SetBaseType t = baseType <- lazy Some t
+    member this.SetBaseTypeDelayed t = baseType <- t
     member this.SetAttributes x = attributes <- x
     // Add MemberInfos
     member this.AddMembersDelayed(makeMS : unit -> list<#MemberInfo>) =
@@ -1075,7 +1086,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.SetAssemblyLazy assembly = theAssembly <- assembly
     override this.FullName = fullName.Force()
     override this.Namespace = rootNamespace.Force()
-    override this.BaseType = match baseType with Some ty -> ty | None -> null
+    override this.BaseType = match baseType.Value with Some ty -> ty | None -> null
     // Constructors
     override this.GetConstructors bindingAttr = 
         [| for m in this.GetMembers bindingAttr do                
@@ -1792,7 +1803,6 @@ type AssemblyGenerator(assemblyFileName) =
 #else
         assembly.Save (Path.GetFileName assemblyFileName)
 #endif
-        System.Diagnostics.Debug.WriteLine (sprintf "final bytes in '%s'" assemblyFileName)
 
         let assemblyLoadedInMemory = assemblyMainModule.Assembly 
 
