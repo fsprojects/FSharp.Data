@@ -8,16 +8,32 @@
 open System.IO
 open FSharp.Literate
 
-let template = Path.Combine(__SOURCE_DIRECTORY__, "template.html")
-let sources = Path.Combine(__SOURCE_DIRECTORY__, "../samples")
-let output = Path.Combine(__SOURCE_DIRECTORY__, "../docs")
+let (++) a b = Path.Combine(a, b)
+let template = __SOURCE_DIRECTORY__ ++ "template.html"
+let sources  = __SOURCE_DIRECTORY__ ++ "../samples"
+let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 
-let sourceDocs = Path.Combine(sources, "docs")
-let outputDocs = Path.Combine(output, "docs")
+// Root URL for the generated HTML
+let root = "http://fsharp.github.com/FSharp.Data"
+
+// When running locally, you can use your path
+// let root = "file://C:\Tomas\Projects\FSharp.Data\docs"
+
+
+// Copy all sample documents to the "docs" directory
+let sourceDocs = sources ++ "docs"
+let outputDocs = output ++ "docs"
 
 if Directory.Exists outputDocs then Directory.Delete(outputDocs, true)
 Directory.CreateDirectory outputDocs
 for fileInfo in DirectoryInfo(sourceDocs).EnumerateFiles() do
-    fileInfo.CopyTo(Path.Combine(outputDocs, fileInfo.Name)) |> ignore
+    fileInfo.CopyTo(outputDocs ++ fileInfo.Name) |> ignore
 
-Literate.ProcessDirectory(sources, template, output)
+// Generate HTML from all FSX files in samples & subdirectories
+let build () =
+  for sub in [ "."; "experimental"; "library"; "tutorials" ] do
+    Literate.ProcessDirectory
+      ( sources ++ sub, template, output ++ sub, 
+        replacements = [ "root", root ] )
+
+build()

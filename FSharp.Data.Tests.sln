@@ -3,18 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
-		samples\ApiaryProvider.fsx = samples\ApiaryProvider.fsx
-		samples\CsvProvider.fsx = samples\CsvProvider.fsx
-		samples\Freebase.fsx = samples\Freebase.fsx
-		samples\FSharpData.md = samples\FSharpData.md
-		samples\FSharpDataExperimental.md = samples\FSharpDataExperimental.md
-		samples\Http.fsx = samples\Http.fsx
 		samples\contributing.md = samples\contributing.md
-		samples\JsonProvider.fsx = samples\JsonProvider.fsx
-		samples\JsonToXml.fsx = samples\JsonToXml.fsx
-		samples\JsonValue.fsx = samples\JsonValue.fsx
-		samples\WorldBank.fsx = samples\WorldBank.fsx
-		samples\XmlProvider.fsx = samples\XmlProvider.fsx
+		samples\experimental.md = samples\experimental.md
+		samples\fsharpdata.md = samples\fsharpdata.md
+		samples\index.md = samples\index.md
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{5EF9FF95-1C75-458A-983A-168E43945913}"
@@ -40,6 +32,27 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimental.DesignTime", "tests\FSharp.Data.Tests.Experimental.DesignTime\FSharp.Data.Tests.Experimental.DesignTime.fsproj", "{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
+	ProjectSection(SolutionItems) = preProject
+		samples\library\CsvProvider.fsx = samples\library\CsvProvider.fsx
+		samples\library\Freebase.fsx = samples\library\Freebase.fsx
+		samples\library\Http.fsx = samples\library\Http.fsx
+		samples\library\JsonProvider.fsx = samples\library\JsonProvider.fsx
+		samples\library\JsonValue.fsx = samples\library\JsonValue.fsx
+		samples\library\WorldBank.fsx = samples\library\WorldBank.fsx
+		samples\library\XmlProvider.fsx = samples\library\XmlProvider.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
+	ProjectSection(SolutionItems) = preProject
+		samples\tutorials\JsonToXml.fsx = samples\tutorials\JsonToXml.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Experimental", "Experimental", "{34171948-6CCE-448B-AA7D-A76FCE32A08E}"
+	ProjectSection(SolutionItems) = preProject
+		samples\experimental\ApiaryProvider.fsx = samples\experimental\ApiaryProvider.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,5 +112,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
+		{5F82EB06-4E8B-4733-A0C7-F210925DDD04} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
+		{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
+		{34171948-6CCE-448B-AA7D-A76FCE32A08E} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
 	EndGlobalSection
 EndGlobal

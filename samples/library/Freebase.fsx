@@ -21,7 +21,7 @@ The following example loads the `FSharp.Data.dll` library (in F# Interactive),
 initializes a connection to Freebase using the `GetDataContext` method:
 *)
 
-#r "../bin/FSharp.Data.dll"
+#r "../../bin/FSharp.Data.dll"
 open FSharp.Data
 
 let data = FreebaseData.GetDataContext()

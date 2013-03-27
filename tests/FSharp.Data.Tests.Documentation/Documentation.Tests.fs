@@ -44,6 +44,9 @@ module DocumentationTests =
         printfn "%A %s (%s)" (startl, endl) msg file
         incr errorCount
 
+    let dir = Path.GetDirectoryName(Path.Combine(output, file))
+    if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
+
     Literate.ProcessScriptFile
       ( Path.Combine(sources, file), template, Path.Combine(output, file), 
         errorHandler = errorHandler,
@@ -54,9 +57,9 @@ module DocumentationTests =
   // Core API documentation
 
   let docFiles = 
-    Directory.EnumerateFiles sources 
-    |> Seq.map Path.GetFileName
-    |> Seq.filter (fun f -> Path.GetExtension f = ".fsx")
+    seq { for sub in [ "library"; "tutorials"; "experimental" ] do
+            for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
+              yield sub + "/" + Path.GetFileName(file) }
   
   [<Test>]
   [<TestCaseSource "docFiles">]

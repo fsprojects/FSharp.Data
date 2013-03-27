@@ -33,7 +33,7 @@ so it is located in `FSharp.Data.Experimental.dll`:
 
 *)
 
-#r "../bin/FSharp.Data.Experimental.dll"
+#r "../../bin/FSharp.Data.Experimental.dll"
 open System.IO
 open FSharp.Data
 

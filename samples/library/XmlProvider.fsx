@@ -18,7 +18,7 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type under the cover): *)
 
-#r "../bin/FSharp.Data.dll"
+#r "../../bin/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
 open FSharp.Data
 
@@ -126,7 +126,7 @@ The `Load` method allows reading the data from a file or from a web resource. Th
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
-type Authors = XmlProvider<"docs/Writers.xml">
+type Authors = XmlProvider<"../docs/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -166,7 +166,7 @@ that processes `<div>` elements. To make this possible, you need to set an optio
 parameter `Global` to `true`:
 *)
 
-type Html = XmlProvider<"docs/HtmlBody.xml", Global=true>
+type Html = XmlProvider<"../docs/HtmlBody.xml", Global=true>
 let html = Html.GetSample()
 
 (**
