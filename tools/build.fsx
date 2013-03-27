@@ -3,8 +3,8 @@
 // (the documentation is stored in the 'docs' directory)
 // --------------------------------------------------------------------------------------
 
-#I "../packages/FSharp.Formatting.1.0.4/lib/net40"
-#load "../packages/FSharp.Formatting.1.0.4/literate/literate.fsx"
+#I "../packages/FSharp.Formatting.1.0.14/lib/net40"
+#load "../packages/FSharp.Formatting.1.0.14/literate/literate.fsx"
 open System.IO
 open FSharp.Literate
 
