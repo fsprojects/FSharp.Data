@@ -7,3 +7,8 @@ tests/*
 TestResults.xml
 demos/*
 tools/*
+docs/docs/*
+docs/experimental/*
+docs/library/*
+docs/tutorials/*
+docs/*.html
