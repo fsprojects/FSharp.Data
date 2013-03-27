@@ -14,6 +14,7 @@ let output = Path.Combine(__SOURCE_DIRECTORY__, "../docs")
 
 let sourceDocs = Path.Combine(sources, "docs")
 let outputDocs = Path.Combine(output, "docs")
+
 if Directory.Exists outputDocs then Directory.Delete(outputDocs, true)
 Directory.CreateDirectory outputDocs
 for fileInfo in DirectoryInfo(sourceDocs).EnumerateFiles() do

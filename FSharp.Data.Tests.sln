@@ -6,8 +6,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7E48
 		samples\ApiaryProvider.fsx = samples\ApiaryProvider.fsx
 		samples\CsvProvider.fsx = samples\CsvProvider.fsx
 		samples\Freebase.fsx = samples\Freebase.fsx
-		samples\FSharpData.fsx = samples\FSharpData.fsx
+		samples\FSharpData.md = samples\FSharpData.md
+		samples\FSharpDataExperimental.md = samples\FSharpDataExperimental.md
 		samples\Http.fsx = samples\Http.fsx
+		samples\contributing.md = samples\contributing.md
 		samples\JsonProvider.fsx = samples\JsonProvider.fsx
 		samples\JsonToXml.fsx = samples\JsonToXml.fsx
 		samples\JsonValue.fsx = samples\JsonValue.fsx
@@ -36,11 +38,6 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.DesignTime", "tests\FSharp.Data.Tests.DesignTime\FSharp.Data.Tests.DesignTime.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{514D9830-63C2-458C-8712-E97A7A071EB9}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimental.DesignTime", "tests\FSharp.Data.Tests.Experimental.DesignTime\FSharp.Data.Tests.Experimental.DesignTime.fsproj", "{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}"
 EndProject
