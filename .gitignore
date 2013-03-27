@@ -3,6 +3,9 @@ obj
 ClientBin
 *.suo
 docs/*.html
+docs/experimental/*.html
+docs/library/*.html
+docs/tutorials/*.html
 docs/docs
 nuget/*.nupkg
 *.user

@@ -19,7 +19,7 @@ is located in the `../bin` directory, we can load it in F# Interactive as follow
 `System.Net`):
 *)
 
-#r "../bin/FSharp.Data.dll"
+#r "../../bin/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -40,7 +40,7 @@ and the next rows define the data. We can pass reference to the file to `CsvProv
 get a strongly typed view of the file:
 *)
 
-type Stocks = CsvProvider<"docs/MSFT.csv">
+type Stocks = CsvProvider<"../docs/MSFT.csv">
 
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
@@ -79,7 +79,7 @@ of MSFT stocks changes since the company was founded:
 *)
 
 // Load the F# chart library
-#load "lib/FSharpChart.fsx"
+#load "../lib/FSharpChart.fsx"
 open System
 open Samples.FSharp.Charting
 
@@ -122,7 +122,7 @@ so there's no need to use the Load method, we can just call the default construc
 *)
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-let small = new CsvProvider<"docs/SmallTest.csv">()
+let small = new CsvProvider<"../docs/SmallTest.csv">()
 
 (**
 As in the previous example the `small` value exposes the rows using the `Data` property.
@@ -150,7 +150,7 @@ countries a semicolon is used. The `CsvProvider` has an optional parameter where
 specify what to use as separator:
 *)
 
-let airQuality = new CsvProvider<"docs/AirQuality.csv", ";">()
+let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()
 
 (**
 The air quality dataset used above is used in a lots of samples for the Statistical
@@ -182,7 +182,7 @@ let mean =
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains 
 rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"docs/AirQuality.csv", Separator=";,">`.
+`CsvProvider<"../docs/AirQuality.csv", Separator=";,">`.
 
 ## Related articles
 
