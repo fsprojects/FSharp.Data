@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>F# Data: Library for Data Access
+    <title>F# Data: Experimental Type Providers
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks.">
@@ -33,75 +33,39 @@
       <hr />
       <div class="row">
         <div class="span9" id="main">
-          <h1>F# Data: Library for Data Access</h1>
+          <h1>F# Data: Experimental Type Providers</h1>
 
-<p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to 
-access data in your F# applications and scripts. It implements F# type 
-providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank data. It also includes helpers for parsing 
-JSON files and for sending HTTP requests.</p>
+<p>The experimental additions of the F# Data library (<code>FSharp.Data.Experimental.dll</code>) include
+type providers for data access that have not been fully tested and do not match the high
+quality standards of F# Data yet.</p>
 
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
-      To install the library, run the following command in the <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a>:
-      <pre>PM> Install-Package FSharp.Data</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
+<p>This is a good place to test new type providers - if you're working on an interesting 
+(data-access related) type provider and want to share it with the world, then please
+consider submitting it to the experimental package! The code is included in <a href="https://github.com/fsharp/FSharp.Data">the main
+GitHub repository</a>, but is referenced only from the <code>FSharp.Data.Experimental.sln</code>
+solution.</p>
 
-<p>Alternatively, you can download the <a href="https://github.com/fsharp/FSharp.Data/zipball/master">source as a ZIP file</a> or download 
-the <a href="https://github.com/fsharp/FSharp.Data/zipball/release">compiled binaries</a> as a ZIP.</p>
+<h2>F# type providers</h2>
 
-<h2>Documentation</h2>
-
-<p>One of the key benefits of this library is that it comes with a comprehensive 
-documentation. The documentation is automatically generated from <code>*.fsx</code> files in 
-<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">the samples folder</a>. If you find a typo, please submit a pull request!</p>
+<p>The library currently contains a type provider for calling REST APIs based on the 
+<a href="http://apiary.io">apiary.io</a> service. If you host a documentation for your REST API
+at apiary and your REST API follows standard patterns, you can easily call it using
+the type provider.</p>
 
 <ul>
-<li><p><a href="fSharpdata.html">F# Data</a> is the documentation home with links
-to pages that document individual type providers (CSV, XML, JSON and WorldBank)
-as well as for other public types available in <code>FSharp.Data.dll</code>.</p></li>
-<li><p><a href="experimental.html">F# Data Experimental</a> is a documentation for 
-experimental extensions to F# Data. The library contains providers
-that do not match high quality standards yet. Currently, it includes a provider
-for REST APIs documented using <a href="http://apiary.io">apiary.io</a>.</p></li>
+<li><a href="experimental/ApiaryProvider.html">F# Data: Apiary Provider (Experimental)</a> - discusses 
+the <code>ApiaryProvider</code> type.</li>
 </ul>
 
-<h2>Contributing</h2>
+<h2>Related projects</h2>
 
-<p>The project is hosted on <a href="https://github.com/fsharp/FSharp.Data">GitHub</a> where you can <a href="https://github.com/fsharp/FSharp.Data/issues">report issues</a>, fork 
-the project and submit pull requests. If you're adding new public API, please also 
-contribute <a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">samples</a> that can be turned into a documentation.</p>
+<p>This library focuses on providing type providers for data access.
+It does not aim to be a comprehensive collection of F# type 
+providers (which can be used for numerous other purposes). Moreover, this library 
+(currently) does not provide API for <em>creating</em> documents.</p>
 
-<ul>
-<li><p>If you want to discuss an issue or feature that you want to add the to the library,
-then you can submit <a href="https://github.com/fsharp/FSharp.Data/issues">an issue or feature request</a> via Github or you can
-send an email to the <a href="http://groups.google.com/group/fsharp-opensource">F# open source</a> mailing list.</p></li>
-<li><p>For more information about the library architecture, organization and more
-(such as the support for portable libraries for Windows Phone, Silverlight etc.)
-see the <a href="contributing.html">contributing to F# data</a> page.</p></li>
-</ul>
-
-<h3>Library philosophy</h3>
-
-<p>This library focuses on providing a simple read-only access to the structured documents 
-and other data sources. It does not aim to be a comprehensive collection of F# type providers 
-(which can be used for numerous other purposes). Moreover, this library (currently) does not 
-provide API for creating or mutating documents.</p>
-
-<p>If you're interested in other F# type prviders or if you need to mutate or create XML and 
-JSON documents, then the <a href="https://github.com/fsharp/fsharpx">FSharpx library</a> might be of interest.</p>
-
-<h3>Library license</h3>
-
-<p>The library is available under Apache 2.0. For more information see the 
-<a href="https://github.com/fsharp/FSharp.Data/blob/master/README.md">License file</a> in the GitHub repository. In summary, this means that you can 
-use the library for commercial purposes, fork it, modify it as you wish.</p>
+<p>If you're interested in other F# type providers then the <a href="https://github.com/fsharp/fsharpx/">FSharpx 
+library</a> might be of interest.</p>
 
           
         </div>
