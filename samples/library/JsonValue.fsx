@@ -82,7 +82,7 @@ the `GetEnumerator` method, which makes it possible to use it in sequence expres
 and with the `for` loop.
 *)
 
-(*
+(**
 ## Parsing WorldBank response
 
 To look at a more complex example, consider a sample document 
