@@ -35,73 +35,70 @@
         <div class="span9" id="main">
           <h1>F# Data: Library for Data Access</h1>
 
-<p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to 
-access data in your F# applications and scripts. It implements F# type 
-providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank data. It also includes helpers for parsing 
-JSON files and for sending HTTP requests.</p>
+<p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to access data 
+in your F# applications and scripts. It implements F# type providers for working with 
+structured file formats and for accessing the WorldBank and Freebase data. It 
+also includes helpers for parsing JSON files and for sending HTTP requests.</p>
 
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
-      To install the library, run the following command in the <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">Package Manager Console</a>:
-      <pre>PM> Install-Package FSharp.Data</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
-</div>
+<h2>F# type providers</h2>
 
-<p>Alternatively, you can download the <a href="https://github.com/fsharp/FSharp.Data/zipball/master">source as a ZIP file</a> or download 
-the <a href="https://github.com/fsharp/FSharp.Data/zipball/release">compiled binaries</a> as a ZIP.</p>
-
-<h2>Documentation</h2>
-
-<p>One of the key benefits of this library is that it comes with a comprehensive 
-documentation. The documentation is automatically generated from <code>*.fsx</code> files in 
-<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">the samples folder</a>. If you find a typo, please submit a pull request!</p>
+<p>The type providers for structured file formats infer the structure of a sample 
+document (or a document containing multiple samples). The structure is then used
+to provide easy to use type-safe access to documents that follow the same structure.
+For more information see:</p>
 
 <ul>
-<li><p><a href="fSharpdata.html">F# Data</a> is the documentation home with links
-to pages that document individual type providers (CSV, XML, JSON and WorldBank)
-as well as for other public types available in <code>FSharp.Data.dll</code>.</p></li>
-<li><p><a href="experimental.html">F# Data Experimental</a> is a documentation for 
-experimental extensions to F# Data. The library contains providers
-that do not match high quality standards yet. Currently, it includes a provider
-for REST APIs documented using <a href="http://apiary.io">apiary.io</a>.</p></li>
+<li><a href="library/XmlProvider.html">XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
+<li><a href="library/JsonProvider.html">JSON Type Provider</a> - discusses the <code>JsonProvider&lt;..&gt;</code> type</li>
+<li><a href="library/CsvProvider.html">CSV Type Provider</a> - discusses the <code>CsvProvider&lt;..&gt;</code> type</li>
 </ul>
 
-<h2>Contributing</h2>
-
-<p>The project is hosted on <a href="https://github.com/fsharp/FSharp.Data">GitHub</a> where you can <a href="https://github.com/fsharp/FSharp.Data/issues">report issues</a>, fork 
-the project and submit pull requests. If you're adding new public API, please also 
-contribute <a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">samples</a> that can be turned into a documentation.</p>
+<p>The library also implements a type provider for accessing data from 
+<a href="http://data.worldbank.org/">the WorldBank</a> and <a href="http://www.freebase.com/">Freebase graph database</a>.</p>
 
 <ul>
-<li><p>If you want to discuss an issue or feature that you want to add the to the library,
-then you can submit <a href="https://github.com/fsharp/FSharp.Data/issues">an issue or feature request</a> via Github or you can
-send an email to the <a href="http://groups.google.com/group/fsharp-opensource">F# open source</a> mailing list.</p></li>
-<li><p>For more information about the library architecture, organization and more
-(such as the support for portable libraries for Windows Phone, Silverlight etc.)
-see the <a href="contributing.html">contributing to F# data</a> page.</p></li>
+<li><a href="library/WorldBank.html">WorldBank Provider</a> - discusses the <code>WorldBankData</code> type 
+and the <code>WorldBankDataProvider&lt;..&gt;</code> type</li>
+<li><a href="library/Freebase.html">Freebase Provider</a> - discusses the <code>FreebaseData</code> type 
+and the <code>FreebaseDataProvider&lt;..&gt;</code> type</li>
 </ul>
 
-<h3>Library philosophy</h3>
+<h2>Data access tools</h2>
 
-<p>This library focuses on providing a simple read-only access to the structured documents 
-and other data sources. It does not aim to be a comprehensive collection of F# type providers 
-(which can be used for numerous other purposes). Moreover, this library (currently) does not 
-provide API for creating or mutating documents.</p>
+<p>In addition to the F# type providers, the library also defines several types that 
+simplify data access. In particular, it incldues tools for HTTP web requests and a 
+JSON parser with simple dynamic API. For more information about these types, see the 
+following topcs:</p>
 
-<p>If you're interested in other F# type prviders or if you need to mutate or create XML and 
-JSON documents, then the <a href="https://github.com/fsharp/fsharpx">FSharpx library</a> might be of interest.</p>
+<ul>
+<li><a href="library/JsonValue.html">JSON Rarser and Reader</a> - introduces the JSON parser 
+(wihtout using the type provider)</li>
+<li><a href="library/Http.html">HTTP Utilities</a> - discusses the <code>Http</code> type that can be used
+to send simple HTTP web requests.</li>
+</ul>
 
-<h3>Library license</h3>
+<h2>Tutorials</h2>
 
-<p>The library is available under Apache 2.0. For more information see the 
-<a href="https://github.com/fsharp/FSharp.Data/blob/master/README.md">License file</a> in the GitHub repository. In summary, this means that you can 
-use the library for commercial purposes, fork it, modify it as you wish.</p>
+<p>The above articles cover all key features of the F# Data library. However, if you're interested
+in more samples or more details, then the following tutorials contain additional advanced examples 
+or demos that use multiple different features together:</p>
+
+<ul>
+<li><a href="tutorials/JsonToXml.html">Converting between JSON and XML</a> - implements two serialization 
+functions that convert between the standard .NET <code>XElement</code> and the <code>JsonValue</code> from F# Data.
+The tutorial demonstrates pattern matching on <code>JsonValue</code>.</li>
+</ul>
+
+<h2>Related projects</h2>
+
+<p>This library focuses on providing type providers for data access.
+It does not aim to be a comprehensive collection of F# type 
+providers (which can be used for numerous other purposes). Moreover, this library 
+(currently) does not provide API for <em>creating</em> documents.</p>
+
+<p>If you're interested in other F# type providers or if you need to mutate or create 
+XML and JSON documents, then the <a href="https://github.com/fsharp/fsharpx/">FSharpx library</a> 
+might be of interest.</p>
 
           
         </div>
