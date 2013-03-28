@@ -2,7 +2,7 @@
 # F# Data: JSON Type Provider
 
 This article demonstrates how to use the JSON type provider to access JSON files
-in a statically typed way. We first look how the structure is infered and then 
+in a statically typed way. We first look how the structure is inferred and then 
 demonstrate the provider by parsing data returned by the WorldBank and Twitter.
 
 The JSON type provider provides a statically typed access to JSON documents.
@@ -35,7 +35,7 @@ simple.Name
 
 (**
 You can see that the generated type has two properties - `Age` of type `int` and `Name` of
-type `string`. The provider successfuly infers the types from the sample and exposes the
+type `string`. The provider successfully infers the types from the sample and exposes the
 fields as properties (with PascalCase name to follow standard naming conventions).
 
 
@@ -136,7 +136,7 @@ some information and the actual `value`. Note that the `value` is passed as a st
 (for some unknown reason). It is wrapped in quotes, so the provider infers its type as
 `string` (and we need to convert it manually).
 
-The following sample generates type based on the [`docs/WorldBank.json`](docs/WorldBank.json) 
+The following sample generates type based on the [`docs/WorldBank.json`](../docs/WorldBank.json) 
 file and loads it:
 *)
 
@@ -164,7 +164,7 @@ for record in doc.Array do
 
 (**
 When printing the data points, some of the values might be missing (in the input, the value
-is `null` instead of a valid number). This is another example of a heterogeenous type - 
+is `null` instead of a valid number). This is another example of a heterogeneous type - 
 the type is either `Number` or some other type (representing `null` value). This means
 that `record.Value` has a `Number` property (when the value is a number) and we can use
 it to print the result only when the data point is available.
