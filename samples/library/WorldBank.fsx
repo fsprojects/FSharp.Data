@@ -59,7 +59,7 @@ value as a Y value.
 ## Using World Bank data asynchronously
 
 If you need to download large amount of data or if you need to run the operation without
-blockin the caller, then you probably want to use F# asynchronous workflows to perform
+blocking the caller, then you probably want to use F# asynchronous workflows to perform
 the operation. The F# Data Library also provides the `WorldBankDataProvider` type which takes
 a number of static parameters. If the `Asynchronous` parameter is set to `true` then the
 type provider generates all operations as asynchronous:

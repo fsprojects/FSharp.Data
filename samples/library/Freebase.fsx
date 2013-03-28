@@ -31,7 +31,7 @@ let data = FreebaseData.GetDataContext()
 ### Exploring Freebase data
 
 Now you can explore the Freebase data schema by typing `data.` and exploring the
-avaailable data sources in the autocomplete. For example, the following snippet
+available data sources in the autocomplete. For example, the following snippet
 retrieves the Chemical Elements and then looks at the details of Hydrogen:
 *)
 
@@ -87,7 +87,7 @@ Freebase type provider. This works in simple cases, but it is inefficient if we 
 filter the data or perform other querying.
 
 However, the Freebase provider includes support for querying. Queries written using the
-F# 3.0 LINQ syntax are translated to MQL (a querying langauge used by Freebase). This means 
+F# 3.0 LINQ syntax are translated to MQL (a querying language used by Freebase). This means 
 you can write queries in F# 3.0 with auto-completion and strong typing, and still execute 
 efficiently on the server, at least for the queries translated to MQL.
 
@@ -168,7 +168,7 @@ summary, here is a list of features:
 * Many queries are translated efficiently into the MQL language. Those that can't 
   execute on the client side by default.
 * A selection of sample individuals is given under the `Individuals` entry for each collection 
-  of objects. This allows you to program against stroingly named individual such as 
+  of objects. This allows you to program against strongly named individual such as 
   `Hydrogen` or `Bob Dylan`.
 * Custom Freebase operators such as approximate counts and approximate string matching are supported
 * Image URLs are provided via the `GetImages()` method, and the first image is provided using the 
@@ -178,7 +178,7 @@ summary, here is a list of features:
   when the schema changes).
 * Optional client-side caching of schema information makes type checking quick and efficient
 * Units of measure are supported. For example, the `Atomic mass` property of chemical elements
-  is automatically converted to SI units and it is exposed in Killograms. This is statically
+  is automatically converted to SI units and it is exposed in Kilograms. This is statically
   tracked in the F# type system using units of measure.
 * If you want to query larger amount of Freebase data, you can register at Google and
   obtain a custom API key. The key can be passed as a static parameter to the type provider.
