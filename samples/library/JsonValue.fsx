@@ -86,7 +86,7 @@ and with the `for` loop.
 ## Parsing WorldBank response
 
 To look at a more complex example, consider a sample document 
-[`docs/WorldBank.json`](docs/WorldBank.json) which was obtained as a response to 
+[`docs/WorldBank.json`](../docs/WorldBank.json) which was obtained as a response to 
 a WorldBank request (you can access the WorldBank data more conveniently using
 [a type provider](WorldBank.html)). The document looks as follows:
 
