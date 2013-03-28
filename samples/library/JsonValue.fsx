@@ -77,7 +77,7 @@ for sib in info?siblings do
 
 (**
 Note that the `JsonValue` type does not actually implement the `IEnumerable<'T>` 
-namespace (meaning that it cannot be pased to `Seq.xyz` functions). It only has
+namespace (meaning that it cannot be passed to `Seq.xyz` functions). It only has
 the `GetEnumerator` method, which makes it possible to use it in sequence expressions
 and with the `for` loop.
 *)
@@ -128,7 +128,7 @@ match value with
 
 (**
 The `value` property of a data point is not always available - as demonstrated
-above, the value may be `null`. In that case, we want to skipt the data point.
+above, the value may be `null`. In that case, we want to skip the data point.
 To check whether the property is `null` we simply compare it with `JsonValue.Null`.
 
 Also note that the `date` and `value` properties are formatted as strings 
