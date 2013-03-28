@@ -2,7 +2,7 @@
 # F# Data: XML Type Provider
 
 This article demonstrates how to use the XML type provider to access XML documents
-in a statically typed way. We first look how the structure is infered and then 
+in a statically typed way. We first look how the structure is inferred and then 
 demonstrate the provider by parsing RSS feed.
 
 The XML type provider provides a statically typed access to XML documents.
@@ -41,7 +41,7 @@ printfn "%s (%d)" sample.Name sample.Born
 (**
 The type provider generates a type `Author` that has properties corresponding to the
 attributes of the root element of the XML document. The types of the properties are 
-infered based on the values in the sample document. In this case, the `Name` property
+inferred based on the values in the sample document. In this case, the `Name` property
 has a type `string` and `Born` is `int`.
 
 XML is quite flexible format, so we could represent the same document differently.
@@ -64,7 +64,7 @@ a primitive value and has no children or attributes.
 
 ### Types for more complex structure
 
-Let's now look at a number of examples that have more interesting structrue. First of 
+Let's now look at a number of examples that have more interesting structure. First of 
 all, what if a node contains some value, but also has some attributes?
 *)
 
@@ -83,7 +83,7 @@ adds property with a (special) name `Value` that returns the content of the elem
 
 Another interesting case is when there are multiple nodes that contain just a 
 primitive value. The following example shows what happens when the root node
-contains multiple `<value>` nodes (not tht if we leave out the parameter to the 
+contains multiple `<value>` nodes (note that if we leave out the parameter to the 
 `Parse` method, the same text used for the schema will be used as the runtime value)
 *)
 
@@ -101,7 +101,7 @@ are turned into `int` values and so the `GetValues()` method returns just `int[]
 
 In this section we look at an example that demonstrates how the type provider works 
 on a simple document that lists authors that write about a specific topic. The 
-sample document [`docs/Writers.xml`](docs/Writers.xml) looks as follows:
+sample document [`docs/Writers.xml`](../docs/Writers.xml) looks as follows:
 
     <authors topic="Philosophy of Science">
       <author name="Paul Feyerabend" born="1924" />
@@ -151,7 +151,7 @@ In the examples shown earlier, an element was never (recursively) contained in a
 element of the same name (for example `<author>` never contained another `<author>`).
 However, when we work with documents such as XHTML files, this can often be the case.
 Consider for example, the following sample (a simplified version of 
-[`docs/HtmlBody.xml`](docs/HtmlBody.xml)):
+[`docs/HtmlBody.xml`](../docs/HtmlBody.xml)):
 
     <div id="root">
       <span>Main text</span>
@@ -191,7 +191,7 @@ printDiv html
 (**
 
 The function first prints all text included as `<span>` (the element never has any
-attributes in our sample, so it is infered as `string`), then it recursively prints
+attributes in our sample, so it is inferred as `string`), then it recursively prints
 the content of all `<div>` elements. If the element does not contain nested elements,
 then we print the `Value` (inner text).
 
