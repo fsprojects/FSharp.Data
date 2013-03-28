@@ -5,9 +5,9 @@
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>
-    <licenseUrl>http://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>http://tpetricek.github.com/FSharp.Data</projectUrl>
-    <iconUrl>http://tpetricek.github.com/FSharp.Data/docs/content/logo.png</iconUrl>
+    <licenseUrl>http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>http://fsharp.github.com/FSharp.Data</projectUrl>
+    <iconUrl>https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>

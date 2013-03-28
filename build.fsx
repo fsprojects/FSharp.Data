@@ -25,7 +25,7 @@ let description = """
   in your F# applications and scripts. It implements F# type providers for working with
   structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase
   data. It also includes helpers for parsing JSON files and for sending HTTP requests."""
-let tags = "F# fsharp data type provider WorldBank Freebase CSV XML JSON"
+let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
 
 // Information for the project containing experimental providers
 let projectExperimental = "FSharp.Data.Experimental"
