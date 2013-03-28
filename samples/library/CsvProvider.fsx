@@ -186,7 +186,7 @@ rows separated by either semicolon or a colon. You can use:
 
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives more information about other
+ * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
 *)
 
