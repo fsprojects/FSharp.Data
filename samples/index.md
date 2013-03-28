@@ -4,7 +4,7 @@ F# Data: Library for Data Access
 The F# Data library (`FSharp.Data.dll`) implements everything you need to 
 access data in your F# applications and scripts. It implements F# type 
 providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank data. It also includes helpers for parsing 
+and for accessing the WorldBank and Freebase data. It also includes helpers for parsing 
 JSON files and for sending HTTP requests.
 
 <div class="row">
@@ -28,8 +28,8 @@ One of the key benefits of this library is that it comes with a comprehensive
 documentation. The documentation is automatically generated from `*.fsx` files in 
 [the samples folder][samples]. If you find a typo, please submit a pull request!
 
- * [F# Data](fSharpdata.html) is the documentation home with links
-   to pages that document individual type providers (CSV, XML, JSON and WorldBank) 
+ * [F# Data](fsharpdata.html) is the documentation home with links
+   to pages that document individual type providers (CSV, XML, JSON, WorldBank and Freebase) 
    as well as for other public types available in `FSharp.Data.dll`.
 
  * [F# Data Experimental](experimental.html) is a documentation for 
@@ -59,8 +59,7 @@ and other data sources. It does not aim to be a comprehensive collection of F# t
 (which can be used for numerous other purposes). Moreover, this library (currently) does not 
 provide API for creating or mutating documents.
 
-If you're interested in other F# type prviders or if you need to mutate or create XML and 
-JSON documents, then the [FSharpx library][fsharpx] might be of interest.
+If you're interested in other F# type providers then the [FSharpx library][fsharpx] might be of interest.
 
 ### Library license
 

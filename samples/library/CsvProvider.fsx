@@ -27,7 +27,7 @@ open FSharp.Data
 ### Parsing stock prices
 
 The Yahoo Finance web site provides daily stock prices in a CSV format that has the
-following structure (you can find a larger example in the [`docs/MSFT.csv`](docs/MSFT.csv) file):
+following structure (you can find a larger example in the [`docs/MSFT.csv`](../docs/MSFT.csv) file):
 
     Date,Open,High,Low,Close,Volume,Adj Close
     2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
@@ -35,7 +35,7 @@ following structure (you can find a larger example in the [`docs/MSFT.csv`](docs
     2012-01-25,29.07,29.65,29.07,29.56,59231700,29.56
     2012-01-24,29.47,29.57,29.18,29.34,51703300,29.34
 
-As usual with CSV files, the first row contains the headers (names of individial columns) 
+As usual with CSV files, the first row contains the headers (names of individual columns) 
 and the next rows define the data. We can pass reference to the file to `CsvProvider` to 
 get a strongly typed view of the file:
 *)
@@ -69,8 +69,8 @@ collection of rows. We iterate over the rows using `for` loop. As you can see th
 to the columns in the CSV file.
 
 As you can see, the type provider also infers types of individual rows. The `Date`
-property is infered to be a `DateTime` (because the values in the sample file can all
-be parsed as dates) while HLOC prices are infered as `decimal`.
+property is inferred to be a `DateTime` (because the values in the sample file can all
+be parsed as dates) while HLOC prices are inferred as `decimal`.
 
 ### Charting stock prices
 
@@ -108,7 +108,7 @@ Another interesting feature of the CSV type provider is that it supports F# unit
 If the header includes the name of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit. 
 
-In this section, we use a simple file [`docs/SmallTest.csv`](docs/SmallTest.csv) which
+In this section, we use a simple file [`docs/SmallTest.csv`](../docs/SmallTest.csv) which
 looks as follows:
 
     Name,  Distance (metre), Time (second)
@@ -139,7 +139,7 @@ for row in small.Data do
 The numerical values of `Distance` and `Time` are both inferred as `decimal` (because they
 are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
-meters per second against a value in kilometers per hour.
+meters per second against a value in kilometres per hour.
 *)
 
 (**
@@ -158,7 +158,7 @@ Computing language R. A short description of the dataset can be found
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
 It is quite common for statistical datasets that some values are missing. If
-you open the [`docs/AirQuality.csv`](docs/AirQuality.csv) file you will see
+you open the [`docs/AirQuality.csv`](../docs/AirQuality.csv) file you will see
 that some values for the Ozone observations are marked `#N/A`. Such values are
 parsed as float and will in F# be marked with `Double.NaN`.
 *)
@@ -175,7 +175,7 @@ each row, then remove missing values and then use the standard `Seq.average` fun
 let mean = 
   airQuality.Data 
   |> Seq.map (fun row -> row.Ozone) 
-  |> Seq.filter (fun elem -> not (System.Double.IsNaN(elem))) 
+  |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
   |> Seq.average 
 
 (**

@@ -77,7 +77,7 @@ for sib in info?siblings do
 
 (**
 Note that the `JsonValue` type does not actually implement the `IEnumerable<'T>` 
-namespace (meaning that it cannot be pased to `Seq.xyz` functions). It only has
+namespace (meaning that it cannot be passed to `Seq.xyz` functions). It only has
 the `GetEnumerator` method, which makes it possible to use it in sequence expressions
 and with the `for` loop.
 *)
@@ -86,7 +86,7 @@ and with the `for` loop.
 ## Parsing WorldBank response
 
 To look at a more complex example, consider a sample document 
-[`docs/WorldBank.json`](docs/WorldBank.json) which was obtained as a response to 
+[`docs/WorldBank.json`](../docs/WorldBank.json) which was obtained as a response to 
 a WorldBank request (you can access the WorldBank data more conveniently using
 [a type provider](WorldBank.html)). The document looks as follows:
 
@@ -128,7 +128,7 @@ match value with
 
 (**
 The `value` property of a data point is not always available - as demonstrated
-above, the value may be `null`. In that case, we want to skipt the data point.
+above, the value may be `null`. In that case, we want to skip the data point.
 To check whether the property is `null` we simply compare it with `JsonValue.Null`.
 
 Also note that the `date` and `value` properties are formatted as strings 

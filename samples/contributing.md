@@ -4,10 +4,10 @@ Contributing to F# Data
 This page should provide you with some basic information if you're thinking about
 contributing to the F# Data package. It gives a brief summary of the library 
 structure, how type providers are written and how the F# Data library handles 
-multi-targetting (to make the providers available for Desktop, Silverlight as well
+multi-targeting (to make the providers available for Desktop, Silverlight as well
 as Portable libraries).
 
- * This page can be editted by sending a pull request to F# Data on GitHub, so
+ * This page can be edited by sending a pull request to F# Data on GitHub, so
    if you learn something when playing with F# Data, please record your
    [findings here](https://github.com/fsharp/FSharp.Data/blob/master/samples/contributing.md)!
 
@@ -47,7 +47,7 @@ platform. Type providers consist of two components:
    compiled F# code that uses the provider runs. For example, for CSV type provider,
    this contains the CSV parser and objects to load CSV files.
 
- * **Design time** is a part that is used when editting F# code that uses type
+ * **Design time** is a part that is used when editing F# code that uses type
    provider in your favourite editor or when compiling code. For example, in the
    CSV provider, this component does the type inference and generates types
    (that are mapped to runtime components by the compiler).
@@ -56,7 +56,7 @@ To support multiple targets, we need a _runtime component_ for every single targ
 (Silverlight, .NET 4.0 and Portable profile). However, we only need one _design time_
 component, because that is always going to be executed on desktop .NET in Visual Studio
 or MonoDevelop. (Well, the truth is that we actually need another _design time_ version
-for Silverlight to suppor the [tryfsharp.org](http://tryfsharp.org) web site...)
+for Silverlight to support the [tryfsharp.org](http://tryfsharp.org) web site...)
 
 So, there are 3 versions of _runtime_ component and 2 versions of _design time_ 
 components. At the moment, this is done by having separate project file for each

@@ -1,4 +1,4 @@
-﻿(** 
+(** 
 # F# Data: Apiary Type Provider (Experimental)
 
 In this article, we look at an experimental type provider that makes it possible to
@@ -23,7 +23,7 @@ content-type header) returns JSON data as follows:
     }
     
 The `ApiaryProvider` uses the above information to infer the structure of the REST API.
-It also re-uses the JSON inference from [JSON Type Provider)(JsonProvider.html) to infer 
+It also re-uses the JSON inference from [JSON Type Provider](../library/JsonProvider.html) to infer 
 the result type from the sample responses.
 
 ## Introducing the provider
@@ -157,16 +157,16 @@ F# Data. The provider infers structure of a REST API from a documentation obtain
 
 At the moment, the type provider is only experimental - it may work for your API or it
 may not. If you're interested in making the provider better, or in supporting other 
-REST API documentation formats, then please visit [Contributing to F# Data](contributing.html)
+REST API documentation formats, then please visit [Contributing to F# Data](../contributing.html)
 page!
 
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
- * [F# Data: JSON Type Provider](JsonProvider.html) - describes simpler type provider
+ * [F# Data: JSON Type Provider](../library/JsonProvider.html) - describes simpler type provider
    for working with JSON documents, which may be useful as a stable alternative
    (when you perform HTTP requests explicitly).
- * [F# Data: HTTP Utilities](Http.html) - if you wish to perform HTTP requests explicitly,
+ * [F# Data: HTTP Utilities](../library/Http.html) - if you wish to perform HTTP requests explicitly,
    the `Http` type makes that easily possible.
 *)
