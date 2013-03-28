@@ -213,7 +213,7 @@ data.``Science and Technology``.Chemistry.
 (**
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives more information about other
+ * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) - The Data Science
    tutorial on Try F# uses the Freebase type provider in numerous examples.
