@@ -162,7 +162,7 @@ page!
 
 ## Related articles
 
- * [F# Data: Type Providers](FSharpData.html) - gives more information about other
+ * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
  * [F# Data: JSON Type Provider](JsonProvider.html) - describes simpler type provider
    for working with JSON documents, which may be useful as a stable alternative
