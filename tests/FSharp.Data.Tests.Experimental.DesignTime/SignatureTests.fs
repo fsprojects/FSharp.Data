@@ -30,11 +30,11 @@ type TestCase =
         | _ -> failwithf "Unknown: %s" args.[0]
         |> TestCase
 
-    member x.Dump resolutionFolder runtimeAssembly signatureOnly =        
+    member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
         let (TestCase x) = x
         let output = 
             x.generateType resolutionFolder runtimeAssembly 
-            |> Debug.prettyPrint signatureOnly
+            |> Debug.prettyPrint signatureOnly ignoreOutput
         output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
 
 let (++) a b = Path.Combine(a, b)
@@ -61,7 +61,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly true
+        let output = testCase.Dump resolutionFolder runtimeAssembly true false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalizeEndings (str:string) =
@@ -71,17 +71,17 @@ let normalizeEndings (str:string) =
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly true |> normalizeEndings 
+    let output = testCase.Dump resolutionFolder runtimeAssembly true false |> normalizeEndings 
     output |> should equal expected
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    testCase.Dump resolutionFolder runtimeAssembly false |> ignore
+    testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    testCase.Dump resolutionFolder portableRuntimeAssembly false |> ignore
+    testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore

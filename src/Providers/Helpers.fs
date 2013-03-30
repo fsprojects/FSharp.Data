@@ -216,7 +216,10 @@ module AssemblyResolver =
 
     let private getAssembly (asmName:AssemblyName) reflectionOnly = 
         let folder = 
-            match asmName.Name, asmName.Version.ToString() with
+            let version = 
+                if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
+                then "" else asmName.Version.ToString()
+            match asmName.Name, version with
             | "FSharp.Core", "2.3.5.0" -> fsharpPortableAssembliesPath
             | "System.Xml.Linq", "5.0.5.0" -> silverlightSdkAssembliesPath
             | _, "5.0.5.0" -> silverlightAssembliesPath

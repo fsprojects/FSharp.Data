@@ -13,12 +13,12 @@ let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
 let assemblyName = "FSharp.Data.Experimental.dll"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
 
-//let signatureOnly = true
 let signatureOnly = false
+let ignoreOutput = false
 
 let generate (inst:TypeProviderInstantiation) = inst.generateType resolutionFolder runtimeAssembly
-let prettyPrint t = Debug.prettyPrint signatureOnly t
-let prettyPrintWithMaxDepth maxDepth t = Debug.prettyPrintWithMaxDepth signatureOnly maxDepth t
+let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput t
+let prettyPrintWithMaxDepth maxDepth t = Debug.prettyPrintWithMaxDepth signatureOnly ignoreOutput maxDepth t
 
 Apiary { ApiName = "themoviedb" }
 |> generate |> prettyPrint |> Console.WriteLine
