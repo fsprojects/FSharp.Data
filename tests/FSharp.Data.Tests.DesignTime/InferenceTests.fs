@@ -236,7 +236,7 @@ module InferenceTests =
 
   [<Test>]
   let ``Inference of numbers with empty values``() = 
-      let source = new CsvFile(new StringReader("float1,float2,float3,float4,int,float5,float6,date\n1,1,1,1,,,,\n2.0,#N/A,,1,1,1,,2010-01-10\n,,2.0,#N/A,1,#N/A,2.0,"))
+      let source = new CsvFile(new StringReader("float1,float2,float3,float4,int,float5,float6,date,bool,int64\n1,1,1,1,,,,,,\n2.0,#N/A,,1,1,1,,2010-01-10,yes,\n,,2.0,#N/A,1,#N/A,2.0,,,2147483648"))
       let actual = CsvInference.inferType source Int32.MaxValue culture
       let propFloat1 = { Name = "float1"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
       let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
@@ -246,7 +246,9 @@ module InferenceTests =
       let propFloat5 = { Name = "float5"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
       let propFloat6 = { Name = "float6"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
       let propDate =   { Name = "date";   Optional = false; Type = WithNull(Primitive(typeof<DateTime>, None)) }
-      let expected = Record(None, [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate ])
+      let propBool =   { Name = "bool";   Optional = false; Type = WithNull(Primitive(typeof<bool>, None)) }
+      let propInt64 =  { Name = "int64";  Optional = false; Type = WithNull(Primitive(typeof<int64>, None)) }
+      let expected = Record(None, [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ])
       actual |> shouldEqual expected
 
       // Test second part of the csv inference
@@ -261,5 +263,7 @@ module InferenceTests =
       let propFloat5 = field "float5" TypeWrapper.None     typeof<float>
       let propFloat6 = field "float6" TypeWrapper.None     typeof<float>
       let propDate =   field "date"   TypeWrapper.Option   typeof<DateTime>
-      let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate ]
+      let propBool =   field "bool"   TypeWrapper.Option   typeof<bool>
+      let propInt64 =  field "int64"  TypeWrapper.Nullable typeof<int64>
+      let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ]
       actual |> shouldEqual expected

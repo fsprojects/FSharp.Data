@@ -60,9 +60,10 @@ let inferType (csv:CsvFile) count culture =
 /// numerical-friendly, so we do a few simple adjustments:
 ///  
 ///  - Fields of type 'int + null' are generated as Nullable<int>
+///  - Fields of type 'int64 + null' are generated as Nullable<int64>
 ///  - Fields of type 'float + null' are just floats (and null becomes NaN)
 ///  - Fields of type 'decimal + null' are generated as floats too
-///  - Fields of type 'T + null' for any other T become option<T>
+///  - Fields of type 'T + null' for any other T (bool/string/date) become option<T>
 ///  - All other types are simply strings.
 ///
 let getFields inferedType = 
@@ -97,7 +98,7 @@ let getFields inferedType =
           let typ, typWrapper = 
             if optional && typ = typeof<float> then typ, TypeWrapper.None
             elif optional && typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-            elif optional && typ = typeof<int> then typ, TypeWrapper.Nullable
+            elif optional && (typ = typeof<int> || typ = typeof<int64>) then typ, TypeWrapper.Nullable
             elif optional then typ, TypeWrapper.Option
             else typ, TypeWrapper.None
         
