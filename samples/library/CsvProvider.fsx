@@ -105,16 +105,16 @@ Chart.Candlestick(recent).AndYAxis(Max = 30.0, Min = 25.0)
 ## Using units of measure
 
 Another interesting feature of the CSV type provider is that it supports F# units of measure.
-If the header includes the name of one of the standard SI units, then the generated type
+If the header includes the name or symbol of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit. 
 
 In this section, we use a simple file [`docs/SmallTest.csv`](../docs/SmallTest.csv) which
 looks as follows:
 
-    Name,  Distance (metre), Time (second)
+    Name,  Distance (metre), Time (s)
     First, 50.0,             3.7
 
-As you can see, the second and third columns are annotated with `metre` and `second`,
+As you can see, the second and third columns are annotated with `metre` and `s`,
 respectively. To use units of measure in our code, we need to open the namespace with
 standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
 a static argument. Also note that in this case we're using the same data at runtime,
@@ -132,7 +132,7 @@ following simple calculation:
 
 for row in small.Data do
   let speed = row.Distance / row.Time
-  if speed > 15.0M<meter/second> then 
+  if speed > 15.0M<metre/second> then 
     printfn "%s (%A m/s)" row.Name speed
 
 (**

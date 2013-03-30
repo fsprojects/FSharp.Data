@@ -12,5 +12,5 @@ class CsvProvider+Row : FDR.CsvRow
     member Low: decimal with get
     member Close: decimal with get
     member Volume: int with get
-    member AdjClose: decimal with get
+    member Adj Close: decimal with get
 

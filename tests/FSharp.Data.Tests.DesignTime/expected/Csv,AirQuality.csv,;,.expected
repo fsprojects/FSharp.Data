@@ -6,5 +6,10 @@ class CsvProvider : FDR.CsvFile
     static member Load: uri:string -> CsvProvider
 
 class CsvProvider+Row : FDR.CsvRow
-    member OzoneSolarWindTempMonthDay: string with get
+    member Ozone: float with get
+    member Solar.R: float with get
+    member Wind: decimal with get
+    member Temp: int with get
+    member Month: int with get
+    member Day: int with get
 

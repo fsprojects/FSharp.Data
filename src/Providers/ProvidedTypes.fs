@@ -861,6 +861,19 @@ type ProvidedTypeBuilder() =
 [<Class>]
 type ProvidedMeasureBuilder() =
 
+    //TODO: this shouldn't be hardcoded, but without creating a dependency on Microsoft.FSharp.Metadata in F# PowerPack
+    //there seems to be no way to check if a type abbreviation exists
+    let unitNamesTypeAbbreviations = 
+        [ "meter"; "hertz"; "newton"; "pascal"; "joule"; "watt"; "coulomb"; 
+          "volt"; "farad"; "ohm"; "siemens"; "weber"; "tesla"; "henry"
+          "lumen"; "lux"; "becquerel"; "gray"; "sievert"; "katal" ]
+        |> Set.ofList
+
+    let unitSymbolsTypeAbbreviations = 
+        [ "m"; "kg"; "s"; "A"; "K"; "mol"; "cd"; "Hz"; "N"; "Pa"; "J"; "W"; "C"
+          "V"; "F"; "S"; "Wb"; "T"; "lm"; "lx"; "Bq"; "Gy"; "Sv"; "kat"; "H" ]
+        |> Set.ofList
+
     static let theBuilder = ProvidedMeasureBuilder()
     static member Default = theBuilder
     member b.One = typeof<Core.CompilerServices.MeasureOne> 
@@ -868,16 +881,27 @@ type ProvidedMeasureBuilder() =
     member b.Inverse m = typedefof<Core.CompilerServices.MeasureInverse<_>>.MakeGenericType [| m |] 
     member b.Ratio (m1, m2) = b.Product(m1, b.Inverse m2)
     member b.Square m = b.Product(m, m)
-    member b.SI m = 
-        match typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames."+m) with 
-        | null ->         
+
+    member b.SI (m:string) = 
+        let mLowerCase = m.ToLowerInvariant()
+        let abbreviation =            
+            if unitNamesTypeAbbreviations.Contains mLowerCase then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", mLowerCase)
+            elif unitSymbolsTypeAbbreviations.Contains m then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols", m)
+            else
+                None
+        match abbreviation with
+        | Some (ns, unitName) ->
             ProvidedSymbolType
                (SymbolKind.FSharpTypeAbbreviation
                    (typeof<Core.CompilerServices.MeasureOne>.Assembly,
-                    "Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", 
-                    [| m |]), 
+                    ns, 
+                    [| unitName |]), 
                 []) :> Type
-        | v -> v
+        | None ->
+            typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames." + mLowerCase)
+
     member b.AnnotateType (basicType, annotation) = ProvidedSymbolType(Generic basicType, annotation) :> Type
 
 

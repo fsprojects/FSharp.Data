@@ -14,7 +14,7 @@ module internal CsvTypeBuilder =
         
       let typ, conv = Conversions.convertValue replacer culture field
 
-      let p = ProvidedProperty(NameUtils.nicePascalName field.Name, typ)
+      let p = ProvidedProperty(field.Name, typ)
 
       p.GetterCode <- fun (Singleton row) -> 
         let row = replacer.ToDesignTime row 

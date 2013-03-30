@@ -8,5 +8,5 @@ class CsvProvider : FDR.CsvFile
 class CsvProvider+Row : FDR.CsvRow
     member Name: string with get
     member Distance: decimal<metre> with get
-    member Time: decimal<second> with get
+    member Time: decimal<s> with get
 

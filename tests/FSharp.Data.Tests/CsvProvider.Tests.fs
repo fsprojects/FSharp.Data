@@ -39,7 +39,7 @@ let ``Decimal column correctly infered and accessed`` () =
   actual |> should equal 3.0M
 
 let [<Literal>] csvWithEmptyValues = """
-float1,float2,float3,float4,int,float5,float6,date
+Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 1,1,1,1,,,,
 2.0,#N/A,,1,1,1,,2010-01-10
 ,,2.0,#N/A,1,#N/A,2.0,"""
@@ -100,4 +100,4 @@ let ``Infers type of an emtpy CSV file`` () =
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
   let csv = new CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>()
   let row = csv.Data |> Seq.head
-  (row.Dato, row.Usd) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
+  (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")

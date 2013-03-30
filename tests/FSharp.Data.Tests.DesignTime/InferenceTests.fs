@@ -267,3 +267,34 @@ module InferenceTests =
       let propInt64 =  field "int64"  TypeWrapper.Nullable typeof<int64>
       let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate; propBool; propInt64 ]
       actual |> shouldEqual expected
+
+  [<Test>]
+  let ``Infers units of measure correctly``() = 
+
+      let source = new CsvFile(new StringReader("String(metre), Float(meter),Date (second),Int\t( Second), Decimal  (watt),Bool(N), Long(N), Unknown (measure)\nxpto, #N/A,2010-01-10,4,3.7, yes,2147483648,2"))
+      let actual = 
+        CsvInference.inferType source Int32.MaxValue culture 
+        |> CsvInference.getFields
+        |> List.map (fun field -> 
+            field.Name, 
+            field.BasicType, 
+            field.TypeWithMeasure
+                 .ToString()
+                 .Replace("Microsoft.FSharp.Data.UnitSystems.SI.", null)
+                 .Replace("UnitNames.", null)
+                 .Replace("UnitSymbols.", null)
+                 .Replace("System.", null)
+                 .Replace("[]", null)
+                 .Replace("[", "<")
+                 .Replace("]", ">"))
+
+      let propString =  "String(metre)"      , typeof<string>  , "String"
+      let propFloat =   "Float"              , typeof<float>   , "Double<meter>"
+      let propDate =    "Date (second)"      , typeof<DateTime>, "DateTime"
+      let propInt =     "Int"                , typeof<int>     , "Int32<second>"
+      let propDecimal = "Decimal"            , typeof<decimal> , "Decimal<watt>"
+      let propBool =    "Bool(N)"            , typeof<bool>    , "Boolean"
+      let propLong =    "Long"               , typeof<int64>   , "Int64<N>"
+      let propInt2 =    "Unknown (measure)"  , typeof<int>     , "Int32"
+      let expected = [ propString; propFloat; propDate; propInt; propDecimal; propBool; propLong; propInt2 ]
+      actual |> shouldEqual expected

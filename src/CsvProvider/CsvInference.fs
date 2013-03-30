@@ -18,7 +18,7 @@ let regexOptions =
 #else
   RegexOptions.Compiled
 #endif
-let headerRegex = new Regex(@"(?<field>.+) \((?<unit>.+)\)", regexOptions)
+let headerRegex = new Regex(@"(?<field>.+)\((?<unit>.+)\)", regexOptions)
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
@@ -26,12 +26,19 @@ let inferType (csv:CsvFile) count culture =
   
   // Infer the units and names from the headers
   let headers = csv.Headers |> Array.map (fun header ->
+    let header = header.Trim()
     let m = headerRegex.Match(header)
     if m.Success then
-      let headerName = m.Groups.["field"].Value
-      let unitName = m.Groups.["unit"].Value
-      Some(ProvidedMeasureBuilder.Default.SI unitName), headerName
-    else None, header)
+      let headerName = m.Groups.["field"].Value.TrimEnd()
+      let unitName = m.Groups.["unit"].Value.Trim()
+      let measureType = ProvidedMeasureBuilder.Default.SI unitName
+      if measureType = null then 
+        None, header
+      else
+        // store the original header because the infered might not support units of measure
+        Some measureType, headerName + "\n" + header
+    else 
+      None, header)
 
   // If we have no data, generate empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
@@ -103,17 +110,21 @@ let getFields inferedType =
             else typ, TypeWrapper.None
         
           // Annotate the type with measure, if there is one
-          let typ, typWithMeasure = 
+          let typ, typWithMeasure, name = 
             match unit with 
-            | Some unit -> typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
-            | _ -> typ, typ
+            | Some unit -> 
+                if supportsUnitsOfMeasure typ then
+                    typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit]), field.Name.Split('\n').[0]
+                else
+                    typ, typ, field.Name.Split('\n').[1]
+            | _ -> typ, typ, field.Name.Split('\n').[0] 
       
-          { Name = field.Name
+          { Name = name
             BasicType = typ
             TypeWithMeasure = typWithMeasure
             TypeWrapper = typWrapper }
       
-      | _ -> { Name = field.Name
+      | _ -> { Name = field.Name.Split('\n').[0]
                BasicType = typeof<string>
                TypeWithMeasure = typeof<string>
                TypeWrapper = TypeWrapper.None } )
