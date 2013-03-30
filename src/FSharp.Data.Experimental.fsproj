@@ -19,7 +19,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\FSharp.Data.Experimental.XML</DocumentationFile>
     <StartAction>Project</StartAction>
@@ -33,7 +33,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.XML</DocumentationFile>
   </PropertyGroup>
@@ -45,7 +45,7 @@
     <Compile Include="Library\Json.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
-    <Compile Include="Runtime.fs" />
+    <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ docs/tutorials/*.html
 docs/docs
 nuget/*.nupkg
 *.user
-__setup__.fsx
+__setup__*__.fsx
 tools/FAKE
 TestResults.xml
 packages/NUnit.Runners.2.6.2

@@ -36,31 +36,16 @@ type FreebaseProviderArgs =
       LocalCache : bool
       AllowLocalQueryEvaluation : bool }
 
-#if EXPERIMENTAL
-type ApiaryProviderArgs = 
-    { ApiName : string }
-#endif
-
 type TypeProviderInstantiation = 
-
-#if EXPERIMENTAL
-    | Apiary of ApiaryProviderArgs
-#else
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs    
-#endif
 
     member x.generateType resolutionFolder runtimeAssembly =
         let f, args =
             match x with
-#if EXPERIMENTAL
-            | Apiary x ->
-                (fun cfg -> new ApiaryProvider(cfg) :> TypeProviderForNamespaces),
-                [| box x.ApiName |] 
-#else
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -95,5 +80,4 @@ type TypeProviderInstantiation =
                    box x.SnapshotDate
                    box x.LocalCache
                    box x.AllowLocalQueryEvaluation |]
-#endif
         Debug.generate resolutionFolder runtimeAssembly f args
