@@ -200,7 +200,7 @@ module InferenceTests =
   [<Test>]
   let ``Inference of DateTime``() = 
       let source = new CsvFile(new StringReader("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0"))
-      let actual = CsvInference.inferFields source Int32.MaxValue culture
+      let actual = CsvInference.inferType source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
@@ -210,7 +210,7 @@ module InferenceTests =
   [<Test>]
   let ``Inference of DateTime with timestamp``() = 
       let source = new CsvFile(new StringReader("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00"))
-      let actual = CsvInference.inferFields source Int32.MaxValue culture
+      let actual = CsvInference.inferType source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let expected = Record(None, [ propDate ; propTimestamp ])
@@ -219,7 +219,7 @@ module InferenceTests =
   [<Test>]
   let ``Inference of DateTime with timestamp non default separator``() = 
       let source = new CsvFile(new StringReader("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00"), ";")
-      let actual = CsvInference.inferFields source Int32.MaxValue culture
+      let actual = CsvInference.inferType source Int32.MaxValue culture
       let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
       let expected = Record(None, [ propDate ; propTimestamp ])
@@ -228,7 +228,7 @@ module InferenceTests =
   [<Test>]
   let ``Inference of float with #N/A values and non default separator``() = 
       let source = new CsvFile(new StringReader("float;integer\n2.0;2\n#N/A;3\n"), ";")
-      let actual = CsvInference.inferFields source Int32.MaxValue culture
+      let actual = CsvInference.inferType source Int32.MaxValue culture
       let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
       let propInteger = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }
       let expected = Record(None, [ propFloat ; propInteger ])
@@ -237,7 +237,7 @@ module InferenceTests =
   [<Test>]
   let ``Inference of numbers with empty values``() = 
       let source = new CsvFile(new StringReader("float1,float2,float3,float4,int,float5,float6,date\n1,1,1,1,,,,\n2.0,#N/A,,1,1,1,,2010-01-10\n,,2.0,#N/A,1,#N/A,2.0,"))
-      let actual = CsvInference.inferFields source Int32.MaxValue culture
+      let actual = CsvInference.inferType source Int32.MaxValue culture
       let propFloat1 = { Name = "float1"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
       let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
       let propFloat3 = { Name = "float3"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
@@ -245,7 +245,21 @@ module InferenceTests =
       let propInt =    { Name = "int";    Optional = false; Type = WithNull(Primitive(typeof<int>, None)) }
       let propFloat5 = { Name = "float5"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
       let propFloat6 = { Name = "float6"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
-      let date = { Name = "date"; Optional = false; Type = WithNull(Primitive(typeof<DateTime>, None)) }
-      let expected = Record(None, [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; date ])
+      let propDate =   { Name = "date";   Optional = false; Type = WithNull(Primitive(typeof<DateTime>, None)) }
+      let expected = Record(None, [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate ])
       actual |> shouldEqual expected
 
+      // Test second part of the csv inference
+      let actual = actual |> CsvInference.getFields
+      let field name wrapper typ = 
+        { Name = name; TypeWrapper = wrapper; BasicType = typ; TypeWithMeasure = typ }
+      let propFloat1 = field "float1" TypeWrapper.None     typeof<float>
+      let propFloat2 = field "float2" TypeWrapper.None     typeof<float>
+      let propFloat3 = field "float3" TypeWrapper.None     typeof<float>
+      let propFloat4 = field "float4" TypeWrapper.None     typeof<float>
+      let propInt =    field "int"    TypeWrapper.Nullable typeof<int>
+      let propFloat5 = field "float5" TypeWrapper.None     typeof<float>
+      let propFloat6 = field "float6" TypeWrapper.None     typeof<float>
+      let propDate =   field "date"   TypeWrapper.Option   typeof<DateTime>
+      let expected = [ propFloat1; propFloat2; propFloat3; propFloat4; propInt; propFloat5; propFloat6; propDate ]
+      actual |> shouldEqual expected

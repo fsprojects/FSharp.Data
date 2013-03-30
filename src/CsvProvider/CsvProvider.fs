@@ -55,7 +55,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let rowType = ProvidedTypeDefinition("Row", Some(replacer.ToRuntime typeof<CsvRow>), HideObjectMethods = true)
     rowType.AddMembersDelayed(fun () ->
       use sampleCsv = sampleCsv
-      let inferedFields = CsvInference.inferFields sampleCsv inferRows cultureInfo
+      let inferedFields = CsvInference.inferType sampleCsv inferRows cultureInfo |> CsvInference.getFields
       CsvTypeBuilder.generateCsvRowProperties culture replacer inferedFields)
     resTy.AddMember rowType
 
