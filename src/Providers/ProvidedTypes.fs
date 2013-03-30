@@ -105,9 +105,8 @@ module internal Misc =
         { new CustomAttributeData() with 
 #endif
                 member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 1)
-                member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message)  |]
-                member __.NamedArguments = 
-                    upcast [| if isError then yield  CustomAttributeNamedArgument(typeof<ObsoleteAttribute>.GetProperty("IsError"), CustomAttributeTypedArgument(typeof<bool>, isError)) |] }
+                member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message) ; CustomAttributeTypedArgument(typeof<bool>, isError)  |]
+                member __.NamedArguments = upcast [| |] }
 
     type CustomAttributesImpl() =
         let customAttributes = ResizeArray<CustomAttributeData>()
@@ -1185,7 +1184,27 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     override this.MakePointerType() = ProvidedSymbolType(SymbolKind.Pointer, [this]) :> Type
     override this.MakeByRefType() = ProvidedSymbolType(SymbolKind.ByRef, [this]) :> Type
 
-    override this.GetMembers _bindingAttr = getMembers() 
+    // The binding attributes are always set to DeclaredOnly ||| Static ||| Instance ||| Public when GetMembers is called directly by the F# compiler
+    // However, it's possible for the framework to generate other sets of flags in some corner cases (e.g. via use of `enum` with a provided type as the target)
+    override this.GetMembers bindingAttr = 
+        let mems = 
+            getMembers() 
+            |> Array.filter (fun mem -> 
+                                let isStatic = 
+                                    match mem with
+                                    | :? FieldInfo as f -> f.IsStatic
+                                    | :? MethodInfo as m -> m.IsStatic
+                                    | :? ConstructorInfo as c -> c.IsStatic
+                                    | :? PropertyInfo as p -> if p.CanRead then p.GetGetMethod().IsStatic else p.GetSetMethod().IsStatic
+                                    | :? EventInfo as e -> e.GetAddMethod().IsStatic
+                                    | :? Type -> true
+                                    | _ -> failwith (sprintf "Member %O is of unexpected type" mem)
+                                bindingAttr.HasFlag(if isStatic then BindingFlags.Static else BindingFlags.Instance))
+
+        if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null then mems
+        else 
+            let baseMems = this.BaseType.GetMembers bindingAttr
+            Array.append mems baseMems
 
     override this.GetNestedTypes bindingAttr = 
         this.GetMembers bindingAttr 
