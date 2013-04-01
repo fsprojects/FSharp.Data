@@ -8,9 +8,9 @@ class JsonProvider
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Authors: JsonProvider+DomainTypes+Entity1[] with get
+    member Authors: JsonProvider+DomainTypes+Entity2[] with get
 
-class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
     member Age: int option with get
     member Name: string with get
 

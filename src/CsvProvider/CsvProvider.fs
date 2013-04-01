@@ -36,7 +36,10 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let culture = args.[2] :?> string
     let cultureInfo = Operations.GetCulture culture
     let inferRows = args.[3] :?> int
-    let resolutionFolder = args.[4] :?> string
+    let schema = args.[4] :?> string
+    let hasHeaders = args.[5] :?> bool
+    let ignoreErrors = args.[6] :?> bool
+    let resolutionFolder = args.[7] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -46,16 +49,16 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
             let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            new CsvFile(reader, separator), true
+            new CsvFile(reader, separator, hasHeaders, ignoreErrors), true
         | None ->
-            new CsvFile(new StringReader(sample), separator), false
+            new CsvFile(new StringReader(sample), separator, hasHeaders, ignoreErrors), false
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
 
     let rowType = ProvidedTypeDefinition("Row", Some(replacer.ToRuntime typeof<CsvRow>), HideObjectMethods = true)
     rowType.AddMembersDelayed(fun () ->
       use sampleCsv = sampleCsv
-      let inferedFields = CsvInference.inferType sampleCsv inferRows cultureInfo |> CsvInference.getFields
+      let inferedFields = CsvInference.inferType sampleCsv inferRows cultureInfo schema ||> CsvInference.getFields
       CsvTypeBuilder.generateCsvRowProperties culture replacer inferedFields)
     resTy.AddMember rowType
 
@@ -71,28 +74,28 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     c.InvokeCode <- 
       if sampleIsUri then
         fun _ -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-                                        new CsvFile(reader, separator) @@>
+                                        new CsvFile(reader, separator, hasHeaders, ignoreErrors) @@>
       else
-        fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator) @@>            
+        fun _ -> replacer.ToRuntime <@@ new CsvFile(new StringReader(sample), separator, hasHeaders, ignoreErrors) @@>            
     resTy.AddMember c
 
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, resTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton text) -> replacer.ToRuntime <@@ new CsvFile(new StringReader(%%text:string), separator) @@>
+    m.InvokeCode <- fun (Singleton text) -> replacer.ToRuntime <@@ new CsvFile(new StringReader(%%text:string), separator, hasHeaders, ignoreErrors) @@>
     resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ new CsvFile(new StreamReader(%%stream:Stream), separator) @@>
+    m.InvokeCode <- fun (Singleton stream) -> replacer.ToRuntime <@@ new CsvFile(new StreamReader(%%stream:Stream), separator, hasHeaders, ignoreErrors) @@>
     resTy.AddMember m
 
     // Generate static Load uri method
     let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, resTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> replacer.ToRuntime <@@ let reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
-                                                                  new CsvFile(reader, separator) @@>
+                                                                  new CsvFile(reader, separator, hasHeaders, ignoreErrors) @@>
     resTy.AddMember m
 
     // Return the generated type
@@ -104,6 +107,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
+      ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
+      ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
+      ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
@@ -112,6 +118,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Separator'>Column delimiter</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
        <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used.</param>
+       <param name='Schema'>Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "int option", "int64 option", "bool option", "float option", "decimal option", and "date option". You can also specify a unit and the name of the column like this: Name (type<unit>)</param>
+       <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line.</param>
+       <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns. Otherwise an exception is thrown when these rows are encountered.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do csvProvTy.AddXmlDoc helpText

@@ -776,7 +776,10 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
 
     override this.GetConstructors _bindingAttr                                                      = notRequired "GetConstructors" this.Name
     override this.GetMethodImpl(_name, _bindingAttr, _binderBinder, _callConvention, _types, _modifiers) = notRequired "GetMethodImpl" this.Name
-    override this.GetMembers _bindingAttr                                                           = notRequired "GetMembers" this.Name
+    override this.GetMembers bindingAttr =
+        if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null 
+        then [||]
+        else this.BaseType.GetMembers bindingAttr
     override this.GetMethods _bindingAttr                                                           = notRequired "GetMethods" this.Name
     override this.GetField(_name, _bindingAttr)                                                      = notRequired "GetField" this.Name
     override this.GetFields _bindingAttr                                                            = notRequired "GetFields" this.Name

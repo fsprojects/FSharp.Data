@@ -21,7 +21,10 @@ type TestCase =
             ["Csv"
              x.Sample
              x.Separator
-             x.Culture]
+             x.Culture
+             x.Schema
+             x.HasHeaders.ToString()
+             x.IgnoreErrors.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -54,6 +57,9 @@ type TestCase =
                   Separator = args.[2]
                   Culture = args.[3]
                   InferRows = Int32.MaxValue
+                  Schema = args.[4]
+                  HasHeaders = args.[5] |> bool.Parse
+                  IgnoreErrors = args.[6] |> bool.Parse
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]

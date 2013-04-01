@@ -9,27 +9,27 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Choice : FDR.JsonDocument
     member Array: JsonProvider+DomainTypes+Entity[] with get
-    member Record: JsonProvider+DomainTypes+Entity3 with get
+    member Record: JsonProvider+DomainTypes+Entity4 with get
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Country: JsonProvider+DomainTypes+Entity1 with get
+    member Country: JsonProvider+DomainTypes+Entity2 with get
     member Date: int with get
     member Decimal: int with get
-    member Indicator: JsonProvider+DomainTypes+Entity2 with get
-    member Value: JsonProvider+DomainTypes+Choice1 with get
-
-class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
-    member Id: string with get
-    member Value: string with get
+    member Indicator: JsonProvider+DomainTypes+Entity3 with get
+    member Value: JsonProvider+DomainTypes+Choice2 with get
 
 class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
     member Id: string with get
     member Value: string with get
 
-class JsonProvider+DomainTypes+Choice1 : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity3 : FDR.JsonDocument
+    member Id: string with get
+    member Value: string with get
+
+class JsonProvider+DomainTypes+Choice2 : FDR.JsonDocument
     member Number: decimal option with get
 
-class JsonProvider+DomainTypes+Entity3 : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity4 : FDR.JsonDocument
     member Page: int with get
     member Pages: int with get
     member PerPage: int with get

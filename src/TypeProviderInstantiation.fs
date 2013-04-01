@@ -7,6 +7,9 @@ type CsvProviderArgs =
       Separator : string
       Culture : string
       InferRows : int
+      Schema : string
+      HasHeaders : bool
+      IgnoreErrors : bool
       ResolutionFolder : string }
 
 type XmlProviderArgs = 
@@ -52,6 +55,9 @@ type TypeProviderInstantiation =
                    box x.Separator
                    box x.Culture
                    box x.InferRows
+                   box x.Schema
+                   box x.HasHeaders
+                   box x.IgnoreErrors
                    box x.ResolutionFolder |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),

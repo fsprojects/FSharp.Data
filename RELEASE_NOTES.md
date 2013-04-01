@@ -13,4 +13,4 @@
 * 1.1.0 - Support for Portable Class Libraries and Silverlight. Added Freebase provider. Improvements to the CSV provider. Performance improvements when handling large files.
 * 1.1.1 - Update WorldBank internals to support more efficient implementation and FunScript.
 * 1.1.2 - Update NuGet package links and icon reference.
-* 1.1.3 - Improve Units of Measure support in CSV Provider.
+* 1.1.3 - Improve Units of Measure support and allow to override the type inference in the CSV Provider.
