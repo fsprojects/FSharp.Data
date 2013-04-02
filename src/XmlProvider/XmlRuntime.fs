@@ -40,33 +40,32 @@ type XmlOperations =
   static member TryGetValue(xml:XmlElement) = 
     if String.IsNullOrEmpty(xml.XElement.Value) then None else Some xml.XElement.Value
 
-  static member TryGetAttribute(xml:XmlElement, name) = 
-    let attr = xml.XElement.Attribute(XName.Get(name))
+  static member TryGetAttribute(xml:XmlElement, nameWithNS) = 
+    let attr = xml.XElement.Attribute(XName.Get(nameWithNS))
     if attr = null then None else Some attr.Value
 
   // Operations that obtain children - depending on the inference, we may
   // want to get an array, option (if it may or may not be there) or 
   // just the value (if we think it is always there)
-  static member GetChildrenArray(value:XmlElement, name) =
-    [| for c in value.XElement.Elements(XName.Get(name)) ->
-         XmlElement(c) |]
+  static member GetChildrenArray(value:XmlElement, nameWithNS) =
+    [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> XmlElement(c) |]
   
-  static member GetChildOption(value:XmlElement, name) =
-    match XmlOperations.GetChildrenArray(value, name) with
+  static member GetChildOption(value:XmlElement, nameWithNS) =
+    match XmlOperations.GetChildrenArray(value, nameWithNS) with
     | [| it |] -> Some it
     | [| |] -> None
-    | _ -> failwithf "XML mismatch: More than single '%s' child" name
+    | array -> failwithf "XML mismatch: Expected zero or one '%s' child, got %d" nameWithNS array.Length
 
-  static member GetChild(value:XmlElement, name) =
-    match XmlOperations.GetChildrenArray(value, name) with
+  static member GetChild(value:XmlElement, nameWithNS) =
+    match XmlOperations.GetChildrenArray(value, nameWithNS) with
     | [| it |] -> it
-    | _ -> failwithf "XML mismatch: Expected exactly one '%s' child" name
+    | array -> failwithf "XML mismatch: Expected exactly one '%s' child, got %d" nameWithNS array.Length
 
   // Functions that transform specified chidlrens using a transformation
   // function - we need a version for array and option
   // (This is used e.g. when transforming `<a>1</a><a>2</a>` to `int[]`)
-  static member ConvertArray<'R>(xml:XmlElement, name, f:Func<XmlElement,'R>) : 'R[] = 
-    XmlOperations.GetChildrenArray(xml, name) |> Array.map f.Invoke
+  static member ConvertArray<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) : 'R[] = 
+    XmlOperations.GetChildrenArray(xml, nameWithNS) |> Array.map f.Invoke
 
-  static member ConvertOptional<'R>(xml:XmlElement, name, f:Func<XmlElement,'R>) =
-    XmlOperations.GetChildOption(xml, name) |> Option.map f.Invoke
+  static member ConvertOptional<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) =
+    XmlOperations.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
