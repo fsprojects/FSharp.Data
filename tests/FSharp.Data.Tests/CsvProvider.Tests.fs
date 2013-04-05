@@ -39,7 +39,7 @@ let ``Decimal column correctly infered and accessed`` () =
   actual |> should equal 3.0M
 
 let [<Literal>] csvWithEmptyValues = """
-float1,float2,float3,float4,int,float5,float6,date
+Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 1,1,1,1,,,,
 2.0,#N/A,,1,1,1,,2010-01-10
 ,,2.0,#N/A,1,#N/A,2.0,"""
@@ -100,4 +100,62 @@ let ``Infers type of an emtpy CSV file`` () =
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
   let csv = new CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>()
   let row = csv.Data |> Seq.head
-  (row.Dato, row.Usd) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
+  (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
+
+[<Test>]
+let ``Empty lines are skipped and don't make everything optional`` () =
+  let csv = new CsvProvider<"Data/banklist.csv">()
+  let row = csv.Data |> Seq.head
+  row.``Bank Name`` |> should equal "Alabama Trust Bank, National Association"
+  row.``CERT #`` |> should equal 35224
+
+[<Literal>]
+let csvWithRepeatedAndEmptyColumns = """Foo3,Foo3,Bar,
+,2,3,
+,4,6,"""
+
+[<Test>]
+let ``Repeated and empty column names``() = 
+  let csv = new CsvProvider<csvWithRepeatedAndEmptyColumns>()
+  let row = csv.Data |> Seq.head
+  row.Foo3.GetType() |> should equal typeof<string>
+  row.Foo4.GetType() |> should equal typeof<int>
+  row.Bar.GetType() |> should equal typeof<int>
+  row.Column4.GetType() |> should equal typeof<string>  
+  
+let [<Literal>] simpleCsvNoHeaders = """
+TRUE,no,3
+"yes", "false", 1.92 """
+
+[<Test>]
+let ``Columns correctly inferred and accessed when headers are missing`` () = 
+    let csv = new CsvProvider<simpleCsvNoHeaders, HasHeaders=false>()
+    let row = csv.Data |> Seq.head
+    let col1:bool = row.Column1
+    let col2:bool = row.Column2
+    let col3:decimal = row.Column3
+    col1 |> should equal true
+    col2 |> should equal false
+    col3 |> should equal 3.0M
+    let row = csv.Data |> Seq.skip 1 |> Seq.head
+    let col1:bool = row.Column1
+    let col2:bool = row.Column2
+    let col3:decimal = row.Column3
+    col1 |> should equal true
+    col2 |> should equal false
+    col3 |> should equal 1.92M
+
+[<Test>]
+let ``IgnoreErrors skips lines with wrong number of columns`` () = 
+    let csv = new CsvProvider<"a,b,c\n1,2\n0,1,2,3,4\n2,3,4", IgnoreErrors=true>()
+    let row = csv.Data |> Seq.head
+    (row.a, row.b, row.c) |> should equal (2,3,4)
+
+[<Test>]
+let ``IgnoreErrors skips lines with wrong number of columns when there's no header`` () = 
+    let csv = new CsvProvider<"1,2\n0,1,2,3,4\n2,3,4\n5,6", IgnoreErrors=true, HasHeaders=false>()
+    let row1 = csv.Data |> Seq.head
+    let row2 = csv.Data |> Seq.skip 1 |> Seq.head
+    (row1.Column1, row1.Column2) |> should equal (1,2)
+    (row2.Column1, row2.Column2) |> should equal (5,6)
+

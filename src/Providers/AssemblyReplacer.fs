@@ -80,47 +80,51 @@ module AssemblyReplacer =
     | Some toAsm -> f toAsm
     | None -> lazyOriginal.Value
 
-  let private getType (asm:Assembly) (t:Type) rt =
-    let fixName (fullName:string) =
-      if fullName.StartsWith("FSI_") then 
-        // when F# Interactive is the host of the design time assembly,
-        // all namespaces are prefixed with FSI_, in the runtime assembly
-        // the name won't have that prefix
-        fullName.Substring(fullName.IndexOf('.') + 1)
-      else 
-        fullName
-    let getType fullName =
-      if asm.FullName.StartsWith "FSI-ASSEMBLY" then
-        // when F# Interactive is the host of the design time assembly,
-        // for each type in the runtime assembly there might be multiple
-        // versions (FSI_0001.FullTypeName, FSI_0002.FullTypeName, etc).
-        // Get the last one.
-        asm.GetTypes() 
-        |> Seq.filter (fun t -> (fixName t.FullName) = fullName)
-        |> Seq.sortBy (fun t -> t.FullName)
-        |> Seq.last
-      else
-        asm.GetType fullName
-    let newT =
-      if t.IsGenericType && not t.IsGenericTypeDefinition then 
-        let genericType = t.GetGenericTypeDefinition()
-        let newT = getType (fixName genericType.FullName)
-        if newT = null then 
-          null
-        else
-          let typeArguments = 
-            t.GetGenericArguments()
-            |> Seq.map rt
-            |> Seq.toArray
-          newT.MakeGenericType(typeArguments)
-      else 
-        getType (fixName t.FullName)
-    if newT = null then
-      failwithf "Type '%O' not found in '%s'" t asm.Location
-    newT
+  let rec private getType (asm:Assembly) (t:Type) asmMappings (typeCache:Dictionary<_,_>) =
+    match typeCache.TryGetValue t with
+    | true, t -> t
+    | false, _ ->
+        let fixName (fullName:string) =
+          if fullName.StartsWith("FSI_") then 
+            // when F# Interactive is the host of the design time assembly,
+            // all namespaces are prefixed with FSI_, in the runtime assembly
+            // the name won't have that prefix
+            fullName.Substring(fullName.IndexOf('.') + 1)
+          else 
+            fullName
+        let getType fullName =
+          if asm.FullName.StartsWith "FSI-ASSEMBLY" then
+            // when F# Interactive is the host of the design time assembly,
+            // for each type in the runtime assembly there might be multiple
+            // versions (FSI_0001.FullTypeName, FSI_0002.FullTypeName, etc).
+            // Get the last one.
+            asm.GetTypes() 
+            |> Seq.filter (fun t -> (fixName t.FullName) = fullName)
+            |> Seq.sortBy (fun t -> t.FullName)
+            |> Seq.last
+          else
+            asm.GetType fullName
+        let newT =
+          if t.IsGenericType && not t.IsGenericTypeDefinition then 
+            let genericType = t.GetGenericTypeDefinition()
+            let newT = getType (fixName genericType.FullName)
+            if newT = null then 
+              null
+            else
+              let typeArguments = 
+                t.GetGenericArguments()
+                |> Seq.map (replaceType asmMappings typeCache)
+                |> Seq.toArray
+              newT.MakeGenericType(typeArguments)
+          else 
+            getType (fixName t.FullName)
+        if newT = null then
+          failwithf "Type '%O' not found in '%s'" t asm.Location
+        typeCache.Add(t, newT)
+        newT
 
   // there might be multiple assemblies involved in generic types
-  let private getAssemblies t =
+  and private getAssemblies t =
     let rec innerGetAssemblies (t:Type) = seq {
       yield t.Assembly
       if t.IsGenericType && not t.IsGenericTypeDefinition then
@@ -129,15 +133,15 @@ module AssemblyReplacer =
     }
     t |> innerGetAssemblies |> Seq.distinct |> Seq.toList
 
-  let rec private replaceType asmMappings (t : Type) =    
+  and private replaceType asmMappings typeCache (t : Type) =    
     if t.GetType().Name = "ProvidedSymbolType" then t
     elif t.GetType() = typeof<ProvidedTypeDefinition> then t
-    else replace asmMappings (t, getAssemblies t) (fun toAsm -> getType toAsm t (replaceType asmMappings))
+    else replace asmMappings (t, getAssemblies t) (fun toAsm -> getType toAsm t asmMappings typeCache)
 
-  let private replaceProperty asmMappings (p : PropertyInfo) =
+  let private replaceProperty asmMappings typeCache (p : PropertyInfo) =
     if p.GetType() = typeof<ProvidedProperty> then p
     else replace asmMappings (p, getAssemblies p.DeclaringType) (fun toAsm ->
-      let t = getType toAsm p.DeclaringType (replaceType asmMappings)
+      let t = getType toAsm p.DeclaringType asmMappings typeCache
       let isStatic = 
         p.CanRead && p.GetGetMethod().IsStatic || 
         p.CanWrite && p.GetSetMethod().IsStatic
@@ -149,10 +153,10 @@ module AssemblyReplacer =
         failwithf "Property '%O' of type '%O' not found in '%s'" p t toAsm.Location
       newP)
 
-  let private replaceField asmMappings (f : FieldInfo) =
+  let private replaceField asmMappings typeCache (f : FieldInfo) =
     if f.GetType() = typeof<ProvidedField> then f
     else replace asmMappings (f, getAssemblies f.DeclaringType) (fun toAsm ->
-      let t = getType toAsm f.DeclaringType (replaceType asmMappings)
+      let t = getType toAsm f.DeclaringType asmMappings typeCache
       let bindingFlags = 
         (if f.IsPublic then BindingFlags.Public else BindingFlags.NonPublic) ||| 
         (if f.IsStatic then BindingFlags.Static else BindingFlags.Instance)
@@ -161,14 +165,14 @@ module AssemblyReplacer =
         failwithf "Field '%O' of type '%O' not found in '%s'" f t toAsm.Location
       newF)
   
-  let private replaceMethod asmMappings (m : MethodInfo) =
+  let private replaceMethod asmMappings typeCache (m : MethodInfo) =
     if m.GetType() = typeof<ProvidedMethod> then m
     elif m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then m // these methods don't really exist, so there's no need to replace them
     else replace asmMappings (m, getAssemblies m.DeclaringType) (fun toAsm ->
-        let t = getType toAsm m.DeclaringType (replaceType asmMappings)
+        let t = getType toAsm m.DeclaringType asmMappings typeCache
         let parameterTypes = 
           m.GetParameters() 
-          |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
+          |> Seq.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
           |> Seq.toArray
         let newM =
           if m.IsGenericMethod then 
@@ -178,7 +182,7 @@ module AssemblyReplacer =
             else
               let typeArguments = 
                 m.GetGenericArguments()
-                |> Seq.map (fun t -> replaceType asmMappings t) 
+                |> Seq.map (fun t -> replaceType asmMappings typeCache t) 
                 |> Seq.toArray            
               genericMethod.MakeGenericMethod(typeArguments)
           else 
@@ -188,13 +192,13 @@ module AssemblyReplacer =
         else
           newM)
 
-  let private replaceConstructor asmMappings (c : ConstructorInfo) =
+  let private replaceConstructor asmMappings typeCache (c : ConstructorInfo) =
     if c.GetType() = typeof<ProvidedConstructor> then c
     else replace asmMappings (c, getAssemblies c.DeclaringType) (fun toAsm ->
-      let t = getType toAsm c.DeclaringType (replaceType asmMappings)
+      let t = getType toAsm c.DeclaringType asmMappings typeCache
       let parameterTypes = 
         c.GetParameters() 
-        |> Seq.map (fun p -> replaceType asmMappings p.ParameterType) 
+        |> Seq.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
         |> Seq.toArray
       let newC = t.GetConstructor(parameterTypes)
       if newC = null then
@@ -202,27 +206,27 @@ module AssemblyReplacer =
       else
         newC)
 
-  let private replaceUnionCase asmMappings (uci : UnionCaseInfo) exprs =
+  let private replaceUnionCase asmMappings typeCache (uci : UnionCaseInfo) exprs =
     replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), getAssemblies uci.DeclaringType) (fun toAsm ->
-      let t = getType toAsm uci.DeclaringType (replaceType asmMappings)
+      let t = getType toAsm uci.DeclaringType asmMappings typeCache
       let constructorMethod = t.GetMethod(uci.Name)
       if constructorMethod = null then
         failwithf "Method '%s' of type '%O' not found in '%s'" uci.Name t toAsm.Location
       Expr.Call (constructorMethod, exprs))
 
-  let private replaceRecord asmMappings (t:Type) exprs =
+  let private replaceRecord asmMappings typeCache (t:Type) exprs =
     replaceLazy asmMappings (lazy (Expr.NewRecord (t, exprs)), getAssemblies t) (fun toAsm ->
-      let t = getType toAsm t (replaceType asmMappings)
+      let t = getType toAsm t asmMappings typeCache
       let c = t.GetConstructors() |> Seq.exactlyOne
       if c = null then
         failwithf "Constructor of record type '%O' not found in '%s'" t toAsm.Location
       Expr.NewObject (c, exprs))
 
-  let private replaceVar asmMappings (varTable: IDictionary<_,_>) reversePass (v: Var) =
+  let private replaceVar asmMappings typeCache (varTable: IDictionary<_,_>) reversePass (v: Var) =
     if v.Type.GetType() = typeof<ProvidedTypeDefinition> then v
     else replace asmMappings (v, getAssemblies v.Type) (fun toAsm ->
       let createNewVar() = 
-        Var (v.Name, getType toAsm v.Type (replaceType asmMappings), v.IsMutable)
+        Var (v.Name, getType toAsm v.Type asmMappings typeCache, v.IsMutable)
       if reversePass then
         let newVar = createNewVar()
         // store the original var as we'll have to revert to it later
@@ -238,16 +242,16 @@ module AssemblyReplacer =
             varTable.Add(v, newVar)
             newVar)
   
-  let rec private replaceExpr asmMappings varTable reversePass quotation =
-    let rt = replaceType asmMappings
-    let rp = replaceProperty asmMappings
-    let rf = replaceField asmMappings
-    let rm = replaceMethod asmMappings
-    let rc = replaceConstructor asmMappings
-    let ru = replaceUnionCase asmMappings
-    let rr = replaceRecord asmMappings
-    let rv = replaceVar asmMappings varTable reversePass
-    let re = replaceExpr asmMappings varTable reversePass
+  let rec private replaceExpr asmMappings typeCache varTable reversePass quotation =
+    let rt = replaceType asmMappings typeCache
+    let rp = replaceProperty asmMappings typeCache
+    let rf = replaceField asmMappings typeCache
+    let rm = replaceMethod asmMappings typeCache
+    let rc = replaceConstructor asmMappings typeCache
+    let ru = replaceUnionCase asmMappings typeCache
+    let rr = replaceRecord asmMappings typeCache
+    let rv = replaceVar asmMappings typeCache varTable reversePass
+    let re = replaceExpr asmMappings typeCache varTable reversePass
     
     match quotation with
     | Call (obj, m, args) -> 
@@ -298,8 +302,8 @@ module AssemblyReplacer =
   let create asmMappings =
     let asmMappingsReversed = asmMappings |> List.map (fun (a, b) -> b, a)
     let variablesTable = new Dictionary<_, _>()
-            
+    let typeCache = new Dictionary<_, _>()
     { new AssemblyReplacer with
-        member __.ToRuntime (t:Type) = t |> replaceType asmMappings
-        member __.ToRuntime (e:Expr) = e |> replaceExpr asmMappings variablesTable false
-        member __.ToDesignTime (e:Expr) = e |> replaceExpr asmMappingsReversed variablesTable true }
+        member __.ToRuntime (t:Type) = t |> replaceType asmMappings typeCache
+        member __.ToRuntime (e:Expr) = e |> replaceExpr asmMappings typeCache variablesTable false
+        member __.ToDesignTime (e:Expr) = e |> replaceExpr asmMappingsReversed typeCache variablesTable true }

@@ -102,6 +102,17 @@ module ProviderHelpers =
 [<RequireQualifiedAccess>]
 type TypeWrapper = None | Option | Nullable
 
+type PrimitiveInferedProperty =
+  { Name : string
+    BasicType : Type
+    TypeWithMeasure : Type
+    TypeWrapper : TypeWrapper }
+  static member create name typ optional =
+    { Name = name
+      BasicType = typ
+      TypeWithMeasure = typ
+      TypeWrapper = if optional then TypeWrapper.Option else TypeWrapper.None }
+
 module Conversions = 
 
   open Microsoft.FSharp.Quotations
@@ -109,14 +120,16 @@ module Conversions =
   open QuotationBuilder
 
   /// Creates a function that takes Expr<string option> and converts it to 
-  /// an expression of other type - the type is specified by `typ` and 
-  let convertValue (culture:string) (fieldName:string) typeWrapper (typ, typWithMeasure) (replacer:AssemblyReplacer) = 
+  /// an expression of other type - the type is specified by `field`
+  let convertValue (replacer:AssemblyReplacer) (culture:string) (field:PrimitiveInferedProperty) = 
 
     let returnTyp = 
-        match typeWrapper with
-        | TypeWrapper.None -> typWithMeasure
-        | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| typWithMeasure |]
-        | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| typWithMeasure |]
+      match field.TypeWrapper with
+      | TypeWrapper.None -> field.TypeWithMeasure
+      | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| field.TypeWithMeasure |]
+      | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| field.TypeWithMeasure |]
+
+    let typ = field.BasicType
 
     returnTyp, fun e ->
       let converted = 
@@ -128,8 +141,8 @@ module Conversions =
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%e) @@>
         elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%e) @@>
         else failwith "convertValue: Unsupported primitive type"
-      match typeWrapper with
-      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (fieldName, converted)
+      match field.TypeWrapper with
+      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (field.Name, converted)
       | TypeWrapper.Option -> converted
       | TypeWrapper.Nullable -> typeof<Operations>?ToNullable (typ) converted
       |> replacer.ToRuntime
@@ -216,7 +229,10 @@ module AssemblyResolver =
 
     let private getAssembly (asmName:AssemblyName) reflectionOnly = 
         let folder = 
-            match asmName.Name, asmName.Version.ToString() with
+            let version = 
+                if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
+                then "" else asmName.Version.ToString()
+            match asmName.Name, version with
             | "FSharp.Core", "2.3.5.0" -> fsharpPortableAssembliesPath
             | "System.Xml.Linq", "5.0.5.0" -> silverlightSdkAssembliesPath
             | _, "5.0.5.0" -> silverlightAssembliesPath

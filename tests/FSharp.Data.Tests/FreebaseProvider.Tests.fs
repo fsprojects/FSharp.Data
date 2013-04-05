@@ -13,7 +13,10 @@ open System.Linq
 open FSharp.Data
 open FSharp.Data.FreebaseOperators
 
-let data = FreebaseData.GetDataContext()
+[<Literal>]
+let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
+
+let data = FreebaseDataProvider<apiKey>.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
