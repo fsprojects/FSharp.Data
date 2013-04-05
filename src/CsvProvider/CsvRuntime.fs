@@ -15,9 +15,10 @@ module internal CsvReader =
   /// Lazily reads the specified CSV file using the specified separators
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
-  let readCsvFile (reader:TextReader) (separators:string) =
+  let readCsvFile (reader:TextReader) (separators:string) quote =
     let separators = separators.ToCharArray()
     let inline (|Char|) (n:int) = char n
+    let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
     let inline (|Separator|_|) (n:int) = if Array.exists ((=) (char n)) separators then Some() else None
 
     /// Read quoted string value until the end (ends with end of stream or
@@ -25,10 +26,10 @@ module internal CsvReader =
     let rec readString chars = 
       match reader.Read() with
       | -1 -> chars
-      | Char '"' when reader.Peek() = int '"' ->
+      | Quote when reader.Peek() = int quote ->
           reader.Read() |> ignore
-          readString ('"'::chars)
-      | Char '"' -> chars
+          readString (quote::chars)
+      | Quote -> chars
       | Char c -> readString (c::chars)
   
     /// Reads a line with data that are separated using specified separators
@@ -41,7 +42,7 @@ module internal CsvReader =
       | Separator -> 
           let item = new string(chars |> List.rev |> Array.ofList)
           readLine (item::data) [] 
-      | Char '"' ->
+      | Quote ->
           readLine data (readString chars)
       | Char c ->
           readLine data (c::chars)
@@ -86,15 +87,16 @@ type CsvRow internal (data:string[], headers:string[]) =
   override x.ToString() = x.Display
 
 // Simple type wrapping CSV data
-type CsvFile (reader:TextReader, ?separators, ?hasHeaders, ?ignoreErrors) =
+type CsvFile (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) =
 
   let separators = defaultArg separators ""
   let separators = if String.IsNullOrEmpty separators then "," else separators
+  let quote = defaultArg quote '"'
   let hasHeaders = defaultArg hasHeaders true
   let ignoreErrors = defaultArg ignoreErrors false
 
   /// Read the input and cache it (we can read input only once)
-  let file = CsvReader.readCsvFile reader separators |> Seq.cache
+  let file = CsvReader.readCsvFile reader separators quote |> Seq.cache
 
   do 
     if Seq.isEmpty file then
@@ -137,6 +139,7 @@ type CsvFile (reader:TextReader, ?separators, ?hasHeaders, ?ignoreErrors) =
   member __.Headers = headers
 
   member internal __.Separators = separators
+  member internal __.Quote = quote
 
   interface IDisposable with
     member __.Dispose() = reader.Dispose()

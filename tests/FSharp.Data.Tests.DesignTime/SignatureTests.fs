@@ -60,6 +60,7 @@ type TestCase =
                   Schema = args.[4]
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = args.[6] |> bool.Parse
+                  Quote = '"'
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]

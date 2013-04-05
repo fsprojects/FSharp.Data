@@ -24,8 +24,10 @@ Csv { Sample = "SmallTest.csv"
       Separator = "" 
       Culture = "" 
       InferRows = Int32.MaxValue
-      HasHeaders = true
       Schema = ""
+      HasHeaders = true
+      IgnoreErrors = false
+      Quote = '"'
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -33,8 +35,10 @@ Csv { Sample = "MSFT.csv"
       Separator = "" 
       Culture = "" 
       InferRows = Int32.MaxValue
-      HasHeaders = true
       Schema = ""
+      HasHeaders = true
+      IgnoreErrors = false
+      Quote = '"'
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -42,8 +46,10 @@ Csv { Sample = "AirQuality.csv"
       Separator = ";" 
       Culture = "" 
       InferRows = Int32.MaxValue
-      HasHeaders = true
       Schema = ""
+      HasHeaders = true
+      IgnoreErrors = false
+      Quote = '"'
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
