@@ -65,7 +65,7 @@ module internal XmlTypeBuilder =
     // then we turn it into a primitive value of type such as int/string/etc.
     | Record(Some nameWithNs, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
         let resTyp, convFunc = 
-          Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.create "Value" typ opt)
+          Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Value", typ, opt))
         resTyp, fun xml -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
 
     // If the node is more complicated, then we generate a type to represent it properly
@@ -89,7 +89,7 @@ module internal XmlTypeBuilder =
           let name = XName.Get(nameWithNS).LocalName
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
           let resTyp, convFunc = 
-            Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.create ("Attribute " + name) typ attr.Optional)
+            Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional))
 
           // Add property with PascalCased name
           let p = ProvidedProperty(NameUtils.nicePascalName name, resTyp)
@@ -110,7 +110,7 @@ module internal XmlTypeBuilder =
                   // If there may be other primitives or nodes, it is optional
                   let opt = nodes.Count > 0 || primitives.Length > 1
                   let resTyp, convFunc = 
-                    Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.create "Value" typ opt)
+                    Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Value", typ, opt))
                   let name = 
                     if primitives.Length = 1 then "Value" else
                     (typeTag primitive).NiceName + NameUtils.nicePascalName "Value"

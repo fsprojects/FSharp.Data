@@ -12,6 +12,8 @@ open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.StructureInference
 
+/// The schema may be set explicitly. This table specifies the mapping
+/// from the names that users can use to the types used.
 let private nameToType =
   ["int" ,           (typeof<int>     , TypeWrapper.None    )
    "int64",          (typeof<int64>   , TypeWrapper.None    )
@@ -52,7 +54,8 @@ type private SchemaParseResult =
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
-/// parses type|measure|type<measure>
+/// Parses type specification in the schema for a single column. 
+/// This can be of the form: type|measure|type<measure>
 let private parseTypeAndUnit str = 
   let m = typeAndUnitRegex.Match(str)
   if m.Success then
@@ -67,19 +70,23 @@ let private parseTypeAndUnit str =
         | null -> failwithf "Invalid unit of measure %s" unitName
         | unit -> Some typ, Some unit
   else 
+    // it is not a full type with unit, so it can be either type or a unit
     let typ = str.ToLowerInvariant() |> nameToType.TryGetValue |> asOption
     match typ with
     | Some (typ, typWrapper) -> 
-        // just type
+        // Just type
         Some (typ, typWrapper), None
     | None -> 
-        // just unit
+        // Just unit
         let unit = ProvidedMeasureBuilder.Default.SI str
         match unit with
         | null -> None, None
         | unit -> None, Some unit
     
-/// if forSchemaOverride is set to true, only Full is returned
+/// Parse schema specification for column. This can either be a name
+/// with type or just type: name (typeInfo)|typeInfo.
+/// If forSchemaOverride is set to true, only Full is returned (this
+/// means that we always succeed and override inferred schema)
 let private parseSchemaItem str forSchemaOverride =     
   let name, typ, unit = 
     let m = nameAndTypeRegex.Match(str)
@@ -101,8 +108,8 @@ let private parseSchemaItem str forSchemaOverride =
       // name
       str, None, None
 
-  match typ with
-  | Some (typ, typWrapper) ->
+  match typ, unit with
+  | Some (typ, typWrapper), unit ->
       let typWithMeasure =
         match unit with
         | None -> typ
@@ -110,32 +117,28 @@ let private parseSchemaItem str forSchemaOverride =
             if supportsUnitsOfMeasure typ
             then ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
             else failwithf "Units of measure not supported by type %s" typ.Name
-      { Name = name
-        BasicType = typ
-        TypeWithMeasure = typWithMeasure
-        TypeWrapper = typWrapper } |> SchemaParseResult.Full
-  | None ->
-      match unit with
-      | Some unit ->
-          SchemaParseResult.NameAndUnit(name, unit)
-      | None ->
-          SchemaParseResult.Name
+      PrimitiveInferedProperty.Create(name, typ, typWithMeasure, typWrapper)
+      |> SchemaParseResult.Full
+  | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
+  | None, None -> SchemaParseResult.Name
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
 let inferType (csv:CsvFile) count culture schema =
 
-  // this has to be done now otherwise subtypeInfered will get confused
+  // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
   
+  // If we do not have header names, then automatically generate names
   let headers = 
-    csv.Headers |> 
-    Array.mapi (fun i header -> 
+    csv.Headers |> Array.mapi (fun i header -> 
       if String.IsNullOrWhiteSpace header then 
         "Column" + (i+1).ToString()
       else
         header.Trim())
 
+  // If the schema is specified explicitly, then parse the schema
+  // (This can specify just types, names of columns or a mix of both)
   let schema =
     if String.IsNullOrWhiteSpace schema then
       Array.zeroCreate headers.Length
@@ -153,13 +156,14 @@ let inferType (csv:CsvFile) count culture schema =
             match parseResult with
             | SchemaParseResult.Full prop -> 
                 let name = 
-                  if prop.Name = "" then
-                    headers.[index]
-                  else 
-                    prop.Name
+                  if prop.Name = "" then headers.[index]
+                  else prop.Name
                 Some { prop with Name = makeUnique name }
             | _ -> failwithf "inferType: Unexpected SchemaParseResult: %A" parseResult)
-            
+
+  // Merge the previous information with the header names that we get from the
+  // first row of the file (if the schema specifies just types, we want to use the
+  // names from the file; if the schema specifies name & type, it overrides the file)            
   let headerNamesAndUnits = headers |> Array.mapi (fun index item ->
     match schema.[index] with
     | Some prop -> prop.Name, None
@@ -270,14 +274,11 @@ let getFields inferedType schema =
                       typ, typ, field.Name.Split('\n').[0]
                 | _ -> typ, typ, field.Name.Split('\n').[0] 
           
-              { Name = name
-                BasicType = typ
-                TypeWithMeasure = typWithMeasure
-                TypeWrapper = typWrapper }
+              PrimitiveInferedProperty.Create
+                (name, typ, typWithMeasure, typWrapper)
           
-          | _ -> { Name = field.Name.Split('\n').[0]
-                   BasicType = typeof<string>
-                   TypeWithMeasure = typeof<string>
-                   TypeWrapper = TypeWrapper.None } )
+          | _ -> 
+              PrimitiveInferedProperty.Create
+                (field.Name.Split('\n').[0], typeof<string>, typeof<string>) )
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType
