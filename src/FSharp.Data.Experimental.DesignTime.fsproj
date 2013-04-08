@@ -19,7 +19,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
     <StartAction>Project</StartAction>
@@ -33,7 +33,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
@@ -61,9 +61,9 @@
     <Compile Include="ApiaryProvider\ApiarySchema.fs" />
     <Compile Include="ApiaryProvider\ApiaryGenerator.fs" />
     <Compile Include="ApiaryProvider\ApiaryProvider.fs" />
-    <Compile Include="TypeProviderInstantiation.fs" />
+    <Compile Include="TypeProviderInstantiation.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.DesignTime.fs" />
-    <None Include="Test.fsx" />
+    <None Include="Test.Experimental.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

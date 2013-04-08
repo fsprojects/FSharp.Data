@@ -7,16 +7,14 @@ Finance web site and then also look how the type provider supports units of meas
 The type provider is based on the same code as the one used on [Try F#](http://www.tryfsharp.org)
 web site in the "Financial Computing" tutorial, so you can find additional examples there.
 
-The CSV type provider takes a sample CSV file as an input and generates
-a type based on the first (header) row. The types are inferred from either the
-entire document or from first few rows.
+The CSV type provider takes a sample CSV as input and generates a type based on the data
+present on the columns of that sample. The column names are obtained from the first
+(header) row, and the types are inferred from the values present on the subsequent rows.
 
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../bin` directory, we can load it in F# Interactive as follows
-(to get CSV files from file system and the internet, we also open `System.IO` and
-`System.Net`):
+is located in the `../bin` directory, we can load it in F# Interactive as follows:
 *)
 
 #r "../../bin/FSharp.Data.dll"
@@ -105,34 +103,35 @@ Chart.Candlestick(recent).AndYAxis(Max = 30.0, Min = 25.0)
 ## Using units of measure
 
 Another interesting feature of the CSV type provider is that it supports F# units of measure.
-If the header includes the name of one of the standard SI units, then the generated type
+If the header includes the name or symbol of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit. 
 
 In this section, we use a simple file [`docs/SmallTest.csv`](../docs/SmallTest.csv) which
 looks as follows:
 
-    Name,  Distance (metre), Time (second)
+    Name,  Distance (metre), Time (s)
     First, 50.0,             3.7
 
-As you can see, the second and third columns are annotated with `metre` and `second`,
+As you can see, the second and third columns are annotated with `metre` and `s`,
 respectively. To use units of measure in our code, we need to open the namespace with
 standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
 a static argument. Also note that in this case we're using the same data at runtime,
 so there's no need to use the Load method, we can just call the default constructor.
 *)
-open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 let small = new CsvProvider<"../docs/SmallTest.csv">()
 
 (**
-As in the previous example the `small` value exposes the rows using the `Data` property.
+As in the previous example, the `small` value exposes the rows using the `Data` property.
 The generated properties `Distance` and `Time` are now annotated with units. Look at the
 following simple calculation:
 *)
 
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+
 for row in small.Data do
   let speed = row.Distance / row.Time
-  if speed > 15.0M<meter/second> then 
+  if speed > 15.0M<metre/second> then 
     printfn "%s (%A m/s)" row.Name speed
 
 (**
@@ -140,33 +139,40 @@ The numerical values of `Distance` and `Time` are both inferred as `decimal` (be
 are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometres per hour.
-*)
 
-(**
 ## Using custom separators
+
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
-countries a semicolon is used. The `CsvProvider` has an optional parameter where you can 
-specify what to use as separator:
+countries, ',' is already used as the numeric decimal separator, so a semicolon is used
+instead to separate CSV columns. The `CsvProvider` has an optional `Separator` parameter
+where you can specify what to use as separator. This means that you can consume
+any textual tabular format. If you specify `\t` you'll also be able to consume TSV files.
 *)
 
 let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()
+
+for row in airQuality.Data do
+  if row.Month > 6 then 
+    printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
 The air quality dataset used above is used in a lots of samples for the Statistical
 Computing language R. A short description of the dataset can be found 
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
-It is quite common for statistical datasets that some values are missing. If
+Finally, note that it is also possible to specify multiple different separators
+for the `CsvProvider`. This might be useful if a file is irregular and contains 
+rows separated by either semicolon or a colon. You can use:
+`CsvProvider<"../docs/AirQuality.csv", Separator=";,">`.
+
+## Missing values
+
+It is quite common in statistical datasets for some values to be missing. If
 you open the [`docs/AirQuality.csv`](../docs/AirQuality.csv) file you will see
 that some values for the Ozone observations are marked `#N/A`. Such values are
 parsed as float and will in F# be marked with `Double.NaN`.
-*)
-for row in airQuality.Data do
-  if row.Month > 6 then 
-    printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
-(** 
 The following snippet calculates the mean of the ozone observations
 excluding the `Double.NaN` values. We first obtain the `Ozone` property for
 each row, then remove missing values and then use the standard `Seq.average` function:
@@ -179,15 +185,51 @@ let mean =
   |> Seq.average 
 
 (**
-Finally, note that it is also possible to specify multiple different separators
-for the `CsvProvider`. This might be useful if a file is irregular and contains 
-rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"../docs/AirQuality.csv", Separator=";,">`.
+
+## Controlling the type inference
+
+By default, the CSV type provider checks the first 1000 rows to infer the types, but you can customize
+it by specifying the `InferRows` parameter of `CsvProvider`. If you specify 0 the entire file will be used.
+
+If in any row a value is missing, the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
+(for `bool` and `DateTime`). When a `decimal` would be inferred but there are missing values, we will generate a
+`float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
+so we never generate a string option.
+
+If you prefer an option instead of a nullable or vice versa, or if you want a column to
+be a decimal even though all the values would fit in an int, you can override this default behaviour by specifying the types
+in the header column between braces, similar to what can be done to specify the units of measure. Valid types are
+`int`, `int64`, `bool`, `float`, `decimal`, `date`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`,
+`int option`, `int64 option`, `bool option`, `float option`, `decimal option`, and `date option`.
+
+You can also specify
+both the type and a unit (e.g `float<metre>`). Example:
+
+    Name,  Distance (decimal?<metre>), Time (float)
+    First, 50,                        3
+
+Additionally, you can also specify some of all the types in the `Schema` parameter of `CsvProvider`. Valid formats are:
+
+* `Type`
+* `Type<Measure>`
+* `Name (Type)`
+* `Name (Type<Measure>)`
+
+What's specified in the `Schema` parameter will always take precedence to what's specified in the column headers.
+
+If the first row of the file is not a header row, you can specify the `HasHeaders` parameter as false to
+consider that row as a data row. In that case the columns will be named Column1, Column2, etc..., unless the
+names are overridden using the `Schema` parameter. Example:
+*)
+
+let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),,float option">()
+for row in csv.Data do
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.Column2 (defaultArg row.Column3 1.0)
+
+(**
 
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
 *)
-
-

@@ -75,6 +75,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Travel services (% of service exports, BoP): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net inflows (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net inflows (% of GDP): FDR.WorldBank.Indicator async with get
+    member Primary income on FDI (current US$): FDR.WorldBank.Indicator async with get
     member Portfolio equity, net inflows (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Current transfers, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Workers' remittances, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
@@ -112,7 +113,73 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Net bilateral aid flows from DAC donors, Sweden (current US$): FDR.WorldBank.Indicator async with get
     member Net bilateral aid flows from DAC donors, Total (current US$): FDR.WorldBank.Indicator async with get
     member Net bilateral aid flows from DAC donors, United States (current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member IMF repurchases (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member Principal repayments on external debt, long-term + IMF (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member Principal repayments on external debt, long-term (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member Principal repayments on external debt, private nonguaranteed (PNG) (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member Principal repayments on external debt, public and publicly guaranteed (PPG) (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (AMT, current US$): FDR.WorldBank.Indicator async with get
+    member Principal arrears, public and publicly guaranteed (current US$): FDR.WorldBank.Indicator async with get
+    member Principal arrears, official creditors (current US$): FDR.WorldBank.Indicator async with get
+    member Principal arrears, private creditors (current US$): FDR.WorldBank.Indicator async with get
+    member Principal forgiven (current US$): FDR.WorldBank.Indicator async with get
+    member Principal rescheduled (current US$): FDR.WorldBank.Indicator async with get
+    member Principal rescheduled, official (current US$): FDR.WorldBank.Indicator async with get
+    member Principal rescheduled, private (current US$): FDR.WorldBank.Indicator async with get
+    member Commitments, public and publicly guaranteed (COM, current US$): FDR.WorldBank.Indicator async with get
+    member Commitments, IBRD (COM, current US$): FDR.WorldBank.Indicator async with get
+    member Commitments, IDA (COM, current US$): FDR.WorldBank.Indicator async with get
+    member Commitments, official creditors (COM, current US$): FDR.WorldBank.Indicator async with get
+    member Commitments, private creditors (COM, current US$): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Deutsche mark (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Euro (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, French franc (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Japanese yen (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Multiple currencies (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, all other currencies (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, SDR (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Swiss franc (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, Pound sterling (%): FDR.WorldBank.Indicator async with get
+    member Currency composition of PPG debt, U.S. dollars (%): FDR.WorldBank.Indicator async with get
+    member Debt forgiveness or reduction (current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member IMF purchases (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member Disbursements on external debt, long-term + IMF (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member Disbursements on external debt, long-term (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member Disbursements on external debt, private nonguaranteed (PNG) (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member Disbursements on external debt, public and publicly guaranteed (PPG) (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member IDA grants (current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (DIS, current US$): FDR.WorldBank.Indicator async with get
+    member External debt stocks, concessional (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member Concessional debt (% of total external debt): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (DOD, current US$): FDR.WorldBank.Indicator async with get
     member External debt stocks, total (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member Total change in external debt stocks (current US$): FDR.WorldBank.Indicator async with get
+    member External debt stocks (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
     member External debt stocks (% of GNI): FDR.WorldBank.Indicator async with get
     member Use of IMF credit (DOD, current US$): FDR.WorldBank.Indicator async with get
     member External debt stocks, long-term (DOD, current US$): FDR.WorldBank.Indicator async with get
@@ -122,12 +189,79 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Short-term debt (% of total reserves): FDR.WorldBank.Indicator async with get
     member Short-term debt (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
     member Short-term debt (% of total external debt): FDR.WorldBank.Indicator async with get
+    member Debt forgiveness grants (current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member Multilateral debt (% of total external debt): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (DOD, current US$): FDR.WorldBank.Indicator async with get
     member IBRD loans and IDA credits (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member External debt stocks, long-term private sector (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member External debt stocks, long-term public sector (DOD, current US$): FDR.WorldBank.Indicator async with get
     member Present value of external debt (current US$): FDR.WorldBank.Indicator async with get
     member Present value of external debt (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Present value of external debt (% of GNI): FDR.WorldBank.Indicator async with get
+    member Residual, debt stock-flow reconciliation (current US$): FDR.WorldBank.Indicator async with get
+    member External debt stocks, variable rate (DOD, current US$): FDR.WorldBank.Indicator async with get
+    member Debt buyback (current US$): FDR.WorldBank.Indicator async with get
+    member Debt stock reduction (current US$): FDR.WorldBank.Indicator async with get
+    member Debt stock rescheduled (current US$): FDR.WorldBank.Indicator async with get
+    member Average grace period on new external debt commitments (years): FDR.WorldBank.Indicator async with get
+    member Average grace period on new external debt commitments, official (years): FDR.WorldBank.Indicator async with get
+    member Average grace period on new external debt commitments, private (years): FDR.WorldBank.Indicator async with get
+    member Average grant element on new external debt commitments (%): FDR.WorldBank.Indicator async with get
+    member Average grant element on new external debt commitments, official (%): FDR.WorldBank.Indicator async with get
+    member Average grant element on new external debt commitments, private (%): FDR.WorldBank.Indicator async with get
+    member Average interest on new external debt commitments (%): FDR.WorldBank.Indicator async with get
+    member Average interest on new external debt commitments, official (%): FDR.WorldBank.Indicator async with get
+    member Average interest on new external debt commitments, private (%): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt, total (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt (% of GNI): FDR.WorldBank.Indicator async with get
+    member IMF charges (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt, long-term (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt, private nonguaranteed (PNG) (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt, public and publicly guaranteed (PPG) (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt, short-term (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (INT, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (INT, current US$): FDR.WorldBank.Indicator async with get
+    member Interest arrears, public and publicly guaranteed (current US$): FDR.WorldBank.Indicator async with get
+    member Net change in interest arrears (current US$): FDR.WorldBank.Indicator async with get
+    member Interest arrears, official creditors (current US$): FDR.WorldBank.Indicator async with get
+    member Interest arrears, private creditors (current US$): FDR.WorldBank.Indicator async with get
+    member Interest forgiven (current US$): FDR.WorldBank.Indicator async with get
+    member Interest rescheduled (capitalized) (current US$): FDR.WorldBank.Indicator async with get
+    member Interest rescheduled, official (current US$): FDR.WorldBank.Indicator async with get
+    member Interest rescheduled, private (current US$): FDR.WorldBank.Indicator async with get
+    member Average maturity on new external debt commitments (years): FDR.WorldBank.Indicator async with get
+    member Average maturity on new external debt commitments, official (years): FDR.WorldBank.Indicator async with get
+    member Average maturity on new external debt commitments, private (years): FDR.WorldBank.Indicator async with get
     member Net financial flows, bilateral (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Portfolio investment, bonds (PPG + PNG) (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member Net flows on external debt, total (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member Net flows on external debt, long-term (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member Net flows on external debt, private nonguaranteed (PNG) (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member Net flows on external debt, public and publicly guaranteed (PPG) (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member Net flows on external debt, short-term (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net official flows from UN agencies, IAEA (current US$): FDR.WorldBank.Indicator async with get
     member Net official flows from UN agencies, IFAD (current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, IMF concessional (NFL, current US$): FDR.WorldBank.Indicator async with get
@@ -135,8 +269,18 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Net financial flows, IBRD (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, IDA (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, multilateral (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, others (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member EBRD, private nonguaranteed (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member IFC, private nonguaranteed (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Commercial banks and other lending (PPG + PNG) (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (NFL, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, RDB concessional (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net financial flows, RDB nonconcessional (NFL, current US$): FDR.WorldBank.Indicator async with get
     member Net official flows from UN agencies, UNAIDS (current US$): FDR.WorldBank.Indicator async with get
@@ -150,6 +294,23 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Net official flows from UN agencies, UNTA (current US$): FDR.WorldBank.Indicator async with get
     member Net official flows from UN agencies, WFP (current US$): FDR.WorldBank.Indicator async with get
     member Net official flows from UN agencies, WHO (current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member Net transfers on external debt, total (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member Net transfers on external debt, long-term (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member Net transfers on external debt, private nonguaranteed (PNG) (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member Net transfers on external debt, public and publicly guaranteed (PPG) (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (NTR, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (NTR, current US$): FDR.WorldBank.Indicator async with get
     member Net official development assistance and official aid received (current US$): FDR.WorldBank.Indicator async with get
     member Net official development assistance and official aid received (constant 2010 US$): FDR.WorldBank.Indicator async with get
     member Net official aid received (current US$): FDR.WorldBank.Indicator async with get
@@ -161,15 +322,34 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Net ODA received (% of imports of goods and services): FDR.WorldBank.Indicator async with get
     member Net ODA received per capita (current US$): FDR.WorldBank.Indicator async with get
     member Net ODA received (% of central government expense): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bilateral concessional (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, total (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Total debt service (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
     member Total debt service (% of GNI): FDR.WorldBank.Indicator async with get
+    member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member Debt service on external debt, long-term (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member Debt service on external debt, private nonguaranteed (PNG) (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Debt service (PPG and IMF only, % of exports, excluding workers' remittances): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Public and publicly guaranteed debt service (% of GNI): FDR.WorldBank.Indicator async with get
     member Public and publicly guaranteed debt service (% of exports, excluding workers' remittances): FDR.WorldBank.Indicator async with get
+    member PPG, IBRD (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, IDA (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Multilateral debt service (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Multilateral debt service (% of public and publicly guaranteed debt service): FDR.WorldBank.Indicator async with get
+    member PPG, multilateral concessional (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, official creditors (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, bonds (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, commercial banks (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, bonds (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PNG, commercial banks and other creditors (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, other private creditors (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member PPG, private creditors (TDS, current US$): FDR.WorldBank.Indicator async with get
+    member Total amount of debt rescheduled (current US$): FDR.WorldBank.Indicator async with get
+    member Undisbursed external debt, total (UND, current US$): FDR.WorldBank.Indicator async with get
+    member Undisbursed external debt, official creditors (UND, current US$): FDR.WorldBank.Indicator async with get
+    member Undisbursed external debt, private creditors (UND, current US$): FDR.WorldBank.Indicator async with get
     member Agriculture value added per worker (constant 2000 US$): FDR.WorldBank.Indicator async with get
     member Water pollution, clay and glass industry (% of total BOD emissions): FDR.WorldBank.Indicator async with get
     member Water pollution, chemical industry (% of total BOD emissions): FDR.WorldBank.Indicator async with get
@@ -807,7 +987,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Number of maternal deaths: FDR.WorldBank.Indicator async with get
     member Lifetime risk of maternal death (1 in: rate varies by country): FDR.WorldBank.Indicator async with get
     member Lifetime risk of maternal death (%): FDR.WorldBank.Indicator async with get
-    member Prevalence of anemia among pregnant women (%): FDR.WorldBank.Indicator async with get
     member Smoking prevalence, females (% of adults): FDR.WorldBank.Indicator async with get
     member Smoking prevalence, males (% of adults): FDR.WorldBank.Indicator async with get
     member Improved sanitation facilities (% of population with access): FDR.WorldBank.Indicator async with get
@@ -835,7 +1014,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Out-of-pocket health expenditure (% of private expenditure on health): FDR.WorldBank.Indicator async with get
     member Health expenditure per capita (current US$): FDR.WorldBank.Indicator async with get
     member Health expenditure per capita, PPP (constant 2005 international $): FDR.WorldBank.Indicator async with get
-    member Health expenditure, private (% of total health expenditure): FDR.WorldBank.Indicator async with get
     member Health expenditure, private (% of GDP): FDR.WorldBank.Indicator async with get
     member Health expenditure, public (% of total health expenditure): FDR.WorldBank.Indicator async with get
     member Health expenditure, public (% of government expenditure): FDR.WorldBank.Indicator async with get
@@ -909,6 +1087,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Children in employment, work only, male (% of male children in employment, ages 7-14): FDR.WorldBank.Indicator async with get
     member Children in employment, work only (% of children in employment, ages 7-14): FDR.WorldBank.Indicator async with get
     member Children in employment, total (% of children ages 7-14): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate, female (% of female population ages 15-24): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate, male (% of male population ages 15-24): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate, total (% of total population ages 15-24): FDR.WorldBank.Indicator async with get
     member Labor force participation rate, female (% of female population ages 15-64): FDR.WorldBank.Indicator async with get
     member Labor force participation rate, male (% of male population ages 15-64): FDR.WorldBank.Indicator async with get
     member Labor force participation rate, total (% of total population ages 15-64): FDR.WorldBank.Indicator async with get
@@ -1161,6 +1342,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Travel services (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net inflows (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net inflows (% of GDP): FDR.WorldBank.IndicatorDescription with get
+    member Primary income on FDI (current US$): FDR.WorldBank.IndicatorDescription with get
     member Portfolio equity, net inflows (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Current transfers, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Workers' remittances, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1198,7 +1380,73 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Net bilateral aid flows from DAC donors, Sweden (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net bilateral aid flows from DAC donors, Total (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net bilateral aid flows from DAC donors, United States (current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member IMF repurchases (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal repayments on external debt, long-term + IMF (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal repayments on external debt, long-term (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal repayments on external debt, private nonguaranteed (PNG) (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal repayments on external debt, public and publicly guaranteed (PPG) (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (AMT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal arrears, public and publicly guaranteed (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal arrears, official creditors (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal arrears, private creditors (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal forgiven (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal rescheduled (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal rescheduled, official (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Principal rescheduled, private (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Commitments, public and publicly guaranteed (COM, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Commitments, IBRD (COM, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Commitments, IDA (COM, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Commitments, official creditors (COM, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Commitments, private creditors (COM, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Deutsche mark (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Euro (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, French franc (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Japanese yen (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Multiple currencies (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, all other currencies (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, SDR (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Swiss franc (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, Pound sterling (%): FDR.WorldBank.IndicatorDescription with get
+    member Currency composition of PPG debt, U.S. dollars (%): FDR.WorldBank.IndicatorDescription with get
+    member Debt forgiveness or reduction (current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member IMF purchases (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Disbursements on external debt, long-term + IMF (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Disbursements on external debt, long-term (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Disbursements on external debt, private nonguaranteed (PNG) (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Disbursements on external debt, public and publicly guaranteed (PPG) (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member IDA grants (current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (DIS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks, concessional (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Concessional debt (% of total external debt): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks, total (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Total change in external debt stocks (current US$): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member Use of IMF credit (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks, long-term (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1208,12 +1456,79 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Short-term debt (% of total reserves): FDR.WorldBank.IndicatorDescription with get
     member Short-term debt (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
     member Short-term debt (% of total external debt): FDR.WorldBank.IndicatorDescription with get
+    member Debt forgiveness grants (current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Multilateral debt (% of total external debt): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member IBRD loans and IDA credits (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks, long-term private sector (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks, long-term public sector (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member Present value of external debt (current US$): FDR.WorldBank.IndicatorDescription with get
     member Present value of external debt (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Present value of external debt (% of GNI): FDR.WorldBank.IndicatorDescription with get
+    member Residual, debt stock-flow reconciliation (current US$): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks, variable rate (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Debt buyback (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Debt stock reduction (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Debt stock rescheduled (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Average grace period on new external debt commitments (years): FDR.WorldBank.IndicatorDescription with get
+    member Average grace period on new external debt commitments, official (years): FDR.WorldBank.IndicatorDescription with get
+    member Average grace period on new external debt commitments, private (years): FDR.WorldBank.IndicatorDescription with get
+    member Average grant element on new external debt commitments (%): FDR.WorldBank.IndicatorDescription with get
+    member Average grant element on new external debt commitments, official (%): FDR.WorldBank.IndicatorDescription with get
+    member Average grant element on new external debt commitments, private (%): FDR.WorldBank.IndicatorDescription with get
+    member Average interest on new external debt commitments (%): FDR.WorldBank.IndicatorDescription with get
+    member Average interest on new external debt commitments, official (%): FDR.WorldBank.IndicatorDescription with get
+    member Average interest on new external debt commitments, private (%): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt, total (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt (% of GNI): FDR.WorldBank.IndicatorDescription with get
+    member IMF charges (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt, long-term (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt, private nonguaranteed (PNG) (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt, public and publicly guaranteed (PPG) (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt, short-term (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (INT, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest arrears, public and publicly guaranteed (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net change in interest arrears (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest arrears, official creditors (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest arrears, private creditors (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest forgiven (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest rescheduled (capitalized) (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest rescheduled, official (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Interest rescheduled, private (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Average maturity on new external debt commitments (years): FDR.WorldBank.IndicatorDescription with get
+    member Average maturity on new external debt commitments, official (years): FDR.WorldBank.IndicatorDescription with get
+    member Average maturity on new external debt commitments, private (years): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, bilateral (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Portfolio investment, bonds (PPG + PNG) (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net flows on external debt, total (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net flows on external debt, long-term (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net flows on external debt, private nonguaranteed (PNG) (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net flows on external debt, public and publicly guaranteed (PPG) (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net flows on external debt, short-term (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official flows from UN agencies, IAEA (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official flows from UN agencies, IFAD (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, IMF concessional (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1221,8 +1536,18 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Net financial flows, IBRD (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, IDA (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, multilateral (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, others (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member EBRD, private nonguaranteed (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member IFC, private nonguaranteed (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Commercial banks and other lending (PPG + PNG) (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, RDB concessional (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net financial flows, RDB nonconcessional (NFL, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official flows from UN agencies, UNAIDS (current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1236,6 +1561,23 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Net official flows from UN agencies, UNTA (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official flows from UN agencies, WFP (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official flows from UN agencies, WHO (current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net transfers on external debt, total (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net transfers on external debt, long-term (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net transfers on external debt, private nonguaranteed (PNG) (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net transfers on external debt, public and publicly guaranteed (PPG) (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (NTR, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official development assistance and official aid received (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net official development assistance and official aid received (constant 2010 US$): FDR.WorldBank.IndicatorDescription with get
     member Net official aid received (current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1247,15 +1589,34 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Net ODA received (% of imports of goods and services): FDR.WorldBank.IndicatorDescription with get
     member Net ODA received per capita (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net ODA received (% of central government expense): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bilateral concessional (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, total (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Total debt service (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
     member Total debt service (% of GNI): FDR.WorldBank.IndicatorDescription with get
+    member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Debt service on external debt, long-term (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Debt service on external debt, private nonguaranteed (PNG) (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Debt service (PPG and IMF only, % of exports, excluding workers' remittances): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Public and publicly guaranteed debt service (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member Public and publicly guaranteed debt service (% of exports, excluding workers' remittances): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IBRD (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, IDA (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Multilateral debt service (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Multilateral debt service (% of public and publicly guaranteed debt service): FDR.WorldBank.IndicatorDescription with get
+    member PPG, multilateral concessional (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, official creditors (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, bonds (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, commercial banks (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, bonds (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PNG, commercial banks and other creditors (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, other private creditors (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member PPG, private creditors (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Total amount of debt rescheduled (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Undisbursed external debt, total (UND, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Undisbursed external debt, official creditors (UND, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Undisbursed external debt, private creditors (UND, current US$): FDR.WorldBank.IndicatorDescription with get
     member Agriculture value added per worker (constant 2000 US$): FDR.WorldBank.IndicatorDescription with get
     member Water pollution, clay and glass industry (% of total BOD emissions): FDR.WorldBank.IndicatorDescription with get
     member Water pollution, chemical industry (% of total BOD emissions): FDR.WorldBank.IndicatorDescription with get
@@ -1893,7 +2254,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Number of maternal deaths: FDR.WorldBank.IndicatorDescription with get
     member Lifetime risk of maternal death (1 in: rate varies by country): FDR.WorldBank.IndicatorDescription with get
     member Lifetime risk of maternal death (%): FDR.WorldBank.IndicatorDescription with get
-    member Prevalence of anemia among pregnant women (%): FDR.WorldBank.IndicatorDescription with get
     member Smoking prevalence, females (% of adults): FDR.WorldBank.IndicatorDescription with get
     member Smoking prevalence, males (% of adults): FDR.WorldBank.IndicatorDescription with get
     member Improved sanitation facilities (% of population with access): FDR.WorldBank.IndicatorDescription with get
@@ -1921,7 +2281,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Out-of-pocket health expenditure (% of private expenditure on health): FDR.WorldBank.IndicatorDescription with get
     member Health expenditure per capita (current US$): FDR.WorldBank.IndicatorDescription with get
     member Health expenditure per capita, PPP (constant 2005 international $): FDR.WorldBank.IndicatorDescription with get
-    member Health expenditure, private (% of total health expenditure): FDR.WorldBank.IndicatorDescription with get
     member Health expenditure, private (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member Health expenditure, public (% of total health expenditure): FDR.WorldBank.IndicatorDescription with get
     member Health expenditure, public (% of government expenditure): FDR.WorldBank.IndicatorDescription with get
@@ -1995,6 +2354,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Children in employment, work only, male (% of male children in employment, ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Children in employment, work only (% of children in employment, ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Children in employment, total (% of children ages 7-14): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate, female (% of female population ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate, male (% of male population ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate, total (% of total population ages 15-24): FDR.WorldBank.IndicatorDescription with get
     member Labor force participation rate, female (% of female population ages 15-64): FDR.WorldBank.IndicatorDescription with get
     member Labor force participation rate, male (% of male population ages 15-64): FDR.WorldBank.IndicatorDescription with get
     member Labor force participation rate, total (% of total population ages 15-64): FDR.WorldBank.IndicatorDescription with get
@@ -2186,6 +2548,7 @@ class WorldBankDataProvider+ServiceTypes+Country : FDR.WorldBank.Country
 class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollection<T><Country>
     member Aruba: WorldBankDataProvider+ServiceTypes+Country with get
     member Afghanistan: WorldBankDataProvider+ServiceTypes+Country with get
+    member Africa: WorldBankDataProvider+ServiceTypes+Country with get
     member Angola: WorldBankDataProvider+ServiceTypes+Country with get
     member Albania: WorldBankDataProvider+ServiceTypes+Country with get
     member Andorra: WorldBankDataProvider+ServiceTypes+Country with get
@@ -2344,6 +2707,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member Malawi: WorldBankDataProvider+ServiceTypes+Country with get
     member Malaysia: WorldBankDataProvider+ServiceTypes+Country with get
     member North America: WorldBankDataProvider+ServiceTypes+Country with get
+    member North Africa: WorldBankDataProvider+ServiceTypes+Country with get
     member Namibia: WorldBankDataProvider+ServiceTypes+Country with get
     member New Caledonia: WorldBankDataProvider+ServiceTypes+Country with get
     member Niger: WorldBankDataProvider+ServiceTypes+Country with get
@@ -2398,6 +2762,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member Sweden: WorldBankDataProvider+ServiceTypes+Country with get
     member Swaziland: WorldBankDataProvider+ServiceTypes+Country with get
     member Sint Maarten (Dutch part): WorldBankDataProvider+ServiceTypes+Country with get
+    member Sub-Saharan Africa excluding South Africa: WorldBankDataProvider+ServiceTypes+Country with get
     member Seychelles: WorldBankDataProvider+ServiceTypes+Country with get
     member Syrian Arab Republic: WorldBankDataProvider+ServiceTypes+Country with get
     member Turks and Caicos Islands: WorldBankDataProvider+ServiceTypes+Country with get
@@ -2426,6 +2791,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member Vanuatu: WorldBankDataProvider+ServiceTypes+Country with get
     member World: WorldBankDataProvider+ServiceTypes+Country with get
     member Samoa: WorldBankDataProvider+ServiceTypes+Country with get
+    member Sub-Saharan Africa excluding South Africa and Nigeria: WorldBankDataProvider+ServiceTypes+Country with get
     member Yemen, Rep.: WorldBankDataProvider+ServiceTypes+Country with get
     member South Africa: WorldBankDataProvider+ServiceTypes+Country with get
     member Zambia: WorldBankDataProvider+ServiceTypes+Country with get
@@ -2436,6 +2802,7 @@ class WorldBankDataProvider+ServiceTypes+Region : FDR.WorldBank.Region
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
 
 class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollection<T><Region>
+    member Africa: WorldBankDataProvider+ServiceTypes+Region with get
     member Arab World: WorldBankDataProvider+ServiceTypes+Region with get
     member Caribbean small states: WorldBankDataProvider+ServiceTypes+Region with get
     member East Asia & Pacific (developing only): WorldBankDataProvider+ServiceTypes+Region with get
@@ -2450,6 +2817,7 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     member Middle East & North Africa (all income levels): WorldBankDataProvider+ServiceTypes+Region with get
     member Middle East & North Africa (developing only): WorldBankDataProvider+ServiceTypes+Region with get
     member North America: WorldBankDataProvider+ServiceTypes+Region with get
+    member North Africa: WorldBankDataProvider+ServiceTypes+Region with get
     member OECD members: WorldBankDataProvider+ServiceTypes+Region with get
     member Other small states: WorldBankDataProvider+ServiceTypes+Region with get
     member Pacific island small states: WorldBankDataProvider+ServiceTypes+Region with get
@@ -2457,7 +2825,9 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     member Sub-Saharan Africa (developing only): WorldBankDataProvider+ServiceTypes+Region with get
     member Sub-Saharan Africa (all income levels): WorldBankDataProvider+ServiceTypes+Region with get
     member Small states: WorldBankDataProvider+ServiceTypes+Region with get
+    member Sub-Saharan Africa excluding South Africa: WorldBankDataProvider+ServiceTypes+Region with get
     member World: WorldBankDataProvider+ServiceTypes+Region with get
+    member Sub-Saharan Africa excluding South Africa and Nigeria: WorldBankDataProvider+ServiceTypes+Region with get
 
 class WorldBankDataProvider+ServiceTypes+Topic : FDR.WorldBank.Topic
     member Indicators: WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions with get

@@ -22,7 +22,9 @@ The root directory contains a number of Visual Studio solutions (`*.sln`) files
 that group the projects in the main logical groups:
 
  * **FSharp.Data.sln** contains the main projects that implement most of the F# Data
-   functionality (such as runtime and design-time type provider libraries).
+   functionality (such as runtime and design-time type provider libraries). If you want
+   to contribute code that is not quite ready yet, but looks interesting, then please
+   add it to the experimental projects.
 
  * **FSharp.Data.Tests.sln** is a library with tests for F# Data and it also contains
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
@@ -32,11 +34,6 @@ that group the projects in the main logical groups:
    F# Data type providers in various configurations (Silverlight, Portable library
    referenced from Windows Phone applications). Feel free to contribute more exciting
    samples!
-
- * **FSharp.Data.Experimental.sln** has similar structure to `FSharp.Data` but contains
-   implementations of experimental type providers and features. If you want to 
-   contribute code that is not quite ready yet, but looks interesting, then please
-   add it here.
 
 ## Projects and multi-targetting
 
