@@ -105,13 +105,13 @@ The following example shows how to process the sample JSON value:</p>
 <span class="l">8: </span><span class="k">for</span> <span onmouseout="hideTip(event, 'fs12', 18)" onmouseover="showTip(event, 'fs12', 18)" class="i">sib</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">info</span><span class="o">?</span><span class="i">siblings</span> <span class="k">do</span>
 <span class="l">9: </span>  <span onmouseout="hideTip(event, 'fs11', 20)" onmouseover="showTip(event, 'fs11', 20)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs12', 21)" onmouseover="showTip(event, 'fs12', 21)" class="i">sib</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 22)" onmouseover="showTip(event, 'fs13', 22)" class="i">AsString</span>())</pre>
 <p>Note that the <code>JsonValue</code> type does not actually implement the <code>IEnumerable&lt;'T&gt;</code> 
-namespace (meaning that it cannot be pased to <code>Seq.xyz</code> functions). It only has
+namespace (meaning that it cannot be passed to <code>Seq.xyz</code> functions). It only has
 the <code>GetEnumerator</code> method, which makes it possible to use it in sequence expressions
 and with the <code>for</code> loop.</p>
 <h2>Parsing WorldBank response</h2>
 
 <p>To look at a more complex example, consider a sample document 
-<a href="docs/WorldBank.json"><code>docs/WorldBank.json</code></a> which was obtained as a response to 
+<a href="../docs/WorldBank.json"><code>docs/WorldBank.json</code></a> which was obtained as a response to 
 a WorldBank request (you can access the WorldBank data more conveniently using
 <a href="WorldBank.html">a type provider</a>). The document looks as follows:</p>
 
@@ -149,7 +149,7 @@ against the <code>JsonValue.Array</code> constructor:</p>
 <span class="l">13: </span>                         (<span onmouseout="hideTip(event, 'fs25', 57)" onmouseover="showTip(event, 'fs25', 57)" class="i">record</span><span class="o">?</span><span onmouseout="hideTip(event, 'fs17', 58)" onmouseover="showTip(event, 'fs17', 58)" class="i">value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 59)" onmouseover="showTip(event, 'fs27', 59)" class="i">AsFloat</span>())
 <span class="l">14: </span>| _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs11', 60)" onmouseover="showTip(event, 'fs11', 60)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">failed</span><span class="s">&quot;</span></pre>
 <p>The <code>value</code> property of a data point is not always available - as demonstrated
-above, the value may be <code>null</code>. In that case, we want to skipt the data point.
+above, the value may be <code>null</code>. In that case, we want to skip the data point.
 To check whether the property is <code>null</code> we simply compare it with <code>JsonValue.Null</code>.</p>
 
 <p>Also note that the <code>date</code> and <code>value</code> properties are formatted as strings 
@@ -200,7 +200,7 @@ can be used to easily access data from the WorldBank</li>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">F# Data Library</li>
-            <li><a href="index.html">Home page</a></li>
+            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>

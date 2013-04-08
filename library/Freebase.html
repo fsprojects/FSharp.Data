@@ -61,7 +61,7 @@ initializes a connection to Freebase using the <code>GetDataContext</code> metho
 <h3>Exploring Freebase data</h3>
 
 <p>Now you can explore the Freebase data schema by typing <code>data.</code> and exploring the
-avaailable data sources in the autocomplete. For example, the following snippet
+available data sources in the autocomplete. For example, the following snippet
 retrieves the Chemical Elements and then looks at the details of Hydrogen:</p>
 <pre class="fssnip">
 <span class="l">1: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">elements</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">data</span><span class="o">.</span><span class="i">``Science and Technology``</span><span class="o">.</span><span class="i">Chemistry</span><span class="o">.</span><span class="i">``Chemical Elements``</span>
@@ -110,7 +110,7 @@ Freebase type provider. This works in simple cases, but it is inefficient if we 
 filter the data or perform other querying.</p>
 
 <p>However, the Freebase provider includes support for querying. Queries written using the
-F# 3.0 LINQ syntax are translated to MQL (a querying langauge used by Freebase). This means 
+F# 3.0 LINQ syntax are translated to MQL (a querying language used by Freebase). This means 
 you can write queries in F# 3.0 with auto-completion and strong typing, and still execute 
 efficiently on the server, at least for the queries translated to MQL.</p>
 
@@ -178,7 +178,7 @@ summary, here is a list of features:</p>
 <li>Many queries are translated efficiently into the MQL language. Those that can't 
 execute on the client side by default.</li>
 <li>A selection of sample individuals is given under the <code>Individuals</code> entry for each collection 
-of objects. This allows you to program against stroingly named individual such as
+of objects. This allows you to program against strongly named individual such as
 <code>Hydrogen</code> or <code>Bob Dylan</code>.</li>
 <li>Custom Freebase operators such as approximate counts and approximate string matching are supported</li>
 <li>Image URLs are provided via the <code>GetImages()</code> method, and the first image is provided using the 
@@ -188,7 +188,7 @@ Freebase database on a specific date (also meaning that your application will no
 when the schema changes).</li>
 <li>Optional client-side caching of schema information makes type checking quick and efficient</li>
 <li>Units of measure are supported. For example, the <code>Atomic mass</code> property of chemical elements
-is automatically converted to SI units and it is exposed in Killograms. This is statically
+is automatically converted to SI units and it is exposed in Kilograms. This is statically
 tracked in the F# type system using units of measure.</li>
 <li>If you want to query larger amount of Freebase data, you can register at Google and
 obtain a custom API key. The key can be passed as a static parameter to the type provider.</li>
@@ -301,7 +301,7 @@ tutorial on Try F# uses the Freebase type provider in numerous examples.</li>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">F# Data Library</li>
-            <li><a href="index.html">Home page</a></li>
+            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>

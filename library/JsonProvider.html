@@ -36,7 +36,7 @@
           <h1>F# Data: JSON Type Provider</h1>
 
 <p>This article demonstrates how to use the JSON type provider to access JSON files
-in a statically typed way. We first look how the structure is infered and then 
+in a statically typed way. We first look how the structure is inferred and then 
 demonstrate the provider by parsing data returned by the WorldBank and Twitter.</p>
 
 <p>The JSON type provider provides a statically typed access to JSON documents.
@@ -65,7 +65,7 @@ accessible via <code>http</code> or <code>https</code>). It is not likely that t
 <span class="l">3: </span><span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Age</span>
 <span class="l">4: </span><span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">Name</span></pre>
 <p>You can see that the generated type has two properties - <code>Age</code> of type <code>int</code> and <code>Name</code> of
-type <code>string</code>. The provider successfuly infers the types from the sample and exposes the
+type <code>string</code>. The provider successfully infers the types from the sample and exposes the
 fields as properties (with PascalCase name to follow standard naming conventions).</p>
 
 <h3>Inferring numeric types</h3>
@@ -154,7 +154,7 @@ some information and the actual <code>value</code>. Note that the <code>value</c
 (for some unknown reason). It is wrapped in quotes, so the provider infers its type as
 <code>string</code> (and we need to convert it manually).</p>
 
-<p>The following sample generates type based on the <a href="docs/WorldBank.json"><code>docs/WorldBank.json</code></a> 
+<p>The following sample generates type based on the <a href="../docs/WorldBank.json"><code>docs/WorldBank.json</code></a> 
 file and loads it:</p>
 <pre class="fssnip">
 <span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs37', 68)" onmouseover="showTip(event, 'fs37', 68)" class="i">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">docs</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span><span class="o">&gt;</span>
@@ -176,7 +176,7 @@ generates simple properties <code>Record</code> and <code>Array</code>. We can p
 <span class="l">8: </span>  <span onmouseout="hideTip(event, 'fs45', 86)" onmouseover="showTip(event, 'fs45', 86)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 87)" onmouseover="showTip(event, 'fs47', 87)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 88)" onmouseover="showTip(event, 'fs48', 88)" class="i">Number</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 89)" onmouseover="showTip(event, 'fs27', 89)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 90)" onmouseover="showTip(event, 'fs28', 90)" class="i">iter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs49', 91)" onmouseover="showTip(event, 'fs49', 91)" class="i">value</span> <span class="k">-&gt;</span>
 <span class="l">9: </span>    <span onmouseout="hideTip(event, 'fs29', 92)" onmouseover="showTip(event, 'fs29', 92)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs45', 93)" onmouseover="showTip(event, 'fs45', 93)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 94)" onmouseover="showTip(event, 'fs50', 94)" class="i">Date</span> <span onmouseout="hideTip(event, 'fs49', 95)" onmouseover="showTip(event, 'fs49', 95)" class="i">value</span>)</pre>
 <p>When printing the data points, some of the values might be missing (in the input, the value
-is <code>null</code> instead of a valid number). This is another example of a heterogeenous type - 
+is <code>null</code> instead of a valid number). This is another example of a heterogeneous type - 
 the type is either <code>Number</code> or some other type (representing <code>null</code> value). This means
 that <code>record.Value</code> has a <code>Number</code> property (when the value is a number) and we can use
 it to print the result only when the data point is available.</p>
@@ -248,24 +248,24 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs37">type WorldBank = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.WorldBank</div>
 <div class="tip" id="fs38">val doc : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><br />Full name: JsonProvider.doc</div>
 <div class="tip" id="fs39">JsonProvider&lt;...&gt;.Load(uri: string) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br />JsonProvider&lt;...&gt;.Load(stream: System.IO.Stream) : JsonProvider&lt;...&gt;.DomainTypes.Choice</div>
-<div class="tip" id="fs40">val info : JsonProvider&lt;...&gt;.DomainTypes.Entity3<br /><br />Full name: JsonProvider.info</div>
-<div class="tip" id="fs41">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Record: JsonProvider&lt;...&gt;.DomainTypes.Entity3</div>
-<div class="tip" id="fs42">property JsonProvider&lt;...&gt;.DomainTypes.Entity3.Page: int</div>
-<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.DomainTypes.Entity3.Pages: int</div>
-<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.DomainTypes.Entity3.Total: int</div>
+<div class="tip" id="fs40">val info : JsonProvider&lt;...&gt;.DomainTypes.Entity4<br /><br />Full name: JsonProvider.info</div>
+<div class="tip" id="fs41">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Record: JsonProvider&lt;...&gt;.DomainTypes.Entity4</div>
+<div class="tip" id="fs42">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Page: int</div>
+<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Pages: int</div>
+<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Total: int</div>
 <div class="tip" id="fs45">val record : JsonProvider&lt;...&gt;.DomainTypes.Entity</div>
 <div class="tip" id="fs46">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Array: JsonProvider&lt;...&gt;.DomainTypes.Entity []</div>
-<div class="tip" id="fs47">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.Choice1</div>
-<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.DomainTypes.Choice1.Number: Option&lt;decimal&gt;</div>
+<div class="tip" id="fs47">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.Choice2</div>
+<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.DomainTypes.Choice2.Number: Option&lt;decimal&gt;</div>
 <div class="tip" id="fs49">val value : decimal</div>
 <div class="tip" id="fs50">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Date: int</div>
 <div class="tip" id="fs51">type Tweet = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Tweet</div>
 <div class="tip" id="fs52">val text : string<br /><br />Full name: JsonProvider.text</div>
 <div class="tip" id="fs53">&quot;&quot;&quot; {&quot;in_reply_to_status_id_str&quot;:null,&quot;text&quot;:&quot;\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002&quot;,&quot;in_reply_to_user_id_str&quot;:null,&quot;retweet_count&quot;:0,&quot;geo&quot;:null,&quot;source&quot;:&quot;web&quot;,&quot;retweeted&quot;:false,&quot;truncated&quot;:false,&quot;id_str&quot;:&quot;263290764686155776&quot;,&quot;entities&quot;:{&quot;user_mentions&quot;:[],&quot;hashtags&quot;:[],&quot;urls&quot;:[]},&quot;in_reply_to_user_id&quot;:null,&quot;in_reply_to_status_id&quot;:null,&quot;place&quot;:null,&quot;coordinates&quot;:null,&quot;in_reply_to_screen_name&quot;:null,&quot;created_at&quot;:&quot;Tue Oct 30 14:46:24 +0000 2012&quot;,&quot;user&quot;:{&quot;notifications&quot;:null,&quot;contributors_enabled&quot;:false,&quot;time_zone&quot;:&quot;Tokyo&quot;,&quot;profile_background_color&quot;:&quot;FFFFFF&quot;,&quot;location&quot;:&quot;Kodaira Tokyo Japan&quot;,&quot;profile_background_tile&quot;:false,&quot;profile_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;default_profile_image&quot;:false,&quot;follow_request_sent&quot;:null,&quot;profile_sidebar_fill_color&quot;:&quot;17451B&quot;,&quot;description&quot;:&quot;KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a&quot;,&quot;favourites_count&quot;:17,&quot;screen_name&quot;:&quot;Merlin_wand&quot;,&quot;profile_sidebar_border_color&quot;:&quot;000000&quot;,&quot;id_str&quot;:&quot;94788486&quot;,&quot;verified&quot;:false,&quot;lang&quot;:&quot;ja&quot;,&quot;statuses_count&quot;:8641,&quot;profile_use_background_image&quot;:true,&quot;protected&quot;:false,&quot;profile_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;listed_count&quot;:31,&quot;geo_enabled&quot;:true,&quot;created_at&quot;:&quot;Sat Dec 05 13:07:32 +0000 2009&quot;,&quot;profile_text_color&quot;:&quot;000000&quot;,&quot;name&quot;:&quot;Marin&quot;,&quot;profile_background_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;friends_count&quot;:629,&quot;url&quot;:null,&quot;id&quot;:94788486,&quot;is_translator&quot;:false,&quot;default_profile&quot;:false,&quot;following&quot;:null,&quot;profile_background_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;utc_offset&quot;:32400,&quot;profile_link_color&quot;:&quot;ADADAD&quot;,&quot;followers_count&quot;:426},&quot;id&quot;:263290764686155776,&quot;contributors&quot;:null,&quot;favorited&quot;:false} &quot;&quot;&quot;</div>
 <div class="tip" id="fs54">val tweet : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><br />Full name: JsonProvider.tweet</div>
-<div class="tip" id="fs55">property JsonProvider&lt;...&gt;.DomainTypes.Entity.User: Option&lt;JsonProvider&lt;...&gt;.DomainTypes.Entity16&gt;</div>
-<div class="tip" id="fs56">property Option.Value: JsonProvider&lt;...&gt;.DomainTypes.Entity16</div>
-<div class="tip" id="fs57">property JsonProvider&lt;...&gt;.DomainTypes.Entity16.Name: string</div>
+<div class="tip" id="fs55">property JsonProvider&lt;...&gt;.DomainTypes.Entity.User: Option&lt;JsonProvider&lt;...&gt;.DomainTypes.Entity17&gt;</div>
+<div class="tip" id="fs56">property Option.Value: JsonProvider&lt;...&gt;.DomainTypes.Entity17</div>
+<div class="tip" id="fs57">property JsonProvider&lt;...&gt;.DomainTypes.Entity17.Name: string</div>
 <div class="tip" id="fs58">property JsonProvider&lt;...&gt;.DomainTypes.Entity.RetweetCount: Option&lt;int&gt;</div>
 <div class="tip" id="fs59">property Option.Value: int</div>
 <div class="tip" id="fs60">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Text: Option&lt;string&gt;</div>
@@ -276,7 +276,7 @@ working with JSON values dynamically.</li>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">F# Data Library</li>
-            <li><a href="index.html">Home page</a></li>
+            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
