@@ -30,15 +30,22 @@ module Seq =
 
 module List = 
 
-    let headAndTail l = match l with [] -> invalidArg "l" "empty list" | h::t -> (h,t)
+  /// Split a non-empty list into a pair consisting of
+  /// its head and its tail
+  let headAndTail l = 
+    match l with 
+    | [] -> invalidArg "l" "empty list" 
+    | head::tail -> (head, tail)
 
-    let frontAndBack l = 
-        let rec loop acc l = 
-            match l with
-            | [] -> invalidArg "l" "empty list" 
-            | [h] -> List.rev acc,h
-            | h::t -> loop  (h::acc) t
-        loop [] l
+  /// Split a non-empty list into a list with all elements 
+  /// except for the last one and the last element
+  let frontAndBack l = 
+    let rec loop acc l = 
+      match l with
+      | [] -> invalidArg "l" "empty list" 
+      | [singleton] -> List.rev acc, singleton
+      | head::tail -> loop  (head::acc) tail
+    loop [] l
 
 // ----------------------------------------------------------------------------------------------
 
@@ -91,9 +98,9 @@ module ProviderHelpers =
     | false, _ -> None
     | true, uri ->
         if not uri.IsAbsoluteUri && (str |> Seq.exists (fun c -> invalidChars.Contains c)) then
-            None
+          None
         else
-            Some uri
+          Some uri
 
 // ----------------------------------------------------------------------------------------------
 // Conversions from string to various primitive types
@@ -102,16 +109,24 @@ module ProviderHelpers =
 [<RequireQualifiedAccess>]
 type TypeWrapper = None | Option | Nullable
 
+/// Represents type information about primitive property (used mainly in the CSV provider)
+/// This type captures the type, unit of measure and handling of missing values (if we
+/// infer that the value may be missing, we can generate option<T> or nullable<T>)
 type PrimitiveInferedProperty =
   { Name : string
     BasicType : Type
     TypeWithMeasure : Type
     TypeWrapper : TypeWrapper }
-  static member create name typ optional =
+  static member Create(name, typ, optional) =
     { Name = name
       BasicType = typ
       TypeWithMeasure = typ
       TypeWrapper = if optional then TypeWrapper.Option else TypeWrapper.None }
+  static member Create(name, typ, typWithMeasure, ?wrapper) =
+    { Name = name
+      BasicType = typ
+      TypeWithMeasure = typWithMeasure
+      TypeWrapper = defaultArg wrapper TypeWrapper.None }
 
 module Conversions = 
 

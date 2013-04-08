@@ -17,7 +17,8 @@ open ProviderImplementation.StructureInference
 /// Generates record fields for all attributes
 let private getAttributes culture (element:XElement) =
   [ for attr in element.Attributes() do
-      yield { Name = attr.Name.LocalName; Optional = false; 
+      yield { Name = attr.Name.ToString()
+              Optional = false; 
               Type = inferPrimitiveType culture attr.Value None } ]
 
 
@@ -46,8 +47,8 @@ let inferGlobalType culture (element:XElement) =
           |> Seq.fold subtypeInfered Top
         let body = { Name = ""; Optional = false; Type = bodyType }
 
-        let record = Record(Some name.LocalName, body::attributes)
-        name.LocalName, (elements, record) )
+        let record = Record(Some(name.ToString()), body::attributes)
+        name.ToString(), (elements, record) )
     |> Map.ofSeq
 
   /// Updates the types representing body in a given assignment
@@ -60,7 +61,7 @@ let inferGlobalType culture (element:XElement) =
       match value with 
       | elements, Record(Some name, body::attributes) -> 
           if body.Name <> "" then failwith "inferGlobalType: Assumed body element first"
-          let children = [ for e in elements.Elements() -> assignment.[e.Name.LocalName] |> snd ]
+          let children = [ for e in elements.Elements() -> assignment.[e.Name.ToString()] |> snd ]
           let bodyType = 
             if children = [] then body.Type
             else subtypeInfered (inferCollectionType children) body.Type
@@ -68,7 +69,7 @@ let inferGlobalType culture (element:XElement) =
           body.Type <- bodyType
       | _ -> failwith "inferGlobalType: Expected Record type with a name"
 
-  assignment.[element.Name.LocalName] |> snd
+  assignment.[element.Name.ToString()] |> snd
 
 
 /// Get information about type locally (the type of children is infered
@@ -88,7 +89,7 @@ let rec inferLocalType culture (element:XElement) =
       elif not (String.IsNullOrEmpty(element.Value)) then
         let primitive = inferPrimitiveType culture element.Value None
         yield { Name = ""; Optional = false; Type = primitive } ]  
-  Record(Some element.Name.LocalName, props)
+  Record(Some(element.Name.ToString()), props)
 
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
