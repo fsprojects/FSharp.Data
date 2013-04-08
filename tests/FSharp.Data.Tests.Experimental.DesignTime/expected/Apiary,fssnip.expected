@@ -7,8 +7,8 @@ class ApiaryProvider+DomainTypes
 class ApiaryProvider+DomainTypes+SnippetType : FDR.Apiary.InternalApiaryContext
     member AsyncGetSnippet: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity async
     member GetSnippet: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity
-    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity1[] async
-    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity1[]
+    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity2[] async
+    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity2[]
 
 class ApiaryProvider+DomainTypes+Entity : FDR.Apiary.ApiaryDocument
     member Author: string with get
@@ -20,7 +20,7 @@ class ApiaryProvider+DomainTypes+Entity : FDR.Apiary.ApiaryDocument
     member Tags: string[] with get
     member Title: string with get
 
-class ApiaryProvider+DomainTypes+Entity1 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
     member Author: string with get
     member Description: string with get
     member Likes: int with get

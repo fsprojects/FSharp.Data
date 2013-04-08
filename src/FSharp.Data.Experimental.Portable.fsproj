@@ -44,7 +44,7 @@
     <Compile Include="Library\Json.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
-    <Compile Include="Runtime.fs" />
+    <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
   </ItemGroup>
   <ItemGroup>

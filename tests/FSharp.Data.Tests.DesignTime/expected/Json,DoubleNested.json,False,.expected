@@ -8,12 +8,12 @@ class JsonProvider
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Main: JsonProvider+DomainTypes+Entity1 with get
-
-class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
-    member Nested: JsonProvider+DomainTypes+Entity2 with get
-    member Title: string with get
+    member Main: JsonProvider+DomainTypes+Entity2 with get
 
 class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
+    member Nested: JsonProvider+DomainTypes+Entity3 with get
+    member Title: string with get
+
+class JsonProvider+DomainTypes+Entity3 : FDR.JsonDocument
     member NestedTitle: string with get
 

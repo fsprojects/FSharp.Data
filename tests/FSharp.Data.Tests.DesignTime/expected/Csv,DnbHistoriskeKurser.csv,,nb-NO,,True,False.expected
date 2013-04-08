@@ -7,14 +7,14 @@ class CsvProvider : FDR.CsvFile
 
 class CsvProvider+Row : FDR.CsvRow
     member Dato: System.DateTime with get
-    member Usd: string with get
-    member Eur: string with get
-    member Sek: string with get
-    member Dkk: string with get
-    member Gbp: string with get
-    member Chf: string with get
-    member Jpy: string with get
-    member Cad: string with get
-    member Isk: string with get
-    member Aud: string with get
+    member USD: string with get
+    member EUR: string with get
+    member SEK: string with get
+    member DKK: string with get
+    member GBP: string with get
+    member CHF: string with get
+    member JPY: string with get
+    member CAD: string with get
+    member ISK: string with get
+    member AUD: string with get
 

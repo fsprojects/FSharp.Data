@@ -7,6 +7,10 @@ type CsvProviderArgs =
       Separator : string
       Culture : string
       InferRows : int
+      Schema : string
+      HasHeaders : bool
+      IgnoreErrors : bool
+      Quote : char
       ResolutionFolder : string }
 
 type XmlProviderArgs = 
@@ -36,37 +40,26 @@ type FreebaseProviderArgs =
       LocalCache : bool
       AllowLocalQueryEvaluation : bool }
 
-#if EXPERIMENTAL
-type ApiaryProviderArgs = 
-    { ApiName : string }
-#endif
-
 type TypeProviderInstantiation = 
-
-#if EXPERIMENTAL
-    | Apiary of ApiaryProviderArgs
-#else
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs    
-#endif
 
     member x.generateType resolutionFolder runtimeAssembly =
         let f, args =
             match x with
-#if EXPERIMENTAL
-            | Apiary x ->
-                (fun cfg -> new ApiaryProvider(cfg) :> TypeProviderForNamespaces),
-                [| box x.ApiName |] 
-#else
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.Separator
                    box x.Culture
                    box x.InferRows
+                   box x.Schema
+                   box x.HasHeaders
+                   box x.IgnoreErrors
+                   box x.Quote
                    box x.ResolutionFolder |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
@@ -95,5 +88,4 @@ type TypeProviderInstantiation =
                    box x.SnapshotDate
                    box x.LocalCache
                    box x.AllowLocalQueryEvaluation |]
-#endif
         Debug.generate resolutionFolder runtimeAssembly f args

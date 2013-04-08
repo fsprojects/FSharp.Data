@@ -69,15 +69,22 @@ let niceCamelName (s:string) =
 ///     let n2 = gen "sample-name"
 ///
 let uniqueGenerator niceName =
-  let dict = new Dictionary<_, _>()
-  (fun name ->
-      let name = niceName name
-      if dict.ContainsKey(name) then
-        dict.[name] <- dict.[name] + 1
-        sprintf "%s%d" name (dict.[name])
-      else 
-        dict.[name] <- 0
-        name)
+  let set = new HashSet<_>()
+  fun name ->
+    let mutable name = niceName name
+    while set.Contains name do 
+      let mutable lastLetterPos = String.length name - 1
+      while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
+        lastLetterPos <- lastLetterPos - 1
+      if lastLetterPos = 0 then
+        name <- (UInt64.Parse name + 1UL).ToString()
+      elif lastLetterPos = name.Length - 1 then
+        name <- name + "2"
+      else
+        let number = name.Substring(lastLetterPos + 1)
+        name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
+    set.Add name |> ignore
+    name
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive 

@@ -34,10 +34,14 @@ let primitiveTypes =
   [ typeof<int>; typeof<int64>; typeof<float>; 
     typeof<decimal>; typeof<bool>; typeof<string>; typeof<DateTime> ]
 
-/// Checks whether a value is a value type (and cannot have null as a value)
+/// Checks whether a type is a value type (and cannot have null as a value)
 let isValueType = function
   | Primitive(typ, _) -> typ <> typeof<string>
   | _ -> false
+
+/// Checks whether a type supports unit of measure
+let supportsUnitsOfMeasure typ =    
+  typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal>
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)

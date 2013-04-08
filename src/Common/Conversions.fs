@@ -63,7 +63,7 @@ type Operations =
   static member AsInteger64 culture text = 
     Int64.TryParse(text, NumberStyles.Integer, culture) |> asOption
   
-  static member AsDecimal culture  text =
+  static member AsDecimal culture text =
     Decimal.TryParse(text, NumberStyles.Number, culture) |> asOption
   
   static member AsFloat culture (text:string) = 

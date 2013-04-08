@@ -36,7 +36,8 @@ module Debug =
             let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
             providedTypeDefinition.MakeParametricType(typeName, args)
 
-    let private innerPrettyPrint signatureOnly (maxDepth: int option) exclude (t: ProvidedTypeDefinition) =        
+    // if ignoreOutput is true, this will still visit the full graph, but it will output an empty string to be faster
+    let private innerPrettyPrint signatureOnly ignoreOutput (maxDepth: int option) exclude (t: ProvidedTypeDefinition) =        
 
         let ns = 
             [ t.Namespace
@@ -116,7 +117,9 @@ module Debug =
                     | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
                     | t -> if not t.IsGenericParameter && t.Assembly = Assembly.GetExecutingAssembly() then " [DESIGNTIME]" else ""
 
-                if hasUnitOfMeasure || t.IsGenericParameter || t.DeclaringType = null then
+                if ignoreOutput then
+                    ""
+                elif hasUnitOfMeasure || t.IsGenericParameter || t.DeclaringType = null then
                     innerToString t + (warnIfWrongAssembly t)
                 else
                     (toString t.DeclaringType) + "+" + (innerToString t) + (warnIfWrongAssembly t)
@@ -130,11 +133,15 @@ module Debug =
                 |> separatedBy " -> "
 
         let sb = StringBuilder ()
+
         let print (str: string) =
-            sb.Append(str) |> ignore
+            if not ignoreOutput then
+                sb.Append(str) |> ignore
+        
         let println() =
-            sb.AppendLine() |> ignore
-                
+            if not ignoreOutput then
+                sb.AppendLine() |> ignore
+              
         let printMember (memberInfo: MemberInfo) =        
 
             let print str =
@@ -168,23 +175,37 @@ module Debug =
                 |> Array.ofSeq
                 |> c.GetInvokeCodeInternal false
 
+            let printExpr x = 
+                if ignoreOutput then 
+                    ""
+                else 
+                    sprintf "\n%A\n" x
+
+            let printObj x = 
+                if ignoreOutput then 
+                    ""
+                else 
+                    sprintf "\n%O\n" x
+
             match memberInfo with
 
             | :? ProvidedConstructor as cons -> 
                 let body = 
                     if signatureOnly then ""
-                    else cons |> getConstructorBody |> sprintf "\n%A\n"
-                print <| "new : " + 
-                         (toSignature <| cons.GetParameters()) + " -> " + 
-                         (toString memberInfo.DeclaringType) + body
+                    else cons |> getConstructorBody |> printExpr
+                if not ignoreOutput then
+                    print <| "new : " + 
+                             (toSignature <| cons.GetParameters()) + " -> " + 
+                             (toString memberInfo.DeclaringType) + body
 
             | :? ProvidedLiteralField as field -> 
                 let value = 
                     if signatureOnly then ""
-                    else field.GetRawConstantValue() |> sprintf "\n%O\n" 
-                print <| "val " + field.Name + ": " + 
-                         (toString field.FieldType) + 
-                         value
+                    else field.GetRawConstantValue() |> printObj
+                if not ignoreOutput then
+                    print <| "val " + field.Name + ": " + 
+                             (toString field.FieldType) + 
+                             value
                          
             | :? ProvidedProperty as prop -> 
                 let body = 
@@ -192,23 +213,25 @@ module Debug =
                     else
                         let getter = 
                             if not prop.CanRead then ""
-                            else getMethodBody (prop.GetGetMethod() :?> ProvidedMethod) |> sprintf "\n%A\n"
+                            else getMethodBody (prop.GetGetMethod() :?> ProvidedMethod) |> printExpr
                         let setter = 
                             if not prop.CanWrite then ""
-                            else getMethodBody (prop.GetSetMethod() :?> ProvidedMethod) |> sprintf "\n%A\n"
+                            else getMethodBody (prop.GetSetMethod() :?> ProvidedMethod) |> printExpr
                         getter + setter
-                print <| (if prop.IsStatic then "static " else "") + "member " + 
-                         prop.Name + ": " + (toString prop.PropertyType) + 
-                         " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
+                if not ignoreOutput then
+                    print <| (if prop.IsStatic then "static " else "") + "member " + 
+                             prop.Name + ": " + (toString prop.PropertyType) + 
+                             " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
 
             | :? ProvidedMethod as m ->
                 let body = 
                     if signatureOnly then ""
-                    else m |> getMethodBody |> sprintf "\n%A\n"
-                if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
-                    print <| (if m.IsStatic then "static " else "") + "member " + 
-                    m.Name + ": " + (toSignature <| m.GetParameters()) + 
-                    " -> " + (toString m.ReturnType) + body
+                    else m |> getMethodBody |> printExpr
+                if not ignoreOutput then
+                    if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
+                        print <| (if m.IsStatic then "static " else "") + "member " + 
+                        m.Name + ": " + (toSignature <| m.GetParameters()) + 
+                        " -> " + (toString m.ReturnType) + body
 
             | :? ProvidedTypeDefinition as t -> add t
 
@@ -250,14 +273,14 @@ module Debug =
 
     /// Returns a string representation of the signature (and optionally also the body) of all the
     /// types generated by the type provider
-    let prettyPrint signatureOnly t = innerPrettyPrint signatureOnly None (fun _ -> false) t
+    let prettyPrint signatureOnly ignoreOutput t = innerPrettyPrint signatureOnly ignoreOutput None (fun _ -> false) t
 
     /// Returns a string representation of the signature (and optionally also the body) of all the
     /// types generated by the type provider up to a certain depth
-    let prettyPrintWithMaxDepth signatureOnly maxDepth t = innerPrettyPrint signatureOnly (Some maxDepth) (fun _ -> false) t
+    let prettyPrintWithMaxDepth signatureOnly ignoreOutput maxDepth t = innerPrettyPrint signatureOnly ignoreOutput (Some maxDepth) (fun _ -> false) t
 
     /// Returns a string representation of the signature (and optionally also the body) of all the
     /// types generated by the type provider up to a certain depth and excluding some types
-    let prettyPrintWithMaxDepthAndExclusions signatureOnly maxDepth exclusions t = 
+    let prettyPrintWithMaxDepthAndExclusions signatureOnly ignoreOutput maxDepth exclusions t = 
         let exclusions = Set.ofSeq exclusions
-        innerPrettyPrint signatureOnly (Some maxDepth) (fun t -> exclusions.Contains t.Name) t
+        innerPrettyPrint signatureOnly ignoreOutput (Some maxDepth) (fun t -> exclusions.Contains t.Name) t

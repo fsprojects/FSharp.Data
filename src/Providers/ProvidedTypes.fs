@@ -105,9 +105,8 @@ module internal Misc =
         { new CustomAttributeData() with 
 #endif
                 member __.Constructor =  typeof<System.ObsoleteAttribute>.GetConstructors() |> Array.find (fun x -> x.GetParameters().Length = 1)
-                member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message)  |]
-                member __.NamedArguments = 
-                    upcast [| if isError then yield  CustomAttributeNamedArgument(typeof<ObsoleteAttribute>.GetProperty("IsError"), CustomAttributeTypedArgument(typeof<bool>, isError)) |] }
+                member __.ConstructorArguments = upcast [|CustomAttributeTypedArgument(typeof<string>, message) ; CustomAttributeTypedArgument(typeof<bool>, isError)  |]
+                member __.NamedArguments = upcast [| |] }
 
     type CustomAttributesImpl() =
         let customAttributes = ResizeArray<CustomAttributeData>()
@@ -777,7 +776,10 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
 
     override this.GetConstructors _bindingAttr                                                      = notRequired "GetConstructors" this.Name
     override this.GetMethodImpl(_name, _bindingAttr, _binderBinder, _callConvention, _types, _modifiers) = notRequired "GetMethodImpl" this.Name
-    override this.GetMembers _bindingAttr                                                           = notRequired "GetMembers" this.Name
+    override this.GetMembers bindingAttr =
+        if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null 
+        then [||]
+        else this.BaseType.GetMembers bindingAttr
     override this.GetMethods _bindingAttr                                                           = notRequired "GetMethods" this.Name
     override this.GetField(_name, _bindingAttr)                                                      = notRequired "GetField" this.Name
     override this.GetFields _bindingAttr                                                            = notRequired "GetFields" this.Name
@@ -861,6 +863,19 @@ type ProvidedTypeBuilder() =
 [<Class>]
 type ProvidedMeasureBuilder() =
 
+    //TODO: this shouldn't be hardcoded, but without creating a dependency on Microsoft.FSharp.Metadata in F# PowerPack
+    //there seems to be no way to check if a type abbreviation exists
+    let unitNamesTypeAbbreviations = 
+        [ "meter"; "hertz"; "newton"; "pascal"; "joule"; "watt"; "coulomb"; 
+          "volt"; "farad"; "ohm"; "siemens"; "weber"; "tesla"; "henry"
+          "lumen"; "lux"; "becquerel"; "gray"; "sievert"; "katal" ]
+        |> Set.ofList
+
+    let unitSymbolsTypeAbbreviations = 
+        [ "m"; "kg"; "s"; "A"; "K"; "mol"; "cd"; "Hz"; "N"; "Pa"; "J"; "W"; "C"
+          "V"; "F"; "S"; "Wb"; "T"; "lm"; "lx"; "Bq"; "Gy"; "Sv"; "kat"; "H" ]
+        |> Set.ofList
+
     static let theBuilder = ProvidedMeasureBuilder()
     static member Default = theBuilder
     member b.One = typeof<Core.CompilerServices.MeasureOne> 
@@ -868,16 +883,27 @@ type ProvidedMeasureBuilder() =
     member b.Inverse m = typedefof<Core.CompilerServices.MeasureInverse<_>>.MakeGenericType [| m |] 
     member b.Ratio (m1, m2) = b.Product(m1, b.Inverse m2)
     member b.Square m = b.Product(m, m)
-    member b.SI m = 
-        match typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames."+m) with 
-        | null ->         
+
+    member b.SI (m:string) = 
+        let mLowerCase = m.ToLowerInvariant()
+        let abbreviation =            
+            if unitNamesTypeAbbreviations.Contains mLowerCase then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", mLowerCase)
+            elif unitSymbolsTypeAbbreviations.Contains m then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols", m)
+            else
+                None
+        match abbreviation with
+        | Some (ns, unitName) ->
             ProvidedSymbolType
                (SymbolKind.FSharpTypeAbbreviation
                    (typeof<Core.CompilerServices.MeasureOne>.Assembly,
-                    "Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", 
-                    [| m |]), 
+                    ns, 
+                    [| unitName |]), 
                 []) :> Type
-        | v -> v
+        | None ->
+            typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames." + mLowerCase)
+
     member b.AnnotateType (basicType, annotation) = ProvidedSymbolType(Generic basicType, annotation) :> Type
 
 
@@ -1161,7 +1187,27 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     override this.MakePointerType() = ProvidedSymbolType(SymbolKind.Pointer, [this]) :> Type
     override this.MakeByRefType() = ProvidedSymbolType(SymbolKind.ByRef, [this]) :> Type
 
-    override this.GetMembers _bindingAttr = getMembers() 
+    // The binding attributes are always set to DeclaredOnly ||| Static ||| Instance ||| Public when GetMembers is called directly by the F# compiler
+    // However, it's possible for the framework to generate other sets of flags in some corner cases (e.g. via use of `enum` with a provided type as the target)
+    override this.GetMembers bindingAttr = 
+        let mems = 
+            getMembers() 
+            |> Array.filter (fun mem -> 
+                                let isStatic = 
+                                    match mem with
+                                    | :? FieldInfo as f -> f.IsStatic
+                                    | :? MethodInfo as m -> m.IsStatic
+                                    | :? ConstructorInfo as c -> c.IsStatic
+                                    | :? PropertyInfo as p -> if p.CanRead then p.GetGetMethod().IsStatic else p.GetSetMethod().IsStatic
+                                    | :? EventInfo as e -> e.GetAddMethod().IsStatic
+                                    | :? Type -> true
+                                    | _ -> failwith (sprintf "Member %O is of unexpected type" mem)
+                                bindingAttr.HasFlag(if isStatic then BindingFlags.Static else BindingFlags.Instance))
+
+        if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null then mems
+        else 
+            let baseMems = this.BaseType.GetMembers bindingAttr
+            Array.append mems baseMems
 
     override this.GetNestedTypes bindingAttr = 
         this.GetMembers bindingAttr 

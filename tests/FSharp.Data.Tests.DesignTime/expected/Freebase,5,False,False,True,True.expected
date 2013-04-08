@@ -550,13 +550,13 @@ class FreebaseDataProvider+ServiceTypes+Uncategorized+Community
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Base
 
-class FreebaseDataProvider+ServiceTypes+Uncategorized+M
-
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Wikipedia
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Freebase
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Pipeline
+
+class FreebaseDataProvider+ServiceTypes+Uncategorized+M
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Nytimes
 
@@ -1136,6 +1136,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+BusinessDomain : FDR.Freeb
     member Trade union: FreebaseDataProvider+ServiceTypes+Business+Business+Trade_unionDataCollection with get
     member Consumer company: FreebaseDataProvider+ServiceTypes+Business+Business+Consumer_companyDataCollection with get
     member Product category: FreebaseDataProvider+ServiceTypes+Business+Business+Product_categoryDataCollection with get
+    member Currency sub-unit: FreebaseDataProvider+ServiceTypes+Business+Business+Currency_sub_unitDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+ArchitectureDomain : FDR.Freebase.FreebaseDomain
     member Skyscraper: FreebaseDataProvider+ServiceTypes+Architecture+Architecture+SkyscraperDataCollection with get
@@ -2012,7 +2013,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+OrganizationDomain : FDR.F
     member Organization scope: FreebaseDataProvider+ServiceTypes+Organization+Organization+Organization_scopeDataCollection with get
     member Club: FreebaseDataProvider+ServiceTypes+Organization+Organization+ClubDataCollection with get
     member Club interest: FreebaseDataProvider+ServiceTypes+Organization+Organization+Club_interestDataCollection with get
-    member Non-profit organization: FreebaseDataProvider+ServiceTypes+Organization+Organization+Non_profit_organizationDataCollection with get
+    member Nonprofit organization: FreebaseDataProvider+ServiceTypes+Organization+Organization+Non_profit_organizationDataCollection with get
     member Non-profit designation: FreebaseDataProvider+ServiceTypes+Organization+Organization+Non_profit_designationDataCollection with get
     member Organization sector: FreebaseDataProvider+ServiceTypes+Organization+Organization+Organization_sectorDataCollection with get
     member Organization advisor: FreebaseDataProvider+ServiceTypes+Organization+Business+Company_advisorDataCollection with get

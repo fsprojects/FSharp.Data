@@ -8,8 +8,8 @@ class JsonProvider
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Items: JsonProvider+DomainTypes+Entity1[] with get
+    member Items: JsonProvider+DomainTypes+Entity2[] with get
 
-class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
     member Id: string with get
 

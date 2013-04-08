@@ -1,8 +1,4 @@
-﻿#if EXPERIMENTAL
-module FSharp.Data.Tests.Experimental.DesignTime.SignatureTests
-#else
-module FSharp.Data.Tests.DesignTime.SignatureTests
-#endif
+﻿module FSharp.Data.Tests.DesignTime.SignatureTests
 
 #if INTERACTIVE
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
@@ -21,16 +17,14 @@ type TestCase =
     override x.ToString() =
         let (TestCase x) = x
         match x with
-#if EXPERIMENTAL
-        | Apiary x -> 
-            ["Apiary"
-             x.ApiName]
-#else
         | Csv x -> 
             ["Csv"
              x.Sample
              x.Separator
-             x.Culture]
+             x.Culture
+             x.Schema
+             x.HasHeaders.ToString()
+             x.IgnoreErrors.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -53,21 +47,20 @@ type TestCase =
              x.Pluralize.ToString()
              x.LocalCache.ToString()
              x.AllowLocalQueryEvaluation.ToString()]
-#endif
         |> String.concat ","
 
     static member Parse (line:string) =
         let args = line.Split [|','|]
         match args.[0] with
-#if EXPERIMENTAL
-        | "Apiary" ->
-            Apiary { ApiName = args.[1] }
-#else
         | "Csv" ->
             Csv { Sample = args.[1]
                   Separator = args.[2]
                   Culture = args.[3]
                   InferRows = Int32.MaxValue
+                  Schema = args.[4]
+                  HasHeaders = args.[5] |> bool.Parse
+                  IgnoreErrors = args.[6] |> bool.Parse
+                  Quote = '"'
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
@@ -92,19 +85,15 @@ type TestCase =
                        ServiceUrl = "https://www.googleapis.com/freebase/v1"
                        LocalCache = args.[5] |> bool.Parse
                        AllowLocalQueryEvaluation = args.[6] |> bool.Parse }
-#endif
         | _ -> failwithf "Unknown: %s" args.[0]
         |> TestCase
 
-    member x.Dump resolutionFolder runtimeAssembly signatureOnly =        
+    member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
         let (TestCase x) = x
         let outputFunc = 
             match x with
-#if EXPERIMENTAL
-#else
-            | Freebase _ -> Debug.prettyPrintWithMaxDepth signatureOnly 3
-#endif
-            | _ -> Debug.prettyPrint signatureOnly
+            | Freebase _ -> Debug.prettyPrintWithMaxDepth signatureOnly ignoreOutput 3
+            | _ -> Debug.prettyPrint signatureOnly ignoreOutput
         let output = 
             x.generateType resolutionFolder runtimeAssembly 
             |> outputFunc
@@ -112,11 +101,7 @@ type TestCase =
 
 let (++) a b = Path.Combine(a, b)
 
-#if EXPERIMENTAL
-let sourceDirectory = __SOURCE_DIRECTORY__ ++ ".." ++ "FSharp.Data.Tests.Experimental.DesignTime"
-#else
 let sourceDirectory = __SOURCE_DIRECTORY__
-#endif
 
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
@@ -129,11 +114,7 @@ let getExpectedPath testCase =
     expectedDirectory ++ (testCase.ToString().Replace("://", "_").Replace("/", "_") + ".expected")
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
-#if EXPERIMENTAL
-let assemblyName = "FSharp.Data.Experimental.dll"
-#else
 let assemblyName = "FSharp.Data.dll"
-#endif
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
 let portableRuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable" ++ assemblyName
 let silverlightRuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "sl5" ++ assemblyName
@@ -142,7 +123,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly true
+        let output = testCase.Dump resolutionFolder runtimeAssembly true false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalizeEndings (str:string) =
@@ -152,26 +133,23 @@ let normalizeEndings (str:string) =
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly true |> normalizeEndings 
+    let output = testCase.Dump resolutionFolder runtimeAssembly true false |> normalizeEndings 
     output |> should equal expected
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    testCase.Dump resolutionFolder runtimeAssembly false |> ignore
+    testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    testCase.Dump resolutionFolder portableRuntimeAssembly false |> ignore
+    testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore
 
-#if EXPERIMENTAL
-#else
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
     let expected = getExpectedPath testCase |> File.ReadAllText 
-    testCase.Dump resolutionFolder silverlightRuntimeAssembly false |> ignore
-#endif
+    testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore

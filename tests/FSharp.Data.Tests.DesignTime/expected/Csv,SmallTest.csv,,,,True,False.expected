@@ -6,11 +6,7 @@ class CsvProvider : FDR.CsvFile
     static member Load: uri:string -> CsvProvider
 
 class CsvProvider+Row : FDR.CsvRow
-    member Date: System.DateTime with get
-    member Open: decimal with get
-    member High: decimal with get
-    member Low: decimal with get
-    member Close: decimal with get
-    member Volume: int with get
-    member AdjClose: decimal with get
+    member Name: string with get
+    member Distance: decimal<metre> with get
+    member Time: decimal<s> with get
 

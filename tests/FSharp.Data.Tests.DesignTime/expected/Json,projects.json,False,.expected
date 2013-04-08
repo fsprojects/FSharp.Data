@@ -8,24 +8,24 @@ class JsonProvider
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Ordercontainer: JsonProvider+DomainTypes+Entity1 with get
-
-class JsonProvider+DomainTypes+Entity1 : FDR.JsonDocument
-    member Backgrounds: JsonProvider+DomainTypes+Entity2 with get
-    member Project: JsonProvider+DomainTypes+Entity5 with get
+    member Ordercontainer: JsonProvider+DomainTypes+Entity2 with get
 
 class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
-    member Background: JsonProvider+DomainTypes+Entity3 with get
+    member Backgrounds: JsonProvider+DomainTypes+Entity3 with get
+    member Project: JsonProvider+DomainTypes+Entity6 with get
 
 class JsonProvider+DomainTypes+Entity3 : FDR.JsonDocument
-    member Title: JsonProvider+DomainTypes+Entity4 with get
+    member Background: JsonProvider+DomainTypes+Entity4 with get
 
 class JsonProvider+DomainTypes+Entity4 : FDR.JsonDocument
-    member Text: string with get
+    member Title: JsonProvider+DomainTypes+Entity5 with get
 
 class JsonProvider+DomainTypes+Entity5 : FDR.JsonDocument
-    member Title: JsonProvider+DomainTypes+Entity6 with get
+    member Text: string with get
 
 class JsonProvider+DomainTypes+Entity6 : FDR.JsonDocument
+    member Title: JsonProvider+DomainTypes+Entity7 with get
+
+class JsonProvider+DomainTypes+Entity7 : FDR.JsonDocument
     member Text: string with get
 
