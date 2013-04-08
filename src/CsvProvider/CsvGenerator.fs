@@ -12,12 +12,9 @@ module internal CsvTypeBuilder =
   let generateCsvRowProperties culture replacer fields =
     fields |> List.mapi (fun index field ->
         
+      // Generate conversion according to the inferred field specification
       let typ, conv = Conversions.convertValue replacer culture field
 
-      let p = ProvidedProperty(field.Name, typ)
-
-      p.GetterCode <- fun (Singleton row) -> 
+      ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> 
         let row = replacer.ToDesignTime row 
-        conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>
-
-      p)
+        conv <@@ Operations.AsOption((%%row:CsvRow).Columns.[index]) @@>) )

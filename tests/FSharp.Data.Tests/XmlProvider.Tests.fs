@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.XmlProvider.DocumentOverride.Tests
+﻿module FSharp.Data.Tests.XmlProvider.Tests
 
 open NUnit.Framework
 open FSharp.Data
@@ -37,9 +37,14 @@ let ``Jim should have a last name of Smith``() =
 let ``Jim should have an age of 24``() = 
     nextPerson.Age |> should equal 24
 
-
 let testXml = XmlProvider<""" <foo a="" /> """>.GetSample()
 
 [<Test>]
 let ``Type of attribute with empty value is string`` = 
   testXml.A |> shouldEqual ""
+
+[<Test>]
+let ``Xml with namespaces``() = 
+  let feed = XmlProvider<"Data/search.atom.xml">.GetSample()
+  feed.Title |> should equal "Windows8 - Twitter Search"
+  feed.GetEntries().[0].Metadata.ResultType |> should equal "recent"
