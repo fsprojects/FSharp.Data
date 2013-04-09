@@ -62,8 +62,6 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
     let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType
 
-    let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
-
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)

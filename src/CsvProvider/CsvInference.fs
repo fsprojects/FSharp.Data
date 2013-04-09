@@ -183,7 +183,7 @@ let inferType (csv:CsvFile) count culture schema =
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
   let rows = 
-    if Seq.isEmpty csv.Data then CsvRow([| for i in 1..headers.Length -> ""|], headers) |> Seq.singleton 
+    if Seq.isEmpty csv.Data then [| for i in 1..headers.Length -> "" |] |> Seq.singleton 
     elif count > 0 then Seq.truncate count csv.Data
     else csv.Data
 
@@ -191,7 +191,7 @@ let inferType (csv:CsvFile) count culture schema =
   let types = seq {
     for row in rows ->
       let fields = 
-        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row.Columns ->
+        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row ->
             let typ = 
               match schema.[index] with
               | Some _ -> Null // this will be ignored, so just return anything
@@ -246,7 +246,7 @@ let getFields inferedType schema =
       // The inference engine assigns some value to all fields
       // so we should never get an optional field
       if field.Optional then 
-        failwithf "getFields: Unexpected optional field %s" field.Name
+        failwithf "Column %s is not present in all rows used for inference" field.Name
       
       match Array.get schema index with
       | Some prop -> prop

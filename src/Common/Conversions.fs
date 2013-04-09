@@ -85,7 +85,7 @@ type Operations =
 
   // Operations that convert string to supported primitive types
   static member ConvertString text = 
-    text |> Option.map (fun (s:string) -> s.Trim())
+    defaultArg text "" |> Some
 
   static member ConvertDateTime(culture, text) = 
     text |> Option.bind (fun s -> Operations.AsDateTime (Operations.GetCulture culture) s)
@@ -100,7 +100,9 @@ type Operations =
     text |> Option.bind (fun s -> Operations.AsDecimal (Operations.GetCulture culture) s)
   
   static member ConvertFloat(culture, text) = 
-    text |> Option.bind (fun s -> Operations.AsFloat (Operations.GetCulture culture) s)
+    match text with
+    | Some s -> Operations.AsFloat (Operations.GetCulture culture) s
+    | None -> Some Double.NaN
   
   static member ConvertBoolean(culture, text) = 
     text |> Option.bind (fun s -> Operations.AsBoolean (Operations.GetCulture culture) s)
@@ -114,12 +116,11 @@ type Operations =
   /// sample to infer it as optional (and get None). If we use defaultof<'T> we
   /// might return 0 and the user would not be able to distinguish between 0
   /// and missing value.
-  static member GetNonOptionalValue<'T>(name:string, opt:option<'T>) : 'T = 
-    match opt with 
-    | Some v -> v
-    | None when typeof<'T> = typeof<double> -> box Double.NaN :?> 'T
-    | None when typeof<'T> = typeof<string> -> box "" :?> 'T
-    | _ -> failwithf "Mismatch: %s is missing" name
+  static member GetNonOptionalValue<'T>(name:string, opt:option<'T>, valueBeforeConversion) : 'T = 
+    match opt, valueBeforeConversion with 
+    | Some value, _ -> value
+    | None, None -> failwithf "%s is missing" name
+    | None, Some valueBeforeConversion -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name valueBeforeConversion 
 
   /// Turn an F# option type Option<'T> containing a primitive 
   /// value type into a .NET type Nullable<'T>

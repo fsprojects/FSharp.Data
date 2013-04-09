@@ -62,8 +62,6 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType
 
-    let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
-
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)

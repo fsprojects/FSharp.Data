@@ -57,6 +57,12 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | [| :? ConstructorInfo as ci |] ->
         if tyargs <> [] then failwith "Constructor cannot be generic!"
         Expr.NewObject(ci, args)
+    | [| :? PropertyInfo as pi |] ->
+        let isStatic = 
+          pi.CanRead && pi.GetGetMethod().IsStatic || 
+          pi.CanWrite && pi.GetSetMethod().IsStatic
+        if isStatic then Expr.PropertyGet(pi, args)
+        else Expr.PropertyGet(List.head args, pi, List.tail args)
     | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
   // If the result is a function, we are called with two tuples as arguments

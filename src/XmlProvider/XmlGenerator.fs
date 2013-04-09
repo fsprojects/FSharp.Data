@@ -64,7 +64,7 @@ module internal XmlTypeBuilder =
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
     | Record(Some nameWithNs, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
-        let resTyp, convFunc = 
+        let resTyp, _, convFunc = 
           Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Value", typ, opt))
         resTyp, fun xml -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
 
@@ -88,7 +88,7 @@ module internal XmlTypeBuilder =
           let nameWithNS = attr.Name
           let name = XName.Get(nameWithNS).LocalName
           let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
-          let resTyp, convFunc = 
+          let resTyp, _, convFunc = 
             Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional))
 
           // Add property with PascalCased name
@@ -109,7 +109,7 @@ module internal XmlTypeBuilder =
               | Primitive(typ, _) -> 
                   // If there may be other primitives or nodes, it is optional
                   let opt = nodes.Count > 0 || primitives.Length > 1
-                  let resTyp, convFunc = 
+                  let resTyp, _, convFunc = 
                     Conversions.convertValue ctx.Replacer culture (PrimitiveInferedProperty.Create("Value", typ, opt))
                   let name = 
                     if primitives.Length = 1 then "Value" else

@@ -22,12 +22,12 @@ class XmlProvider+DomainTypes+Channel : FDR.XmlElement
 
 class XmlProvider+DomainTypes+Item : FDR.XmlElement
     member Value: string option with get
-    member GetCreators: () -> XmlProvider+DomainTypes+Creator[]
     member GetDescriptions: () -> string[]
     member GetLinks: () -> string[]
     member GetPubDates: () -> System.DateTime[]
-    member GetSummaries: () -> XmlProvider+DomainTypes+Summary[]
     member GetTitles: () -> string[]
+    member GetCreators: () -> XmlProvider+DomainTypes+Creator[]
+    member GetSummaries: () -> XmlProvider+DomainTypes+Summary[]
 
 class XmlProvider+DomainTypes+Creator : FDR.XmlElement
     member Dc: string with get
