@@ -58,7 +58,7 @@ open FSharp.Data.Csv.Extensions
 open System.Globalization
 
 for row in msft.Data do
-  printfn "HLOC: (%s, %M, %f, %f)" (row?High.AsString()) (row?Low.AsDecimal()) (row.["Open"].AsFloat()) (row?Close.AsFloat(CultureInfo.GetCultureInfo "en-gb"))
+  printfn "HLOC: (%s, %M, %f, %f)" row?High (row?Low.AsDecimal()) (row.["Open"].AsFloat()) (row?Close.AsFloat(CultureInfo.GetCultureInfo "en-gb"))
 
 (**
 

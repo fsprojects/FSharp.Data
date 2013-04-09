@@ -16,8 +16,6 @@ type CsvRow(parent:CsvFile, columns:string[]) =
   member __.Columns = columns
   member __.GetColumn columnName = columns.[parent.GetColumnIndex columnName]
 
-  member internal __.Parent = parent
-
   [<EditorBrowsable(EditorBrowsableState.Never)>]
   override __.ToString() = columns.ToString()
 
@@ -27,18 +25,15 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// If 'hasHeaders' is true (the default), the first line read by 'reader' will not be considered part of data.
 /// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored
-and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors, ?culture) as this =
+and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
   inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)), reader, defaultArg separators "", defaultArg quote '"', 
                           defaultArg hasHeaders true, defaultArg ignoreErrors false)
-
-  let culture = defaultArg culture CultureInfo.InvariantCulture
 
   let headerDic = 
     this.Headers
     |> Seq.mapi (fun index header -> header, index)
     |> dict
 
-  member internal __.Culture = culture
   member internal __.GetColumnIndex columnName = headerDic.[columnName]
 
   /// Parses the specified CSV content
@@ -68,51 +63,40 @@ and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignor
 /// less safe way. The module also provides the dynamic operator.
 module Extensions = 
   
-  open System.Globalization
-
-  type CsvRowIndex = 
-    { Row : CsvRow
-      Index : int }
-
-    member x.AsString() = x.Row.Columns.[x.Index]
-    
-    [<EditorBrowsable(EditorBrowsableState.Never)>]
-    override x.ToString() = x.AsString()
-
   type CsvRow with
-      member x.Item with get(index) = { Row = x; Index = index }
-      member x.Item with get(columnName) = { Row = x; Index = x.Parent.GetColumnIndex(columnName) }
+      member x.Item with get(index) = x.Columns.[index]
+      member x.Item with get(columnName) = x.GetColumn(columnName)
   
   let (?) (csvRow:CsvRow) (columnName:string) = csvRow.[columnName]
 
-  type CsvRowIndex with
+  type String with
 
     member x.AsDateTime(?culture) = 
-      match x.AsString() |> Operations.AsDateTime (defaultArg culture x.Row.Parent.Culture) with 
+      match x |> Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) with 
       | Some d -> d
       | _ -> failwithf "Not a datetime - %A" x
 
     member x.AsFloat(?culture) = 
-      match x.AsString() |> Operations.AsFloat (defaultArg culture x.Row.Parent.Culture) with
+      match x |> Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
       | _ -> failwithf "Not a float - %A" x
 
     member x.AsDecimal(?culture) = 
-      match x.AsString() |> Operations.AsDecimal (defaultArg culture x.Row.Parent.Culture) with
+      match x |> Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
       | _ -> failwithf "Not a decimal - %A" x
   
     member x.AsInteger(?culture) = 
-      match x.AsString() |> Operations.AsInteger (defaultArg culture x.Row.Parent.Culture) with
+      match x |> Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
       | _ -> failwithf "Not an int - %A" x
 
     member x.AsInteger64(?culture) = 
-      match x.AsString() |> Operations.AsInteger64 (defaultArg culture x.Row.Parent.Culture) with
+      match x |> Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
       | _ -> failwithf "Not an int64 - %A" x
 
     member x.AsBoolean(?culture) =
-      match x.AsString() |> Operations.AsBoolean (defaultArg culture x.Row.Parent.Culture) with
+      match x |> Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
       | _ -> failwithf "Not a bool" x
