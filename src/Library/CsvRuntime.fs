@@ -5,9 +5,7 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
-open System.ComponentModel
 open System.IO
-open System.Text
 
 // Parser for the CSV format 
 module internal CsvReader = 
@@ -58,7 +56,7 @@ module internal CsvReader =
   
     readLines() 
 
-type CsvFile<'RowType>(f:Func<string[],'RowType>, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) =
+type CsvFile<'RowType>(f:Func<_,_,'RowType>, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) as this =
 
   let separators = if String.IsNullOrEmpty separators then "," else separators
 
@@ -71,17 +69,13 @@ type CsvFile<'RowType>(f:Func<string[],'RowType>, reader:TextReader, separators,
     if Seq.isEmpty lines then
       failwithf "Invalid CSV file: header row not found" 
 
-  let headers =
+  let headers = 
     if hasHeaders then 
-      lines 
-      |> Seq.head
+      lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim())
     else 
       // use the number of columns of the first data row
-      lines 
-      |> Seq.head 
-      |> Array.length 
-      |> Array.zeroCreate
-    
+      Array.create (lines |> Seq.head |> Array.length) ""    
+
   let rawData = 
     if hasHeaders 
     then lines |> Seq.skip 1
@@ -101,7 +95,7 @@ type CsvFile<'RowType>(f:Func<string[],'RowType>, reader:TextReader, separators,
         failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index headers.Length row.Length
       let convertedRow = 
         try 
-          f.Invoke row |> Choice1Of2 
+          f.Invoke(this, row) |> Choice1Of2 
         with exn -> 
           Choice2Of2 exn
       match convertedRow, ignoreErrors with
@@ -119,13 +113,3 @@ type CsvFile<'RowType>(f:Func<string[],'RowType>, reader:TextReader, separators,
 
   interface IDisposable with
     member __.Dispose() = reader.Dispose()
-
-/// Represents a CSV file. The lines are read on demand from 'reader'.
-/// Columns are delimited by one of the chars passed by 'separators' (defaults to just ','), and
-/// to escape the separator chars, the 'quote' character will be used (defaults to '"').
-/// If 'hasHeaders' is true (the default), the first line read by 'reader' will not be considered part of data.
-/// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
-/// (or the first row if headers are not present) will be ignored
-type CsvFile(reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) =
-    inherit CsvFile<string[]>(Func<_,_> id, reader, defaultArg separators "", defaultArg quote '"', 
-                              defaultArg hasHeaders true, defaultArg ignoreErrors false)

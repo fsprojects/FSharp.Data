@@ -232,4 +232,7 @@ for row in csv.Data do
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
+ * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
+   working with CSV documents dynamically.
+
 *)

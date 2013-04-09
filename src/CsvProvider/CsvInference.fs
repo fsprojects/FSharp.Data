@@ -7,6 +7,7 @@ module ProviderImplementation.CsvInference
 open System
 open System.IO
 open System.Text.RegularExpressions
+open FSharp.Data.Csv
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
@@ -132,10 +133,10 @@ let inferType (csv:CsvFile) count culture schema =
   // If we do not have header names, then automatically generate names
   let headers = 
     csv.Headers |> Array.mapi (fun i header -> 
-      if String.IsNullOrWhiteSpace header then 
+      if String.IsNullOrEmpty header then 
         "Column" + (i+1).ToString()
       else
-        header.Trim())
+        header)
 
   // If the schema is specified explicitly, then parse the schema
   // (This can specify just types, names of columns or a mix of both)
@@ -183,7 +184,7 @@ let inferType (csv:CsvFile) count culture schema =
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
   let rows = 
-    if Seq.isEmpty csv.Data then [| for i in 1..headers.Length -> "" |] |> Seq.singleton 
+    if Seq.isEmpty csv.Data then CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
     elif count > 0 then Seq.truncate count csv.Data
     else csv.Data
 
@@ -191,7 +192,7 @@ let inferType (csv:CsvFile) count culture schema =
   let types = seq {
     for row in rows ->
       let fields = 
-        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row ->
+        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row.Columns ->
             let typ = 
               match schema.[index] with
               | Some _ -> Null // this will be ignored, so just return anything

@@ -40,10 +40,12 @@ module internal CsvTypeBuilder =
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type
     let converterFunc = 
-      
+
+      let parentVar = Var("parent", csvErasedType)
+            
       let rowVar = Var("row", typeof<string[]>)
       let rowVarExpr = Expr.Var rowVar
-      
+
       // Convert each element of the row using the appropriate conversion
       let convertedItems = fields |> List.mapi (fun index (_, _, _, conv) -> 
         conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>)
@@ -53,8 +55,8 @@ module internal CsvTypeBuilder =
         |> replacer.ToRuntime
 
       let delegateType = 
-        typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
+        typedefof<Func<_,_,_>>.MakeGenericType(csvErasedType, typeof<string[]>, rowErasedType)
 
-      Expr.NewDelegate(delegateType, [rowVar], tuple)
+      Expr.NewDelegate(delegateType, [parentVar; rowVar], tuple)
 
     csvType, csvErasedType, rowType, rowErasedType, converterFunc

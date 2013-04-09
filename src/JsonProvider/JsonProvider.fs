@@ -71,7 +71,13 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load(%%stream, Operations.GetCulture(culture))) @@>
+    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load((%%stream:Stream), Operations.GetCulture(culture))) @@>
+    resTy.AddMember m
+
+    // Generate static Load reader method
+    let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ JsonDocument(JsonValue.Load((%%reader:TextReader), Operations.GetCulture(culture))) @@>
     resTy.AddMember m
 
     // Generate static Load uri method

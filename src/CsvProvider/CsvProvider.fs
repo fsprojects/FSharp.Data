@@ -12,6 +12,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open FSharp.Data.Csv
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
@@ -47,9 +48,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
             let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            new CsvFile(reader, separator, quote, hasHeaders, ignoreErrors), true
+            CsvFile.Load(reader, separator, quote, hasHeaders, ignoreErrors), true
         | None ->
-            new CsvFile(new StringReader(sample), separator, quote, hasHeaders, ignoreErrors), false
+            CsvFile.Parse(sample, separator, quote, hasHeaders, ignoreErrors), false
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
     

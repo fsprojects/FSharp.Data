@@ -15,6 +15,7 @@ open System.Text
 open System.Globalization
 open FSharp.Data
 open FSharp.Data.RuntimeImplementation
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 open ProviderImplementation.HttpUtility
 
 /// Represents a JSON value. Large numbers that do not fit in the 
@@ -205,20 +206,29 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
 
 type JsonValue with
 
-  /// Parse the specified JSON string
-  static member Parse(input:string, ?culture) = JsonParser(input, culture).Parse()
+  /// Parses the specified JSON string
+  static member Parse(text, ?culture) = JsonParser(text, culture).Parse()
 
   /// Loads JSON from the specified stream
   static member Load(stream:Stream, ?culture) = 
     use reader = new StreamReader(stream)
     JsonParser(reader.ReadToEnd(), culture).Parse()
 
+  /// Loads JSON from the specified reader
+  static member Load(reader:TextReader, ?culture) = 
+    JsonParser(reader.ReadToEnd(), culture).Parse()
+
+  /// Loads JSON from the specified uri
+  static member Load(uri, ?culture) = 
+    use reader = readTextAtRunTime false "" "" uri
+    JsonParser(reader.ReadToEnd(), culture).Parse()
+
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple JSON processing
 // --------------------------------------------------------------------------------------
 
-/// Adds extension methods that can be used to get work with the JSON value
-/// in a less safe, but shorter way. The module also provides dynamic operator
+/// Adds extension methods that can be used to work with JsonValue in a less safe, 
+/// but shorter way. The module also provides the dynamic operator.
 module Extensions = 
   
   type JsonValue with
@@ -232,6 +242,7 @@ module Extensions =
 
     /// Assuming the value is an array, get the value at a specified index
     member x.Item with get(index) = x.AsArray().[index]
+
     /// Assuming the value is an object, get value with the specified name
     member x.Item with get(propertyName) = x.GetProperty(propertyName)
 

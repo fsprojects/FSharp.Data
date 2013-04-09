@@ -75,6 +75,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
                                                               XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
     resTy.AddMember m
 
+    // Generate static Load reader method
+    let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ XmlElement(XDocument.Parse((%%reader:TextReader).ReadToEnd()).Root) @@>
+    resTy.AddMember m
+
     // Generate static Load uri method
     let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
