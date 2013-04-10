@@ -10,12 +10,12 @@ open ProviderImplementation.ProvidedTypes
 
 module internal CsvTypeBuilder =
 
-  let generateTypes asm ns typeName culture replacer inferredFields =
+  let generateTypes asm ns typeName (missingValues, culture) replacer inferredFields =
     
     let fields =
       inferredFields
       |> List.map (fun field -> 
-        let typ, typWithoutMeasure, conv = Conversions.convertValue replacer culture field
+        let typ, typWithoutMeasure, conv = Conversions.convertValue replacer (missingValues, culture) field
         field.Name, typ, typWithoutMeasure, conv)
 
     // The erased row type will be a tuple of all the field types (without the units of measure)

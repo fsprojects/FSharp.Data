@@ -38,7 +38,9 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let hasHeaders = args.[5] :?> bool
     let ignoreErrors = args.[6] :?> bool
     let quote = args.[7] :?> char
-    let resolutionFolder = args.[8] :?> string
+    let missingValues = args.[8] :?> string
+    let missingValuesList = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
+    let resolutionFolder = args.[9] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -57,11 +59,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     use sampleCsv = sampleCsv
 
     let inferredFields = 
-      CsvInference.inferType sampleCsv inferRows cultureInfo schema 
+      CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema 
       ||> CsvInference.getFields
 
     let csvType, csvErasedType, rowType, rowErasedType, converterFunc = 
-        inferredFields |> CsvTypeBuilder.generateTypes asm ns typeName culture replacer 
+        inferredFields |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
 
     let (?) = QuotationBuilder.(?)
 
@@ -104,6 +106,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     // Return the generated type
     csvType
 
+  let defaultMissingValues = String.Join(",", Operations.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>) 
@@ -114,6 +117,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
+      ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = defaultMissingValues)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
@@ -126,6 +130,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line</param>
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to '"'</param>
+       <param name='MissingValues'>The set of strings recogized as missing values. Defaults to """ + "\"" + defaultMissingValues + """""</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do csvProvTy.AddXmlDoc helpText

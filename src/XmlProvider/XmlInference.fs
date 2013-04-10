@@ -19,7 +19,7 @@ let private getAttributes culture (element:XElement) =
   [ for attr in element.Attributes() do
       yield { Name = attr.Name.ToString()
               Optional = false; 
-              Type = inferPrimitiveType culture attr.Value None } ]
+              Type = inferPrimitiveType ([], culture) attr.Value None } ]
 
 
 /// Infers type for the element, unifying nodes of the same name
@@ -43,7 +43,7 @@ let inferGlobalType culture (element:XElement) =
         let bodyType = 
           [ for e in elements do
               if not (String.IsNullOrEmpty(e.Value)) then
-                yield inferPrimitiveType culture e.Value None ]
+                yield inferPrimitiveType ([], culture) e.Value None ]
           |> Seq.fold subtypeInfered Top
         let body = { Name = ""; Optional = false; Type = bodyType }
 
@@ -87,7 +87,7 @@ let rec inferLocalType culture (element:XElement) =
 
       // If it has value, add primtiive content
       elif not (String.IsNullOrEmpty(element.Value)) then
-        let primitive = inferPrimitiveType culture element.Value None
+        let primitive = inferPrimitiveType ([], culture) element.Value None
         yield { Name = ""; Optional = false; Type = primitive } ]  
   Record(Some(element.Name.ToString()), props)
 

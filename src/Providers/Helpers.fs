@@ -136,7 +136,7 @@ module Conversions =
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `field`
-  let convertValue (replacer:AssemblyReplacer) (culture:string) (field:PrimitiveInferedProperty) = 
+  let convertValue (replacer:AssemblyReplacer) (missingValues, culture) (field:PrimitiveInferedProperty) = 
 
     let returnTyp = 
       match field.TypeWrapper with
@@ -157,7 +157,7 @@ module Conversions =
         if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%value) @@>
         elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
         elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%value) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, %%value) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
         elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>

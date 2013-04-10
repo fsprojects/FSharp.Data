@@ -125,7 +125,7 @@ let private parseSchemaItem str forSchemaOverride =
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let inferType (csv:CsvFile) count culture schema =
+let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -201,7 +201,7 @@ let inferType (csv:CsvFile) count culture schema =
                   // infer heterogeneous types e.g. 'null + int', will then 
                   // be turned into Nullable<int> (etc.) in the getFields function
                   if String.IsNullOrWhiteSpace value then Null
-                  else inferPrimitiveType culture value unit
+                  else inferPrimitiveType (missingValues, culture) value unit
             { Name = name
               Optional = false
               Type = typ } ]

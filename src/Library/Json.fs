@@ -148,7 +148,7 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
         match Operations.AsDecimal culture (s.Substring(start,len)) with  
         | Some x -> JsonValue.Number x
         | _ -> 
-            match Operations.AsFloat culture (s.Substring(start,len)) with  
+            match Operations.AsFloat [] culture (s.Substring(start,len)) with  
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
@@ -275,7 +275,7 @@ module Extensions =
       | JsonValue.Float n -> n
       | JsonValue.Number n -> float n
       | JsonValue.String s -> 
-          match Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) s with
+          match Operations.AsFloat [] (defaultArg culture CultureInfo.InvariantCulture) s with
           | Some n -> n
           | _ -> failwithf "JSON mismatch: Not a number - %A" x
       | _ -> failwithf "JSON mismatch: Not a number - %A" x

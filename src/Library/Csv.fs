@@ -76,8 +76,10 @@ module Extensions =
       | Some d -> d
       | _ -> failwithf "Not a datetime - %A" x
 
-    member x.AsFloat(?culture) = 
-      match x |> Operations.AsFloat (defaultArg culture CultureInfo.InvariantCulture) with
+    member x.AsFloat(?culture, ?missingValues) =       
+      let missingValues = defaultArg missingValues Operations.DefaultMissingValues
+      let culture = defaultArg culture CultureInfo.InvariantCulture
+      match x |> Operations.AsFloat missingValues culture with
       | Some n -> n
       | _ -> failwithf "Not a float - %A" x
 

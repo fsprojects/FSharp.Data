@@ -85,7 +85,7 @@ module Debug =
                     | t when t.IsArray -> (t.GetElementType() |> toString) + "[]"
                     | :? ProvidedTypeDefinition as t ->
                         add t
-                        t.Name.Split([| ',' |]).[0]
+                        t.Name.Split(',').[0]
                     | t when t.IsGenericType ->            
                         let args =                 
                             t.GetGenericArguments() 
@@ -101,7 +101,7 @@ module Debug =
                             | t when t.Name = "FSharpAsync`1" -> "async", true
                             | t when ns.Contains t.Namespace -> t.Name, false
                             | t -> fullName t, false
-                        let name = name.Split([| '`' |]).[0]
+                        let name = name.Split('`').[0]
                         if reverse then
                             args + " " + name 
                         else
