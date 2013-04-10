@@ -5,19 +5,16 @@
 namespace FSharp.Data.Csv
 
 open System
-open System.ComponentModel
 open System.Globalization
 open System.IO
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
+[<StructuredFormatDisplay("{Columns}")>]
 type CsvRow(parent:CsvFile, columns:string[]) =
 
   member __.Columns = columns
   member __.GetColumn columnName = columns.[parent.GetColumnIndex columnName]
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override __.ToString() = columns.ToString()
 
 /// Represents a CSV file. The lines are read on demand from 'reader'.
 /// Columns are delimited by one of the chars passed by 'separators' (defaults to just ','), and
