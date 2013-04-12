@@ -61,6 +61,7 @@ type TestCase =
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = args.[6] |> bool.Parse
                   Quote = '"'
+                  MissingValues = "#N/A,NA,:"
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]

@@ -171,7 +171,9 @@ rows separated by either semicolon or a colon. You can use:
 It is quite common in statistical datasets for some values to be missing. If
 you open the [`docs/AirQuality.csv`](../docs/AirQuality.csv) file you will see
 that some values for the Ozone observations are marked `#N/A`. Such values are
-parsed as float and will in F# be marked with `Double.NaN`.
+parsed as float and will in F# be marked with `Double.NaN`. The values `#N/A`, `NA`,
+and `:` are recognized as missing values by default, but you can customize it by specifying
+the `MissingValues` parameter of `CsvProvider`.
 
 The following snippet calculates the mean of the ozone observations
 excluding the `Double.NaN` values. We first obtain the `Ozone` property for
@@ -232,4 +234,7 @@ for row in csv.Data do
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
+ * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
+   working with CSV documents dynamically.
+
 *)

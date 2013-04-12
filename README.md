@@ -13,6 +13,12 @@ automatically generated from `*.fsx` files in [the samples folder][2]. If you fi
  - [F# Data Library documentation][4] with links to pages that document individual type providers 
    (CSV, XML, JSON and WorldBank) as well as for other public types available in FSharp.Data.dll. 
 
+## Support and community
+
+ - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
+ - If you want to submit a bug, a feature request or help witht fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to F# Data](http://fsharp.github.io/FSharp.Data/contributing.html).
+ - To discuss more general issues about F# Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
+
 ## Library license
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.

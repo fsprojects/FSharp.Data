@@ -2,6 +2,7 @@ class XmlProvider
     new : () -> XmlProvider
     static member Parse: text:string -> XmlProvider+DomainTypes+Authors
     static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Authors
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Authors
     static member Load: uri:string -> XmlProvider+DomainTypes+Authors
     static member GetSample: () -> XmlProvider+DomainTypes+Authors
 

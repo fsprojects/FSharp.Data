@@ -35,6 +35,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
 	ProjectSection(SolutionItems) = preProject
+		samples\library\CsvFile.fsx = samples\library\CsvFile.fsx
 		samples\library\CsvProvider.fsx = samples\library\CsvProvider.fsx
 		samples\library\Freebase.fsx = samples\library\Freebase.fsx
 		samples\library\Http.fsx = samples\library\Http.fsx

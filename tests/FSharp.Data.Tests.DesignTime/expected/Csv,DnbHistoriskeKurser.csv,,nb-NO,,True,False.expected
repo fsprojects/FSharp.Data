@@ -1,11 +1,11 @@
-class CsvProvider : FDR.CsvFile
+class CsvProvider : FDR.CsvFile<System.Tuple<System.DateTime, string, string, string, string, string, string, System.Tuple<string, string, string, string>>>
     member Data: CsvProvider+Row seq with get
     new : () -> CsvProvider
     static member Parse: text:string -> CsvProvider
     static member Load: stream:System.IO.Stream -> CsvProvider
     static member Load: uri:string -> CsvProvider
 
-class CsvProvider+Row : FDR.CsvRow
+class CsvProvider+Row : System.Tuple<System.DateTime, string, string, string, string, string, string, System.Tuple<string, string, string, string>>
     member Dato: System.DateTime with get
     member USD: string with get
     member EUR: string with get

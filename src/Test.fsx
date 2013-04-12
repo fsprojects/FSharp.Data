@@ -28,6 +28,7 @@ Csv { Sample = "SmallTest.csv"
       HasHeaders = true
       IgnoreErrors = false
       Quote = '"'
+      MissingValues = "#N/A,NA,:"
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -39,6 +40,7 @@ Csv { Sample = "MSFT.csv"
       HasHeaders = true
       IgnoreErrors = false
       Quote = '"'
+      MissingValues = "#N/A,NA,:"
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -50,6 +52,7 @@ Csv { Sample = "AirQuality.csv"
       HasHeaders = true
       IgnoreErrors = false
       Quote = '"'
+      MissingValues = "#N/A,NA,:"
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 

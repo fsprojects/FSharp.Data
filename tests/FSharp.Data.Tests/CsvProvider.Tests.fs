@@ -152,6 +152,11 @@ let ``IgnoreErrors skips lines with wrong number of columns`` () =
     (row.a, row.b, row.c) |> should equal (2,3,4)
 
 [<Test>]
+let ``Lines with wrong number of columns throw exception when ignore errors is set to false`` () = 
+    let csv = CsvProvider<"a,b,c">.Parse("a,b,c\n1,2\n0,1,2,3,4\n2,3,4")
+    (fun () -> csv.Data |> Seq.head |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
 let ``IgnoreErrors skips lines with wrong number of columns when there's no header`` () = 
     let csv = new CsvProvider<"1,2\n0,1,2,3,4\n2,3,4\n5,6", IgnoreErrors=true, HasHeaders=false>()
     let row1 = csv.Data |> Seq.head
@@ -159,3 +164,13 @@ let ``IgnoreErrors skips lines with wrong number of columns when there's no head
     (row1.Column1, row1.Column2) |> should equal (1,2)
     (row2.Column1, row2.Column2) |> should equal (5,6)
 
+[<Test>]
+let ``IgnoreErrors skips lines with wrong types`` () = 
+    let csv = new CsvProvider<"a (int),b (int),c (int)\nx,y,c\n2,3,4", IgnoreErrors=true>()
+    let row = csv.Data |> Seq.head
+    (row.a, row.b, row.c) |> should equal (2,3,4)
+
+[<Test>]
+let ``Lines with wrong types throw exception when ignore errors is set to false`` () = 
+    let csv = new CsvProvider<"a (int),b (int),c (int)\nx,y,z\n2,3,4">()
+    (fun () -> csv.Data |> Seq.head |> ignore) |> should throw typeof<Exception>
