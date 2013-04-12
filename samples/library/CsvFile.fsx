@@ -29,7 +29,7 @@ let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // Print the prices in the HLOC format
 for row in msft.Data do
-  printfn "HLOC: (%s, %s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Open") (row.GetColumn "Close")
+  printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (**
 
@@ -44,7 +44,6 @@ opening the `FSharp.Data.Csv.Extensions` namespace. Once opened, we can write:
  * `value.AsInteger()` returns the value as integer if it is numeric and can be
    converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
    `value.AsFloat()` behave similarly.
- * `value.AsString()` returns the value as a string
  * `value.AsDateTime()` parse the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
@@ -55,10 +54,9 @@ Methods that may need to parse a numeric value or date (such as `AsFloat` and
 The following example shows how to process the sample previous CSV sample using these extensions:
 *)
 open FSharp.Data.Csv.Extensions
-open System.Globalization
 
 for row in msft.Data do
-  printfn "HLOC: (%s, %M, %f, %f)" row?High (row?Low.AsDecimal()) (row.["Open"].AsFloat()) (row?Close.AsFloat(CultureInfo.GetCultureInfo "en-gb"))
+  printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (**
 
