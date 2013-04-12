@@ -5,9 +5,7 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
-open System.ComponentModel
 open System.IO
-open System.Text
 
 // Parser for the CSV format 
 module internal CsvReader = 
@@ -58,81 +56,53 @@ module internal CsvReader =
   
     readLines() 
 
+type CsvFile<'RowType>(f:Func<_,_,'RowType>, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) as this =
 
-/// Simple type that represents a single CSV row
-[<StructuredFormatDisplay("{Display}")>]
-type CsvRow internal (data:string[], headers:string[]) =
-
-  do 
-    if data.Length <> headers.Length then
-      failwithf "Invalid CSV row: expected %d columns, but got %d: %A" headers.Length data.Length (data |> Seq.map (fun s -> "\"" + s + "\"") |> String.concat " ")
-
-  /// The raw data
-  member x.Columns = data
-
-  /// Format the CSV row in the style of F# records
-  member private x.Display =
-    let sb = new StringBuilder()
-    let append (s:string) = sb.Append s |> ignore
-    append "{" 
-    for (header, data) in Seq.zip headers data do
-      append " "
-      append header
-      append " = "
-      append data
-      append " ;"
-    sb.ToString(0, sb.Length - 1) + "}"
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.ToString() = x.Display
-
-// Simple type wrapping CSV data
-type CsvFile (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) =
-
-  let separators = defaultArg separators ""
   let separators = if String.IsNullOrEmpty separators then "," else separators
-  let quote = defaultArg quote '"'
-  let hasHeaders = defaultArg hasHeaders true
-  let ignoreErrors = defaultArg ignoreErrors false
 
   /// Read the input and cache it (we can read input only once)
-  let file = CsvReader.readCsvFile reader separators quote |> Seq.cache
+  let lines = 
+    CsvReader.readCsvFile reader separators quote 
+    |> Seq.cache
 
   do 
-    if Seq.isEmpty file then
+    if Seq.isEmpty lines then
       failwithf "Invalid CSV file: header row not found" 
 
-  let headers =
+  let headers = 
     if hasHeaders then 
-      file 
-      |> Seq.head
+      lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim())
     else 
       // use the number of columns of the first data row
-      file 
-      |> Seq.head 
-      |> Array.length 
-      |> Array.zeroCreate
-    
-  let file = 
-    if hasHeaders then
-      file |> Seq.skip 1
-    else
-      file
+      Array.create (lines |> Seq.head |> Array.length) ""    
 
-  let file = 
-    if ignoreErrors then
-      // ignore rows with different number of columns
-      file |> Seq.filter (fun row -> row.Length = headers.Length)
-    else 
-      file
+  let rawData = 
+    if hasHeaders 
+    then lines |> Seq.skip 1
+    else lines
+    |> Seq.mapi (fun index line -> index, line)
 
-  // ignore empty rows
-  let file = 
-    file |> Seq.filter (fun row -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
-
-  let data =
-    file
-    |> Seq.map (fun v -> CsvRow(v, headers))
+  let data = 
+    // Ignore rows with different number of columns when ignoreErrors is set to true
+    if ignoreErrors
+    then rawData |> Seq.filter (fun (_, row) -> row.Length = headers.Length)
+    else rawData
+    // Always ignore empty rows
+    |> Seq.filter (fun (_, row) -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
+    // Try to convert rows to 'RowType
+    |> Seq.choose (fun (index, row) ->
+      if not ignoreErrors && row.Length <> headers.Length then
+        failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index headers.Length row.Length
+      let convertedRow = 
+        try 
+          f.Invoke(this, row) |> Choice1Of2 
+        with exn -> 
+          Choice2Of2 exn
+      match convertedRow, ignoreErrors with
+      | Choice1Of2 convertedRow, _ -> Some convertedRow
+      | Choice2Of2 _, true -> None
+      | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" index exn.Message
+    )
     |> Seq.cache
 
   member __.Data = data

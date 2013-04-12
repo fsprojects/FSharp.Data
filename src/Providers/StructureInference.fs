@@ -202,7 +202,7 @@ let inferCollectionType types =
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
-let inferPrimitiveType culture (value : string) unit =
+let inferPrimitiveType (missingValues, culture) (value : string) unit =
 
   // Helper for calling Operations.AsXyz functions
   let (|Parse|_|) func value = func culture value
@@ -217,7 +217,7 @@ let inferPrimitiveType culture (value : string) unit =
   | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
   | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
   | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
-  | Parse Operations.AsFloat _ -> Primitive(typeof<float>, unit)
+  | Parse (Operations.AsFloat missingValues) _ -> Primitive(typeof<float>, unit)
   | Parse Operations.AsDateTime _ 
         // If this can be considered a decimal under the invariant culture, 
         // it's a safer bet to consider it a string than a DateTime

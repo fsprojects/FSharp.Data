@@ -55,6 +55,8 @@
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
+    <Compile Include="Library\CsvRuntime.fs" />
+    <Compile Include="Library\Csv.fs" />
     <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
     <Compile Include="Providers\ProvidedTypes.fs" />
@@ -73,7 +75,6 @@
     <Compile Include="XmlProvider\XmlInference.fs" />
     <Compile Include="XmlProvider\XmlGenerator.fs" />
     <Compile Include="XmlProvider\XmlProvider.fs" />
-    <Compile Include="CsvProvider\CsvRuntime.fs" />
     <Compile Include="CsvProvider\CsvInference.fs" />
     <Compile Include="CsvProvider\CsvGenerator.fs" />
     <Compile Include="CsvProvider\CsvProvider.fs" />

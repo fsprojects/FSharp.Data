@@ -136,7 +136,7 @@ module Conversions =
 
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `field`
-  let convertValue (replacer:AssemblyReplacer) (culture:string) (field:PrimitiveInferedProperty) = 
+  let convertValue (replacer:AssemblyReplacer) (missingValues, culture) (field:PrimitiveInferedProperty) = 
 
     let returnTyp = 
       match field.TypeWrapper with
@@ -144,20 +144,26 @@ module Conversions =
       | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| field.TypeWithMeasure |]
       | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| field.TypeWithMeasure |]
 
+    let returnTypWithoutMeasure = 
+      match field.TypeWrapper with
+      | TypeWrapper.None -> field.BasicType
+      | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| field.BasicType |]
+      | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| field.BasicType |]
+
     let typ = field.BasicType
 
-    returnTyp, fun e ->
+    returnTyp, returnTypWithoutMeasure, fun value ->
       let converted = 
-        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%e) @@>
-        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%e) @@>
-        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%e) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, %%e) @@>
-        elif typ = typeof<string> then <@@ Operations.ConvertString(%%e) @@>
-        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%e) @@>
-        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%e) @@>
+        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%value) @@>
+        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
+        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%value) @@>
+        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
+        elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
+        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
+        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>
         else failwith "convertValue: Unsupported primitive type"
       match field.TypeWrapper with
-      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (field.Name, converted)
+      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (field.Name, converted, value)
       | TypeWrapper.Option -> converted
       | TypeWrapper.Nullable -> typeof<Operations>?ToNullable (typ) converted
       |> replacer.ToRuntime

@@ -62,8 +62,6 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType
 
-    let (|Singleton|) = function Singleton s -> replacer.ToDesignTime s
-
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
@@ -75,6 +73,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ use reader = new StreamReader(%%stream:Stream)
                                                               XmlElement(XDocument.Parse(reader.ReadToEnd()).Root) @@>
+    resTy.AddMember m
+
+    // Generate static Load reader method
+    let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+    let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ XmlElement(XDocument.Parse((%%reader:TextReader).ReadToEnd()).Root) @@>
     resTy.AddMember m
 
     // Generate static Load uri method
