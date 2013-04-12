@@ -6,6 +6,7 @@ class CsvProvider : FDR.CsvFile<System.Tuple<System.DateTime, string, string, st
     static member Load: uri:string -> CsvProvider
 
 class CsvProvider+Row : System.Tuple<System.DateTime, string, string, string, string, string, string, System.Tuple<string, string, string, string>>
+    member AsTuple: System.Tuple<System.DateTime, string, string, string, string, string, string, System.Tuple<string, string, string, string>> with get
     member Dato: System.DateTime with get
     member USD: string with get
     member EUR: string with get

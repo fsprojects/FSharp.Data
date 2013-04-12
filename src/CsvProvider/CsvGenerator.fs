@@ -25,6 +25,9 @@ module internal CsvTypeBuilder =
     
     let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
     
+    // Allow to access the underlying representation
+    rowType.AddMember <| ProvidedProperty("AsTuple", rowErasedType, GetterCode = fun (Singleton row) -> row)
+
     // Each property of the generated row type will simply be a tuple get
     fields 
     |> List.mapi (fun index (name, typ, _, _) -> 

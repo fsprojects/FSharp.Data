@@ -37,7 +37,9 @@ type internal JsonGenerationContext =
   static member Create(domainTy, replacer) =
     let packer e = <@@ JsonDocument(%%e) @@>
     let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
-    JsonGenerationContext.Create(domainTy, typeof<JsonDocument>, replacer, packer, unpacker, NameUtils.uniqueGenerator NameUtils.nicePascalName)
+    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
+    uniqueNiceName "JsonValue" |> ignore
+    JsonGenerationContext.Create(domainTy, typeof<JsonDocument>, replacer, packer, unpacker, uniqueNiceName)
   static member internal Create(domainTy, representation, replacer, packer, unpacker, uniqueNiceName) =
     { DomainType = domainTy
       Replacer = replacer 

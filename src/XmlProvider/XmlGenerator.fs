@@ -24,11 +24,13 @@ type internal XmlGenerationContext =
     UnifyGlobally : bool
     GeneratedResults : IDictionary<string, System.Type * (Expr -> Expr)> }
   static member Create(domainTy, unifyGlobally, replacer) =
+    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
+    uniqueNiceName "XElement" |> ignore
     { DomainType = domainTy
       Replacer = replacer
       GeneratedResults = new Dictionary<_, _>()
       UnifyGlobally = unifyGlobally
-      UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName }
+      UniqueNiceName = uniqueNiceName }
 
 module internal XmlTypeBuilder = 
 

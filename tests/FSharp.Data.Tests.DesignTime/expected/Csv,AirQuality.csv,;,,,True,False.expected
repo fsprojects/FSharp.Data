@@ -6,6 +6,7 @@ class CsvProvider : FDR.CsvFile<System.Tuple<float, float, decimal, int, int, in
     static member Load: uri:string -> CsvProvider
 
 class CsvProvider+Row : System.Tuple<float, float, decimal, int, int, int>
+    member AsTuple: System.Tuple<float, float, decimal, int, int, int> with get
     member Ozone: float with get
     member Solar.R: float with get
     member Wind: decimal with get

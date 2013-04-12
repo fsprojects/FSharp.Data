@@ -6,6 +6,7 @@ class CsvProvider : FDR.CsvFile<System.Tuple<int, decimal>>
     static member Load: uri:string -> CsvProvider
 
 class CsvProvider+Row : System.Tuple<int, decimal>
+    member AsTuple: System.Tuple<int, decimal> with get
     member Distance: int<metre> with get
     member Time: decimal<second> with get
 
