@@ -73,8 +73,10 @@ Http.Request
 
 If you want to create a POST request with HTTP POST data, you can specify the
 additional data in a string using the `body` parameter, or you can specify a set
-of name-value pairs using the `bodyValues` parameter. The following example uses the 
-[httpbin.org](http://httpbin.org) service which returns the request details:
+of name-value pairs using the `bodyValues` parameter. If you specify body data,
+you do not need to set the `meth` parameter - it will be set to `GET` automatically.
+The following example uses the [httpbin.org](http://httpbin.org) service which 
+returns the request details:
 *)
 
 Http.Request("http://httpbin.org/post", bodyValues=["test", "foo"])
@@ -93,47 +95,66 @@ Http.Request
 (**
 ## Maintaing cookies across requests
 
-If you want to maintain cookies between requests, you can specify the `cookieContainer` parameter.
-The following example will request the MSDN documentation for the `HttpRequest` class. It will return
-the code snippets in C# and not F#:
+If you want to maintain cookies between requests, you can specify the `cookieContainer` 
+parameter. The following example will request the MSDN documentation for the 
+`HttpRequest` class. It will return the code snippets in C# and not F#:
 *)
 
-let msdn className = 
-    sprintf "http://msdn.microsoft.com/en-gb/library/%s.aspx" className
+// Build URL with documentation for a given class
+let msdnUrl className = 
+  let root = "http://msdn.microsoft.com"
+  sprintf "%s/en-gb/library/%s.aspx" root className
 
-Http.Request(msdn "system.web.httprequest").Contains "<a>F#</a>"
+// Get the page and search for F# code
+let body = Http.Request(msdnUrl "system.web.httprequest")
+body.Contains "<a>F#</a>"
 
 (**
 
-If we now go to another MSDN page and click on a F# code sample, and then go back to the `HttpRequest` class docs,
-while maintaining the same `cookieContainer`, we will be presented with the F# code snippets:
+If we now go to another MSDN page and click on a F# code sample, and then go 
+back to the `HttpRequest` class documentation, while maintaining the same `cookieContainer`, 
+we will be presented with the F# code snippets:
 *)
 
 open System.Net
 let cc = CookieContainer()
 
-Http.Request(msdn "system.datetime", 
-             query=["cs-save-lang", "1"
-                    "cs-lang","fsharp"], 
-             cookieContainer = cc) |> ignore
+// Send a request to switch the language
+Http.Request
+  ( msdnUrl "system.datetime", 
+    query = ["cs-save-lang", "1"; "cs-lang","fsharp"], 
+    cookieContainer = cc) |> ignore
 
-Http.Request(msdn "system.web.httprequest", 
-             cookieContainer = cc).Contains "<a>F#</a>"
+// Request the documentation again & search for F#
+let body = 
+  Http.Request
+    ( msdnUrl "system.web.httprequest", 
+      cookieContainer = cc )
+body.Contains "<a>F#</a>"
 
 (**
-If you want to see more information about the response, including the response headers, the returned cookies, and the response url
-(which might be different to the url you passed when there are redirects), you can use the `RequestEx` method:
+If you want to see more information about the response, including the response 
+headers, the returned cookies, and the response url (which might be different to 
+the url you passed when there are redirects), you can use the `RequestDetailed` method:
 *)
 
-Http.RequestEx(msdn "system.web.httprequest")
+let response = Http.RequestDetailed(msdnUrl "system.web.httprequest")
+
+// Examine information about the response
+response.Cookies
+response.ResponseUrl
 
 (**
 ## Requesting binary data
 
-The `Request` method will always return the response as a `string`, but if you use the `RequestEx` method, it will
-return a `HttpResponseBody.Text` or a `HttpResponseBody.Binary` depending on the response `content-type` header:
+The `Request` method will always return the response as a `string`, but if you use the 
+`RequestDetailed` method, it will return a `HttpResponseBody.Text` or a 
+`HttpResponseBody.Binary` depending on the response `content-type` header:
 *)
 
-match Http.RequestEx("https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png").Body with
-| HttpResponseBody.Text text -> printfn "Got text content: %s" text
-| HttpResponseBody.Binary bytes -> printfn "Got %d bytes of binary content" bytes.Length
+let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
+match Http.RequestDetailed(logoUrl).Body with
+| HttpResponseBody.Text text -> 
+    printfn "Got text content: %s" text
+| HttpResponseBody.Binary bytes -> 
+    printfn "Got %d bytes of binary content" bytes.Length

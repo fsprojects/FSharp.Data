@@ -75,9 +75,10 @@ type Http private() =
             output.ToArray() |> HttpResponseBody.Binary }
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
-    let remoteStackTraceString = typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+    let remoteStackTraceString = 
+      typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
     if remoteStackTraceString <> null then
-        remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+      remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
     raise e
 
   static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
@@ -211,7 +212,7 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequestEx(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+  static member AsyncRequestDetailed(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
     Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -232,8 +233,8 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member RequestEx(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequestEx(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member RequestDetailed(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequestDetailed(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously
 
   /// Download an HTTP web resource from the specified URL synchronously
