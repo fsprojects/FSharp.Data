@@ -23,7 +23,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     let ns = "FSharp.Data" 
 
     let defaultServiceUrl = "http://api.worldbank.org"
-    let restCache, _ = createInternetFileCache "WorldBankSchema"
+    let restCache, _ = createInternetFileCache "WorldBankSchema" (TimeSpan.FromDays 30.0)
 
     let createTypesForSources(sources, worldBankTypeName, asynchronous) = 
 

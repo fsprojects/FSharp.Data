@@ -22,11 +22,10 @@ type RestApi<'T> =
   | Function of string * 'T
   | Entity of string * list<'T> * list<RestApi<'T>>
 
-
 module ApiarySchema =
   let download = 
     // Cache for storing downloaded specifications
-    let cache = createInMemoryCache()
+    let cache, _ = createInternetFileCache "ApiarySchema" (TimeSpan.FromMinutes 30.0)
     fun uri ->
       match cache.TryRetrieve(uri) with
       | Some html -> html

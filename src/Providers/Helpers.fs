@@ -81,15 +81,29 @@ module internal ReflectionHelpers =
 module ProviderHelpers =
 
   open System.IO
+  open FSharp.Data.RuntimeImplementation.Caching
   open FSharp.Data.RuntimeImplementation.ProviderFileSystem
+  open FSharp.Net
+
+  let private webUrisCache, _ = createInternetFileCache "DesignTimeURLs" (TimeSpan.FromMinutes 30.0)
 
   /// Resolve a location of a file (or a web location) and open it for shared
   /// read, and trigger the specified function whenever the file changes
   let readTextAtDesignTime defaultResolutionFolder invalidate resolutionFolder uri = 
-    let stream = 
-      asyncOpenStreamInProvider true (false, defaultResolutionFolder) (Some invalidate) resolutionFolder uri
-      |> Async.RunSynchronously
-    new StreamReader(stream)
+    if isWeb uri then
+      let value = 
+        match webUrisCache.TryRetrieve uri.OriginalString with
+        | Some value -> value
+        | None ->
+            let value = Http.Request(uri.OriginalString)
+            webUrisCache.Set(uri.OriginalString, value)
+            value
+      new StringReader(value) :> TextReader
+    else
+      let stream = 
+        asyncOpenStreamInProvider true (false, defaultResolutionFolder) (Some invalidate) resolutionFolder uri
+        |> Async.RunSynchronously
+      new StreamReader(stream) :> TextReader
 
   let invalidChars = Array.append (Path.GetInvalidPathChars()) (@"{}[],".ToCharArray()) |> set
 
