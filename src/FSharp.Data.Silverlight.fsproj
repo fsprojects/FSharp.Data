@@ -55,10 +55,11 @@
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
+    <Compile Include="Library\CsvRuntime.fs" />
+    <Compile Include="Library\Csv.fs" />
     <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="XmlProvider\XmlRuntime.fs" />
-    <Compile Include="CsvProvider\CsvRuntime.fs" />
     <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
     <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
     <Compile Include="FreebaseProvider\FreebaseSchema.fs" />

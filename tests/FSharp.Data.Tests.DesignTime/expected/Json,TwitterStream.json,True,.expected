@@ -2,6 +2,7 @@ class JsonProvider
     new : () -> JsonProvider
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
 
 class JsonProvider+DomainTypes

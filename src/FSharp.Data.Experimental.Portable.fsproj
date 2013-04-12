@@ -37,6 +37,7 @@
     <DocumentationFile>bin\portable\Release\FSharp.Data.Experimental.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common\ProviderFileSystem.fs" />
     <Compile Include="Common\StructuralTypes.fs" />
     <Compile Include="Common\HttpUtils.fs" />
     <Compile Include="Common\Conversions.fs" />

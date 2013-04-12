@@ -7,6 +7,7 @@ module ProviderImplementation.CsvInference
 open System
 open System.IO
 open System.Text.RegularExpressions
+open FSharp.Data.Csv
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
@@ -124,7 +125,7 @@ let private parseSchemaItem str forSchemaOverride =
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let inferType (csv:CsvFile) count culture schema =
+let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -132,10 +133,10 @@ let inferType (csv:CsvFile) count culture schema =
   // If we do not have header names, then automatically generate names
   let headers = 
     csv.Headers |> Array.mapi (fun i header -> 
-      if String.IsNullOrWhiteSpace header then 
+      if String.IsNullOrEmpty header then 
         "Column" + (i+1).ToString()
       else
-        header.Trim())
+        header)
 
   // If the schema is specified explicitly, then parse the schema
   // (This can specify just types, names of columns or a mix of both)
@@ -183,7 +184,7 @@ let inferType (csv:CsvFile) count culture schema =
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
   let rows = 
-    if Seq.isEmpty csv.Data then CsvRow([| for i in 1..headers.Length -> ""|], headers) |> Seq.singleton 
+    if Seq.isEmpty csv.Data then CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
     elif count > 0 then Seq.truncate count csv.Data
     else csv.Data
 
@@ -200,7 +201,7 @@ let inferType (csv:CsvFile) count culture schema =
                   // infer heterogeneous types e.g. 'null + int', will then 
                   // be turned into Nullable<int> (etc.) in the getFields function
                   if String.IsNullOrWhiteSpace value then Null
-                  else inferPrimitiveType culture value unit
+                  else inferPrimitiveType (missingValues, culture) value unit
             { Name = name
               Optional = false
               Type = typ } ]
@@ -246,7 +247,7 @@ let getFields inferedType schema =
       // The inference engine assigns some value to all fields
       // so we should never get an optional field
       if field.Optional then 
-        failwithf "getFields: Unexpected optional field %s" field.Name
+        failwithf "Column %s is not present in all rows used for inference" field.Name
       
       match Array.get schema index with
       | Some prop -> prop
