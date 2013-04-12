@@ -26,6 +26,8 @@ let private watchForChanges invalidate (fileName:string) =
   watcher.EnableRaisingEvents <- true
 #endif
 
+let internal isWeb (uri:Uri) = uri.IsAbsoluteUri && not uri.IsUnc
+
 /// Resolve the absolute location of a file (or web URL) according to the rules
 /// used by standard F# type providers as described here:
 /// https://github.com/fsharp/fsharpx/issues/195#issuecomment-12141785
@@ -50,15 +52,13 @@ let private resolveUri
     (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (uri:Uri) =
 
 #if FX_NO_LOCAL_FILESYSTEM
-  let isWeb = uri.IsAbsoluteUri && not uri.IsUnc
-  if isWeb then
+  if isWeb uri then
       uri, true
   else
       failwith "Only web locations are supported"
 #else
-  let isWeb = uri.IsAbsoluteUri && (not uri.IsUnc && not uri.IsFile)
   match uri with
-  | url when isWeb -> url, true
+  | url when isWeb url -> url, true
   | fullPath when uri.IsAbsoluteUri -> fullPath, false
   | relative ->
       let root = 

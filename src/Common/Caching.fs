@@ -4,6 +4,8 @@
 
 module internal FSharp.Data.RuntimeImplementation.Caching
 
+open System
+
 /// Represents a cache (various implementations are available)
 type ICache<'T> = 
   abstract TryRetrieve : string -> 'T option
@@ -19,41 +21,40 @@ let createNonCachingCache() =
 open System.Collections.Generic
 
 /// Creates a cache that uses in-memory collection
-let createInMemoryCache () = 
+let createInMemoryCache expiration = 
   let dict = new Dictionary<_, _>()
   { new ICache<_> with
-      member __.Set(k, v) = 
-        lock dict (fun () -> dict.[k] <- v)
-      member __.TryRetrieve(k) =
-        lock dict (fun () ->
-          match dict.TryGetValue(k) with
-          | true, v -> Some v
-          | _ -> None) }
+      member __.Set(key, value) = 
+        lock dict <| fun () -> dict.[key] <- (value, DateTime.UtcNow)
+      member __.TryRetrieve(key) =
+        lock dict <| fun () ->
+          match dict.TryGetValue(key) with
+          | true, (value, timestamp) when timestamp - DateTime.UtcNow < expiration -> Some value
+          | _ -> None }
 
 #else
 
 open System.Collections.Concurrent
 
 /// Creates a cache that uses in-memory collection
-let createInMemoryCache () = 
+let createInMemoryCache expiration = 
   let dict = new ConcurrentDictionary<_, _>()
   { new ICache<_> with
-      member __.Set(k, v) = 
-        dict.[k] <- v
-      member __.TryRetrieve(k) =
-        match dict.TryGetValue(k) with
-        | true, v -> Some v
+      member __.Set(key, value) = 
+        dict.[key] <- (value, DateTime.UtcNow)
+      member __.TryRetrieve(key) =
+        match dict.TryGetValue(key) with
+        | true, (value, timestamp) when timestamp - DateTime.UtcNow < expiration -> Some value
         | _ -> None }
 
 #endif
 
 #if FX_NO_LOCAL_FILESYSTEM
 
-let createInternetFileCache _ = createInMemoryCache(), null
+let createInternetFileCache (prefix:string) expiration = createInMemoryCache expiration, null
 
 #else
 
-open System
 open System.Diagnostics
 open System.IO
 open System.Security.Cryptography
@@ -68,7 +69,7 @@ let private hashString (plainText:string) =
   s.Replace("ab","abab").Replace("\\","ab")
 
 /// Creates a cache that stores data in a local file system
-let createInternetFileCache prefix =
+let createInternetFileCache prefix expiration =
 
   // e.g. C:\Users\<user>\AppData\Local\Microsoft\Windows\Temporary Internet Files
   let cacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
@@ -93,12 +94,11 @@ let createInternetFileCache prefix =
           member x.TryRetrieve(key) = 
             let cacheFile = cacheFile key
             try
-              if File.Exists cacheFile then
+              if File.Exists cacheFile && File.GetLastWriteTimeUtc cacheFile - DateTime.UtcNow < expiration then
                 let result = File.ReadAllText cacheFile
-                if isWellFormedResult result then
-                    Some result
-                else
-                    None
+                if isWellFormedResult result
+                then Some result
+                else None
               else None
             with e -> 
               Debug.WriteLine("Caching: Failed to read file {0} with an exception: {1}", cacheFile, e.Message)
@@ -113,11 +113,11 @@ let createInternetFileCache prefix =
     // Ensure that we can access the file system by writing sample thing to a cache
     cache.Set("$$$test$$$", "empty")
     if cache.TryRetrieve("$$$test$$$") <> Some "empty" then 
-        createInMemoryCache(), null
+        createInMemoryCache expiration, null
     else 
         cache, downloadCache 
   with e -> 
     Debug.WriteLine("Caching: Fall back to memory cache, because of an exception: {0}", e.Message)
-    createInMemoryCache(), null
+    createInMemoryCache expiration, null
 
 #endif
