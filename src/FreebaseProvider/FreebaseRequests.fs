@@ -74,7 +74,7 @@ let isStringNone s = String.IsNullOrEmpty s || s = "none"
 type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
     let snapshotDate = if isStringNone snapshotDate then None else Some snapshotDate
     let sendingRequest = Event<Uri>()
-    let localCache, localCacheLocation = createInternetFileCache localCacheName 
+    let localCache, localCacheLocation = createInternetFileCache localCacheName (TimeSpan.FromDays 30.0)
     let noLocalCache = createNonCachingCache()
     let mutable useLocalCache = useLocalCache
     let mutable serviceUrl = serviceUrl
@@ -135,7 +135,7 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             resultText
           with 
             | :? WebException as exn -> 
-                if exn.Response = null then reraise()
+                if exn.Response = null then Http.reraisePreserveStackTrace exn
                 let freebaseExn =
                     try
                         use responseStream = exn.Response.GetResponseStream()
@@ -150,7 +150,7 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                     with _ -> None
                 match freebaseExn with
                 | Some e -> raise e
-                | None -> reraise()
+                | None -> Http.reraisePreserveStackTrace exn
 
     let queryString(queryUrl, fromJson) : FreebaseResult<'T> = 
         let resultText = queryRawText queryUrl

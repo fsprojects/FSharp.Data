@@ -14,4 +14,4 @@
 * 1.1.1 - Update WorldBank internals to support more efficient implementation and FunScript.
 * 1.1.2 - Update NuGet package links and icon reference.
 * 1.1.3 - Improve Units of Measure support and allow to override the type inference in the CSV Provider.
-* 1.1.4 - Allow to skip rows that don't match the schema in CsvProvider. Support for dynamic lookup in CSV files.
+* 1.1.4 - Allow to skip rows that don't match the schema in CsvProvider. Support for dynamic lookup in CSV files. Improvements to FSharp.Net.Http to support cookies and binary files.

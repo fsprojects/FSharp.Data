@@ -11,6 +11,7 @@ open System.IO
 open FSharp.Data
 
 type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
+type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
 
 [<Test>]
 let ``Decimal required field is read correctly`` () = 
@@ -31,6 +32,16 @@ let ``Reading a required field that is null throws an exception`` () =
 let ``Reading a required field that is missing throws an exception`` () = 
   let prov = NumericFields.Parse(""" {"b":123} """)
   (fun () -> prov.A |> ignore)|> should throw typeof<Exception>
+
+[<Test>]
+let ``Reading a required decimal that is not a valid decimal throws an exception`` () = 
+  let prov = NumericFields.Parse(""" {"a":"hello", "b":123} """)
+  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``Reading a required float that is not a valid float throws an exception`` () = 
+  let prov = DecimalFields.Parse(""" {"a":"hello", "b":123} """)
+  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
 
 [<Test>]
 let ``Optional int correctly infered`` () = 

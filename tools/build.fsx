@@ -17,7 +17,7 @@ let output   = __SOURCE_DIRECTORY__ ++ "../docs"
 let root = "http://fsharp.github.com/FSharp.Data"
 
 // When running locally, you can use your path
-// let root = "file://C:\Tomas\Projects\FSharp.Data\docs"
+//let root = @"file://C:\Tomas\Projects\FSharp.Data\docs"
 
 
 // Copy all sample documents to the "docs" directory

@@ -346,7 +346,7 @@ type IWorldBankData =
 
 type WorldBankData(serviceUrl:string, sources:string) = 
     let sources = sources.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries) |> Array.toList
-    let restCache, _ = createInternetFileCache "WorldBankRuntime"
+    let restCache, _ = createInternetFileCache "WorldBankRuntime" (TimeSpan.FromDays 30.0)
     let connection = new ServiceConnection(restCache, serviceUrl, sources)
     interface IWorldBankData with
         member x.GetCountries() = CountryCollection(connection, None) :> seq<_>
