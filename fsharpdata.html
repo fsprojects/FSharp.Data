@@ -38,7 +38,7 @@
 <p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to access data 
 in your F# applications and scripts. It implements F# type providers for working with 
 structured file formats and for accessing the WorldBank and Freebase data. It 
-also includes helpers for parsing JSON files and for sending HTTP requests.</p>
+also includes helpers for parsing JSON and CSV files and for sending HTTP requests.</p>
 
 <h2>F# type providers</h2>
 
@@ -67,11 +67,13 @@ and the <code>FreebaseDataProvider&lt;..&gt;</code> type</li>
 
 <p>In addition to the F# type providers, the library also defines several types that 
 simplify data access. In particular, it includes tools for HTTP web requests and a 
-JSON parser with simple dynamic API. For more information about these types, see the 
+JSON and CSV parsers with simple dynamic API. For more information about these types, see the 
 following topics:</p>
 
 <ul>
 <li><a href="library/JsonValue.html">JSON Parser and Reader</a> - introduces the JSON parser 
+(without using the type provider)</li>
+<li><a href="library/CsvFile.html">CSV Parser and Reader</a> - introduces the CSV parser 
 (without using the type provider)</li>
 <li><a href="library/Http.html">HTTP Utilities</a> - discusses the <code>Http</code> type that can be used
 to send simple HTTP web requests.</li>
@@ -123,6 +125,7 @@ might be of interest.</p>
             <li><a href="http://fsharp.github.com/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
             <li class="divider"></li>
             <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="http://fsharp.github.com/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
 
             <li class="nav-header">Experimental</li>
