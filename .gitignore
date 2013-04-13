@@ -3,3 +3,9 @@ bin/*.dll
 nuget/*
 src/*
 tests/*
+TestResults.xml
+demos/*
+docs/*
+library/*
+packages/*
+tools/*
