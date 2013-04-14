@@ -26,7 +26,7 @@ let private watchForChanges invalidate (fileName:string) =
   watcher.EnableRaisingEvents <- true
 #endif
 
-let internal isWeb (uri:Uri) = uri.IsAbsoluteUri && not uri.IsUnc
+let internal isWeb (uri:Uri) = uri.IsAbsoluteUri && not uri.IsUnc && uri.Scheme <> "file"
 
 /// Resolve the absolute location of a file (or web URL) according to the rules
 /// used by standard F# type providers as described here:
