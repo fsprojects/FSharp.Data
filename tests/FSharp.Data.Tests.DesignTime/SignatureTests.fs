@@ -43,9 +43,7 @@ type TestCase =
             ["Freebase"
              x.NumIndividuals.ToString()
              x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()
-             x.LocalCache.ToString()
-             x.AllowLocalQueryEvaluation.ToString()]
+             x.Pluralize.ToString()]
         |> String.concat ","
 
     static member Parse (line:string) =
@@ -83,8 +81,8 @@ type TestCase =
                        Pluralize = args.[4] |> bool.Parse
                        SnapshotDate = "now"
                        ServiceUrl = "https://www.googleapis.com/freebase/v1"
-                       LocalCache = args.[5] |> bool.Parse
-                       AllowLocalQueryEvaluation = args.[6] |> bool.Parse }
+                       LocalCache = true
+                       AllowLocalQueryEvaluation = true }
         | _ -> failwithf "Unknown: %s" args.[0]
         |> TestCase
 
