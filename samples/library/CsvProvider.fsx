@@ -148,6 +148,8 @@ countries, ',' is already used as the numeric decimal separator, so a semicolon 
 instead to separate CSV columns. The `CsvProvider` has an optional `Separator` parameter
 where you can specify what to use as separator. This means that you can consume
 any textual tabular format. If you specify `\t` you'll also be able to consume TSV files.
+If you don't specify the separator and you're using an url or file that has the `.tsv`
+extensions, the type provider will use `\t` by default.
 *)
 
 let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()

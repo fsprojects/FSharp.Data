@@ -45,14 +45,20 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let defaultResolutionFolder = cfg.ResolutionFolder
 
     // Infer the schema from a specified uri or inline text
-    let sampleCsv, sampleIsUri = 
+    let sampleCsv, sampleIsUri, separator = 
       try
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
+            let separator = 
+              if String.IsNullOrEmpty separator &&
+                 (uri.IsAbsoluteUri && uri.AbsolutePath.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase) || uri.OriginalString.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase)) then
+                "\t"
+              else
+                separator
             let reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            CsvFile.Load(reader, separator, quote, hasHeaders, ignoreErrors), true
+            CsvFile.Load(reader, separator, quote, hasHeaders, ignoreErrors), true, separator
         | None ->
-            CsvFile.Parse(sample, separator, quote, hasHeaders, ignoreErrors), false
+            CsvFile.Parse(sample, separator, quote, hasHeaders, ignoreErrors), false, separator
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed CSV: %s" e.Message
     
@@ -110,7 +116,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>) 
-      ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = ",") 
+      ProvidedStaticParameter("Separator", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)
       ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
