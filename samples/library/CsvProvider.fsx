@@ -232,6 +232,32 @@ for row in csv.Data do
 
 (**
 
+## Transforming CSV files
+
+In addition to reading, `CsvProvider` also has support for transforming CSV files. The operations
+available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. All these operations
+preserver the schema, so after transforming you can save the results by using one of the overloads of
+the `Save` method. Of course, if you don't need to save the results afterwards in the CSV format, or if
+your transformations need to change the shape of the data, you can use the operations available in the `Seq`
+module on the the sequence of rows exposed via the `Data` property directly.
+*)
+
+// Saving the first 10 rows that don't have missing values to a new csv file
+airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) && 
+                             not (Double.IsNaN row.``Solar.R``))
+          .Truncate(10)
+          .SaveToString()
+
+(**
+For convenience, you can also treat each row as a tuple by using the `AsTuple` property of the RowType.
+This is usefull when want to treat different CSV files with a similar schema in a uniform way:
+*)
+
+for row in airQuality.Data do
+  printfn "%A" row.AsTuple
+
+(**
+
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other

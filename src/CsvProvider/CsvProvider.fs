@@ -69,12 +69,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema 
       ||> CsvInference.getFields
 
-    let csvType, csvErasedType, converterFunc = 
+    let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
         inferredFields |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
 
     let csvConstructor (reader:Expr) =
-        csvErasedType?``.ctor`` () (converterFunc, reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
-        |> replacer.ToRuntime
+        csvErasedType?``.ctor`` () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
 
     // Generate default constructor
     let c = ProvidedConstructor []
@@ -95,6 +94,12 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, csvType, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton stream) -> csvConstructor <@@ new StreamReader(%%stream:Stream) @@>
+    csvType.AddMember m
+
+    // Generate static Load reader method
+    let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+    let m = ProvidedMethod("Load", args, csvType, IsStaticMethod = true)
+    m.InvokeCode <- fun (Singleton reader) -> csvConstructor reader
     csvType.AddMember m
 
     // Generate static Load uri method

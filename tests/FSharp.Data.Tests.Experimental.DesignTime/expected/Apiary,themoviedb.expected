@@ -1,7 +1,7 @@
 class ApiaryProvider : FDR.Apiary.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
-    member AsyncConfiguration: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity async
-    member Configuration: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity
+    member AsyncConfiguration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity async
+    member Configuration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity
     member Authentication: ApiaryProvider+DomainTypes+AuthenticationType with get
     member Account: ApiaryProvider+DomainTypes+AccountType with get
     member Movie: ApiaryProvider+DomainTypes+MovieType with get
@@ -26,73 +26,73 @@ class ApiaryProvider+DomainTypes+AuthenticationType : FDR.Apiary.InternalApiaryC
     member GuestSession: ApiaryProvider+DomainTypes+GuestSessionType with get
 
 class ApiaryProvider+DomainTypes+AccountType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity6 async
-    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity6
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity6 async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity6
 
 class ApiaryProvider+DomainTypes+MovieType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetMovie: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity7 async
-    member GetMovie: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity7
-    member AsyncLatest: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity39 async
-    member Latest: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity39
-    member AsyncUpcoming: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity43 async
-    member Upcoming: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity43
-    member AsyncNowPlaying: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity45 async
-    member NowPlaying: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity45
-    member AsyncPopular: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity47 async
-    member Popular: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity47
-    member AsyncTopRated: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity49 async
-    member TopRated: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity49
-    member AsyncChanges: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity51 async
-    member Changes: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity51
+    member AsyncGetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity7 async
+    member GetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity7
+    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity39 async
+    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity39
+    member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity43 async
+    member Upcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity43
+    member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity45 async
+    member NowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity45
+    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity47 async
+    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity47
+    member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity49 async
+    member TopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity49
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity51 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity51
 
 class ApiaryProvider+DomainTypes+CollectionType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetCollection: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity53 async
-    member GetCollection: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity53
+    member AsyncGetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity53 async
+    member GetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity53
 
 class ApiaryProvider+DomainTypes+PersonType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetPerson: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity58 async
-    member GetPerson: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity58
-    member AsyncPopular: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity67 async
-    member Popular: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity67
-    member AsyncLatest: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity69 async
-    member Latest: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity69
-    member AsyncChanges: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity70 async
-    member Changes: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity70
+    member AsyncGetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity58 async
+    member GetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity58
+    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity67 async
+    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity67
+    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity69 async
+    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity69
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity70 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity70
 
 class ApiaryProvider+DomainTypes+ListType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetList: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity72 async
-    member GetList: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity72
+    member AsyncGetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity72 async
+    member GetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity72
 
 class ApiaryProvider+DomainTypes+CompanyType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetCompany: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity74 async
-    member GetCompany: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity74
+    member AsyncGetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity74 async
+    member GetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity74
 
 class ApiaryProvider+DomainTypes+GenreType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity77 async
-    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity77
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity77 async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity77
     member Id: ApiaryProvider+DomainTypes+IdType with get
 
 class ApiaryProvider+DomainTypes+KeywordType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetKeyword: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity81 async
-    member GetKeyword: id:string -> query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity81
+    member AsyncGetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity81 async
+    member GetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity81
 
 class ApiaryProvider+DomainTypes+SearchType : FDR.Apiary.InternalApiaryContext
-    member AsyncMovie: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity84 async
-    member Movie: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity84
-    member AsyncCollection: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity86 async
-    member Collection: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity86
-    member AsyncPerson: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity88 async
-    member Person: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity88
-    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity90 async
-    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity90
-    member AsyncCompany: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity92 async
-    member Company: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity92
-    member AsyncKeyword: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity94 async
-    member Keyword: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity94
+    member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity84 async
+    member Movie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity84
+    member AsyncCollection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity86 async
+    member Collection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity86
+    member AsyncPerson: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity88 async
+    member Person: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity88
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity90 async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity90
+    member AsyncCompany: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity92 async
+    member Company: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity92
+    member AsyncKeyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity94 async
+    member Keyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity94
 
 class ApiaryProvider+DomainTypes+JobType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity96 async
-    member List: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity96
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity96 async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity96
 
 class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
     member BackdropSizes: string[] with get
@@ -103,8 +103,8 @@ class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
     member SecureBaseUrl: string with get
 
 class ApiaryProvider+DomainTypes+TokenType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity3 async
-    member New: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity3
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity3 async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity3
 
 class ApiaryProvider+DomainTypes+Entity3 : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
@@ -112,16 +112,16 @@ class ApiaryProvider+DomainTypes+Entity3 : FDR.Apiary.ApiaryDocument
     member Success: bool with get
 
 class ApiaryProvider+DomainTypes+SessionType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity4 async
-    member New: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity4
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity4 async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity4
 
 class ApiaryProvider+DomainTypes+Entity4 : FDR.Apiary.ApiaryDocument
     member SessionId: string with get
     member Success: bool with get
 
 class ApiaryProvider+DomainTypes+GuestSessionType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity5 async
-    member New: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity5
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity5 async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity5
 
 class ApiaryProvider+DomainTypes+Entity5 : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
@@ -160,30 +160,30 @@ class ApiaryProvider+DomainTypes+Entity7 : FDR.Apiary.ApiaryDocument
     member Title: string with get
     member VoteAverage: decimal with get
     member VoteCount: int with get
-    member AsyncAlternativeTitles: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity12 async
-    member AlternativeTitles: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity12
-    member AsyncCasts: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity14 async
-    member Casts: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity14
-    member AsyncImages: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity17 async
-    member Images: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity17
-    member AsyncKeywords: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity20 async
-    member Keywords: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity20
-    member AsyncReleases: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity22 async
-    member Releases: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity22
-    member AsyncTrailers: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity24 async
-    member Trailers: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity24
-    member AsyncTranslations: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity26 async
-    member Translations: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity26
-    member AsyncSimilarMovies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity28 async
-    member SimilarMovies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity28
-    member AsyncLists: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity30 async
-    member Lists: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity30
-    member AsyncChanges: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity32 async
-    member Changes: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity32
-    member AsyncAccountStates: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity36 async
-    member AccountStates: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity36
-    member AsyncRating: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity38 async
-    member Rating: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity38
+    member AsyncAlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity12 async
+    member AlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity12
+    member AsyncCasts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity14 async
+    member Casts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity14
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity17 async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity17
+    member AsyncKeywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity20 async
+    member Keywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity20
+    member AsyncReleases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity22 async
+    member Releases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity22
+    member AsyncTrailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity24 async
+    member Trailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity24
+    member AsyncTranslations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity26 async
+    member Translations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity26
+    member AsyncSimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity28 async
+    member SimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity28
+    member AsyncLists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity30 async
+    member Lists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity30
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity32 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity32
+    member AsyncAccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity36 async
+    member AccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity36
+    member AsyncRating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity38 async
+    member Rating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity38
 
 class ApiaryProvider+DomainTypes+Entity8 : FDR.Apiary.ApiaryDocument
     member Id: int with get
@@ -490,8 +490,8 @@ class ApiaryProvider+DomainTypes+Entity53 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member Parts: ApiaryProvider+DomainTypes+Entity54[] with get
     member PosterPath: string with get
-    member AsyncImages: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity55 async
-    member Images: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity55
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity55 async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity55
 
 class ApiaryProvider+DomainTypes+Entity54 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
@@ -530,12 +530,12 @@ class ApiaryProvider+DomainTypes+Entity58 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member PlaceOfBirth: string with get
     member ProfilePath: string with get
-    member AsyncCredits: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity59 async
-    member Credits: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity59
-    member AsyncImages: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity62 async
-    member Images: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity62
-    member AsyncChanges: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity64 async
-    member Changes: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity64
+    member AsyncCredits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity59 async
+    member Credits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity59
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity62 async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity62
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity64 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity64
 
 class ApiaryProvider+DomainTypes+Choice5 : FDR.Apiary.ApiaryDocument
 
@@ -647,10 +647,10 @@ class ApiaryProvider+DomainTypes+Entity72 : FDR.Apiary.ApiaryDocument
     member Items: ApiaryProvider+DomainTypes+Entity73[] with get
     member Name: string with get
     member PosterPath: string with get
-    member AsyncAddItem: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> FDR.Apiary.ApiaryDocument async
-    member AddItem: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> FDR.Apiary.ApiaryDocument
-    member AsyncRemoveItem: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> FDR.Apiary.ApiaryDocument async
-    member RemoveItem: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> FDR.Apiary.ApiaryDocument
+    member AsyncAddItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument async
+    member AddItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument
+    member AsyncRemoveItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument async
+    member RemoveItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument
 
 class ApiaryProvider+DomainTypes+Entity73 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
@@ -670,8 +670,8 @@ class ApiaryProvider+DomainTypes+Entity74 : FDR.Apiary.ApiaryDocument
     member LogoPath: string with get
     member Name: string with get
     member ParentCompany: FDR.Apiary.ApiaryDocument with get
-    member AsyncMovies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity75 async
-    member Movies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity75
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity75 async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity75
 
 class ApiaryProvider+DomainTypes+Entity75 : FDR.Apiary.ApiaryDocument
     member Id: int with get
@@ -701,8 +701,8 @@ class ApiaryProvider+DomainTypes+Entity78 : FDR.Apiary.ApiaryDocument
     member Name: string with get
 
 class ApiaryProvider+DomainTypes+IdType : FDR.Apiary.InternalApiaryContext
-    member AsyncMovies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity79 async
-    member Movies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity79
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity79 async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity79
 
 class ApiaryProvider+DomainTypes+Entity79 : FDR.Apiary.ApiaryDocument
     member Id: int with get
@@ -724,8 +724,8 @@ class ApiaryProvider+DomainTypes+Entity80 : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+Entity81 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
-    member AsyncMovies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity82 async
-    member Movies: query:System.Tuple<string, string> list -> headers:System.Tuple<string, string> list -> ApiaryProvider+DomainTypes+Entity82
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity82 async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity82
 
 class ApiaryProvider+DomainTypes+Entity82 : FDR.Apiary.ApiaryDocument
     member Id: int with get

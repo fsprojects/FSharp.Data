@@ -5,8 +5,10 @@ namespace ProviderImplementation
 
 open System
 open Microsoft.FSharp.Quotations
+open Microsoft.FSharp.Reflection
 open FSharp.Data.RuntimeImplementation
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.QuotationBuilder
 
 module internal CsvTypeBuilder =
 
@@ -15,12 +17,12 @@ module internal CsvTypeBuilder =
     let fields =
       inferredFields
       |> List.map (fun field -> 
-        let typ, typWithoutMeasure, conv = Conversions.convertValue replacer (missingValues, culture) field
-        field.Name, typ, typWithoutMeasure, conv)
+        let typ, typWithoutMeasure, conv, convBack = Conversions.convertValue replacer (missingValues, culture) field
+        field.Name, typ, typWithoutMeasure, conv, convBack)
 
     // The erased row type will be a tuple of all the field types (without the units of measure)
     let rowErasedType = 
-      Reflection.FSharpType.MakeTupleType([| for _, _, typWithoutMeasure, _ in fields -> typWithoutMeasure |])
+      FSharpType.MakeTupleType([| for _, _, typWithoutMeasure, _, _ in fields -> typWithoutMeasure |])
       |> replacer.ToRuntime
     
     let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
@@ -30,7 +32,7 @@ module internal CsvTypeBuilder =
 
     // Each property of the generated row type will simply be a tuple get
     fields 
-    |> List.mapi (fun index (name, typ, _, _) -> 
+    |> List.mapi (fun index (name, typ, _, _, _) -> 
       ProvidedProperty(name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index)))
     |> rowType.AddMembers 
 
@@ -45,7 +47,7 @@ module internal CsvTypeBuilder =
     csvType.AddMember rowType
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type
-    let converterFunc = 
+    let stringArrayToRow = 
 
       let parentVar = Var("parent", typeof<obj>)
             
@@ -53,16 +55,34 @@ module internal CsvTypeBuilder =
       let rowVarExpr = Expr.Var rowVar
 
       // Convert each element of the row using the appropriate conversion
-      let convertedItems = fields |> List.mapi (fun index (_, _, _, conv) -> 
+      let convertedItems = fields |> List.mapi (fun index (_, _, _, conv, _) -> 
         conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>)
         
-      let tuple = 
+      let body = 
         Expr.NewTuple convertedItems
         |> replacer.ToRuntime
 
       let delegateType = 
         typedefof<Func<_,_,_>>.MakeGenericType(typeof<obj>, typeof<string[]>, rowErasedType)
 
-      Expr.NewDelegate(delegateType, [parentVar; rowVar], tuple)
+      Expr.NewDelegate(delegateType, [parentVar; rowVar], body)
 
-    csvType, csvErasedTypeWithRowErasedType, converterFunc
+    // Create a function that converts the tuple type to a string[]
+    let rowToStringArray =
+            
+      let rowVar = Var("row", rowErasedType)
+      let rowVarExpr = Expr.Var rowVar
+
+      // Convert each element back to string
+      let convertedItems = fields |> List.mapi (fun index (_, _, _, _, convBack) -> 
+        convBack (Expr.TupleGet(rowVarExpr, index)))
+
+      let body = 
+        Expr.NewArray(typeof<string>, convertedItems)
+
+      let delegateType = 
+        typedefof<Func<_,_>>.MakeGenericType(rowErasedType, typeof<string[]>)
+
+      Expr.NewDelegate(delegateType, [rowVar], body)
+
+    csvType, csvErasedTypeWithRowErasedType, stringArrayToRow, rowToStringArray

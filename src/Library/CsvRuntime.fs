@@ -56,57 +56,155 @@ module internal CsvReader =
   
     readLines() 
 
-type CsvFile<'RowType>(f:Func<_,_,'RowType>, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) as this =
+// --------------------------------------------------------------------------------------
 
-  let separators = if String.IsNullOrEmpty separators then "," else separators
+module private CsvHelpers = 
 
-  /// Read the input and cache it (we can read input only once)
-  let lines = 
-    CsvReader.readCsvFile reader separators quote 
-    |> Seq.cache
+  let tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
+    try 
+      stringArrayToRow.Invoke(this, row) |> Choice1Of2 
+    with exn -> 
+      Choice2Of2 exn
 
-  do 
-    if Seq.isEmpty lines then
-      failwithf "Invalid CSV file: header row not found" 
+// --------------------------------------------------------------------------------------
 
-  let headers = 
-    if hasHeaders then 
-      lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim())
-    else 
-      // use the number of columns of the first data row
-      Array.create (lines |> Seq.head |> Array.length) ""    
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader:TextReader, data:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
-  let rawData = 
-    if hasHeaders 
-    then lines |> Seq.skip 1
-    else lines
-    |> Seq.mapi (fun index line -> index, line)
-
-  let data = 
-    // Ignore rows with different number of columns when ignoreErrors is set to true
-    if ignoreErrors
-    then rawData |> Seq.filter (fun (_, row) -> row.Length = headers.Length)
-    else rawData
-    // Always ignore empty rows
-    |> Seq.filter (fun (_, row) -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
-    // Try to convert rows to 'RowType
-    |> Seq.choose (fun (index, row) ->
-      if not ignoreErrors && row.Length <> headers.Length then
-        failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index headers.Length row.Length
-      let convertedRow = 
-        try 
-          f.Invoke(this, row) |> Choice1Of2 
-        with exn -> 
-          Choice2Of2 exn
-      match convertedRow, ignoreErrors with
-      | Choice1Of2 convertedRow, _ -> Some convertedRow
-      | Choice2Of2 _, true -> None
-      | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" index exn.Message
-    )
-    |> Seq.cache
+  let data = data |> Seq.cache
 
   member __.Data = data
   member __.Headers = headers
-
+  member __.NumberOfColumns = numberOfColumns
+  member __.Separators = separators
+  member __.Quote = quote
+  
   interface IDisposable with
-    member __.Dispose() = reader.Dispose()
+    member __.Dispose() = 
+      if reader <> null then
+        reader.Dispose()
+
+  new (stringArrayToRow, rowToStringArray, reader, separators, quote, hasHeaders, ignoreErrors) as this =
+  
+    let separators = if String.IsNullOrEmpty separators then "," else separators
+  
+    /// Read the input and cache it (we can read input only once)
+    let lines = 
+      CsvReader.readCsvFile reader separators quote 
+      |> Seq.cache
+  
+    do 
+      if Seq.isEmpty lines then
+        failwithf "Invalid CSV file: header row not found" 
+  
+    let headers = 
+      if hasHeaders then 
+        lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim()) |> Some
+      else 
+        None
+  
+    let numberOfColumns =
+      match headers with
+      | Some headers -> headers |> Array.length
+      | None -> lines |> Seq.head |> Array.length
+
+    let rawData = 
+      (if hasHeaders then lines |> Seq.skip 1 else lines)
+      |> Seq.mapi (fun index line -> index, line)
+  
+    let data = 
+      // Ignore rows with different number of columns when ignoreErrors is set to true
+      (if ignoreErrors
+      then rawData |> Seq.filter (fun (_, row) -> row.Length = numberOfColumns)
+      else rawData)
+      // Always ignore empty rows
+      |> Seq.filter (fun (_, row) -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
+      // Try to convert rows to 'RowType
+      |> Seq.choose (fun (index, row) ->
+        if not ignoreErrors && row.Length <> numberOfColumns then
+          failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index numberOfColumns row.Length
+        let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
+        match convertedRow, ignoreErrors with
+        | Choice1Of2 convertedRow, _ -> Some convertedRow
+        | Choice2Of2 _, true -> None
+        | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" index exn.Message
+      )
+  
+    new CsvFile<'RowType>(rowToStringArray, reader, data, headers, numberOfColumns, separators, quote)
+
+  /// Saves CSV to the specified writer
+  member x.Save(writer:TextWriter) =
+
+    use writer = writer
+
+    let separator = x.Separators.[0].ToString()
+    let quote = x.Quote.ToString()
+
+    let writeLine writeItem (items:string[]) =
+      for i = 0 to items.Length-2 do
+        writeItem items.[i]
+        writer.Write separator
+      writeItem items.[items.Length-1]
+      writer.WriteLine()
+
+    match x.Headers with
+    | Some headers -> headers |> writeLine writer.Write
+    | None -> ()
+
+    for row in x.Data do
+      row |> rowToStringArray.Invoke |> writeLine (fun item -> 
+        let needsQuote = 
+          if x.Separators.Length = 1 
+          then item.Contains(separator) 
+          else item.ToCharArray() |> Seq.exists (fun char -> x.Separators.Contains(char.ToString()))
+        if needsQuote then
+          writer.Write quote
+          writer.Write item
+          writer.Write quote
+        else
+          writer.Write item)
+
+  /// Saves CSV to the specified stream
+  member x.Save(stream:Stream) = 
+    x.Save(new StreamWriter(stream))
+
+#if FX_NO_LOCAL_FILESYSTEM
+#else
+  /// Saves CSV to the specified file
+  member x.Save(path:string) = 
+    x.Save(new StreamWriter(File.OpenWrite(path)))
+#endif
+
+  /// Saves CSV to a string
+  member x.SaveToString() = 
+     let writer = new StringWriter()
+     x.Save(writer)
+     writer.ToString()
+
+  member inline private x.map f =
+    new CsvFile<'RowType>(rowToStringArray, null, x.Data |> f, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  /// Returns a new csv containing only the rows for which the given predicate returns "true".
+  member x.Filter predicate = 
+    Seq.filter predicate |> x.map
+  
+  /// Returns a new csv with only the first N rows of the underlying csv.
+  member x.Take count = 
+    Seq.take count |> x.map
+  
+  /// Returns a csv that, when iterated, yields rowswhile the given predicate
+  /// returns <c>true</c>, and then returns no further rows.
+  member x.TakeWhile predicate = 
+    Seq.takeWhile predicate |> x.map
+  
+  /// Returns a csv that skips N rows and then yields the remaining rows.
+  member x.Skip count = 
+    Seq.skip count |> x.map
+  
+  /// Returns a csv that, when iterated, skips rows while the given predicate returns
+  /// <c>true</c>, and then yields the remaining rows.
+  member x.SkipWhile predicate = 
+    Seq.skipWhile predicate |> x.map
+  
+  /// Returns a csv that when enumerated returns at most N rows.
+  member x.Truncate count = 
+    Seq.truncate count |> x.map

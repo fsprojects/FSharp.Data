@@ -90,22 +90,27 @@ module Debug =
                         let args =                 
                             t.GetGenericArguments() 
                             |> Seq.map (if hasUnitOfMeasure then (fun t -> t.Name) else toString)
-                            |> separatedBy ", "
-                        let name, reverse = 
-                            match t with
-                            | t when hasUnitOfMeasure -> toString t.UnderlyingSystemType, false
-                            | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
-                            | t when t.Name = "FSharpAsync`1" -> "async", true
-                            | t when ns.Contains t.Namespace -> t.Name, false
-                            | t -> fullName t, false
-                        let name = name.Split('`').[0]
-                        if reverse then
-                            args + " " + name 
-                        else
-                            name + "<" + args + ">"
+                        if FSharpType.IsTuple t then
+                            separatedBy " * " args
+                        elif t.Name.StartsWith "FSharpFunc`" then
+                            "(" + separatedBy " -> " args + ")"
+                        else 
+                          let args = separatedBy ", " args
+                          let name, reverse = 
+                              match t with
+                              | t when hasUnitOfMeasure -> toString t.UnderlyingSystemType, false
+                              | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
+                              | t when t.Name = "FSharpAsync`1" -> "async", true
+                              | t when ns.Contains t.Namespace -> t.Name, false
+                              | t -> fullName t, false
+                          let name = name.Split('`').[0]
+                          if reverse then
+                              args + " " + name 
+                          else
+                              name + "<" + args + ">"
                     | t when ns.Contains t.Namespace -> t.Name
                     | t when t.IsGenericParameter -> t.Name
                     | t -> fullName t

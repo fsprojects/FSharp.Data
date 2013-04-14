@@ -23,13 +23,18 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored
 and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
-  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)), reader, defaultArg separators "", defaultArg quote '"', 
+  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
+                          Func<_,_>(fun row -> row.Columns),
+                          reader, defaultArg separators "", defaultArg quote '"', 
                           defaultArg hasHeaders true, defaultArg ignoreErrors false)
 
   let headerDic = 
-    this.Headers
-    |> Seq.mapi (fun index header -> header, index)
-    |> dict
+    match this.Headers with
+    | Some headers ->
+        headers
+        |> Seq.mapi (fun index header -> header, index)
+        |> dict
+    | None -> [] |> dict
 
   member internal __.GetColumnIndex columnName = headerDic.[columnName]
 

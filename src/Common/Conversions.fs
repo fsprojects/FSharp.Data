@@ -69,7 +69,7 @@ type Operations =
   static member AsDecimal culture text =
     Decimal.TryParse(text, NumberStyles.Number, culture) |> asOption
   
-  static member DefaultMissingValues = ["#N/A"; "NA"; ":"]
+  static member DefaultMissingValues = ["NaN"; "NA"; "#N/A"; ":"]
 
   static member AsFloat missingValues culture (text:string) = 
     match text.Trim() with
@@ -95,31 +95,73 @@ type Operations =
   static member ConvertString text = 
     defaultArg text "" |> Some
 
+  static member ConvertStringBack(value:string option) = 
+    defaultArg value ""
+
   static member ConvertDateTime(culture, text) = 
     text |> Option.bind (Operations.AsDateTime (Operations.GetCulture culture))
 
+  static member ConvertDateTimeBack(culture, value:DateTime option) = 
+    match value with
+    | Some value -> value.ToString(Operations.GetCulture culture)
+    | None -> ""
+
   static member ConvertInteger(culture, text) = 
     text |> Option.bind (Operations.AsInteger (Operations.GetCulture culture))
+
+  static member ConvertIntegerBack(culture, value:int option) = 
+    match value with
+    | Some value -> value.ToString(Operations.GetCulture culture)
+    | None -> ""
   
   static member ConvertInteger64(culture, text) = 
     text |> Option.bind (Operations.AsInteger64 (Operations.GetCulture culture))
+
+  static member ConvertInteger64Back(culture, value:int64 option) = 
+    match value with
+    | Some value -> value.ToString(Operations.GetCulture culture)
+    | None -> ""
   
   static member ConvertDecimal(culture, text) =
     text |> Option.bind (Operations.AsDecimal (Operations.GetCulture culture))
+
+  static member ConvertDecimalBack(culture, value:decimal option) = 
+    match value with
+    | Some value -> value.ToString(Operations.GetCulture culture)
+    | None -> ""
   
   static member ConvertFloat(culture, missingValues:string, text) = 
     match text with
     | Some s -> 
       let missingValues = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-      let culture = Operations.GetCulture culture    
+      let culture = Operations.GetCulture culture
       Operations.AsFloat missingValues culture s
     | None -> Some Double.NaN
+
+  static member ConvertFloatBack(culture, missingValues:string, value:float option) = 
+    match value with
+    | Some value ->
+        if Double.IsNaN value then
+          missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries).[0]
+        else
+          value.ToString(Operations.GetCulture culture)
+    | None -> ""
   
   static member ConvertBoolean(culture, text) = 
     text |> Option.bind (Operations.AsBoolean (Operations.GetCulture culture))
 
-  static member ConvertGuid(culture, text) = 
+  static member ConvertBooleanBack(culture, value:bool option) = 
+    match value with
+    | Some value -> if value then "true" else "false"
+    | None -> ""
+
+  static member ConvertGuid(text) = 
     text |> Option.bind Operations.AsGuid
+
+  static member ConvertGuidBack(value:Guid option) = 
+    match value with
+    | Some value -> value.ToString()
+    | None -> ""
 
   /// Operation that extracts the value from an option and reports a
   /// meaningful error message when the value is not there
@@ -136,9 +178,15 @@ type Operations =
     | None, None -> failwithf "%s is missing" name
     | None, Some valueBeforeConversion -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name valueBeforeConversion 
 
+  static member GetOptionalValue value = Some value
+
   /// Turn an F# option type Option<'T> containing a primitive 
   /// value type into a .NET type Nullable<'T>
-  static member ToNullable opt =
+  static member OptionToNullable opt =
     match opt with 
     | Some v -> Nullable v
     | _ -> Nullable()
+
+  /// Turn a .NET type Nullable<'T> to an F# option type Option<'T>
+  static member NullableToOption (nullable:Nullable<_>) =
+    if nullable.HasValue then Some nullable.Value else None

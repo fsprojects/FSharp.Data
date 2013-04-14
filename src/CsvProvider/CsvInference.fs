@@ -136,11 +136,14 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // If we do not have header names, then automatically generate names
   let headers = 
-    csv.Headers |> Array.mapi (fun i header -> 
-      if String.IsNullOrEmpty header then 
-        "Column" + (i+1).ToString()
-      else
-        header)
+    match csv.Headers with
+    | Some headers ->
+        headers |> Array.mapi (fun i header -> 
+          if String.IsNullOrEmpty header then 
+            "Column" + (i+1).ToString()
+          else
+            header)
+    | None -> Array.init csv.NumberOfColumns (fun i -> "Column" + (i+1).ToString())
 
   // If the schema is specified explicitly, then parse the schema
   // (This can specify just types, names of columns or a mix of both)
