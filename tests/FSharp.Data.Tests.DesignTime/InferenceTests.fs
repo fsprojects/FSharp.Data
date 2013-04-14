@@ -290,7 +290,7 @@ let ``Infers units of measure correctly``() =
 
     let source = CsvFile.Parse("String(metre), Float(meter),Date (second),Int\t( Second), Decimal  (watt),Bool(N), Long(N), Unknown (measure)\nxpto, #N/A,2010-01-10,4,3.7, yes,2147483648,2")
     let actual = 
-      CsvInference.inferType source Int32.MaxValue ([], culture) ""
+      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) ""
       ||> CsvInference.getFields
       |> List.map (fun field -> 
           field.Name, 

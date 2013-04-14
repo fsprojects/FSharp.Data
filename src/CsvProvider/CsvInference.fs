@@ -22,6 +22,7 @@ let private nameToType =
    "float",          (typeof<float>   , TypeWrapper.None    )
    "decimal",        (typeof<decimal> , TypeWrapper.None    )
    "date",           (typeof<DateTime>, TypeWrapper.None    )
+   "guid",           (typeof<Guid>    , TypeWrapper.None    )
    "string",         (typeof<String>  , TypeWrapper.None    )
    "int?",           (typeof<int>     , TypeWrapper.Nullable)
    "int64?",         (typeof<int64>   , TypeWrapper.Nullable)
@@ -29,12 +30,14 @@ let private nameToType =
    "float?",         (typeof<float>   , TypeWrapper.Nullable)
    "decimal?",       (typeof<decimal> , TypeWrapper.Nullable)
    "date?",          (typeof<DateTime>, TypeWrapper.Nullable)
+   "guid?",          (typeof<Guid>    , TypeWrapper.Nullable)
    "int option",     (typeof<int>     , TypeWrapper.Option  )
    "int64 option",   (typeof<int64>   , TypeWrapper.Option  )
    "bool option",    (typeof<bool>    , TypeWrapper.Option  )
    "float option",   (typeof<float>   , TypeWrapper.Option  )
    "decimal option", (typeof<decimal> , TypeWrapper.Option  )
-   "date option",    (typeof<DateTime>, TypeWrapper.Option  )]
+   "date option",    (typeof<DateTime>, TypeWrapper.Option  )
+   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )]
   |> dict
 
 // Compiled regex is not supported in Silverlight
@@ -224,7 +227,7 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 ///  - Fields of type 'int64 + null' are generated as Nullable<int64>
 ///  - Fields of type 'float + null' are just floats (and null becomes NaN)
 ///  - Fields of type 'decimal + null' are generated as floats too
-///  - Fields of type 'T + null' for any other non-nullable T (bool/date) become option<T>
+///  - Fields of type 'T + null' for any other non-nullable T (bool/date/guid) become option<T>
 ///  - All other types are simply strings.
 ///
 let getFields inferedType schema = 

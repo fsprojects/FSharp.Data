@@ -71,31 +71,36 @@ module Extensions =
     member x.AsDateTime(?culture) = 
       match x |> Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) with 
       | Some d -> d
-      | _ -> failwithf "Not a datetime - %A" x
+      | _ -> failwithf "Not a datetime - %s" x
 
     member x.AsFloat(?culture, ?missingValues) =       
       let missingValues = defaultArg missingValues Operations.DefaultMissingValues
       let culture = defaultArg culture CultureInfo.InvariantCulture
       match x |> Operations.AsFloat missingValues culture with
       | Some n -> n
-      | _ -> failwithf "Not a float - %A" x
+      | _ -> failwithf "Not a float - %s" x
 
     member x.AsDecimal(?culture) = 
       match x |> Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not a decimal - %A" x
+      | _ -> failwithf "Not a decimal - %s" x
   
     member x.AsInteger(?culture) = 
       match x |> Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not an int - %A" x
+      | _ -> failwithf "Not an int - %s" x
 
     member x.AsInteger64(?culture) = 
       match x |> Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not an int64 - %A" x
+      | _ -> failwithf "Not an int64 - %s" x
 
     member x.AsBoolean(?culture) =
       match x |> Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not a bool" x
+      | _ -> failwithf "Not a bool - %s" x
+
+    member x.AsGuid(?culture) =
+      match x |> Operations.AsGuid with
+      | Some n -> n
+      | _ -> failwithf "Not a guid - %s" x

@@ -82,6 +82,9 @@ type Operations =
     | StringEquals "false" | StringEquals "no" -> Some false
     | _ -> None
 
+  static member AsGuid (text:string) = 
+    Guid.TryParse(text.Trim()) |> asOption
+
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
   static member GetCulture culture =
@@ -93,16 +96,16 @@ type Operations =
     defaultArg text "" |> Some
 
   static member ConvertDateTime(culture, text) = 
-    text |> Option.bind (fun s -> Operations.AsDateTime (Operations.GetCulture culture) s)
+    text |> Option.bind (Operations.AsDateTime (Operations.GetCulture culture))
 
   static member ConvertInteger(culture, text) = 
-    text |> Option.bind (fun s -> Operations.AsInteger (Operations.GetCulture culture) s)
+    text |> Option.bind (Operations.AsInteger (Operations.GetCulture culture))
   
   static member ConvertInteger64(culture, text) = 
-    text |> Option.bind (fun s -> Operations.AsInteger64 (Operations.GetCulture culture) s)
+    text |> Option.bind (Operations.AsInteger64 (Operations.GetCulture culture))
   
   static member ConvertDecimal(culture, text) =
-    text |> Option.bind (fun s -> Operations.AsDecimal (Operations.GetCulture culture) s)
+    text |> Option.bind (Operations.AsDecimal (Operations.GetCulture culture))
   
   static member ConvertFloat(culture, missingValues:string, text) = 
     match text with
@@ -113,7 +116,10 @@ type Operations =
     | None -> Some Double.NaN
   
   static member ConvertBoolean(culture, text) = 
-    text |> Option.bind (fun s -> Operations.AsBoolean (Operations.GetCulture culture) s)
+    text |> Option.bind (Operations.AsBoolean (Operations.GetCulture culture))
+
+  static member ConvertGuid(culture, text) = 
+    text |> Option.bind Operations.AsGuid
 
   /// Operation that extracts the value from an option and reports a
   /// meaningful error message when the value is not there
@@ -136,4 +142,3 @@ type Operations =
     match opt with 
     | Some v -> Nullable v
     | _ -> Nullable()
-    

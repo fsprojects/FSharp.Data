@@ -23,8 +23,7 @@ type TestCase =
              x.Separator
              x.Culture
              x.Schema
-             x.HasHeaders.ToString()
-             x.IgnoreErrors.ToString()]
+             x.HasHeaders.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -59,7 +58,7 @@ type TestCase =
                   InferRows = Int32.MaxValue
                   Schema = args.[4]
                   HasHeaders = args.[5] |> bool.Parse
-                  IgnoreErrors = args.[6] |> bool.Parse
+                  IgnoreErrors = false
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
                   ResolutionFolder = "" }

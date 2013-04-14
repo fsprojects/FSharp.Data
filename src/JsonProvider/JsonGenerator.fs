@@ -98,6 +98,7 @@ module JsonTypeBuilder =
           elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, culture) @@>
           elif typ = typeof<string> then fun json -> <@@ JsonOperations.GetString(%%json) @@>
           elif typ = typeof<bool> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
+          elif typ = typeof<Guid> then fun json -> <@@ JsonOperations.GetGuid(%%json) @@>
           elif typ = typeof<DateTime> then fun json -> <@@ JsonOperations.GetDateTime(%%json, culture) @@>
           else failwith "generateJsonType: Unsupported primitive type"
         let conv = ctx.UnpackerStayInDesignTime >> conv >> ctx.Replacer.ToRuntime
