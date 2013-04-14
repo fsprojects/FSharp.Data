@@ -1,5 +1,4 @@
-class CsvProvider : FDR.CsvFile<System.Tuple<System.DateTime, decimal, decimal, decimal, decimal, int, decimal>>
-    member Data: CsvProvider+Row seq with get
+class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     static member Parse: text:string -> CsvProvider
     static member Load: stream:System.IO.Stream -> CsvProvider

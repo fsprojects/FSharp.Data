@@ -12,6 +12,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Csv
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
@@ -68,20 +69,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema 
       ||> CsvInference.getFields
 
-    let csvType, csvErasedType, rowType, rowErasedType, converterFunc = 
+    let csvType, csvErasedType, converterFunc = 
         inferredFields |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
-
-    let (?) = QuotationBuilder.(?)
 
     let csvConstructor (reader:Expr) =
         csvErasedType?``.ctor`` () (converterFunc, reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
         |> replacer.ToRuntime
 
-    // 'Data' property has the generated type
-    let p = ProvidedProperty("Data", typedefof<seq<_>>.MakeGenericType(rowType))
-    p.GetterCode <- fun (Singleton self) -> csvErasedType?Data () (self)
-    csvType.AddMember p
-    
     // Generate default constructor
     let c = ProvidedConstructor []
     c.InvokeCode <- 

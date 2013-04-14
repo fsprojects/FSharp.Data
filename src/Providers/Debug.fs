@@ -56,7 +56,7 @@ module Debug =
                 pending.Enqueue t
 
         let fullName (t: Type) =
-            let fullName = t.FullName
+            let fullName = t.Namespace + "." + t.Name
             if fullName.StartsWith "FSI_" then
                 fullName.Substring(fullName.IndexOf('.') + 1)
             else
