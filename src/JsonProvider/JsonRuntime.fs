@@ -4,29 +4,15 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
-open System.ComponentModel
 open System.Globalization
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Underlying representation of the generated JSON types
-[<StructuredFormatDisplay("{JsonValue}")>]
-type JsonDocument (json:JsonValue) =
-  
-  /// Returns the raw JSON value that is represented by the generated type
-  member x.JsonValue = json  
+type JsonDocument = { JsonValue : JsonValue }
 
-  [<EditorBrowsable(EditorBrowsableState.Never)>]  
-  override x.Equals(y) =
-    match y with
-    | :? JsonDocument as y -> x.JsonValue = y.JsonValue
-    | _ -> false 
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.GetHashCode() = x.JsonValue.GetHashCode()
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.ToString() = x.JsonValue.ToString()
-
+/// Static helper methods called from the generated code
 type JsonOperations = 
   // Trivial operations that return primitive values
   static member GetString(value:JsonValue) = value.AsString()

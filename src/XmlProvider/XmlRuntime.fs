@@ -4,34 +4,11 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
-open System.ComponentModel
 open System.Xml.Linq
 open System.Globalization
 
 /// Underlying representation of the generated XML types
-[<StructuredFormatDisplay("{XElement}")>]
-
-#if SILVERLIGHT
-type XmlElement (node:obj) =
-  let node = node :?> XElement
-#else
-type XmlElement (node:XElement) =
-#endif
-
-  /// Returns the raw XML element that is represented by the generated type
-  member x.XElement = node
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.Equals(y) =
-    match y with
-    | :? XmlElement as y -> x.XElement = y.XElement
-    | _ -> false 
-  
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.GetHashCode() = x.XElement.GetHashCode()
-
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
-  override x.ToString() = x.XElement.ToString()
+type XmlElement = { XElement : XElement }
 
 /// Static helper methods called from the generated code
 type XmlOperations = 
@@ -48,7 +25,7 @@ type XmlOperations =
   // want to get an array, option (if it may or may not be there) or 
   // just the value (if we think it is always there)
   static member GetChildrenArray(value:XmlElement, nameWithNS) =
-    [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> XmlElement(c) |]
+    [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> { XElement = c } |]
   
   static member GetChildOption(value:XmlElement, nameWithNS) =
     match XmlOperations.GetChildrenArray(value, nameWithNS) with
