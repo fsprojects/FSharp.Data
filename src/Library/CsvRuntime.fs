@@ -108,8 +108,5 @@ type CsvFile<'RowType>(f:Func<_,_,'RowType>, reader:TextReader, separators, quot
   member __.Data = data
   member __.Headers = headers
 
-  member internal __.Separators = separators
-  member internal __.Quote = quote
-
   interface IDisposable with
     member __.Dispose() = reader.Dispose()
