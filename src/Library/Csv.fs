@@ -54,8 +54,16 @@ and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignor
 
   /// Loads CSV from the specified uri
   static member Load(uri, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+    let separators = defaultArg separators ""    
+    let separators = 
+      let uri = Uri(uri, UriKind.RelativeOrAbsolute)
+      if String.IsNullOrEmpty separators &&
+          (uri.IsAbsoluteUri && uri.AbsolutePath.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase) || uri.OriginalString.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase)) then
+        "\t"
+      else
+        separators
     let reader = readTextAtRunTime false "" "" uri
-    new CsvFile(reader, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    new CsvFile(reader, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple CSV processing
