@@ -46,15 +46,15 @@ module internal CsvReader =
           readLine data (c::chars)
 
     /// Reads multiple lines from the input, skipping newline characters
-    let rec readLines () = seq {
+    let rec readLines lineNumber = seq {
       match reader.Peek() with
       | -1 -> ()
-      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines()
+      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines (lineNumber + 1)
       | _ -> 
-          yield readLine [] [] |> List.rev |> Array.ofList
-          yield! readLines() }
+          yield readLine [] [] |> List.rev |> Array.ofList, lineNumber
+          yield! readLines (lineNumber + 1) }
   
-    readLines() 
+    readLines 0
 
 // --------------------------------------------------------------------------------------
 
@@ -87,47 +87,57 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
   
     let separators = if String.IsNullOrEmpty separators then "," else separators
   
-    /// Read the input and cache it (we can read input only once)
-    let lines = 
-      CsvReader.readCsvFile reader separators quote 
-      |> Seq.cache
+    let linesIterator = (CsvReader.readCsvFile reader separators quote).GetEnumerator()
   
-    do 
-      if Seq.isEmpty lines then
-        failwithf "Invalid CSV file: header row not found" 
-  
+    let firstLine = 
+      if linesIterator.MoveNext() then
+        linesIterator.Current
+      else
+        if hasHeaders then
+          failwithf "Invalid CSV file: header row not found" 
+        else
+          failwithf "Invalid CSV file: no data rows found"
+
     let headers = 
       if hasHeaders then 
-        lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim()) |> Some
+        firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
       else 
         None
   
     let numberOfColumns =
       match headers with
       | Some headers -> headers |> Array.length
-      | None -> lines |> Seq.head |> Array.length
+      | None -> firstLine |> fst |> Array.length
 
-    let rawData = 
-      (if hasHeaders then lines |> Seq.skip 1 else lines)
-      |> Seq.mapi (fun index line -> index, line)
-  
+    let data = seq {
+      try
+        if not hasHeaders then
+          yield firstLine
+        while linesIterator.MoveNext() do
+          yield linesIterator.Current
+      finally
+        linesIterator.Dispose()
+    }
+
+    // Ignore rows with different number of columns when ignoreErrors is set to true
     let data = 
-      // Ignore rows with different number of columns when ignoreErrors is set to true
-      (if ignoreErrors
-      then rawData |> Seq.filter (fun (_, row) -> row.Length = numberOfColumns)
-      else rawData)
-      // Always ignore empty rows
-      |> Seq.filter (fun (_, row) -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
-      // Try to convert rows to 'RowType
-      |> Seq.choose (fun (index, row) ->
-        if not ignoreErrors && row.Length <> numberOfColumns then
-          failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index numberOfColumns row.Length
-        let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
-        match convertedRow, ignoreErrors with
-        | Choice1Of2 convertedRow, _ -> Some convertedRow
-        | Choice2Of2 _, true -> None
-        | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" index exn.Message
-      )
+      if ignoreErrors
+      then data |> Seq.filter (fun (row, _) -> row.Length = numberOfColumns)
+      else data
+
+    let data = seq {
+      for row, lineNumber in data do
+        // Always ignore empty rows
+        if not (row |> Seq.forall String.IsNullOrWhiteSpace) then
+          // Try to convert rows to 'RowType      
+          if not ignoreErrors && row.Length <> numberOfColumns then
+            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
+          let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
+          match convertedRow, ignoreErrors with
+          | Choice1Of2 convertedRow, _ -> yield convertedRow
+          | Choice2Of2 _, true -> ()
+          | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+    }
   
     new CsvFile<'RowType>(rowToStringArray, reader, data, headers, numberOfColumns, separators, quote)
 

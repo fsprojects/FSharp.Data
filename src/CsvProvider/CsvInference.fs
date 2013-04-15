@@ -152,7 +152,7 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
       Array.zeroCreate headers.Length
     else
       use reader = new StringReader(schema)
-      let schema = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne
+      let schema = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
       if schema.Length <> headers.Length then
         failwithf "Schema was expected to have %d items, but has %d" headers.Length schema.Length
       schema |> Array.mapi (fun index item -> 
