@@ -81,7 +81,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let c = ProvidedConstructor []
     c.InvokeCode <- 
       if sampleIsUri then
-        fun _ -> csvConstructor <@@ readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample @@>
+        fun _ -> csvConstructor <@@ readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder sample @@>
       else
         fun _ -> csvConstructor <@@ new StringReader(sample) @@>
     csvType.AddMember c

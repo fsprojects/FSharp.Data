@@ -92,7 +92,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       let m = ProvidedMethod("GetSample", [], methResTy, IsStaticMethod = true)
       m.InvokeCode <- fun _ -> 
         (if sampleIsUri then
-          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+          <@@ use reader = readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder sample
               { JsonValue = JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture)) } @@>
          else
           <@@ { JsonValue = JsonValue.Parse(sample, Operations.GetCulture(culture)) } @@>)

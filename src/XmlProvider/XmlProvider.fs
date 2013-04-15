@@ -93,7 +93,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       let m = ProvidedMethod("GetSample", [],  methResTy, IsStaticMethod = true)
       m.InvokeCode <- fun _ -> 
         (if sampleIsUri then
-          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
+          <@@ use reader = readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder sample
               { XElement = XDocument.Parse(reader.ReadToEnd()).Root } @@>
          else
           <@@ { XElement = XDocument.Parse(sample).Root } @@>)
