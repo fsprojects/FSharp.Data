@@ -6,6 +6,7 @@ namespace FSharp.Data.RuntimeImplementation
 
 open System
 open System.IO
+open System.Text
 
 // Parser for the CSV format 
 module internal CsvReader = 
@@ -14,53 +15,64 @@ module internal CsvReader =
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
   let readCsvFile (reader:TextReader) (separators:string) quote =
-    let separators = separators.ToCharArray()
+
     let inline (|Char|) (n:int) = char n
     let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
-    let inline (|Separator|_|) (n:int) = if Array.exists ((=) (char n)) separators then Some() else None
+    
+    let separators = separators.ToCharArray()
+    let inline (|Separator|_|) (n:int) =
+      if separators.Length = 1 then 
+        if (char n) = separators.[0] then Some() else None
+      else
+        if Array.exists ((=) (char n)) separators then Some() else None
 
     /// Read quoted string value until the end (ends with end of stream or
     /// the " character, which can be encoded using double ")
-    let rec readString chars = 
-      match reader.Read() with
-      | -1 -> chars
-      | Quote when reader.Peek() = int quote ->
-          reader.Read() |> ignore
-          readString (quote::chars)
-      | Quote -> chars
-      | Char c -> readString (c::chars)
-  
+    let inline readString (chars:StringBuilder) = 
+      let mutable breakLoop = false
+      while not breakLoop do
+        match reader.Read() with
+        | -1 -> breakLoop <- true
+        | Quote when reader.Peek() = int quote ->
+            reader.Read() |> ignore
+            chars.Append quote |> ignore
+        | Quote -> breakLoop <- true
+        | Char c -> chars.Append c |> ignore
+      chars
+
     /// Reads a line with data that are separated using specified separators
     /// and may be quoted. Ends with newline or end of input.
-    let rec readLine data chars = 
+    let rec readLine data (chars:StringBuilder) = 
       match reader.Read() with
       | -1 | Char '\r' | Char '\n' -> 
-          let item = new string(chars |> List.rev |> Array.ofList)
+          let item = chars.ToString()
           item::data
       | Separator -> 
-          let item = new string(chars |> List.rev |> Array.ofList)
-          readLine (item::data) [] 
+          let item = chars.ToString()
+          readLine (item::data) (StringBuilder())
       | Quote ->
           readLine data (readString chars)
       | Char c ->
-          readLine data (c::chars)
+          readLine data (chars.Append c)
 
     /// Reads multiple lines from the input, skipping newline characters
     let rec readLines lineNumber = seq {
       match reader.Peek() with
       | -1 -> ()
-      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines (lineNumber + 1)
+      | Char '\r' | Char '\n' -> 
+          reader.Read() |> ignore
+          yield! readLines (lineNumber + 1)
       | _ -> 
-          yield readLine [] [] |> List.rev |> Array.ofList, lineNumber
+          yield readLine [] (StringBuilder()) |> List.rev |> Array.ofList, lineNumber
           yield! readLines (lineNumber + 1) }
-  
+
     readLines 0
 
 // --------------------------------------------------------------------------------------
 
 module private CsvHelpers = 
 
-  let tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
+  let inline tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
     try 
       stringArrayToRow.Invoke(this, row) |> Choice1Of2 
     with exn -> 
@@ -118,24 +130,21 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
         linesIterator.Dispose()
     }
 
-    // Ignore rows with different number of columns when ignoreErrors is set to true
-    let data = 
-      if ignoreErrors
-      then data |> Seq.filter (fun (row, _) -> row.Length = numberOfColumns)
-      else data
-
     let data = seq {
       for row, lineNumber in data do
-        // Always ignore empty rows
-        if not (row |> Seq.forall String.IsNullOrWhiteSpace) then
-          // Try to convert rows to 'RowType      
-          if not ignoreErrors && row.Length <> numberOfColumns then
+        if row.Length <> numberOfColumns then
+          // Ignore rows with different number of columns when ignoreErrors is set to true
+          if not ignoreErrors then
             failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
-          let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
-          match convertedRow, ignoreErrors with
-          | Choice1Of2 convertedRow, _ -> yield convertedRow
-          | Choice2Of2 _, true -> ()
-          | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+        else
+          // Always ignore empty rows
+          if not (row |> Seq.forall String.IsNullOrWhiteSpace) then
+            // Try to convert rows to 'RowType      
+            let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
+            match convertedRow, ignoreErrors with
+            | Choice1Of2 convertedRow, _ -> yield convertedRow
+            | Choice2Of2 _, true -> ()
+            | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
     }
   
     new CsvFile<'RowType>(rowToStringArray, reader, data, headers, numberOfColumns, separators, quote)
