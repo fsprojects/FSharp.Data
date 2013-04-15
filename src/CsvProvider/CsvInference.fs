@@ -190,10 +190,21 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
+  let rowsIterator = csv.Data.GetEnumerator()
   let rows = 
-    if Seq.isEmpty csv.Data then CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
-    elif count > 0 then Seq.truncate count csv.Data
-    else csv.Data
+    if rowsIterator.MoveNext() then
+      seq {
+        yield rowsIterator.Current
+        try
+          while rowsIterator.MoveNext() do
+            yield rowsIterator.Current
+        finally
+          rowsIterator.Dispose()
+      }
+    else
+      CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
+  
+  let rows = if count > 0 then Seq.truncate count rows else rows
 
   // Infer the type of collection using structural inference
   let types = seq {

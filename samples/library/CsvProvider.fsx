@@ -236,10 +236,10 @@ for row in csv.Data do
 
 In addition to reading, `CsvProvider` also has support for transforming CSV files. The operations
 available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. All these operations
-preserver the schema, so after transforming you can save the results by using one of the overloads of
-the `Save` method. Of course, if you don't need to save the results afterwards in the CSV format, or if
-your transformations need to change the shape of the data, you can use the operations available in the `Seq`
-module on the the sequence of rows exposed via the `Data` property directly.
+preserve the schema, so after transforming you can save the results by using one of the overloads of
+the `Save` method. If you don't need to save the results in the CSV format, or if your transformations
+need to change the shape of the data, you can also use the operations available in the `Seq` module on the the 
+sequence of rows exposed via the `Data` property directly.
 *)
 
 // Saving the first 10 rows that don't have missing values to a new csv file
@@ -258,6 +258,19 @@ for row in airQuality.Data do
 
 (**
 
+## Handling big datasets
+
+By default, the rows are cached so you can iterate over the `Data` property multiple times without worrying.
+But if you will only iterate once, you can disable caching by settting the `CacheRows` parameter of `CsvProvider`
+to false. If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
+You can still cache the data at some point by using the `Cache` method, but only do that if you have already
+transformed the dataset to be smaller:
+*)
+
+let stocks = new CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>()
+stocks.Take(10).Cache()
+
+(**
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other

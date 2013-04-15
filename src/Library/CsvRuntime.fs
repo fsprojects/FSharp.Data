@@ -70,8 +70,6 @@ module private CsvHelpers =
 
 type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader:TextReader, data:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
-  let data = data |> Seq.cache
-
   member __.Data = data
   member __.Headers = headers
   member __.NumberOfColumns = numberOfColumns
@@ -93,6 +91,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
       if linesIterator.MoveNext() then
         linesIterator.Current
       else
+        linesIterator.Dispose()
         if hasHeaders then
           failwithf "Invalid CSV file: header row not found" 
         else
@@ -142,12 +141,13 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
     new CsvFile<'RowType>(rowToStringArray, reader, data, headers, numberOfColumns, separators, quote)
 
   /// Saves CSV to the specified writer
-  member x.Save(writer:TextWriter) =
+  member x.Save(writer:TextWriter, ?separator, ?quote) =
+
+    let separator = (defaultArg separator x.Separators.[0]).ToString()
+    let quote = (defaultArg quote x.Quote).ToString()
+    let doubleQuote = quote + quote
 
     use writer = writer
-
-    let separator = x.Separators.[0].ToString()
-    let quote = x.Quote.ToString()
 
     let writeLine writeItem (items:string[]) =
       for i = 0 to items.Length-2 do
@@ -162,36 +162,39 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
 
     for row in x.Data do
       row |> rowToStringArray.Invoke |> writeLine (fun item -> 
-        let needsQuote = 
-          if x.Separators.Length = 1 
-          then item.Contains(separator) 
-          else item.ToCharArray() |> Seq.exists (fun char -> x.Separators.Contains(char.ToString()))
-        if needsQuote then
+        if item.Contains separator then
           writer.Write quote
-          writer.Write item
+          writer.Write (item.Replace(quote, doubleQuote))
           writer.Write quote
         else
           writer.Write item)
 
   /// Saves CSV to the specified stream
-  member x.Save(stream:Stream) = 
-    x.Save(new StreamWriter(stream))
+  member x.Save(stream:Stream, ?separator, ?quote) = 
+    let writer = new StreamWriter(stream)
+    x.Save(writer, ?separator=separator, ?quote=quote)
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
   /// Saves CSV to the specified file
-  member x.Save(path:string) = 
-    x.Save(new StreamWriter(File.OpenWrite(path)))
+  member x.Save(path:string, ?separator, ?quote) = 
+    let writer = new StreamWriter(File.OpenWrite(path))
+    x.Save(writer, ?separator=separator, ?quote=quote)
 #endif
 
   /// Saves CSV to a string
-  member x.SaveToString() = 
+  member x.SaveToString(?separator, ?quote) = 
      let writer = new StringWriter()
-     x.Save(writer)
+     x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
 
   member inline private x.map f =
     new CsvFile<'RowType>(rowToStringArray, null, x.Data |> f, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  /// Returns a new csv with the same rows as the original but which guarantees
+  /// that each row will be only be read and parsed from the input at most once.
+  member x.Cache() =   
+    Seq.cache |> x.map
 
   /// Returns a new csv containing only the rows for which the given predicate returns "true".
   member x.Filter predicate = 

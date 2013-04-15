@@ -41,7 +41,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let quote = args.[7] :?> char
     let missingValues = args.[8] :?> string
     let missingValuesList = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-    let resolutionFolder = args.[9] :?> string
+    let cacheRows = args.[9] :?> bool
+    let resolutionFolder = args.[10] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -73,7 +74,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         inferredFields |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
 
     let csvConstructor (reader:Expr) =
-        csvErasedType?``.ctor`` () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
+        let uncachedCsv = csvErasedType?``.ctor`` () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
+        if cacheRows then csvErasedType?``Cache`` () uncachedCsv else uncachedCsv
 
     // Generate default constructor
     let c = ProvidedConstructor []
@@ -123,6 +125,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
       ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = defaultMissingValues)
+      ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
@@ -136,6 +139,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to "</param>
        <param name='MissingValues'>The set of strings recogized as missing values. Defaults to """ + "\"" + defaultMissingValues + "\"" + """</param>
+       <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do csvProvTy.AddXmlDoc helpText

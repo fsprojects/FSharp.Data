@@ -25,13 +25,17 @@ sample calls it with a URL that points to a live CSV file on the Yahoo finance w
 *)
  
 // Download the stock prices
-let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
+let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT").Cache()
 
 // Print the prices in the HLOC format
 for row in msft.Data do
   printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (**
+
+Note that unlike `CsvProvider`, `CsvFile` works in streaming mode for performance reasons, which means
+that `Data` can only be iterated once. If you need to iterate multiple times, use the `Cache` method, 
+but please note that this will increase memory usage and should not be used in large datasets.
 
 ## Using CSV extensions
 
@@ -60,6 +64,23 @@ for row in msft.Data do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (**
+
+## Transforming CSV files
+
+In addition to reading, `CsvFiles` also has support for transforming CSV files. The operations
+available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. After transforming
+you can save the results by using one of the overloads of the `Save` method. You can choose different
+separator and quote characters when saving.
+*)
+
+// Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:
+msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
+    .Truncate(10)
+    .SaveToString('\t')
+
+(**
+For convenience, you can also treat each row as a tuple by using the `AsTuple` property of the RowType.
+This is usefull when want to treat different CSV files with a similar schema in a uniform way:
 
 ## Related articles
 
