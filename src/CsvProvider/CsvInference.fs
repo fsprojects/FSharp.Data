@@ -89,8 +89,9 @@ let private parseTypeAndUnit str =
     
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
-/// If forSchemaOverride is set to true, only Full is returned (this
-/// means that we always succeed and override inferred schema)
+/// If forSchemaOverride is set to true, only Full or Name is returne
+/// (if we succeed we override the inferred schema, otherwise, we just
+/// override the header name)
 let private parseSchemaItem str forSchemaOverride =     
   let name, typ, unit = 
     let m = nameAndTypeRegex.Match(str)
@@ -106,7 +107,7 @@ let private parseSchemaItem str forSchemaOverride =
       // type|type<measure>
       let typ, unit = parseTypeAndUnit str
       match typ, unit with
-      | None, _ -> failwithf "Invalid type: %s" str
+      | None, _ -> str, None, None
       | typ, unit -> "", typ, unit
     else
       // name
@@ -162,6 +163,9 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
         | item -> 
             let parseResult = parseSchemaItem item true
             match parseResult with
+            | SchemaParseResult.Name ->                
+                headers.[index] <- item // if the type is not valid, override the header
+                None
             | SchemaParseResult.Full prop -> 
                 let name = 
                   if prop.Name = "" then headers.[index]

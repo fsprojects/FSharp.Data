@@ -223,12 +223,13 @@ What's specified in the `Schema` parameter will always take precedence to what's
 
 If the first row of the file is not a header row, you can specify the `HasHeaders` parameter as false to
 consider that row as a data row. In that case the columns will be named Column1, Column2, etc..., unless the
-names are overridden using the `Schema` parameter. Example:
+names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
+and still have the provider infer the type for you. Example:
 *)
 
-let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),,float option">()
+let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">()
 for row in csv.Data do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.Column2 (defaultArg row.Column3 1.0)
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
 (**
 
