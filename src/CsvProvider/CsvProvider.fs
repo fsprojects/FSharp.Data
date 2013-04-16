@@ -90,24 +90,28 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, csvType, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton text) -> csvConstructor <@@ new StringReader(%%text:string) @@>
+    m.AddXmlDoc "Parses the specified CSV content"
     csvType.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, csvType, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton stream) -> csvConstructor <@@ new StreamReader(%%stream:Stream) @@>
+    m.AddXmlDoc "Loads CSV from the specified stream"
     csvType.AddMember m
 
     // Generate static Load reader method
     let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
     let m = ProvidedMethod("Load", args, csvType, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton reader) -> csvConstructor reader
+    m.AddXmlDoc "Loads CSV from the specified reader"
     csvType.AddMember m
 
     // Generate static Load uri method
     let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, csvType, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> csvConstructor <@@ readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri @@>
+    m.AddXmlDoc "Loads CSV from the specified uri"
     csvType.AddMember m
 
     // Return the generated type

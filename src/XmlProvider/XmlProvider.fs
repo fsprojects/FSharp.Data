@@ -66,6 +66,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton text) -> methResConv <@@ { XElement = XDocument.Parse(%%text).Root } @@>
+    m.AddXmlDoc "Parses the specified XML string"
     resTy.AddMember m
 
     // Generate static Load stream method
@@ -73,12 +74,14 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ use reader = new StreamReader(%%stream:Stream)
                                                               { XElement = XDocument.Parse(reader.ReadToEnd()).Root } @@>
+    m.AddXmlDoc "Loads XML from the specified stream"
     resTy.AddMember m
 
     // Generate static Load reader method
     let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ { XElement = XDocument.Parse((%%reader:TextReader).ReadToEnd()).Root } @@>
+    m.AddXmlDoc "Loads XML from the specified reader"
     resTy.AddMember m
 
     // Generate static Load uri method
@@ -86,6 +89,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
                                                            { XElement = XDocument.Parse(reader.ReadToEnd()).Root } @@>
+    m.AddXmlDoc "Loads XML from the specified uri"
     resTy.AddMember m
 
     if not sampleList then
