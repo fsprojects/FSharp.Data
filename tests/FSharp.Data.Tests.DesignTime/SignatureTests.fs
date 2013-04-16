@@ -59,6 +59,7 @@ type TestCase =
                   IgnoreErrors = false
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
+                  CacheRows = false
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]

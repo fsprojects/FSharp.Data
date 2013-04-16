@@ -29,6 +29,7 @@ Csv { Sample = "SmallTest.csv"
       IgnoreErrors = false
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
+      CacheRows = true
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -41,6 +42,7 @@ Csv { Sample = "MSFT.csv"
       IgnoreErrors = false
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
+      CacheRows = true
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -53,6 +55,7 @@ Csv { Sample = "AirQuality.csv"
       IgnoreErrors = false
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
+      CacheRows = true
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
