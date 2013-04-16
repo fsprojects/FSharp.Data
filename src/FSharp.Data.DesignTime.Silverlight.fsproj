@@ -71,10 +71,6 @@
     <Compile Include="JsonProvider\JsonInference.fs" />
     <Compile Include="JsonProvider\JsonGenerator.fs" />
     <Compile Include="JsonProvider\JsonProvider.fs" />
-    <Compile Include="XmlProvider\XmlRuntime.fs" />
-    <Compile Include="XmlProvider\XmlInference.fs" />
-    <Compile Include="XmlProvider\XmlGenerator.fs" />
-    <Compile Include="XmlProvider\XmlProvider.fs" />
     <Compile Include="CsvProvider\CsvInference.fs" />
     <Compile Include="CsvProvider\CsvGenerator.fs" />
     <Compile Include="CsvProvider\CsvProvider.fs" />
@@ -89,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=2.9.9.999, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\sl5-compiler\FSharp.Core.dll</HintPath>
+      <HintPath>..\lib\sl5-compiler\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
