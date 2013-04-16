@@ -226,7 +226,7 @@ module Debug =
                 if not ignoreOutput then
                     print <| (if prop.IsStatic then "static " else "") + "member " + 
                              prop.Name + ": " + (toString prop.PropertyType) + 
-                             " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
+                             " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set") + body
 
             | :? ProvidedMethod as m ->
                 let body = 
