@@ -34,7 +34,7 @@ module private Helpers =
 type Operations = 
 
   /// Turns empty or null string value into None, otherwise returns Some
-  static member inline AsOption str =
+  static member AsOption str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
   /// Parse date time using either the JSON milliseconds format or using ISO 8601

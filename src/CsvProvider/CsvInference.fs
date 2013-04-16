@@ -207,30 +207,30 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
   let rows = if count > 0 then Seq.truncate count rows else rows
 
   // Infer the type of collection using structural inference
-  let types = seq {
-    for row in rows ->
-      let fields = 
-        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row.Columns ->
-            let typ = 
-              match schema.[index] with
-              | Some _ -> Null // this will be ignored, so just return anything
-              | None ->
-                  // Treat empty values as 'null' values. The inference will
-                  // infer heterogeneous types e.g. 'null + int', will then 
-                  // be turned into Nullable<int> (etc.) in the getFields function
-                  if String.IsNullOrWhiteSpace value then Null
-                  else inferPrimitiveType (missingValues, culture) value unit
-            { Name = name
-              Optional = false
-              Type = typ } ]
-      Record(None, fields) }
+  let types = 
+    [ for row in rows ->
+        let fields = 
+          [ for (name, unit), index, value in Array.zip3 headerNamesAndUnits [| 0..headerNamesAndUnits.Length-1 |] row.Columns ->
+              let typ = 
+                match schema.[index] with
+                | Some _ -> Null // this will be ignored, so just return anything
+                | None ->
+                    // Treat empty values as 'null' values. The inference will
+                    // infer heterogeneous types e.g. 'null + int', will then 
+                    // be turned into Nullable<int> (etc.) in the getFields function
+                    if String.IsNullOrWhiteSpace value then Null
+                    else inferPrimitiveType (missingValues, culture) value unit
+              { Name = name
+                Optional = false
+                Type = typ } ]
+        Record(None, fields) ]
 
   let inferedType = 
     if schema |> Seq.forall Option.isSome then
         // all the columns types are already set, so all the rows will be the same
         types |> Seq.head
     else
-        Seq.reduce subtypeInfered types
+        List.reduce subtypeInfered types
   
   inferedType, schema
 
@@ -248,9 +248,9 @@ let getFields inferedType schema =
 
   /// Matches heterogeneous types that consist of 'null + T' and return the T type
   /// (used below to transform 'float + null => float' and 'int + null => int?')
-  let (|TypeOrNull|_|) typ = 
+  let inline (|TypeOrNull|_|) typ = 
     match typ with 
-    | Heterogeneous(map) when map |> Seq.length = 2 && map |> Map.containsKey InferedTypeTag.Null ->
+    | Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
         let kvp = map |> Seq.find (function (KeyValue(InferedTypeTag.Null, _)) -> false | _ -> true)
         Some kvp.Value
     | _ -> None

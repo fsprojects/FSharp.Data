@@ -28,17 +28,14 @@ module internal CsvReader =
 
     /// Read quoted string value until the end (ends with end of stream or
     /// the " character, which can be encoded using double ")
-    let inline readString (chars:StringBuilder) = 
-      let mutable breakLoop = false
-      while not breakLoop do
-        match reader.Read() with
-        | -1 -> breakLoop <- true
-        | Quote when reader.Peek() = int quote ->
-            reader.Read() |> ignore
-            chars.Append quote |> ignore
-        | Quote -> breakLoop <- true
-        | Char c -> chars.Append c |> ignore
-      chars
+    let rec readString (chars:StringBuilder) = 
+      match reader.Read() with
+      | -1 -> chars
+      | Quote when reader.Peek() = int quote ->
+          reader.Read() |> ignore
+          readString (chars.Append quote)
+      | Quote -> chars
+      | Char c -> readString (chars.Append c)
 
     /// Reads a line with data that are separated using specified separators
     /// and may be quoted. Ends with newline or end of input.
@@ -138,7 +135,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader
             failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
         else
           // Always ignore empty rows
-          if not (row |> Seq.forall String.IsNullOrWhiteSpace) then
+          if not (Array.forall String.IsNullOrWhiteSpace row) then
             // Try to convert rows to 'RowType      
             let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
             match convertedRow, ignoreErrors with

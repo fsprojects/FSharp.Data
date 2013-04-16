@@ -10,19 +10,28 @@ open FSharp.Data.RuntimeImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
+type private FieldInfo = 
+  { TypeForTuple : Type
+    Property : ProvidedProperty
+    Convert: Expr -> Expr
+    ConvertBack: Expr -> Expr }
+
 module internal CsvTypeBuilder =
 
   let generateTypes asm ns typeName (missingValues, culture) replacer inferredFields =
     
-    let fields =
-      inferredFields
-      |> List.map (fun field -> 
-        let typ, typWithoutMeasure, conv, convBack = Conversions.convertValue replacer (missingValues, culture) field
-        field.Name, typ, typWithoutMeasure, conv, convBack)
+    let fields = inferredFields |> List.mapi (fun index field ->
+
+      let typ, typWithoutMeasure, conv, convBack = Conversions.convertValue replacer (missingValues, culture) field
+
+      { TypeForTuple = typWithoutMeasure
+        Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
+        Convert = fun rowVarExpr -> conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>
+        ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index)) } )
 
     // The erased row type will be a tuple of all the field types (without the units of measure)
     let rowErasedType = 
-      FSharpType.MakeTupleType([| for _, _, typWithoutMeasure, _, _ in fields -> typWithoutMeasure |])
+      FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
       |> replacer.ToRuntime
     
     let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
@@ -31,10 +40,8 @@ module internal CsvTypeBuilder =
     rowType.AddMember <| ProvidedProperty("AsTuple", rowErasedType, GetterCode = fun (Singleton row) -> row)
 
     // Each property of the generated row type will simply be a tuple get
-    fields 
-    |> List.mapi (fun index (name, typ, _, _, _) -> 
-      ProvidedProperty(name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index)))
-    |> rowType.AddMembers 
+    for field in fields do
+      rowType.AddMember field.Property
 
     // The erased csv type will be parameterised by the tuple type
     let csvErasedTypeWithRowErasedType = 
@@ -55,11 +62,8 @@ module internal CsvTypeBuilder =
       let rowVarExpr = Expr.Var rowVar
 
       // Convert each element of the row using the appropriate conversion
-      let convertedItems = fields |> List.mapi (fun index (_, _, _, conv, _) -> 
-        conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>)
-        
       let body = 
-        Expr.NewTuple convertedItems
+        Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
         |> replacer.ToRuntime
 
       let delegateType = 
@@ -73,12 +77,8 @@ module internal CsvTypeBuilder =
       let rowVar = Var("row", rowErasedType)
       let rowVarExpr = Expr.Var rowVar
 
-      // Convert each element back to string
-      let convertedItems = fields |> List.mapi (fun index (_, _, _, _, convBack) -> 
-        convBack (Expr.TupleGet(rowVarExpr, index)))
-
       let body = 
-        Expr.NewArray(typeof<string>, convertedItems)
+        Expr.NewArray(typeof<string>, [ for field in fields -> field.ConvertBack rowVarExpr ])
 
       let delegateType = 
         typedefof<Func<_,_>>.MakeGenericType(rowErasedType, typeof<string[]>)
