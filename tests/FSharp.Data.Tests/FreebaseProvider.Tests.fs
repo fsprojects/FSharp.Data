@@ -99,3 +99,21 @@ let ``Can access olympics info``() =
                 head }
 
     firstOlympicCity.Name |> should equal "Athens"
+
+
+[<Test>]
+let ``Can execute query that compares to null``() =
+    let p1 = query {
+        for p in data.Commons.People.Persons do
+        where (p.Name.ApproximatelyMatches "^Evelyn ")
+        where (p.Gender = null)
+        head
+    }
+    let p2 = query {
+        for p in data.Commons.People.Persons do
+        where (p.Name.ApproximatelyMatches "^Evelyn ")
+        where (p.Gender <> null)
+        head
+    }
+    p1.Name |> should equal "Evelyn Escalante"
+    p2.Name |> should equal "Evelyn Waugh"
