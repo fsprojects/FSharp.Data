@@ -432,7 +432,7 @@ module internal QueryImplementation =
         | ExpressionType.LessThanOrEqual, (:? BinaryExpression as ce) ->  Some ("<=", ce.Left, ce.Right)
         | ExpressionType.GreaterThan, (:? BinaryExpression as ce) ->  Some (">", ce.Left, ce.Right)
         | ExpressionType.GreaterThanOrEqual, (:? BinaryExpression as ce) ->  Some (">=", ce.Left, ce.Right)
-        | ExpressionType.NotEqual, (:? BinaryExpression as ce) ->  Some ("!=", ce.Left, ce.Right)
+        | ExpressionType.NotEqual, (:? BinaryExpression as ce) ->  Some ("<>", ce.Left, ce.Right)
         | _, MethodCall(_,MethodWithName "ApproximatelyMatches",[l;r]) ->  Some ("~=", l, r)
         | _ -> None
 
@@ -503,6 +503,7 @@ module internal QueryImplementation =
     
     type FreebaseQueryQualification = 
         | UniquePropertyNotNull of FreebasePropAccess * bool
+        | UniquePropertyNull of FreebasePropAccess * bool
         | PropertyOpConstant of FreebasePropAccess * string * obj
         | PropertyOpConstants of FreebasePropAccess * string * obj list
 
@@ -560,9 +561,16 @@ module internal QueryImplementation =
         | UniquePropertyNotNull (propAccess,isCompound) -> 
             let constraintText = 
                 if isCompound then 
-                    "{ '/type/object/id' : null, 'limit':1 }"
+                    "{ '/type/object/id':null, 'limit':1 }"
                 else 
-                    "{ 'value':null, 'limit':1}"
+                    "{ 'value':null, 'limit':1 }"
+            formatPropAccessCx fbDataConn propAccess "" constraintText
+        | UniquePropertyNull (propAccess,isCompound) -> 
+            let constraintText = 
+                if isCompound then 
+                    "{ '/type/object/id': null, 'optional':'forbidden', 'limit':1 }"
+                else 
+                    "{ 'value':null, 'optional':'forbidden', 'limit':1 }"
             formatPropAccessCx fbDataConn propAccess "" constraintText
         | PropertyOpConstant (propAccess, op, o) -> 
             let (typeId, propId) = List.head (List.rev propAccess)
@@ -597,12 +605,12 @@ module internal QueryImplementation =
 
     let rec queryDataAsEnumerable (fbDataConn:FreebaseDataConnection) (queryData:FreebaseQueryData) =
         match queryData with 
-        | TailSelect (preQuery,f) -> (preQuery  |> queryDataAsEnumerable fbDataConn |> Seq.cast |> Seq.map f) :> System.Collections.IEnumerable
+        | TailSelect (preQuery,f) -> preQuery |> queryDataAsEnumerable fbDataConn |> Seq.map f
         | _ -> 
             let queryConstraints = formatQueryData fbDataConn queryData
             let typeId = getBaseTypeId queryData
             seq { for objData in fbDataConn.GetInitialDataForObjectsFromQueryText(queryConstraints,typeId,fbDataConn.Limit) do 
-                      yield FreebaseObject(fbDataConn,objData,typeId) :> IFreebaseObject } :> System.Collections.IEnumerable
+                      yield FreebaseObject(fbDataConn,objData,typeId) :> obj }
 
     type IWithFreebaseQueryData = 
         abstract FreebaseQueryData : FreebaseQueryData
@@ -617,8 +625,13 @@ module internal QueryImplementation =
     let whenAllElseFails (e:Expression) : 'TResult = 
         match e with 
         | MethodCall(None, meth, (SourceWithQueryData sourceData :: args)) when evaluateOnClientSideWhereNecessary ->
-            let sourceObj = ((queryDataAsEnumerable sourceData.FreebaseDataConnection sourceData.FreebaseQueryData) :?> seq<IFreebaseObject>).AsQueryable()
-            let sourceExpr = Expression.Constant(sourceObj, typeof<IQueryable<IFreebaseObject>>) :> Expression
+            let sourceExpr = 
+                if typeof<'TResult>.IsGenericType && typeof<'TResult>.GetGenericTypeDefinition() = typedefof<IQueryable<_>> then
+                    let sourceObj = ((queryDataAsEnumerable sourceData.FreebaseDataConnection sourceData.FreebaseQueryData) |> Seq.cast<IFreebaseObject>).AsQueryable()
+                    Expression.Constant(sourceObj, typeof<IQueryable<IFreebaseObject>>) :> Expression
+                else
+                    let sourceObj = ((queryDataAsEnumerable sourceData.FreebaseDataConnection sourceData.FreebaseQueryData) |> Seq.cast<'TResult>).AsQueryable()
+                    Expression.Constant(sourceObj, typeof<IQueryable<'TResult>>) :> Expression
             let replacementExpr = Expression.Call(null, meth, [| yield sourceExpr; yield! args |])
             let fDelegate = (Expression.Lambda(replacementExpr,[| |])).Compile()
             try fDelegate.DynamicInvoke() :?> 'TResult with :? TargetInvocationException as e -> raise e 
@@ -680,6 +693,7 @@ module internal QueryImplementation =
                         // Convert the qualification
                         let dataOpt = 
                             match qual with 
+
                             // Detect the compiled version of "where (freebaseObject.FreebaseProperty = constant)"
                             | Lambda([ v1 ], FreebaseRelOp(op,FreebasePropertyGets(Var v2, propAccess), FreebaseConstant qc)) when v1 = v2 ->  
                                 Some (FreebaseQueryData.Filter(source.FreebaseQueryData, FreebaseQueryQualification.PropertyOpConstant (propAccess, op, qc)))
@@ -687,12 +701,18 @@ module internal QueryImplementation =
                             // Detect the compiled version of "where (freebaseObject.FreebaseProperty <> null )"
                             // Becomes 'prop : { ... "limit":1}' 
                             // This currently only works for unique compound properties like dated_money_value, e.g. /meteorology/tropical_cyclone/damages
-
-                            | Lambda([ v1 ], FreebaseRelOp("!=",FreebaseUniquePropertyGets source.FreebaseDataConnection (Var v2, propAccess, prop),  Null)) 
+                            | Lambda([ v1 ], FreebaseRelOp("<>",FreebaseUniquePropertyGets source.FreebaseDataConnection (Var v2, propAccess, prop),  Null)) 
                                   when v1 = v2  ->
                                 let isCompound = prop.BasicSystemType.IsNone
                                 Some (FreebaseQueryData.Filter(source.FreebaseQueryData, FreebaseQueryQualification.UniquePropertyNotNull (propAccess, isCompound)))
 
+                            // Detect the compiled version of "where (freebaseObject.FreebaseProperty = null )"
+                            | Lambda([ v1 ], FreebaseRelOp("=",FreebaseUniquePropertyGets source.FreebaseDataConnection (Var v2, propAccess, prop),  Null)) 
+                                  when v1 = v2  ->
+                                let isCompound = prop.BasicSystemType.IsNone
+                                Some (FreebaseQueryData.Filter(source.FreebaseQueryData, FreebaseQueryQualification.UniquePropertyNull (propAccess, isCompound)))
+
+                            // Detect the compiled version of "where (freebaseObject.FreebaseProperty.HasValue)"
                             | Lambda([ v1 ], PropertyGet(Some (FreebaseUniquePropertyGets source.FreebaseDataConnection (Var v2, propAccess, prop)), hasValueProp)) 
                                   when v1 = v2  && hasValueProp.Name = "HasValue" ->
                                 let isCompound = prop.BasicSystemType.IsNone
@@ -701,6 +721,7 @@ module internal QueryImplementation =
                             // Detect the compiled version of "where (freebaseObject.FreebaseProperty.ApproximatelyOneOf(constant1, constant2, ...)"
                             | Lambda([ v1 ], FreebaseApproximatelyOneOfOp(FreebasePropertyGets(Var v2, propAccess), qcs)) when qcs.Length > 0 && v1 = v2 ->  
                                 Some (FreebaseQueryData.Filter(source.FreebaseQueryData, FreebaseQueryQualification.PropertyOpConstants (propAccess, "|=", qcs)))
+
                             | _ -> 
                                 translationFailure source.FreebaseDataConnection (sprintf "unknown qualification - not a lambda - %A, %A, %A" qual qual.NodeType (qual :? LambdaExpression))
 

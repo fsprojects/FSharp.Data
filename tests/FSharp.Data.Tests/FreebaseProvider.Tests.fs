@@ -102,18 +102,42 @@ let ``Can access olympics info``() =
 
 
 [<Test>]
-let ``Can execute query that compares to null``() =
-    let p1 = query {
-        for p in data.Commons.People.Persons do
-        where (p.Name.ApproximatelyMatches "^Evelyn ")
-        where (p.Gender = null)
-        head
-    }
-    let p2 = query {
+let ``Can execute query that checks for not null``() =
+    let p = query {
         for p in data.Commons.People.Persons do
         where (p.Name.ApproximatelyMatches "^Evelyn ")
         where (p.Gender <> null)
         head
     }
-    p1.Name |> should equal "Evelyn Escalante"
-    p2.Name |> should equal "Evelyn Waugh"
+    p.Name |> should equal "Evelyn Waugh"
+    p.Gender.Name |> should equal "Male"
+
+[<Test>]
+let ``Can execute query that checks for null``() =
+    let p = query {
+        for p in data.Commons.People.Persons do
+        where (p.Name.ApproximatelyMatches "^Evelyn ")
+        where (p.Gender = null)
+        head
+    }
+    p.Name |> should equal "Evelyn Escalante"
+    p.Gender |> should equal null
+
+[<Test>]
+let ``Can execute query that gets the head of a sequence of compound objects``() =
+    query {
+        for p in data.Commons.People.Persons do
+        where (p.Name.ApproximatelyMatches "^Evelyn ")
+        select (p.Name, p.``Date of birth``)
+        head
+    } |> should equal ("Evelyn Waugh", "1903-10-28")
+    
+[<Test>]
+let ``Can execute query that gets the head of a sequence of basic types``() =
+    query {
+        for p in data.Commons.People.Persons do
+        where (p.Name.ApproximatelyMatches "^Evelyn ")
+        select p.Name
+        head
+    } |> should equal "Evelyn Waugh"
+    
