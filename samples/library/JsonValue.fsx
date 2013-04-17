@@ -39,7 +39,7 @@ We do not cover this technique in this introduction. Instead, we look at a numbe
 of extensions that become available after opening the `FSharp.Data.Json.Extensions` 
 namespace. Once opened, we can write:
 
- * `value.AsBoolean()` returns the value as Boolean if it is either `true` or `false`
+ * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`
  * `value.AsInteger()` returns the value as integer if it is numeric and can be
    converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
    `value.AsFloat()` behave similarly.
@@ -47,6 +47,7 @@ namespace. Once opened, we can write:
  * `value.AsDateTime()` parse the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
+ * `value.AsGuid()` parse the string as a `Guid` value.
  * `value?child` uses the dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
     `value.[child]`.

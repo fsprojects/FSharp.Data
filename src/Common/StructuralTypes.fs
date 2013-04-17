@@ -33,6 +33,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Boolean
   | String
   | DateTime
+  | Guid
   // Collections and sum types
   | Collection 
   | Heterogeneous
@@ -90,6 +91,7 @@ type InferedTypeTag with
     | Boolean -> "Boolean"
     | String -> "String"
     | DateTime -> "DateTime"
+    | Guid -> "Guid"
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
     | Record None -> "Record"
@@ -110,6 +112,7 @@ type InferedTypeTag with
     | "Boolean" -> Boolean
     | "String" -> String 
     | "DateTime" -> DateTime
+    | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous
     | _ -> failwith "Invalid InferredTypeTag code"

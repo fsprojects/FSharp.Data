@@ -65,26 +65,30 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
     let m = ProvidedMethod("Parse", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ JsonDocument(JsonValue.Parse(%%text, Operations.GetCulture(culture))) @@>
+    m.InvokeCode <- fun (Singleton text) -> methResConv <@@ { JsonValue = JsonValue.Parse(%%text, Operations.GetCulture(culture)) } @@>
+    m.AddXmlDoc "Parses the specified JSON string"
     resTy.AddMember m
 
     // Generate static Load stream method
     let args = [ ProvidedParameter("stream", typeof<Stream>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ JsonDocument(JsonValue.Load((%%stream:Stream), Operations.GetCulture(culture))) @@>
+    m.InvokeCode <- fun (Singleton stream) -> methResConv <@@ { JsonValue = JsonValue.Load((%%stream:Stream), Operations.GetCulture(culture)) } @@>
+    m.AddXmlDoc "Loads JSON from the specified stream"
     resTy.AddMember m
 
     // Generate static Load reader method
     let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
-    m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ JsonDocument(JsonValue.Load((%%reader:TextReader), Operations.GetCulture(culture))) @@>
+    m.InvokeCode <- fun (Singleton reader) -> methResConv <@@ { JsonValue = JsonValue.Load((%%reader:TextReader), Operations.GetCulture(culture)) } @@>
+    m.AddXmlDoc "Loads JSON from the specified reader"
     resTy.AddMember m
 
     // Generate static Load uri method
     let args = [ ProvidedParameter("uri", typeof<string>) ]
     let m = ProvidedMethod("Load", args, methResTy, IsStaticMethod = true)
     m.InvokeCode <- fun (Singleton uri) -> methResConv <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder %%uri
-                                                           JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
+                                                           { JsonValue = JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture)) } @@>
+    m.AddXmlDoc "Loads JSON from the specified uri"
     resTy.AddMember m
 
     if not sampleList then
@@ -92,10 +96,10 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       let m = ProvidedMethod("GetSample", [], methResTy, IsStaticMethod = true)
       m.InvokeCode <- fun _ -> 
         (if sampleIsUri then
-          <@@ use reader = readTextAtRunTime isHostedExecution defaultResolutionFolder resolutionFolder sample
-              JsonDocument(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
+          <@@ use reader = readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder sample
+              { JsonValue = JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture)) } @@>
          else
-          <@@ JsonDocument(JsonValue.Parse(sample, Operations.GetCulture(culture))) @@>)
+          <@@ { JsonValue = JsonValue.Parse(sample, Operations.GetCulture(culture)) } @@>)
         |> methResConv
       resTy.AddMember m
 

@@ -6,6 +6,7 @@ namespace FSharp.Data.RuntimeImplementation
 
 open System
 open System.IO
+open System.Text
 
 // Parser for the CSV format 
 module internal CsvReader = 
@@ -14,102 +15,215 @@ module internal CsvReader =
   /// (Handles most of the RFC 4180 - most notably quoted values and also
   /// quoted newline characters in columns)
   let readCsvFile (reader:TextReader) (separators:string) quote =
-    let separators = separators.ToCharArray()
+
     let inline (|Char|) (n:int) = char n
     let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
-    let inline (|Separator|_|) (n:int) = if Array.exists ((=) (char n)) separators then Some() else None
+    
+    let separators = separators.ToCharArray()
+    let inline (|Separator|_|) (n:int) =
+      if separators.Length = 1 then 
+        if (char n) = separators.[0] then Some() else None
+      else
+        if Array.exists ((=) (char n)) separators then Some() else None
 
     /// Read quoted string value until the end (ends with end of stream or
     /// the " character, which can be encoded using double ")
-    let rec readString chars = 
+    let rec readString (chars:StringBuilder) = 
       match reader.Read() with
       | -1 -> chars
       | Quote when reader.Peek() = int quote ->
           reader.Read() |> ignore
-          readString (quote::chars)
+          readString (chars.Append quote)
       | Quote -> chars
-      | Char c -> readString (c::chars)
-  
+      | Char c -> readString (chars.Append c)
+
     /// Reads a line with data that are separated using specified separators
     /// and may be quoted. Ends with newline or end of input.
-    let rec readLine data chars = 
+    let rec readLine data (chars:StringBuilder) = 
       match reader.Read() with
       | -1 | Char '\r' | Char '\n' -> 
-          let item = new string(chars |> List.rev |> Array.ofList)
+          let item = chars.ToString()
           item::data
       | Separator -> 
-          let item = new string(chars |> List.rev |> Array.ofList)
-          readLine (item::data) [] 
+          let item = chars.ToString()
+          readLine (item::data) (StringBuilder())
       | Quote ->
           readLine data (readString chars)
       | Char c ->
-          readLine data (c::chars)
+          readLine data (chars.Append c)
 
     /// Reads multiple lines from the input, skipping newline characters
-    let rec readLines () = seq {
+    let rec readLines lineNumber = seq {
       match reader.Peek() with
       | -1 -> ()
-      | Char '\r' | Char '\n' -> reader.Read() |> ignore; yield! readLines()
+      | Char '\r' | Char '\n' -> 
+          reader.Read() |> ignore
+          yield! readLines (lineNumber + 1)
       | _ -> 
-          yield readLine [] [] |> List.rev |> Array.ofList
-          yield! readLines() }
-  
-    readLines() 
+          yield readLine [] (StringBuilder()) |> List.rev |> Array.ofList, lineNumber
+          yield! readLines (lineNumber + 1) }
 
-type CsvFile<'RowType>(f:Func<_,_,'RowType>, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) as this =
+    readLines 0
 
-  let separators = if String.IsNullOrEmpty separators then "," else separators
+// --------------------------------------------------------------------------------------
 
-  /// Read the input and cache it (we can read input only once)
-  let lines = 
-    CsvReader.readCsvFile reader separators quote 
-    |> Seq.cache
+module private CsvHelpers = 
 
-  do 
-    if Seq.isEmpty lines then
-      failwithf "Invalid CSV file: header row not found" 
+  let inline tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
+    try 
+      stringArrayToRow.Invoke(this, row) |> Choice1Of2 
+    with exn -> 
+      Choice2Of2 exn
 
-  let headers = 
-    if hasHeaders then 
-      lines |> Seq.head |> Array.map (fun columnName -> columnName.Trim())
-    else 
-      // use the number of columns of the first data row
-      Array.create (lines |> Seq.head |> Array.length) ""    
+// --------------------------------------------------------------------------------------
 
-  let rawData = 
-    if hasHeaders 
-    then lines |> Seq.skip 1
-    else lines
-    |> Seq.mapi (fun index line -> index, line)
-
-  let data = 
-    // Ignore rows with different number of columns when ignoreErrors is set to true
-    if ignoreErrors
-    then rawData |> Seq.filter (fun (_, row) -> row.Length = headers.Length)
-    else rawData
-    // Always ignore empty rows
-    |> Seq.filter (fun (_, row) -> not (row |> Seq.forall String.IsNullOrWhiteSpace))
-    // Try to convert rows to 'RowType
-    |> Seq.choose (fun (index, row) ->
-      if not ignoreErrors && row.Length <> headers.Length then
-        failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" index headers.Length row.Length
-      let convertedRow = 
-        try 
-          f.Invoke(this, row) |> Choice1Of2 
-        with exn -> 
-          Choice2Of2 exn
-      match convertedRow, ignoreErrors with
-      | Choice1Of2 convertedRow, _ -> Some convertedRow
-      | Choice2Of2 _, true -> None
-      | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" index exn.Message
-    )
-    |> Seq.cache
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, reader:TextReader, data:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
   member __.Data = data
   member __.Headers = headers
-
-  member internal __.Separators = separators
-  member internal __.Quote = quote
-
+  member __.NumberOfColumns = numberOfColumns
+  member __.Separators = separators
+  member __.Quote = quote
+  
   interface IDisposable with
-    member __.Dispose() = reader.Dispose()
+    member __.Dispose() = 
+      if reader <> null then
+        reader.Dispose()
+
+  new (stringArrayToRow, rowToStringArray, reader, separators, quote, hasHeaders, ignoreErrors) as this =
+  
+    let separators = if String.IsNullOrEmpty separators then "," else separators
+  
+    let linesIterator = (CsvReader.readCsvFile reader separators quote).GetEnumerator()
+  
+    let firstLine = 
+      if linesIterator.MoveNext() then
+        linesIterator.Current
+      else
+        linesIterator.Dispose()
+        if hasHeaders then
+          failwithf "Invalid CSV file: header row not found" 
+        else
+          failwithf "Invalid CSV file: no data rows found"
+
+    let headers = 
+      if hasHeaders then 
+        firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
+      else 
+        None
+  
+    let numberOfColumns =
+      match headers with
+      | Some headers -> headers |> Array.length
+      | None -> firstLine |> fst |> Array.length
+
+    let data = seq {
+      try
+        if not hasHeaders then
+          yield firstLine
+        while linesIterator.MoveNext() do
+          yield linesIterator.Current
+      finally
+        linesIterator.Dispose()
+    }
+
+    let data = seq {
+      for row, lineNumber in data do
+        if row.Length <> numberOfColumns then
+          // Ignore rows with different number of columns when ignoreErrors is set to true
+          if not ignoreErrors then
+            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
+        else
+          // Always ignore empty rows
+          if not (Array.forall String.IsNullOrWhiteSpace row) then
+            // Try to convert rows to 'RowType      
+            let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
+            match convertedRow, ignoreErrors with
+            | Choice1Of2 convertedRow, _ -> yield convertedRow
+            | Choice2Of2 _, true -> ()
+            | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+    }
+  
+    new CsvFile<'RowType>(rowToStringArray, reader, data, headers, numberOfColumns, separators, quote)
+
+  /// Saves CSV to the specified writer
+  member x.Save(writer:TextWriter, ?separator, ?quote) =
+
+    let separator = (defaultArg separator x.Separators.[0]).ToString()
+    let quote = (defaultArg quote x.Quote).ToString()
+    let doubleQuote = quote + quote
+
+    use writer = writer
+
+    let writeLine writeItem (items:string[]) =
+      for i = 0 to items.Length-2 do
+        writeItem items.[i]
+        writer.Write separator
+      writeItem items.[items.Length-1]
+      writer.WriteLine()
+
+    match x.Headers with
+    | Some headers -> headers |> writeLine writer.Write
+    | None -> ()
+
+    for row in x.Data do
+      row |> rowToStringArray.Invoke |> writeLine (fun item -> 
+        if item.Contains separator then
+          writer.Write quote
+          writer.Write (item.Replace(quote, doubleQuote))
+          writer.Write quote
+        else
+          writer.Write item)
+
+  /// Saves CSV to the specified stream
+  member x.Save(stream:Stream, ?separator, ?quote) = 
+    let writer = new StreamWriter(stream)
+    x.Save(writer, ?separator=separator, ?quote=quote)
+
+#if FX_NO_LOCAL_FILESYSTEM
+#else
+  /// Saves CSV to the specified file
+  member x.Save(path:string, ?separator, ?quote) = 
+    let writer = new StreamWriter(File.OpenWrite(path))
+    x.Save(writer, ?separator=separator, ?quote=quote)
+#endif
+
+  /// Saves CSV to a string
+  member x.SaveToString(?separator, ?quote) = 
+     let writer = new StringWriter()
+     x.Save(writer, ?separator=separator, ?quote=quote)
+     writer.ToString()
+
+  member inline private x.map f =
+    new CsvFile<'RowType>(rowToStringArray, null, x.Data |> f, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  /// Returns a new csv with the same rows as the original but which guarantees
+  /// that each row will be only be read and parsed from the input at most once.
+  member x.Cache() =   
+    Seq.cache |> x.map
+
+  /// Returns a new csv containing only the rows for which the given predicate returns "true".
+  member x.Filter predicate = 
+    Seq.filter predicate |> x.map
+  
+  /// Returns a new csv with only the first N rows of the underlying csv.
+  member x.Take count = 
+    Seq.take count |> x.map
+  
+  /// Returns a csv that, when iterated, yields rowswhile the given predicate
+  /// returns <c>true</c>, and then returns no further rows.
+  member x.TakeWhile predicate = 
+    Seq.takeWhile predicate |> x.map
+  
+  /// Returns a csv that skips N rows and then yields the remaining rows.
+  member x.Skip count = 
+    Seq.skip count |> x.map
+  
+  /// Returns a csv that, when iterated, skips rows while the given predicate returns
+  /// <c>true</c>, and then yields the remaining rows.
+  member x.SkipWhile predicate = 
+    Seq.skipWhile predicate |> x.map
+  
+  /// Returns a csv that when enumerated returns at most N rows.
+  member x.Truncate count = 
+    Seq.truncate count |> x.map

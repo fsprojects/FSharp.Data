@@ -73,7 +73,6 @@ type FreebaseProperty =
           Delegated = fbr.GetStringValWithKey("/type/property/delegated") 
           UnitOfMeasure = fbr.GetStringValWithKey("/type/property/unit") 
           Unique = fbr.GetStringValWithKey("/type/property/unique")  }
-
     member fp.IsUnique = match fp.Unique with "true" | "True" -> true | _ -> false
     member fp.IsEnum = not(String.IsNullOrEmpty fp.Enumeration)
     member fp.BasicSystemType =
@@ -87,6 +86,7 @@ type FreebaseProperty =
         | "/type/datetime" -> Some(typeof<string>, true) // Not System.DateTime because, for example, "1776" is a freebase DateTime, as is 9000BC. 
         | null -> Some(typeof<string>, true) // Tolerate null and treat as string. We can't really do anything else.
         | _ -> None
+    override x.ToString() = x.PropertyName
 
 type FreebaseArticle = 
     { ArticleId:string }
@@ -131,8 +131,9 @@ type FreebaseType =
           Deprecated = fbr.GetStringValWithKey("/freebase/type_hints/deprecated")
           Domain = fbr.GetStringValWithKey("/type/type/domain")
           IncludedTypes = fbr.GetArrayValWithKey("/freebase/type_hints/included_types") |> Array.map FreebaseTypeId.FromJson
-          Properties = fbr.GetOptionalArrayValWithKey("/type/type/properties") |> Array.map FreebaseProperty.FromJson }
-      
+          Properties = fbr.GetOptionalArrayValWithKey("/type/type/properties") |> Array.map FreebaseProperty.FromJson }      
+    override x.ToString() = x.TypeName
+
 type FreebaseDomain = 
     { Id:string
       DomainName:string    

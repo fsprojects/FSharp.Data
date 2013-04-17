@@ -22,6 +22,7 @@ let private nameToType =
    "float",          (typeof<float>   , TypeWrapper.None    )
    "decimal",        (typeof<decimal> , TypeWrapper.None    )
    "date",           (typeof<DateTime>, TypeWrapper.None    )
+   "guid",           (typeof<Guid>    , TypeWrapper.None    )
    "string",         (typeof<String>  , TypeWrapper.None    )
    "int?",           (typeof<int>     , TypeWrapper.Nullable)
    "int64?",         (typeof<int64>   , TypeWrapper.Nullable)
@@ -29,12 +30,14 @@ let private nameToType =
    "float?",         (typeof<float>   , TypeWrapper.Nullable)
    "decimal?",       (typeof<decimal> , TypeWrapper.Nullable)
    "date?",          (typeof<DateTime>, TypeWrapper.Nullable)
+   "guid?",          (typeof<Guid>    , TypeWrapper.Nullable)
    "int option",     (typeof<int>     , TypeWrapper.Option  )
    "int64 option",   (typeof<int64>   , TypeWrapper.Option  )
    "bool option",    (typeof<bool>    , TypeWrapper.Option  )
    "float option",   (typeof<float>   , TypeWrapper.Option  )
    "decimal option", (typeof<decimal> , TypeWrapper.Option  )
-   "date option",    (typeof<DateTime>, TypeWrapper.Option  )]
+   "date option",    (typeof<DateTime>, TypeWrapper.Option  )
+   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )]
   |> dict
 
 // Compiled regex is not supported in Silverlight
@@ -86,8 +89,9 @@ let private parseTypeAndUnit str =
     
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
-/// If forSchemaOverride is set to true, only Full is returned (this
-/// means that we always succeed and override inferred schema)
+/// If forSchemaOverride is set to true, only Full or Name is returne
+/// (if we succeed we override the inferred schema, otherwise, we just
+/// override the header name)
 let private parseSchemaItem str forSchemaOverride =     
   let name, typ, unit = 
     let m = nameAndTypeRegex.Match(str)
@@ -103,7 +107,7 @@ let private parseSchemaItem str forSchemaOverride =
       // type|type<measure>
       let typ, unit = parseTypeAndUnit str
       match typ, unit with
-      | None, _ -> failwithf "Invalid type: %s" str
+      | None, _ -> str, None, None
       | typ, unit -> "", typ, unit
     else
       // name
@@ -129,14 +133,18 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
-  
+  makeUnique "AsTuple" |> ignore
+
   // If we do not have header names, then automatically generate names
   let headers = 
-    csv.Headers |> Array.mapi (fun i header -> 
-      if String.IsNullOrEmpty header then 
-        "Column" + (i+1).ToString()
-      else
-        header)
+    match csv.Headers with
+    | Some headers ->
+        headers |> Array.mapi (fun i header -> 
+          if String.IsNullOrEmpty header then 
+            "Column" + (i+1).ToString()
+          else
+            header)
+    | None -> Array.init csv.NumberOfColumns (fun i -> "Column" + (i+1).ToString())
 
   // If the schema is specified explicitly, then parse the schema
   // (This can specify just types, names of columns or a mix of both)
@@ -145,7 +153,7 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
       Array.zeroCreate headers.Length
     else
       use reader = new StringReader(schema)
-      let schema = CsvReader.readCsvFile reader csv.Separators csv.Quote |> Seq.exactlyOne
+      let schema = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
       if schema.Length <> headers.Length then
         failwithf "Schema was expected to have %d items, but has %d" headers.Length schema.Length
       schema |> Array.mapi (fun index item -> 
@@ -155,6 +163,9 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
         | item -> 
             let parseResult = parseSchemaItem item true
             match parseResult with
+            | SchemaParseResult.Name ->                
+                headers.[index] <- item // if the type is not valid, override the header
+                None
             | SchemaParseResult.Full prop -> 
                 let name = 
                   if prop.Name = "" then headers.[index]
@@ -183,36 +194,47 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
+  let rowsIterator = csv.Data.GetEnumerator()
   let rows = 
-    if Seq.isEmpty csv.Data then CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
-    elif count > 0 then Seq.truncate count csv.Data
-    else csv.Data
+    if rowsIterator.MoveNext() then
+      seq {
+        yield rowsIterator.Current
+        try
+          while rowsIterator.MoveNext() do
+            yield rowsIterator.Current
+        finally
+          rowsIterator.Dispose()
+      }
+    else
+      CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
+  
+  let rows = if count > 0 then Seq.truncate count rows else rows
 
   // Infer the type of collection using structural inference
-  let types = seq {
-    for row in rows ->
-      let fields = 
-        [ for (name, unit), index, value in Seq.zip3 headerNamesAndUnits { 0..headerNamesAndUnits.Length-1 } row.Columns ->
-            let typ = 
-              match schema.[index] with
-              | Some _ -> Null // this will be ignored, so just return anything
-              | None ->
-                  // Treat empty values as 'null' values. The inference will
-                  // infer heterogeneous types e.g. 'null + int', will then 
-                  // be turned into Nullable<int> (etc.) in the getFields function
-                  if String.IsNullOrWhiteSpace value then Null
-                  else inferPrimitiveType (missingValues, culture) value unit
-            { Name = name
-              Optional = false
-              Type = typ } ]
-      Record(None, fields) }
+  let types = 
+    [ for row in rows ->
+        let fields = 
+          [ for (name, unit), index, value in Array.zip3 headerNamesAndUnits [| 0..headerNamesAndUnits.Length-1 |] row.Columns ->
+              let typ = 
+                match schema.[index] with
+                | Some _ -> Null // this will be ignored, so just return anything
+                | None ->
+                    // Treat empty values as 'null' values. The inference will
+                    // infer heterogeneous types e.g. 'null + int', will then 
+                    // be turned into Nullable<int> (etc.) in the getFields function
+                    if String.IsNullOrWhiteSpace value then Null
+                    else inferPrimitiveType (missingValues, culture) value unit
+              { Name = name
+                Optional = false
+                Type = typ } ]
+        Record(None, fields) ]
 
   let inferedType = 
     if schema |> Seq.forall Option.isSome then
         // all the columns types are already set, so all the rows will be the same
         types |> Seq.head
     else
-        Seq.reduce subtypeInfered types
+        List.reduce subtypeInfered types
   
   inferedType, schema
 
@@ -223,16 +245,16 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 ///  - Fields of type 'int64 + null' are generated as Nullable<int64>
 ///  - Fields of type 'float + null' are just floats (and null becomes NaN)
 ///  - Fields of type 'decimal + null' are generated as floats too
-///  - Fields of type 'T + null' for any other non-nullable T (bool/date) become option<T>
+///  - Fields of type 'T + null' for any other non-nullable T (bool/date/guid) become option<T>
 ///  - All other types are simply strings.
 ///
 let getFields inferedType schema = 
 
   /// Matches heterogeneous types that consist of 'null + T' and return the T type
   /// (used below to transform 'float + null => float' and 'int + null => int?')
-  let (|TypeOrNull|_|) typ = 
+  let inline (|TypeOrNull|_|) typ = 
     match typ with 
-    | Heterogeneous(map) when map |> Seq.length = 2 && map |> Map.containsKey InferedTypeTag.Null ->
+    | Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
         let kvp = map |> Seq.find (function (KeyValue(InferedTypeTag.Null, _)) -> false | _ -> true)
         Some kvp.Value
     | _ -> None

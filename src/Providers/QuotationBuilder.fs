@@ -46,7 +46,7 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
       else [ convertValue args ]
 
     // Find a method that we want to call
-    let flags = BindingFlags.NonPublic ||| BindingFlags.Public ||| BindingFlags.Static ||| BindingFlags.Instance
+    let flags = BindingFlags.Public ||| BindingFlags.Static ||| BindingFlags.Instance
     match typ.GetMember(operation, MemberTypes.All, flags) with 
     | [| :? MethodInfo as mi |] -> 
         let mi = 

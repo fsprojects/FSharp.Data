@@ -23,13 +23,18 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored
 and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
-  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)), reader, defaultArg separators "", defaultArg quote '"', 
+  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
+                          Func<_,_>(fun row -> row.Columns),
+                          reader, defaultArg separators "", defaultArg quote '"', 
                           defaultArg hasHeaders true, defaultArg ignoreErrors false)
 
   let headerDic = 
-    this.Headers
-    |> Seq.mapi (fun index header -> header, index)
-    |> dict
+    match this.Headers with
+    | Some headers ->
+        headers
+        |> Seq.mapi (fun index header -> header, index)
+        |> dict
+    | None -> [] |> dict
 
   member internal __.GetColumnIndex columnName = headerDic.[columnName]
 
@@ -49,8 +54,16 @@ and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignor
 
   /// Loads CSV from the specified uri
   static member Load(uri, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+    let separators = defaultArg separators ""    
+    let separators = 
+      let uri = Uri(uri, UriKind.RelativeOrAbsolute)
+      if String.IsNullOrEmpty separators &&
+          (uri.IsAbsoluteUri && uri.AbsolutePath.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase) || uri.OriginalString.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase)) then
+        "\t"
+      else
+        separators
     let reader = readTextAtRunTime false "" "" uri
-    new CsvFile(reader, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    new CsvFile(reader, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple CSV processing
@@ -71,31 +84,36 @@ module Extensions =
     member x.AsDateTime(?culture) = 
       match x |> Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) with 
       | Some d -> d
-      | _ -> failwithf "Not a datetime - %A" x
+      | _ -> failwithf "Not a datetime - %s" x
 
     member x.AsFloat(?culture, ?missingValues) =       
       let missingValues = defaultArg missingValues Operations.DefaultMissingValues
       let culture = defaultArg culture CultureInfo.InvariantCulture
       match x |> Operations.AsFloat missingValues culture with
       | Some n -> n
-      | _ -> failwithf "Not a float - %A" x
+      | _ -> failwithf "Not a float - %s" x
 
     member x.AsDecimal(?culture) = 
       match x |> Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not a decimal - %A" x
+      | _ -> failwithf "Not a decimal - %s" x
   
     member x.AsInteger(?culture) = 
       match x |> Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not an int - %A" x
+      | _ -> failwithf "Not an int - %s" x
 
     member x.AsInteger64(?culture) = 
       match x |> Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not an int64 - %A" x
+      | _ -> failwithf "Not an int64 - %s" x
 
     member x.AsBoolean(?culture) =
       match x |> Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) with
       | Some n -> n
-      | _ -> failwithf "Not a bool" x
+      | _ -> failwithf "Not a bool - %s" x
+
+    member x.AsGuid(?culture) =
+      match x |> Operations.AsGuid with
+      | Some n -> n
+      | _ -> failwithf "Not a guid - %s" x

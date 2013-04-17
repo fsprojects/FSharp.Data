@@ -148,6 +148,8 @@ countries, ',' is already used as the numeric decimal separator, so a semicolon 
 instead to separate CSV columns. The `CsvProvider` has an optional `Separator` parameter
 where you can specify what to use as separator. This means that you can consume
 any textual tabular format. If you specify `\t` you'll also be able to consume TSV files.
+If you don't specify the separator and you're using an url or file that has the `.tsv`
+extensions, the type provider will use `\t` by default.
 *)
 
 let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()
@@ -221,15 +223,55 @@ What's specified in the `Schema` parameter will always take precedence to what's
 
 If the first row of the file is not a header row, you can specify the `HasHeaders` parameter as false to
 consider that row as a data row. In that case the columns will be named Column1, Column2, etc..., unless the
-names are overridden using the `Schema` parameter. Example:
+names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
+and still have the provider infer the type for you. Example:
 *)
 
-let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),,float option">()
+let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">()
 for row in csv.Data do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.Column2 (defaultArg row.Column3 1.0)
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
 (**
 
+## Transforming CSV files
+
+In addition to reading, `CsvProvider` also has support for transforming CSV files. The operations
+available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. All these operations
+preserve the schema, so after transforming you can save the results by using one of the overloads of
+the `Save` method. If you don't need to save the results in the CSV format, or if your transformations
+need to change the shape of the data, you can also use the operations available in the `Seq` module on the the 
+sequence of rows exposed via the `Data` property directly.
+*)
+
+// Saving the first 10 rows that don't have missing values to a new csv file
+airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) && 
+                             not (Double.IsNaN row.``Solar.R``))
+          .Truncate(10)
+          .SaveToString()
+
+(**
+For convenience, you can also treat each row as a tuple by using the `AsTuple` property of the RowType.
+This is usefull when want to treat different CSV files with a similar schema in a uniform way:
+*)
+
+for row in airQuality.Data do
+  printfn "%A" row.AsTuple
+
+(**
+
+## Handling big datasets
+
+By default, the rows are cached so you can iterate over the `Data` property multiple times without worrying.
+But if you will only iterate once, you can disable caching by settting the `CacheRows` parameter of `CsvProvider`
+to false. If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
+You can still cache the data at some point by using the `Cache` method, but only do that if you have already
+transformed the dataset to be smaller:
+*)
+
+let stocks = new CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>()
+stocks.Take(10).Cache()
+
+(**
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other

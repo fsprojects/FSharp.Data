@@ -290,7 +290,7 @@ let ``Infers units of measure correctly``() =
 
     let source = CsvFile.Parse("String(metre), Float(meter),Date (second),Int\t( Second), Decimal  (watt),Bool(N), Long(N), Unknown (measure)\nxpto, #N/A,2010-01-10,4,3.7, yes,2147483648,2")
     let actual = 
-      CsvInference.inferType source Int32.MaxValue ([], culture) ""
+      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) ""
       ||> CsvInference.getFields
       |> List.map (fun field -> 
           field.Name, 
@@ -337,7 +337,7 @@ let ``Inference schema override by parameter``() =
 
   let source = CsvFile.Parse(",Foo,,,,\n1,1,1,1,1,")
   let actual = 
-    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),,C(float<m>)"
+    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),foo,C(float<m>)"
     ||> CsvInference.getFields
     |> List.map (fun field -> 
         field.Name, 
@@ -349,7 +349,7 @@ let ``Inference schema override by parameter``() =
   let col2 = "Foo"     , typeof<int>  , "int"          , TypeWrapper.None
   let col3 = "Column3" , typeof<float>, "float<second>", TypeWrapper.Nullable
   let col4 = "A"       , typeof<float>, "float"        , TypeWrapper.Option
-  let col5 = "Column5" , typeof<int>  , "int"          , TypeWrapper.None
+  let col5 = "foo"     , typeof<int>  , "int"          , TypeWrapper.None
   let col6 = "C"       , typeof<float>, "float<m>"     , TypeWrapper.None
   let expected = [ col1; col2; col3; col4; col5; col6 ]
 

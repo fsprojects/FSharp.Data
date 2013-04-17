@@ -937,6 +937,20 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     let mutable interfaceImplsDelayed = ResizeArray<unit -> list<Type>>()
     let mutable methodOverrides = ResizeArray<ProvidedMethod * MethodInfo>()
 
+    // returns a type equivalent to the base type where all the generic type arguments
+    // are replaced with the erased to types
+    let getSafeBaseType() =
+        let t = this.BaseType
+        if t <> null && t.IsGenericType && not t.IsGenericTypeDefinition then 
+            let genericType = t.GetGenericTypeDefinition()
+            let typeArguments = 
+                t.GetGenericArguments()
+                |> Seq.map (fun t -> if t :? ProvidedTypeDefinition then t.BaseType else t)
+                |> Seq.toArray
+            genericType.MakeGenericType typeArguments
+        else
+            t
+
     // members API
     let getMembers() = 
         if membersQueue.Count > 0 then 
@@ -1206,7 +1220,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
         if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null then mems
         else 
-            let baseMems = this.BaseType.GetMembers bindingAttr
+            let baseMems = getSafeBaseType().GetMembers bindingAttr
             Array.append mems baseMems
 
     override this.GetNestedTypes bindingAttr = 

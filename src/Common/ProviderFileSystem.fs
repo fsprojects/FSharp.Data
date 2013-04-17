@@ -102,3 +102,12 @@ let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder uri =
         asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder uri
         |> Async.RunSynchronously
       new StreamReader(stream)
+
+let readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder uri = 
+  match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
+  | false, _ -> failwithf "Invalid uri: %s" uri
+  | true, uri ->
+      let stream = 
+        asyncOpenStreamInProvider true (false, defaultResolutionFolder) None resolutionFolder uri
+        |> Async.RunSynchronously
+      new StreamReader(stream)

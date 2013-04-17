@@ -542,6 +542,74 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Expense (% of GDP): FDR.WorldBank.Indicator async with get
     member Subsidies and other transfers (current LCU): FDR.WorldBank.Indicator async with get
     member Subsidies and other transfers (% of expense): FDR.WorldBank.Indicator async with get
+    member Bank accounts per 1000 adults (commercial banks-bank survey): FDR.WorldBank.Indicator async with get
+    member Bank branches per 100,000 adults (commercial banks): FDR.WorldBank.Indicator async with get
+    member Firms with line of credit to total firms (all firms) (%): FDR.WorldBank.Indicator async with get
+    member Small firms with line of credit to total small firms (%): FDR.WorldBank.Indicator async with get
+    member Adults with an account at a formal fin. inst. to total adults (%): FDR.WorldBank.Indicator async with get
+    member Adults saving at a fin. inst. in the past year to total adults (Household survey) (%): FDR.WorldBank.Indicator async with get
+    member Adults borrowing from a formal fin. inst. in the past year to total adults  (HH survey) (%): FDR.WorldBank.Indicator async with get
+    member Value traded of top 10 traded companies to total value traded (%): FDR.WorldBank.Indicator async with get
+    member Market cap. outside of top 10 largest companies to total market cap. (%): FDR.WorldBank.Indicator async with get
+    member Corporate bonds to total bonds and notes outstanding (%): FDR.WorldBank.Indicator async with get
+    member Bank private credit to GDP (%): FDR.WorldBank.Indicator async with get
+    member Deposit money bank assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Non-bank financial institutions assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Deposit money bank assets to deposit money bank assets and central bank assets (%): FDR.WorldBank.Indicator async with get
+    member Liquid liabilities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Central bank assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Mutual fund assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Financial system deposits to GDP (%): FDR.WorldBank.Indicator async with get
+    member Life insurance premium volume to GDP (%): FDR.WorldBank.Indicator async with get
+    member Non-Life insurance premium volume to GDP (%): FDR.WorldBank.Indicator async with get
+    member Insurance company assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Private credit by deposit money banks and other financial institutions to GDP (%): FDR.WorldBank.Indicator async with get
+    member Pension fund assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Stock market capitalization to GDP (%): FDR.WorldBank.Indicator async with get
+    member Stock market total value traded to GDP (%): FDR.WorldBank.Indicator async with get
+    member Outstanding domestic private debt securities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Outstanding domestic public debt securities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Outstanding international private debt decurities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Outstanding international public debt securities to GDP (%): FDR.WorldBank.Indicator async with get
+    member International debt issues to GDP (%): FDR.WorldBank.Indicator async with get
+    member Gross portfolio equity liabilities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Gross portfolio equity assets to GDP (%): FDR.WorldBank.Indicator async with get
+    member Gross portfolio debt liabilities to GDP (%): FDR.WorldBank.Indicator async with get
+    member Net interest margin (%): FDR.WorldBank.Indicator async with get
+    member Lending-deposit spread (%): FDR.WorldBank.Indicator async with get
+    member Non-interest income to total income (%): FDR.WorldBank.Indicator async with get
+    member Overhead costs to total assets (%): FDR.WorldBank.Indicator async with get
+    member Return on assets (%): FDR.WorldBank.Indicator async with get
+    member Return on equity (%): FDR.WorldBank.Indicator async with get
+    member Cost to income ratio (%): FDR.WorldBank.Indicator async with get
+    member Credit to government and state-owned enterprises to GDP (%): FDR.WorldBank.Indicator async with get
+    member Stock market turnover ratio (value traded/capitalization) (%): FDR.WorldBank.Indicator async with get
+    member December Consumper Price Index (2005=100): FDR.WorldBank.Indicator async with get
+    member Average Consumer Price Index (2005=100): FDR.WorldBank.Indicator async with get
+    member Average consumer price Index (annual % change): FDR.WorldBank.Indicator async with get
+    member Bank concentration (%): FDR.WorldBank.Indicator async with get
+    member Bank deposits to GDP (%): FDR.WorldBank.Indicator async with get
+    member H-statistic: FDR.WorldBank.Indicator async with get
+    member Lerner index: FDR.WorldBank.Indicator async with get
+    member Boone indicator: FDR.WorldBank.Indicator async with get
+    member 5-bank asset concentration (%): FDR.WorldBank.Indicator async with get
+    member Liquid liabilities in millions 2000 USD: FDR.WorldBank.Indicator async with get
+    member Loans from non-resident banks (net) to GDP (%): FDR.WorldBank.Indicator async with get
+    member Loans from non-resident banks (amounts outstanding) to GDP (%): FDR.WorldBank.Indicator async with get
+    member Offshore bank deposits to domestic bank deposits (%): FDR.WorldBank.Indicator async with get
+    member Remittance inflows to GDP (%): FDR.WorldBank.Indicator async with get
+    member Consolidated foreign claims of BIS-reporting banks to GDP (%): FDR.WorldBank.Indicator async with get
+    member Percentage of foreign banks among total banks (%): FDR.WorldBank.Indicator async with get
+    member Percentage of foreign bank assets among total bank assets (%): FDR.WorldBank.Indicator async with get
+    member Number of listed companies per 10,000 people: FDR.WorldBank.Indicator async with get
+    member Bank Z-score: FDR.WorldBank.Indicator async with get
+    member Bank non-performing loans to gross loans (%): FDR.WorldBank.Indicator async with get
+    member Bank capital to total assets (%): FDR.WorldBank.Indicator async with get
+    member Bank credit to bank deposits (%): FDR.WorldBank.Indicator async with get
+    member Regulatory capital to risk-weighted assets (%): FDR.WorldBank.Indicator async with get
+    member Liquid assets to deposits and short term funding (%): FDR.WorldBank.Indicator async with get
+    member Provisions to non-performing loans (%): FDR.WorldBank.Indicator async with get
+    member Volatility of stock price index: FDR.WorldBank.Indicator async with get
     member Business extent of disclosure index (0=less disclosure to 10=more disclosure): FDR.WorldBank.Indicator async with get
     member Ease of doing business index (1=most business-friendly regulations): FDR.WorldBank.Indicator async with get
     member New business density (new registrations per 1,000 people ages 15-64): FDR.WorldBank.Indicator async with get
@@ -1809,6 +1877,74 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Expense (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member Subsidies and other transfers (current LCU): FDR.WorldBank.IndicatorDescription with get
     member Subsidies and other transfers (% of expense): FDR.WorldBank.IndicatorDescription with get
+    member Bank accounts per 1000 adults (commercial banks-bank survey): FDR.WorldBank.IndicatorDescription with get
+    member Bank branches per 100,000 adults (commercial banks): FDR.WorldBank.IndicatorDescription with get
+    member Firms with line of credit to total firms (all firms) (%): FDR.WorldBank.IndicatorDescription with get
+    member Small firms with line of credit to total small firms (%): FDR.WorldBank.IndicatorDescription with get
+    member Adults with an account at a formal fin. inst. to total adults (%): FDR.WorldBank.IndicatorDescription with get
+    member Adults saving at a fin. inst. in the past year to total adults (Household survey) (%): FDR.WorldBank.IndicatorDescription with get
+    member Adults borrowing from a formal fin. inst. in the past year to total adults  (HH survey) (%): FDR.WorldBank.IndicatorDescription with get
+    member Value traded of top 10 traded companies to total value traded (%): FDR.WorldBank.IndicatorDescription with get
+    member Market cap. outside of top 10 largest companies to total market cap. (%): FDR.WorldBank.IndicatorDescription with get
+    member Corporate bonds to total bonds and notes outstanding (%): FDR.WorldBank.IndicatorDescription with get
+    member Bank private credit to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Deposit money bank assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Non-bank financial institutions assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Deposit money bank assets to deposit money bank assets and central bank assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Liquid liabilities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Central bank assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Mutual fund assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Financial system deposits to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Life insurance premium volume to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Non-Life insurance premium volume to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Insurance company assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Private credit by deposit money banks and other financial institutions to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Pension fund assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Stock market capitalization to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Stock market total value traded to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Outstanding domestic private debt securities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Outstanding domestic public debt securities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Outstanding international private debt decurities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Outstanding international public debt securities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member International debt issues to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Gross portfolio equity liabilities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Gross portfolio equity assets to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Gross portfolio debt liabilities to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Net interest margin (%): FDR.WorldBank.IndicatorDescription with get
+    member Lending-deposit spread (%): FDR.WorldBank.IndicatorDescription with get
+    member Non-interest income to total income (%): FDR.WorldBank.IndicatorDescription with get
+    member Overhead costs to total assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Return on assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Return on equity (%): FDR.WorldBank.IndicatorDescription with get
+    member Cost to income ratio (%): FDR.WorldBank.IndicatorDescription with get
+    member Credit to government and state-owned enterprises to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Stock market turnover ratio (value traded/capitalization) (%): FDR.WorldBank.IndicatorDescription with get
+    member December Consumper Price Index (2005=100): FDR.WorldBank.IndicatorDescription with get
+    member Average Consumer Price Index (2005=100): FDR.WorldBank.IndicatorDescription with get
+    member Average consumer price Index (annual % change): FDR.WorldBank.IndicatorDescription with get
+    member Bank concentration (%): FDR.WorldBank.IndicatorDescription with get
+    member Bank deposits to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member H-statistic: FDR.WorldBank.IndicatorDescription with get
+    member Lerner index: FDR.WorldBank.IndicatorDescription with get
+    member Boone indicator: FDR.WorldBank.IndicatorDescription with get
+    member 5-bank asset concentration (%): FDR.WorldBank.IndicatorDescription with get
+    member Liquid liabilities in millions 2000 USD: FDR.WorldBank.IndicatorDescription with get
+    member Loans from non-resident banks (net) to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Loans from non-resident banks (amounts outstanding) to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Offshore bank deposits to domestic bank deposits (%): FDR.WorldBank.IndicatorDescription with get
+    member Remittance inflows to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Consolidated foreign claims of BIS-reporting banks to GDP (%): FDR.WorldBank.IndicatorDescription with get
+    member Percentage of foreign banks among total banks (%): FDR.WorldBank.IndicatorDescription with get
+    member Percentage of foreign bank assets among total bank assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Number of listed companies per 10,000 people: FDR.WorldBank.IndicatorDescription with get
+    member Bank Z-score: FDR.WorldBank.IndicatorDescription with get
+    member Bank non-performing loans to gross loans (%): FDR.WorldBank.IndicatorDescription with get
+    member Bank capital to total assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Bank credit to bank deposits (%): FDR.WorldBank.IndicatorDescription with get
+    member Regulatory capital to risk-weighted assets (%): FDR.WorldBank.IndicatorDescription with get
+    member Liquid assets to deposits and short term funding (%): FDR.WorldBank.IndicatorDescription with get
+    member Provisions to non-performing loans (%): FDR.WorldBank.IndicatorDescription with get
+    member Volatility of stock price index: FDR.WorldBank.IndicatorDescription with get
     member Business extent of disclosure index (0=less disclosure to 10=more disclosure): FDR.WorldBank.IndicatorDescription with get
     member Ease of doing business index (1=most business-friendly regulations): FDR.WorldBank.IndicatorDescription with get
     member New business density (new registrations per 1,000 people ages 15-64): FDR.WorldBank.IndicatorDescription with get

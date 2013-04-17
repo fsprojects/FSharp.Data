@@ -135,6 +135,11 @@ let ``Can parse document with booleans``() =
     j?hasFalse.AsBoolean() |> should equal false
 
 [<Test>] 
+let ``Can parse document with guids``() =
+    let j = JsonValue.Parse "{ \"id\": \"{F842213A-82FB-4EEB-AB75-7CCD18676FD5}\" }"
+    j?id.AsGuid() |> should equal (Guid.Parse "F842213A-82FB-4EEB-AB75-7CCD18676FD5")
+
+[<Test>] 
 let ``Can parse document with null``() =    
     let j = JsonValue.Parse "{ \"items\": [{\"id\": \"Open\"}, null, {\"id\": \"Pause\"}] }"
     let jArray = j?items

@@ -31,8 +31,8 @@ let internal pairBy f first second =
 /// List of primitive types that can be returned as a result of the inference
 /// (with names that are returned for heterogeneous types)
 let primitiveTypes =
-  [ typeof<int>; typeof<int64>; typeof<float>; 
-    typeof<decimal>; typeof<bool>; typeof<string>; typeof<DateTime> ]
+  [ typeof<int>; typeof<int64>; typeof<float>; typeof<decimal>
+    typeof<bool>; typeof<string>; typeof<DateTime>; typeof<Guid> ]
 
 /// Checks whether a type is a value type (and cannot have null as a value)
 let isValueType = function
@@ -56,6 +56,7 @@ let typeTag = function
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
+      elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "inferCollectionType: Unknown primitive type"
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
@@ -207,6 +208,8 @@ let inferPrimitiveType (missingValues, culture) (value : string) unit =
   // Helper for calling Operations.AsXyz functions
   let (|Parse|_|) func value = func culture value
 
+  let asGuid _ value = Operations.AsGuid value
+
   // This always returns Primitive, unless the value is `null`. We do not
   // return `null` if the value is just empty string, because we do not want
   // to infer the type of XML attributes or JSON fields as `Null` when they
@@ -218,6 +221,7 @@ let inferPrimitiveType (missingValues, culture) (value : string) unit =
   | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
   | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
   | Parse (Operations.AsFloat missingValues) _ -> Primitive(typeof<float>, unit)
+  | Parse asGuid _ -> Primitive(typeof<Guid>, unit)
   | Parse Operations.AsDateTime _ 
         // If this can be considered a decimal under the invariant culture, 
         // it's a safer bet to consider it a string than a DateTime

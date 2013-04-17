@@ -323,6 +323,15 @@ module Extensions =
           | _ -> failwithf "JSON mismatch: Not a number - %A" x
       | _ -> failwithf "JSON mismatch: Not a boolean - %A" x
 
+    /// Get the guid value of an element (assuming that the value is a guid)
+    member x.AsGuid(?culture) =
+      match x with
+      | JsonValue.String s -> 
+          match Operations.AsGuid s with
+          | Some n -> n
+          | _ -> failwithf "JSON mismatch: Not a guid - %A" x
+      | _ -> failwithf "JSON mismatch: Not a guid - %A" x
+
     /// Get inner text of an element - this includes just string nodes and
     /// string nodes in an array (e.g. multi-line string represented as array)
     /// (assuming that the value is a string or array of strings)

@@ -23,8 +23,7 @@ type TestCase =
              x.Separator
              x.Culture
              x.Schema
-             x.HasHeaders.ToString()
-             x.IgnoreErrors.ToString()]
+             x.HasHeaders.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -44,9 +43,7 @@ type TestCase =
             ["Freebase"
              x.NumIndividuals.ToString()
              x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()
-             x.LocalCache.ToString()
-             x.AllowLocalQueryEvaluation.ToString()]
+             x.Pluralize.ToString()]
         |> String.concat ","
 
     static member Parse (line:string) =
@@ -59,9 +56,10 @@ type TestCase =
                   InferRows = Int32.MaxValue
                   Schema = args.[4]
                   HasHeaders = args.[5] |> bool.Parse
-                  IgnoreErrors = args.[6] |> bool.Parse
+                  IgnoreErrors = false
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
+                  CacheRows = false
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
@@ -84,8 +82,8 @@ type TestCase =
                        Pluralize = args.[4] |> bool.Parse
                        SnapshotDate = "now"
                        ServiceUrl = "https://www.googleapis.com/freebase/v1"
-                       LocalCache = args.[5] |> bool.Parse
-                       AllowLocalQueryEvaluation = args.[6] |> bool.Parse }
+                       LocalCache = true
+                       AllowLocalQueryEvaluation = true }
         | _ -> failwithf "Unknown: %s" args.[0]
         |> TestCase
 
@@ -140,17 +138,14 @@ let ``Validate signature didn't change `` (testCase:TestCase) =
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
     testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
     testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
     testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore

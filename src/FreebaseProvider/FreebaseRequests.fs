@@ -135,13 +135,12 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             resultText
           with 
             | :? WebException as exn -> 
-                if exn.Response = null then Http.reraisePreserveStackTrace exn
+                let pos = exn.Message.IndexOf '\n'
+                if pos = -1 then Http.reraisePreserveStackTrace exn
                 let freebaseExn =
                     try
-                        use responseStream = exn.Response.GetResponseStream()
-                        use streamReader = new StreamReader(responseStream)
-                        let response = streamReader.ReadToEnd() |> JsonValue.Parse 
-                        let error = response.GetProperty("error").GetArrayValWithKey("errors").[0]
+                        let json = exn.Message.Substring (pos+1) |> JsonValue.Parse 
+                        let error = json.GetProperty("error").GetArrayValWithKey("errors").[0]
                         let domain = error.GetStringValWithKey("domain")
                         let reason = error.GetStringValWithKey("reason")
                         let message  = error.GetStringValWithKey("message")

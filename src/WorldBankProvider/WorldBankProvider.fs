@@ -174,7 +174,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
         resTy
 
     // ASSUMPTION: Follow www.worldbank.org and only show these sources by default. The others are very sparsely populated.
-    let defaultSources = [ "World Development Indicators"; "Global Development Finance"]
+    let defaultSources = [ "World Development Indicators"; "Global Financial Development" ]
 
     let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
 

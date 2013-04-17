@@ -166,7 +166,7 @@ module Conversions =
 
     let typ = field.BasicType
 
-    returnTyp, returnTypWithoutMeasure, fun value ->
+    let convert value =
       let converted = 
         if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%value) @@>
         elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
@@ -174,13 +174,33 @@ module Conversions =
         elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
         elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
+        elif typ = typeof<Guid> then <@@ Operations.ConvertGuid(%%value) @@>
         elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>
         else failwith "convertValue: Unsupported primitive type"
       match field.TypeWrapper with
       | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (field.Name, converted, value)
       | TypeWrapper.Option -> converted
-      | TypeWrapper.Nullable -> typeof<Operations>?ToNullable (typ) converted
+      | TypeWrapper.Nullable -> typeof<Operations>?OptionToNullable (typ) converted
       |> replacer.ToRuntime
+
+    let convertBack value = 
+      let value = 
+        match field.TypeWrapper with
+        | TypeWrapper.None -> typeof<Operations>?GetOptionalValue (typ) value
+        | TypeWrapper.Option -> value
+        | TypeWrapper.Nullable -> typeof<Operations>?NullableToOption (typ) value
+      if typ = typeof<int> then <@@ Operations.ConvertIntegerBack(culture, %%value) @@>
+      elif typ = typeof<int64> then <@@ Operations.ConvertInteger64Back(culture, %%value) @@>
+      elif typ = typeof<decimal> then <@@ Operations.ConvertDecimalBack(culture, %%value) @@>
+      elif typ = typeof<float> then <@@ Operations.ConvertFloatBack(culture, missingValues, %%value) @@>
+      elif typ = typeof<string> then <@@ Operations.ConvertStringBack(%%value) @@>
+      elif typ = typeof<bool> then <@@ Operations.ConvertBooleanBack(culture, %%value) @@>
+      elif typ = typeof<Guid> then <@@ Operations.ConvertGuidBack(%%value) @@>
+      elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTimeBack(culture, %%value) @@>
+      else failwith "convertValue: Unsupported primitive type"
+      |> replacer.ToRuntime
+
+    returnTyp, returnTypWithoutMeasure, convert, convertBack
 
 // ----------------------------------------------------------------------------------------------
 
