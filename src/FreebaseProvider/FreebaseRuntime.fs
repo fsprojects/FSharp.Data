@@ -63,7 +63,7 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
     member __.QueryFragmentsOfPropertiesOfAllIncludedTypes(typeId:string, queryConstraints ) =
          [ for p in fbSchema.GetAllPropertiesOfAllIncludedTypesOfTypeId typeId do
                if not (queryConstraints |> List.exists (fun (k,_v) -> k = p.Id)) then
-                   match p.BasicSystemType, (p.IsUnique || p.IsEnum) with 
+                   match p.BasicSystemType, p.IsUnique with 
                    // Compund, non-unique: not eagerly loaded
                    | Some _, false -> yield sprintf ", '%s' : []" p.Id
                   // Could add this for unique objects with BasicSystemType.IsNone??

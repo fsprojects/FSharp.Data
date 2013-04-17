@@ -140,4 +140,10 @@ let ``Can execute query that gets the head of a sequence of basic types``() =
         select p.Name
         head
     } |> should equal "Evelyn Waugh"
-    
+
+[<Test>]
+let ``tvrage_id is not unique in mql query``() =
+    query {
+        for p in data.Commons.People.Persons do
+        select (p.Name, p.``Date of birth``)
+    } |> Seq.head |> should equal ("Jack Abramoff", "1958-02-28")
