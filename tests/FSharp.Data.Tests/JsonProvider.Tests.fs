@@ -48,3 +48,15 @@ let ``Optional int correctly infered`` () =
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSample()
   let i = prov.[0].A.Number
   i |> should equal (Some 123)
+
+[<Test>]
+let ``SampleList for json correctly handled``() = 
+    Path.Combine(__SOURCE_DIRECTORY__, "Data/TwitterSample.json")
+    |> File.ReadLines 
+    |> Seq.filter (not << String.IsNullOrWhiteSpace)
+    |> Seq.sumBy (fun line ->
+        let twitter = JsonProvider<"Data/TwitterSample.json", SampleList=true>.Parse line
+        match twitter.Text with
+        | Some _ -> 0
+        | None -> 1)
+    |> should equal 2

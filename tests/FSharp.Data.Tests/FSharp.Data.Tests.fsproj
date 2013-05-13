@@ -106,6 +106,9 @@
     <Content Include="Data/TwitterStream.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/TwitterSample.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/GitHub.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
