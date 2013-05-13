@@ -163,10 +163,12 @@ Computing language R. A short description of the dataset can be found
 
 If you are parsing a tab-separated file that uses `\t` as the separator, you can also
 specify the separator explicitly. However, if you're using an url or file that has 
-the `.tsv` extensions, the type provider will use `\t` by default:
+the `.tsv` extensions, the type provider will use `\t` by default. In the following example,
+we also set `IgnoreErrors` parameter to `true` so that lines with incorrect number of elements
+are automatically skipped (the sample file contains additional unstructured data at the end):
 *)
 
-let mortalityNy = new CsvProvider<"../docs/MortalityNY.tsv">()
+let mortalityNy = new CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)

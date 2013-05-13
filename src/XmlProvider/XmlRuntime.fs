@@ -11,7 +11,7 @@ open System.Globalization
 type XmlElement = 
   // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
   // (but since this is used across multiple files, we have explicit Create method)
-  private { XElement : XElement }
+  { XElement : XElement }
   /// Creates a JsonDocument representing the specified value
   static member Create(element) =
     { XElement = element }

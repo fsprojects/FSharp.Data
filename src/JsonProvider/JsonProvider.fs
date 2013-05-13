@@ -114,9 +114,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       m.InvokeCode <- fun _ -> 
         (if sampleIsUri then
           <@@ use reader = readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder sample
-              { JsonValue = JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture)) } @@>
+              JsonDocument.Create(JsonValue.Parse(reader.ReadToEnd(), Operations.GetCulture(culture))) @@>
          else
-          <@@ { JsonValue = JsonValue.Parse(sample, Operations.GetCulture(culture)) } @@>)
+          <@@ JsonDocument.Create(JsonValue.Parse(sample, Operations.GetCulture(culture))) @@>)
         |> methResConv
       resTy.AddMember m
 

@@ -13,7 +13,7 @@ open FSharp.Data.RuntimeImplementation.StructuralTypes
 type JsonDocument = 
   // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
   // (but since this is used across multiple files, we have explicit Create method)
-  private { JsonValue : JsonValue }
+  { JsonValue : JsonValue }
   /// Creates a JsonDocument representing the specified value
   static member Create(value:JsonValue) = 
     { JsonValue = value }
