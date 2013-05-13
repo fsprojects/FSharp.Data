@@ -240,7 +240,7 @@ type providers in the <code>FSharp.Data</code> package.</li>
 <div class="tip" id="fs3">type Author = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.Author</div>
 <div class="tip" id="fs4">type XmlProvider<br /><br />Full name: FSharp.Data.XmlProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a XML file&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution)&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val sample : XmlProvider&lt;...&gt;.DomainTypes.Author<br /><br />Full name: XmlProvider.sample</div>
-<div class="tip" id="fs6">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.DomainTypes.Author</div>
+<div class="tip" id="fs6">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.DomainTypes.Author<br /><em><br /><br />Parses the specified XML string</em></div>
 <div class="tip" id="fs7">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
 <div class="tip" id="fs8">property XmlProvider&lt;...&gt;.DomainTypes.Author.Name: string</div>
 <div class="tip" id="fs9">property XmlProvider&lt;...&gt;.DomainTypes.Author.Born: int</div>
@@ -259,7 +259,7 @@ type providers in the <code>FSharp.Data</code> package.</li>
 <div class="tip" id="fs22">val authors : string<br /><br />Full name: XmlProvider.authors</div>
 <div class="tip" id="fs23">type Authors = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.Authors</div>
 <div class="tip" id="fs24">val topic : XmlProvider&lt;...&gt;.DomainTypes.Authors<br /><br />Full name: XmlProvider.topic</div>
-<div class="tip" id="fs25">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.DomainTypes.Authors</div>
+<div class="tip" id="fs25">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.DomainTypes.Authors<br /><em><br /><br />Parses the specified XML string</em></div>
 <div class="tip" id="fs26">property XmlProvider&lt;...&gt;.DomainTypes.Authors.Topic: string</div>
 <div class="tip" id="fs27">val author : XmlProvider&lt;...&gt;.DomainTypes.Author</div>
 <div class="tip" id="fs28">XmlProvider&lt;...&gt;.DomainTypes.Authors.GetAuthors() : XmlProvider&lt;...&gt;.DomainTypes.Author []</div>
@@ -273,7 +273,7 @@ type providers in the <code>FSharp.Data</code> package.</li>
 <div class="tip" id="fs36">val printDiv : div:XmlProvider&lt;...&gt;.DomainTypes.Div -&gt; unit<br /><br />Full name: XmlProvider.printDiv<br /><em><br /><br />&#160;Prints the content of a &lt;div&gt; element</em></div>
 <div class="tip" id="fs37">val div : XmlProvider&lt;...&gt;.DomainTypes.Div</div>
 <div class="tip" id="fs38">type DomainTypes =<br />&#160;&#160;nested type Div<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../docs/HtmlBody.xml&quot;,Global=&quot;True&quot;.DomainTypes</div>
-<div class="tip" id="fs39">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;member GetDivs : unit -&gt; Div []<br />&#160;&#160;member GetSpans : unit -&gt; string []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Value : Option&lt;string&gt;<br />&#160;&#160;member XElement : XElement<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../docs/HtmlBody.xml&quot;,Global=&quot;True&quot;.DomainTypes.Div</div>
+<div class="tip" id="fs39">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;member GetDivs : unit -&gt; Div []<br />&#160;&#160;member GetSpans : unit -&gt; string []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Value : Option&lt;string&gt;<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../docs/HtmlBody.xml&quot;,Global=&quot;True&quot;.DomainTypes.Div</div>
 <div class="tip" id="fs40">XmlProvider&lt;...&gt;.DomainTypes.Div.GetSpans() : string []</div>
 <div class="tip" id="fs41">XmlProvider&lt;...&gt;.DomainTypes.Div.GetDivs() : XmlProvider&lt;...&gt;.DomainTypes.Div []</div>
 <div class="tip" id="fs42">property XmlProvider&lt;...&gt;.DomainTypes.Div.Value: Option&lt;string&gt;</div>
