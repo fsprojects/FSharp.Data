@@ -21,9 +21,7 @@ module internal CsvTypeBuilder =
   let generateTypes asm ns typeName (missingValues, culture) replacer inferredFields =
     
     let fields = inferredFields |> List.mapi (fun index field ->
-
       let typ, typWithoutMeasure, conv, convBack = Conversions.convertValue replacer (missingValues, culture) field
-
       { TypeForTuple = typWithoutMeasure
         Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
         Convert = fun rowVarExpr -> conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>
@@ -46,7 +44,6 @@ module internal CsvTypeBuilder =
     // The erased csv type will be parameterised by the tuple type
     let csvErasedTypeWithRowErasedType = 
       (replacer.ToRuntime typedefof<CsvFile<_>>).MakeGenericType(rowErasedType) 
-
     let csvErasedTypeWithGeneratedRowType = 
       (replacer.ToRuntime typedefof<CsvFile<_>>).MakeGenericType(rowType) 
 
@@ -55,9 +52,7 @@ module internal CsvTypeBuilder =
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type
     let stringArrayToRow = 
-
-      let parentVar = Var("parent", typeof<obj>)
-            
+      let parentVar = Var("parent", typeof<obj>)            
       let rowVar = Var("row", typeof<string[]>)
       let rowVarExpr = Expr.Var rowVar
 
@@ -73,13 +68,10 @@ module internal CsvTypeBuilder =
 
     // Create a function that converts the tuple type to a string[]
     let rowToStringArray =
-            
       let rowVar = Var("row", rowErasedType)
       let rowVarExpr = Expr.Var rowVar
-
       let body = 
         Expr.NewArray(typeof<string>, [ for field in fields -> field.ConvertBack rowVarExpr ])
-
       let delegateType = 
         typedefof<Func<_,_>>.MakeGenericType(rowErasedType, typeof<string[]>)
 
