@@ -9,15 +9,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{ad03f725-3ae4-4369-907f-58d8563b4ab4}</ProjectGuid>
+    <ProjectGuid>{ae27935c-12fc-4311-8c46-79f97d579d9e}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>FSharp.Data.DesignTime</AssemblyName>
+    <AssemblyName>FSharp.Data.Experimental.DesignTime</AssemblyName>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <FileAlignment>512</FileAlignment>
     <AllowCrossTargeting>true</AllowCrossTargeting>
     <ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{f2a71f9b-5d33-465a-a702-920d77279786}</ProjectTypeGuids>
-    <Name>FSharp.Data.DesignTime</Name>
+    <Name>FSharp.Data.Experimental.DesignTime</Name>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
@@ -31,7 +31,7 @@
     <OutputPath>bin\sl5-compiler\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl5-compiler\Debug\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\sl5-compiler\Debug\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -45,7 +45,7 @@
     <OutputPath>bin\sl5-compiler\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl5-compiler\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\sl5-compiler\Release\FSharp.Data.Experimental.DesignTime.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ProviderFileSystem.fs" />
@@ -55,9 +55,6 @@
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
     <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\CsvRuntime.fs" />
-    <Compile Include="Library\Csv.fs" />
-    <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="Providers\ProvidedTypes.fsi" />
     <Compile Include="Providers\ProvidedTypes.fs" />
     <Compile Include="Providers\Pluralizer.fs" />
@@ -70,18 +67,13 @@
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="JsonProvider\JsonInference.fs" />
     <Compile Include="JsonProvider\JsonGenerator.fs" />
-    <Compile Include="JsonProvider\JsonProvider.fs" />
-    <Compile Include="CsvProvider\CsvInference.fs" />
-    <Compile Include="CsvProvider\CsvGenerator.fs" />
-    <Compile Include="CsvProvider\CsvProvider.fs" />
-    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
-    <Compile Include="WorldBankProvider\WorldBankProvider.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
-    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
-    <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
-    <Compile Include="AssemblyInfo.DesignTime.fs" />
-    <None Include="Test.fsx" />
+    <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
+    <Compile Include="ApiaryProvider\ApiarySchema.fs" />
+    <Compile Include="ApiaryProvider\ApiaryGenerator.fs" />
+    <Compile Include="ApiaryProvider\ApiaryProvider.fs" />
+    <Compile Include="TypeProviderInstantiation.Experimental.fs" />
+    <Compile Include="AssemblyInfo.Experimental.DesignTime.fs" />
+    <None Include="Test.Experimental.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=2.9.9.999, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

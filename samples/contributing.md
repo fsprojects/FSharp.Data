@@ -55,24 +55,30 @@ component, because that is always going to be executed on desktop .NET in Visual
 or MonoDevelop. (Well, the truth is that we actually need another _design time_ version
 for Silverlight to support the [tryfsharp.org](http://tryfsharp.org) web site...)
 
-So, there are 3 versions of _runtime_ component and 2 versions of _design time_ 
+So, there are 3 versions of _runtime_ components and 2 versions of _design time_ 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
-using `#if`.
+using `#if`. There are also 2 versions of _runtime_ components and 2 versions of _design time_ components
+for the experimental projects.
 
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
  * **FSharp.Data.Portable** - F# portable library version
  * **FSharp.Data.Silverlight** - a separate Silverlight version
+ * **FSharp.Data.Experimental** - the desktop .NET 4.0 version of the experimental features
+ * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features
 
-Although you could use portable library in Silverlight, this causes various issues and
-so we have a separate Silverlight build. The _design time_ components are in the following
+Although you could use the portable library in Silverlight, the Freebase provider doesn't work
+correctly, so we have a separate Silverlight build. For the experimental project there's no
+need to have a separate Silverlight build. The _design time_ components are in the following
 projects:
 
  * **FSharp.Data.DesignTime** - the main version for desktop editors
  * **FSharp.Data.DesignTime.Silverlight** - an experimental version for Try F#
+ * **FSharp.Data.Experimental.DesignTime** - the main version for desktop editors
+ * **FSharp.Data.Experimental.DesignTime.Silverlight** - an experimental version for Try F#
 
 ### Type provider structure
 
@@ -155,8 +161,10 @@ All standard type providers obtain an instance of `AssemblyReplacer` when constr
 to the code generator, which can use it to generate appropriate code:
 
     type AssemblyReplacer =
+    
       /// Gets the equivalent runtime type
       abstract member ToRuntime : designTimeType:Type -> Type
+      
       /// Gets an equivalent expression with all the types 
       /// replaced with runtime equivalents
       abstract member ToRuntime : designTimeTypeExpr:Expr -> Expr
