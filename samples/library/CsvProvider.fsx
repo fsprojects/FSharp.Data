@@ -140,16 +140,14 @@ are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometres per hour.
 
-## Using custom separators
+## Custom separators and tab-separated files
 
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
 countries, ',' is already used as the numeric decimal separator, so a semicolon is used
 instead to separate CSV columns. The `CsvProvider` has an optional `Separator` parameter
 where you can specify what to use as separator. This means that you can consume
-any textual tabular format. If you specify `\t` you'll also be able to consume TSV files.
-If you don't specify the separator and you're using an url or file that has the `.tsv`
-extensions, the type provider will use `\t` by default.
+any textual tabular format. Here is an example using `;` as a separator:
 *)
 
 let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()
@@ -162,6 +160,28 @@ for row in airQuality.Data do
 The air quality dataset used above is used in a lots of samples for the Statistical
 Computing language R. A short description of the dataset can be found 
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
+
+If you are parsing a tab-separated file that uses `\t` as the separator, you can also
+specify the separator explicitly. However, if you're using an url or file that has 
+the `.tsv` extensions, the type provider will use `\t` by default. In the following example,
+we also set `IgnoreErrors` parameter to `true` so that lines with incorrect number of elements
+are automatically skipped (the sample file contains additional unstructured data at the end):
+*)
+
+let mortalityNy = new CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>()
+
+// Find the name of a cause based on code
+// (Pedal cyclist injured in an accident)
+let cause = mortalityNy.Data |> Seq.find (fun r -> 
+  r.``Cause of death Code`` = "V13.4")
+
+// Print the number of injured cyclists 
+printfn "CAUSE: %s" cause.``Cause of death``
+for r in mortalityNy.Data do
+  if r.``Cause of death Code`` = "V13.4" then 
+    printfn "%s (%d cases)" r.County r.Count
+
+(**
 
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains 
