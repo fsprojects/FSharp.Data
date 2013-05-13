@@ -173,7 +173,7 @@ it to print the result only when the data point is available.
 
 In our last example, we look how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
 Tweets are quite heterogeneous, so we infer the structure from a _list_ of inputs rather than from 
-just a single input. To do that, we use the file [`docs/TwitterStream.json`](docs/TwitterStream.json) 
+just a single input. To do that, we use the file [`docs/TwitterStream.json`](../docs/TwitterStream.json) 
 (containing a list of tweets) and pass an optional parameter `SampleList=true` which tells the 
 provider that the sample is actually a _list of samples_:
 

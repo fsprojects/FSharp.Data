@@ -49,6 +49,9 @@ let getJsonData() = seq {
                             Content = issue.Body } } }
 }
 
+#if SILVERLIGHT
+#else
+
 type AuthorsXml = XmlProvider<"../../samples/docs/Writers.xml">
 
 let getXmlData() = seq {
@@ -67,6 +70,7 @@ let getXmlData() = seq {
                             Description = ""
                             Content = "" } } }
 }
+#endif
 
 let getWorldBankData() = seq {
 

@@ -33,6 +33,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental", 
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.Portable", "src\FSharp.Data.Experimental.Portable.fsproj", "{B80449D9-77F9-4C10-BA90-BBEE3B0D088D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.DesignTime.Silverlight", "src\FSharp.Data.Experimental.DesignTime.Silverlight.fsproj", "{AE27935C-12FC-4311-8C46-79F97D579D9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{B80449D9-77F9-4C10-BA90-BBEE3B0D088D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B80449D9-77F9-4C10-BA90-BBEE3B0D088D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B80449D9-77F9-4C10-BA90-BBEE3B0D088D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

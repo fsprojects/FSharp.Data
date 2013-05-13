@@ -59,7 +59,6 @@
     <Compile Include="Library\Csv.fs" />
     <Compile Include="Library\FreebaseOperators.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
-    <Compile Include="XmlProvider\XmlRuntime.fs" />
     <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
     <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
     <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
