@@ -110,6 +110,11 @@
  (assuming that the value is a string or array of strings)
 </summary>
 </member>
+<member name="M:FSharp.Data.Json.Extensions.JsonValue.AsGuid``1(FSharp.Data.Json.JsonValue,Microsoft.FSharp.Core.FSharpOption{``0})">
+<summary>
+ Get the guid value of an element (assuming that the value is a guid)
+</summary>
+</member>
 <member name="M:FSharp.Data.Json.Extensions.JsonValue.AsBoolean(FSharp.Data.Json.JsonValue,Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
 <summary>
  Get the boolean value of an element (assuming that the value is a boolean)
@@ -175,22 +180,10 @@
 <member name="">
 
 </member>
-<member name="P:FSharp.Data.RuntimeImplementation.JsonDocument.JsonValue">
+<member name="M:FSharp.Data.RuntimeImplementation.JsonDocument.Create(FSharp.Data.Json.JsonValue)">
 <summary>
- Returns the raw JSON value that is represented by the generated type
+ Creates a JsonDocument representing the specified value
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.JsonDocument">
 <summary>
@@ -206,6 +199,9 @@
 <summary>
  Returns single or no value from an array matching the specified tag
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -254,17 +250,27 @@
  `JsonDocument`) which is then passed to projection function `f`.
 </summary>
 </member>
-<member name="">
-
+<member name="T:FSharp.Data.RuntimeImplementation.JsonOperations">
+<summary>
+ Static helper methods called from the generated code
+</summary>
 </member>
 <member name="">
 
 </member>
-<member name="M:FSharp.Data.RuntimeImplementation.Operations.ToNullable``1(Microsoft.FSharp.Core.FSharpOption{``0})">
+<member name="M:FSharp.Data.RuntimeImplementation.Operations.OptionToNullable``1(Microsoft.FSharp.Core.FSharpOption{``0})">
 <summary>
  Turn an F# option type Option&lt;&apos;T&gt; containing a primitive 
  value type into a .NET type Nullable&lt;&apos;T&gt;
 </summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.Operations.NullableToOption``1(System.Nullable{``0})">
+<summary>
+ Turn a .NET type Nullable&lt;&apos;T&gt; to an F# option type Option&lt;&apos;T&gt;
+</summary>
+</member>
+<member name="">
+
 </member>
 <member name="M:FSharp.Data.RuntimeImplementation.Operations.GetNonOptionalValue``1(System.String,Microsoft.FSharp.Core.FSharpOption{``0},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
@@ -306,10 +312,40 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.Operations.AsOption(System.String)">
 <summary>
  Turns empty or null string value into None, otherwise returns Some
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -519,6 +555,9 @@
 <member name="T:FSharp.Data.RuntimeImplementation.Helpers">
 
 </member>
+<member name="">
+
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.ProviderFileSystem.readTextAtRunTime(System.Boolean,System.String,System.String,System.String)">
 <summary>
  Resolve a location of a file (or a web location) and open it for shared
@@ -613,6 +652,9 @@
  we would lose information about multiplicity and so we would not be able
  to generate nicer types!
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -1177,7 +1219,7 @@
 <member name="T:ProviderImplementation.AssemblyResolver">
 
 </member>
-<member name="M:ProviderImplementation.Conversions.convertValue(ProviderImplementation.AssemblyReplacer,System.String,System.String,ProviderImplementation.PrimitiveInferedProperty)">
+<member name="M:ProviderImplementation.Conversions.convertValue``2(ProviderImplementation.AssemblyReplacer,System.String,System.String,ProviderImplementation.PrimitiveInferedProperty)">
 <summary>
  Creates a function that takes Expr&lt;string option&gt; and converts it to 
  an expression of other type - the type is specified by `field`

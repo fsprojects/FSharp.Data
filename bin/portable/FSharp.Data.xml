@@ -92,6 +92,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="T:FSharp.Data.Csv.Extensions">
 <summary>
  Adds extension methods that can be used to work with CsvRow in a more convenient, but
@@ -231,6 +234,11 @@
  (assuming that the value is a string or array of strings)
 </summary>
 </member>
+<member name="M:FSharp.Data.Json.Extensions.JsonValue.AsGuid``1(FSharp.Data.Json.JsonValue,Microsoft.FSharp.Core.FSharpOption{``0})">
+<summary>
+ Get the guid value of an element (assuming that the value is a guid)
+</summary>
+</member>
 <member name="M:FSharp.Data.Json.Extensions.JsonValue.AsBoolean(FSharp.Data.Json.JsonValue,Microsoft.FSharp.Core.FSharpOption{System.Globalization.CultureInfo})">
 <summary>
  Get the boolean value of an element (assuming that the value is a boolean)
@@ -335,9 +343,60 @@
 <member name="">
 
 </member>
-<member name="P:FSharp.Data.RuntimeImplementation.JsonDocument.JsonValue">
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Truncate(System.Int32)">
 <summary>
- Returns the raw JSON value that is represented by the generated type
+ Returns a csv that when enumerated returns at most N rows.
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.TakeWhile(Microsoft.FSharp.Core.FSharpFunc{`0,System.Boolean})">
+<summary>
+ Returns a csv that, when iterated, yields rowswhile the given predicate
+ returns &lt;c&gt;true&lt;/c&gt;, and then returns no further rows.
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Take(System.Int32)">
+<summary>
+ Returns a new csv with only the first N rows of the underlying csv.
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.SkipWhile(Microsoft.FSharp.Core.FSharpFunc{`0,System.Boolean})">
+<summary>
+ Returns a csv that, when iterated, skips rows while the given predicate returns
+ &lt;c&gt;true&lt;/c&gt;, and then yields the remaining rows.
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Skip(System.Int32)">
+<summary>
+ Returns a csv that skips N rows and then yields the remaining rows.
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.SaveToString(Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Char})">
+<summary>
+ Saves CSV to a string
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Save(System.IO.Stream,Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Char})">
+<summary>
+ Saves CSV to the specified stream
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Save(System.IO.TextWriter,Microsoft.FSharp.Core.FSharpOption{System.Char},Microsoft.FSharp.Core.FSharpOption{System.Char})">
+<summary>
+ Saves CSV to the specified writer
+</summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Filter(Microsoft.FSharp.Core.FSharpFunc{`0,System.Boolean})">
+<summary>
+ Returns a new csv containing only the rows for which the given predicate returns &quot;true&quot;.
+</summary>
+</member>
+<member name="">
+
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.CsvFile`1.Cache">
+<summary>
+ Returns a new csv with the same rows as the original but which guarantees
+ that each row will be only be read and parsed from the input at most once.
 </summary>
 </member>
 <member name="">
@@ -351,6 +410,11 @@
 </member>
 <member name="">
 
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.JsonDocument.Create(FSharp.Data.Json.JsonValue)">
+<summary>
+ Creates a JsonDocument representing the specified value
+</summary>
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.JsonDocument">
 <summary>
@@ -366,6 +430,9 @@
 <summary>
  Returns single or no value from an array matching the specified tag
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -414,17 +481,27 @@
  `JsonDocument`) which is then passed to projection function `f`.
 </summary>
 </member>
-<member name="">
-
+<member name="T:FSharp.Data.RuntimeImplementation.JsonOperations">
+<summary>
+ Static helper methods called from the generated code
+</summary>
 </member>
 <member name="">
 
 </member>
-<member name="M:FSharp.Data.RuntimeImplementation.Operations.ToNullable``1(Microsoft.FSharp.Core.FSharpOption{``0})">
+<member name="M:FSharp.Data.RuntimeImplementation.Operations.OptionToNullable``1(Microsoft.FSharp.Core.FSharpOption{``0})">
 <summary>
  Turn an F# option type Option&lt;&apos;T&gt; containing a primitive 
  value type into a .NET type Nullable&lt;&apos;T&gt;
 </summary>
+</member>
+<member name="M:FSharp.Data.RuntimeImplementation.Operations.NullableToOption``1(System.Nullable{``0})">
+<summary>
+ Turn a .NET type Nullable&lt;&apos;T&gt; to an F# option type Option&lt;&apos;T&gt;
+</summary>
+</member>
+<member name="">
+
 </member>
 <member name="M:FSharp.Data.RuntimeImplementation.Operations.GetNonOptionalValue``1(System.String,Microsoft.FSharp.Core.FSharpOption{``0},Microsoft.FSharp.Core.FSharpOption{System.String})">
 <summary>
@@ -466,10 +543,40 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
+<member name="">
+
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.Operations.AsOption(System.String)">
 <summary>
  Turns empty or null string value into None, otherwise returns Some
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -499,22 +606,10 @@
 <member name="">
 
 </member>
-<member name="P:FSharp.Data.RuntimeImplementation.XmlElement.XElement">
+<member name="M:FSharp.Data.RuntimeImplementation.XmlElement.Create(System.Xml.Linq.XElement)">
 <summary>
- Returns the raw XML element that is represented by the generated type
+ Creates a JsonDocument representing the specified value
 </summary>
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
-</member>
-<member name="">
-
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.XmlElement">
 <summary>
@@ -570,6 +665,12 @@
 
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.Caching">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:FSharp.Data.RuntimeImplementation.CsvHelpers">
 
 </member>
 <member name="M:FSharp.Data.RuntimeImplementation.CsvReader.readCsvFile(System.IO.TextReader,System.String,System.Char)">
@@ -1354,6 +1455,9 @@
 <member name="">
 
 </member>
+<member name="">
+
+</member>
 <member name="F:FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema.FreebaseProperty.UnitOfMeasure">
 <summary>
  The unit of measure for the property, if any. e.g. /en/kilometer
@@ -1366,6 +1470,9 @@
 <summary>
  Name of the enumeration type. Like /authority/gnis
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
@@ -1454,6 +1561,9 @@
 
 </member>
 <member name="T:FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema">
+
+</member>
+<member name="">
 
 </member>
 <member name="">
@@ -1745,6 +1855,9 @@
 <member name="T:FSharp.Data.RuntimeImplementation.Helpers">
 
 </member>
+<member name="">
+
+</member>
 <member name="M:FSharp.Data.RuntimeImplementation.ProviderFileSystem.readTextAtRunTime(System.Boolean,System.String,System.String,System.String)">
 <summary>
  Resolve a location of a file (or a web location) and open it for shared
@@ -1830,6 +1943,9 @@
  we would lose information about multiplicity and so we would not be able
  to generate nicer types!
 </summary>
+</member>
+<member name="">
+
 </member>
 <member name="">
 
