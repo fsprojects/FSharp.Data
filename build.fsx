@@ -99,7 +99,7 @@ Target "RunTests" (fun _ ->
         { p with
             ToolPath = nunitPath
             DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 10.
+            TimeOut = TimeSpan.FromMinutes 20.
             OutputFile = "TestResults.xml" })
 )
 

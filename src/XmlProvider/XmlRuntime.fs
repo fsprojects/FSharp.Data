@@ -8,7 +8,13 @@ open System.Xml.Linq
 open System.Globalization
 
 /// Underlying representation of the generated XML types
-type XmlElement = { XElement : XElement }
+type XmlElement = 
+  // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
+  // (but since this is used across multiple files, we have explicit Create method)
+  { XElement : XElement }
+  /// Creates a JsonDocument representing the specified value
+  static member Create(element) =
+    { XElement = element }
 
 /// Static helper methods called from the generated code
 type XmlOperations = 
