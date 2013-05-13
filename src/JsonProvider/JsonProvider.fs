@@ -1,5 +1,6 @@
 ﻿namespace ProviderImplementation
 
+open System
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
@@ -40,24 +41,32 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
+    let parse value = 
+      if sampleList then
+        try
+          JsonValue.Parse(value, cultureInfo).AsArray() :> seq<_>
+        with _  ->
+          value.Split '\n'
+          |> Seq.filter (not << String.IsNullOrWhiteSpace)
+          |> Seq.map (fun value -> JsonValue.Parse(value, cultureInfo))
+      else
+        JsonValue.Parse(value, cultureInfo) |> Seq.singleton
+
     // Infer the schema from a specified uri or inline text
     let sampleJson, sampleIsUri = 
       try
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
             use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            JsonValue.Parse(reader.ReadToEnd(), cultureInfo), true
+            parse (reader.ReadToEnd()), true
         | None ->
-            JsonValue.Parse(sample, cultureInfo), false
+            parse sample, false
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed JSON: %s" e.Message
 
     let inferedType = 
-      if not sampleList then
-        JsonInference.inferType cultureInfo sampleJson
-      else
-        [ for itm in sampleJson -> JsonInference.inferType cultureInfo itm ]
-        |> Seq.fold subtypeInfered Top
+      [ for item in sampleJson -> JsonInference.inferType cultureInfo item ]
+      |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
     let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType

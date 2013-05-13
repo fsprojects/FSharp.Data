@@ -1,5 +1,6 @@
 ﻿namespace ProviderImplementation
 
+open System
 open System.IO
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
@@ -40,24 +41,33 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
+    let parse value = 
+      if sampleList then
+        try
+          XDocument.Parse(value).Root.Descendants()
+        with _  ->
+          value.Split '\n'
+          |> Seq.filter (not << String.IsNullOrWhiteSpace)
+          |> Seq.map (fun value -> XDocument.Parse(value).Root)
+      else
+        XDocument.Parse(value).Root |> Seq.singleton
+
     // Infer the schema from a specified uri or inline text
     let sampleXml, sampleIsUri = 
       try
         match ProviderHelpers.tryGetUri sample with
         | Some uri ->
             use reader = ProviderHelpers.readTextAtDesignTime defaultResolutionFolder this.Invalidate resolutionFolder uri
-            XDocument.Parse(reader.ReadToEnd()), true
+            parse (reader.ReadToEnd()), true
         | None ->
-            XDocument.Parse(sample), false
+            parse sample, false
       with e ->
         failwithf "Specified argument is neither a file, nor well-formed XML: %s" e.Message
 
     let inferedType = 
-      if not sampleList then
-        XmlInference.inferType cultureInfo globalInference sampleXml.Root
-      else
-        [ for itm in sampleXml.Root.Descendants() -> XmlInference.inferType cultureInfo globalInference itm ]
-        |> Seq.fold subtypeInfered Top
+      sampleXml
+      |> Seq.map (fun item -> XmlInference.inferType cultureInfo globalInference item)
+      |> Seq.fold subtypeInfered Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType
