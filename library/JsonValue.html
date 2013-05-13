@@ -68,7 +68,7 @@ of extensions that become available after opening the <code>FSharp.Data.Json.Ext
 namespace. Once opened, we can write:</p>
 
 <ul>
-<li><code>value.AsBoolean()</code> returns the value as Boolean if it is either <code>true</code> or <code>false</code></li>
+<li><code>value.AsBoolean()</code> returns the value as boolean if it is either <code>true</code> or <code>false</code></li>
 <li><code>value.AsInteger()</code> returns the value as integer if it is numeric and can be
 converted to an integer; <code>value.AsInteger64()</code>, <code>value.AsDecimal()</code> and
 <code>value.AsFloat()</code> behave similarly.</li>
@@ -76,6 +76,7 @@ converted to an integer; <code>value.AsInteger64()</code>, <code>value.AsDecimal
 <li><code>value.AsDateTime()</code> parse the string as a <code>DateTime</code> value using either the
 <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format, or using the
 <code>\/Date(...)\/</code> JSON format containing number of milliseconds since 1/1/1970.</li>
+<li><code>value.AsGuid()</code> parse the string as a <code>Guid</code> value.</li>
 <li><code>value?child</code> uses the dynamic operator to obtain a record member named <code>child</code>;
 alternatively, you can also use <code>value.GetProperty(child)</code> or an indexer
 <code>value.[child]</code>.</li>
