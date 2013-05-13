@@ -106,8 +106,8 @@ let msdnUrl className =
   sprintf "%s/en-gb/library/%s.aspx" root className
 
 // Get the page and search for F# code
-let body = Http.Request(msdnUrl "system.web.httprequest")
-body.Contains "<a>F#</a>"
+let docInCSharp = Http.Request(msdnUrl "system.web.httprequest")
+docInCSharp.Contains "<a>F#</a>"
 
 (**
 
@@ -126,11 +126,11 @@ Http.Request
     cookieContainer = cc) |> ignore
 
 // Request the documentation again & search for F#
-let body = 
+let docInFSharp = 
   Http.Request
     ( msdnUrl "system.web.httprequest", 
       cookieContainer = cc )
-body.Contains "<a>F#</a>"
+docInFSharp.Contains "<a>F#</a>"
 
 (**
 If you want to see more information about the response, including the response 

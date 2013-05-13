@@ -38,6 +38,13 @@ let ``Decimal column correctly infered and accessed`` () =
   let actual:decimal = first.Column3
   actual |> should equal 3.0M
 
+[<Test>]
+let ``Guid column correctly infered and accessed`` () = 
+  let csv = new CsvProvider<"Data/LastFM.tsv", HasHeaders=false>()
+  let first = csv.Data |> Seq.head
+  let actual:Guid option = first.Column3
+  actual |> should equal (Some (Guid.Parse("f1b1cf71-bd35-4e99-8624-24a6e15f133a")))
+
 let [<Literal>] csvWithEmptyValues = """
 Float1,Float2,Float3,Float4,Int,Float5,Float6,Date
 1,1,1,1,,,,

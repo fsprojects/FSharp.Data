@@ -56,7 +56,7 @@ module Debug =
                 pending.Enqueue t
 
         let fullName (t: Type) =
-            let fullName = t.FullName
+            let fullName = t.Namespace + "." + t.Name
             if fullName.StartsWith "FSI_" then
                 fullName.Substring(fullName.IndexOf('.') + 1)
             else
@@ -90,22 +90,27 @@ module Debug =
                         let args =                 
                             t.GetGenericArguments() 
                             |> Seq.map (if hasUnitOfMeasure then (fun t -> t.Name) else toString)
-                            |> separatedBy ", "
-                        let name, reverse = 
-                            match t with
-                            | t when hasUnitOfMeasure -> toString t.UnderlyingSystemType, false
-                            | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
-                            | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
-                            | t when t.Name = "FSharpAsync`1" -> "async", true
-                            | t when ns.Contains t.Namespace -> t.Name, false
-                            | t -> fullName t, false
-                        let name = name.Split('`').[0]
-                        if reverse then
-                            args + " " + name 
-                        else
-                            name + "<" + args + ">"
+                        if FSharpType.IsTuple t then
+                            separatedBy " * " args
+                        elif t.Name.StartsWith "FSharpFunc`" then
+                            "(" + separatedBy " -> " args + ")"
+                        else 
+                          let args = separatedBy ", " args
+                          let name, reverse = 
+                              match t with
+                              | t when hasUnitOfMeasure -> toString t.UnderlyingSystemType, false
+                              | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
+                              | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
+                              | t when t.Name = "FSharpAsync`1" -> "async", true
+                              | t when ns.Contains t.Namespace -> t.Name, false
+                              | t -> fullName t, false
+                          let name = name.Split('`').[0]
+                          if reverse then
+                              args + " " + name 
+                          else
+                              name + "<" + args + ">"
                     | t when ns.Contains t.Namespace -> t.Name
                     | t when t.IsGenericParameter -> t.Name
                     | t -> fullName t
@@ -221,7 +226,7 @@ module Debug =
                 if not ignoreOutput then
                     print <| (if prop.IsStatic then "static " else "") + "member " + 
                              prop.Name + ": " + (toString prop.PropertyType) + 
-                             " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")            
+                             " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set") + body
 
             | :? ProvidedMethod as m ->
                 let body = 

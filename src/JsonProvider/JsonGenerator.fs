@@ -35,7 +35,7 @@ type internal JsonGenerationContext =
     Unpacker : Expr -> Expr
     UnpackerStayInDesignTime : Expr -> Expr }
   static member Create(domainTy, replacer) =
-    let packer e = <@@ JsonDocument(%%e) @@>
+    let packer e = <@@ { JsonValue = %%e } @@>
     let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
     JsonGenerationContext.Create(domainTy, typeof<JsonDocument>, replacer, packer, unpacker, NameUtils.uniqueGenerator NameUtils.nicePascalName)
   static member internal Create(domainTy, representation, replacer, packer, unpacker, uniqueNiceName) =
@@ -98,6 +98,7 @@ module JsonTypeBuilder =
           elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, culture) @@>
           elif typ = typeof<string> then fun json -> <@@ JsonOperations.GetString(%%json) @@>
           elif typ = typeof<bool> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
+          elif typ = typeof<Guid> then fun json -> <@@ JsonOperations.GetGuid(%%json) @@>
           elif typ = typeof<DateTime> then fun json -> <@@ JsonOperations.GetDateTime(%%json, culture) @@>
           else failwith "generateJsonType: Unsupported primitive type"
         let conv = ctx.UnpackerStayInDesignTime >> conv >> ctx.Replacer.ToRuntime

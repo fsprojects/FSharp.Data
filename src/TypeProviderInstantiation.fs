@@ -12,6 +12,7 @@ type CsvProviderArgs =
       IgnoreErrors : bool
       Quote : char
       MissingValues : string
+      CacheRows : bool
       ResolutionFolder : string }
 
 type XmlProviderArgs = 
@@ -62,6 +63,7 @@ type TypeProviderInstantiation =
                    box x.IgnoreErrors
                    box x.Quote
                    box x.MissingValues
+                   box x.CacheRows
                    box x.ResolutionFolder |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),

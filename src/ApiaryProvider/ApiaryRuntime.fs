@@ -5,7 +5,6 @@
 namespace FSharp.Data.RuntimeImplementation.Apiary
 
 open System
-open System.ComponentModel
 open FSharp.Data.Json
 open FSharp.Net
 
@@ -38,14 +37,13 @@ type ApiaryDocument private (json:JsonValue, context:InternalApiaryContext optio
   member x.JsonValue = json
   member x.Context = context.Value
 
-  [<EditorBrowsable(EditorBrowsableState.Never)>]  
   override x.Equals(y) =
     match y with
     | :? ApiaryDocument as y -> x.JsonValue = y.JsonValue
     | _ -> false 
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
+
   override x.GetHashCode() = x.JsonValue.GetHashCode()
-  [<EditorBrowsable(EditorBrowsableState.Never)>]
+
   override x.ToString() = x.JsonValue.ToString()
 
 and ApiaryOperations = 

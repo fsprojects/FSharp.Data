@@ -1,11 +1,12 @@
-class CsvProvider : FDR.CsvFile<System.Tuple<int, decimal>>
-    member Data: CsvProvider+Row seq with get
+class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     static member Parse: text:string -> CsvProvider
     static member Load: stream:System.IO.Stream -> CsvProvider
+    static member Load: reader:System.IO.TextReader -> CsvProvider
     static member Load: uri:string -> CsvProvider
 
-class CsvProvider+Row : System.Tuple<int, decimal>
+class CsvProvider+Row : int * decimal
+    member AsTuple: int * decimal with get
     member Distance: int<metre> with get
     member Time: decimal<second> with get
 

@@ -77,11 +77,9 @@ let ``Validate signature didn't change `` (testCase:TestCase) =
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
     testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText 
     testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore

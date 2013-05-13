@@ -49,7 +49,7 @@ class JsonProvider+DomainTypes+Entity4 : FDR.JsonDocument
     member FollowersUrl: string with get
     member FollowingUrl: string with get
     member GistsUrl: string with get
-    member GravatarId: string with get
+    member GravatarId: System.Guid with get
     member HtmlUrl: string with get
     member Id: int with get
     member Login: string with get
