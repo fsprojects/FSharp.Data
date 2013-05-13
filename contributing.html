@@ -91,11 +91,12 @@ component, because that is always going to be executed on desktop .NET in Visual
 or MonoDevelop. (Well, the truth is that we actually need another <em>design time</em> version
 for Silverlight to support the <a href="http://tryfsharp.org">tryfsharp.org</a> web site...)</p>
 
-<p>So, there are 3 versions of <em>runtime</em> component and 2 versions of <em>design time</em> 
+<p>So, there are 3 versions of <em>runtime</em> components and 2 versions of <em>design time</em> 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
-using <code>#if</code>.</p>
+using <code>#if</code>. There are also 2 versions of <em>runtime</em> components and 2 versions of <em>design time</em> components
+for the experimental projects.</p>
 
 <p>If you open <code>FSharp.Data.sln</code>, you'll see the following projects for <em>runtime components</em>:</p>
 
@@ -103,15 +104,20 @@ using <code>#if</code>.</p>
 <li><strong>FSharp.Data</strong> - the desktop .NET 4.0 version</li>
 <li><strong>FSharp.Data.Portable</strong> - F# portable library version</li>
 <li><strong>FSharp.Data.Silverlight</strong> - a separate Silverlight version</li>
+<li><strong>FSharp.Data.Experimental</strong> - the desktop .NET 4.0 version of the experimental features</li>
+<li><strong>FSharp.Data.Experimental.Portable</strong> - F# portable library version of the experimental features</li>
 </ul>
 
-<p>Although you could use portable library in Silverlight, this causes various issues and
-so we have a separate Silverlight build. The <em>design time</em> components are in the following
+<p>Although you could use the portable library in Silverlight, the Freebase provider doesn't work
+correctly, so we have a separate Silverlight build. For the experimental project there's no
+need to have a separate Silverlight build. The <em>design time</em> components are in the following
 projects:</p>
 
 <ul>
 <li><strong>FSharp.Data.DesignTime</strong> - the main version for desktop editors</li>
 <li><strong>FSharp.Data.DesignTime.Silverlight</strong> - an experimental version for Try F#</li>
+<li><strong>FSharp.Data.Experimental.DesignTime</strong> - the main version for desktop editors</li>
+<li><strong>FSharp.Data.Experimental.DesignTime.Silverlight</strong> - an experimental version for Try F#</li>
 </ul>
 
 <h3>Type provider structure</h3>
@@ -192,15 +198,17 @@ to the code generator, which can use it to generate appropriate code:</p>
 
 <pre class="fssnip">
 <span class="l"> 1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">AssemblyReplacer</span> <span class="o">=</span>
-<span class="l"> 2: </span>  <span class="c">/// Gets the equivalent runtime type</span>
-<span class="l"> 3: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">Type</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Type</span>
-<span class="l"> 4: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
-<span class="l"> 5: </span>  <span class="c">/// replaced with runtime equivalents</span>
-<span class="l"> 6: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Expr</span>
-<span class="l"> 7: </span>
-<span class="l"> 8: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
-<span class="l"> 9: </span>  <span class="c">/// replaced with designTime equivalents</span>
-<span class="l">10: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 15)" onmouseover="showTip(event, 'fs10', 15)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">Expr</span></pre>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>  <span class="c">/// Gets the equivalent runtime type</span>
+<span class="l"> 4: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">Type</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Type</span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
+<span class="l"> 7: </span>  <span class="c">/// replaced with runtime equivalents</span>
+<span class="l"> 8: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Expr</span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
+<span class="l">11: </span>  <span class="c">/// replaced with designTime equivalents</span>
+<span class="l">12: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 15)" onmouseover="showTip(event, 'fs10', 15)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">Expr</span></pre>
 
 
 <h2>Documentation</h2>
