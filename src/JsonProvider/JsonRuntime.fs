@@ -10,7 +10,13 @@ open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Underlying representation of the generated JSON types
-type JsonDocument = { JsonValue : JsonValue }
+type JsonDocument = 
+  // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
+  // (but since this is used across multiple files, we have explicit Create method)
+  private { JsonValue : JsonValue }
+  /// Creates a JsonDocument representing the specified value
+  static member Create(value:JsonValue) = 
+    { JsonValue = value }
 
 /// Static helper methods called from the generated code
 type JsonOperations = 
