@@ -60,3 +60,14 @@ let ``SampleList for json correctly handled``() =
         | Some _ -> 0
         | None -> 1)
     |> should equal 2
+
+open FSharp.Data.Json.Extensions
+
+[<Test>]
+let ``Null values correctly handled``() = 
+    let tweetStr = 
+        Path.Combine(__SOURCE_DIRECTORY__, "Data/TwitterSample.json")
+        |> File.ReadLines 
+        |> Seq.head
+    let tweet = JsonProvider<"Data/TwitterSample.json", SampleList=true>.Parse tweetStr
+    tweet.Place |> should equal None
