@@ -39,7 +39,9 @@ type JsonOperations =
 
   /// Get optional property of a specified type
   static member ConvertOptionalProperty(value:JsonValue, name, packer:Func<_,_>, f:Func<_,_>) =     
-    value.TryGetProperty(name) |> Option.map (packer.Invoke >> f.Invoke)
+    value.TryGetProperty(name) 
+    |> Option.bind (function JsonValue.Null -> None | x -> Some x) 
+    |> Option.map (packer.Invoke >> f.Invoke)
 
   /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
