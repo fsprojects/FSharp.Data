@@ -61,8 +61,6 @@ let ``SampleList for json correctly handled``() =
         | None -> 1)
     |> should equal 2
 
-open FSharp.Data.Json.Extensions
-
 [<Test>]
 let ``Null values correctly handled``() = 
     let tweetStr = 
