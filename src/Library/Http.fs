@@ -94,7 +94,12 @@ type Http private() =
     // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
-    req.ClientCertificates.Add cert.Value |> ignore
+#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
+#else
+    match cert with
+    | None -> ()
+    | Some certificate -> req.ClientCertificates.Add certificate |> ignore
+#endif
 
     // set method
     let defaultMethod =
