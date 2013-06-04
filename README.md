@@ -23,7 +23,7 @@ automatically generated from `*.fsx` files in [the samples folder][2]. If you fi
 
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
 
- [1]: https://github.com/tpetricek/FSharp.Data/blob/master/LICENSE.md
- [2]: https://github.com/tpetricek/FSharp.Data/tree/master/samples
- [3]: http://tpetricek.github.com/FSharp.Data/
- [4]: http://tpetricek.github.com/FSharp.Data/docs/FSharpData.html
+ [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
+ [2]: https://github.com/fsharp/FSharp.Data/tree/master/samples
+ [3]: http://fsharp.github.io/FSharp.Data/
+ [4]: http://fsharp.github.io/FSharp.Data/fsharpdata.html
