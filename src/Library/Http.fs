@@ -95,6 +95,7 @@ type Http private() =
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
+    failwith "Client Certificates not supported"
 #else
     match cert with
     | None -> ()
