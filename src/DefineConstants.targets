@@ -11,6 +11,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_SECURITY_ELEMENT_ESCAPE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);SILVERLIGHT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
@@ -22,6 +23,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
   </PropertyGroup>
