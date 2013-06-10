@@ -81,7 +81,7 @@ type Http private() =
       remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
     raise e
 
-  static member private InnerRequest(url:string, forceText, ?cert, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
+  static member private InnerRequest(url:string, forceText, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
 
     // Format query parameters
     let url = 
@@ -95,9 +95,9 @@ type Http private() =
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    failwith "Client Certificates not supported"
+    failwith "Client certificate not supported"
 #else
-    match cert with
+    match certificate with
     | None -> ()
     | Some certificate -> req.ClientCertificates.Add certificate |> ignore
 #endif
@@ -221,16 +221,16 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequestDetailed(url, ?cert, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.InnerRequest(url, false, ?cert=cert, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member AsyncRequestDetailed(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.InnerRequest(url, false, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
 
   /// Download an HTTP web resource from the specified URL asynchronously
   /// (allows specifying query string parameters and HTTP headers including
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequest(url, ?cert, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
-    let! response = Http.InnerRequest(url, true, ?cert=cert, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member AsyncRequest(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
+    let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     return
         match response.Body with
         | HttpResponseBody.Text text -> text
@@ -242,8 +242,8 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member RequestDetailed(url, ?cert, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequestDetailed(url, ?cert=cert, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member RequestDetailed(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequestDetailed(url, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously
 
   /// Download an HTTP web resource from the specified URL synchronously
@@ -251,6 +251,6 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member Request(url, ?cert, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequest(url, ?cert=cert, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member Request(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequest(url, ?certificate=certificate, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously

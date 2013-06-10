@@ -93,6 +93,21 @@ Http.Request
     body = """ {"test": 42} """)
 
 (**
+## Sending a client certificate
+
+If you want to add a client certificate to your requests, then you can add a 
+X509ClientCertificate(2) to your request like so:
+*)
+
+open System.Security.Cryptography.X509Certificates
+
+let clientCert = new X509Certificate2 (".\myCertificate.pfx", "password")
+
+Http.Request("http://yourprotectedresouce.com/data",
+             certificate = clientCert)
+
+
+(**
 ## Maintaing cookies across requests
 
 If you want to maintain cookies between requests, you can specify the `cookieContainer` 
