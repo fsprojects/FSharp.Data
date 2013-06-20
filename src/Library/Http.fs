@@ -76,9 +76,13 @@ type Http private() =
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
     let remoteStackTraceString = 
-      typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+      try
+        typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+      with _ -> null
     if remoteStackTraceString <> null then
-      remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+      try
+        remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+      with _ -> ()
     raise e
 
   static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
