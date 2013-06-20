@@ -199,7 +199,9 @@ type Http private() =
               use responseStream = exn.Response.GetResponseStream()
               use streamReader = new StreamReader(responseStream)
               let response = streamReader.ReadToEnd()
-              responseStream.Position <- 0L
+              try 
+                responseStream.Position <- 0L
+              with _ -> ()
               if String.IsNullOrEmpty response then None
               else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
             with _ -> None
