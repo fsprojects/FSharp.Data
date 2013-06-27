@@ -37,7 +37,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let sampleList = args.[1] :?> bool
     let culture = args.[2] :?> string
     let cultureInfo = Operations.GetCulture culture
-    let resolutionFolder = args.[3] :?> string
+    let rootName = args.[3] :?> string
+    let resolutionFolder = args.[4] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -69,7 +70,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       |> Seq.fold subtypeInfered Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
-    let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx inferedType
+    let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx (NameUtils.singularize rootName) inferedType
 
     // Generate static Parse method
     let args = [ ProvidedParameter("text", typeof<string>) ]
@@ -128,6 +129,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     [ ProvidedStaticParameter("Sample", typeof<string>)
       ProvidedStaticParameter("SampleList", typeof<bool>, parameterDefaultValue = false) 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
@@ -135,6 +137,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
        <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
        <param name='SampleList'>If true, sample should be a list of individual samples for the inference.</param>
        <param name='Culture'>The culture used for parsing numbers and dates.</param>
+       <param name='RootName'>The name to be used to the root type. Defaults to 'Entity'.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do jsonProvTy.AddXmlDoc helpText

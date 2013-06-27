@@ -34,53 +34,52 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Cereal yield (kg per hectare): FDR.WorldBank.Indicator async with get
     member Trade in services (% of GDP): FDR.WorldBank.Indicator async with get
     member Communications, computer, etc. (% of service imports, BoP): FDR.WorldBank.Indicator async with get
-    member Income payments (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Primary income payments (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Imports of goods and services (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Insurance and financial services (% of service imports, BoP): FDR.WorldBank.Indicator async with get
     member Goods imports (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Service imports (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Royalty and license fees, payments (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Imports of goods, services and income (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Charges for the use of intellectual property, payments (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Imports of goods, services and primary income (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Transport services (% of service imports, BoP): FDR.WorldBank.Indicator async with get
     member Travel services (% of service imports, BoP): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net outflows (% of GDP): FDR.WorldBank.Indicator async with get
-    member Private current transfers, payments (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Personal transfers and compensation of employees, paid (current US$): FDR.WorldBank.Indicator async with get
+    member Secondary income, other sectors, payments (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Personal remittances, paid (current US$): FDR.WorldBank.Indicator async with get
     member Current account balance (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Current account balance (% of GDP): FDR.WorldBank.Indicator async with get
-    member Net income (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Net financial account (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Net primary income (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Net trade in goods and services (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Net trade in goods (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Net errors and omissions, adjusted (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Net errors and omissions (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Private capital flows, total (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Private capital flows, total (% of GDP): FDR.WorldBank.Indicator async with get
-    member Portfolio investment, excluding LCFAR (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Changes in net reserves (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Net current transfers (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Portfolio Investment, net (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Reserves and related items (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Net secondary income (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Net capital account (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Grants, excluding technical cooperation (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Technical cooperation grants (BoP, current US$): FDR.WorldBank.Indicator async with get
     member ICT service exports (BoP, current US$): FDR.WorldBank.Indicator async with get
     member ICT service exports (% of service exports, BoP): FDR.WorldBank.Indicator async with get
     member Communications, computer, etc. (% of service exports, BoP): FDR.WorldBank.Indicator async with get
-    member Income receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Primary income receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Exports of goods and services (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Insurance and financial services (% of service exports, BoP): FDR.WorldBank.Indicator async with get
     member Goods exports (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Service exports (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Royalty and license fees, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Exports of goods, services and income (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Charges for the use of intellectual property, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Exports of goods, services and primary income (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Transport services (% of service exports, BoP): FDR.WorldBank.Indicator async with get
     member Travel services (% of service exports, BoP): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net inflows (BoP, current US$): FDR.WorldBank.Indicator async with get
     member Foreign direct investment, net inflows (% of GDP): FDR.WorldBank.Indicator async with get
     member Primary income on FDI (current US$): FDR.WorldBank.Indicator async with get
     member Portfolio equity, net inflows (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Current transfers, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Workers' remittances, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
-    member Personal transfers and compensation of employees, received (current US$): FDR.WorldBank.Indicator async with get
-    member Personal transfers and compensation of employees, received (% of GDP): FDR.WorldBank.Indicator async with get
+    member Secondary income receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Personal transfers, receipts (BoP, current US$): FDR.WorldBank.Indicator async with get
+    member Personal remittances, received (current US$): FDR.WorldBank.Indicator async with get
+    member Personal remittances, received (% of GDP): FDR.WorldBank.Indicator async with get
     member S&P Global Equity Indices (annual % change): FDR.WorldBank.Indicator async with get
     member Market capitalization of listed companies (current US$): FDR.WorldBank.Indicator async with get
     member Market capitalization of listed companies (% of GDP): FDR.WorldBank.Indicator async with get
@@ -179,7 +178,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member PPG, bilateral concessional (DOD, current US$): FDR.WorldBank.Indicator async with get
     member External debt stocks, total (DOD, current US$): FDR.WorldBank.Indicator async with get
     member Total change in external debt stocks (current US$): FDR.WorldBank.Indicator async with get
-    member External debt stocks (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
+    member External debt stocks (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member External debt stocks (% of GNI): FDR.WorldBank.Indicator async with get
     member Use of IMF credit (DOD, current US$): FDR.WorldBank.Indicator async with get
     member External debt stocks, long-term (DOD, current US$): FDR.WorldBank.Indicator async with get
@@ -187,7 +186,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member External debt stocks, public and publicly guaranteed (PPG) (DOD, current US$): FDR.WorldBank.Indicator async with get
     member External debt stocks, short-term (DOD, current US$): FDR.WorldBank.Indicator async with get
     member Short-term debt (% of total reserves): FDR.WorldBank.Indicator async with get
-    member Short-term debt (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
+    member Short-term debt (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Short-term debt (% of total external debt): FDR.WorldBank.Indicator async with get
     member Debt forgiveness grants (current US$): FDR.WorldBank.Indicator async with get
     member PPG, IBRD (DOD, current US$): FDR.WorldBank.Indicator async with get
@@ -225,7 +224,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member PPG, bilateral (INT, current US$): FDR.WorldBank.Indicator async with get
     member PPG, bilateral concessional (INT, current US$): FDR.WorldBank.Indicator async with get
     member Interest payments on external debt, total (INT, current US$): FDR.WorldBank.Indicator async with get
-    member Interest payments on external debt (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
+    member Interest payments on external debt (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Interest payments on external debt (% of GNI): FDR.WorldBank.Indicator async with get
     member IMF charges (INT, current US$): FDR.WorldBank.Indicator async with get
     member Interest payments on external debt, long-term (INT, current US$): FDR.WorldBank.Indicator async with get
@@ -319,21 +318,21 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Net ODA received (% of gross capital formation): FDR.WorldBank.Indicator async with get
     member Net ODA received (% of GNI): FDR.WorldBank.Indicator async with get
     member Net official development assistance received (constant 2010 US$): FDR.WorldBank.Indicator async with get
-    member Net ODA received (% of imports of goods and services): FDR.WorldBank.Indicator async with get
+    member Net ODA received (% of imports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Net ODA received per capita (current US$): FDR.WorldBank.Indicator async with get
     member Net ODA received (% of central government expense): FDR.WorldBank.Indicator async with get
     member PPG, bilateral (TDS, current US$): FDR.WorldBank.Indicator async with get
     member PPG, bilateral concessional (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, total (TDS, current US$): FDR.WorldBank.Indicator async with get
-    member Total debt service (% of exports of goods, services and income): FDR.WorldBank.Indicator async with get
+    member Total debt service (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Total debt service (% of GNI): FDR.WorldBank.Indicator async with get
     member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, long-term (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, private nonguaranteed (PNG) (TDS, current US$): FDR.WorldBank.Indicator async with get
-    member Debt service (PPG and IMF only, % of exports, excluding workers' remittances): FDR.WorldBank.Indicator async with get
+    member Debt service (PPG and IMF only, % of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Public and publicly guaranteed debt service (% of GNI): FDR.WorldBank.Indicator async with get
-    member Public and publicly guaranteed debt service (% of exports, excluding workers' remittances): FDR.WorldBank.Indicator async with get
+    member Public and publicly guaranteed debt service (% of exports of goods, services and primary income): FDR.WorldBank.Indicator async with get
     member PPG, IBRD (TDS, current US$): FDR.WorldBank.Indicator async with get
     member PPG, IDA (TDS, current US$): FDR.WorldBank.Indicator async with get
     member Multilateral debt service (TDS, current US$): FDR.WorldBank.Indicator async with get
@@ -621,14 +620,15 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Delay in obtaining an electrical connection (days): FDR.WorldBank.Indicator async with get
     member Power outages in firms in a typical month (number): FDR.WorldBank.Indicator async with get
     member Time required to get electricity (days): FDR.WorldBank.Indicator async with get
-    member Firing cost (weeks of wages): FDR.WorldBank.Indicator async with get
     member Cost to export (US$ per container): FDR.WorldBank.Indicator async with get
     member Documents to export (number): FDR.WorldBank.Indicator async with get
     member Time to export (days): FDR.WorldBank.Indicator async with get
     member Firms using banks to finance investment (% of firms): FDR.WorldBank.Indicator async with get
+    member Firms competing against unregistered firms (% of firms): FDR.WorldBank.Indicator async with get
     member Informal payments to public officials (% of firms): FDR.WorldBank.Indicator async with get
     member Losses due to theft, robbery, vandalism, and arson (% sales): FDR.WorldBank.Indicator async with get
     member Time required to obtain an operating license (days): FDR.WorldBank.Indicator async with get
+    member Firms with female top manager (% of firms): FDR.WorldBank.Indicator async with get
     member Firms with female participation in ownership (% of firms): FDR.WorldBank.Indicator async with get
     member Firms formally registered when operations started (% of firms): FDR.WorldBank.Indicator async with get
     member Firms that do not report all sales for tax purposes (% of firms): FDR.WorldBank.Indicator async with get
@@ -725,7 +725,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Secure Internet servers: FDR.WorldBank.Indicator async with get
     member Secure Internet servers (per 1 million people): FDR.WorldBank.Indicator async with get
     member Internet users (per 100 people): FDR.WorldBank.Indicator async with get
-    member Daily newspapers (per 1,000 people): FDR.WorldBank.Indicator async with get
     member Lead time to export, median case (days): FDR.WorldBank.Indicator async with get
     member Lead time to import, median case (days): FDR.WorldBank.Indicator async with get
     member Logistics performance index: Efficiency of customs clearance process (1=low to 5=high): FDR.WorldBank.Indicator async with get
@@ -888,6 +887,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member GDP, PPP (constant 2005 international $): FDR.WorldBank.Indicator async with get
     member Natural gas rents (% of GDP): FDR.WorldBank.Indicator async with get
     member GDP per capita (current US$): FDR.WorldBank.Indicator async with get
+    member GDP per capita (current LCU): FDR.WorldBank.Indicator async with get
     member GDP per capita (constant 2000 US$): FDR.WorldBank.Indicator async with get
     member GDP per capita growth (annual %): FDR.WorldBank.Indicator async with get
     member GDP per capita (constant LCU): FDR.WorldBank.Indicator async with get
@@ -908,11 +908,14 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member GNI growth (annual %): FDR.WorldBank.Indicator async with get
     member GNI (constant LCU): FDR.WorldBank.Indicator async with get
     member GNI, PPP (current international $): FDR.WorldBank.Indicator async with get
+    member GNI, PPP (constant 2005 international $): FDR.WorldBank.Indicator async with get
     member GNI per capita, Atlas method (current US$): FDR.WorldBank.Indicator async with get
+    member GNI per capita (current LCU): FDR.WorldBank.Indicator async with get
     member GNI per capita (constant 2000 US$): FDR.WorldBank.Indicator async with get
     member GNI per capita growth (annual %): FDR.WorldBank.Indicator async with get
     member GNI per capita (constant LCU): FDR.WorldBank.Indicator async with get
     member GNI per capita, PPP (current international $): FDR.WorldBank.Indicator async with get
+    member GNI per capita, PPP (constant 2005 international $): FDR.WorldBank.Indicator async with get
     member Gross savings (current US$): FDR.WorldBank.Indicator async with get
     member Gross savings (current LCU): FDR.WorldBank.Indicator async with get
     member Gross savings (% of GNI): FDR.WorldBank.Indicator async with get
@@ -959,9 +962,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member School enrollment, primary (% gross): FDR.WorldBank.Indicator async with get
     member School enrollment, primary, female (% gross): FDR.WorldBank.Indicator async with get
     member School enrollment, primary, male (% gross): FDR.WorldBank.Indicator async with get
-    member Gross intake rate in grade 1, female (% of relevant age group): FDR.WorldBank.Indicator async with get
-    member Gross intake rate in grade 1, male (% of relevant age group): FDR.WorldBank.Indicator async with get
-    member Gross intake rate in grade 1, total (% of relevant age group): FDR.WorldBank.Indicator async with get
+    member Gross intake ratio in first grade of primary education, female (% of relevant age group): FDR.WorldBank.Indicator async with get
+    member Gross intake ratio in first grade of primary education, male (% of relevant age group): FDR.WorldBank.Indicator async with get
+    member Gross intake ratio in first grade of primary education, total (% of relevant age group): FDR.WorldBank.Indicator async with get
     member School enrollment, primary (% net): FDR.WorldBank.Indicator async with get
     member School enrollment, primary, female (% net): FDR.WorldBank.Indicator async with get
     member School enrollment, primary, male (% net): FDR.WorldBank.Indicator async with get
@@ -1025,16 +1028,22 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Public spending on education, total (% of GDP): FDR.WorldBank.Indicator async with get
     member Female legislators, senior officials and managers (% of total): FDR.WorldBank.Indicator async with get
     member Proportion of seats held by women in national parliaments (%): FDR.WorldBank.Indicator async with get
+    member Prevalence of anemia among children (% of children under 5): FDR.WorldBank.Indicator async with get
     member Condom use, population ages 15-24, female (% of females ages 15-24): FDR.WorldBank.Indicator async with get
     member Condom use, population ages 15-24, male (% of males ages 15-24): FDR.WorldBank.Indicator async with get
+    member Cause of death, by communicable diseases and maternal, prenatal and nutrition conditions (% of total): FDR.WorldBank.Indicator async with get
     member Number of infant deaths: FDR.WorldBank.Indicator async with get
+    member Cause of death, by injury (% of total): FDR.WorldBank.Indicator async with get
     member Number of under-five deaths: FDR.WorldBank.Indicator async with get
+    member Cause of death, by non-communicable diseases (% of total): FDR.WorldBank.Indicator async with get
     member Number of neonatal deaths: FDR.WorldBank.Indicator async with get
     member Women's share of population ages 15+ living with HIV (%): FDR.WorldBank.Indicator async with get
     member Prevalence of HIV, total (% of population ages 15-49): FDR.WorldBank.Indicator async with get
     member Mortality rate, female child (per 1,000 female children age one): FDR.WorldBank.Indicator async with get
     member Mortality rate, male child (per 1,000 male children age one): FDR.WorldBank.Indicator async with get
     member Mortality rate, under-5 (per 1,000 live births): FDR.WorldBank.Indicator async with get
+    member Mortality rate, under-5, female (per 1,000): FDR.WorldBank.Indicator async with get
+    member Mortality rate, under-5, male (per 1,000): FDR.WorldBank.Indicator async with get
     member Mortality rate, neonatal (per 1,000 live births): FDR.WorldBank.Indicator async with get
     member Improved water source, rural (% of rural population with access): FDR.WorldBank.Indicator async with get
     member Improved water source, urban (% of urban population with access): FDR.WorldBank.Indicator async with get
@@ -1055,6 +1064,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Number of maternal deaths: FDR.WorldBank.Indicator async with get
     member Lifetime risk of maternal death (1 in: rate varies by country): FDR.WorldBank.Indicator async with get
     member Lifetime risk of maternal death (%): FDR.WorldBank.Indicator async with get
+    member Prevalence of anemia among pregnant women (%): FDR.WorldBank.Indicator async with get
     member Smoking prevalence, females (% of adults): FDR.WorldBank.Indicator async with get
     member Smoking prevalence, males (% of adults): FDR.WorldBank.Indicator async with get
     member Improved sanitation facilities (% of population with access): FDR.WorldBank.Indicator async with get
@@ -1065,12 +1075,21 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Exclusive breastfeeding (% of children under 6 months): FDR.WorldBank.Indicator async with get
     member Births attended by skilled health staff (% of total): FDR.WorldBank.Indicator async with get
     member Low-birthweight babies (% of births): FDR.WorldBank.Indicator async with get
+    member Diabetes prevalence (% of population ages 20 to 79): FDR.WorldBank.Indicator async with get
+    member Malnutrition prevalence, weight for age, female (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Malnutrition prevalence, weight for age, male (% of children under 5): FDR.WorldBank.Indicator async with get
     member Malnutrition prevalence, weight for age (% of children under 5): FDR.WorldBank.Indicator async with get
     member Maternal mortality ratio (modeled estimate, per 100,000 live births): FDR.WorldBank.Indicator async with get
     member Maternal mortality ratio (national estimate, per 100,000 live births): FDR.WorldBank.Indicator async with get
     member Diarrhea treatment (% of children under 5 receiving oral rehydration and continued feeding): FDR.WorldBank.Indicator async with get
+    member Prevalence of overweight, female (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Prevalence of overweight, male (% of children under 5): FDR.WorldBank.Indicator async with get
     member Prevalence of overweight (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Malnutrition prevalence, height for age, female (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Malnutrition prevalence, height for age, male (% of children under 5): FDR.WorldBank.Indicator async with get
     member Malnutrition prevalence, height for age (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Prevalence of wasting, female (% of children under 5): FDR.WorldBank.Indicator async with get
+    member Prevalence of wasting, male (% of children under 5): FDR.WorldBank.Indicator async with get
     member Prevalence of wasting (% of children under 5): FDR.WorldBank.Indicator async with get
     member Tuberculosis treatment success rate (% of registered cases): FDR.WorldBank.Indicator async with get
     member Tuberculosis case detection rate (%, all forms): FDR.WorldBank.Indicator async with get
@@ -1130,6 +1149,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Wage and salaried workers, female (% of females employed): FDR.WorldBank.Indicator async with get
     member Wage and salary workers, male (% of males employed): FDR.WorldBank.Indicator async with get
     member Wage and salaried workers, total (% of total employed): FDR.WorldBank.Indicator async with get
+    member Children in employment, unpaid family workers (% of children in employment, ages 7-14): FDR.WorldBank.Indicator async with get
     member Contributing family workers, female (% of females employed): FDR.WorldBank.Indicator async with get
     member Contributing family workers, male (% of males employed): FDR.WorldBank.Indicator async with get
     member Contributing family workers, total (% of total employed): FDR.WorldBank.Indicator async with get
@@ -1140,6 +1160,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Child employment in manufacturing, female (% of female economically active children ages 7-14): FDR.WorldBank.Indicator async with get
     member Child employment in manufacturing, male (% of male economically active children ages 7-14): FDR.WorldBank.Indicator async with get
     member Child employment in manufacturing (% of economically active children ages 7-14): FDR.WorldBank.Indicator async with get
+    member Children in employment, self-employed (% of children in employment, ages 7-14): FDR.WorldBank.Indicator async with get
     member Child employment in services, female (% of female economically active children ages 7-14): FDR.WorldBank.Indicator async with get
     member Child employment in services, male (% of male economically active children ages 7-14): FDR.WorldBank.Indicator async with get
     member Child employment in services (% of economically active children ages 7-14): FDR.WorldBank.Indicator async with get
@@ -1198,6 +1219,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Unemployment, female (% of female labor force): FDR.WorldBank.Indicator async with get
     member Unemployment, male (% of male labor force): FDR.WorldBank.Indicator async with get
     member Unemployment, total (% of total labor force): FDR.WorldBank.Indicator async with get
+    member Children in employment, wage workers (% of children in employment, ages 7-14): FDR.WorldBank.Indicator async with get
     member Emigration rate of tertiary educated (% of total tertiary educated population): FDR.WorldBank.Indicator async with get
     member Net migration: FDR.WorldBank.Indicator async with get
     member Refugee population by country or territory of asylum: FDR.WorldBank.Indicator async with get
@@ -1205,7 +1227,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member International migrant stock, total: FDR.WorldBank.Indicator async with get
     member International migrant stock (% of population): FDR.WorldBank.Indicator async with get
     member Prevalence of undernourishment (% of population): FDR.WorldBank.Indicator async with get
-    member Depth of hunger (kilocalories per person per day): FDR.WorldBank.Indicator async with get
+    member Depth of the food deficit (kilocalories per person per day): FDR.WorldBank.Indicator async with get
     member Consumption of iodized salt (% of households): FDR.WorldBank.Indicator async with get
     member Vitamin A supplementation coverage rate (% of children ages 6-59 months): FDR.WorldBank.Indicator async with get
     member Adolescent fertility rate (births per 1,000 women ages 15-19): FDR.WorldBank.Indicator async with get
@@ -1369,53 +1391,52 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Cereal yield (kg per hectare): FDR.WorldBank.IndicatorDescription with get
     member Trade in services (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member Communications, computer, etc. (% of service imports, BoP): FDR.WorldBank.IndicatorDescription with get
-    member Income payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Primary income payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Imports of goods and services (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Insurance and financial services (% of service imports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Goods imports (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Service imports (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Royalty and license fees, payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Imports of goods, services and income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Charges for the use of intellectual property, payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Imports of goods, services and primary income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Transport services (% of service imports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Travel services (% of service imports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net outflows (% of GDP): FDR.WorldBank.IndicatorDescription with get
-    member Private current transfers, payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Personal transfers and compensation of employees, paid (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Secondary income, other sectors, payments (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Personal remittances, paid (current US$): FDR.WorldBank.IndicatorDescription with get
     member Current account balance (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Current account balance (% of GDP): FDR.WorldBank.IndicatorDescription with get
-    member Net income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net financial account (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net primary income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net trade in goods and services (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net trade in goods (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Net errors and omissions, adjusted (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net errors and omissions (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Private capital flows, total (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Private capital flows, total (% of GDP): FDR.WorldBank.IndicatorDescription with get
-    member Portfolio investment, excluding LCFAR (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Changes in net reserves (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Net current transfers (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Portfolio Investment, net (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Reserves and related items (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Net secondary income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Net capital account (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Grants, excluding technical cooperation (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Technical cooperation grants (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member ICT service exports (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member ICT service exports (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Communications, computer, etc. (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
-    member Income receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Primary income receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Exports of goods and services (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Insurance and financial services (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Goods exports (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Service exports (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Royalty and license fees, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Exports of goods, services and income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Charges for the use of intellectual property, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Exports of goods, services and primary income (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Transport services (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Travel services (% of service exports, BoP): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net inflows (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
     member Foreign direct investment, net inflows (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member Primary income on FDI (current US$): FDR.WorldBank.IndicatorDescription with get
     member Portfolio equity, net inflows (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Current transfers, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Workers' remittances, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Personal transfers and compensation of employees, received (current US$): FDR.WorldBank.IndicatorDescription with get
-    member Personal transfers and compensation of employees, received (% of GDP): FDR.WorldBank.IndicatorDescription with get
+    member Secondary income receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Personal transfers, receipts (BoP, current US$): FDR.WorldBank.IndicatorDescription with get
+    member Personal remittances, received (current US$): FDR.WorldBank.IndicatorDescription with get
+    member Personal remittances, received (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member S&P Global Equity Indices (annual % change): FDR.WorldBank.IndicatorDescription with get
     member Market capitalization of listed companies (current US$): FDR.WorldBank.IndicatorDescription with get
     member Market capitalization of listed companies (% of GDP): FDR.WorldBank.IndicatorDescription with get
@@ -1514,7 +1535,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member PPG, bilateral concessional (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks, total (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member Total change in external debt stocks (current US$): FDR.WorldBank.IndicatorDescription with get
-    member External debt stocks (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
+    member External debt stocks (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member Use of IMF credit (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks, long-term (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1522,7 +1543,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member External debt stocks, public and publicly guaranteed (PPG) (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member External debt stocks, short-term (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
     member Short-term debt (% of total reserves): FDR.WorldBank.IndicatorDescription with get
-    member Short-term debt (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
+    member Short-term debt (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Short-term debt (% of total external debt): FDR.WorldBank.IndicatorDescription with get
     member Debt forgiveness grants (current US$): FDR.WorldBank.IndicatorDescription with get
     member PPG, IBRD (DOD, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1560,7 +1581,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member PPG, bilateral (INT, current US$): FDR.WorldBank.IndicatorDescription with get
     member PPG, bilateral concessional (INT, current US$): FDR.WorldBank.IndicatorDescription with get
     member Interest payments on external debt, total (INT, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Interest payments on external debt (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
+    member Interest payments on external debt (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Interest payments on external debt (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member IMF charges (INT, current US$): FDR.WorldBank.IndicatorDescription with get
     member Interest payments on external debt, long-term (INT, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1654,21 +1675,21 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Net ODA received (% of gross capital formation): FDR.WorldBank.IndicatorDescription with get
     member Net ODA received (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member Net official development assistance received (constant 2010 US$): FDR.WorldBank.IndicatorDescription with get
-    member Net ODA received (% of imports of goods and services): FDR.WorldBank.IndicatorDescription with get
+    member Net ODA received (% of imports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Net ODA received per capita (current US$): FDR.WorldBank.IndicatorDescription with get
     member Net ODA received (% of central government expense): FDR.WorldBank.IndicatorDescription with get
     member PPG, bilateral (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member PPG, bilateral concessional (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, total (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Total debt service (% of exports of goods, services and income): FDR.WorldBank.IndicatorDescription with get
+    member Total debt service (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Total debt service (% of GNI): FDR.WorldBank.IndicatorDescription with get
     member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, long-term (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, private nonguaranteed (PNG) (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
-    member Debt service (PPG and IMF only, % of exports, excluding workers' remittances): FDR.WorldBank.IndicatorDescription with get
+    member Debt service (PPG and IMF only, % of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member Debt service on external debt, public and publicly guaranteed (PPG) (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Public and publicly guaranteed debt service (% of GNI): FDR.WorldBank.IndicatorDescription with get
-    member Public and publicly guaranteed debt service (% of exports, excluding workers' remittances): FDR.WorldBank.IndicatorDescription with get
+    member Public and publicly guaranteed debt service (% of exports of goods, services and primary income): FDR.WorldBank.IndicatorDescription with get
     member PPG, IBRD (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member PPG, IDA (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     member Multilateral debt service (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
@@ -1956,14 +1977,15 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Delay in obtaining an electrical connection (days): FDR.WorldBank.IndicatorDescription with get
     member Power outages in firms in a typical month (number): FDR.WorldBank.IndicatorDescription with get
     member Time required to get electricity (days): FDR.WorldBank.IndicatorDescription with get
-    member Firing cost (weeks of wages): FDR.WorldBank.IndicatorDescription with get
     member Cost to export (US$ per container): FDR.WorldBank.IndicatorDescription with get
     member Documents to export (number): FDR.WorldBank.IndicatorDescription with get
     member Time to export (days): FDR.WorldBank.IndicatorDescription with get
     member Firms using banks to finance investment (% of firms): FDR.WorldBank.IndicatorDescription with get
+    member Firms competing against unregistered firms (% of firms): FDR.WorldBank.IndicatorDescription with get
     member Informal payments to public officials (% of firms): FDR.WorldBank.IndicatorDescription with get
     member Losses due to theft, robbery, vandalism, and arson (% sales): FDR.WorldBank.IndicatorDescription with get
     member Time required to obtain an operating license (days): FDR.WorldBank.IndicatorDescription with get
+    member Firms with female top manager (% of firms): FDR.WorldBank.IndicatorDescription with get
     member Firms with female participation in ownership (% of firms): FDR.WorldBank.IndicatorDescription with get
     member Firms formally registered when operations started (% of firms): FDR.WorldBank.IndicatorDescription with get
     member Firms that do not report all sales for tax purposes (% of firms): FDR.WorldBank.IndicatorDescription with get
@@ -2060,7 +2082,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Secure Internet servers: FDR.WorldBank.IndicatorDescription with get
     member Secure Internet servers (per 1 million people): FDR.WorldBank.IndicatorDescription with get
     member Internet users (per 100 people): FDR.WorldBank.IndicatorDescription with get
-    member Daily newspapers (per 1,000 people): FDR.WorldBank.IndicatorDescription with get
     member Lead time to export, median case (days): FDR.WorldBank.IndicatorDescription with get
     member Lead time to import, median case (days): FDR.WorldBank.IndicatorDescription with get
     member Logistics performance index: Efficiency of customs clearance process (1=low to 5=high): FDR.WorldBank.IndicatorDescription with get
@@ -2223,6 +2244,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member GDP, PPP (constant 2005 international $): FDR.WorldBank.IndicatorDescription with get
     member Natural gas rents (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member GDP per capita (current US$): FDR.WorldBank.IndicatorDescription with get
+    member GDP per capita (current LCU): FDR.WorldBank.IndicatorDescription with get
     member GDP per capita (constant 2000 US$): FDR.WorldBank.IndicatorDescription with get
     member GDP per capita growth (annual %): FDR.WorldBank.IndicatorDescription with get
     member GDP per capita (constant LCU): FDR.WorldBank.IndicatorDescription with get
@@ -2243,11 +2265,14 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member GNI growth (annual %): FDR.WorldBank.IndicatorDescription with get
     member GNI (constant LCU): FDR.WorldBank.IndicatorDescription with get
     member GNI, PPP (current international $): FDR.WorldBank.IndicatorDescription with get
+    member GNI, PPP (constant 2005 international $): FDR.WorldBank.IndicatorDescription with get
     member GNI per capita, Atlas method (current US$): FDR.WorldBank.IndicatorDescription with get
+    member GNI per capita (current LCU): FDR.WorldBank.IndicatorDescription with get
     member GNI per capita (constant 2000 US$): FDR.WorldBank.IndicatorDescription with get
     member GNI per capita growth (annual %): FDR.WorldBank.IndicatorDescription with get
     member GNI per capita (constant LCU): FDR.WorldBank.IndicatorDescription with get
     member GNI per capita, PPP (current international $): FDR.WorldBank.IndicatorDescription with get
+    member GNI per capita, PPP (constant 2005 international $): FDR.WorldBank.IndicatorDescription with get
     member Gross savings (current US$): FDR.WorldBank.IndicatorDescription with get
     member Gross savings (current LCU): FDR.WorldBank.IndicatorDescription with get
     member Gross savings (% of GNI): FDR.WorldBank.IndicatorDescription with get
@@ -2294,9 +2319,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member School enrollment, primary (% gross): FDR.WorldBank.IndicatorDescription with get
     member School enrollment, primary, female (% gross): FDR.WorldBank.IndicatorDescription with get
     member School enrollment, primary, male (% gross): FDR.WorldBank.IndicatorDescription with get
-    member Gross intake rate in grade 1, female (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
-    member Gross intake rate in grade 1, male (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
-    member Gross intake rate in grade 1, total (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    member Gross intake ratio in first grade of primary education, female (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    member Gross intake ratio in first grade of primary education, male (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    member Gross intake ratio in first grade of primary education, total (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
     member School enrollment, primary (% net): FDR.WorldBank.IndicatorDescription with get
     member School enrollment, primary, female (% net): FDR.WorldBank.IndicatorDescription with get
     member School enrollment, primary, male (% net): FDR.WorldBank.IndicatorDescription with get
@@ -2360,16 +2385,22 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Public spending on education, total (% of GDP): FDR.WorldBank.IndicatorDescription with get
     member Female legislators, senior officials and managers (% of total): FDR.WorldBank.IndicatorDescription with get
     member Proportion of seats held by women in national parliaments (%): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of anemia among children (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Condom use, population ages 15-24, female (% of females ages 15-24): FDR.WorldBank.IndicatorDescription with get
     member Condom use, population ages 15-24, male (% of males ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Cause of death, by communicable diseases and maternal, prenatal and nutrition conditions (% of total): FDR.WorldBank.IndicatorDescription with get
     member Number of infant deaths: FDR.WorldBank.IndicatorDescription with get
+    member Cause of death, by injury (% of total): FDR.WorldBank.IndicatorDescription with get
     member Number of under-five deaths: FDR.WorldBank.IndicatorDescription with get
+    member Cause of death, by non-communicable diseases (% of total): FDR.WorldBank.IndicatorDescription with get
     member Number of neonatal deaths: FDR.WorldBank.IndicatorDescription with get
     member Women's share of population ages 15+ living with HIV (%): FDR.WorldBank.IndicatorDescription with get
     member Prevalence of HIV, total (% of population ages 15-49): FDR.WorldBank.IndicatorDescription with get
     member Mortality rate, female child (per 1,000 female children age one): FDR.WorldBank.IndicatorDescription with get
     member Mortality rate, male child (per 1,000 male children age one): FDR.WorldBank.IndicatorDescription with get
     member Mortality rate, under-5 (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
+    member Mortality rate, under-5, female (per 1,000): FDR.WorldBank.IndicatorDescription with get
+    member Mortality rate, under-5, male (per 1,000): FDR.WorldBank.IndicatorDescription with get
     member Mortality rate, neonatal (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
     member Improved water source, rural (% of rural population with access): FDR.WorldBank.IndicatorDescription with get
     member Improved water source, urban (% of urban population with access): FDR.WorldBank.IndicatorDescription with get
@@ -2390,6 +2421,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Number of maternal deaths: FDR.WorldBank.IndicatorDescription with get
     member Lifetime risk of maternal death (1 in: rate varies by country): FDR.WorldBank.IndicatorDescription with get
     member Lifetime risk of maternal death (%): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of anemia among pregnant women (%): FDR.WorldBank.IndicatorDescription with get
     member Smoking prevalence, females (% of adults): FDR.WorldBank.IndicatorDescription with get
     member Smoking prevalence, males (% of adults): FDR.WorldBank.IndicatorDescription with get
     member Improved sanitation facilities (% of population with access): FDR.WorldBank.IndicatorDescription with get
@@ -2400,12 +2432,21 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Exclusive breastfeeding (% of children under 6 months): FDR.WorldBank.IndicatorDescription with get
     member Births attended by skilled health staff (% of total): FDR.WorldBank.IndicatorDescription with get
     member Low-birthweight babies (% of births): FDR.WorldBank.IndicatorDescription with get
+    member Diabetes prevalence (% of population ages 20 to 79): FDR.WorldBank.IndicatorDescription with get
+    member Malnutrition prevalence, weight for age, female (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Malnutrition prevalence, weight for age, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Malnutrition prevalence, weight for age (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Maternal mortality ratio (modeled estimate, per 100,000 live births): FDR.WorldBank.IndicatorDescription with get
     member Maternal mortality ratio (national estimate, per 100,000 live births): FDR.WorldBank.IndicatorDescription with get
     member Diarrhea treatment (% of children under 5 receiving oral rehydration and continued feeding): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of overweight, female (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of overweight, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Prevalence of overweight (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Malnutrition prevalence, height for age, female (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Malnutrition prevalence, height for age, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Malnutrition prevalence, height for age (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of wasting, female (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    member Prevalence of wasting, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Prevalence of wasting (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     member Tuberculosis treatment success rate (% of registered cases): FDR.WorldBank.IndicatorDescription with get
     member Tuberculosis case detection rate (%, all forms): FDR.WorldBank.IndicatorDescription with get
@@ -2465,6 +2506,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Wage and salaried workers, female (% of females employed): FDR.WorldBank.IndicatorDescription with get
     member Wage and salary workers, male (% of males employed): FDR.WorldBank.IndicatorDescription with get
     member Wage and salaried workers, total (% of total employed): FDR.WorldBank.IndicatorDescription with get
+    member Children in employment, unpaid family workers (% of children in employment, ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Contributing family workers, female (% of females employed): FDR.WorldBank.IndicatorDescription with get
     member Contributing family workers, male (% of males employed): FDR.WorldBank.IndicatorDescription with get
     member Contributing family workers, total (% of total employed): FDR.WorldBank.IndicatorDescription with get
@@ -2475,6 +2517,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Child employment in manufacturing, female (% of female economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Child employment in manufacturing, male (% of male economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Child employment in manufacturing (% of economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
+    member Children in employment, self-employed (% of children in employment, ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Child employment in services, female (% of female economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Child employment in services, male (% of male economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Child employment in services (% of economically active children ages 7-14): FDR.WorldBank.IndicatorDescription with get
@@ -2533,6 +2576,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Unemployment, female (% of female labor force): FDR.WorldBank.IndicatorDescription with get
     member Unemployment, male (% of male labor force): FDR.WorldBank.IndicatorDescription with get
     member Unemployment, total (% of total labor force): FDR.WorldBank.IndicatorDescription with get
+    member Children in employment, wage workers (% of children in employment, ages 7-14): FDR.WorldBank.IndicatorDescription with get
     member Emigration rate of tertiary educated (% of total tertiary educated population): FDR.WorldBank.IndicatorDescription with get
     member Net migration: FDR.WorldBank.IndicatorDescription with get
     member Refugee population by country or territory of asylum: FDR.WorldBank.IndicatorDescription with get
@@ -2540,7 +2584,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member International migrant stock, total: FDR.WorldBank.IndicatorDescription with get
     member International migrant stock (% of population): FDR.WorldBank.IndicatorDescription with get
     member Prevalence of undernourishment (% of population): FDR.WorldBank.IndicatorDescription with get
-    member Depth of hunger (kilocalories per person per day): FDR.WorldBank.IndicatorDescription with get
+    member Depth of the food deficit (kilocalories per person per day): FDR.WorldBank.IndicatorDescription with get
     member Consumption of iodized salt (% of households): FDR.WorldBank.IndicatorDescription with get
     member Vitamin A supplementation coverage rate (% of children ages 6-59 months): FDR.WorldBank.IndicatorDescription with get
     member Adolescent fertility rate (births per 1,000 women ages 15-19): FDR.WorldBank.IndicatorDescription with get

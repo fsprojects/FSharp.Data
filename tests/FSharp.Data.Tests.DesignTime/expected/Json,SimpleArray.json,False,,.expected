@@ -9,14 +9,8 @@ class JsonProvider
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member Address: JsonProvider+DomainTypes+Entity2 with get
-    member Age: int with get
-    member FirstName: string with get
-    member LastName: string with get
+    member Items: JsonProvider+DomainTypes+Item[] with get
 
-class JsonProvider+DomainTypes+Entity2 : FDR.JsonDocument
-    member City: string with get
-    member PostalCode: int with get
-    member State: string with get
-    member StreetAddress: string with get
+class JsonProvider+DomainTypes+Item : FDR.JsonDocument
+    member Id: string with get
 

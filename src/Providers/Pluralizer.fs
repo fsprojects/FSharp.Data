@@ -43,7 +43,8 @@ let private tables = lazy(
          "uo",       "uos"
          "o",        "oes"
 
-         "house",    "houses"                  
+         "house",    "houses"
+         "course",   "courses"
          
          "cis",      "ces"
          "sis",      "ses"

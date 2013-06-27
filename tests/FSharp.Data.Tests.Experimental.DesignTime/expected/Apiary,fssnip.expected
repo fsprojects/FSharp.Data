@@ -1,16 +1,16 @@
 class ApiaryProvider : FDR.Apiary.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
-    member Snippet: ApiaryProvider+DomainTypes+SnippetType with get
+    member Snippet: ApiaryProvider+DomainTypes+Snippet with get
 
 class ApiaryProvider+DomainTypes
 
-class ApiaryProvider+DomainTypes+SnippetType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity async
-    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity2[] async
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity2[]
+class ApiaryProvider+DomainTypes+Snippet : FDR.Apiary.InternalApiaryContext
+    member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2 async
+    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[] async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[]
 
-class ApiaryProvider+DomainTypes+Entity : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Snippet2 : FDR.Apiary.ApiaryDocument
     member Author: string with get
     member Description: string with get
     member Formatted: string with get
@@ -20,7 +20,7 @@ class ApiaryProvider+DomainTypes+Entity : FDR.Apiary.ApiaryDocument
     member Tags: string[] with get
     member Title: string with get
 
-class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SnippetList : FDR.Apiary.ApiaryDocument
     member Author: string with get
     member Description: string with get
     member Likes: int with get

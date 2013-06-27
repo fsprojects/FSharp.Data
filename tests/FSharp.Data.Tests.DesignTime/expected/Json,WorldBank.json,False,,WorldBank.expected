@@ -1,0 +1,38 @@
+class JsonProvider
+    new : () -> JsonProvider
+    static member Parse: text:string -> JsonProvider+DomainTypes+WorldBankChoice
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+WorldBankChoice
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+WorldBankChoice
+    static member Load: uri:string -> JsonProvider+DomainTypes+WorldBankChoice
+    static member GetSample: () -> JsonProvider+DomainTypes+WorldBankChoice
+
+class JsonProvider+DomainTypes
+
+class JsonProvider+DomainTypes+WorldBankChoice : FDR.JsonDocument
+    member Array: JsonProvider+DomainTypes+WorldBankChoice1of2[] with get
+    member Record: JsonProvider+DomainTypes+WorldBankChoice2of2 with get
+
+class JsonProvider+DomainTypes+WorldBankChoice1of2 : FDR.JsonDocument
+    member Country: JsonProvider+DomainTypes+Country with get
+    member Date: int with get
+    member Decimal: int with get
+    member Indicator: JsonProvider+DomainTypes+Indicator with get
+    member Value: JsonProvider+DomainTypes+ValueChoice with get
+
+class JsonProvider+DomainTypes+Country : FDR.JsonDocument
+    member Id: string with get
+    member Value: string with get
+
+class JsonProvider+DomainTypes+Indicator : FDR.JsonDocument
+    member Id: string with get
+    member Value: string with get
+
+class JsonProvider+DomainTypes+ValueChoice : FDR.JsonDocument
+    member Number: decimal option with get
+
+class JsonProvider+DomainTypes+WorldBankChoice2of2 : FDR.JsonDocument
+    member Page: int with get
+    member Pages: int with get
+    member PerPage: int with get
+    member Total: int with get
+
