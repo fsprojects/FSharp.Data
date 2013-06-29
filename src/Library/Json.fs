@@ -73,7 +73,7 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
     let skipWhitespace() =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
-    let decimalSeparator = culture.NumberFormat.NumberDecimalSeparator.ToCharArray() |> Seq.exactlyOne
+    let decimalSeparator = culture.NumberFormat.NumberDecimalSeparator.[0]
     let isNumChar c = 
       Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
     let throw() = 

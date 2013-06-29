@@ -79,7 +79,7 @@ let internal asyncOpenStreamInProvider
 
   if isWeb then
     let req = WebRequest.Create(resolvedUri)
-    let! resp = req.AsyncGetResponse() 
+    let! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
     return resp.GetResponseStream()
   else
 #if FX_NO_LOCAL_FILESYSTEM

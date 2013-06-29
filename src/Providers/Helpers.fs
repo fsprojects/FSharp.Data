@@ -105,7 +105,7 @@ module ProviderHelpers =
         |> Async.RunSynchronously
       new StreamReader(stream) :> TextReader
 
-  let invalidChars = Array.append (Path.GetInvalidPathChars()) (@"{}[],".ToCharArray()) |> set
+  let invalidChars = [ for c in "\"|<>{}[]" -> c ] @ [ for i in 0..31 -> char i ] |> set
 
   let tryGetUri str =
     match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
