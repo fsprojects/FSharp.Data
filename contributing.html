@@ -76,10 +76,11 @@ samples!</p></li>
 platform. Type providers consist of two components:</p>
 
 <ul>
-<li><p><strong>Runtime</strong> is a part of the type provider that is actually used when the
-compiled F# code that uses the provider runs. For example, for CSV type provider,
-this contains the CSV parser and objects to load CSV files.</p></li>
-<li><p><strong>Design time</strong> is a part that is used when editing F# code that uses type
+<li><p><strong>Runtime</strong> is the part of the type provider that is actually used when the
+compiled F# code that uses the provider runs. This assembly also has the
+non type-provider components of FSharp.Data: the JSON and CSV parsers, and
+the HTTP utilities.</p></li>
+<li><p><strong>Design time</strong> is the part that is used when editing F# code that uses type
 provider in your favourite editor or when compiling code. For example, in the
 CSV provider, this component does the type inference and generates types
 (that are mapped to runtime components by the compiler).</p></li>
@@ -91,7 +92,7 @@ component, because that is always going to be executed on desktop .NET in Visual
 or MonoDevelop. (Well, the truth is that we actually need another <em>design time</em> version
 for Silverlight to support the <a href="http://tryfsharp.org">tryfsharp.org</a> web site...)</p>
 
-<p>So, there are 3 versions of <em>runtime</em> components and 2 versions of <em>design time</em> 
+<p>So, there are 4 versions of <em>runtime</em> components and 2 versions of <em>design time</em> 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
@@ -102,16 +103,19 @@ for the experimental projects.</p>
 
 <ul>
 <li><strong>FSharp.Data</strong> - the desktop .NET 4.0 version</li>
-<li><strong>FSharp.Data.Portable</strong> - F# portable library version</li>
-<li><strong>FSharp.Data.Silverlight</strong> - a separate Silverlight version</li>
+<li><strong>FSharp.Data.Portable</strong> - F# portable library version (targetting desktop .NET 4.0, Windows Phone 8 and Windows 8)</li>
+<li><strong>FSharp.Data.Silverlight</strong> - Silverlight 5 version</li>
+<li><strong>FSharp.Data.WindowsPhone7</strong> - Windows Phone 7 version</li>
 <li><strong>FSharp.Data.Experimental</strong> - the desktop .NET 4.0 version of the experimental features</li>
 <li><strong>FSharp.Data.Experimental.Portable</strong> - F# portable library version of the experimental features</li>
 </ul>
 
-<p>Although you could use the portable library in Silverlight, the Freebase provider doesn't work
-correctly, so we have a separate Silverlight build. For the experimental project there's no
-need to have a separate Silverlight build. The <em>design time</em> components are in the following
-projects:</p>
+<p>Although you could use the portable library in Silverlight, the Freebase provider doesn't work because 
+of problems referencing the correct version of the System.Core assembly which has the LINQ query operators.
+The XmlProvider also doesn't work in Silverlight both when using the portable version or the Silverlight specific version.
+For the experimental project there's no need to have a separate Silverlight build.</p>
+
+<p>The <em>design time</em> components are in the following projects:</p>
 
 <ul>
 <li><strong>FSharp.Data.DesignTime</strong> - the main version for desktop editors</li>
@@ -119,6 +123,18 @@ projects:</p>
 <li><strong>FSharp.Data.Experimental.DesignTime</strong> - the main version for desktop editors</li>
 <li><strong>FSharp.Data.Experimental.DesignTime.Silverlight</strong> - an experimental version for Try F#</li>
 </ul>
+
+<p>Because the latest available FSharp.Core version for the Windows Phone 7 platform is from F# 2.0,
+this version doesn't support type providers, so it only has the runtime components of FSharp.Data.
+To build it you also need to edit <code>C:\Program Files (x86)\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.targets</code>
+to remove the following lines:</p>
+
+<pre class="fssnip">
+<span class="l">1: </span><span class="o">&lt;</span><span class="i">Error</span>
+<span class="l">2: </span>    <span class="i">Condition</span><span class="o">=</span><span class="s">&quot;</span><span class="s">&#39;</span><span class="s">$</span><span class="s">(</span><span class="s">SilverlightVersion</span><span class="s">)</span><span class="s">&#39;</span><span class="s"> </span><span class="s">!</span><span class="s">=</span><span class="s"> </span><span class="s">&#39;</span><span class="s">&#39;</span><span class="s"> </span><span class="s">and</span><span class="s"> </span><span class="s">&#39;</span><span class="s">$</span><span class="s">(</span><span class="s">SilverlightVersion</span><span class="s">)</span><span class="s">&#39;</span><span class="s"> </span><span class="s">!</span><span class="s">=</span><span class="s"> </span><span class="s">&#39;</span><span class="s">v5</span><span class="s">.</span><span class="s">0</span><span class="s">&#39;</span><span class="s">&quot;</span>
+<span class="l">3: </span>    <span class="i">Text</span><span class="o">=</span><span class="s">&quot;</span><span class="s">In</span><span class="s"> </span><span class="s">this</span><span class="s"> </span><span class="s">version</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Visual</span><span class="s"> </span><span class="s">Studio</span><span class="s">,</span><span class="s"> </span><span class="s">F</span><span class="s">#</span><span class="s"> </span><span class="s">for</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">can</span><span class="s"> </span><span class="s">only</span><span class="s"> </span><span class="s">target</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">v5</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s"> </span><span class="s">Use</span><span class="s"> </span><span class="s">a</span><span class="s"> </span><span class="s">prior</span><span class="s"> </span><span class="s">version</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Visual</span><span class="s"> </span><span class="s">Studio</span><span class="s"> </span><span class="s">to</span><span class="s"> </span><span class="s">target</span><span class="s"> </span><span class="s">previous</span><span class="s"> </span><span class="s">versions</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">with</span><span class="s"> </span><span class="s">F</span><span class="s">#</span><span class="s">.</span><span class="s">&quot;</span>
+<span class="l">4: </span><span class="o">/&gt;</span></pre>
+
 
 <h3>Type provider structure</h3>
 
@@ -197,18 +213,18 @@ expressions that use F# functions as parameters or return values, we always have
 to the code generator, which can use it to generate appropriate code:</p>
 
 <pre class="fssnip">
-<span class="l"> 1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">AssemblyReplacer</span> <span class="o">=</span>
+<span class="l"> 1: </span><span class="k">type</span> <span class="i">AssemblyReplacer</span> <span class="o">=</span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>  <span class="c">/// Gets the equivalent runtime type</span>
-<span class="l"> 4: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">Type</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Type</span>
+<span class="l"> 4: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span class="i">Type</span> <span class="k">-&gt;</span> <span class="i">Type</span>
 <span class="l"> 5: </span>
 <span class="l"> 6: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
 <span class="l"> 7: </span>  <span class="c">/// replaced with runtime equivalents</span>
-<span class="l"> 8: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Expr</span>
+<span class="l"> 8: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span class="i">Expr</span> <span class="k">-&gt;</span> <span class="i">Expr</span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
 <span class="l">11: </span>  <span class="c">/// replaced with designTime equivalents</span>
-<span class="l">12: </span>  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs10', 15)" onmouseover="showTip(event, 'fs10', 15)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">Expr</span></pre>
+<span class="l">12: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span class="i">Expr</span> <span class="k">-&gt;</span> <span class="i">Expr</span></pre>
 
 
 <h2>Documentation</h2>
@@ -246,12 +262,6 @@ from quite simple, to very complex.</p></li>
 <div class="tip" id="fs3">namespace Microsoft</div>
 <div class="tip" id="fs4">namespace Microsoft.FSharp</div>
 <div class="tip" id="fs5">namespace Microsoft.FSharp.Quotations</div>
-<div class="tip" id="fs6">type AssemblyReplacer =<br />&#160;&#160;interface<br />&#160;&#160;&#160;&#160;abstract member ToDesignTime : runtimeExpr:Expr -&gt; Expr<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeType:Type -&gt; Type<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br />&#160;&#160;end<br /><br />Full name: contributing.AssemblyReplacer</div>
-<div class="tip" id="fs7">abstract member AssemblyReplacer.ToRuntime : designTimeType:Type -&gt; Type<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets the equivalent runtime type</em></div>
-<div class="tip" id="fs8">type Type =<br />&#160;&#160;inherit MemberInfo<br />&#160;&#160;member Assembly : Assembly<br />&#160;&#160;member AssemblyQualifiedName : string<br />&#160;&#160;member Attributes : TypeAttributes<br />&#160;&#160;member BaseType : Type<br />&#160;&#160;member ContainsGenericParameters : bool<br />&#160;&#160;member DeclaringMethod : MethodBase<br />&#160;&#160;member DeclaringType : Type<br />&#160;&#160;member Equals : o:obj -&gt; bool + 1 overload<br />&#160;&#160;member FindInterfaces : filter:TypeFilter * filterCriteria:obj -&gt; Type[]<br />&#160;&#160;member FindMembers : memberType:MemberTypes * bindingAttr:BindingFlags * filter:MemberFilter * filterCriteria:obj -&gt; MemberInfo[]<br />&#160;&#160;...<br /><br />Full name: System.Type</div>
-<div class="tip" id="fs9">abstract member AssemblyReplacer.ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with runtime equivalents</em></div>
-<div class="tip" id="fs10">Multiple items<br />type Expr =<br />&#160;&#160;override Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetFreeVars : unit -&gt; seq&lt;Var&gt;<br />&#160;&#160;member Substitute : substitution:(Var -&gt; Expr option) -&gt; Expr<br />&#160;&#160;member ToString : full:bool -&gt; string<br />&#160;&#160;member CustomAttributes : Expr list<br />&#160;&#160;member Type : Type<br />&#160;&#160;static member AddressOf : target:Expr -&gt; Expr<br />&#160;&#160;static member AddressSet : target:Expr * value:Expr -&gt; Expr<br />&#160;&#160;static member Application : functionExpr:Expr * argument:Expr -&gt; Expr<br />&#160;&#160;static member Applications : functionExpr:Expr * arguments:Expr list list -&gt; Expr<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Quotations.Expr<br /><br />--------------------<br />type Expr&lt;&#39;T&gt; =<br />&#160;&#160;inherit Expr<br />&#160;&#160;member Raw : Expr<br /><br />Full name: Microsoft.FSharp.Quotations.Expr&lt;_&gt;</div>
-<div class="tip" id="fs11">abstract member AssemblyReplacer.ToDesignTime : runtimeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToDesignTime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with designTime equivalents</em></div>
 
         </div>
         <div class="span3">

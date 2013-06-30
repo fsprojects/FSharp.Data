@@ -212,7 +212,7 @@ working with JSON values dynamically.</li>
           <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Simple = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Simple</div>
-<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution)&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to &#39;Entity&#39;.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution)&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val simple : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><br />Full name: JsonProvider.simple</div>
 <div class="tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><em><br /><br />Parses the specified JSON string</em></div>
 <div class="tip" id="fs7">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Age: int</div>
@@ -239,33 +239,33 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs28">val iter : action:(&#39;T -&gt; unit) -&gt; option:&#39;T option -&gt; unit<br /><br />Full name: Microsoft.FSharp.Core.Option.iter</div>
 <div class="tip" id="fs29">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
 <div class="tip" id="fs30">type Values = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Values</div>
-<div class="tip" id="fs31">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.Choice</div>
-<div class="tip" id="fs32">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Number: Option&lt;int&gt;</div>
-<div class="tip" id="fs33">property JsonProvider&lt;...&gt;.DomainTypes.Choice.String: Option&lt;string&gt;</div>
+<div class="tip" id="fs31">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.ValueChoice</div>
+<div class="tip" id="fs32">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.Number: Option&lt;int&gt;</div>
+<div class="tip" id="fs33">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.String: Option&lt;string&gt;</div>
 <div class="tip" id="fs34">union case Option.Some: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
 <div class="tip" id="fs35">val num : int</div>
 <div class="tip" id="fs36">val str : string</div>
 <div class="tip" id="fs37">type WorldBank = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.WorldBank</div>
 <div class="tip" id="fs38">val doc : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><br />Full name: JsonProvider.doc</div>
 <div class="tip" id="fs39">JsonProvider&lt;...&gt;.Load(uri: string) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified uri</em><br />JsonProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified reader</em><br />JsonProvider&lt;...&gt;.Load(stream: System.IO.Stream) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified stream</em></div>
-<div class="tip" id="fs40">val info : JsonProvider&lt;...&gt;.DomainTypes.Entity4<br /><br />Full name: JsonProvider.info</div>
-<div class="tip" id="fs41">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Record: JsonProvider&lt;...&gt;.DomainTypes.Entity4</div>
-<div class="tip" id="fs42">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Page: int</div>
-<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Pages: int</div>
-<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.DomainTypes.Entity4.Total: int</div>
-<div class="tip" id="fs45">val record : JsonProvider&lt;...&gt;.DomainTypes.Entity</div>
-<div class="tip" id="fs46">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Array: JsonProvider&lt;...&gt;.DomainTypes.Entity []</div>
-<div class="tip" id="fs47">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.Choice2</div>
-<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.DomainTypes.Choice2.Number: Option&lt;decimal&gt;</div>
+<div class="tip" id="fs40">val info : JsonProvider&lt;...&gt;.DomainTypes.Choice2of2<br /><br />Full name: JsonProvider.info</div>
+<div class="tip" id="fs41">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Record: JsonProvider&lt;...&gt;.DomainTypes.Choice2of2</div>
+<div class="tip" id="fs42">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Page: int</div>
+<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Pages: int</div>
+<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Total: int</div>
+<div class="tip" id="fs45">val record : JsonProvider&lt;...&gt;.DomainTypes.Choice1of2</div>
+<div class="tip" id="fs46">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Array: JsonProvider&lt;...&gt;.DomainTypes.Choice1of2 []</div>
+<div class="tip" id="fs47">property JsonProvider&lt;...&gt;.DomainTypes.Choice1of2.Value: JsonProvider&lt;...&gt;.DomainTypes.ValueChoice</div>
+<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.Number: Option&lt;decimal&gt;</div>
 <div class="tip" id="fs49">val value : decimal</div>
-<div class="tip" id="fs50">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Date: int</div>
+<div class="tip" id="fs50">property JsonProvider&lt;...&gt;.DomainTypes.Choice1of2.Date: int</div>
 <div class="tip" id="fs51">type Tweet = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Tweet</div>
 <div class="tip" id="fs52">val text : string<br /><br />Full name: JsonProvider.text</div>
 <div class="tip" id="fs53">&quot;&quot;&quot; {&quot;in_reply_to_status_id_str&quot;:null,&quot;text&quot;:&quot;\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002&quot;,&quot;in_reply_to_user_id_str&quot;:null,&quot;retweet_count&quot;:0,&quot;geo&quot;:null,&quot;source&quot;:&quot;web&quot;,&quot;retweeted&quot;:false,&quot;truncated&quot;:false,&quot;id_str&quot;:&quot;263290764686155776&quot;,&quot;entities&quot;:{&quot;user_mentions&quot;:[],&quot;hashtags&quot;:[],&quot;urls&quot;:[]},&quot;in_reply_to_user_id&quot;:null,&quot;in_reply_to_status_id&quot;:null,&quot;place&quot;:null,&quot;coordinates&quot;:null,&quot;in_reply_to_screen_name&quot;:null,&quot;created_at&quot;:&quot;Tue Oct 30 14:46:24 +0000 2012&quot;,&quot;user&quot;:{&quot;notifications&quot;:null,&quot;contributors_enabled&quot;:false,&quot;time_zone&quot;:&quot;Tokyo&quot;,&quot;profile_background_color&quot;:&quot;FFFFFF&quot;,&quot;location&quot;:&quot;Kodaira Tokyo Japan&quot;,&quot;profile_background_tile&quot;:false,&quot;profile_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;default_profile_image&quot;:false,&quot;follow_request_sent&quot;:null,&quot;profile_sidebar_fill_color&quot;:&quot;17451B&quot;,&quot;description&quot;:&quot;KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a&quot;,&quot;favourites_count&quot;:17,&quot;screen_name&quot;:&quot;Merlin_wand&quot;,&quot;profile_sidebar_border_color&quot;:&quot;000000&quot;,&quot;id_str&quot;:&quot;94788486&quot;,&quot;verified&quot;:false,&quot;lang&quot;:&quot;ja&quot;,&quot;statuses_count&quot;:8641,&quot;profile_use_background_image&quot;:true,&quot;protected&quot;:false,&quot;profile_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;listed_count&quot;:31,&quot;geo_enabled&quot;:true,&quot;created_at&quot;:&quot;Sat Dec 05 13:07:32 +0000 2009&quot;,&quot;profile_text_color&quot;:&quot;000000&quot;,&quot;name&quot;:&quot;Marin&quot;,&quot;profile_background_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;friends_count&quot;:629,&quot;url&quot;:null,&quot;id&quot;:94788486,&quot;is_translator&quot;:false,&quot;default_profile&quot;:false,&quot;following&quot;:null,&quot;profile_background_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;utc_offset&quot;:32400,&quot;profile_link_color&quot;:&quot;ADADAD&quot;,&quot;followers_count&quot;:426},&quot;id&quot;:263290764686155776,&quot;contributors&quot;:null,&quot;favorited&quot;:false} &quot;&quot;&quot;</div>
 <div class="tip" id="fs54">val tweet : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><br />Full name: JsonProvider.tweet</div>
-<div class="tip" id="fs55">property JsonProvider&lt;...&gt;.DomainTypes.Entity.User: Option&lt;JsonProvider&lt;...&gt;.DomainTypes.Entity17&gt;</div>
-<div class="tip" id="fs56">property Option.Value: JsonProvider&lt;...&gt;.DomainTypes.Entity17</div>
-<div class="tip" id="fs57">property JsonProvider&lt;...&gt;.DomainTypes.Entity17.Name: string</div>
+<div class="tip" id="fs55">property JsonProvider&lt;...&gt;.DomainTypes.Entity.User: Option&lt;JsonProvider&lt;...&gt;.DomainTypes.User&gt;</div>
+<div class="tip" id="fs56">property Option.Value: JsonProvider&lt;...&gt;.DomainTypes.User</div>
+<div class="tip" id="fs57">property JsonProvider&lt;...&gt;.DomainTypes.User.Name: string</div>
 <div class="tip" id="fs58">property JsonProvider&lt;...&gt;.DomainTypes.Entity.RetweetCount: Option&lt;int&gt;</div>
 <div class="tip" id="fs59">property Option.Value: int</div>
 <div class="tip" id="fs60">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Text: Option&lt;string&gt;</div>
