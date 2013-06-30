@@ -2,7 +2,8 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#r @"tools\FAKE\tools\FakeLib.dll"
+#I @"tools/FAKE/tools"
+#r @"tools/FAKE/tools/FakeLib.dll"
 
 open System
 open System.IO
