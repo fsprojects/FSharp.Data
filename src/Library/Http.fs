@@ -76,9 +76,13 @@ type Http private() =
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
     let remoteStackTraceString = 
-      typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+      try
+        typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+      with _ -> null
     if remoteStackTraceString <> null then
-      remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+      try
+        remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+      with _ -> ()
     raise e
 
   static member private InnerRequest(url:string, forceText, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
@@ -203,7 +207,9 @@ type Http private() =
               use responseStream = exn.Response.GetResponseStream()
               use streamReader = new StreamReader(responseStream)
               let response = streamReader.ReadToEnd()
-              responseStream.Position <- 0L
+              try 
+                responseStream.Position <- 0L
+              with _ -> ()
               if String.IsNullOrEmpty response then None
               else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
             with _ -> None

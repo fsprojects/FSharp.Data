@@ -14,6 +14,9 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);SILVERLIGHT</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'WindowsPhone71' ">
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_LOCAL_FILESYSTEM</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>

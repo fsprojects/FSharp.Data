@@ -23,7 +23,7 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\portable\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\portable\Debug\FSharp.Data.Experimental.XML</DocumentationFile>
   </PropertyGroup>
@@ -32,7 +32,7 @@
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\portable\Release</OutputPath>
-    <DefineConstants>TRACE;EXPERIMENTAL</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\portable\Release\FSharp.Data.Experimental.XML</DocumentationFile>
   </PropertyGroup>
