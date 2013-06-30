@@ -550,9 +550,9 @@ class FreebaseDataProvider+ServiceTypes+Uncategorized+Community
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Base
 
-class FreebaseDataProvider+ServiceTypes+Uncategorized+Wikipedia
-
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Freebase
+
+class FreebaseDataProvider+ServiceTypes+Uncategorized+Wikipedia
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Pipeline
 
@@ -1097,6 +1097,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+MusicDomain : FDR.Freebase
     member Music video subjects: FreebaseDataProvider+ServiceTypes+Music+Music+Music_video_subjectDataCollection with get
     member Release tracks: FreebaseDataProvider+ServiceTypes+Music+Music+Release_trackDataCollection with get
     member Musical tribute acts: FreebaseDataProvider+ServiceTypes+Music+Music+Musical_tribute_actDataCollection with get
+    member Album content types: FreebaseDataProvider+ServiceTypes+Music+Music+Album_content_typeDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+BusinessDomain : FDR.Freebase.FreebaseDomain
     member Currencies: FreebaseDataProvider+ServiceTypes+Business+Finance+CurrencyDataCollection with get
@@ -1802,7 +1803,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+SportsDomain : FDR.Freebas
     member Sports Team Locations: FreebaseDataProvider+ServiceTypes+Sports+Sports+Sports_team_locationDataCollection with get
     member Golf Facilities: FreebaseDataProvider+ServiceTypes+Sports+Sports+Golf_facilityDataCollection with get
     member Golf Course Architects: FreebaseDataProvider+ServiceTypes+Sports+Sports+Golf_course_designerDataCollection with get
-    member Golf Courses: FreebaseDataProvider+ServiceTypes+Sports+Sports+Golf_courseDataCollection with get
+    member Golf courses: FreebaseDataProvider+ServiceTypes+Sports+Sports+Golf_courseDataCollection with get
     member Golf Facility Accesses: FreebaseDataProvider+ServiceTypes+Sports+Sports+Golf_club_accessDataCollection with get
     member Sports officials: FreebaseDataProvider+ServiceTypes+Sports+Sports+Sports_officialDataCollection with get
     member Tournament event competitors: FreebaseDataProvider+ServiceTypes+Sports+Sports+Tournament_event_competitorDataCollection with get

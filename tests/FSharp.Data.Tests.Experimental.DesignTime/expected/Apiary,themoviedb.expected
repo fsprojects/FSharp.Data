@@ -1,100 +1,110 @@
 class ApiaryProvider : FDR.Apiary.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
-    member AsyncConfiguration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity async
-    member Configuration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity
-    member Authentication: ApiaryProvider+DomainTypes+AuthenticationType with get
-    member Account: ApiaryProvider+DomainTypes+AccountType with get
-    member Movie: ApiaryProvider+DomainTypes+MovieType with get
-    member Collection: ApiaryProvider+DomainTypes+CollectionType with get
-    member Person: ApiaryProvider+DomainTypes+PersonType with get
-    member List: ApiaryProvider+DomainTypes+ListType with get
-    member Company: ApiaryProvider+DomainTypes+CompanyType with get
-    member Genre: ApiaryProvider+DomainTypes+GenreType with get
-    member Keyword: ApiaryProvider+DomainTypes+KeywordType with get
-    member Search: ApiaryProvider+DomainTypes+SearchType with get
-    member Job: ApiaryProvider+DomainTypes+JobType with get
+    member AsyncConfiguration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Configuration async
+    member Configuration: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Configuration
+    member Authentication: ApiaryProvider+DomainTypes+Authentication with get
+    member Account: ApiaryProvider+DomainTypes+Account with get
+    member Movie: ApiaryProvider+DomainTypes+Movie with get
+    member Collection: ApiaryProvider+DomainTypes+Collection with get
+    member Person: ApiaryProvider+DomainTypes+Person with get
+    member List: ApiaryProvider+DomainTypes+List with get
+    member Company: ApiaryProvider+DomainTypes+Company with get
+    member Genre: ApiaryProvider+DomainTypes+Genre2 with get
+    member Keyword: ApiaryProvider+DomainTypes+Keyword2 with get
+    member Discover: ApiaryProvider+DomainTypes+Discover with get
+    member Search: ApiaryProvider+DomainTypes+Search with get
+    member Review: ApiaryProvider+DomainTypes+Review with get
+    member Job: ApiaryProvider+DomainTypes+Job with get
 
 class ApiaryProvider+DomainTypes
 
-class ApiaryProvider+DomainTypes+Entity : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Configuration : FDR.Apiary.ApiaryDocument
     member ChangeKeys: string[] with get
-    member Images: ApiaryProvider+DomainTypes+Entity2 with get
+    member Images: ApiaryProvider+DomainTypes+Images with get
 
-class ApiaryProvider+DomainTypes+AuthenticationType : FDR.Apiary.InternalApiaryContext
-    member Token: ApiaryProvider+DomainTypes+TokenType with get
-    member Session: ApiaryProvider+DomainTypes+SessionType with get
-    member GuestSession: ApiaryProvider+DomainTypes+GuestSessionType with get
+class ApiaryProvider+DomainTypes+Authentication : FDR.Apiary.InternalApiaryContext
+    member Token: ApiaryProvider+DomainTypes+Token with get
+    member Session: ApiaryProvider+DomainTypes+Session with get
+    member GuestSession: ApiaryProvider+DomainTypes+GuestSession with get
 
-class ApiaryProvider+DomainTypes+AccountType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity6 async
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity6
+class ApiaryProvider+DomainTypes+Account : FDR.Apiary.InternalApiaryContext
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AccountList async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AccountList
 
-class ApiaryProvider+DomainTypes+MovieType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity7 async
-    member GetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity7
-    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity39 async
-    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity39
-    member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity43 async
-    member Upcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity43
-    member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity45 async
-    member NowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity45
-    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity47 async
-    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity47
-    member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity49 async
-    member TopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity49
-    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity51 async
-    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity51
+class ApiaryProvider+DomainTypes+Movie : FDR.Apiary.InternalApiaryContext
+    member AsyncGetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Movie2 async
+    member GetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Movie2
+    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieLatest async
+    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieLatest
+    member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieUpcoming async
+    member Upcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieUpcoming
+    member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieNowPlaying async
+    member NowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieNowPlaying
+    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MoviePopular async
+    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MoviePopular
+    member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTopRated async
+    member TopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTopRated
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieChanges2 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieChanges2
 
-class ApiaryProvider+DomainTypes+CollectionType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity53 async
-    member GetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity53
+class ApiaryProvider+DomainTypes+Collection : FDR.Apiary.InternalApiaryContext
+    member AsyncGetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Collection2 async
+    member GetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Collection2
 
-class ApiaryProvider+DomainTypes+PersonType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity58 async
-    member GetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity58
-    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity67 async
-    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity67
-    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity69 async
-    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity69
-    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity70 async
-    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity70
+class ApiaryProvider+DomainTypes+Person : FDR.Apiary.InternalApiaryContext
+    member AsyncGetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Person2 async
+    member GetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Person2
+    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonPopular async
+    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonPopular
+    member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonLatest async
+    member Latest: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonLatest
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonChanges2 async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonChanges2
 
-class ApiaryProvider+DomainTypes+ListType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity72 async
-    member GetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity72
+class ApiaryProvider+DomainTypes+List : FDR.Apiary.InternalApiaryContext
+    member AsyncGetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+List2 async
+    member GetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+List2
 
-class ApiaryProvider+DomainTypes+CompanyType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity74 async
-    member GetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity74
+class ApiaryProvider+DomainTypes+Company : FDR.Apiary.InternalApiaryContext
+    member AsyncGetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Company2 async
+    member GetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Company2
 
-class ApiaryProvider+DomainTypes+GenreType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity77 async
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity77
-    member Id: ApiaryProvider+DomainTypes+IdType with get
+class ApiaryProvider+DomainTypes+Genre2 : FDR.Apiary.InternalApiaryContext
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+GenreList async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+GenreList
+    member Id: ApiaryProvider+DomainTypes+Id with get
 
-class ApiaryProvider+DomainTypes+KeywordType : FDR.Apiary.InternalApiaryContext
-    member AsyncGetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity81 async
-    member GetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity81
+class ApiaryProvider+DomainTypes+Keyword2 : FDR.Apiary.InternalApiaryContext
+    member AsyncGetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Keyword3 async
+    member GetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Keyword3
 
-class ApiaryProvider+DomainTypes+SearchType : FDR.Apiary.InternalApiaryContext
-    member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity84 async
-    member Movie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity84
-    member AsyncCollection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity86 async
-    member Collection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity86
-    member AsyncPerson: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity88 async
-    member Person: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity88
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity90 async
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity90
-    member AsyncCompany: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity92 async
-    member Company: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity92
-    member AsyncKeyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity94 async
-    member Keyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity94
+class ApiaryProvider+DomainTypes+Discover : FDR.Apiary.InternalApiaryContext
+    member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+DiscoverMovie async
+    member Movie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+DiscoverMovie
 
-class ApiaryProvider+DomainTypes+JobType : FDR.Apiary.InternalApiaryContext
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity96 async
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity96
+class ApiaryProvider+DomainTypes+Search : FDR.Apiary.InternalApiaryContext
+    member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchMovie async
+    member Movie: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchMovie
+    member AsyncCollection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchCollection async
+    member Collection: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchCollection
+    member AsyncPerson: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchPerson async
+    member Person: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchPerson
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchList async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchList
+    member AsyncCompany: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchCompany async
+    member Company: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchCompany
+    member AsyncKeyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchKeyword async
+    member Keyword: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SearchKeyword
 
-class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Review : FDR.Apiary.InternalApiaryContext
+    member AsyncId: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+ReviewId async
+    member Id: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+ReviewId
+
+class ApiaryProvider+DomainTypes+Job : FDR.Apiary.InternalApiaryContext
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+JobList async
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+JobList
+
+class ApiaryProvider+DomainTypes+Images : FDR.Apiary.ApiaryDocument
     member BackdropSizes: string[] with get
     member BaseUrl: string with get
     member LogoSizes: string[] with get
@@ -102,33 +112,33 @@ class ApiaryProvider+DomainTypes+Entity2 : FDR.Apiary.ApiaryDocument
     member ProfileSizes: string[] with get
     member SecureBaseUrl: string with get
 
-class ApiaryProvider+DomainTypes+TokenType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity3 async
-    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity3
+class ApiaryProvider+DomainTypes+Token : FDR.Apiary.InternalApiaryContext
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationTokenNew async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationTokenNew
 
-class ApiaryProvider+DomainTypes+Entity3 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AuthenticationTokenNew : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
     member RequestToken: string with get
     member Success: bool with get
 
-class ApiaryProvider+DomainTypes+SessionType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity4 async
-    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity4
+class ApiaryProvider+DomainTypes+Session : FDR.Apiary.InternalApiaryContext
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationSessionNew async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationSessionNew
 
-class ApiaryProvider+DomainTypes+Entity4 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AuthenticationSessionNew : FDR.Apiary.ApiaryDocument
     member SessionId: string with get
     member Success: bool with get
 
-class ApiaryProvider+DomainTypes+GuestSessionType : FDR.Apiary.InternalApiaryContext
-    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity5 async
-    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity5
+class ApiaryProvider+DomainTypes+GuestSession : FDR.Apiary.InternalApiaryContext
+    member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationGuestSessionNew async
+    member New: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+AuthenticationGuestSessionNew
 
-class ApiaryProvider+DomainTypes+Entity5 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AuthenticationGuestSessionNew : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
     member GuestSessionId: string with get
     member Success: bool with get
 
-class ApiaryProvider+DomainTypes+Entity6 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AccountList : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member IncludeAdult: bool with get
     member Iso31661: string with get
@@ -136,12 +146,12 @@ class ApiaryProvider+DomainTypes+Entity6 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member Username: string with get
 
-class ApiaryProvider+DomainTypes+Entity7 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Movie2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member BackdropPath: string with get
     member BelongsToCollection: FDR.Apiary.ApiaryDocument with get
     member Budget: int with get
-    member Genres: ApiaryProvider+DomainTypes+Entity8[] with get
+    member Genres: ApiaryProvider+DomainTypes+Genre[] with get
     member Homepage: string with get
     member Id: int with get
     member ImdbId: string with get
@@ -149,91 +159,93 @@ class ApiaryProvider+DomainTypes+Entity7 : FDR.Apiary.ApiaryDocument
     member Overview: string with get
     member Popularity: decimal with get
     member PosterPath: string with get
-    member ProductionCompanies: ApiaryProvider+DomainTypes+Entity9[] with get
-    member ProductionCountries: ApiaryProvider+DomainTypes+Entity10[] with get
+    member ProductionCompanies: ApiaryProvider+DomainTypes+ProductionCompany[] with get
+    member ProductionCountries: ApiaryProvider+DomainTypes+ProductionCountry[] with get
     member ReleaseDate: System.DateTime with get
     member Revenue: int with get
     member Runtime: int with get
-    member SpokenLanguages: ApiaryProvider+DomainTypes+Entity11[] with get
+    member SpokenLanguages: ApiaryProvider+DomainTypes+SpokenLanguage[] with get
     member Status: string with get
     member Tagline: string with get
     member Title: string with get
     member VoteAverage: decimal with get
     member VoteCount: int with get
-    member AsyncAlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity12 async
-    member AlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity12
-    member AsyncCasts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity14 async
-    member Casts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity14
-    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity17 async
-    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity17
-    member AsyncKeywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity20 async
-    member Keywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity20
-    member AsyncReleases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity22 async
-    member Releases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity22
-    member AsyncTrailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity24 async
-    member Trailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity24
-    member AsyncTranslations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity26 async
-    member Translations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity26
-    member AsyncSimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity28 async
-    member SimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity28
-    member AsyncLists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity30 async
-    member Lists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity30
-    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity32 async
-    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity32
-    member AsyncAccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity36 async
-    member AccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity36
-    member AsyncRating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity38 async
-    member Rating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity38
+    member AsyncAlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieAlternativeTitles async
+    member AlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieAlternativeTitles
+    member AsyncCasts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieCasts async
+    member Casts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieCasts
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieImages async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieImages
+    member AsyncKeywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieKeywords async
+    member Keywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieKeywords
+    member AsyncReleases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReleases async
+    member Releases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReleases
+    member AsyncTrailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTrailers async
+    member Trailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTrailers
+    member AsyncTranslations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTranslations async
+    member Translations: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTranslations
+    member AsyncSimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieSimilarMovies async
+    member SimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieSimilarMovies
+    member AsyncReviews: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReviews async
+    member Reviews: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReviews
+    member AsyncLists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieLists async
+    member Lists: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieLists
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieChanges async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieChanges
+    member AsyncAccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieAccountStates async
+    member AccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieAccountStates
+    member AsyncRating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieRating async
+    member Rating: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieRating
 
-class ApiaryProvider+DomainTypes+Entity8 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Genre : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity9 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ProductionCompany : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity10 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ProductionCountry : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity11 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SpokenLanguage : FDR.Apiary.ApiaryDocument
     member Iso6391: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity12 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieAlternativeTitles : FDR.Apiary.ApiaryDocument
     member Id: int with get
-    member Titles: ApiaryProvider+DomainTypes+Entity13[] with get
+    member Titles: ApiaryProvider+DomainTypes+Title[] with get
 
-class ApiaryProvider+DomainTypes+Entity13 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Title : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     member Title: string with get
 
-class ApiaryProvider+DomainTypes+Entity14 : FDR.Apiary.ApiaryDocument
-    member Cast: ApiaryProvider+DomainTypes+Entity15[] with get
-    member Crew: ApiaryProvider+DomainTypes+Entity16[] with get
+class ApiaryProvider+DomainTypes+MovieCasts : FDR.Apiary.ApiaryDocument
+    member Cast: ApiaryProvider+DomainTypes+Cast[] with get
+    member Crew: ApiaryProvider+DomainTypes+Crew[] with get
     member Id: int with get
 
-class ApiaryProvider+DomainTypes+Entity15 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Cast : FDR.Apiary.ApiaryDocument
     member Character: string with get
     member Id: int with get
     member Name: string with get
     member Order: int with get
     member ProfilePath: string with get
 
-class ApiaryProvider+DomainTypes+Entity16 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Crew : FDR.Apiary.ApiaryDocument
     member Department: string with get
     member Id: int with get
     member Job: string with get
     member Name: string with get
     member ProfilePath: string with get
 
-class ApiaryProvider+DomainTypes+Entity17 : FDR.Apiary.ApiaryDocument
-    member Backdrops: ApiaryProvider+DomainTypes+Entity18[] with get
+class ApiaryProvider+DomainTypes+MovieImages : FDR.Apiary.ApiaryDocument
+    member Backdrops: ApiaryProvider+DomainTypes+Backdrop[] with get
     member Id: int with get
-    member Posters: ApiaryProvider+DomainTypes+Entity19[] with get
+    member Posters: ApiaryProvider+DomainTypes+Poster[] with get
 
-class ApiaryProvider+DomainTypes+Entity18 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Backdrop : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     member FilePath: string with get
     member Height: int with get
@@ -242,7 +254,7 @@ class ApiaryProvider+DomainTypes+Entity18 : FDR.Apiary.ApiaryDocument
     member VoteCount: int with get
     member Width: int with get
 
-class ApiaryProvider+DomainTypes+Entity19 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Poster : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     member FilePath: string with get
     member Height: int with get
@@ -251,55 +263,55 @@ class ApiaryProvider+DomainTypes+Entity19 : FDR.Apiary.ApiaryDocument
     member VoteCount: int with get
     member Width: int with get
 
-class ApiaryProvider+DomainTypes+Entity20 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieKeywords : FDR.Apiary.ApiaryDocument
     member Id: int with get
-    member Keywords: ApiaryProvider+DomainTypes+Entity21[] with get
+    member Keywords: ApiaryProvider+DomainTypes+Keyword[] with get
 
-class ApiaryProvider+DomainTypes+Entity21 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Keyword : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity22 : FDR.Apiary.ApiaryDocument
-    member Countries: ApiaryProvider+DomainTypes+Entity23[] with get
+class ApiaryProvider+DomainTypes+MovieReleases : FDR.Apiary.ApiaryDocument
+    member Countries: ApiaryProvider+DomainTypes+Country[] with get
     member Id: int with get
 
-class ApiaryProvider+DomainTypes+Entity23 : FDR.Apiary.ApiaryDocument
-    member Certification: ApiaryProvider+DomainTypes+Choice with get
+class ApiaryProvider+DomainTypes+Country : FDR.Apiary.ApiaryDocument
+    member Certification: ApiaryProvider+DomainTypes+CertificationChoice with get
     member Iso31661: string with get
     member ReleaseDate: System.DateTime with get
 
-class ApiaryProvider+DomainTypes+Choice : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+CertificationChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     member String: string option with get
 
-class ApiaryProvider+DomainTypes+Entity24 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieTrailers : FDR.Apiary.ApiaryDocument
     member Id: int with get
-    member Quicktime: ApiaryProvider+DomainTypes+Choice2 with get
-    member Youtube: ApiaryProvider+DomainTypes+Entity25[] with get
+    member Quicktime: ApiaryProvider+DomainTypes+QuicktimeChoice with get
+    member Youtube: ApiaryProvider+DomainTypes+Youtube[] with get
 
-class ApiaryProvider+DomainTypes+Choice2 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+QuicktimeChoice : FDR.Apiary.ApiaryDocument
 
-class ApiaryProvider+DomainTypes+Entity25 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Youtube : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member Size: string with get
     member Source: string with get
 
-class ApiaryProvider+DomainTypes+Entity26 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieTranslations : FDR.Apiary.ApiaryDocument
     member Id: int with get
-    member Translations: ApiaryProvider+DomainTypes+Entity27[] with get
+    member Translations: ApiaryProvider+DomainTypes+Translation[] with get
 
-class ApiaryProvider+DomainTypes+Entity27 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Translation : FDR.Apiary.ApiaryDocument
     member EnglishName: string with get
     member Iso6391: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity28 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieSimilarMovies : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity29[] with get
+    member Results: ApiaryProvider+DomainTypes+Result[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity29 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -309,14 +321,27 @@ class ApiaryProvider+DomainTypes+Entity29 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity30 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieReviews : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity31[] with get
+    member Results: ApiaryProvider+DomainTypes+Result2[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity31 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result2 : FDR.Apiary.ApiaryDocument
+    member Author: string with get
+    member Content: string with get
+    member Id: string with get
+    member Url: string with get
+
+class ApiaryProvider+DomainTypes+MovieLists : FDR.Apiary.ApiaryDocument
+    member Id: int with get
+    member Page: int with get
+    member Results: ApiaryProvider+DomainTypes+Result3[] with get
+    member TotalPages: int with get
+    member TotalResults: int with get
+
+class ApiaryProvider+DomainTypes+Result3 : FDR.Apiary.ApiaryDocument
     member Description: string with get
     member FavoriteCount: int with get
     member Id: string with get
@@ -325,28 +350,28 @@ class ApiaryProvider+DomainTypes+Entity31 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member PosterPath: string with get
 
-class ApiaryProvider+DomainTypes+Entity32 : FDR.Apiary.ApiaryDocument
-    member Changes: ApiaryProvider+DomainTypes+Entity33[] with get
+class ApiaryProvider+DomainTypes+MovieChanges : FDR.Apiary.ApiaryDocument
+    member Changes: ApiaryProvider+DomainTypes+Change[] with get
 
-class ApiaryProvider+DomainTypes+Entity33 : FDR.Apiary.ApiaryDocument
-    member Items: ApiaryProvider+DomainTypes+Entity34[] with get
+class ApiaryProvider+DomainTypes+Change : FDR.Apiary.ApiaryDocument
+    member Items: ApiaryProvider+DomainTypes+Item[] with get
     member Key: string with get
 
-class ApiaryProvider+DomainTypes+Entity34 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Item : FDR.Apiary.ApiaryDocument
     member Action: string with get
     member Id: string with get
     member Time: string with get
-    member Value: ApiaryProvider+DomainTypes+Choice3 option with get
+    member Value: ApiaryProvider+DomainTypes+ValueChoice option with get
     member Iso6391: string option with get
     member OriginalValue: string option with get
 
-class ApiaryProvider+DomainTypes+Choice3 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ValueChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     member Boolean: bool option with get
     member String: string option with get
-    member Record: ApiaryProvider+DomainTypes+Entity35 option with get
+    member Record: ApiaryProvider+DomainTypes+ValueChoice4of4 option with get
 
-class ApiaryProvider+DomainTypes+Entity35 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ValueChoice4of4 : FDR.Apiary.ApiaryDocument
     member Id: int option with get
     member Name: string option with get
     member Certification: string option with get
@@ -359,25 +384,25 @@ class ApiaryProvider+DomainTypes+Entity35 : FDR.Apiary.ApiaryDocument
     member Character: string option with get
     member Order: int option with get
 
-class ApiaryProvider+DomainTypes+Entity36 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieAccountStates : FDR.Apiary.ApiaryDocument
     member Favorite: bool with get
     member Id: int with get
-    member Rated: ApiaryProvider+DomainTypes+Entity37 with get
+    member Rated: ApiaryProvider+DomainTypes+Rated with get
     member Watchlist: bool with get
 
-class ApiaryProvider+DomainTypes+Entity37 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Rated : FDR.Apiary.ApiaryDocument
     member Value: decimal with get
 
-class ApiaryProvider+DomainTypes+Entity38 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieRating : FDR.Apiary.ApiaryDocument
     member StatusCode: int with get
     member StatusMessage: string with get
 
-class ApiaryProvider+DomainTypes+Entity39 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member BackdropPath: FDR.Apiary.ApiaryDocument with get
     member BelongsToCollection: FDR.Apiary.ApiaryDocument with get
     member Budget: int with get
-    member Genres: ApiaryProvider+DomainTypes+Choice4 with get
+    member Genres: ApiaryProvider+DomainTypes+GenresChoice with get
     member Homepage: FDR.Apiary.ApiaryDocument with get
     member Id: int with get
     member ImdbId: string with get
@@ -385,38 +410,38 @@ class ApiaryProvider+DomainTypes+Entity39 : FDR.Apiary.ApiaryDocument
     member Overview: FDR.Apiary.ApiaryDocument with get
     member Popularity: int with get
     member PosterPath: FDR.Apiary.ApiaryDocument with get
-    member ProductionCompanies: ApiaryProvider+DomainTypes+Entity40[] with get
-    member ProductionCountries: ApiaryProvider+DomainTypes+Entity41[] with get
+    member ProductionCompanies: ApiaryProvider+DomainTypes+ProductionCompany2[] with get
+    member ProductionCountries: ApiaryProvider+DomainTypes+ProductionCountry2[] with get
     member ReleaseDate: System.DateTime with get
     member Revenue: int with get
     member Runtime: FDR.Apiary.ApiaryDocument with get
-    member SpokenLanguages: ApiaryProvider+DomainTypes+Entity42[] with get
+    member SpokenLanguages: ApiaryProvider+DomainTypes+SpokenLanguage2[] with get
     member Tagline: FDR.Apiary.ApiaryDocument with get
     member Title: string with get
     member VoteAverage: int with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Choice4 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+GenresChoice : FDR.Apiary.ApiaryDocument
 
-class ApiaryProvider+DomainTypes+Entity40 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ProductionCompany2 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity41 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ProductionCountry2 : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity42 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SpokenLanguage2 : FDR.Apiary.ApiaryDocument
     member Iso6391: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity43 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieUpcoming : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity44[] with get
+    member Results: ApiaryProvider+DomainTypes+Result4[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity44 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result4 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -426,13 +451,13 @@ class ApiaryProvider+DomainTypes+Entity44 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity45 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieNowPlaying : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity46[] with get
+    member Results: ApiaryProvider+DomainTypes+Result5[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity46 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result5 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -442,13 +467,31 @@ class ApiaryProvider+DomainTypes+Entity46 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity47 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MoviePopular : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity48[] with get
+    member Results: ApiaryProvider+DomainTypes+Result6[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity48 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result6 : FDR.Apiary.ApiaryDocument
+    member Adult: bool with get
+    member BackdropPath: string with get
+    member Id: int with get
+    member OriginalTitle: string with get
+    member Popularity: decimal with get
+    member PosterPath: string with get
+    member ReleaseDate: System.DateTime with get
+    member Title: string with get
+    member VoteAverage: decimal with get
+    member VoteCount: int with get
+
+class ApiaryProvider+DomainTypes+MovieTopRated : FDR.Apiary.ApiaryDocument
+    member Page: int with get
+    member Results: ApiaryProvider+DomainTypes+Result7[] with get
+    member TotalPages: int with get
+    member TotalResults: int with get
+
+class ApiaryProvider+DomainTypes+Result7 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -458,70 +501,54 @@ class ApiaryProvider+DomainTypes+Entity48 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity49 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+MovieChanges2 : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity50[] with get
+    member Results: ApiaryProvider+DomainTypes+Result8[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity50 : FDR.Apiary.ApiaryDocument
-    member BackdropPath: string with get
-    member Id: int with get
-    member OriginalTitle: string with get
-    member PosterPath: string with get
-    member ReleaseDate: System.DateTime with get
-    member Title: string with get
-    member VoteAverage: decimal with get
-    member VoteCount: int with get
-
-class ApiaryProvider+DomainTypes+Entity51 : FDR.Apiary.ApiaryDocument
-    member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity52[] with get
-    member TotalPages: int with get
-    member TotalResults: int with get
-
-class ApiaryProvider+DomainTypes+Entity52 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result8 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Id: int with get
 
-class ApiaryProvider+DomainTypes+Entity53 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Collection2 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member Name: string with get
-    member Parts: ApiaryProvider+DomainTypes+Entity54[] with get
+    member Parts: ApiaryProvider+DomainTypes+Part[] with get
     member PosterPath: string with get
-    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity55 async
-    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity55
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CollectionImages async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CollectionImages
 
-class ApiaryProvider+DomainTypes+Entity54 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Part : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member PosterPath: string with get
     member ReleaseDate: System.DateTime with get
     member Title: string with get
 
-class ApiaryProvider+DomainTypes+Entity55 : FDR.Apiary.ApiaryDocument
-    member Backdrops: ApiaryProvider+DomainTypes+Entity56[] with get
+class ApiaryProvider+DomainTypes+CollectionImages : FDR.Apiary.ApiaryDocument
+    member Backdrops: ApiaryProvider+DomainTypes+Backdrop2[] with get
     member Id: int with get
-    member Posters: ApiaryProvider+DomainTypes+Entity57[] with get
+    member Posters: ApiaryProvider+DomainTypes+Poster2[] with get
 
-class ApiaryProvider+DomainTypes+Entity56 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Backdrop2 : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     member FilePath: string with get
     member Height: int with get
     member Iso6391: FDR.Apiary.ApiaryDocument with get
     member Width: int with get
 
-class ApiaryProvider+DomainTypes+Entity57 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Poster2 : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     member FilePath: string with get
     member Height: int with get
     member Iso6391: string with get
     member Width: int with get
 
-class ApiaryProvider+DomainTypes+Entity58 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Person2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
-    member AlsoKnownAs: ApiaryProvider+DomainTypes+Choice5 with get
+    member AlsoKnownAs: ApiaryProvider+DomainTypes+AlsoKnownAsChoice with get
     member Biography: string with get
     member Birthday: System.DateTime with get
     member Deathday: string with get
@@ -530,92 +557,92 @@ class ApiaryProvider+DomainTypes+Entity58 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member PlaceOfBirth: string with get
     member ProfilePath: string with get
-    member AsyncCredits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity59 async
-    member Credits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity59
-    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity62 async
-    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity62
-    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity64 async
-    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity64
+    member AsyncCredits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonCredits async
+    member Credits: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonCredits
+    member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonImages async
+    member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonImages
+    member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonChanges async
+    member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonChanges
 
-class ApiaryProvider+DomainTypes+Choice5 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AlsoKnownAsChoice : FDR.Apiary.ApiaryDocument
 
-class ApiaryProvider+DomainTypes+Entity59 : FDR.Apiary.ApiaryDocument
-    member Cast: ApiaryProvider+DomainTypes+Entity60[] with get
-    member Crew: ApiaryProvider+DomainTypes+Entity61[] with get
+class ApiaryProvider+DomainTypes+PersonCredits : FDR.Apiary.ApiaryDocument
+    member Cast: ApiaryProvider+DomainTypes+Cast2[] with get
+    member Crew: ApiaryProvider+DomainTypes+Crew2[] with get
     member Id: int with get
 
-class ApiaryProvider+DomainTypes+Entity60 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Cast2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Character: string with get
     member Id: int with get
-    member OriginalTitle: ApiaryProvider+DomainTypes+Choice6 with get
+    member OriginalTitle: ApiaryProvider+DomainTypes+OriginalTitleChoice with get
     member PosterPath: string with get
-    member ReleaseDate: ApiaryProvider+DomainTypes+Choice7 with get
-    member Title: ApiaryProvider+DomainTypes+Choice8 with get
+    member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice with get
+    member Title: ApiaryProvider+DomainTypes+TitleChoice with get
 
-class ApiaryProvider+DomainTypes+Choice6 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+OriginalTitleChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     member String: string option with get
 
-class ApiaryProvider+DomainTypes+Choice7 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ReleaseDateChoice : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
 
-class ApiaryProvider+DomainTypes+Choice8 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+TitleChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     member String: string option with get
 
-class ApiaryProvider+DomainTypes+Entity61 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Crew2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Department: string with get
     member Id: int with get
     member Job: string with get
     member OriginalTitle: string with get
     member PosterPath: string with get
-    member ReleaseDate: ApiaryProvider+DomainTypes+Choice9 with get
+    member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice2 with get
     member Title: string with get
 
-class ApiaryProvider+DomainTypes+Choice9 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ReleaseDateChoice2 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
 
-class ApiaryProvider+DomainTypes+Entity62 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+PersonImages : FDR.Apiary.ApiaryDocument
     member Id: int with get
-    member Profiles: ApiaryProvider+DomainTypes+Entity63[] with get
+    member Profiles: ApiaryProvider+DomainTypes+Profile[] with get
 
-class ApiaryProvider+DomainTypes+Entity63 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Profile : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     member FilePath: string with get
     member Height: int with get
     member Iso6391: FDR.Apiary.ApiaryDocument with get
     member Width: int with get
 
-class ApiaryProvider+DomainTypes+Entity64 : FDR.Apiary.ApiaryDocument
-    member Changes: ApiaryProvider+DomainTypes+Entity65[] with get
+class ApiaryProvider+DomainTypes+PersonChanges : FDR.Apiary.ApiaryDocument
+    member Changes: ApiaryProvider+DomainTypes+Change2[] with get
 
-class ApiaryProvider+DomainTypes+Entity65 : FDR.Apiary.ApiaryDocument
-    member Items: ApiaryProvider+DomainTypes+Entity66[] with get
+class ApiaryProvider+DomainTypes+Change2 : FDR.Apiary.ApiaryDocument
+    member Items: ApiaryProvider+DomainTypes+Item2[] with get
     member Key: string with get
 
-class ApiaryProvider+DomainTypes+Entity66 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Item2 : FDR.Apiary.ApiaryDocument
     member Action: string with get
     member Id: string with get
     member Time: string with get
     member Value: string option with get
 
-class ApiaryProvider+DomainTypes+Entity67 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+PersonPopular : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity68[] with get
+    member Results: ApiaryProvider+DomainTypes+Result9[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity68 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result9 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Id: int with get
     member Name: string with get
     member ProfilePath: string with get
 
-class ApiaryProvider+DomainTypes+Entity69 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+PersonLatest : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
-    member AlsoKnownAs: ApiaryProvider+DomainTypes+Choice10 with get
+    member AlsoKnownAs: ApiaryProvider+DomainTypes+AlsoKnownAsChoice2 with get
     member Biography: FDR.Apiary.ApiaryDocument with get
     member Birthday: FDR.Apiary.ApiaryDocument with get
     member Deathday: FDR.Apiary.ApiaryDocument with get
@@ -625,34 +652,36 @@ class ApiaryProvider+DomainTypes+Entity69 : FDR.Apiary.ApiaryDocument
     member PlaceOfBirth: FDR.Apiary.ApiaryDocument with get
     member ProfilePath: FDR.Apiary.ApiaryDocument with get
 
-class ApiaryProvider+DomainTypes+Choice10 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+AlsoKnownAsChoice2 : FDR.Apiary.ApiaryDocument
 
-class ApiaryProvider+DomainTypes+Entity70 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+PersonChanges2 : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity71[] with get
+    member Results: ApiaryProvider+DomainTypes+Result10[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity71 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result10 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Id: int with get
 
-class ApiaryProvider+DomainTypes+Entity72 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+List2 : FDR.Apiary.ApiaryDocument
     member CreatedBy: string with get
     member Description: string with get
     member FavoriteCount: int with get
     member Id: string with get
     member Iso6391: string with get
     member ItemCount: int with get
-    member Items: ApiaryProvider+DomainTypes+Entity73[] with get
+    member Items: ApiaryProvider+DomainTypes+Item3[] with get
     member Name: string with get
     member PosterPath: string with get
+    member AsyncItemStatus: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+ListItemStatus async
+    member ItemStatus: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+ListItemStatus
     member AsyncAddItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument async
     member AddItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument
     member AsyncRemoveItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument async
     member RemoveItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument
 
-class ApiaryProvider+DomainTypes+Entity73 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Item3 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -662,7 +691,11 @@ class ApiaryProvider+DomainTypes+Entity73 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity74 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ListItemStatus : FDR.Apiary.ApiaryDocument
+    member Id: string with get
+    member ItemPresent: bool with get
+
+class ApiaryProvider+DomainTypes+Company2 : FDR.Apiary.ApiaryDocument
     member Description: FDR.Apiary.ApiaryDocument with get
     member Headquarters: string with get
     member Homepage: string with get
@@ -670,48 +703,48 @@ class ApiaryProvider+DomainTypes+Entity74 : FDR.Apiary.ApiaryDocument
     member LogoPath: string with get
     member Name: string with get
     member ParentCompany: FDR.Apiary.ApiaryDocument with get
-    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity75 async
-    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity75
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CompanyMovies async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CompanyMovies
 
-class ApiaryProvider+DomainTypes+Entity75 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+CompanyMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity76[] with get
+    member Results: ApiaryProvider+DomainTypes+Result11[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity76 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result11 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
     member PosterPath: string with get
-    member ReleaseDate: ApiaryProvider+DomainTypes+Choice11 with get
+    member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice3 with get
     member Title: string with get
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Choice11 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ReleaseDateChoice3 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
 
-class ApiaryProvider+DomainTypes+Entity77 : FDR.Apiary.ApiaryDocument
-    member Genres: ApiaryProvider+DomainTypes+Entity78[] with get
+class ApiaryProvider+DomainTypes+GenreList : FDR.Apiary.ApiaryDocument
+    member Genres: ApiaryProvider+DomainTypes+Genre3[] with get
 
-class ApiaryProvider+DomainTypes+Entity78 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Genre3 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+IdType : FDR.Apiary.InternalApiaryContext
-    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity79 async
-    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity79
+class ApiaryProvider+DomainTypes+Id : FDR.Apiary.InternalApiaryContext
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+GenreIdMovies async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+GenreIdMovies
 
-class ApiaryProvider+DomainTypes+Entity79 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+GenreIdMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity80[] with get
+    member Results: ApiaryProvider+DomainTypes+Result12[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity80 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result12 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -721,20 +754,20 @@ class ApiaryProvider+DomainTypes+Entity80 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity81 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Keyword3 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
-    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity82 async
-    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Entity82
+    member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+KeywordMovies async
+    member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+KeywordMovies
 
-class ApiaryProvider+DomainTypes+Entity82 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+KeywordMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity83[] with get
+    member Results: ApiaryProvider+DomainTypes+Result13[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity83 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result13 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
@@ -744,58 +777,76 @@ class ApiaryProvider+DomainTypes+Entity83 : FDR.Apiary.ApiaryDocument
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Entity84 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+DiscoverMovie : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity85[] with get
+    member Results: ApiaryProvider+DomainTypes+Result14[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity85 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result14 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member BackdropPath: string with get
     member Id: int with get
     member OriginalTitle: string with get
     member Popularity: decimal with get
     member PosterPath: string with get
-    member ReleaseDate: ApiaryProvider+DomainTypes+Choice12 with get
+    member ReleaseDate: System.DateTime with get
+    member Title: string with get
+    member VoteAverage: int with get
+    member VoteCount: int with get
+
+class ApiaryProvider+DomainTypes+SearchMovie : FDR.Apiary.ApiaryDocument
+    member Page: int with get
+    member Results: ApiaryProvider+DomainTypes+Result15[] with get
+    member TotalPages: int with get
+    member TotalResults: int with get
+
+class ApiaryProvider+DomainTypes+Result15 : FDR.Apiary.ApiaryDocument
+    member Adult: bool with get
+    member BackdropPath: string with get
+    member Id: int with get
+    member OriginalTitle: string with get
+    member Popularity: decimal with get
+    member PosterPath: string with get
+    member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice4 with get
     member Title: string with get
     member VoteAverage: decimal with get
     member VoteCount: int with get
 
-class ApiaryProvider+DomainTypes+Choice12 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+ReleaseDateChoice4 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
 
-class ApiaryProvider+DomainTypes+Entity86 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SearchCollection : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity87[] with get
+    member Results: ApiaryProvider+DomainTypes+Result16[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity87 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result16 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     member Id: int with get
     member Name: string with get
     member PosterPath: string with get
 
-class ApiaryProvider+DomainTypes+Entity88 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SearchPerson : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity89[] with get
+    member Results: ApiaryProvider+DomainTypes+Result17[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity89 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result17 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     member Id: int with get
     member Name: string with get
     member ProfilePath: string with get
 
-class ApiaryProvider+DomainTypes+Entity90 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SearchList : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity91[] with get
+    member Results: ApiaryProvider+DomainTypes+Result18[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity91 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result18 : FDR.Apiary.ApiaryDocument
     member Description: string with get
     member FavoriteCount: int with get
     member Id: string with get
@@ -805,31 +856,41 @@ class ApiaryProvider+DomainTypes+Entity91 : FDR.Apiary.ApiaryDocument
     member Name: string with get
     member PosterPath: string with get
 
-class ApiaryProvider+DomainTypes+Entity92 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SearchCompany : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity93[] with get
+    member Results: ApiaryProvider+DomainTypes+Result19[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity93 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result19 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member LogoPath: string with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity94 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+SearchKeyword : FDR.Apiary.ApiaryDocument
     member Page: int with get
-    member Results: ApiaryProvider+DomainTypes+Entity95[] with get
+    member Results: ApiaryProvider+DomainTypes+Result20[] with get
     member TotalPages: int with get
     member TotalResults: int with get
 
-class ApiaryProvider+DomainTypes+Entity95 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+Result20 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     member Name: string with get
 
-class ApiaryProvider+DomainTypes+Entity96 : FDR.Apiary.ApiaryDocument
-    member Jobs: ApiaryProvider+DomainTypes+Entity97[] with get
+class ApiaryProvider+DomainTypes+ReviewId : FDR.Apiary.ApiaryDocument
+    member Author: string with get
+    member Content: string with get
+    member Id: string with get
+    member Iso6391: string with get
+    member MediaId: int with get
+    member MediaTitle: string with get
+    member MediaType: string with get
+    member Url: string with get
 
-class ApiaryProvider+DomainTypes+Entity97 : FDR.Apiary.ApiaryDocument
+class ApiaryProvider+DomainTypes+JobList : FDR.Apiary.ApiaryDocument
+    member Jobs: ApiaryProvider+DomainTypes+Job2[] with get
+
+class ApiaryProvider+DomainTypes+Job2 : FDR.Apiary.ApiaryDocument
     member Department: string with get
     member JobList: string[] with get
 

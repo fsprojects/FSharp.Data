@@ -1,9 +1,9 @@
-﻿module FSharp.Data.Tests.Experimental.DesignTime.SignatureTests
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.Experimental.DesignTime.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.Experimental.DesignTime.SignatureTests
 #endif
 
 open System
