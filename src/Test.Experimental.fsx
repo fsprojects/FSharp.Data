@@ -2,6 +2,8 @@
 #load "SetupTesting.fsx"
 SetupTesting.generateSetupScript __SOURCE_DIRECTORY__ "FSharp.Data.Experimental.DesignTime"
 #load "__setup__FSharp.Data.Experimental.DesignTime__.fsx"
+#else
+module Test
 #endif
 
 open System
@@ -9,7 +11,7 @@ open System.IO
 open ProviderImplementation
 
 let (++) a b = Path.Combine(a, b)
-let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
+let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.Experimental.dll"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
 

@@ -2,6 +2,8 @@
 #load "SetupTesting.fsx"
 SetupTesting.generateSetupScript __SOURCE_DIRECTORY__ "FSharp.Data.DesignTime"
 #load "__setup__FSharp.Data.DesignTime__.fsx"
+#else
+module Test
 #endif
 
 open System
@@ -9,7 +11,7 @@ open System.IO
 open ProviderImplementation
 
 let (++) a b = Path.Combine(a, b)
-let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "samples" ++ "docs"
+let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
 
@@ -83,12 +85,21 @@ Xml { Sample = "http://tomasp.net/blog/rss.aspx"
 Json { Sample = "WorldBank.json"
        SampleList = false
        Culture = "" 
+       RootName = "WorldBank"
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Json { Sample = "TwitterStream.json"
        SampleList = true
        Culture = "" 
+       RootName = ""
+       ResolutionFolder = "" }
+|> generate |> prettyPrint |> Console.WriteLine
+
+Json { Sample = "list_my.json"
+       SampleList = false
+       Culture = "" 
+       RootName = "Topic"
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 

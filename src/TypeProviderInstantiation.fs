@@ -26,6 +26,7 @@ type JsonProviderArgs =
     { Sample : string
       SampleList : bool
       Culture : string
+      RootName : string
       ResolutionFolder : string }
 
 type WorldBankProviderArgs =
@@ -77,6 +78,7 @@ type TypeProviderInstantiation =
                 [| box x.Sample
                    box x.SampleList
                    box x.Culture
+                   box x.RootName
                    box x.ResolutionFolder|] 
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),

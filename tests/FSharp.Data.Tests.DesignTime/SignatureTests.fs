@@ -1,9 +1,9 @@
-﻿module FSharp.Data.Tests.DesignTime.SignatureTests
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.DesignTime.SignatureTests
 #endif
 
 open System
@@ -34,7 +34,8 @@ type TestCase =
             ["Json"
              x.Sample
              x.SampleList.ToString()
-             x.Culture]
+             x.Culture
+             x.RootName]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -71,6 +72,7 @@ type TestCase =
             Json { Sample = args.[1]
                    SampleList = args.[2] |> bool.Parse
                    Culture = args.[3] 
+                   RootName = args.[4]
                    ResolutionFolder = ""}
         | "WorldBank" ->
             WorldBank { Sources = args.[1]

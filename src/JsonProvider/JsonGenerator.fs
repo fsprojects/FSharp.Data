@@ -53,41 +53,46 @@ module JsonTypeBuilder =
   /// "Choice" type. This is parameterized by the types (choices) to generate,
   /// by functions that get the multiplicity and the type tag for each option
   /// and also by function that generates the actual code.
-  let rec internal generateMultipleChoiceType culture ctx types codeGenerator =
+  let rec internal generateMultipleChoiceType culture ctx parentName types codeGenerator =
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Representation), HideObjectMethods = true)
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (parentName + "Choice"), Some(ctx.Representation), HideObjectMethods = true)
     ctx.DomainType.AddMember(objectTy)
         
     // Generate GetXyz(s) method for every different case
     // (but skip all Null nodes - we simply ingore them)
     let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    for (KeyValue(kind, (multiplicity, typ))) in types do
-      if kind <> InferedTypeTag.Null then
-        let valTy, valConv = generateJsonType culture ctx typ
-        let kindCode = kind.Code
+    let types = 
+      types 
+      |> Seq.map (fun (KeyValue(kind, (multiplicity, typ))) -> kind, multiplicity, typ)
+      |> Seq.filter (fun (kind, _, _) -> kind <> InferedTypeTag.Null)
+      |> Seq.mapi (fun index (kind, multiplicity, typ) -> index + 1, kind, multiplicity, typ)
+      |> Seq.toArray
+    for index, kind, multiplicity, typ in types do
+      let valTy, valConv = generateJsonType culture ctx (sprintf "%sChoice%dof%d" parentName index types.Length) typ
+      let kindCode = kind.Code
 
-        // If it occurs at most once, then generate property (which may 
-        // be optional). For multiple occurrences, generate method
-        match multiplicity with 
-        | InferedMultiplicity.OptionalSingle ->
-            let p = ProvidedProperty(gen kind.NiceName, typedefof<option<_>>.MakeGenericType [| valTy |])
-            p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
-            objectTy.AddMember(p)          
-        | InferedMultiplicity.Single ->
-            let p = ProvidedProperty(gen kind.NiceName, valTy)
-            p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
-            objectTy.AddMember(p)          
-        | InferedMultiplicity.Multiple ->
-            let p = ProvidedMethod(gen ("Get" + NameUtils.pluralize kind.NiceName), [], valTy.MakeArrayType())
-            p.InvokeCode <- codeGenerator (multiplicity, typ) valConv kindCode
-            objectTy.AddMember(p)          
+      // If it occurs at most once, then generate property (which may 
+      // be optional). For multiple occurrences, generate method
+      match multiplicity with 
+      | InferedMultiplicity.OptionalSingle ->
+          let p = ProvidedProperty(gen kind.NiceName, typedefof<option<_>>.MakeGenericType [| valTy |])
+          p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
+          objectTy.AddMember(p)          
+      | InferedMultiplicity.Single ->
+          let p = ProvidedProperty(gen kind.NiceName, valTy)
+          p.GetterCode <- codeGenerator (multiplicity, typ) valConv kindCode
+          objectTy.AddMember(p)          
+      | InferedMultiplicity.Multiple ->
+          let p = ProvidedMethod(gen ("Get" + NameUtils.pluralize kind.NiceName), [], valTy.MakeArrayType())
+          p.InvokeCode <- codeGenerator (multiplicity, typ) valConv kindCode
+          objectTy.AddMember(p)          
 
     objectTy :> Type, fun (json:Expr) -> ctx.Replacer.ToRuntime json
 
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  and internal generateJsonType culture ctx = function
+  and internal generateJsonType culture ctx parentName = function
     | Primitive(typ, _) -> 
 
         // Return the JSON value as one of the supported primitive types
@@ -109,7 +114,7 @@ module JsonTypeBuilder =
         ctx.Representation, fun (json:Expr) -> ctx.Replacer.ToRuntime json
 
     | Collection (SingletonMap(_, (_, typ))) -> 
-        let elementTy, elementConv = generateJsonType culture ctx typ
+        let elementTy, elementConv = generateJsonType culture ctx (NameUtils.singularize parentName) typ
 
         // Build a function `mapper = fun x -> %%(elementConv x)`
         let convTyp, convFunc = ReflectionHelpers.makeDelegate elementConv ctx.Representation
@@ -125,7 +130,7 @@ module JsonTypeBuilder =
 
     | Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Entity", Some(ctx.Representation), HideObjectMethods = true)
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if parentName = "" then "Entity" else parentName), Some(ctx.Representation), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
 
         // Add all record fields as properties
@@ -134,12 +139,12 @@ module JsonTypeBuilder =
           let propTy, getter =
             if not prop.Optional then 
               // If it is not optional, then we simply return the property
-              let valTy, valConv = generateJsonType culture ctx prop.Type
+              let valTy, valConv = generateJsonType culture ctx propName prop.Type
               valTy, fun (Singleton json) -> 
                 valConv (ctx.Packer <@@ JsonOperations.GetProperty(%%(ctx.UnpackerStayInDesignTime json), propName) @@>)
             else
               // If it is optional, then we generate code similar to arrays
-              let valTy, valConv = generateJsonType culture ctx prop.Type
+              let valTy, valConv = generateJsonType culture ctx propName prop.Type
               let optValTy = typedefof<option<_>>.MakeGenericType [| valTy |]
 
               // Construct function arguments & call `ConvertOptionalProperty` 
@@ -160,7 +165,7 @@ module JsonTypeBuilder =
     | Collection types -> 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
-        generateMultipleChoiceType culture ctx types (fun info valConv kindCode ->
+        generateMultipleChoiceType culture ctx parentName types (fun info valConv kindCode ->
           match info with
           | InferedMultiplicity.Single, _ -> fun (Singleton json) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
@@ -187,7 +192,7 @@ module JsonTypeBuilder =
     | Heterogeneous types ->
         // Generate a choice type that always calls `GetValueByTypeTag` to 
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
-        generateMultipleChoiceType culture ctx types (fun info valConv kindCode ->
+        generateMultipleChoiceType culture ctx parentName types (fun info valConv kindCode ->
           // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
           let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
           let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)

@@ -1,0 +1,32 @@
+class JsonProvider
+    new : () -> JsonProvider
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member GetSample: () -> JsonProvider+DomainTypes+Entity
+
+class JsonProvider+DomainTypes
+
+class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+    member Ordercontainer: JsonProvider+DomainTypes+Ordercontainer with get
+
+class JsonProvider+DomainTypes+Ordercontainer : FDR.JsonDocument
+    member Backgrounds: JsonProvider+DomainTypes+Backgrounds with get
+    member Project: JsonProvider+DomainTypes+Project with get
+
+class JsonProvider+DomainTypes+Backgrounds : FDR.JsonDocument
+    member Background: JsonProvider+DomainTypes+Background with get
+
+class JsonProvider+DomainTypes+Background : FDR.JsonDocument
+    member Title: JsonProvider+DomainTypes+Title with get
+
+class JsonProvider+DomainTypes+Title : FDR.JsonDocument
+    member Text: string with get
+
+class JsonProvider+DomainTypes+Project : FDR.JsonDocument
+    member Title: JsonProvider+DomainTypes+Title2 with get
+
+class JsonProvider+DomainTypes+Title2 : FDR.JsonDocument
+    member Text: string with get
+
