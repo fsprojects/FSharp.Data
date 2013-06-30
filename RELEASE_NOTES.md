@@ -16,3 +16,4 @@
 * 1.1.3 - Improve Units of Measure support and allow to override the type inference in the CSV Provider.
 * 1.1.4 - Allow to skip rows that don't match the schema in CsvProvider. Support for dynamic lookup in CSV files. Improvements to FSharp.Net.Http to support cookies and binary files.
 * 1.1.5 - Performance improvements, support for big csv files, and support for Guid types. Save, Filter and Truncate operations for csv files.
+* 1.1.6 - Fixed runtime problem accessing optional properties with a JSON null. Support for client certificates in FSharp.Net.Http. Support for Windows Phone 7.
