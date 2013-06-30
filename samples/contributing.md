@@ -40,11 +40,12 @@ that group the projects in the main logical groups:
 One problem with developing type providers is supporting multiple versions of the .NET 
 platform. Type providers consist of two components:
 
- * **Runtime** is a part of the type provider that is actually used when the
-   compiled F# code that uses the provider runs. For example, for CSV type provider,
-   this contains the CSV parser and objects to load CSV files.
+ * **Runtime** is the part of the type provider that is actually used when the
+   compiled F# code that uses the provider runs. This assembly also has the
+   non type-provider components of FSharp.Data: the JSON and CSV parsers, and
+   the HTTP utilities.
 
- * **Design time** is a part that is used when editing F# code that uses type
+ * **Design time** is the part that is used when editing F# code that uses type
    provider in your favourite editor or when compiling code. For example, in the
    CSV provider, this component does the type inference and generates types
    (that are mapped to runtime components by the compiler).
@@ -55,7 +56,7 @@ component, because that is always going to be executed on desktop .NET in Visual
 or MonoDevelop. (Well, the truth is that we actually need another _design time_ version
 for Silverlight to support the [tryfsharp.org](http://tryfsharp.org) web site...)
 
-So, there are 3 versions of _runtime_ components and 2 versions of _design time_ 
+So, there are 4 versions of _runtime_ components and 2 versions of _design time_ 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
@@ -65,20 +66,33 @@ for the experimental projects.
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
- * **FSharp.Data.Portable** - F# portable library version
- * **FSharp.Data.Silverlight** - a separate Silverlight version
+ * **FSharp.Data.Portable** - F# portable library version (targetting desktop .NET 4.0, Windows Phone 8 and Windows 8)
+ * **FSharp.Data.Silverlight** - Silverlight 5 version
+ * **FSharp.Data.WindowsPhone7** - Windows Phone 7 version
  * **FSharp.Data.Experimental** - the desktop .NET 4.0 version of the experimental features
  * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features
 
-Although you could use the portable library in Silverlight, the Freebase provider doesn't work
-correctly, so we have a separate Silverlight build. For the experimental project there's no
-need to have a separate Silverlight build. The _design time_ components are in the following
-projects:
+Although you could use the portable library in Silverlight, the Freebase provider doesn't work because 
+of problems referencing the correct version of the System.Core assembly which has the LINQ query operators.
+The XmlProvider also doesn't work in Silverlight both when using the portable version or the Silverlight specific version.
+For the experimental project there's no need to have a separate Silverlight build.
+
+The _design time_ components are in the following projects:
 
  * **FSharp.Data.DesignTime** - the main version for desktop editors
  * **FSharp.Data.DesignTime.Silverlight** - an experimental version for Try F#
  * **FSharp.Data.Experimental.DesignTime** - the main version for desktop editors
  * **FSharp.Data.Experimental.DesignTime.Silverlight** - an experimental version for Try F#
+
+Because the latest available FSharp.Core version for the Windows Phone 7 platform is from F# 2.0,
+this version doesn't support type providers, so it only has the runtime components of FSharp.Data.
+To build it you also need to edit `C:\Program Files (x86)\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.targets`
+to remove the following lines:
+
+    <Error
+        Condition="'$(SilverlightVersion)' != '' and '$(SilverlightVersion)' != 'v5.0'"
+        Text="In this version of Visual Studio, F# for Silverlight can only target Silverlight v5.0. Use a prior version of Visual Studio to target previous versions of Silverlight with F#."
+    />
 
 ### Type provider structure
 
