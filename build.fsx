@@ -166,7 +166,6 @@ Target "UpdateDocs" (fun _ ->
     CopyRecursive "docs" "gh-pages" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
     Branches.push "gh-pages"
-    DeleteDir "gh-pages"
 )
 
 Target "UpdateBinaries" (fun _ ->
@@ -177,7 +176,6 @@ Target "UpdateBinaries" (fun _ ->
     CopyRecursive "bin" "release/bin" true |> printfn "%A"
     CommandHelper.runSimpleGitCommand "release" (sprintf """commit -a -m "Update binaries for version %s""" version) |> printfn "%s"
     Branches.push "release"
-    DeleteDir "release"
 )
 
 Target "Release" DoNothing
