@@ -45,7 +45,7 @@ let ``Can access the symbol for hydrogen``() =
 
 let findCountryByFifaCode code = 
     query { for x in data.``Time and Space``.Location.Countries do 
-            where (x.``FIFA Code`` = code) 
+            where (x.``FIFA Code``.Contains code) 
             exactlyOne }
 
 [<Test>]
@@ -104,7 +104,6 @@ let ``Can access olympics info``() =
 
     firstOlympicCity.Name |> should equal "Athens"
 
-
 [<Test>]
 let ``Can execute query that checks for not null``() =
     let p = query {
@@ -151,3 +150,8 @@ let ``tvrage_id is not unique in mql query``() =
         for p in data.Commons.People.Persons do
         select (p.Name, p.``Date of birth``)
     } |> Seq.head |> should equal ("Jack Abramoff", "1958-02-28")
+
+[<Test>]
+let ``Can handle Ghana multiple ISO 3 codes``() =
+    let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
