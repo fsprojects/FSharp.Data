@@ -227,50 +227,50 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
             match fbPropOpt with 
             | None -> failwith (sprintf "couldn't find information for property '%s' of type '%s'" propertyId declaringTypeId)
             | Some fbProp ->
-            let isUnique = fbProp.IsUnique || fbProp.IsEnum
-            match fbProp.BasicSystemType with
-            // Unique or sequence of compound type: no basic system type
-            | None -> 
-                let propTypeOpt = fb.Schema.GetTypeByTypeId fbProp.ExpectedType
-                match propTypeOpt with 
-                | Some propType ->
-                  memoizeLookup objPropsOnDemand propertyId (fun _propertyId -> 
-                    let results = 
-                        seq { for objData in fb.GetInitialDataForAllObjectsForPropertyOfObject(this.Id,declaringTypeId,fbProp,propType.Id,fb.Limit) do
-                                 yield FreebaseObject(fb,objData,propType.Id) }
-                    if fbProp.IsUnique then 
-                        match results |> Seq.toList with
-                        | objData :: _ -> objData |> box
-                        | [ ] -> null 
-                    else
-                       box results)
-                | _ ->
-                    let raw = this.GetSimplePropertyById(declaringTypeId, propertyId)
-                    if fbProp.IsUnique then  
-                        // Unpublished types get a string 
-                       raw
-                    else
-                        // Unpublished types get a string sequence
-                       raw |> rawResultToStringSequence |> box 
-
-            // Unique or sequence of primitve results: create array, apply unit transformations
-            | Some (basicType,supportsNull) ->
-
-                let rawResult = this.GetSimplePropertyById(declaringTypeId, propertyId)
-                if isUnique then
-                    let targetType = if supportsNull then basicType else makeRuntimeNullableTy basicType
-                    RuntimeConversion.convertOne fb.UseUnits true rawResult targetType fbProp
-                elif basicType=typeof<string> then
-                    this.GetSimplePropertyById(declaringTypeId, propertyId)
-                    |> rawResultToStringSequence 
-                    |> box 
-                else
+                let isUnique = fbProp.IsUnique
+                match fbProp.BasicSystemType with
+                // Unique or sequence of compound type: no basic system type
+                | None -> 
+                    let propTypeOpt = fb.Schema.GetTypeByTypeId fbProp.ExpectedType
+                    match propTypeOpt with 
+                    | Some propType ->
+                      memoizeLookup objPropsOnDemand propertyId (fun _propertyId -> 
+                        let results = 
+                            seq { for objData in fb.GetInitialDataForAllObjectsForPropertyOfObject(this.Id,declaringTypeId,fbProp,propType.Id,fb.Limit) do
+                                     yield FreebaseObject(fb,objData,propType.Id) }
+                        if fbProp.IsUnique then 
+                            match results |> Seq.toList with
+                            | objData :: _ -> objData |> box
+                            | [ ] -> null 
+                        else
+                           box results)
+                    | _ ->
+                        let raw = this.GetSimplePropertyById(declaringTypeId, propertyId)
+                        if fbProp.IsUnique then  
+                            // Unpublished types get a string 
+                           raw
+                        else
+                            // Unpublished types get a string sequence
+                           raw |> rawResultToStringSequence |> box 
+                
+                // Unique or sequence of primitve results: create array, apply unit transformations
+                | Some (basicType,supportsNull) ->
+                
                     let rawResult = this.GetSimplePropertyById(declaringTypeId, propertyId)
-                    let rawResults = rawResult :?> obj[]
-                    let arr = System.Array.CreateInstance(basicType, rawResults.Length)
-                    for i in 0 .. rawResults.Length - 1 do 
-                        arr.SetValue(RuntimeConversion.convertOne fb.UseUnits true rawResults.[i] basicType fbProp, i)
-                    arr |> box
+                    if isUnique then
+                        let targetType = if supportsNull then basicType else makeRuntimeNullableTy basicType
+                        RuntimeConversion.convertOne fb.UseUnits true rawResult targetType fbProp
+                    elif basicType=typeof<string> then
+                        this.GetSimplePropertyById(declaringTypeId, propertyId)
+                        |> rawResultToStringSequence 
+                        |> box 
+                    else
+                        let rawResult = this.GetSimplePropertyById(declaringTypeId, propertyId)
+                        let rawResults = rawResult :?> obj[]
+                        let arr = System.Array.CreateInstance(basicType, rawResults.Length)
+                        for i in 0 .. rawResults.Length - 1 do 
+                            arr.SetValue(RuntimeConversion.convertOne fb.UseUnits true rawResults.[i] basicType fbProp, i)
+                        arr |> box
 
     
     /// Images associated with this item. 
@@ -494,7 +494,7 @@ module internal QueryImplementation =
         | FreebasePropertyGets(e,props) -> 
             let (typeId, propId) = List.head (List.rev props)
             match conn.TryGetPropertyById(typeId, propId) with 
-            | Some prop when prop.IsUnique || prop.IsEnum -> Some (e, props, prop)
+            | Some prop when prop.IsUnique -> Some (e, props, prop)
             | _ -> None
         | _ -> None
 
@@ -890,4 +890,3 @@ type internal TypeProviderAssemblyAttribute(assemblyName : string) =
     member __.AssemblyName = assemblyName
 
 #endif
-

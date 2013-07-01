@@ -7,11 +7,15 @@ open FsUnit
 open NUnit.Framework
 open System
 open System.IO
+open System.Net
 open System.Reflection
 open FSharp.Literate
 open FSharp.CodeFormat
 
 module DocumentationTests = 
+
+  //alow tests that access the network to work when you're behind a proxy
+  WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
   // Initialization of the test - lookup the documentation files,
   // create temp folder for the output and load the F# compiler DLL

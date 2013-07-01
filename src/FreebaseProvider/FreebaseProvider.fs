@@ -193,12 +193,10 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                     if not (String.IsNullOrEmpty property.PropertyName) then 
                         let staticPropertyType = property.FSharpPropertyType(fbSchema, refinedFSharpTypeOfFreebaseProperty, tryFindRefinedTypeForFreebaseType, makeDesignTimeNullableTy, makeDesignTimeSeqTy)
                         let runtimePropertyType = property.FSharpPropertyRuntimeType(fbSchema, fbRuntimeInfo.IFreebaseObjectType)
+                        let (?) = QuotationBuilder.(?)
                         let p = ProvidedProperty(property.PropertyName, staticPropertyType,
-                                                 GetterCode = (fun args -> 
-                                                      let meth = fbRuntimeInfo.IFreebaseObjectType.GetMethod "GetPropertyByIdTyped"
-                                                      let meth = meth.MakeGenericMethod [| runtimePropertyType |]
-                                                      Expr.Call(args.[0],meth,[Expr.Value typeWithProperties.Id; Expr.Value property.Id])))
-
+                                                 GetterCode = fun args -> fbRuntimeInfo.IFreebaseObjectType?GetPropertyByIdTyped (runtimePropertyType)
+                                                                                                                                 (args.[0], typeWithProperties.Id, property.Id))
                         p.AddXmlDocDelayed(fun () -> blurbOfId property.Id |> xmlDoc)
                         yield (p :> MemberInfo) 
                      ]
