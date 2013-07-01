@@ -10,11 +10,15 @@ open NUnit.Framework
 open FsUnit
 open System
 open System.Linq
+open System.Net
 open FSharp.Data
 open FSharp.Data.FreebaseOperators
 
 [<Literal>]
 let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
+
+//alow tests to work when you're behind a proxy
+WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 let data = FreebaseDataProvider<apiKey>.GetDataContext()
 
