@@ -21,7 +21,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\FSharp.Data.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\FSharp.Data.xml</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -35,7 +35,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\FSharp.Data.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\FSharp.Data.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ProviderFileSystem.fs" />
