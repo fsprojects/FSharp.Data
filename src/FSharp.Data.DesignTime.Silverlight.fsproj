@@ -31,7 +31,7 @@
     <OutputPath>bin\sl5-compiler\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl5-compiler\Debug\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\sl5-compiler\Debug\FSharp.Data.DesignTime.xml</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -45,7 +45,7 @@
     <OutputPath>bin\sl5-compiler\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl5-compiler\Release\FSharp.Data.DesignTime.XML</DocumentationFile>
+    <DocumentationFile>bin\sl5-compiler\Release\FSharp.Data.DesignTime.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ProviderFileSystem.fs" />
