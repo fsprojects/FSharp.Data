@@ -13,3 +13,5 @@ __setup__*__.fsx
 tools/FAKE
 TestResults.xml
 packages/NUnit.Runners.2.6.2
+gh-pages
+release

@@ -9,6 +9,7 @@ open System
 open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
+open Fake.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
@@ -25,7 +26,7 @@ let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
   in your F# applications and scripts. It implements F# type providers for working with
   structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase
-  data. It also includes helpers for parsing JSON files and for sending HTTP requests."""
+  data. It also includes helpers for parsing JSON and CSV files and for sending HTTP requests."""
 let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
 
 // Information for the project containing experimental providers
@@ -153,7 +154,38 @@ Target "NuGet" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Run all targets by default. Invoke 'build target=<Target>' to verride
+// Release Scripts
+
+Target "UpdateDocs" (fun _ ->
+
+    executeFSI "tools" "build.fsx" [] |> ignore
+
+    DeleteDir "gh-pages"
+    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "gh-pages"
+    Branches.checkoutBranch "gh-pages" "gh-pages"
+    CopyRecursive "docs" "gh-pages" true |> printfn "%A"
+    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
+    Branches.push "gh-pages"
+    DeleteDir "gh-pages"
+)
+
+Target "UpdateBinaries" (fun _ ->
+
+    DeleteDir "release"
+    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "release"
+    Branches.checkoutBranch "release" "release"
+    CopyRecursive "bin" "release/bin" true |> printfn "%A"
+    CommandHelper.runSimpleGitCommand "release" (sprintf """commit -a -m "Update binaries for version %s""" version) |> printfn "%s"
+    Branches.push "release"
+    DeleteDir "release"
+)
+
+Target "Release" DoNothing
+
+"UpdateDocs" ==> "UpdateBinaries" ==> "Release"
+
+// --------------------------------------------------------------------------------------
+// Run all targets by default. Invoke 'build <Target>' to override
 
 Target "All" DoNothing
 
@@ -164,4 +196,4 @@ Target "All" DoNothing
   ==> "NuGet"
   ==> "All"
 
-Run <| getBuildParamOrDefault "target" "All"
+RunTargetOrDefault "All"
