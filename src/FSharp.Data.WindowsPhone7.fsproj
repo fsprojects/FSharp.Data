@@ -32,7 +32,7 @@
     <OutputPath>bin\sl4-windowsphone71\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl4-windowsphone71\Debug\FSharp.Data.XML</DocumentationFile>
+    <DocumentationFile>bin\sl4-windowsphone71\Debug\FSharp.Data.xml</DocumentationFile>
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
@@ -46,7 +46,7 @@
     <OutputPath>bin\sl4-windowsphone71\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\sl4-windowsphone71\Release\FSharp.Data.XML</DocumentationFile>
+    <DocumentationFile>bin\sl4-windowsphone71\Release\FSharp.Data.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\ProviderFileSystem.fs" />
