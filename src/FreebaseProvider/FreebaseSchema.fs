@@ -279,7 +279,7 @@ type FreebaseProperty with
     /// 'typeReprFunction' indicates if erasure is happening or not.
     member property.FSharpPropertyType(fb:FreebaseSchemaConnection, propertyReprFunction, tryTypeReprFunction, makeNullable, makeSeq) =
         let elementType, supportsNull = property.FSharpPropertyElementType(fb, propertyReprFunction, tryTypeReprFunction)
-        match property.IsUnique || property.IsEnum with
+        match property.IsUnique with
         | true -> if supportsNull then elementType else makeNullable elementType
         | false -> makeSeq elementType
 
@@ -648,4 +648,3 @@ let units =
        ("/en/hourly", (* "Hourly", *) (SI "hertz", 0.000277778, None))
        ("/en/kilohertz_measure", (* "Kilohertz", *) (SI "hertz", 1000.0, None))
   ]
-
