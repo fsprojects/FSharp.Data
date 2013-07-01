@@ -180,7 +180,8 @@ Target "UpdateBinaries" (fun _ ->
 
 Target "Release" DoNothing
 
-"UpdateDocs" ==> "UpdateBinaries" ==> "Release"
+"UpdateDocs" ==> "Release"
+"UpdateBinaries" ==> "Release"
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
