@@ -30,11 +30,6 @@ that group the projects in the main logical groups:
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
    to edit the documentation!
 
- * **FSharp.Data.Demos.sln** contains a couple of larger projects that demonstrate the
-   F# Data type providers in various configurations (Silverlight, Portable library
-   referenced from Windows Phone applications). Feel free to contribute more exciting
-   samples!
-
 ## Projects and multi-targetting
 
 One problem with developing type providers is supporting multiple versions of the .NET 
