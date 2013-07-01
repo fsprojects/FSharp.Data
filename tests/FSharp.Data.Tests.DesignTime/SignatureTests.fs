@@ -8,9 +8,13 @@ module FSharp.Data.Tests.DesignTime.SignatureTests
 
 open System
 open System.IO
+open System.Net
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
+
+//alow tests that access the network to work when you're behind a proxy
+WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 type TestCase = 
     | TestCase of TypeProviderInstantiation
