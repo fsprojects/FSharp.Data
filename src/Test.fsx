@@ -61,6 +61,19 @@ Csv { Sample = "AirQuality.csv"
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
+Csv { Sample = "Titanic.csv"
+      Separator = "" 
+      Culture = "" 
+      InferRows = Int32.MaxValue
+      Schema = "Sex=string option,PClass=string option"
+      HasHeaders = true
+      IgnoreErrors = false
+      Quote = '"'
+      MissingValues = "NaN,NA,#N/A,:"
+      CacheRows = true
+      ResolutionFolder = "" }
+|> generate |> prettyPrint |> Console.WriteLine
+
 Xml { Sample = "Writers.xml"
       Global = false
       SampleList = false

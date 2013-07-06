@@ -253,6 +253,22 @@ for row in csv.Data do
 
 (**
 
+You don't need to override all the columns, you can skip the ones to leave as default, or you can specifically
+just override one or two. For example, in the titanic training dataset from Kaggle ([`docs/Titanic.csv`](../docs/Titanic.csv)),
+if you want to override the `Pclass` column which is inferred as `int` to `string`:
+
+*)
+
+let titanic1 = new CsvProvider<"../docs/Titanic.csv", Schema=",,string,,,,,,,,,">()
+for row in titanic1.Data do
+  printfn "%s" row.Pclass
+
+let titanic2 = new CsvProvider<"../docs/Titanic.csv", Schema="Pclass=string">()
+for row in titanic2.Data do
+  printfn "%s" row.Pclass
+
+(**
+
 ## Transforming CSV files
 
 In addition to reading, `CsvProvider` also has support for transforming CSV files. The operations

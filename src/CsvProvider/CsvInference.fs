@@ -50,12 +50,14 @@ let private regexOptions =
 #endif
 let private nameAndTypeRegex = new Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
 let private typeAndUnitRegex = new Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
+let private overrideByNameRegex = new Regex(@"^(?<name>.+)=(?<type>.+)$", regexOptions)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
   | Name
   | NameAndUnit of string * Type
   | Full of PrimitiveInferedProperty
+  | FullByName of PrimitiveInferedProperty
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
@@ -94,25 +96,35 @@ let private parseTypeAndUnit str =
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem str forSchemaOverride =     
-  let name, typ, unit = 
-    let m = nameAndTypeRegex.Match(str)
-    if m.Success then
-      // name (type|measure|type<measure>)
+  let name, typ, unit, isOverride = 
+    let m = overrideByNameRegex.Match str
+    if m.Success && forSchemaOverride then
+      // name=type|type<measure>
       let name = m.Groups.["name"].Value.TrimEnd()
       let typeAndUnit = m.Groups.["type"].Value.Trim()
       let typ, unit = parseTypeAndUnit typeAndUnit
-      if forSchemaOverride && typ.IsNone then
+      if typ.IsNone then
         failwithf "Invalid type: %s" typeAndUnit
-      name, typ, unit
-    elif forSchemaOverride then
-      // type|type<measure>
-      let typ, unit = parseTypeAndUnit str
-      match typ, unit with
-      | None, _ -> str, None, None
-      | typ, unit -> "", typ, unit
+      name, typ, unit, true
     else
-      // name
-      str, None, None
+      let m = nameAndTypeRegex.Match(str)
+      if m.Success then
+        // name (type|measure|type<measure>)
+        let name = m.Groups.["name"].Value.TrimEnd()
+        let typeAndUnit = m.Groups.["type"].Value.Trim()
+        let typ, unit = parseTypeAndUnit typeAndUnit
+        if forSchemaOverride && typ.IsNone then
+          failwithf "Invalid type: %s" typeAndUnit
+        name, typ, unit, false
+      elif forSchemaOverride then
+        // type|type<measure>
+        let typ, unit = parseTypeAndUnit str
+        match typ, unit with
+        | None, _ -> str, None, None, false
+        | typ, unit -> "", typ, unit, false
+      else
+        // name
+        str, None, None, false
 
   match typ, unit with
   | Some (typ, typWrapper), unit ->
@@ -124,7 +136,7 @@ let private parseSchemaItem str forSchemaOverride =
             then ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
             else failwithf "Units of measure not supported by type %s" typ.Name
       PrimitiveInferedProperty.Create(name, typ, typWithMeasure, typWrapper)
-      |> SchemaParseResult.Full
+      |> (if isOverride then SchemaParseResult.FullByName else SchemaParseResult.Full)
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
   | None, None -> SchemaParseResult.Name
 
@@ -154,25 +166,35 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
       Array.zeroCreate headers.Length
     else
       use reader = new StringReader(schema)
-      let schema = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
-      if schema.Length <> headers.Length then
-        failwithf "Schema was expected to have %d items, but has %d" headers.Length schema.Length
-      schema |> Array.mapi (fun index item -> 
-        let item = item.Trim()
+      let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+      if schemaStr.Length > headers.Length then
+        failwithf "Schema was expected to have at most %d items, but has %d" headers.Length schemaStr.Length
+      let schema = Array.zeroCreate headers.Length
+      for index = 0 to schemaStr.Length-1 do
+        let item = schemaStr.[index].Trim()
         match item with
-        | "" -> None
+        | "" -> ()
         | item -> 
             let parseResult = parseSchemaItem item true
             match parseResult with
             | SchemaParseResult.Name ->                
                 headers.[index] <- item // if the type is not valid, override the header
-                None
             | SchemaParseResult.Full prop -> 
                 let name = 
                   if prop.Name = "" then headers.[index]
                   else prop.Name
-                Some { prop with Name = makeUnique name }
-            | _ -> failwithf "inferType: Unexpected SchemaParseResult: %A" parseResult)
+                schema.[index] <- Some { prop with Name = makeUnique name }
+            | SchemaParseResult.FullByName prop -> 
+                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(prop.Name, StringComparison.OrdinalIgnoreCase))
+                match index with
+                | Some index -> 
+                    let name = 
+                      if prop.Name = "" then headers.[index]
+                      else prop.Name
+                    schema.[index] <- Some { prop with Name = makeUnique headers.[index] }
+                | None -> failwithf "Column '%s' not found in '%s'" prop.Name (headers |> String.concat ",")
+            | _ -> failwithf "inferType: Unexpected SchemaParseResult for schema: %A" parseResult
+      schema
 
   // Merge the previous information with the header names that we get from the
   // first row of the file (if the schema specifies just types, we want to use the
@@ -191,7 +213,8 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
         | SchemaParseResult.Full prop -> 
             let prop = { prop with Name = makeUnique prop.Name }
             schema.[index] <- Some prop
-            prop.Name, None)
+            prop.Name, None
+        | _ -> failwithf "inferType: Unexpected SchemaParseResult for header: %A" parseResult)
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)

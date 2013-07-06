@@ -58,6 +58,9 @@
     <Content Include="Data/banklist.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/Titanic.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/HtmlBody.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
