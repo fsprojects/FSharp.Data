@@ -92,8 +92,8 @@ type Operations =
     else Globalization.CultureInfo(culture)
 
   // Operations that convert string to supported primitive types
-  static member ConvertString text = 
-    defaultArg text "" |> Some
+  static member ConvertString (text:string option) = 
+    text
 
   static member ConvertStringBack(value:string option) = 
     defaultArg value ""
@@ -175,6 +175,7 @@ type Operations =
   static member GetNonOptionalValue<'T>(name:string, opt:option<'T>, valueBeforeConversion) : 'T = 
     match opt, valueBeforeConversion with 
     | Some value, _ -> value
+    | None, None when typeof<'T> = typeof<string> -> "" |> unbox
     | None, None -> failwithf "%s is missing" name
     | None, Some valueBeforeConversion -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name valueBeforeConversion 
 

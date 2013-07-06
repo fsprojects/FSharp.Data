@@ -37,7 +37,8 @@ let private nameToType =
    "float option",   (typeof<float>   , TypeWrapper.Option  )
    "decimal option", (typeof<decimal> , TypeWrapper.Option  )
    "date option",    (typeof<DateTime>, TypeWrapper.Option  )
-   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )]
+   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )
+   "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
 // Compiled regex is not supported in Silverlight
