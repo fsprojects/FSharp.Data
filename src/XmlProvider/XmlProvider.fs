@@ -66,8 +66,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     let inferedType = 
       sampleXml
-      |> Seq.map (fun item -> XmlInference.inferType cultureInfo globalInference item)
-      |> Seq.fold subtypeInfered Top
+      |> Seq.map (fun item -> XmlInference.inferType cultureInfo (*allowNulls*)true globalInference item)
+      |> Seq.fold (subtypeInfered (*allowNulls*)true) Top
 
     let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)
     let methResTy, methResConv = XmlTypeBuilder.generateXmlType culture ctx inferedType

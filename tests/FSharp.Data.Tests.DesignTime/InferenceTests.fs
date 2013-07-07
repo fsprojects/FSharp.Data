@@ -51,14 +51,14 @@ let ``Seq.pairBy helper function preserves order``() =
 let ``Finds common subtype of numeric types (decimal)``() =
   let source = JsonValue.Parse """[ 10, 10.23 ]"""
   let expected = SimpleCollection(Primitive(typeof<decimal>, None))
-  let actual = JsonInference.inferType culture  source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (int64)``() =
   let source = JsonValue.Parse """[ 10, 2147483648 ]"""
   let expected = SimpleCollection(Primitive(typeof<int64>, None))
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -68,7 +68,7 @@ let ``Infers heterogeneous type of primitives``() =
     [ InferedTypeTag.Number, (Single, Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> Collection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -79,14 +79,14 @@ let ``Infers heterogeneous type of primitives and nulls``() =
       InferedTypeTag.Number, (Single, Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> Collection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (float)``() =
   let source = JsonValue.Parse """[ 10, 10.23, 79228162514264337593543950336 ]"""
   let expected = SimpleCollection(Primitive(typeof<float>, None))
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -97,7 +97,7 @@ let ``Infers heterogeneous type of primitives and records``() =
       InferedTypeTag.Record None, 
         (Single, Record(None, [ { Name="a"; Optional=false; Type=Primitive(typeof<Bit0>, None) } ])) ]
     |> Map.ofSeq |> Collection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -107,7 +107,7 @@ let ``Merges types in a collection of collections``() =
     Record(None, [ {Name = "a"; Optional = true; Type = Primitive(typeof<bool>, None) }
                    {Name = "b"; Optional = true; Type = Primitive(typeof<decimal>, None) } ])
     |> SimpleCollection |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
     
 [<Test>]
@@ -118,7 +118,7 @@ let ``Unions properties of records in a collection``() =
                    {Name = "b"; Optional = true; Type = Primitive(typeof<string>, None) }
                    {Name = "c"; Optional = true; Type = Primitive(typeof<bool>, None) }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -127,13 +127,13 @@ let ``Null is a valid value of string``() =
   let expected =
     Record(None, [ {Name = "a"; Optional = false; Type = Primitive(typeof<string>, None) } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Null is not a valid value of DateTime``() =
   let actual = 
-    ProviderImplementation.StructureInference.subtypeInfered
+    ProviderImplementation.StructureInference.subtypeInfered false
       Null (Primitive(typeof<DateTime>, None))
   let expected = 
     [ InferedTypeTag.Null, Null
@@ -147,7 +147,7 @@ let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``(
   let expected =
     Record(None, [ {Name = "a"; Optional = false; Type = WithNull(Primitive(typeof<int>, None)) } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -158,7 +158,7 @@ let ``Null is a valid value of record``() =
   let expected =
     Record(None, [ {Name = "a"; Optional = false; Type = nestedRecord } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -170,7 +170,7 @@ let ``Infers mixed fields of a record as heterogeneous type``() =
   let expected = 
     Record(None, [ { Name = "a"; Optional = false; Type = Heterogeneous cases }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -182,7 +182,7 @@ let ``Infers mixed fields of a record as heterogeneous type with nulls (2.)``() 
   let expected = 
     Record(None, [ { Name = "a"; Optional = false; Type = WithNull(Primitive(typeof<int>, None)) }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -193,13 +193,13 @@ let ``Inference of multiple nulls works``() =
     [ InferedTypeTag.Collection, (Single, SimpleCollection(Record(None, [prop])))
       InferedTypeTag.Number, (Single, Primitive(typeof<Bit0>, None)) ]
     |> Map.ofSeq |> Collection
-  let actual = JsonInference.inferType culture source
+  let actual = JsonInference.inferType culture true source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Inference of DateTime``() = 
   let source = CsvFile.Parse("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
   let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
@@ -209,7 +209,7 @@ let ``Inference of DateTime``() =
 [<Test>]
 let ``Inference of DateTime with timestamp``() = 
   let source = CsvFile.Parse("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let expected = Record(None, [ propDate ; propTimestamp ])
@@ -218,7 +218,7 @@ let ``Inference of DateTime with timestamp``() =
 [<Test>]
 let ``Inference of DateTime with timestamp non default separator``() = 
   let source = CsvFile.Parse("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00", ";")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let expected = Record(None, [ propDate ; propTimestamp ])
@@ -227,7 +227,7 @@ let ``Inference of DateTime with timestamp non default separator``() =
 [<Test>]
 let ``Inference of float with #N/A values and non default separator``() = 
   let source = CsvFile.Parse("float;integer\n2.0;2\n#N/A;3\n", ";")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false
+  let actual, _ = CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false false
   let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
   let propInteger = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }
   let expected = Record(None, [ propFloat ; propInteger ])
@@ -236,7 +236,7 @@ let ``Inference of float with #N/A values and non default separator``() =
 [<Test>]
 let ``Inference of numbers with empty values``() = 
   let source = CsvFile.Parse("float1,float2,float3,float4,int,float5,float6,date,bool,int64\n1,1,1,1,,,,,,\n2.0,#N/A,,1,1,1,,2010-01-10,yes,\n,,2.0,NA,1,foo,2.0,,,2147483648")
-  let actual, typeOverrides = CsvInference.inferType source Int32.MaxValue (["#N/A"; "NA"; "foo"], culture) "" false
+  let actual, typeOverrides = CsvInference.inferType source Int32.MaxValue (["#N/A"; "NA"; "foo"], culture) "" false false
   let propFloat1 = { Name = "float1"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
   let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
   let propFloat3 = { Name = "float3"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
@@ -251,7 +251,7 @@ let ``Inference of numbers with empty values``() =
   actual |> shouldEqual expected
 
   // Test second part of the csv inference
-  let actual = CsvInference.getFields actual typeOverrides
+  let actual = CsvInference.getFields false actual typeOverrides
   let field name (wrapper:TypeWrapper) typ = PrimitiveInferedProperty.Create(name, typ, wrapper)
   let propFloat1 = field "float1" TypeWrapper.None     typeof<float>
   let propFloat2 = field "float2" TypeWrapper.None     typeof<float>
@@ -289,8 +289,8 @@ let ``Infers units of measure correctly``() =
 
     let source = CsvFile.Parse("String(metre), Float(meter),Date (second),Int\t( Second), Decimal  (watt),Bool(N), Long(N), Unknown (measure)\nxpto, #N/A,2010-01-10,4,3.7, yes,2147483648,2")
     let actual = 
-      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false
-      ||> CsvInference.getFields
+      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false false
+      ||> CsvInference.getFields false
       |> List.map (fun field -> 
           field.Name, 
           field.RuntimeType, 
@@ -313,8 +313,8 @@ let ``Inference schema override by column name``() =
 
   let source = CsvFile.Parse("A (second), B (decimal?), C (float<watt>), float, second, float<N>\n1,1,,1,1,1")
   let actual = 
-    CsvInference.inferType source Int32.MaxValue ([], culture) "" false
-    ||> CsvInference.getFields
+    CsvInference.inferType source Int32.MaxValue ([], culture) "" false false
+    ||> CsvInference.getFields false
     |> List.map (fun field -> 
         field.Name, 
         field.RuntimeType, 
@@ -336,8 +336,8 @@ let ``Inference schema override by parameter``() =
 
   let source = CsvFile.Parse(",Foo,,,,\n1,1,1,1,1,")
   let actual = 
-    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),foo,C(float<m>)" false
-    ||> CsvInference.getFields
+    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),foo,C(float<m>)" false false
+    ||> CsvInference.getFields false
     |> List.map (fun field -> 
         field.Name, 
         field.RuntimeType, 

@@ -135,7 +135,7 @@ let private parseSchemaItem str forSchemaOverride =
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode =
+let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode preferOptionals =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -253,12 +253,13 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode =
         // all the columns types are already set, so all the rows will be the same
         types |> Seq.head
     else
-        List.reduce subtypeInfered types
+        List.reduce (subtypeInfered (not preferOptionals)) types
   
   inferedType, schema
 
 /// Generates the fields for a CSV row. The CSV provider should be
-/// numerical-friendly, so we do a few simple adjustments:
+/// numerical-friendly, so we do a few simple adjustments.
+/// When preferOptionals is false:
 ///  
 ///  - Fields of type 'int + null' are generated as Nullable<int>
 ///  - Fields of type 'int64 + null' are generated as Nullable<int64>
@@ -267,7 +268,11 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode =
 ///  - Fields of type 'T + null' for any other non-nullable T (bool/date/guid) become option<T>
 ///  - All other types are simply strings.
 ///
-let getFields inferedType schema = 
+/// When preferOptionals is true:
+///  
+///  - All fields of type 'T + null' for any type become option<T>, incude strings
+
+let getFields preferOptionals inferedType schema = 
 
   /// Matches heterogeneous types that consist of 'null + T' and return the T type
   /// (used below to transform 'float + null => float' and 'int + null => int?')
@@ -300,10 +305,12 @@ let getFields inferedType schema =
               
               // Transform the types as described above
               let typ, typWrapper = 
-                if optional && typ = typeof<float> then typ, TypeWrapper.None
-                elif optional && typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-                elif optional && (typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64>) then typ, TypeWrapper.Nullable
-                elif optional then typ, TypeWrapper.Option
+                if optional then
+                  if preferOptionals then typ, TypeWrapper.Option
+                  elif typ = typeof<float> then typ, TypeWrapper.None
+                  elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
+                  elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
+                  else typ, TypeWrapper.Option
                 else typ, TypeWrapper.None
             
               // Annotate the type with measure, if there is one
@@ -319,6 +326,6 @@ let getFields inferedType schema =
               PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
           
           | _ -> 
-              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>) )
+              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>, preferOptionals) )
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType

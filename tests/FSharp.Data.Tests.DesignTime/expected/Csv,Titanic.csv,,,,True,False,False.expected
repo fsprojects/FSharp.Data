@@ -5,11 +5,11 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: reader:System.IO.TextReader -> CsvProvider
     static member Load: uri:string -> CsvProvider
 
-class CsvProvider+Row : int * bool * string * string * string * float * int * int * string * decimal * string * string
-    member AsTuple: int * bool * string * string * string * float * int * int * string * decimal * string * string with get
+class CsvProvider+Row : int * bool * int * string * string * float * int * int * string * decimal * string * string
+    member AsTuple: int * bool * int * string * string * float * int * int * string * decimal * string * string with get
     member PassengerId: int with get
     member Survived: bool with get
-    member Pclass: string with get
+    member Pclass: int with get
     member Name: string with get
     member Sex: string with get
     member Age: float with get

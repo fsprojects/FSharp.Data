@@ -228,6 +228,8 @@ be a decimal even though all the values would fit in an int, you can override th
 in the header column between braces, similar to what can be done to specify the units of measure. Valid types are
 `int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`,
 `guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option`, and `string option`.
+You can also override this globally by setting the parameter `PreferOptionals` to true, which will make all columns with missing
+values optional (instead of nullable), and will output `None` instead of `Double.NaN` for missing decimal or float values.
 
 You can also specify
 both the type and a unit (e.g `float<metre>`). Example:

@@ -28,7 +28,8 @@ type TestCase =
              x.Culture
              x.Schema
              x.HasHeaders.ToString()
-             x.SafeMode.ToString()]
+             x.SafeMode.ToString()
+             x.PreferOptionals.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -64,6 +65,7 @@ type TestCase =
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
                   SafeMode = args.[6] |> bool.Parse
+                  PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
                   CacheRows = false
@@ -157,3 +159,4 @@ let ``Generating expressions works in portable `` (testCase:TestCase) =
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore
+

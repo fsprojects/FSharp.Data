@@ -11,6 +11,7 @@ type CsvProviderArgs =
       HasHeaders : bool
       IgnoreErrors : bool
       SafeMode : bool
+      PreferOptionals : bool
       Quote : char
       MissingValues : string
       CacheRows : bool
@@ -64,6 +65,7 @@ type TypeProviderInstantiation =
                    box x.HasHeaders
                    box x.IgnoreErrors
                    box x.SafeMode
+                   box x.PreferOptionals
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
