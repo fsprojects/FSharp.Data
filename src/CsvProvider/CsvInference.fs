@@ -135,7 +135,7 @@ let private parseSchemaItem str forSchemaOverride =
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let inferType (csv:CsvFile) count (missingValues, culture) schema =
+let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -221,6 +221,8 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
             yield rowsIterator.Current
         finally
           rowsIterator.Dispose()
+        if safeMode then
+          yield CsvRow(csv, [| for i in 1..headers.Length -> "" |])
       }
     else
       CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 

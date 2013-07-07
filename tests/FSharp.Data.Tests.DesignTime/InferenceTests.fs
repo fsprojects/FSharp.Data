@@ -199,7 +199,7 @@ let ``Inference of multiple nulls works``() =
 [<Test>]
 let ``Inference of DateTime``() = 
   let source = CsvFile.Parse("date,int,float\n2012-12-19,2,3.0\n2012-12-12,4,5.0\n2012-12-1,6,10.0")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) ""
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propInt = { Name = "int"; Optional = false; Type = Primitive(typeof<int>, None) }
   let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<Decimal>, None) }
@@ -209,7 +209,7 @@ let ``Inference of DateTime``() =
 [<Test>]
 let ``Inference of DateTime with timestamp``() = 
   let source = CsvFile.Parse("date,timestamp\n2012-12-19,2012-12-19 12:00\n2012-12-12,2012-12-12 00:00\n2012-12-1,2012-12-1 07:00")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) ""
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let expected = Record(None, [ propDate ; propTimestamp ])
@@ -218,7 +218,7 @@ let ``Inference of DateTime with timestamp``() =
 [<Test>]
 let ``Inference of DateTime with timestamp non default separator``() = 
   let source = CsvFile.Parse("date;timestamp\n2012-12-19;2012-12-19 12:00\n2012-12-12;2012-12-12 00:00\n2012-12-1;2012-12-1 07:00", ";")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) ""
+  let actual, _ = CsvInference.inferType source Int32.MaxValue ([], culture) "" false
   let propDate = { Name = "date"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let propTimestamp = { Name = "timestamp"; Optional = false; Type = Primitive(typeof<DateTime>, None) }
   let expected = Record(None, [ propDate ; propTimestamp ])
@@ -227,7 +227,7 @@ let ``Inference of DateTime with timestamp non default separator``() =
 [<Test>]
 let ``Inference of float with #N/A values and non default separator``() = 
   let source = CsvFile.Parse("float;integer\n2.0;2\n#N/A;3\n", ";")
-  let actual, _ = CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) ""
+  let actual, _ = CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false
   let propFloat = { Name = "float"; Optional = false; Type = Primitive(typeof<float>, None) }
   let propInteger = { Name = "integer"; Optional = false; Type = Primitive(typeof<int>, None) }
   let expected = Record(None, [ propFloat ; propInteger ])
@@ -236,7 +236,7 @@ let ``Inference of float with #N/A values and non default separator``() =
 [<Test>]
 let ``Inference of numbers with empty values``() = 
   let source = CsvFile.Parse("float1,float2,float3,float4,int,float5,float6,date,bool,int64\n1,1,1,1,,,,,,\n2.0,#N/A,,1,1,1,,2010-01-10,yes,\n,,2.0,NA,1,foo,2.0,,,2147483648")
-  let actual, typeOverrides = CsvInference.inferType source Int32.MaxValue (["#N/A"; "NA"; "foo"], culture) ""
+  let actual, typeOverrides = CsvInference.inferType source Int32.MaxValue (["#N/A"; "NA"; "foo"], culture) "" false
   let propFloat1 = { Name = "float1"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
   let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
   let propFloat3 = { Name = "float3"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
@@ -289,7 +289,7 @@ let ``Infers units of measure correctly``() =
 
     let source = CsvFile.Parse("String(metre), Float(meter),Date (second),Int\t( Second), Decimal  (watt),Bool(N), Long(N), Unknown (measure)\nxpto, #N/A,2010-01-10,4,3.7, yes,2147483648,2")
     let actual = 
-      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) ""
+      CsvInference.inferType source Int32.MaxValue (["#N/A"], culture) "" false
       ||> CsvInference.getFields
       |> List.map (fun field -> 
           field.Name, 
@@ -313,7 +313,7 @@ let ``Inference schema override by column name``() =
 
   let source = CsvFile.Parse("A (second), B (decimal?), C (float<watt>), float, second, float<N>\n1,1,,1,1,1")
   let actual = 
-    CsvInference.inferType source Int32.MaxValue ([], culture) ""
+    CsvInference.inferType source Int32.MaxValue ([], culture) "" false
     ||> CsvInference.getFields
     |> List.map (fun field -> 
         field.Name, 
@@ -336,7 +336,7 @@ let ``Inference schema override by parameter``() =
 
   let source = CsvFile.Parse(",Foo,,,,\n1,1,1,1,1,")
   let actual = 
-    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),foo,C(float<m>)"
+    CsvInference.inferType source Int32.MaxValue ([], culture) "float,,float?<second>,A(float option),foo,C(float<m>)" false
     ||> CsvInference.getFields
     |> List.map (fun field -> 
         field.Name, 

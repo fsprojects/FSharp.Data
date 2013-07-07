@@ -27,7 +27,8 @@ type TestCase =
              x.Separator
              x.Culture
              x.Schema
-             x.HasHeaders.ToString()]
+             x.HasHeaders.ToString()
+             x.SafeMode.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -62,6 +63,7 @@ type TestCase =
                   Schema = args.[4]
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
+                  SafeMode = args.[6] |> bool.Parse
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
                   CacheRows = false

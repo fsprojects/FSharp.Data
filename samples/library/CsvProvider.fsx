@@ -216,15 +216,18 @@ By default, the CSV type provider checks the first 1000 rows to infer the types,
 it by specifying the `InferRows` parameter of `CsvProvider`. If you specify 0 the entire file will be used.
 
 If in any row a value is missing, the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
-(for `bool` and `DateTime`). When a `decimal` would be inferred but there are missing values, we will generate a
+(for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will generate a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
-so we never generate a string option.
+so by default we won't generate a `string option`.
+
+If the sample has no missing values, but you want to be able to handle
+missing values in any column, you can specify the parameter `SafeMode` to true.
 
 If you prefer an option instead of a nullable or vice versa, or if you want a column to
 be a decimal even though all the values would fit in an int, you can override this default behaviour by specifying the types
 in the header column between braces, similar to what can be done to specify the units of measure. Valid types are
-`int`, `int64`, `bool`, `float`, `decimal`, `date`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`,
-`int option`, `int64 option`, `bool option`, `float option`, `decimal option`, and `date option`.
+`int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`,
+`guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option`, and `string option`.
 
 You can also specify
 both the type and a unit (e.g `float<metre>`). Example:

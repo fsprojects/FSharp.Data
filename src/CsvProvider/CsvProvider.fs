@@ -38,11 +38,12 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let schema = args.[4] :?> string
     let hasHeaders = args.[5] :?> bool
     let ignoreErrors = args.[6] :?> bool
-    let quote = args.[7] :?> char
-    let missingValues = args.[8] :?> string
+    let safeMode = args.[7] :?> bool
+    let quote = args.[8] :?> char
+    let missingValues = args.[9] :?> string
     let missingValuesList = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-    let cacheRows = args.[9] :?> bool
-    let resolutionFolder = args.[10] :?> string
+    let cacheRows = args.[10] :?> bool
+    let resolutionFolder = args.[11] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -67,7 +68,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     use sampleCsv = sampleCsv
 
     let inferredFields = 
-      CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema 
+      CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema safeMode
       ||> CsvInference.getFields
 
     let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
@@ -128,6 +129,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("SafeMode", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
       ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = defaultMissingValues)
       ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
@@ -142,6 +144,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Schema'>Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'</param>
        <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line</param>
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered</param>
+       <param name='SafeMode'>When set to true, all columns will assume they can have missing values, even if in the provided sample all values are present. Defaults to false</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to "</param>
        <param name='MissingValues'>The set of strings recogized as missing values. Defaults to """ + "\"" + defaultMissingValues + "\"" + """</param>
        <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets</param>

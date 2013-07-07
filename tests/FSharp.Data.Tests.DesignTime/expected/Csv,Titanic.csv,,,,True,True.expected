@@ -1,0 +1,22 @@
+class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : () -> CsvProvider
+    static member Parse: text:string -> CsvProvider
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    static member Load: uri:string -> CsvProvider
+
+class CsvProvider+Row : System.Nullable<int> * bool option * System.Nullable<int> * string * string * float * System.Nullable<int> * System.Nullable<int> * string * float * string * string
+    member AsTuple: System.Nullable<int> * bool option * System.Nullable<int> * string * string * float * System.Nullable<int> * System.Nullable<int> * string * float * string * string with get
+    member PassengerId: System.Nullable<int> with get
+    member Survived: bool option with get
+    member Pclass: System.Nullable<int> with get
+    member Name: string with get
+    member Sex: string with get
+    member Age: float with get
+    member SibSp: System.Nullable<int> with get
+    member Parch: System.Nullable<int> with get
+    member Ticket: string with get
+    member Fare: float with get
+    member Cabin: string with get
+    member Embarked: string with get
+

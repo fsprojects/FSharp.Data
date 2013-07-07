@@ -10,6 +10,7 @@ type CsvProviderArgs =
       Schema : string
       HasHeaders : bool
       IgnoreErrors : bool
+      SafeMode : bool
       Quote : char
       MissingValues : string
       CacheRows : bool
@@ -62,6 +63,7 @@ type TypeProviderInstantiation =
                    box x.Schema
                    box x.HasHeaders
                    box x.IgnoreErrors
+                   box x.SafeMode
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
