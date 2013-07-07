@@ -19,7 +19,7 @@ module private Helpers =
       then Some () else None
 
   let (|OneOf|_|) set str = 
-    set |> Seq.tryFind ((=) str) |> Option.map ignore
+    if Array.exists ((=) str) set then Some() else None
 
   let regexOptions = 
 #if FX_NO_REGEX_COMPILATION
@@ -69,12 +69,14 @@ type Operations =
   static member AsDecimal culture text =
     Decimal.TryParse(text, NumberStyles.Number, culture) |> asOption
   
-  static member DefaultMissingValues = ["NaN"; "NA"; "#N/A"; ":"]
+  static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"|]
 
   static member AsFloat missingValues culture (text:string) = 
     match text.Trim() with
-    | OneOf missingValues -> Some Double.NaN
-    | _ -> Double.TryParse(text, NumberStyles.Float, culture) |> asOption
+    | OneOf missingValues -> None
+    | _ -> Double.TryParse(text, NumberStyles.Float, culture)
+           |> asOption
+           |> Option.bind (fun f -> if Double.IsNaN f then None else Some f)
   
   static member AsBoolean culture (text:string) = 
     match text.Trim() with
@@ -131,18 +133,15 @@ type Operations =
     | None -> ""
   
   static member ConvertFloat(culture, missingValues:string, text) = 
-    match text with
-    | Some s -> 
-      let missingValues = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-      let culture = Operations.GetCulture culture
-      Operations.AsFloat missingValues culture s
-    | None -> Some Double.NaN
+    text |> Option.bind (Operations.AsFloat (missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries))
+                                            (Operations.GetCulture culture))
 
   static member ConvertFloatBack(culture, missingValues:string, value:float option) = 
     match value with
     | Some value ->
         if Double.IsNaN value then
-          missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries).[0]
+          let missingValues = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
+          if missingValues.Length = 0 then (Operations.GetCulture culture).NumberFormat.NaNSymbol else missingValues.[0]
         else
           value.ToString(Operations.GetCulture culture)
     | None -> ""
@@ -176,7 +175,8 @@ type Operations =
   static member GetNonOptionalValue<'T>(name:string, opt:option<'T>, valueBeforeConversion) : 'T = 
     match opt, valueBeforeConversion with 
     | Some value, _ -> value
-    | None, None when typeof<'T> = typeof<string> -> "" |> unbox
+    | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
+    | None, _ when typeof<'T> = typeof<float> -> Double.NaN |> unbox
     | None, None -> failwithf "%s is missing" name
     | None, Some valueBeforeConversion -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name valueBeforeConversion 
 

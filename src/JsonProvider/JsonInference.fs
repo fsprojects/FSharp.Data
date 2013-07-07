@@ -22,7 +22,7 @@ let rec inferType culture allowNulls json =
   // Null and primitives without subtyping hiearchies
   | JsonValue.Null -> Null
   | JsonValue.Boolean _ -> Primitive(typeof<bool>, None)
-  | JsonValue.String s -> inferPrimitiveType ([], culture) s None 
+  | JsonValue.String s -> inferPrimitiveType culture s None 
   // For numbers, we test if it is integer and if it fits in smaller range
   | JsonValue.Number 0M -> Primitive(typeof<Bit0>, None)
   | JsonValue.Number 1M -> Primitive(typeof<Bit1>, None)

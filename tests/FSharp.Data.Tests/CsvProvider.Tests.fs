@@ -193,3 +193,15 @@ let ``Columns explicitly overrided to string option should return None when empt
     row1.c |> should equal (Some 1)
     row2 |> should equal ("a", Some "b", Some 2)
 
+[<Test>]
+let ``NaN's should work correctly when using option types`` () = 
+    let csv = new CsvProvider<"a,b\n1,\n:,1.0", Schema="float option,float option">()
+    let rows = csv.Data |> Seq.toArray
+    let row1 = rows.[0]
+    let row2 = rows.[1]
+    row1.a |> should equal (Some 1.0)
+    row1.b |> should equal None
+    row2.a |> should equal None
+    row2.b |> should equal (Some 1.0)
+    
+
