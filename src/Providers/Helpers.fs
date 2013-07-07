@@ -7,7 +7,9 @@ namespace ProviderImplementation
 open System
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
+open FSharp.Data.RuntimeImplementation.StructuralTypes
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.StructureInference
 
 // ----------------------------------------------------------------------------------------------
 
@@ -128,19 +130,29 @@ type TypeWrapper = None | Option | Nullable
 /// infer that the value may be missing, we can generate option<T> or nullable<T>)
 type PrimitiveInferedProperty =
   { Name : string
-    BasicType : Type
+    InferedType : Type
+    RuntimeType : Type
     TypeWithMeasure : Type
     TypeWrapper : TypeWrapper }
-  static member Create(name, typ, optional) =
+  static member Create(name, typ, ?typWrapper, ?unit) =
+    let runtimeTyp = 
+      if typ = typeof<Bit> then typeof<bool>
+      elif typ = typeof<Bit0> || typ = typeof<Bit1> then typeof<int>
+      else typ
+    let typWithMeasure =
+      match unit with
+      | None -> runtimeTyp
+      | Some unit -> 
+          if supportsUnitsOfMeasure runtimeTyp
+          then ProvidedMeasureBuilder.Default.AnnotateType(runtimeTyp, [unit])
+          else failwithf "Units of measure not supported by type %s" runtimeTyp.Name
     { Name = name
-      BasicType = typ
-      TypeWithMeasure = typ
-      TypeWrapper = if optional then TypeWrapper.Option else TypeWrapper.None }
-  static member Create(name, typ, typWithMeasure, ?wrapper) =
-    { Name = name
-      BasicType = typ
+      InferedType = typ
+      RuntimeType = runtimeTyp
       TypeWithMeasure = typWithMeasure
-      TypeWrapper = defaultArg wrapper TypeWrapper.None }
+      TypeWrapper = defaultArg typWrapper TypeWrapper.None }
+  static member Create(name, typ, optional) =
+    PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), ?unit=None)
 
 module Conversions = 
 
@@ -160,41 +172,43 @@ module Conversions =
 
     let returnTypWithoutMeasure = 
       match field.TypeWrapper with
-      | TypeWrapper.None -> field.BasicType
-      | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| field.BasicType |]
-      | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| field.BasicType |]
+      | TypeWrapper.None -> field.RuntimeType
+      | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType [| field.RuntimeType |]
+      | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType [| field.RuntimeType |]
 
-    let typ = field.BasicType
+    let typ = field.InferedType
+    let runtimeTyp = field.RuntimeType
 
     let convert value =
       let converted = 
-        if typ = typeof<int> then <@@ Operations.ConvertInteger(culture, %%value) @@>
+        if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertInteger(culture, %%value) @@>
         elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
         elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%value) @@>
         elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
         elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
-        elif typ = typeof<bool> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
+        elif typ = typeof<bool> || typ = typeof<Bit> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
         elif typ = typeof<Guid> then <@@ Operations.ConvertGuid(%%value) @@>
         elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>
         else failwith "convertValue: Unsupported primitive type"
       match field.TypeWrapper with
-      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (typ) (field.Name, converted, value)
+      | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (runtimeTyp) (field.Name, converted, value)
       | TypeWrapper.Option -> converted
-      | TypeWrapper.Nullable -> typeof<Operations>?OptionToNullable (typ) converted
+      | TypeWrapper.Nullable -> typeof<Operations>?OptionToNullable (runtimeTyp) converted
       |> replacer.ToRuntime
 
     let convertBack value = 
       let value = 
         match field.TypeWrapper with
-        | TypeWrapper.None -> typeof<Operations>?GetOptionalValue (typ) value
+        | TypeWrapper.None -> typeof<Operations>?GetOptionalValue (runtimeTyp) value
         | TypeWrapper.Option -> value
-        | TypeWrapper.Nullable -> typeof<Operations>?NullableToOption (typ) value
-      if typ = typeof<int> then <@@ Operations.ConvertIntegerBack(culture, %%value) @@>
+        | TypeWrapper.Nullable -> typeof<Operations>?NullableToOption (runtimeTyp) value
+      if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertIntegerBack(culture, %%value) @@>
       elif typ = typeof<int64> then <@@ Operations.ConvertInteger64Back(culture, %%value) @@>
       elif typ = typeof<decimal> then <@@ Operations.ConvertDecimalBack(culture, %%value) @@>
       elif typ = typeof<float> then <@@ Operations.ConvertFloatBack(culture, missingValues, %%value) @@>
       elif typ = typeof<string> then <@@ Operations.ConvertStringBack(%%value) @@>
-      elif typ = typeof<bool> then <@@ Operations.ConvertBooleanBack(culture, %%value) @@>
+      elif typ = typeof<bool> then <@@ Operations.ConvertBooleanBack(culture, %%value, false) @@>
+      elif typ = typeof<Bit> then <@@ Operations.ConvertBooleanBack(culture, %%value, true) @@>
       elif typ = typeof<Guid> then <@@ Operations.ConvertGuidBack(%%value) @@>
       elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTimeBack(culture, %%value) @@>
       else failwith "convertValue: Unsupported primitive type"

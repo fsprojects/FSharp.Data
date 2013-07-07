@@ -65,7 +65,7 @@ let ``Finds common subtype of numeric types (int64)``() =
 let ``Infers heterogeneous type of primitives``() =
   let source = JsonValue.Parse """[ 1,true ]"""
   let expected = 
-    [ InferedTypeTag.Number, (Single, Primitive(typeof<int>, None))
+    [ InferedTypeTag.Number, (Single, Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> Collection
   let actual = JsonInference.inferType culture source
@@ -76,7 +76,7 @@ let ``Infers heterogeneous type of primitives and nulls``() =
   let source = JsonValue.Parse """[ 1,true,null ]"""
   let expected = 
     [ InferedTypeTag.Null, (Single, Null)
-      InferedTypeTag.Number, (Single, Primitive(typeof<int>, None))
+      InferedTypeTag.Number, (Single, Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> Collection
   let actual = JsonInference.inferType culture source
@@ -95,7 +95,7 @@ let ``Infers heterogeneous type of primitives and records``() =
   let expected = 
     [ InferedTypeTag.Number, (Multiple, Primitive(typeof<int>, None))
       InferedTypeTag.Record None, 
-        (Single, Record(None, [ { Name="a"; Optional=false; Type=Primitive(typeof<int>, None) } ])) ]
+        (Single, Record(None, [ { Name="a"; Optional=false; Type=Primitive(typeof<Bit0>, None) } ])) ]
     |> Map.ofSeq |> Collection
   let actual = JsonInference.inferType culture source
   actual |> shouldEqual expected
@@ -154,7 +154,7 @@ let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``(
 let ``Null is a valid value of record``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":{"b": 1}} ]"""
   let nestedRecord = 
-    Record(None, [{ Name = "b"; Optional = false; Type = Primitive(typeof<int>, None) }])
+    Record(None, [{ Name = "b"; Optional = false; Type = Primitive(typeof<Bit1>, None) }])
   let expected =
     Record(None, [ {Name = "a"; Optional = false; Type = nestedRecord } ])
     |> SimpleCollection
@@ -191,7 +191,7 @@ let ``Inference of multiple nulls works``() =
   let prop = { Name = "a"; Optional = false; Type = Null }
   let expected = 
     [ InferedTypeTag.Collection, (Single, SimpleCollection(Record(None, [prop])))
-      InferedTypeTag.Number, (Single, Primitive(typeof<int>, None)) ]
+      InferedTypeTag.Number, (Single, Primitive(typeof<Bit0>, None)) ]
     |> Map.ofSeq |> Collection
   let actual = JsonInference.inferType culture source
   actual |> shouldEqual expected
@@ -241,7 +241,7 @@ let ``Inference of numbers with empty values``() =
   let propFloat2 = { Name = "float2"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
   let propFloat3 = { Name = "float3"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
   let propFloat4 = { Name = "float4"; Optional = false; Type = Primitive(typeof<float>, None) }
-  let propInt =    { Name = "int";    Optional = false; Type = WithNull(Primitive(typeof<int>, None)) }
+  let propInt =    { Name = "int";    Optional = false; Type = WithNull(Primitive(typeof<Bit1>, None)) }
   let propFloat5 = { Name = "float5"; Optional = false; Type = WithNull(Primitive(typeof<float>, None)) }
   let propFloat6 = { Name = "float6"; Optional = false; Type = WithNull(Primitive(typeof<decimal>, None)) }
   let propDate =   { Name = "date";   Optional = false; Type = WithNull(Primitive(typeof<DateTime>, None)) }
@@ -252,13 +252,12 @@ let ``Inference of numbers with empty values``() =
 
   // Test second part of the csv inference
   let actual = CsvInference.getFields actual typeOverrides
-  let field name wrapper typ = 
-    { Name = name; TypeWrapper = wrapper; BasicType = typ; TypeWithMeasure = typ }
+  let field name (wrapper:TypeWrapper) typ = PrimitiveInferedProperty.Create(name, typ, wrapper)
   let propFloat1 = field "float1" TypeWrapper.None     typeof<float>
   let propFloat2 = field "float2" TypeWrapper.None     typeof<float>
   let propFloat3 = field "float3" TypeWrapper.None     typeof<float>
   let propFloat4 = field "float4" TypeWrapper.None     typeof<float>
-  let propInt =    field "int"    TypeWrapper.Nullable typeof<int>
+  let propInt =    field "int"    TypeWrapper.Nullable typeof<Bit1>
   let propFloat5 = field "float5" TypeWrapper.None     typeof<float>
   let propFloat6 = field "float6" TypeWrapper.None     typeof<float>
   let propDate =   field "date"   TypeWrapper.Option   typeof<DateTime>
@@ -294,7 +293,7 @@ let ``Infers units of measure correctly``() =
       ||> CsvInference.getFields
       |> List.map (fun field -> 
           field.Name, 
-          field.BasicType, 
+          field.RuntimeType, 
           prettyTypeName field.TypeWithMeasure)
 
     let propString =  "String(metre)"      , typeof<string>  , "string"
@@ -318,7 +317,7 @@ let ``Inference schema override by column name``() =
     ||> CsvInference.getFields
     |> List.map (fun field -> 
         field.Name, 
-        field.BasicType, 
+        field.RuntimeType, 
         prettyTypeName field.TypeWithMeasure,
         field.TypeWrapper)
 
@@ -341,7 +340,7 @@ let ``Inference schema override by parameter``() =
     ||> CsvInference.getFields
     |> List.map (fun field -> 
         field.Name, 
-        field.BasicType, 
+        field.RuntimeType, 
         prettyTypeName field.TypeWithMeasure,
         field.TypeWrapper)
 

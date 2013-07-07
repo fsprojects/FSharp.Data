@@ -24,6 +24,8 @@ let rec inferType culture json =
   | JsonValue.Boolean _ -> Primitive(typeof<bool>, None)
   | JsonValue.String s -> inferPrimitiveType ([], culture) s None 
   // For numbers, we test if it is integer and if it fits in smaller range
+  | JsonValue.Number 0M -> Primitive(typeof<Bit0>, None)
+  | JsonValue.Number 1M -> Primitive(typeof<Bit1>, None)
   | JsonValue.Number n when inrange Int32.MinValue Int32.MaxValue n && integer n -> Primitive(typeof<int>, None)
   | JsonValue.Number n when inrange Int64.MinValue Int64.MaxValue n && integer n -> Primitive(typeof<int64>, None)
   | JsonValue.Number _ -> Primitive(typeof<decimal>, None)

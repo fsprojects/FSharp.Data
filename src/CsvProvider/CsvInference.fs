@@ -128,14 +128,7 @@ let private parseSchemaItem str forSchemaOverride =
 
   match typ, unit with
   | Some (typ, typWrapper), unit ->
-      let typWithMeasure =
-        match unit with
-        | None -> typ
-        | Some unit -> 
-            if supportsUnitsOfMeasure typ
-            then ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
-            else failwithf "Units of measure not supported by type %s" typ.Name
-      PrimitiveInferedProperty.Create(name, typ, typWithMeasure, typWrapper)
+      PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
       |> (if isOverride then SchemaParseResult.FullByName else SchemaParseResult.Full)
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
   | None, None -> SchemaParseResult.Name
@@ -307,25 +300,23 @@ let getFields inferedType schema =
               let typ, typWrapper = 
                 if optional && typ = typeof<float> then typ, TypeWrapper.None
                 elif optional && typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-                elif optional && (typ = typeof<int> || typ = typeof<int64>) then typ, TypeWrapper.Nullable
+                elif optional && (typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64>) then typ, TypeWrapper.Nullable
                 elif optional then typ, TypeWrapper.Option
                 else typ, TypeWrapper.None
             
               // Annotate the type with measure, if there is one
-              let typ, typWithMeasure, name = 
+              let typ, unit, name = 
                 match unit with 
                 | Some unit -> 
                     if supportsUnitsOfMeasure typ then
-                      typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit]), field.Name.Split('\n').[1]
+                      typ, Some unit, field.Name.Split('\n').[1]
                     else
-                      typ, typ, field.Name.Split('\n').[0]
-                | _ -> typ, typ, field.Name.Split('\n').[0] 
+                      typ, None, field.Name.Split('\n').[0]
+                | _ -> typ, None, field.Name.Split('\n').[0] 
           
-              PrimitiveInferedProperty.Create
-                (name, typ, typWithMeasure, typWrapper)
+              PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
           
           | _ -> 
-              PrimitiveInferedProperty.Create
-                (field.Name.Split('\n').[0], typeof<string>, typeof<string>) )
+              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>) )
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType

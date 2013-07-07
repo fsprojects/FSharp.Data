@@ -78,8 +78,8 @@ type Operations =
   
   static member AsBoolean culture (text:string) = 
     match text.Trim() with
-    | StringEquals "true" | StringEquals "yes" -> Some true
-    | StringEquals "false" | StringEquals "no" -> Some false
+    | StringEquals "true" | StringEquals "yes" | StringEquals "1" -> Some true
+    | StringEquals "false" | StringEquals "no" | StringEquals "0" -> Some false
     | _ -> None
 
   static member AsGuid (text:string) = 
@@ -150,8 +150,9 @@ type Operations =
   static member ConvertBoolean(culture, text) = 
     text |> Option.bind (Operations.AsBoolean (Operations.GetCulture culture))
 
-  static member ConvertBooleanBack(culture, value:bool option) = 
+  static member ConvertBooleanBack(culture, value:bool option, use0and1) = 
     match value with
+    | Some value when use0and1 -> if value then "1" else "0"
     | Some value -> if value then "true" else "false"
     | None -> ""
 

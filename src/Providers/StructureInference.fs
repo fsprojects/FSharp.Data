@@ -28,11 +28,10 @@ let internal pairBy f first second =
   
 // ------------------------------------------------------------------------------------------------
 
+let numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int64>; typeof<decimal>; typeof<float>]
+
 /// List of primitive types that can be returned as a result of the inference
-/// (with names that are returned for heterogeneous types)
-let primitiveTypes =
-  [ typeof<int>; typeof<int64>; typeof<float>; typeof<decimal>
-    typeof<bool>; typeof<string>; typeof<DateTime>; typeof<Guid> ]
+let primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
 /// Checks whether a type is a value type (and cannot have null as a value)
 let isValueType = function
@@ -41,7 +40,7 @@ let isValueType = function
 
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
-  typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal>
+  List.exists ((=) typ) numericTypes
 
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)
@@ -51,8 +50,7 @@ let typeTag = function
   | Null | Top -> InferedTypeTag.Null
   | Heterogeneous _ -> InferedTypeTag.Heterogeneous
   | Primitive(typ, _) ->
-      if typ = typeof<int> || typ = typeof<int64> || typ = typeof<float> || typ = typeof<decimal> 
-        then InferedTypeTag.Number
+      if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
@@ -62,34 +60,40 @@ let typeTag = function
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.
 ///
-///   float :> decimal :> int64 :> int
+///   float :> decimal :> int64 :> int :> bit :> bit0
+///   float :> decimal :> int64 :> int :> bit :> bit1
+///   bool :> bit :> bit0
+///   bool :> bit :> bit1
 ///
 /// This means that e.g. `int` is a subtype of `decimal` and so all `int` values
 /// are also `decimal` (and `float`) values, but not the other way round.
+
+let conversionTable =
+    [ typeof<Bit>,     [ typeof<Bit0>; typeof<Bit1>]
+      typeof<bool>,    [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
+      typeof<int>,     [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>]
+      typeof<int64>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>]
+      typeof<decimal>, [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>]
+      typeof<float>,   [ typeof<Bit0>; typeof<Bit1>; typeof<Bit>; typeof<int>; typeof<int64>; typeof<decimal>] ]
+
 let subtypePrimitives typ1 typ2 = 
-  Debug.Assert(Seq.exists ((=) typ1) primitiveTypes)
-  Debug.Assert(Seq.exists ((=) typ2) primitiveTypes)
+  Debug.Assert(List.exists ((=) typ1) primitiveTypes)
+  Debug.Assert(List.exists ((=) typ2) primitiveTypes)
     
   let convertibleTo typ source = 
-    if typ = typeof<int64> then 
-      source = typeof<int64> || source = typeof<int>
-    elif typ = typeof<decimal> then
-      source = typeof<decimal> || source = typeof<int64> || source = typeof<int>
-    elif typ = typeof<float> then 
-      source = typeof<float> || source = typeof<decimal> || source = typeof<int64> || source = typeof<int>
-    else failwith "convertibleTo: Incorrect argument"
+    typ = source ||
+    conversionTable |> List.find (fst >> (=) typ) |> snd |> List.exists ((=) source)
 
   // If both types are the same, then that's good
-  if typ1 = typ2 then Some typ1 
-  // If both are convertible to int64, decimal and float, respectively
-  elif convertibleTo typeof<int64> typ1 && convertibleTo typeof<int64> typ2 then
-    Some typeof<int64>
-  elif convertibleTo typeof<decimal> typ1 && convertibleTo typeof<decimal> typ2 then
-    Some typeof<decimal>
-  elif convertibleTo typeof<float> typ1 && convertibleTo typeof<float> typ2 then
-    Some typeof<float>
-  // Otherwise there is no common subtype
-  else None
+  if typ1 = typ2 then Some typ1   
+  else
+    // try to find the smaller type that both types are convertible to
+    conversionTable
+    |> List.map fst
+    |> List.tryPick (fun superType -> 
+        if convertibleTo superType typ1 && convertibleTo superType typ2 
+        then Some superType
+        else None)
 
 /// Active pattern that calls `subtypePrimitives` on two primitive types
 let (|SubtypePrimitives|_|) = function
@@ -216,6 +220,8 @@ let inferPrimitiveType (missingValues, culture) (value : string) unit =
   // are perfectly valid (empty) strings. This is handled differently in CSV.
   match value with
   | null -> Null
+  | "0" -> Primitive(typeof<Bit0>, unit)
+  | "1" -> Primitive(typeof<Bit1>, unit)
   | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
   | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
   | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
