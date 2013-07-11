@@ -79,8 +79,6 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
     .SaveToString('\t')
 
 (**
-For convenience, you can also treat each row as a tuple by using the `AsTuple` property of the RowType.
-This is usefull when want to treat different CSV files with a similar schema in a uniform way:
 
 ## Related articles
 
