@@ -44,20 +44,21 @@ let private nameToType =
 // Compiled regex is not supported in Silverlight
 let private regexOptions = 
 #if FX_NO_REGEX_COMPILATION
-  RegexOptions.None
+  RegexOptions.RightToLeft
 #else
-  RegexOptions.Compiled
+  RegexOptions.Compiled ||| RegexOptions.RightToLeft
 #endif
 let private nameAndTypeRegex = new Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
 let private typeAndUnitRegex = new Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
-let private overrideByNameRegex = new Regex(@"^(?<name>.+)=(?<type>.+)$", regexOptions)
+let private overrideByNameRegex = new Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
-  | Name
+  | Name of string
   | NameAndUnit of string * Type
   | Full of PrimitiveInferedProperty
-  | FullByName of PrimitiveInferedProperty
+  | FullByName of PrimitiveInferedProperty * (*originalName*)string
+  | Rename of (*name*)string * (*originalName*)string
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
@@ -96,16 +97,17 @@ let private parseTypeAndUnit str =
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem str forSchemaOverride =     
-  let name, typ, unit, isOverride = 
+  let name, typ, unit, isOverrideByName, originalName = 
     let m = overrideByNameRegex.Match str
     if m.Success && forSchemaOverride then
       // name=type|type<measure>
-      let name = m.Groups.["name"].Value.TrimEnd()
+      let originalName = m.Groups.["name"].Value.TrimEnd()
+      let newName = m.Groups.["newName"].Value.Trim()
       let typeAndUnit = m.Groups.["type"].Value.Trim()
       let typ, unit = parseTypeAndUnit typeAndUnit
-      if typ.IsNone then
+      if typ.IsNone && typeAndUnit <> "" then
         failwithf "Invalid type: %s" typeAndUnit
-      name, typ, unit, true
+      newName, typ, unit, true, originalName
     else
       let m = nameAndTypeRegex.Match(str)
       if m.Success then
@@ -113,25 +115,28 @@ let private parseSchemaItem str forSchemaOverride =
         let name = m.Groups.["name"].Value.TrimEnd()
         let typeAndUnit = m.Groups.["type"].Value.Trim()
         let typ, unit = parseTypeAndUnit typeAndUnit
-        if forSchemaOverride && typ.IsNone then
-          failwithf "Invalid type: %s" typeAndUnit
-        name, typ, unit, false
+        name, typ, unit, false, ""
       elif forSchemaOverride then
         // type|type<measure>
         let typ, unit = parseTypeAndUnit str
         match typ, unit with
-        | None, _ -> str, None, None, false
-        | typ, unit -> "", typ, unit, false
+        | None, _ -> str, None, None, false, ""
+        | typ, unit -> "", typ, unit, false, ""
       else
         // name
-        str, None, None, false
+        str, None, None, false, ""
 
   match typ, unit with
   | Some (typ, typWrapper), unit ->
-      PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
-      |> (if isOverride then SchemaParseResult.FullByName else SchemaParseResult.Full)
+      let prop = PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
+      if isOverrideByName then 
+        SchemaParseResult.FullByName(prop, originalName) 
+      else 
+      SchemaParseResult.Full prop
+  | None, None when isOverrideByName -> SchemaParseResult.Rename(name, originalName)
+  | None, None -> SchemaParseResult.Name str
+  | None, Some unit when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
-  | None, None -> SchemaParseResult.Name
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
@@ -170,22 +175,28 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode prefe
         | item -> 
             let parseResult = parseSchemaItem item true
             match parseResult with
-            | SchemaParseResult.Name ->                
-                headers.[index] <- item // if the type is not valid, override the header
+            | SchemaParseResult.Name name ->
+                headers.[index] <- name
             | SchemaParseResult.Full prop -> 
                 let name = 
                   if prop.Name = "" then headers.[index]
                   else prop.Name
                 schema.[index] <- Some { prop with Name = makeUnique name }
-            | SchemaParseResult.FullByName prop -> 
-                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(prop.Name, StringComparison.OrdinalIgnoreCase))
+            | SchemaParseResult.Rename (name, originalName) ->
+                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(originalName, StringComparison.OrdinalIgnoreCase))
+                match index with
+                | Some index -> 
+                    headers.[index] <- name
+                | None -> failwithf "Column '%s' not found in '%s'" originalName (headers |> String.concat ",")
+            | SchemaParseResult.FullByName (prop, originalName) -> 
+                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(originalName, StringComparison.OrdinalIgnoreCase))
                 match index with
                 | Some index -> 
                     let name = 
                       if prop.Name = "" then headers.[index]
                       else prop.Name
-                    schema.[index] <- Some { prop with Name = makeUnique headers.[index] }
-                | None -> failwithf "Column '%s' not found in '%s'" prop.Name (headers |> String.concat ",")
+                    schema.[index] <- Some { prop with Name = makeUnique name }
+                | None -> failwithf "Column '%s' not found in '%s'" originalName (headers |> String.concat ",")
             | _ -> failwithf "inferType: Unexpected SchemaParseResult for schema: %A" parseResult
       schema
 
@@ -198,8 +209,8 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode prefe
     | None ->
         let parseResult = parseSchemaItem item false
         match parseResult with
-        | SchemaParseResult.Name -> 
-            makeUnique item, None
+        | SchemaParseResult.Name name -> 
+            makeUnique name, None
         | SchemaParseResult.NameAndUnit (name, unit) -> 
             // store the original header because the inferred type might not support units of measure
             (makeUnique item) + "\n" + (makeUnique name), Some unit
