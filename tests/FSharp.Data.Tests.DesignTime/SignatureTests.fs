@@ -26,7 +26,7 @@ type TestCase =
              x.Sample
              x.Separator
              x.Culture
-             x.Schema
+             x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
              x.SafeMode.ToString()
              x.PreferOptionals.ToString()]
@@ -61,7 +61,7 @@ type TestCase =
                   Separator = args.[2]
                   Culture = args.[3]
                   InferRows = Int32.MaxValue
-                  Schema = args.[4]
+                  Schema = args.[4].Replace(';', ',')
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
                   SafeMode = args.[6] |> bool.Parse
@@ -120,7 +120,7 @@ let testCases =
 let expectedDirectory = sourceDirectory ++ "expected" 
 
 let getExpectedPath testCase = 
-    expectedDirectory ++ (testCase.ToString().Replace("://", "_").Replace("/", "_") + ".expected")
+    expectedDirectory ++ (testCase.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected")
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
@@ -159,4 +159,3 @@ let ``Generating expressions works in portable `` (testCase:TestCase) =
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore
-
