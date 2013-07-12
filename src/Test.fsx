@@ -71,7 +71,7 @@ Csv { Sample = "Titanic.csv"
       Separator = "" 
       Culture = "" 
       InferRows = Int32.MaxValue
-      Schema = "PassengerId=int"
+      Schema = "passengerid = int , Pclass -> Class, Parch -> ParentsOrChildren = int<meter>,SibSp->SiblingsOrSpouse"
       HasHeaders = true
       IgnoreErrors = false
       SafeMode = true
