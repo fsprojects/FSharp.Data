@@ -93,21 +93,24 @@ module JsonTypeBuilder =
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   and internal generateJsonType culture ctx parentName = function
-    | Primitive(typ, _) -> 
+    | Primitive(inferedTyp, _) -> 
+
+        let inferedProp = PrimitiveInferedProperty.Create("", inferedTyp)
+        let typ, runtimeTyp = inferedProp.InferedType, inferedProp.RuntimeType
 
         // Return the JSON value as one of the supported primitive types
         let conv = 
-          if typ = typeof<int> then fun json -> <@@ JsonOperations.GetInteger(%%json, culture) @@>
+          if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then fun json -> <@@ JsonOperations.GetInteger(%%json, culture) @@>
           elif typ = typeof<int64> then fun json -> <@@ JsonOperations.GetInteger64(%%json, culture) @@>
           elif typ = typeof<decimal> then fun json -> <@@ JsonOperations.GetDecimal(%%json, culture) @@>
           elif typ = typeof<float> then fun json -> <@@ JsonOperations.GetFloat(%%json, culture) @@>
           elif typ = typeof<string> then fun json -> <@@ JsonOperations.GetString(%%json) @@>
-          elif typ = typeof<bool> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
+          elif typ = typeof<bool> || typ = typeof<Bit> then fun json -> <@@ JsonOperations.GetBoolean(%%json) @@>
           elif typ = typeof<Guid> then fun json -> <@@ JsonOperations.GetGuid(%%json) @@>
           elif typ = typeof<DateTime> then fun json -> <@@ JsonOperations.GetDateTime(%%json, culture) @@>
           else failwith "generateJsonType: Unsupported primitive type"
         let conv = ctx.UnpackerStayInDesignTime >> conv >> ctx.Replacer.ToRuntime
-        typ, conv
+        runtimeTyp, conv
 
     | Top | Null -> 
         // Return the underlying JsonDocument without change

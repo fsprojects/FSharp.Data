@@ -19,13 +19,13 @@ let private getAttributes culture (element:XElement) =
   [ for attr in element.Attributes() do
       yield { Name = attr.Name.ToString()
               Optional = false; 
-              Type = inferPrimitiveType ([], culture) attr.Value None } ]
+              Type = inferPrimitiveType culture attr.Value None } ]
 
 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType culture (element:XElement) =
+let inferGlobalType culture allowNulls (element:XElement) =
 
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
@@ -37,14 +37,14 @@ let inferGlobalType culture (element:XElement) =
         let attributes =
           elements
           |> Seq.map (getAttributes culture)
-          |> Seq.reduce unionRecordTypes 
+          |> Seq.reduce (unionRecordTypes  allowNulls)
 
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
               if not (String.IsNullOrEmpty(e.Value)) then
-                yield inferPrimitiveType ([], culture) e.Value None ]
-          |> Seq.fold subtypeInfered Top
+                yield inferPrimitiveType culture e.Value None ]
+          |> Seq.fold (subtypeInfered allowNulls) Top
         let body = { Name = ""; Optional = false; Type = bodyType }
 
         let record = Record(Some(name.ToString()), body::attributes)
@@ -64,7 +64,7 @@ let inferGlobalType culture (element:XElement) =
           let children = [ for e in elements.Elements() -> assignment.[e.Name.ToString()] |> snd ]
           let bodyType = 
             if children = [] then body.Type
-            else subtypeInfered (inferCollectionType children) body.Type
+            else subtypeInfered allowNulls (inferCollectionType allowNulls children) body.Type
           changed <- changed || (body.Type <> bodyType)
           body.Type <- bodyType
       | _ -> failwith "inferGlobalType: Expected Record type with a name"
@@ -74,7 +74,7 @@ let inferGlobalType culture (element:XElement) =
 
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
-let rec inferLocalType culture (element:XElement) = 
+let rec inferLocalType culture allowNulls (element:XElement) = 
   let props = 
     [ // Generate record fields for attributes
       yield! getAttributes culture element
@@ -82,18 +82,18 @@ let rec inferLocalType culture (element:XElement) =
       // If it has children, add collection content
       let children = element.Elements()
       if Seq.length children > 0 then
-        let collection = inferCollectionType (Seq.map (inferLocalType culture) children)
+        let collection = inferCollectionType allowNulls (Seq.map (inferLocalType culture allowNulls) children)
         yield { Name = ""; Optional = false; Type = collection } 
 
       // If it has value, add primtiive content
       elif not (String.IsNullOrEmpty(element.Value)) then
-        let primitive = inferPrimitiveType ([], culture) element.Value None
+        let primitive = inferPrimitiveType culture element.Value None
         yield { Name = ""; Optional = false; Type = primitive } ]  
   Record(Some(element.Name.ToString()), props)
 
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType culture globalInference (element:XElement) = 
-  if globalInference then inferGlobalType culture element
-  else inferLocalType culture element
+let inferType culture allowNulls globalInference (element:XElement) = 
+  if globalInference then inferGlobalType culture allowNulls element
+  else inferLocalType culture allowNulls element

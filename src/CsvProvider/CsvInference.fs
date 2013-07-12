@@ -37,24 +37,28 @@ let private nameToType =
    "float option",   (typeof<float>   , TypeWrapper.Option  )
    "decimal option", (typeof<decimal> , TypeWrapper.Option  )
    "date option",    (typeof<DateTime>, TypeWrapper.Option  )
-   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )]
+   "guid option",    (typeof<Guid>    , TypeWrapper.Option  )
+   "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
 // Compiled regex is not supported in Silverlight
 let private regexOptions = 
 #if FX_NO_REGEX_COMPILATION
-  RegexOptions.None
+  RegexOptions.RightToLeft
 #else
-  RegexOptions.Compiled
+  RegexOptions.Compiled ||| RegexOptions.RightToLeft
 #endif
 let private nameAndTypeRegex = new Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
 let private typeAndUnitRegex = new Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
+let private overrideByNameRegex = new Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
-  | Name
+  | Name of string
   | NameAndUnit of string * Type
   | Full of PrimitiveInferedProperty
+  | FullByName of PrimitiveInferedProperty * (*originalName*)string
+  | Rename of (*name*)string * (*originalName*)string
 
 let private asOption = function true, x -> Some x | false, _ -> None
 
@@ -93,43 +97,50 @@ let private parseTypeAndUnit str =
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
 let private parseSchemaItem str forSchemaOverride =     
-  let name, typ, unit = 
-    let m = nameAndTypeRegex.Match(str)
-    if m.Success then
-      // name (type|measure|type<measure>)
-      let name = m.Groups.["name"].Value.TrimEnd()
+  let name, typ, unit, isOverrideByName, originalName = 
+    let m = overrideByNameRegex.Match str
+    if m.Success && forSchemaOverride then
+      // name=type|type<measure>
+      let originalName = m.Groups.["name"].Value.TrimEnd()
+      let newName = m.Groups.["newName"].Value.Trim()
       let typeAndUnit = m.Groups.["type"].Value.Trim()
       let typ, unit = parseTypeAndUnit typeAndUnit
-      if forSchemaOverride && typ.IsNone then
+      if typ.IsNone && typeAndUnit <> "" then
         failwithf "Invalid type: %s" typeAndUnit
-      name, typ, unit
-    elif forSchemaOverride then
-      // type|type<measure>
-      let typ, unit = parseTypeAndUnit str
-      match typ, unit with
-      | None, _ -> str, None, None
-      | typ, unit -> "", typ, unit
+      newName, typ, unit, true, originalName
     else
-      // name
-      str, None, None
+      let m = nameAndTypeRegex.Match(str)
+      if m.Success then
+        // name (type|measure|type<measure>)
+        let name = m.Groups.["name"].Value.TrimEnd()
+        let typeAndUnit = m.Groups.["type"].Value.Trim()
+        let typ, unit = parseTypeAndUnit typeAndUnit
+        name, typ, unit, false, ""
+      elif forSchemaOverride then
+        // type|type<measure>
+        let typ, unit = parseTypeAndUnit str
+        match typ, unit with
+        | None, _ -> str, None, None, false, ""
+        | typ, unit -> "", typ, unit, false, ""
+      else
+        // name
+        str, None, None, false, ""
 
   match typ, unit with
   | Some (typ, typWrapper), unit ->
-      let typWithMeasure =
-        match unit with
-        | None -> typ
-        | Some unit -> 
-            if supportsUnitsOfMeasure typ
-            then ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit])
-            else failwithf "Units of measure not supported by type %s" typ.Name
-      PrimitiveInferedProperty.Create(name, typ, typWithMeasure, typWrapper)
-      |> SchemaParseResult.Full
+      let prop = PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
+      if isOverrideByName then 
+        SchemaParseResult.FullByName(prop, originalName) 
+      else 
+      SchemaParseResult.Full prop
+  | None, None when isOverrideByName -> SchemaParseResult.Rename(name, originalName)
+  | None, None -> SchemaParseResult.Name str
+  | None, Some unit when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
-  | None, None -> SchemaParseResult.Name
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let inferType (csv:CsvFile) count (missingValues, culture) schema =
+let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode preferOptionals =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -153,25 +164,41 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
       Array.zeroCreate headers.Length
     else
       use reader = new StringReader(schema)
-      let schema = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
-      if schema.Length <> headers.Length then
-        failwithf "Schema was expected to have %d items, but has %d" headers.Length schema.Length
-      schema |> Array.mapi (fun index item -> 
-        let item = item.Trim()
+      let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+      if schemaStr.Length > headers.Length then
+        failwithf "Schema was expected to have at most %d items, but has %d" headers.Length schemaStr.Length
+      let schema = Array.zeroCreate headers.Length
+      for index = 0 to schemaStr.Length-1 do
+        let item = schemaStr.[index].Trim()
         match item with
-        | "" -> None
+        | "" -> ()
         | item -> 
             let parseResult = parseSchemaItem item true
             match parseResult with
-            | SchemaParseResult.Name ->                
-                headers.[index] <- item // if the type is not valid, override the header
-                None
+            | SchemaParseResult.Name name ->
+                headers.[index] <- name
             | SchemaParseResult.Full prop -> 
                 let name = 
                   if prop.Name = "" then headers.[index]
                   else prop.Name
-                Some { prop with Name = makeUnique name }
-            | _ -> failwithf "inferType: Unexpected SchemaParseResult: %A" parseResult)
+                schema.[index] <- Some { prop with Name = makeUnique name }
+            | SchemaParseResult.Rename (name, originalName) ->
+                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(originalName, StringComparison.OrdinalIgnoreCase))
+                match index with
+                | Some index -> 
+                    headers.[index] <- name
+                | None -> failwithf "Column '%s' not found in '%s'" originalName (headers |> String.concat ",")
+            | SchemaParseResult.FullByName (prop, originalName) -> 
+                let index = headers |> Array.tryFindIndex (fun header -> header.Equals(originalName, StringComparison.OrdinalIgnoreCase))
+                match index with
+                | Some index -> 
+                    let name = 
+                      if prop.Name = "" then headers.[index]
+                      else prop.Name
+                    schema.[index] <- Some { prop with Name = makeUnique name }
+                | None -> failwithf "Column '%s' not found in '%s'" originalName (headers |> String.concat ",")
+            | _ -> failwithf "inferType: Unexpected SchemaParseResult for schema: %A" parseResult
+      schema
 
   // Merge the previous information with the header names that we get from the
   // first row of the file (if the schema specifies just types, we want to use the
@@ -182,15 +209,16 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
     | None ->
         let parseResult = parseSchemaItem item false
         match parseResult with
-        | SchemaParseResult.Name -> 
-            makeUnique item, None
+        | SchemaParseResult.Name name -> 
+            makeUnique name, None
         | SchemaParseResult.NameAndUnit (name, unit) -> 
             // store the original header because the inferred type might not support units of measure
             (makeUnique item) + "\n" + (makeUnique name), Some unit
         | SchemaParseResult.Full prop -> 
             let prop = { prop with Name = makeUnique prop.Name }
             schema.[index] <- Some prop
-            prop.Name, None)
+            prop.Name, None
+        | _ -> failwithf "inferType: Unexpected SchemaParseResult for header: %A" parseResult)
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
@@ -204,6 +232,8 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
             yield rowsIterator.Current
         finally
           rowsIterator.Dispose()
+        if safeMode then
+          yield CsvRow(csv, [| for i in 1..headers.Length -> "" |])
       }
     else
       CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
@@ -219,11 +249,12 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
                 match schema.[index] with
                 | Some _ -> Null // this will be ignored, so just return anything
                 | None ->
-                    // Treat empty values as 'null' values. The inference will
-                    // infer heterogeneous types e.g. 'null + int', will then 
-                    // be turned into Nullable<int> (etc.) in the getFields function
+                    // Treat empty values as 'null' values.
                     if String.IsNullOrWhiteSpace value then Null
-                    else inferPrimitiveType (missingValues, culture) value unit
+                    // Missing values will be treated as float unless the preferOptionals is set to true
+                    elif Array.exists ((=) <| value.Trim()) missingValues then 
+                        if preferOptionals then Null else Primitive(typeof<float>, unit)
+                    else inferPrimitiveType culture value unit
               { Name = name
                 Optional = false
                 Type = typ } ]
@@ -234,12 +265,13 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
         // all the columns types are already set, so all the rows will be the same
         types |> Seq.head
     else
-        List.reduce subtypeInfered types
+        List.reduce (subtypeInfered (not preferOptionals)) types
   
   inferedType, schema
 
 /// Generates the fields for a CSV row. The CSV provider should be
-/// numerical-friendly, so we do a few simple adjustments:
+/// numerical-friendly, so we do a few simple adjustments.
+/// When preferOptionals is false:
 ///  
 ///  - Fields of type 'int + null' are generated as Nullable<int>
 ///  - Fields of type 'int64 + null' are generated as Nullable<int64>
@@ -248,7 +280,11 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema =
 ///  - Fields of type 'T + null' for any other non-nullable T (bool/date/guid) become option<T>
 ///  - All other types are simply strings.
 ///
-let getFields inferedType schema = 
+/// When preferOptionals is true:
+///  
+///  - All fields of type 'T + null' for any type become option<T>, incude strings
+
+let getFields preferOptionals inferedType schema = 
 
   /// Matches heterogeneous types that consist of 'null + T' and return the T type
   /// (used below to transform 'float + null => float' and 'int + null => int?')
@@ -281,27 +317,27 @@ let getFields inferedType schema =
               
               // Transform the types as described above
               let typ, typWrapper = 
-                if optional && typ = typeof<float> then typ, TypeWrapper.None
-                elif optional && typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-                elif optional && (typ = typeof<int> || typ = typeof<int64>) then typ, TypeWrapper.Nullable
-                elif optional then typ, TypeWrapper.Option
+                if optional then
+                  if preferOptionals then typ, TypeWrapper.Option
+                  elif typ = typeof<float> then typ, TypeWrapper.None
+                  elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
+                  elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
+                  else typ, TypeWrapper.Option
                 else typ, TypeWrapper.None
             
               // Annotate the type with measure, if there is one
-              let typ, typWithMeasure, name = 
+              let typ, unit, name = 
                 match unit with 
                 | Some unit -> 
                     if supportsUnitsOfMeasure typ then
-                      typ, ProvidedMeasureBuilder.Default.AnnotateType(typ, [unit]), field.Name.Split('\n').[1]
+                      typ, Some unit, field.Name.Split('\n').[1]
                     else
-                      typ, typ, field.Name.Split('\n').[0]
-                | _ -> typ, typ, field.Name.Split('\n').[0] 
+                      typ, None, field.Name.Split('\n').[0]
+                | _ -> typ, None, field.Name.Split('\n').[0] 
           
-              PrimitiveInferedProperty.Create
-                (name, typ, typWithMeasure, typWrapper)
+              PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
           
           | _ -> 
-              PrimitiveInferedProperty.Create
-                (field.Name.Split('\n').[0], typeof<string>, typeof<string>) )
+              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>, preferOptionals) )
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType

@@ -64,8 +64,8 @@
     <Compile Include="Providers\NameUtils.fs" />
     <Compile Include="Providers\QuotationBuilder.fs" />
     <Compile Include="Providers\AssemblyReplacer.fs" />
-    <Compile Include="Providers\Helpers.fs" />
     <Compile Include="Providers\StructureInference.fs" />
+    <Compile Include="Providers\Helpers.fs" />
     <Compile Include="Providers\Debug.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="JsonProvider\JsonInference.fs" />

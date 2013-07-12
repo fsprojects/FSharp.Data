@@ -26,8 +26,10 @@ type TestCase =
              x.Sample
              x.Separator
              x.Culture
-             x.Schema
-             x.HasHeaders.ToString()]
+             x.Schema.Replace(',', ';')
+             x.HasHeaders.ToString()
+             x.SafeMode.ToString()
+             x.PreferOptionals.ToString()]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -59,9 +61,11 @@ type TestCase =
                   Separator = args.[2]
                   Culture = args.[3]
                   InferRows = Int32.MaxValue
-                  Schema = args.[4]
+                  Schema = args.[4].Replace(';', ',')
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
+                  SafeMode = args.[6] |> bool.Parse
+                  PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
                   MissingValues = "#N/A,NA,:"
                   CacheRows = false
@@ -116,7 +120,7 @@ let testCases =
 let expectedDirectory = sourceDirectory ++ "expected" 
 
 let getExpectedPath testCase = 
-    expectedDirectory ++ (testCase.ToString().Replace("://", "_").Replace("/", "_") + ".expected")
+    expectedDirectory ++ (testCase.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected")
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"

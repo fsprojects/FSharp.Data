@@ -66,8 +66,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         failwithf "Specified argument is neither a file, nor well-formed JSON: %s" e.Message
 
     let inferedType = 
-      [ for item in sampleJson -> JsonInference.inferType cultureInfo item ]
-      |> Seq.fold subtypeInfered Top
+      [ for item in sampleJson -> JsonInference.inferType cultureInfo (*allowNulls*)true item ]
+      |> Seq.fold (subtypeInfered (*allowNulls*)true) Top
 
     let ctx = JsonGenerationContext.Create(domainTy, replacer)
     let methResTy, methResConv = JsonTypeBuilder.generateJsonType culture ctx (NameUtils.singularize rootName) inferedType

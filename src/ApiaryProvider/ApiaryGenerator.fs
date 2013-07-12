@@ -49,8 +49,8 @@ module internal ApiaryTypeBuilder =
           if example?status.AsInteger() = 200 then 
             let source = example?body.InnerText
             yield JsonValue.Parse source ]
-    [ for itm in samples -> JsonInference.inferType (Operations.GetCulture culture) itm ]
-    |> Seq.fold StructureInference.subtypeInfered InferedType.Top
+    [ for item in samples -> JsonInference.inferType (Operations.GetCulture culture) (*allowNulls*)true item ]
+    |> Seq.fold (StructureInference.subtypeInfered (*allowNulls*)true) InferedType.Top
     |> JsonTypeBuilder.generateJsonType culture ctx.JsonContext name
 
   let ensureGeneratedType ctx parentName (entityTy:Type) = 
