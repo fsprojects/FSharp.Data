@@ -38,11 +38,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let schema = args.[4] :?> string
     let hasHeaders = args.[5] :?> bool
     let ignoreErrors = args.[6] :?> bool
-    let quote = args.[7] :?> char
-    let missingValues = args.[8] :?> string
+    let safeMode = args.[7] :?> bool
+    let preferOptionals = args.[8] :?> bool
+    let quote = args.[9] :?> char
+    let missingValues = args.[10] :?> string
     let missingValuesList = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-    let cacheRows = args.[9] :?> bool
-    let resolutionFolder = args.[10] :?> string
+    let cacheRows = args.[11] :?> bool
+    let resolutionFolder = args.[12] :?> string
     let isHostedExecution = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
@@ -67,8 +69,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     use sampleCsv = sampleCsv
 
     let inferredFields = 
-      CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema 
-      ||> CsvInference.getFields
+      CsvInference.inferType sampleCsv inferRows (missingValuesList, cultureInfo) schema safeMode preferOptionals
+      ||> CsvInference.getFields preferOptionals
 
     let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
       inferredFields 
@@ -128,6 +130,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("SafeMode", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
       ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = defaultMissingValues)
       ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
@@ -139,9 +143,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='Separator'>Column delimiter. Defaults to ","</param>
        <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture</param>
        <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used</param>
-       <param name='Schema'>Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", and "guid option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name</param>
+       <param name='Schema'>Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'</param>
        <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line</param>
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered</param>
+       <param name='SafeMode'>When set to true, all columns will assume they can have missing values, even if in the provided sample all values are present. Defaults to false</param>
+       <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values. Defaults to false</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to "</param>
        <param name='MissingValues'>The set of strings recogized as missing values. Defaults to """ + "\"" + defaultMissingValues + "\"" + """</param>
        <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets</param>

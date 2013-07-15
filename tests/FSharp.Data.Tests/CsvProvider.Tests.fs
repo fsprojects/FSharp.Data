@@ -156,7 +156,7 @@ let ``Columns correctly inferred and accessed when headers are missing`` () =
 let ``IgnoreErrors skips lines with wrong number of columns`` () = 
     let csv = new CsvProvider<"a,b,c\n1,2\n0,1,2,3,4\n2,3,4", IgnoreErrors=true>()
     let row = csv.Data |> Seq.head
-    (row.a, row.b, row.c) |> should equal (2,3,4)
+    row |> should equal (2,3,4)
 
 [<Test>]
 let ``Lines with wrong number of columns throw exception when ignore errors is set to false`` () = 
@@ -168,16 +168,40 @@ let ``IgnoreErrors skips lines with wrong number of columns when there's no head
     let csv = new CsvProvider<"1,2\n0,1,2,3,4\n2,3,4\n5,6", IgnoreErrors=true, HasHeaders=false>()
     let row1 = csv.Data |> Seq.head
     let row2 = csv.Data |> Seq.skip 1 |> Seq.head
-    (row1.Column1, row1.Column2) |> should equal (1,2)
-    (row2.Column1, row2.Column2) |> should equal (5,6)
+    row1 |> should equal (1,2)
+    row2 |> should equal (5,6)
 
 [<Test>]
 let ``IgnoreErrors skips lines with wrong types`` () = 
     let csv = new CsvProvider<"a (int),b (int),c (int)\nx,y,c\n2,3,4", IgnoreErrors=true>()
     let row = csv.Data |> Seq.head
-    (row.a, row.b, row.c) |> should equal (2,3,4)
+    row |> should equal (2,3,4)
 
 [<Test>]
 let ``Lines with wrong types throw exception when ignore errors is set to false`` () = 
     let csv = new CsvProvider<"a (int),b (int),c (int)\nx,y,z\n2,3,4">()
     (fun () -> csv.Data |> Seq.head |> ignore) |> should throw typeof<Exception>
+
+[<Test>]
+let ``Columns explicitly overrided to string option should return None when empty or whitespace`` () = 
+    let csv = new CsvProvider<"a,b,c\n , ,1\na,b,2",Schema=",string option,int option">()
+    let rows = csv.Data |> Seq.toArray
+    let row1 = rows.[0]
+    let row2 = rows.[1]
+    row1.a |> should equal ""
+    row1.b |> should equal None
+    row1.c |> should equal (Some 1)
+    row2 |> should equal ("a", Some "b", Some 2)
+
+[<Test>]
+let ``NaN's should work correctly when using option types`` () = 
+    let csv = new CsvProvider<"a,b\n1,\n:,1.0", Schema="float option,float option">()
+    let rows = csv.Data |> Seq.toArray
+    let row1 = rows.[0]
+    let row2 = rows.[1]
+    row1.a |> should equal (Some 1.0)
+    row1.b |> should equal None
+    row2.a |> should equal None
+    row2.b |> should equal (Some 1.0)
+    
+

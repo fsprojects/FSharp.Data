@@ -80,7 +80,7 @@ class JsonProvider+DomainTypes+Course : FDR.JsonDocument
     member StartMonth: JsonProvider+DomainTypes+StartMonthChoice with get
     member StartYear: JsonProvider+DomainTypes+StartYearChoice with get
     member StatementDesignId: JsonProvider+DomainTypes+StatementDesignIdChoice with get
-    member Status: int with get
+    member Status: bool with get
     member Textbooks: JsonProvider+DomainTypes+TextbooksChoice with get
     member TopicId: int with get
     member UniversityLogo: string with get
