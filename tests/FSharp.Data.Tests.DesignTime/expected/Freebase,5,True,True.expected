@@ -1098,6 +1098,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+MusicDomain : FDR.Freebase
     member Release tracks: FreebaseDataProvider+ServiceTypes+Music+Music+Release_trackDataCollection with get
     member Musical tribute acts: FreebaseDataProvider+ServiceTypes+Music+Music+Musical_tribute_actDataCollection with get
     member Album content types: FreebaseDataProvider+ServiceTypes+Music+Music+Album_content_typeDataCollection with get
+    member Featured artists: FreebaseDataProvider+ServiceTypes+Music+Music+Featured_artistDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+BusinessDomain : FDR.Freebase.FreebaseDomain
     member Currencies: FreebaseDataProvider+ServiceTypes+Business+Finance+CurrencyDataCollection with get
