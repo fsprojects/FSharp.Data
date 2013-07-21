@@ -2,9 +2,7 @@
 # F# Data: CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
-in a statically typed way. We look how to download stock prices from the Yahoo
-Finance web site and then also look how the type provider supports units of measure.
-The type provider is based on the same code as the one used on [Try F#](http://www.tryfsharp.org)
+in a statically typed way. This type provider is similar to the the one used on [Try F#](http://www.tryfsharp.org)
 web site in the "Financial Computing" tutorial, so you can find additional examples there.
 
 The CSV type provider takes a sample CSV as input and generates a type based on the data
@@ -14,7 +12,7 @@ present on the columns of that sample. The column names are obtained from the fi
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../bin` directory, we can load it in F# Interactive as follows:
+is located in the `../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
 #r "../../bin/FSharp.Data.dll"
@@ -144,8 +142,8 @@ meters per second against a value in kilometres per hour.
 
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
-countries, ',' is already used as the numeric decimal separator, so a semicolon is used
-instead to separate CSV columns. The `CsvProvider` has an optional `Separator` parameter
+countries, `,` is already used as the numeric decimal separator, so a semicolon is used
+instead to separate CSV columns. The `CsvProvider` has an optional `Separator` static parameter
 where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
@@ -157,15 +155,15 @@ for row in airQuality.Data do
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
-The air quality dataset used above is used in a lots of samples for the Statistical
-Computing language R. A short description of the dataset can be found 
+The air quality dataset ([`docs/AirQuality.csv`](../docs/AirQuality.csv)) used above is used in many
+samples for the Statistical Computing language R. A short description of the dataset can be found 
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
 If you are parsing a tab-separated file that uses `\t` as the separator, you can also
 specify the separator explicitly. However, if you're using an url or file that has 
-the `.tsv` extensions, the type provider will use `\t` by default. In the following example,
-we also set `IgnoreErrors` parameter to `true` so that lines with incorrect number of elements
-are automatically skipped (the sample file contains additional unstructured data at the end):
+the `.tsv` extension, the type provider will use `\t` by default. In the following example,
+we also set `IgnoreErrors` static parameter to `true` so that lines with incorrect number of elements
+are automatically skipped (the sample file ([`docs/MortalityNY.csv`](../docs/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
 let mortalityNy = new CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>()
@@ -195,7 +193,7 @@ you open the [`docs/AirQuality.csv`](../docs/AirQuality.csv) file you will see
 that some values for the Ozone observations are marked `#N/A`. Such values are
 parsed as float and will in F# be marked with `Double.NaN`. The values `#N/A`, `NA`,
 and `:` are recognized as missing values by default, but you can customize it by specifying
-the `MissingValues` parameter of `CsvProvider`.
+the `MissingValues` static parameter of `CsvProvider`.
 
 The following snippet calculates the mean of the ozone observations
 excluding the `Double.NaN` values. We first obtain the `Ozone` property for
@@ -210,44 +208,68 @@ let mean =
 
 (**
 
-## Controlling the type inference
+If the sample doesn't have missing values on all columns, but at runtime missing values could
+appear anywhere, you can set the static parameter `SafeMode` to `true` in order to force `CsvProvider` 
+to assume missing values can occur in any column.
+
+## Controlling the column types
 
 By default, the CSV type provider checks the first 1000 rows to infer the types, but you can customize
-it by specifying the `InferRows` parameter of `CsvProvider`. If you specify 0 the entire file will be used.
+it by specifying the `InferRows` static parameter of `CsvProvider`. If you specify 0 the entire file will be used.
 
-If in any row a value is missing, the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
-(for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will generate a
+Columns with only `0`, `1`, `Yes`, `No`, `True`, or `False` will be set to `bool`n. Columns with numerical values
+will be set to either `int`, `int64`, `decimal`, or `float`, in that order of preference.
+
+If in any row a value is missing, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
+(for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
-so by default we won't generate a `string option`.
+so by default we won't generate a `string option`. If you prefer to use optionals in all cases, you can set the static parameter
+`PreferOptionals` to `true`. In that case you'll never get an empty string or a `Double.NaN` and will always get a `None` instead.
 
-If the sample has no missing values, but you want to be able to handle
-missing values in any column, you can specify the parameter `SafeMode` to true.
+If you have other preferences, e.g. if you want a column to be a `float` instead of a `decimal`,
+you can override the default behaviour by specifying the types in the header column between braces, similar to what can be done to
+specify the units of measure. This will override both `SafeMode` and `PreferOptionals`. The valid types are:
 
-If you prefer an option instead of a nullable or vice versa, or if you want a column to
-be a decimal even though all the values would fit in an int, you can override this default behaviour by specifying the types
-in the header column between braces, similar to what can be done to specify the units of measure. Valid types are
-`int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`,
-`guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option`, and `string option`.
-You can also override this globally by setting the parameter `PreferOptionals` to true, which will make all columns with missing
-values optional (instead of nullable), and will output `None` instead of `Double.NaN` for missing decimal or float values.
+* `int`
+* `int?`
+* `int option`
+* `int64`
+* `int64?`
+* `int64 option`
+* `bool`
+* `bool?`
+* `bool option`
+* `float`
+* `float?`
+* `float option`
+* `decimal`
+* `decimal?`
+* `decimal option`
+* `date`
+* `date?`
+* `date option`
+* `guid`
+* `guid?`
+* `guid option`
+* `string`
+* `string option`.
 
-You can also specify
-both the type and a unit (e.g `float<metre>`). Example:
+You can also specify both the type and a unit (e.g `float<metre>`). Example:
 
     Name,  Distance (decimal?<metre>), Time (float)
     First, 50,                        3
 
-Additionally, you can also specify some of all the types in the `Schema` parameter of `CsvProvider`. Valid formats are:
+Additionally, you can also specify some or all the types in the `Schema` static parameter of `CsvProvider`. Valid formats are:
 
 * `Type`
 * `Type<Measure>`
 * `Name (Type)`
 * `Name (Type<Measure>)`
 
-What's specified in the `Schema` parameter will always take precedence to what's specified in the column headers.
+What's specified in the `Schema` static parameter will always take precedence to what's specified in the column headers.
 
-If the first row of the file is not a header row, you can specify the `HasHeaders` parameter as false to
-consider that row as a data row. In that case the columns will be named Column1, Column2, etc..., unless the
+If the first row of the file is not a header row, you can specify the `HasHeaders` static parameter to `false` in order to
+consider that row as a data row. In that case, the columns will be named `Column1`, `Column2`, etc..., unless the
 names are overridden using the `Schema` parameter. Note that you can override only the name in the `Schema` parameter
 and still have the provider infer the type for you. Example:
 *)
@@ -258,21 +280,31 @@ for row in csv.Data do
 
 (**
 
-You don't need to override all the columns, you can skip the ones to leave as default, or you can specifically
-just override one or two. For example, in the titanic training dataset from Kaggle ([`docs/Titanic.csv`](../docs/Titanic.csv)),
-if you want to override the `Pclass` column which is inferred as `int` to `string`:
+You don't need to override all the columns, you can skip the ones to leave as default.
+For example, in the titanic training dataset from Kaggle ([`docs/Titanic.csv`](../docs/Titanic.csv)),
+if you want to rename the 3rd column (the `PClass` column) to `Passenger Class` and override the
+6th column (the `Fare` column) to be a `float` instead of a `decimal`, you can define only that, and leave
+the other columns blank in the schema (you also don't need to add all the trailing commas).
 
 *)
 
-let titanic1 = new CsvProvider<"../docs/Titanic.csv", Schema=",,string,,,,,,,,,">()
+let titanic1 = new CsvProvider<"../docs/Titanic.csv", Schema=",,Passenger Class,,,float">()
 for row in titanic1.Data do
-  printfn "%s" row.Pclass
-
-let titanic2 = new CsvProvider<"../docs/Titanic.csv", Schema="Pclass=string">()
-for row in titanic2.Data do
-  printfn "%s" row.Pclass
+  printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
+
+Alternatively, you can rename and override the type of any column by name instead of by position:
+
+*)
+
+let titanic2 = new CsvProvider<"../docs/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">()
+for row in titanic2.Data do
+  printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
+
+(**
+
+You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,PClass->Passenger Class=string"`
 
 ## Transforming CSV files
 
@@ -303,8 +335,8 @@ for row in airQuality.Data do
 ## Handling big datasets
 
 By default, the rows are cached so you can iterate over the `Data` property multiple times without worrying.
-But if you will only iterate once, you can disable caching by settting the `CacheRows` parameter of `CsvProvider`
-to false. If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
+But if you will only iterate once, you can disable caching by settting the `CacheRows` static parameter of `CsvProvider`
+to `false` . If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
 *)
