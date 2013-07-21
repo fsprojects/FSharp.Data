@@ -74,16 +74,28 @@ type Http private() =
         else
             output.ToArray() |> HttpResponseBody.Binary }
 
-  static member inline internal reraisePreserveStackTrace (e:Exception) =
-    let remoteStackTraceString = 
-      try
-        typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
-      with _ -> null
-    if remoteStackTraceString <> null then
-      try
-        remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
-      with _ -> ()
-    raise e
+  static member inline private augmentWebExceptionsWithDetails f = 
+    try
+      f()
+    with 
+      // If an exception happens, augment the message with the response
+      | :? WebException as exn -> 
+        if exn.Response = null then reraise()
+        let responseExn =
+            try
+              use responseStream = exn.Response.GetResponseStream()
+              use streamReader = new StreamReader(responseStream)
+              let response = streamReader.ReadToEnd()
+              try 
+                // on some platforms this fails
+                responseStream.Position <- 0L
+              with _ -> ()
+              if String.IsNullOrEmpty response then None
+              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
+            with _ -> None
+        match responseExn with
+        | Some e -> raise e
+        | None -> reraise()
 
   static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
 
@@ -185,8 +197,8 @@ type Http private() =
         mimeType = "application/xml-dtd" ||
         mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
 
-    // Send the request and get the response       
-    try
+    // Send the request and get the response
+    return! Http.augmentWebExceptionsWithDetails <| fun () -> async {
       use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
       use stream = resp.GetResponseStream()
       let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
@@ -195,29 +207,7 @@ type Http private() =
       return { Body = respBody
                Headers = headers
                ResponseUrl = resp.ResponseUri.OriginalString
-               Cookies = cookies }
-    with 
-      // If an exception happens, augment the message with the response
-      | :? WebException as exn -> 
-        if exn.Response = null then Http.reraisePreserveStackTrace exn
-        let responseExn =
-            try
-              use responseStream = exn.Response.GetResponseStream()
-              use streamReader = new StreamReader(responseStream)
-              let response = streamReader.ReadToEnd()
-              try 
-                responseStream.Position <- 0L
-              with _ -> ()
-              if String.IsNullOrEmpty response then None
-              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
-            with _ -> None
-        match responseExn with
-        | Some e -> raise e
-        | None -> Http.reraisePreserveStackTrace exn
-        return { Body = HttpResponseBody.Text ""
-                 Headers = Map.empty
-                 ResponseUrl = uri.OriginalString
-                 Cookies = Map.empty }
+               Cookies = cookies } }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously

@@ -19,3 +19,4 @@
 * 1.1.6 - Fixed runtime problem accessing optional properties with a JSON null. Support for client certificates in FSharp.Net.Http. Support for Windows Phone 7.
 * 1.1.7 - Fixed problem handling enumerates in FreebaseProvider.
 * 1.1.8 - Fixed problem with portable version of FSharp.Net.Http.
+* 1.1.9 - Infer booleans for ints that only manifest 0 and 1. Support for partially overriding the Schema in CsvProvider. PreferOptionals and SafeMode parameters for CsvProvider.

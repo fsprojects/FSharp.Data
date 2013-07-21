@@ -14,7 +14,7 @@ loaded file does not match the structure of the sample, an exception may occur
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../bin` directory, we can load it in F# Interactive as follows: *)
+is located in the `../../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../../bin/FSharp.Data.dll"
 open FSharp.Data
