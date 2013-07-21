@@ -70,14 +70,14 @@ be parsed as dates) while HLOC prices are inferred as `decimal`.
 
 ### Charting stock prices
 
-We can use the `FSharpChart` library to draw a simple line chart showing how the price
+We can use the [FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) library to draw a simple line chart showing how the price
 of MSFT stocks changes since the company was founded:
 *)
 
-// Load the F# chart library
-#load "../lib/FSharpChart.fsx"
+// Load the FSharp.Charting library
+#load "../../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
 open System
-open Samples.FSharp.Charting
+open FSharp.Charting
 
 // Visualize the stock prices
 [ for row in msft.Data -> row.Date, row.Open ]
@@ -95,7 +95,7 @@ let recent =
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
 // Visualize prices using Candlestick chart
-Chart.Candlestick(recent).AndYAxis(Max = 30.0, Min = 25.0)
+Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
 
 (**
 ## Using units of measure
