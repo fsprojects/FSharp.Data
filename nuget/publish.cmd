@@ -1,1 +1,1 @@
-@for %%f in (..\bin\*.nupkg) do @..\tools\NuGet\NuGet.exe push %%f
+@for %%f in (..\bin\*.nupkg) do @..\.nuget\NuGet.exe push %%f
