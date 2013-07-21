@@ -87,10 +87,6 @@ Target "Build" (fun _ ->
 
 Target "RunTests" (fun _ ->
 
-    // Will get NUnit.Runner NuGet package if not present
-    // (needed to run tests using the 'NUnit' target)
-    RestorePackages()
-
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
 
@@ -117,7 +113,7 @@ Target "NuGet" (fun _ ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let descriptionExperimental = descriptionExperimental.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
-    let nugetPath = "tools/Nuget/nuget.exe"
+    let nugetPath = ".nuget/nuget.exe"
 
     NuGet (fun p -> 
         { p with   
