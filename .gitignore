@@ -12,6 +12,6 @@ nuget/*.nupkg
 __setup__*__.fsx
 tools/FAKE
 TestResults.xml
-packages/NUnit.Runners.2.6.2
+packages
 gh-pages
 release
