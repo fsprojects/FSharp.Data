@@ -41,12 +41,12 @@ values for different years. Using `Seq.maxBy fst` we get the most recent availab
 
 ### Charting World Bank data
 
-We can easily see how the university enrollment changes over time by using the `FSharpChart`
-library and plotting the data:
+We can easily see how the university enrollment changes over time by using the
+[FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) library and plotting the data:
 
 *)
-#load "../lib/FSharpChart.fsx"
-open Samples.FSharp.Charting
+#load "../../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+open FSharp.Charting
 
 data.Countries.``United Kingdom``
     .Indicators.``School enrollment, tertiary (% gross)``

@@ -136,7 +136,7 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
           with 
             | :? WebException as exn -> 
                 let pos = exn.Message.IndexOf '\n'
-                if pos = -1 then Http.reraisePreserveStackTrace exn
+                if pos = -1 then reraise()
                 let freebaseExn =
                     try
                         let json = exn.Message.Substring (pos+1) |> JsonValue.Parse 
@@ -149,7 +149,7 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                     with _ -> None
                 match freebaseExn with
                 | Some e -> raise e
-                | None -> Http.reraisePreserveStackTrace exn
+                | None -> reraise()
 
     let queryString(queryUrl, fromJson) : FreebaseResult<'T> = 
         let resultText = queryRawText queryUrl

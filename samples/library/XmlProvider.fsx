@@ -14,7 +14,7 @@ of the sample, an exception may occur (but only when accessing e.g. non-existing
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../bin` directory, we can load it in F# Interactive as follows:
+is located in the `../../bin` directory, we can load it in F# Interactive as follows:
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type under the cover): *)
 
