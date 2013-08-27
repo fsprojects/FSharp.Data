@@ -16,6 +16,10 @@ type HttpResponseBody =
     | Text of string
     | Binary of byte[]
 
+type HttpRequestBody =
+    | Text of string
+    | Binary of byte[]
+
 type HttpResponse =
   { Body : HttpResponseBody
     Headers : Map<string,string> 
@@ -74,6 +78,19 @@ type Http private() =
         else
             output.ToArray() |> HttpResponseBody.Binary }
 
+
+  static let writeBody (req:HttpWebRequest) (postBytes: byte []) = async { 
+#if FX_NO_WEBREQUEST_CONTENTLENGTH
+#else
+      req.ContentLength <- int64 postBytes.Length
+#endif
+      use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+      do! output.AsyncWrite(postBytes, 0, postBytes.Length)
+      output.Flush()
+      return ()
+  }
+
+
   static member inline private augmentWebExceptionsWithDetails f = 
     try
       f()
@@ -97,7 +114,7 @@ type Http private() =
         | Some e -> raise e
         | None -> reraise()
 
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
+  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, (?body:HttpRequestBody), ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
 
     // Format query parameters
     let url = 
@@ -173,25 +190,26 @@ type Http private() =
         | _, Some bodyValues ->
             [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
             |> String.concat "&"
+            |> HttpRequestBody.Text
             |> Some
         | body, _ -> body
 
-    match body with
-    | Some (text:string) ->
-        // Set default content type if it is not specified by the user
-        if not !hasContentType then
-          req.ContentType <- "application/x-www-form-urlencoded"
 
-        // Write the body 
-        let postBytes = Encoding.UTF8.GetBytes(text)
-#if FX_NO_WEBREQUEST_CONTENTLENGTH
-#else
-        req.ContentLength <- int64 postBytes.Length
-#endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
-        output.Flush()
+         
+    match body with
+    | Some body ->
+        match body with
+        | HttpRequestBody.Text text ->
+            // Set default content type if it is not specified by the user
+            if not !hasContentType then
+                req.ContentType <- "application/x-www-form-urlencoded"
+            // Write the body 
+            do! writeBody req (Encoding.UTF8.GetBytes(text))
+        | HttpRequestBody.Binary bytes ->
+            do! writeBody req bytes
     | _ -> ()
+
+
 
     let isText (mimeType:string) =
         let isText (mimeType:string) =
