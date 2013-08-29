@@ -48,3 +48,24 @@ let ``Xml with namespaces``() =
   let feed = XmlProvider<"Data/search.atom.xml">.GetSample()
   feed.Title |> should equal "Windows8 - Twitter Search"
   feed.GetEntries().[0].Metadata.ResultType |> should equal "recent"
+
+
+type Config = FSharp.Data.XmlProvider<"""
+  <test>
+    <options><node set="wales.css" /></options>
+    <options><node set="true" /></options>
+    <options><node set="42" /></options>
+    <options><node /></options>
+  </test>""">
+
+[<Test>]
+let ``Can read config with heterogeneous attribute types``() =
+  let config = Config.GetSample()
+  let opts = 
+    [ for opt in config.GetOptions() -> 
+        let set = opt.Node.Set in set.Boolean, set.Number, set.String ]
+  opts |> should equal [ (None, None, Some "wales.css");
+                         (Some true, None, Some "true"); 
+                         (None, Some 42, Some "42")
+                         (None, None, None) ]
+  ()
