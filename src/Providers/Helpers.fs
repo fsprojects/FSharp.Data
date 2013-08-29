@@ -160,9 +160,32 @@ module Conversions =
   open FSharp.Data.RuntimeImplementation
   open QuotationBuilder
 
+  let getConversionQuotation (missingValues, culture) typ value =
+    if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertInteger(culture, %%value) @@>
+    elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
+    elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%value) @@>
+    elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
+    elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
+    elif typ = typeof<bool> || typ = typeof<Bit> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
+    elif typ = typeof<Guid> then <@@ Operations.ConvertGuid(%%value) @@>
+    elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>
+    else failwith "getConversionQuotation: Unsupported primitive type"
+
+  let getBackConversionQuotation (missingValues, culture) typ value =
+    if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertIntegerBack(culture, %%value) @@>
+    elif typ = typeof<int64> then <@@ Operations.ConvertInteger64Back(culture, %%value) @@>
+    elif typ = typeof<decimal> then <@@ Operations.ConvertDecimalBack(culture, %%value) @@>
+    elif typ = typeof<float> then <@@ Operations.ConvertFloatBack(culture, missingValues, %%value) @@>
+    elif typ = typeof<string> then <@@ Operations.ConvertStringBack(%%value) @@>
+    elif typ = typeof<bool> then <@@ Operations.ConvertBooleanBack(culture, %%value, false) @@>
+    elif typ = typeof<Bit> then <@@ Operations.ConvertBooleanBack(culture, %%value, true) @@>
+    elif typ = typeof<Guid> then <@@ Operations.ConvertGuidBack(%%value) @@>
+    elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTimeBack(culture, %%value) @@>
+    else failwith "getBackConversionQuotation: Unsupported primitive type"
+
   /// Creates a function that takes Expr<string option> and converts it to 
   /// an expression of other type - the type is specified by `field`
-  let convertValue (replacer:AssemblyReplacer) (missingValues, culture) (field:PrimitiveInferedProperty) = 
+  let convertValue (replacer:AssemblyReplacer) config (field:PrimitiveInferedProperty) = 
 
     let returnTyp = 
       match field.TypeWrapper with
@@ -180,16 +203,7 @@ module Conversions =
     let runtimeTyp = field.RuntimeType
 
     let convert value =
-      let converted = 
-        if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertInteger(culture, %%value) @@>
-        elif typ = typeof<int64> then <@@ Operations.ConvertInteger64(culture, %%value) @@>
-        elif typ = typeof<decimal> then <@@ Operations.ConvertDecimal(culture, %%value) @@>
-        elif typ = typeof<float> then <@@ Operations.ConvertFloat(culture, missingValues, %%value) @@>
-        elif typ = typeof<string> then <@@ Operations.ConvertString(%%value) @@>
-        elif typ = typeof<bool> || typ = typeof<Bit> then <@@ Operations.ConvertBoolean(culture, %%value) @@>
-        elif typ = typeof<Guid> then <@@ Operations.ConvertGuid(%%value) @@>
-        elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTime(culture, %%value) @@>
-        else failwith "convertValue: Unsupported primitive type"
+      let converted = getConversionQuotation config typ value
       match field.TypeWrapper with
       | TypeWrapper.None -> typeof<Operations>?GetNonOptionalValue (runtimeTyp) (field.Name, converted, value)
       | TypeWrapper.Option -> converted
@@ -202,17 +216,7 @@ module Conversions =
         | TypeWrapper.None -> typeof<Operations>?GetOptionalValue (runtimeTyp) value
         | TypeWrapper.Option -> value
         | TypeWrapper.Nullable -> typeof<Operations>?NullableToOption (runtimeTyp) value
-      if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ Operations.ConvertIntegerBack(culture, %%value) @@>
-      elif typ = typeof<int64> then <@@ Operations.ConvertInteger64Back(culture, %%value) @@>
-      elif typ = typeof<decimal> then <@@ Operations.ConvertDecimalBack(culture, %%value) @@>
-      elif typ = typeof<float> then <@@ Operations.ConvertFloatBack(culture, missingValues, %%value) @@>
-      elif typ = typeof<string> then <@@ Operations.ConvertStringBack(%%value) @@>
-      elif typ = typeof<bool> then <@@ Operations.ConvertBooleanBack(culture, %%value, false) @@>
-      elif typ = typeof<Bit> then <@@ Operations.ConvertBooleanBack(culture, %%value, true) @@>
-      elif typ = typeof<Guid> then <@@ Operations.ConvertGuidBack(%%value) @@>
-      elif typ = typeof<DateTime> then <@@ Operations.ConvertDateTimeBack(culture, %%value) @@>
-      else failwith "convertValue: Unsupported primitive type"
-      |> replacer.ToRuntime
+      getBackConversionQuotation config typ value |> replacer.ToRuntime
 
     returnTyp, returnTypWithoutMeasure, convert, convertBack
 
