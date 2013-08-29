@@ -89,6 +89,12 @@ let ``Can create type for small document``() =
   let time = row1.Time
   time |> should equal 3.7<second>
 
+[<Test>]
+let ``CsvFile.Data is re-entrant if the underlying stream is``() =
+  let csv = Csv.CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
+  let twice = [ yield! csv.Data; yield! csv.Data ]
+  twice |> Seq.length |> should equal 6
+
 [<Test>] 
 let ``Can parse sample file with whitespace in the name``() =
   let csv = new CsvProvider<"Data/file with spaces.csv">()
