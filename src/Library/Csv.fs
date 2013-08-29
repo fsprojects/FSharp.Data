@@ -22,10 +22,10 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// If 'hasHeaders' is true (the default), the first line read by 'reader' will not be considered part of data.
 /// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored
-and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
-  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
-                          Func<_,_>(fun row -> row.Columns),
-                          reader, defaultArg separators "", defaultArg quote '"', 
+and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
+  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow((box this) :?> CsvFile, columns)),
+                          Func<_,_>(fun (row:CsvRow) -> row.Columns),
+                          readerFunc, defaultArg separators "", defaultArg quote '"', 
                           defaultArg hasHeaders true, defaultArg ignoreErrors false)
 
   let headerDic = 
@@ -40,17 +40,30 @@ and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignor
 
   /// Parses the specified CSV content
   static member Parse(text, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
-    let reader = new StringReader(text)
-    new CsvFile(reader, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    let readerFunc = Func<_>(fun () -> new StringReader(text) :> TextReader)
+    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified stream
   static member Load(stream:Stream, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
-    let reader = new StreamReader(stream)
-    new CsvFile(reader, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    let firstTime = ref true
+    let readerFunc = Func<_>(fun () -> 
+      if firstTime.Value then firstTime := false
+      else stream.Position <- 0L
+      new StreamReader(stream) :> TextReader)
+    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified reader
   static member Load(reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
-    new CsvFile(reader, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    let firstTime = ref true
+    let readerFunc = Func<_>(fun () ->  
+      if firstTime.Value then firstTime := false
+      elif reader :? StreamReader then
+        let sr = reader :?> StreamReader
+        sr.BaseStream.Position <- 0L
+        sr.DiscardBufferedData()
+      else invalidOp "The underlying source stream is not re-entrant. Use the Cache method to cache the data."
+      reader)
+    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified uri
   static member Load(uri, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
@@ -62,8 +75,8 @@ and CsvFile private (reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignor
         "\t"
       else
         separators
-    let reader = readTextAtRunTime false "" "" uri
-    new CsvFile(reader, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    let readerFunc = Func<_>(fun () -> readTextAtRunTime false "" "" uri :> TextReader)
+    new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple CSV processing
