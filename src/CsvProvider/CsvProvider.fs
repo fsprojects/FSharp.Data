@@ -77,8 +77,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
 
     let csvConstructor (reader:Expr) =
-      let uncachedCsv = csvErasedType?``.ctor`` () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
-      if cacheRows then csvErasedType?``Cache`` () uncachedCsv else uncachedCsv
+      let uncachedCsv = csvErasedType?CreateNonReentrant () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, separator, quote, hasHeaders, ignoreErrors) :> Expr
+      if cacheRows then csvErasedType?Cache () uncachedCsv else uncachedCsv
 
     // Generate default constructor
     let c = ProvidedConstructor []
