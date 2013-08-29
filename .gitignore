@@ -15,3 +15,5 @@ TestResults.xml
 packages
 gh-pages
 release
+tests/TestResult.xml
+*.VisualState.xml
