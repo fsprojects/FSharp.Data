@@ -89,14 +89,48 @@ module internal XmlTypeBuilder =
         for attr in attrs do
           let nameWithNS = attr.Name
           let name = XName.Get(nameWithNS).LocalName
-          let typ = match attr.Type with Primitive(t, _) -> t | _ -> failwith "generateXmlType: Expected Primitive type"
-          let resTyp, _, convFunc, _ = 
-            Conversions.convertValue ctx.Replacer ("", culture) (PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional))
+          match attr.Type with 
+          | Heterogeneous types ->
+              // If the attribute has multiple possible type (e.g. "bool|int") then we generate
+              // a choice type that is erased to 'option<string>' (for simplicity, assuming that
+              // the attribute is always optional)
+              let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(typeof<option<string>>), HideObjectMethods = true)
+              ctx.DomainType.AddMember(choiceTy)
+              for (KeyValue(kind, typ)) in types do 
+                match typ with
+                | InferedType.Null -> ()
+                | InferedType.Primitive(primTyp, _) ->
+                    // Conversion function takes 'option<string>' to the required type
+                    let valTy, _, convFunc, _ = 
+                      Conversions.convertValue ctx.Replacer ("", culture) (PrimitiveInferedProperty.Create(kind.NiceName, primTyp, true))
+                    let p = ProvidedProperty(kind.NiceName, valTy)
+                    p.GetterCode <- fun (Singleton attrVal) -> 
+                      let attrVal = ctx.Replacer.ToDesignTime attrVal
+                      convFunc attrVal
+                    choiceTy.AddMember(p)   
+                | _ -> failwith "generateXmlType: A choice type of an attribute can only contain primitive types"
 
-          // Add property with PascalCased name
-          let p = ProvidedProperty(NameUtils.nicePascalName name, resTyp)
-          p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
-          objectTy.AddMember(p)          
+              // Generate a property for the attribute which has a type 'choiceTy'
+              // (and returns 'string option' value that we get from 'TryGetAttribute'
+              let primProp = PrimitiveInferedProperty.Create("Attribute " + name, typeof<string>, attr.Optional)
+              let resTyp, _, convFunc, _ = Conversions.convertValue ctx.Replacer ("", culture) primProp
+
+              let p = ProvidedProperty(NameUtils.nicePascalName name, choiceTy)
+              p.GetterCode <- fun (Singleton xml) -> 
+                let xml = ctx.Replacer.ToDesignTime xml 
+                ctx.Replacer.ToRuntime <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
+              objectTy.AddMember(p)
+
+          | Primitive(typ, _) ->
+              // 
+              let resTyp, _, convFunc, _ = 
+                Conversions.convertValue ctx.Replacer ("", culture) (PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional))
+
+              // Add property with PascalCased name
+              let p = ProvidedProperty(NameUtils.nicePascalName name, resTyp)
+              p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
+              objectTy.AddMember(p)          
+          | _ -> failwith "generateXmlType: Expected Primitive or Choice type"
 
 
         // Add properties that can be used to access content of the node
