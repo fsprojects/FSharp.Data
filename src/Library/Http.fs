@@ -24,7 +24,8 @@ type HttpResponse =
   { Body : HttpResponseBody
     Headers : Map<string,string> 
     ResponseUrl : string
-    Cookies : Map<string,string> }
+    Cookies : Map<string,string>
+    StatusCode: int }
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
@@ -231,10 +232,15 @@ type Http private() =
       let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
       let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
       let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
+      // get status code
+      let httpWebResponse = resp :?> HttpWebResponse
+      let statusCode = int httpWebResponse.StatusCode
+      
       return { Body = respBody
                Headers = headers
                ResponseUrl = resp.ResponseUri.OriginalString
-               Cookies = cookies } }
+               Cookies = cookies
+               StatusCode = statusCode } }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously
