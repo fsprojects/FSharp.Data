@@ -12,7 +12,7 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type HttpResponseBody =
+type Body =
     | Text of string
     | Binary of byte[]
 
@@ -21,7 +21,7 @@ type HttpRequestBody =
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : HttpResponseBody
+  { Body : Body
     Headers : Map<string,string> 
     ResponseUrl : string
     Cookies : Map<string,string>
@@ -30,6 +30,17 @@ type HttpResponse =
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
+
+  static let writeBody (req:HttpWebRequest) (bytes: byte []) = async {
+    #if FX_NO_WEBREQUEST_CONTENTLENGTH
+    #else
+            req.ContentLength <- int64 bytes.Length
+    #endif
+            use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+            do! output.AsyncWrite(bytes, 0, bytes.Length)
+            output.Flush()
+            return ()
+  }
 
 #if FX_NO_URI_WORKAROUND
 #else
@@ -75,9 +86,9 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> HttpResponseBody.Text
+            sr.ReadToEnd() |> Body.Text
         else
-            output.ToArray() |> HttpResponseBody.Binary }
+            output.ToArray() |> Body.Binary }
 
 
   static let writeBody (req:HttpWebRequest) (postBytes: byte []) = async { 
@@ -191,23 +202,22 @@ type Http private() =
         | _, Some bodyValues ->
             [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
             |> String.concat "&"
-            |> HttpRequestBody.Text
+            |> Body.Text
             |> Some
         | body, _ -> body
 
-
-         
     match body with
     | Some body ->
         match body with
-        | HttpRequestBody.Text text ->
+        | Body.Text text ->
             // Set default content type if it is not specified by the user
             if not !hasContentType then
-                req.ContentType <- "application/x-www-form-urlencoded"
+              req.ContentType <- "application/x-www-form-urlencoded"
             // Write the body 
             do! writeBody req (Encoding.UTF8.GetBytes(text))
-        | HttpRequestBody.Binary bytes ->
-            do! writeBody req bytes
+        | Body.Binary bytes ->
+            // Write the body 
+            do! writeBody req bytes    
     | _ -> ()
 
 
@@ -260,8 +270,8 @@ type Http private() =
     let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
     return
         match response.Body with
-        | HttpResponseBody.Text text -> text
-        | HttpResponseBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | Body.Text text -> text
+        | Body.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
