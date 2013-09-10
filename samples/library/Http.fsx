@@ -90,7 +90,19 @@ using the optional argument `headers`:
 Http.Request
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/json"],
-    body = """ {"test": 42} """)
+    body = Body.Text """ {"test": 42} """)
+
+(**
+You can also send binary data in the HTTP POST request's body. Just change the header appropriately 
+and use the `Body.Binary` constructor in your request.
+*)
+
+let myBinaryData = System.Text.Encoding.UTF8.GetBytes "Hello!"
+
+Http.Request
+  ( "http://httpbin.org/post", 
+    headers = ["content-type", "application/octet-stream"],
+    body = Body.Binary myBinaryData )
 
 (**
 ## Sending a client certificate
@@ -158,6 +170,7 @@ let response = Http.RequestDetailed(msdnUrl "system.web.httprequest")
 // Examine information about the response
 response.Cookies
 response.ResponseUrl
+response.StatusCode
 
 (**
 ## Requesting binary data
@@ -169,7 +182,7 @@ The `Request` method will always return the response as a `string`, but if you u
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.RequestDetailed(logoUrl).Body with
-| HttpResponseBody.Text text -> 
+| Body.Text text -> 
     printfn "Got text content: %s" text
-| HttpResponseBody.Binary bytes -> 
+| Body.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length

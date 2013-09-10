@@ -12,19 +12,31 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type HttpResponseBody =
+type Body =
     | Text of string
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : HttpResponseBody
+  { Body : Body
     Headers : Map<string,string> 
     ResponseUrl : string
-    Cookies : Map<string,string> }
+    Cookies : Map<string,string>
+    StatusCode: int }
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
+
+  static let writeBody (req:HttpWebRequest) (bytes: byte []) = async {
+    #if FX_NO_WEBREQUEST_CONTENTLENGTH
+    #else
+            req.ContentLength <- int64 bytes.Length
+    #endif
+            use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+            do! output.AsyncWrite(bytes, 0, bytes.Length)
+            output.Flush()
+            return ()
+  }
 
 #if FX_NO_URI_WORKAROUND
 #else
@@ -70,9 +82,9 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> HttpResponseBody.Text
+            sr.ReadToEnd() |> Body.Text
         else
-            output.ToArray() |> HttpResponseBody.Binary }
+            output.ToArray() |> Body.Binary }
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
     let remoteStackTraceString = 
@@ -154,24 +166,22 @@ type Http private() =
         | _, Some bodyValues ->
             [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
             |> String.concat "&"
+            |> Body.Text
             |> Some
         | body, _ -> body
 
     match body with
-    | Some (text:string) ->
-        // Set default content type if it is not specified by the user
-        if not !hasContentType then
-          req.ContentType <- "application/x-www-form-urlencoded"
-
-        // Write the body 
-        let postBytes = Encoding.UTF8.GetBytes(text)
-#if FX_NO_WEBREQUEST_CONTENTLENGTH
-#else
-        req.ContentLength <- int64 postBytes.Length
-#endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
-        output.Flush()
+    | Some body ->
+        match body with
+        | Body.Text text ->
+            // Set default content type if it is not specified by the user
+            if not !hasContentType then
+              req.ContentType <- "application/x-www-form-urlencoded"
+            // Write the body 
+            do! writeBody req (Encoding.UTF8.GetBytes(text))
+        | Body.Binary bytes ->
+            // Write the body 
+            do! writeBody req bytes    
     | _ -> ()
 
     let isText (mimeType:string) =
@@ -185,16 +195,26 @@ type Http private() =
 
     // Send the request and get the response       
     try
-      use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-      use stream = resp.GetResponseStream()
-      let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
-      let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
-      let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
-      return { Body = respBody
-               Headers = headers
-               ResponseUrl = resp.ResponseUri.OriginalString
-               Cookies = cookies }
-    with 
+        use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+        use stream = resp.GetResponseStream()
+        let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
+        let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
+        let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
+        try 
+            let httpWebResponse = resp :?> HttpWebResponse
+            let statusCode = int httpWebResponse.StatusCode
+            return { Body = respBody
+                     Headers = headers
+                     ResponseUrl = resp.ResponseUri.OriginalString
+                     Cookies = cookies
+                     StatusCode = statusCode }
+        with // if the cast to HttpWebResponse fails then return a statuscode of 0
+        | _ -> return { Body = respBody
+                        Headers = headers
+                        ResponseUrl = resp.ResponseUri.OriginalString
+                        Cookies = cookies
+                        StatusCode = 0 }  
+    with
       // If an exception happens, augment the message with the response
       | :? WebException as exn -> 
         if exn.Response = null then Http.reraisePreserveStackTrace exn
@@ -210,10 +230,11 @@ type Http private() =
         match responseExn with
         | Some e -> raise e
         | None -> Http.reraisePreserveStackTrace exn
-        return { Body = HttpResponseBody.Text ""
+        return { Body = Body.Text ""
                  Headers = Map.empty
                  ResponseUrl = uri.OriginalString
-                 Cookies = Map.empty }
+                 Cookies = Map.empty
+                 StatusCode = 0 }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -233,8 +254,8 @@ type Http private() =
     let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     return
         match response.Body with
-        | HttpResponseBody.Text text -> text
-        | HttpResponseBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | Body.Text text -> text
+        | Body.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
