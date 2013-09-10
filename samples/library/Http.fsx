@@ -93,6 +93,21 @@ Http.Request
     body = """ {"test": 42} """)
 
 (**
+## Sending a client certificate
+
+If you want to add a client certificate to your requests, then you can add a 
+X509ClientCertificate(2) to your request like so:
+*)
+
+open System.Security.Cryptography.X509Certificates
+
+let clientCert = new X509Certificate2 (".\myCertificate.pfx", "password")
+
+Http.Request("http://yourprotectedresouce.com/data",
+             certificate = clientCert)
+
+
+(**
 ## Maintaing cookies across requests
 
 If you want to maintain cookies between requests, you can specify the `cookieContainer` 
@@ -158,24 +173,3 @@ match Http.RequestDetailed(logoUrl).Body with
     printfn "Got text content: %s" text
 | HttpResponseBody.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
-
-(**
-## Sending a client certificate
-
-If you want to add a client certificate to your requests, then you can use the 
-optional parameter `certificate` and pass the `X509ClientCertificate` value as
-an argument. To do that, you need to open the `X509Certificates` namespace from 
-`System.Security.Cryptography`. Assuming the certificate is stored in `myCertificate.pfx`,
-you can write:
-*)
-
-open System.Security.Cryptography.X509Certificates
-
-// Load the certificate from local file
-let clientCert = 
-  new X509Certificate2(".\myCertificate.pfx", "password")
-
-// Send the request with certificate
-Http.Request
-  ( "http://yourprotectedresouce.com/data",
-    certificate = clientCert)
