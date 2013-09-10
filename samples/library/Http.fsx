@@ -32,7 +32,7 @@ can use `Http.Request` and `Http.AsyncRequest` with just a single parameter:
 Http.Request("http://tomasp.net")
 
 // Download web site asynchronously
-async { let! html = Http.AsyncRequest("http://tomasp.net")
+async { let! html = Http.AsyncRequestString("http://tomasp.net")
         printfn "%d" html.Length }
 |> Async.Start
 
@@ -90,7 +90,7 @@ using the optional argument `headers`:
 Http.Request
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/json"],
-    body = Body.Text """ {"test": 42} """)
+    body = ReqBody.Text """ {"test": 42} """)
 
 (**
 You can also send binary data in the HTTP POST request's body. Just change the header appropriately 
@@ -102,7 +102,7 @@ let myBinaryData = System.Text.Encoding.UTF8.GetBytes "Hello!"
 Http.Request
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/octet-stream"],
-    body = Body.Binary myBinaryData )
+    body = ReqBody.Binary myBinaryData )
 
 (**
 ## Maintaing cookies across requests
@@ -118,7 +118,7 @@ let msdnUrl className =
   sprintf "%s/en-gb/library/%s.aspx" root className
 
 // Get the page and search for F# code
-let docInCSharp = Http.Request(msdnUrl "system.web.httprequest")
+let docInCSharp = Http.RequestString(msdnUrl "system.web.httprequest")
 docInCSharp.Contains "<a>F#</a>"
 
 (**
@@ -139,7 +139,7 @@ Http.Request
 
 // Request the documentation again & search for F#
 let docInFSharp = 
-  Http.Request
+  Http.RequestString
     ( msdnUrl "system.web.httprequest", 
       cookieContainer = cc )
 docInFSharp.Contains "<a>F#</a>"
@@ -150,7 +150,7 @@ headers, the returned cookies, and the response url (which might be different to
 the url you passed when there are redirects), you can use the `RequestDetailed` method:
 *)
 
-let response = Http.RequestDetailed(msdnUrl "system.web.httprequest")
+let response = Http.Request(msdnUrl "system.web.httprequest")
 
 // Examine information about the response
 response.Cookies
@@ -166,10 +166,10 @@ The `Request` method will always return the response as a `string`, but if you u
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
-match Http.RequestDetailed(logoUrl).Body with
-| Body.Text text -> 
+match Http.Request(logoUrl).Body with
+| ResBody.Text text -> 
     printfn "Got text content: %s" text
-| Body.Binary bytes -> 
+| ResBody.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**

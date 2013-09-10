@@ -12,7 +12,12 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type Body =
+type ReqBody =
+    | Text of string
+    | Binary of byte[]
+    | FormValues of seq<string * string>
+
+type ResBody =
     | Text of string
     | Binary of byte[]
 
@@ -21,7 +26,7 @@ type HttpRequestBody =
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : Body
+  { Body : ResBody
     Headers : Map<string,string> 
     ResponseUrl : string
     Cookies : Map<string,string>
@@ -86,10 +91,9 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> Body.Text
+            sr.ReadToEnd() |> ResBody.Text
         else
-            output.ToArray() |> Body.Binary }
-
+            output.ToArray() |> ResBody.Binary }
 
   static let writeBody (req:HttpWebRequest) (postBytes: byte []) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
@@ -127,7 +131,6 @@ type Http private() =
         | None -> reraise()
 
   static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, (?body:HttpRequestBody), ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
-
     // Format query parameters
     let url = 
       match query with
@@ -152,9 +155,8 @@ type Http private() =
 
     // set method
     let defaultMethod =
-      match body, bodyValues with
-      | None, None -> "GET"
-      | Some _, Some _ -> failwith "Only one of 'body' or 'bodyValues' may be specified, not both"
+      match body with
+      | None -> "GET"
       | _ -> "POST"
     req.Method <- (defaultArg meth defaultMethod).ToUpperInvariant()   
 
@@ -195,29 +197,21 @@ type Http private() =
           cookieContainer.Add(req.RequestUri, Cookie(name, value))
     req.CookieContainer <- cookieContainer
 
-    // If we want to set some body, encode it with POST data as array of bytes
-    let body = 
-        match body, bodyValues with 
-        | Some _, Some _ -> failwithf "Only body or bodyValues can be specified"
-        | _, Some bodyValues ->
-            [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
-            |> String.concat "&"
-            |> Body.Text
-            |> Some
-        | body, _ -> body
-
     match body with
     | Some body ->
         match body with
-        | Body.Text text ->
-            // Set default content type if it is not specified by the user
-            if not !hasContentType then
-              req.ContentType <- "application/x-www-form-urlencoded"
-            // Write the body 
+        | ReqBody.Text text ->
             do! writeBody req (Encoding.UTF8.GetBytes(text))
-        | Body.Binary bytes ->
-            // Write the body 
-            do! writeBody req bytes    
+        | ReqBody.Binary bytes ->
+            do! writeBody req bytes
+        | ReqBody.FormValues values ->
+             // Set default content type if it is not specified by the user
+            if not !hasContentType then req.ContentType <- "application/x-www-form-urlencoded"
+            let bytes = 
+                [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                |> String.concat "&"
+                |> Encoding.UTF8.GetBytes
+            do! writeBody req bytes
     | _ -> ()
 
 
@@ -270,8 +264,8 @@ type Http private() =
     let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
     return
         match response.Body with
-        | Body.Text text -> text
-        | Body.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | ResBody.Text text -> text
+        | ResBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
