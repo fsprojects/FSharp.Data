@@ -75,7 +75,7 @@ and InternalApiaryContext private
       let allheaders = [ yield! headers; yield! globalHeaders ]
       let allquery = [ yield! query; yield! globalQuery ]
       if String.Compare(meth, "get", StringComparison.OrdinalIgnoreCase) = 0 then
-        let! res = Http.AsyncRequest(rootUrl + path, headers = allheaders, query = allquery)
+        let! res = Http.AsyncRequestString(rootUrl + path, headers = allheaders, query = allquery)
 
         // Create context that captures all arguments already specified
         let context = InternalApiaryContext(rootUrl, globalQuery, globalHeaders, allArguments)

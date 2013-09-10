@@ -30,7 +30,7 @@ module ApiarySchema =
       match cache.TryRetrieve(uri) with
       | Some html -> html
       | None -> 
-          let html = Http.Request(uri)
+          let html = Http.RequestString(uri)
           cache.Set(uri, html)
           html
   

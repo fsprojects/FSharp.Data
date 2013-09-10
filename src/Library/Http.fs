@@ -12,12 +12,17 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type Body =
+type ReqBody =
+    | Text of string
+    | Binary of byte[]
+    | FormValues of seq<string * string>
+
+type ResBody =
     | Text of string
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : Body
+  { Body : ResBody
     Headers : Map<string,string> 
     ResponseUrl : string
     Cookies : Map<string,string>
@@ -82,9 +87,9 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> Body.Text
+            sr.ReadToEnd() |> ResBody.Text
         else
-            output.ToArray() |> Body.Binary }
+            output.ToArray() |> ResBody.Binary }
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
     let remoteStackTraceString = 
@@ -93,7 +98,7 @@ type Http private() =
       remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
     raise e
 
-  static member private InnerRequest(url:string, forceText, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
+  static member private InnerRequest(url:string, forceText, ?certificate, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 
     // Format query parameters
     let url = 
@@ -116,9 +121,8 @@ type Http private() =
 
     // set method
     let defaultMethod =
-      match body, bodyValues with
-      | None, None -> "GET"
-      | Some _, Some _ -> failwith "Only one of 'body' or 'bodyValues' may be specified, not both"
+      match body with
+      | None -> "GET"
       | _ -> "POST"
     req.Method <- (defaultArg meth defaultMethod).ToUpperInvariant()   
 
@@ -159,29 +163,21 @@ type Http private() =
           cookieContainer.Add(req.RequestUri, Cookie(name, value))
     req.CookieContainer <- cookieContainer
 
-    // If we want to set some body, encode it with POST data as array of bytes
-    let body = 
-        match body, bodyValues with 
-        | Some _, Some _ -> failwithf "Only body or bodyValues can be specified"
-        | _, Some bodyValues ->
-            [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
-            |> String.concat "&"
-            |> Body.Text
-            |> Some
-        | body, _ -> body
-
     match body with
     | Some body ->
         match body with
-        | Body.Text text ->
-            // Set default content type if it is not specified by the user
-            if not !hasContentType then
-              req.ContentType <- "application/x-www-form-urlencoded"
-            // Write the body 
+        | ReqBody.Text text ->
             do! writeBody req (Encoding.UTF8.GetBytes(text))
-        | Body.Binary bytes ->
-            // Write the body 
-            do! writeBody req bytes    
+        | ReqBody.Binary bytes ->
+            do! writeBody req bytes
+        | ReqBody.FormValues values ->
+             // Set default content type if it is not specified by the user
+            if not !hasContentType then req.ContentType <- "application/x-www-form-urlencoded"
+            let bytes = 
+                [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                |> String.concat "&"
+                |> Encoding.UTF8.GetBytes
+            do! writeBody req bytes
     | _ -> ()
 
     let isText (mimeType:string) =
@@ -200,20 +196,12 @@ type Http private() =
         let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
         let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
         let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
-        try 
-            let httpWebResponse = resp :?> HttpWebResponse
-            let statusCode = int httpWebResponse.StatusCode
-            return { Body = respBody
-                     Headers = headers
-                     ResponseUrl = resp.ResponseUri.OriginalString
-                     Cookies = cookies
-                     StatusCode = statusCode }
-        with // if the cast to HttpWebResponse fails then return a statuscode of 0
-        | _ -> return { Body = respBody
-                        Headers = headers
-                        ResponseUrl = resp.ResponseUri.OriginalString
-                        Cookies = cookies
-                        StatusCode = 0 }  
+        return {Body = respBody
+                Headers = headers
+                ResponseUrl = resp.ResponseUri.OriginalString
+                Cookies = cookies
+                StatusCode = if resp :? HttpWebResponse then int (resp :?> HttpWebResponse).StatusCode 
+                             else 0 }
     with
       // If an exception happens, augment the message with the response
       | :? WebException as exn -> 
@@ -230,7 +218,7 @@ type Http private() =
         match responseExn with
         | Some e -> raise e
         | None -> Http.reraisePreserveStackTrace exn
-        return { Body = Body.Text ""
+        return { Body = ResBody.Text ""
                  Headers = Map.empty
                  ResponseUrl = uri.OriginalString
                  Cookies = Map.empty
@@ -242,20 +230,20 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequestDetailed(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.InnerRequest(url, false, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member AsyncRequest(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.InnerRequest(url, false, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 
   /// Download an HTTP web resource from the specified URL asynchronously
   /// (allows specifying query string parameters and HTTP headers including
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequest(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
-    let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member AsyncRequestString(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
+    let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
     return
         match response.Body with
-        | Body.Text text -> text
-        | Body.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | ResBody.Text text -> text
+        | ResBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
@@ -263,8 +251,8 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member RequestDetailed(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequestDetailed(url, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member Request(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequest(url, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously
 
   /// Download an HTTP web resource from the specified URL synchronously
@@ -272,6 +260,6 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member Request(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequest(url, ?certificate=certificate, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
+  static member RequestString(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequestString(url, ?certificate=certificate, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously

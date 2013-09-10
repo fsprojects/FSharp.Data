@@ -97,7 +97,7 @@ module ProviderHelpers =
         match webUrisCache.TryRetrieve uri.OriginalString with
         | Some value -> value
         | None ->
-            let value = Http.Request(uri.OriginalString)
+            let value = Http.RequestString(uri.OriginalString)
             webUrisCache.Set(uri.OriginalString, value)
             value
       new StringReader(value) :> TextReader
