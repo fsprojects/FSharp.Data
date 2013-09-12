@@ -58,6 +58,12 @@ let ``Unique generator generates unique names`` () =
   Seq.length names  |> should equal (Seq.length (set names))
 
 [<Test>]
+let ``Unique generator works on single letter names`` () = 
+  let gen = uniqueGenerator nicePascalName
+  gen "a" |> should equal "A"
+  gen "a" |> should equal "A2"
+
+[<Test>]
 let ``Trims HTML tags from string`` () = 
   trimHtml "<b>hello</b><em>world</em>" |> should equal "hello world"
 

@@ -76,10 +76,10 @@ let uniqueGenerator niceName =
       let mutable lastLetterPos = String.length name - 1
       while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
         lastLetterPos <- lastLetterPos - 1
-      if lastLetterPos = 0 then
-        name <- (UInt64.Parse name + 1UL).ToString()
-      elif lastLetterPos = name.Length - 1 then
+      if lastLetterPos = name.Length - 1 then
         name <- name + "2"
+      elif lastLetterPos = 0 then
+        name <- (UInt64.Parse name + 1UL).ToString()
       else
         let number = name.Substring(lastLetterPos + 1)
         name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
