@@ -126,9 +126,11 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                 let shortUrl = url.[0.. idx - 1]
                 //printfn "post, shortUrl = '%s'" shortUrl
                 //printfn "post, content = '%s'" content
-                Http.Request(shortUrl, meth = "POST", headers = [ "X-HTTP-Method-Override", "GET" ], body = content)
+                Http.RequestString(shortUrl,
+                                   headers = [ "X-HTTP-Method-Override", "GET" ],
+                                   body = RequestBody.Text content)
             else
-                Http.Request(url)
+                Http.RequestString(url)
           try
             let resultText = getResultText()
             getCache().Set(url, resultText)
