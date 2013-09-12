@@ -15,9 +15,9 @@ class XmlProvider+DomainTypes+Ordercontainer : FDR.XmlElement
 class XmlProvider+DomainTypes+Backgrounds : FDR.XmlElement
     member Background: XmlProvider+DomainTypes+Background with get
 
-class XmlProvider+DomainTypes+Project : FDR.XmlElement
+class XmlProvider+DomainTypes+Background : FDR.XmlElement
     member Title: string with get
 
-class XmlProvider+DomainTypes+Background : FDR.XmlElement
+class XmlProvider+DomainTypes+Project : FDR.XmlElement
     member Title: string with get
 
