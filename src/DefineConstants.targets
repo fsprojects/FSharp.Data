@@ -12,6 +12,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);SILVERLIGHT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'WindowsPhone71' ">
@@ -27,6 +28,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
   </PropertyGroup>
