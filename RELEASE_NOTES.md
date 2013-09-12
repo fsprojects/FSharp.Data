@@ -20,4 +20,4 @@
 * 1.1.7 - Fixed problem handling enumerates in FreebaseProvider.
 * 1.1.8 - Fixed problem with portable version of FSharp.Net.Http.
 * 1.1.9 - Infer booleans for ints that only manifest 0 and 1. Support for partially overriding the Schema in CsvProvider. PreferOptionals and SafeMode parameters for CsvProvider.
-* 1.1.10 - Support for heterogeneous XML attributes. Make CsvFile re-entrant. Support for compressed HTTP responses. Fix JSON conversion of 0 and 1 to booleans.
+* 1.1.10 - Support for heterogeneous XML attributes. Make CsvFile re-entrant. Support for compressed HTTP responses. Fix JSON conversion of 0 and 1 to booleans. Fix XmlProvider problems with nested elements and elements with same name in different namespaces.
