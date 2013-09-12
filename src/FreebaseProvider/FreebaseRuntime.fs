@@ -213,7 +213,7 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                | None -> null
                | Some fbDeclaringType ->
                    let obj = fb.GetInitialDataForSpecificObjectOfType(fbDeclaringType.Id, this.Id)
-                   for (KeyValue(k,v)) in obj.Dictionary do
+                   for KeyValue(k,v) in obj.Dictionary do
                        objPropsOnDemand.[k] <- extractPrimValue v
                    match objPropsOnDemand.TryGetValue(propertyId) with
                    | true, res -> res
