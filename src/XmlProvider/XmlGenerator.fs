@@ -85,6 +85,8 @@ module internal XmlTypeBuilder =
         let attrs, content =
           props |> List.partition (fun prop -> prop.Name <> "")
 
+        let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
+
         // Generate properties for all XML attributes
         for attr in attrs do
           let nameWithNS = attr.Name
@@ -115,7 +117,7 @@ module internal XmlTypeBuilder =
               let primProp = PrimitiveInferedProperty.Create("Attribute " + name, typeof<string>, attr.Optional)
               let resTyp, _, convFunc, _ = Conversions.convertValue ctx.Replacer ("", culture) primProp
 
-              let p = ProvidedProperty(NameUtils.nicePascalName name, choiceTy)
+              let p = ProvidedProperty(gen name, choiceTy)
               p.GetterCode <- fun (Singleton xml) -> 
                 let xml = ctx.Replacer.ToDesignTime xml 
                 ctx.Replacer.ToRuntime <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
@@ -127,7 +129,7 @@ module internal XmlTypeBuilder =
                 Conversions.convertValue ctx.Replacer ("", culture) (PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional))
 
               // Add property with PascalCased name
-              let p = ProvidedProperty(NameUtils.nicePascalName name, resTyp)
+              let p = ProvidedProperty(gen name, resTyp)
               p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
               objectTy.AddMember(p)          
           | _ -> failwith "generateXmlType: Expected Primitive or Choice type"
@@ -148,8 +150,8 @@ module internal XmlTypeBuilder =
                   let resTyp, _, convFunc, _ = 
                     Conversions.convertValue ctx.Replacer ("", culture) (PrimitiveInferedProperty.Create("Value", typ, opt))
                   let name = 
-                    if primitives.Length = 1 then "Value" else
-                    (typeTag primitive).NiceName + NameUtils.nicePascalName "Value"
+                    gen <| if primitives.Length = 1 then "Value" else
+                           (typeTag primitive).NiceName + NameUtils.nicePascalName "Value"
                   let p = ProvidedProperty(name, resTyp)
                   p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in convFunc <@@ XmlOperations.TryGetValue(%%xml) @@>
                   objectTy.AddMember(p)          
@@ -165,7 +167,7 @@ module internal XmlTypeBuilder =
                     let childTy, childConv = generateXmlType culture ctx typ 
                     match multiplicity with
                     | InferedMultiplicity.Single ->
-                        let p = ProvidedProperty(NameUtils.nicePascalName name, childTy)
+                        let p = ProvidedProperty(gen name, childTy)
                         p.GetterCode <- fun (Singleton xml) -> let xml = ctx.Replacer.ToDesignTime xml in childConv <@@ XmlOperations.GetChild(%%xml, nameWithNS) @@>
                         p :> MemberInfo
 
@@ -173,7 +175,7 @@ module internal XmlTypeBuilder =
                     // (because the node may be represented as primitive type - so we cannot just
                     // return array of XmlElement - it might be for example int[])
                     | InferedMultiplicity.Multiple ->
-                        let m = ProvidedMethod("Get" + NameUtils.nicePascalName (NameUtils.pluralize name), [], childTy.MakeArrayType())
+                        let m = ProvidedMethod(gen ("Get" + NameUtils.nicePascalName (NameUtils.pluralize name)), [], childTy.MakeArrayType())
                         let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         m.InvokeCode <- fun (Singleton xml) -> 
                           let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
@@ -181,7 +183,7 @@ module internal XmlTypeBuilder =
                         m :> MemberInfo
 
                     | InferedMultiplicity.OptionalSingle ->
-                        let p = ProvidedProperty(NameUtils.nicePascalName name, typedefof<option<_>>.MakeGenericType [| childTy |])
+                        let p = ProvidedProperty(gen name, typedefof<option<_>>.MakeGenericType [| childTy |])
                         let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         p.GetterCode <- fun (Singleton xml) -> 
                           let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>

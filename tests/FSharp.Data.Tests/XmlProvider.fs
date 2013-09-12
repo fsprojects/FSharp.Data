@@ -149,3 +149,18 @@ let ``Nested xml types compile when only used in type annotations``() =
     let ulWorks (ul:Html.DomainTypes.Ul) = ()
     let liWorks (li:Html.DomainTypes.Li) = ()
     ()
+
+[<Literal>]
+let sameNameDifferentNamespace = """<?xml version="1.0" encoding="UTF-8" ?>
+<a>
+    <b xmlns="urn:x" />
+    <b xmlns="urn:y" />
+</a>
+"""
+
+[<Test>]
+let ``XML elements with same name in different namespaces``() =
+    let xml = XmlProvider<sameNameDifferentNamespace>.GetSample()
+    let b1 = xml.B
+    let b2 = xml.B2
+    ()

@@ -136,6 +136,8 @@ module JsonTypeBuilder =
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if parentName = "" then "Entity" else parentName), Some(ctx.Representation), HideObjectMethods = true)
         ctx.DomainType.AddMember(objectTy)
 
+        let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
+
         // Add all record fields as properties
         for prop in props do
           let propName = prop.Name
@@ -159,7 +161,7 @@ module JsonTypeBuilder =
               optValTy, conv
 
           // Add property with PascalCased name
-          let p = ProvidedProperty(NameUtils.nicePascalName prop.Name, propTy)
+          let p = ProvidedProperty(gen prop.Name, propTy)
           p.GetterCode <- getter
           objectTy.AddMember(p)          
 
