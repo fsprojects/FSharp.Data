@@ -2,7 +2,13 @@
 // Tests for the CSV parsing code
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.Tests.CsvProvider.Parsing
+module FSharp.Data.Tests.CsvReader
+
+#if INTERACTIVE
+#r "../../bin/FSharp.Data.dll"
+#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#load "../Common/FsUnit.fs"
+#endif
 
 open NUnit.Framework
 open FsUnit

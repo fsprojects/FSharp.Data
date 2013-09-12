@@ -1,4 +1,4 @@
-﻿module FSharp.Data.Tests.FreebaseProvider.Tests
+﻿module FSharp.Data.Tests.FreebaseProvider
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"

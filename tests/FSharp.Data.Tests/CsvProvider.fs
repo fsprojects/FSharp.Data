@@ -2,7 +2,7 @@
 // Tests for the CSV parsing code
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.Tests.CsvProvider.Tests
+module FSharp.Data.Tests.CsvProvider
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"

@@ -123,24 +123,15 @@
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
-    <Compile Include="HttpUtils.Encoding.fs" />
-    <Compile Include="JsonValue.ParseTests.fs" />
-    <Compile Include="JsonValue.SerializationTests.fs" />
-    <Compile Include="JsonValue.XmlConversionTests.fs" />
-    <Compile Include="CsvProvider.Parsing.fs" />
-    <Compile Include="CsvProvider.Tests.fs" />
-    <Compile Include="XmlProvider.Tests.fs" />
-    <Compile Include="XmlProvider.Reader.Tests.fs" />
-    <Compile Include="XmlProvider.Writer.Tests.fs" />
-    <Compile Include="XmlProvider.ProjectFile.Tests.fs" />
-    <Compile Include="JsonProvider.Tests.fs" />
-    <Compile Include="JsonProvider.Reader.Tests.fs" />
-    <Compile Include="JsonProvider.Writer.Tests.fs" />
-    <Compile Include="JsonProvider.WikiSample.Tests.fs" />
-    <Compile Include="JsonProvider.DocumentOverride.Tests.fs" />
-    <Compile Include="JsonProvider.ProjectFile.Tests.fs" />
-    <Compile Include="JsonProvider.Dates.Tests.fs" />
-    <Compile Include="FreebaseProvider.Tests.fs" />
+    <Compile Include="HttpUtility.fs" />
+    <Compile Include="Conversions.fs" />
+    <Compile Include="JsonValue..fs" />
+    <Compile Include="JsonExtensions.fs" />
+    <Compile Include="CsvReader.fs" />
+    <Compile Include="CsvProvider.fs" />
+    <Compile Include="XmlProvider.fs" />
+    <Compile Include="JsonProvider.fs" />
+    <Compile Include="FreebaseProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
