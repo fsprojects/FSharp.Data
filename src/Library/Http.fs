@@ -32,15 +32,6 @@ type HttpResponse =
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
 
-  static let writeBody (req:HttpWebRequest) (bytes: byte []) = async {
-    #if FX_NO_WEBREQUEST_CONTENTLENGTH
-    #else
-        req.ContentLength <- int64 bytes.Length
-    #endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(bytes, 0, bytes.Length)
-        output.Flush() }
-
 #if FX_NO_URI_WORKAROUND
 #else
   /// Are we currently running on Mono?
@@ -89,7 +80,7 @@ type Http private() =
         else
             output.ToArray() |> ResponseBody.Binary }
 
-  static let writeBody (req:HttpWebRequest) (postBytes: byte []) = async { 
+  static let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
 #else
       req.ContentLength <- int64 postBytes.Length
@@ -98,7 +89,6 @@ type Http private() =
       do! output.AsyncWrite(postBytes, 0, postBytes.Length)
       output.Flush()
   }
-
 
   static member inline private augmentWebExceptionsWithDetails f = 
     try
@@ -123,7 +113,7 @@ type Http private() =
         | Some e -> raise e
         | None -> reraise()
 
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, (?body:RequestBody), ?cookies, ?cookieContainer, ?certificate) = async {
+  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
     // Format query parameters
     let url = 
       match query with
@@ -147,10 +137,7 @@ type Http private() =
 #endif
 
     // set method
-    let defaultMethod =
-      match body with
-      | None -> "GET"
-      | _ -> "POST"
+    let defaultMethod = if body.IsSome then "POST" else "GET"
     req.Method <- (defaultArg meth defaultMethod).ToUpperInvariant()   
 
     let (|StringEquals|_|) (s1:string) s2 = 
@@ -192,24 +179,20 @@ type Http private() =
 
     match body with
     | Some body ->
-        match body with
-        | RequestBody.Text text ->
-            if not !hasContentType then req.ContentType <- "text/plain"
-            do! writeBody req (Encoding.UTF8.GetBytes(text))
-        | RequestBody.Binary bytes ->
-            if not !hasContentType then req.ContentType <- "application/octet-stream"
-            do! writeBody req bytes
-        | RequestBody.FormValues values ->
-             // Set default content type if it is not specified by the user
-            if not !hasContentType then req.ContentType <- "application/x-www-form-urlencoded"
-            let bytes = 
-                [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
-                |> String.concat "&"
-                |> Encoding.UTF8.GetBytes
-            do! writeBody req bytes
-    | _ -> ()
-
-
+        let defaultContentType, bytes =
+          match body with
+          | RequestBody.Text text -> "text/plain", Encoding.UTF8.GetBytes(text)
+          | RequestBody.Binary bytes -> "application/octet-stream", bytes
+          | RequestBody.FormValues values -> 
+              let bytes = 
+                  [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                  |> String.concat "&"
+                  |> Encoding.UTF8.GetBytes
+              "application/x-www-form-urlencoded", bytes
+        // Set default content type if it is not specified by the user
+        if not !hasContentType then req.ContentType <- defaultContentType
+        do! writeBody req bytes
+    | None -> ()
 
     let isText (mimeType:string) =
         let isText (mimeType:string) =
@@ -231,10 +214,10 @@ type Http private() =
       let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
       let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
       let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
-      // get status code
-      let httpWebResponse = resp :?> HttpWebResponse
-      let statusCode = int httpWebResponse.StatusCode
-      
+      let statusCode = 
+        match resp with
+        | :? HttpWebResponse as resp -> int resp.StatusCode
+        | _ -> 0
       return { Body = respBody
                Headers = headers
                ResponseUrl = resp.ResponseUri.OriginalString

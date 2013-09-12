@@ -8,10 +8,10 @@ want to quickly run a simple HTTP request and specify parameters such as method,
 HTTP POST data or additional headers.
 
 The F# Data Library provides a simple `Http` type with four overloaded methods:
-`RequestString` and `AsyncRequestString` that can be used to create a simple request and
-perform it synchronously or asynchronously, and `Request` and it's async companion `RequestAsync` if
- you want to request binary files or you want to know more about the response like the status code,
- the response url and the returned cookies.
+`RequestString` and `AsyncRequestString`, that can be used to create a simple request and
+perform it synchronously or asynchronously, and `Request` and it's async companion `AsyncRequest` if
+you want to request binary files or you want to know more about the response like the status code,
+the response url, or the returned headers and cookies.
 
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
@@ -31,7 +31,7 @@ can use `Http.RequestString` and `Http.AsyncRequestString` with just a single pa
 *)
 
 // Download the content of a web site
-Http.Request("http://tomasp.net")
+Http.RequestString("http://tomasp.net")
 
 // Download web site asynchronously
 async { let! html = Http.AsyncRequestString("http://tomasp.net")
@@ -39,8 +39,8 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
 |> Async.Start
 
 (** 
-In the rest of the documentation, we focus at the `Request(String)` method, because
-the use of `AsyncRequest(String)` is exactly the same.
+In the rest of the documentation, we focus at the `RequestString` method, because
+the use of `AsyncRequestString` is exactly the same.
 
 ## Query parameters and headers
 
@@ -50,12 +50,12 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.Request("http://httpbin.org/get", query=["test", "foo"], meth="GET")
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], meth="GET")
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
 The collection can contain custom headers, but also standard headers such as the 
-Accept header (which has to be set explicitly when using `HttpWebRequest`).
+Accept header (which has to be set using a specific property when using `HttpWebRequest`).
 
 The following example uses [The Movie Database](http://www.themoviedb.org) API 
 to search for the word "batman". To run the sample, you'll need to register and
@@ -65,65 +65,41 @@ provide your API key:
 let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
-Http.Request
+Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey; "query", "batman" ],
+    query   = [ "api_key", apiKey
+                "query", "batman" ],
     headers = [ "accept", "application/json" ])
 
 (**
 ## Sending request data
 
 If you want to create a POST request with HTTP POST data, you can specify the
-additional data in a string using the `body` parameter, or you can specify a set
-of name-value pairs using the `bodyValues` parameter. If you specify body data,
-you do not need to set the `meth` parameter - it will be set to `GET` automatically.
+additional data in the `body` optional parameter. This parameter is of type `RequestBody`, which
+is a discriminated union with three cases:
+
+* `RequestBody.Text` for sending a string in the request body
+* `RequestBody.FormValues` for sending a set of name-value pairs correspondent to form values
+* `RequestBody.Binary` for sending binary content in the request
+
+If you specify a body, you do not need to set the `meth` parameter, it will be set to `POST` automatically.
+
 The following example uses the [httpbin.org](http://httpbin.org) service which 
 returns the request details:
 *)
 
-Http.Request("http://httpbin.org/post", body=RequestBody.FormValues ["test", "foo"])
+Http.RequestString("http://httpbin.org/post", body = RequestBody.FormValues ["test", "foo"])
 
 (**
-By default, the Content-Type header is set to `application/x-www-form-urlencoded`,
-but you can change this behaviour by adding `content-type` to the list of headers
-using the optional argument `headers`:
+By default, the `Content-Type` header is set to `text/plain`, `application/x-www-form-urlencoded`,
+or `application/octet-stream`, depending on which kind of `RequestBody` you specify, but you can change
+this behaviour by adding `content-type` to the list of headers using the optional argument `headers`:
 *)
 
 Http.RequestString
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/json"],
     body = RequestBody.Text """ {"test": 42} """)
-
-(**
-You can also send binary data in the HTTP POST request's body. Just change the header appropriately 
-and use the `ReqBody.Binary` constructor in your request.
-*)
-
-let myBinaryData = System.Text.Encoding.UTF8.GetBytes "Hello!"
-
-Http.RequestString
-  ( "http://httpbin.org/post", 
-    headers = ["content-type", "application/octet-stream"],
-    body = RequestBody.Binary myBinaryData )
-
-(**
-## Sending a client certificate
-
-If you want to add a client certificate to your requests, then you can use the 
-optional parameter `certificate` and pass the `X509ClientCertificate` value as
-an argument. To do that, you need to open the `X509Certificates` namespace from 
-`System.Security.Cryptography`. Assuming the certificate is stored in `myCertificate.pfx`,
-you can write:
-*)
-
-
-open System.Security.Cryptography.X509Certificates
-
-let clientCert = new X509Certificate2 (".\myCertificate.pfx", "password")
-
-Http.RequestString("http://yourprotectedresouce.com/data",
-             certificate = clientCert)
-
 
 (**
 ## Maintaing cookies across requests
@@ -166,7 +142,9 @@ let docInFSharp =
 docInFSharp.Contains "<a>F#</a>"
 
 (**
-If you want to see more information about the response, including the response 
+## Getting extra information
+
+If you want to see more information about the response, including the status code, the response 
 headers, the returned cookies, and the response url (which might be different to 
 the url you passed when there are redirects), you can use the `Request` method:
 *)
@@ -174,6 +152,7 @@ the url you passed when there are redirects), you can use the `Request` method:
 let response = Http.Request(msdnUrl "system.web.httprequest")
 
 // Examine information about the response
+response.Headers
 response.Cookies
 response.ResponseUrl
 response.StatusCode
@@ -192,3 +171,24 @@ match Http.Request(logoUrl).Body with
     printfn "Got text content: %s" text
 | ResponseBody.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
+
+(**
+## Sending a client certificate
+
+If you want to add a client certificate to your requests, then you can use the 
+optional parameter `certificate` and pass the `X509ClientCertificate` value as
+an argument. To do that, you need to open the `X509Certificates` namespace from 
+`System.Security.Cryptography`. Assuming the certificate is stored in `myCertificate.pfx`,
+you can write:
+*)
+
+open System.Security.Cryptography.X509Certificates
+
+// Load the certificate from local file
+let clientCert = 
+  new X509Certificate2(".\myCertificate.pfx", "password")
+
+// Send the request with certificate
+Http.Request
+  ( "http://yourprotectedresouce.com/data",
+    certificate = clientCert)
