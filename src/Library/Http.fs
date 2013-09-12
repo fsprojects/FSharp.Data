@@ -12,19 +12,34 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type HttpResponseBody =
+type RequestBody =
+    | Text of string
+    | Binary of byte[]
+    | FormValues of seq<string * string>
+
+type ResponseBody =
     | Text of string
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : HttpResponseBody
+  { Body : ResponseBody
     Headers : Map<string,string> 
     ResponseUrl : string
-    Cookies : Map<string,string> }
+    Cookies : Map<string,string>
+    StatusCode: int }
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
+
+  static let writeBody (req:HttpWebRequest) (bytes: byte []) = async {
+    #if FX_NO_WEBREQUEST_CONTENTLENGTH
+    #else
+        req.ContentLength <- int64 bytes.Length
+    #endif
+        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+        do! output.AsyncWrite(bytes, 0, bytes.Length)
+        output.Flush() }
 
 #if FX_NO_URI_WORKAROUND
 #else
@@ -70,34 +85,18 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> HttpResponseBody.Text
+            sr.ReadToEnd() |> ResponseBody.Text
         else
-            output.ToArray() |> HttpResponseBody.Binary }
+            output.ToArray() |> ResponseBody.Binary }
 
-  static member inline private augmentWebExceptionsWithDetails f = 
-    try
-      f()
-    with 
-      // If an exception happens, augment the message with the response
-      | :? WebException as exn -> 
-        if exn.Response = null then reraise()
-        let responseExn =
-            try
-              use responseStream = exn.Response.GetResponseStream()
-              use streamReader = new StreamReader(responseStream)
-              let response = streamReader.ReadToEnd()
-              try 
-                // on some platforms this fails
-                responseStream.Position <- 0L
-              with _ -> ()
-              if String.IsNullOrEmpty response then None
-              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
-            with _ -> None
-        match responseExn with
-        | Some e -> raise e
-        | None -> reraise()
+  static member inline internal reraisePreserveStackTrace (e:Exception) =
+    let remoteStackTraceString = 
+      typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic)
+    if remoteStackTraceString <> null then
+      remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+    raise e
 
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
+  static member private InnerRequest(url:string, forceText, ?certificate, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 
     // Format query parameters
     let url = 
@@ -116,16 +115,17 @@ type Http private() =
 #endif
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    if certificate.IsSome then failwith "Client certificates not supported"
+    failwith "Client certificate not supported"
 #else
-    certificate |> Option.map req.ClientCertificates.Add |> ignore
+    match certificate with
+    | None -> ()
+    | Some certificate -> req.ClientCertificates.Add certificate |> ignore
 #endif
 
     // set method
     let defaultMethod =
-      match body, bodyValues with
-      | None, None -> "GET"
-      | Some _, Some _ -> failwith "Only one of 'body' or 'bodyValues' may be specified, not both"
+      match body with
+      | None -> "GET"
       | _ -> "POST"
     req.Method <- (defaultArg meth defaultMethod).ToUpperInvariant()   
 
@@ -166,31 +166,23 @@ type Http private() =
           cookieContainer.Add(req.RequestUri, Cookie(name, value))
     req.CookieContainer <- cookieContainer
 
-    // If we want to set some body, encode it with POST data as array of bytes
-    let body = 
-        match body, bodyValues with 
-        | Some _, Some _ -> failwithf "Only body or bodyValues can be specified"
-        | _, Some bodyValues ->
-            [ for k, v in bodyValues -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
-            |> String.concat "&"
-            |> Some
-        | body, _ -> body
-
     match body with
-    | Some (text:string) ->
-        // Set default content type if it is not specified by the user
-        if not !hasContentType then
-          req.ContentType <- "application/x-www-form-urlencoded"
-
-        // Write the body 
-        let postBytes = Encoding.UTF8.GetBytes(text)
-#if FX_NO_WEBREQUEST_CONTENTLENGTH
-#else
-        req.ContentLength <- int64 postBytes.Length
-#endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
-        output.Flush()
+    | Some body ->
+        match body with
+        | RequestBody.Text text ->
+            if not !hasContentType then req.ContentType <- "text/plain"
+            do! writeBody req (Encoding.UTF8.GetBytes(text))
+        | RequestBody.Binary bytes ->
+            if not !hasContentType then req.ContentType <- "application/octet-stream"
+            do! writeBody req bytes
+        | RequestBody.FormValues values ->
+             // Set default content type if it is not specified by the user
+            if not !hasContentType then req.ContentType <- "application/x-www-form-urlencoded"
+            let bytes = 
+                [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                |> String.concat "&"
+                |> Encoding.UTF8.GetBytes
+            do! writeBody req bytes
     | _ -> ()
 
     let isText (mimeType:string) =
@@ -206,17 +198,40 @@ type Http private() =
         mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
         |> Array.exists isText       
 
-    // Send the request and get the response
-    return! Http.augmentWebExceptionsWithDetails <| fun () -> async {
-      use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-      use stream = resp.GetResponseStream()
-      let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
-      let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
-      let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
-      return { Body = respBody
-               Headers = headers
-               ResponseUrl = resp.ResponseUri.OriginalString
-               Cookies = cookies } }
+    // Send the request and get the response       
+    try
+        use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+        use stream = resp.GetResponseStream()
+        let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
+        let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
+        let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
+        return {Body = respBody
+                Headers = headers
+                ResponseUrl = resp.ResponseUri.OriginalString
+                Cookies = cookies
+                StatusCode = if resp :? HttpWebResponse then int (resp :?> HttpWebResponse).StatusCode 
+                             else 0 }
+    with
+      // If an exception happens, augment the message with the response
+      | :? WebException as exn -> 
+        if exn.Response = null then Http.reraisePreserveStackTrace exn
+        let responseExn =
+            try
+              use responseStream = exn.Response.GetResponseStream()
+              use streamReader = new StreamReader(responseStream)
+              let response = streamReader.ReadToEnd()
+              responseStream.Position <- 0L
+              if String.IsNullOrEmpty response then None
+              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
+            with _ -> None
+        match responseExn with
+        | Some e -> raise e
+        | None -> Http.reraisePreserveStackTrace exn
+        return { Body = ResponseBody.Text ""
+                 Headers = Map.empty
+                 ResponseUrl = uri.OriginalString
+                 Cookies = Map.empty
+                 StatusCode = 0 }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -224,20 +239,20 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequestDetailed(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member AsyncRequest(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.InnerRequest(url, false, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 
   /// Download an HTTP web resource from the specified URL asynchronously
   /// (allows specifying query string parameters and HTTP headers including
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = async {
-    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member AsyncRequestString(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = async {
+    let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
     return
         match response.Body with
-        | HttpResponseBody.Text text -> text
-        | HttpResponseBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | ResponseBody.Text text -> text
+        | ResponseBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
@@ -245,8 +260,8 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member RequestDetailed(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.AsyncRequestDetailed(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member Request(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequest(url, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously
 
   /// Download an HTTP web resource from the specified URL synchronously
@@ -254,6 +269,6 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member Request(url, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.AsyncRequest(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member RequestString(url, ?certificate, ?query, ?headers, ?meth, ?body, ?bodyValues, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequestString(url, ?certificate=certificate, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?bodyValues=bodyValues, ?cookies=cookies, ?cookieContainer=cookieContainer)
     |> Async.RunSynchronously
