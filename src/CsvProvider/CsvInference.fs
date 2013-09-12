@@ -291,7 +291,7 @@ let getFields preferOptionals inferedType schema =
   let inline (|TypeOrNull|_|) typ = 
     match typ with 
     | Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
-        let kvp = map |> Seq.find (function (KeyValue(InferedTypeTag.Null, _)) -> false | _ -> true)
+        let kvp = map |> Seq.find (function KeyValue(InferedTypeTag.Null, _) -> false | _ -> true)
         Some kvp.Value
     | _ -> None
 
