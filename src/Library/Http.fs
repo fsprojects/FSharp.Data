@@ -12,17 +12,17 @@ open System.Reflection
 open System.Collections.Generic
 
 [<RequireQualifiedAccess>]
-type ReqBody =
+type RequestBody =
     | Text of string
     | Binary of byte[]
     | FormValues of seq<string * string>
 
-type ResBody =
+type ResponseBody =
     | Text of string
     | Binary of byte[]
 
 type HttpResponse =
-  { Body : ResBody
+  { Body : ResponseBody
     Headers : Map<string,string> 
     ResponseUrl : string
     Cookies : Map<string,string>
@@ -35,13 +35,11 @@ type Http private() =
   static let writeBody (req:HttpWebRequest) (bytes: byte []) = async {
     #if FX_NO_WEBREQUEST_CONTENTLENGTH
     #else
-            req.ContentLength <- int64 bytes.Length
+        req.ContentLength <- int64 bytes.Length
     #endif
-            use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-            do! output.AsyncWrite(bytes, 0, bytes.Length)
-            output.Flush()
-            return ()
-  }
+        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+        do! output.AsyncWrite(bytes, 0, bytes.Length)
+        output.Flush() }
 
 #if FX_NO_URI_WORKAROUND
 #else
@@ -87,9 +85,9 @@ type Http private() =
     return 
         if isText then
             use sr = new StreamReader(output)
-            sr.ReadToEnd() |> ResBody.Text
+            sr.ReadToEnd() |> ResponseBody.Text
         else
-            output.ToArray() |> ResBody.Binary }
+            output.ToArray() |> ResponseBody.Binary }
 
   static member inline internal reraisePreserveStackTrace (e:Exception) =
     let remoteStackTraceString = 
@@ -166,11 +164,13 @@ type Http private() =
     match body with
     | Some body ->
         match body with
-        | ReqBody.Text text ->
+        | RequestBody.Text text ->
+            if not !hasContentType then req.ContentType <- "text/plain"
             do! writeBody req (Encoding.UTF8.GetBytes(text))
-        | ReqBody.Binary bytes ->
+        | RequestBody.Binary bytes ->
+            if not !hasContentType then req.ContentType <- "application/octet-stream"
             do! writeBody req bytes
-        | ReqBody.FormValues values ->
+        | RequestBody.FormValues values ->
              // Set default content type if it is not specified by the user
             if not !hasContentType then req.ContentType <- "application/x-www-form-urlencoded"
             let bytes = 
@@ -218,7 +218,7 @@ type Http private() =
         match responseExn with
         | Some e -> raise e
         | None -> Http.reraisePreserveStackTrace exn
-        return { Body = ResBody.Text ""
+        return { Body = ResponseBody.Text ""
                  Headers = Map.empty
                  ResponseUrl = uri.OriginalString
                  Cookies = Map.empty
@@ -242,8 +242,8 @@ type Http private() =
     let! response = Http.InnerRequest(url, true, ?certificate=certificate, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
     return
         match response.Body with
-        | ResBody.Text text -> text
-        | ResBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
+        | ResponseBody.Text text -> text
+        | ResponseBody.Binary binary -> failwithf "Expecting text, but got a binary response (%d bytes)" binary.Length
   }
 
   /// Download an HTTP web resource from the specified URL synchronously
