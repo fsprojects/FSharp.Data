@@ -110,6 +110,11 @@ type Http private() =
     // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+#else
+    req.AutomaticDecompression <- DecompressionMethods.Deflate ||| DecompressionMethods.GZip
+#endif
+
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
     if certificate.IsSome then failwith "Client certificates not supported"
 #else
@@ -189,13 +194,17 @@ type Http private() =
     | _ -> ()
 
     let isText (mimeType:string) =
-        mimeType.StartsWith "text/" || 
-        mimeType = "application/json" || 
-        mimeType = "application/xml" ||
-        mimeType = "application/javascript" ||
-        mimeType = "application/ecmascript" ||
-        mimeType = "application/xml-dtd" ||
-        mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+        let isText (mimeType:string) =
+            let mimeType = mimeType.Trim()
+            mimeType.StartsWith "text/" || 
+            mimeType = "application/json" || 
+            mimeType = "application/xml" ||
+            mimeType = "application/javascript" ||
+            mimeType = "application/ecmascript" ||
+            mimeType = "application/xml-dtd" ||
+            mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+        mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
+        |> Array.exists isText       
 
     // Send the request and get the response
     return! Http.augmentWebExceptionsWithDetails <| fun () -> async {
