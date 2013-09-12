@@ -61,7 +61,7 @@ module Implementation =
                 | None -> 
                     Debug.WriteLine (sprintf "[WorldBank] downloading (%d): %s" attempt url)
                     try
-                        let! doc = Http.AsyncRequest(url)
+                        let! doc = Http.AsyncRequestString(url)
                         Debug.WriteLine (sprintf "[WorldBank] got text: %s" (if doc = null then "null" elif doc.Length > 50 then doc.[0..49] + "..." else doc))
                         if not (String.IsNullOrEmpty doc) then 
                             restCache.Set(url, doc)
