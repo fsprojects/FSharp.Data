@@ -132,3 +132,20 @@ let ``Can access the project title``() =
     let doc = Project.GetSample()
     let project = doc.Project
     project.Title |> should equal "Avery"
+
+type Html = XmlProvider<"""
+<div>
+    <span>
+        <ul> 
+            <li/>          
+        </ul>
+    </span>  
+</div>""">
+ 
+[<Test>]
+let ``Nested xml types compile when only used in type annotations``() =
+    let divWorks (div:Html.DomainTypes.Div) = ()
+    let spanWorks (span:Html.DomainTypes.Span) = ()
+    let ulWorks (ul:Html.DomainTypes.Ul) = ()
+    let liWorks (li:Html.DomainTypes.Li) = ()
+    ()

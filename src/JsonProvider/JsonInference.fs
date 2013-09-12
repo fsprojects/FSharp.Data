@@ -34,6 +34,6 @@ let rec inferType culture allowNulls json =
   | JsonValue.Array ar -> inferCollectionType allowNulls (Seq.map (inferType culture allowNulls) ar)
   | JsonValue.Object o ->
       let props = 
-        [ for (KeyValue(k, v)) in o -> 
+        [ for KeyValue(k, v) in o -> 
             { Name = k; Optional = false; Type = inferType culture allowNulls v } ]
       Record(None, props)

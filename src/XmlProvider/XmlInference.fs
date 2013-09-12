@@ -57,7 +57,7 @@ let inferGlobalType culture allowNulls (element:XElement) =
   let mutable changed = true
   while changed do 
     changed <- false
-    for (KeyValue(_, value)) in assignment do
+    for KeyValue(_, value) in assignment do
       match value with 
       | elements, Record(Some name, body::attributes) -> 
           if body.Name <> "" then failwith "inferGlobalType: Assumed body element first"

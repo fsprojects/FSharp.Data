@@ -96,7 +96,7 @@ module internal XmlTypeBuilder =
               // the attribute is always optional)
               let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(typeof<option<string>>), HideObjectMethods = true)
               ctx.DomainType.AddMember(choiceTy)
-              for (KeyValue(kind, typ)) in types do 
+              for KeyValue(kind, typ) in types do 
                 match typ with
                 | InferedType.Null -> ()
                 | InferedType.Primitive(primTyp, _) ->
@@ -157,10 +157,10 @@ module internal XmlTypeBuilder =
 
             // For every possible child node, generate 'GetXyz()' method (if there
             // is multiple of them) or just a getter property if there is one or none
-            objectTy.AddMembersDelayed(fun () ->
-              nodes |> List.ofSeq |> List.map (function
-                | (KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ))) ->
-                  
+            [ for node in nodes ->
+                match node with
+                | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
+                
                     let name = XName.Get(nameWithNS).LocalName
                     let childTy, childConv = generateXmlType culture ctx typ 
                     match multiplicity with
@@ -188,7 +188,9 @@ module internal XmlTypeBuilder =
                           operationsTyp?ConvertOptional (convTyp) (xml, nameWithNS, convFunc)
                         p :> MemberInfo
 
-                | _ -> failwith "generateXmlType: Child nodes should be named record types"))
+                | _ -> failwith "generateXmlType: Child nodes should be named record types" ]
+
+            |> objectTy.AddMembers 
 
         | [_] -> failwith "generateXmlType: Children should be collection or heterogeneous"
         | _::_ -> failwith "generateXmlType: Only one child collection expected"
