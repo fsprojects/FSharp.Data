@@ -78,7 +78,7 @@ type Operations =
            |> asOption
            |> Option.bind (fun f -> if Double.IsNaN f then None else Some f)
   
-  static member AsBoolean culture (text:string) = 
+  static member AsBoolean (culture:IFormatProvider) (text:string) = 
     match text.Trim() with
     | StringEquals "true" | StringEquals "yes" | StringEquals "1" -> Some true
     | StringEquals "false" | StringEquals "no" | StringEquals "0" -> Some false

@@ -550,13 +550,13 @@ class FreebaseDataProvider+ServiceTypes+Uncategorized+Community
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Base
 
+class FreebaseDataProvider+ServiceTypes+Uncategorized+M
+
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Freebase
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Wikipedia
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Pipeline
-
-class FreebaseDataProvider+ServiceTypes+Uncategorized+M
 
 class FreebaseDataProvider+ServiceTypes+Uncategorized+Nytimes
 
@@ -610,6 +610,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+CommonDomain : FDR.Freebas
     member Annotation Indexs: FreebaseDataProvider+ServiceTypes+Common+Common+Annotation_indexDataCollection with get
     member Identities: FreebaseDataProvider+ServiceTypes+Common+Common+IdentityDataCollection with get
     member Rawstring properties: FreebaseDataProvider+ServiceTypes+Common+Common+Rawstring_propertyDataCollection with get
+    member License permissions: FreebaseDataProvider+ServiceTypes+Common+Common+License_permissionDataCollection with get
+    member License prohibitions: FreebaseDataProvider+ServiceTypes+Common+Common+License_prohibitionDataCollection with get
+    member Licence requirements: FreebaseDataProvider+ServiceTypes+Common+Common+License_requirementDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+EducationDomain : FDR.Freebase.FreebaseDomain
     member Degrees: FreebaseDataProvider+ServiceTypes+Education+Education+Educational_degreeDataCollection with get
@@ -1195,7 +1198,6 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain :
     member American football teams: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_teamDataCollection with get
     member American football divisions: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_divisionDataCollection with get
     member American football conferences: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_conferenceDataCollection with get
-    member American football positions: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_positionDataCollection with get
     member American football coach positions: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_coach_positionDataCollection with get
     member American football games: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_gameDataCollection with get
     member Scoreboard Quarters: FreebaseDataProvider+ServiceTypes+American_football+American_football+Scoreboard_quarterDataCollection with get
@@ -1569,7 +1571,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+FreebaseDomain : FDR.Freeb
     member Query Hints: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Query_hintsDataCollection with get
     member Queries: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+QueryDataCollection with get
     member View Types: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+View_typeDataCollection with get
-    member written_bies: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Written_byDataCollection with get
+    member Written Bies: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Written_byDataCollection with get
     member Vendors: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+VendorDataCollection with get
     member Vendor Templates: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Vendor_templateDataCollection with get
     member Vendor Links Profiles: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Vendor_links_profileDataCollection with get
@@ -1596,6 +1598,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+FreebaseDomain : FDR.Freeb
     member Notability hints: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Notability_hintsDataCollection with get
     member Value Notations: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+ValuenotationDataCollection with get
     member Object profiles: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Object_profileDataCollection with get
+    member Namespace Hints: FreebaseDataProvider+ServiceTypes+Freebase+Freebase+Namespace_hintsDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+ComputersDomain : FDR.Freebase.FreebaseDomain
     member Operating Systems: FreebaseDataProvider+ServiceTypes+Computer+Computer+Operating_systemDataCollection with get
@@ -2095,6 +2098,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+MediaDomain : FDR.Freebase
     member Netflix Titles: FreebaseDataProvider+ServiceTypes+Media_common+Media_common+Netflix_titleDataCollection with get
     member Netflix Genres: FreebaseDataProvider+ServiceTypes+Media_common+Media_common+Netflix_genreDataCollection with get
     member Cataloged instances: FreebaseDataProvider+ServiceTypes+Media_common+Media_common+Cataloged_instanceDataCollection with get
+    member Media genre equivalent topics: FreebaseDataProvider+ServiceTypes+Media_common+Media_common+Media_genre_equivalent_topicDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+LawDomain : FDR.Freebase.FreebaseDomain
     member Patents: FreebaseDataProvider+ServiceTypes+Law+Law+Us_patentDataCollection with get

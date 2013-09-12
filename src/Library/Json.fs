@@ -322,6 +322,8 @@ module Extensions =
     member x.AsBoolean(?culture) =
       match x with
       | JsonValue.Boolean t -> t
+      | JsonValue.Number 1M -> true
+      | JsonValue.Number 0M -> false
       | JsonValue.String s -> 
           match Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) s with
           | Some n -> n
