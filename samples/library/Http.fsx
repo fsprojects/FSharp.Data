@@ -10,7 +10,8 @@ HTTP POST data or additional headers.
 The F# Data Library provides a simple `Http` type with four overloaded methods:
 `RequestString` and `AsyncRequestString` that can be used to create a simple request and
 perform it synchronously or asynchronously, and `Request` and it's async companion `RequestAsync` if
-you want to know more about the response like `statuscode`, `responseurl` and `cookies`.
+ you want to request binary files or you want to know more about the response like the status code,
+ the response url and the returned cookies.
 
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
@@ -30,7 +31,7 @@ can use `Http.RequestString` and `Http.AsyncRequestString` with just a single pa
 *)
 
 // Download the content of a web site
-Http.RequestString("http://tomasp.net")
+Http.Request("http://tomasp.net")
 
 // Download web site asynchronously
 async { let! html = Http.AsyncRequestString("http://tomasp.net")
@@ -49,7 +50,7 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], meth="GET")
+Http.Request("http://httpbin.org/get", query=["test", "foo"], meth="GET")
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -64,7 +65,7 @@ provide your API key:
 let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
-Http.RequestString
+Http.Request
   ( "http://api.themoviedb.org/3/search/movie",
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ "accept", "application/json" ])
@@ -80,7 +81,7 @@ The following example uses the [httpbin.org](http://httpbin.org) service which
 returns the request details:
 *)
 
-Http.RequestString("http://httpbin.org/post", bodyValues=["test", "foo"])
+Http.Request("http://httpbin.org/post", body=RequestBody.FormValues ["test", "foo"])
 
 (**
 By default, the Content-Type header is set to `application/x-www-form-urlencoded`,
@@ -91,7 +92,7 @@ using the optional argument `headers`:
 Http.RequestString
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/json"],
-    body = ReqBody.Text """ {"test": 42} """)
+    body = RequestBody.Text """ {"test": 42} """)
 
 (**
 You can also send binary data in the HTTP POST request's body. Just change the header appropriately 
@@ -103,7 +104,7 @@ let myBinaryData = System.Text.Encoding.UTF8.GetBytes "Hello!"
 Http.RequestString
   ( "http://httpbin.org/post", 
     headers = ["content-type", "application/octet-stream"],
-    body = ReqBody.Binary myBinaryData )
+    body = RequestBody.Binary myBinaryData )
 
 (**
 ## Sending a client certificate
@@ -181,13 +182,13 @@ response.StatusCode
 ## Requesting binary data
 
 The `RequestString` method will always return the response as a `string`, but if you use the 
-`Request` method, it will return a `ResBody.Text` or a 
-`ResBody.Binary` depending on the response `content-type` header:
+`Request` method, it will return a `ResponseBody.Text` or a 
+`ResponseBody.Binary` depending on the response `content-type` header:
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| ResBody.Text text -> 
+| ResponseBody.Text text -> 
     printfn "Got text content: %s" text
-| ResBody.Binary bytes -> 
+| ResponseBody.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
