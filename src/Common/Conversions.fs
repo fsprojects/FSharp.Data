@@ -67,7 +67,7 @@ type Operations =
     Int64.TryParse(text, NumberStyles.Integer, culture) |> asOption
   
   static member AsDecimal culture text =
-    Decimal.TryParse(text, NumberStyles.Number, culture) |> asOption
+    Decimal.TryParse(text, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, culture) |> asOption
   
   static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"|]
 

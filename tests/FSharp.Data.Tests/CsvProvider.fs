@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
-// Tests for the CSV parsing code
-// --------------------------------------------------------------------------------------
-
-module FSharp.Data.Tests.CsvProvider
+﻿module FSharp.Data.Tests.CsvProvider
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
@@ -210,4 +206,8 @@ let ``NaN's should work correctly when using option types`` () =
     row2.a |> should equal None
     row2.b |> should equal (Some 1.0)
     
-
+[<Test>]
+let ``Currency symbols on decimal columns should work``() =
+    let csv = new CsvProvider<"$66.92,0.9458,Jan-13,0,0,0,1", HasHeaders=false, Culture="en-US">()
+    let row = csv.Data |> Seq.head
+    row.Column1 : decimal |> should equal 66.92M
