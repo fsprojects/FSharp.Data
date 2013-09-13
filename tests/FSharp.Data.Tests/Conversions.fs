@@ -24,3 +24,9 @@ let ``Boolean conversions``() =
   Operations.AsBoolean culture "0"     |> should equal (Some false)
 
   Operations.AsBoolean culture "rubbish" |> should equal None
+
+[<Test>]
+let ``Decimal conversions``() = 
+  Operations.AsDecimal CultureInfo.InvariantCulture "¤50" |> should equal (Some 50M)
+  Operations.AsDecimal (CultureInfo "en-GB") "£50" |> should equal (Some 50M)
+  Operations.AsDecimal (CultureInfo "en-GB") "$50" |> should equal None
