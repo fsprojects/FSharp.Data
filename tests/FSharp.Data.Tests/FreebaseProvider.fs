@@ -155,3 +155,17 @@ let ``tvrage_id is not unique in mql query``() =
 let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
     ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests
+open FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
+
+[<Test>]
+let ``Wrong key gives relevant message``() =
+    let fb = new FreebaseQueries("invalidKey", "https://www.googleapis.com/freebase/v1", "FreebaseSchema", "none", false)
+    let fbSchema = new FreebaseSchemaConnection(fb)
+    let mutable exn = ""
+    try
+        fbSchema.GetDomainStructure() |> ignore
+    with :? FreebaseWebException as e -> 
+        exn <- e.Message
+    exn |> should contain "Reason='keyInvalid'"
