@@ -1,19 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
-	EndProjectSection
-EndProject
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20827.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{36E72EB1-5847-4B38-8993-B951648CB0D9}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data", "src\FSharp.Data.fsproj", "{6EBFDE55-9687-40A9-8C1A-6E204ECB117F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "src\FSharp.Data.DesignTime.fsproj", "{B85F245B-3FB9-4253-8251-16F98F05B6EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.DesignTime", "src\FSharp.Data.Experimental.DesignTime.fsproj", "{3DB6653E-5E17-4C81-A0EF-83810B47C350}"
