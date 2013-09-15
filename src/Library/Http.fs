@@ -90,13 +90,21 @@ type Http private() =
       output.Flush()
   }
 
-  static member inline private augmentWebExceptionsWithDetails f = 
+  static member inline private reraisePreserveStackTrace (e:Exception) =
     try
-      f()
+      let remoteStackTraceString = typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic);
+      if remoteStackTraceString <> null then
+        remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
+    with _ -> ()
+    raise e
+
+  static member inline private augmentWebExceptionsWithDetails f = async {
+    try
+      return! f()
     with 
       // If an exception happens, augment the message with the response
       | :? WebException as exn -> 
-        if exn.Response = null then reraise()
+        if exn.Response = null then Http.reraisePreserveStackTrace exn
         let responseExn =
             try
               use responseStream = exn.Response.GetResponseStream()
@@ -111,7 +119,10 @@ type Http private() =
             with _ -> None
         match responseExn with
         | Some e -> raise e
-        | None -> reraise()
+        | None -> Http.reraisePreserveStackTrace exn 
+        // just to keep the type-checker happy:
+        return Unchecked.defaultof<_>
+  }
 
   static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
     // Format query parameters
