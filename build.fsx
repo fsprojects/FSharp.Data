@@ -77,7 +77,7 @@ Target "Clean" (fun _ ->
 // of the runtime library & desktop + Silverlight version of design time library)
 
 Target "Build" (fun _ ->
-    (files ["FSharp.Data.sln"; "FSharp.Data.Tests.sln"])
+    (files ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"; "FSharp.Data.Tests.sln"])
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 )
