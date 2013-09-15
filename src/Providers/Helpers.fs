@@ -216,6 +216,7 @@ module Conversions =
         | TypeWrapper.None -> typeof<Operations>?GetOptionalValue (runtimeTyp) value
         | TypeWrapper.Option -> value
         | TypeWrapper.Nullable -> typeof<Operations>?NullableToOption (runtimeTyp) value
+        |> replacer.ToDesignTime
       getBackConversionQuotation config typ value |> replacer.ToRuntime
 
     returnTyp, returnTypWithoutMeasure, convert, convertBack
@@ -260,14 +261,27 @@ module AssemblyResolver =
         ++ "Reference Assemblies" 
         ++ "Microsoft" 
 
-    let private fsharpPortableAssembliesPath = 
+    let private fsharp30PortableAssembliesPath = 
         referenceAssembliesPath
         ++ "FSharp" 
         ++ "3.0" 
         ++ "Runtime" 
         ++ ".NETPortable"
 
-    let private frameworkPortableAssembliesPath = 
+    let private fsharp30Net40AssembliesPath = 
+        referenceAssembliesPath
+        ++ "FSharp" 
+        ++ "3.0" 
+        ++ "Runtime" 
+        ++ "v4.0"
+
+    let private net40AssembliesPath = 
+        referenceAssembliesPath
+        ++ "Framework" 
+        ++ ".NETFramework" 
+        ++ "v4.0" 
+
+    let private portable40AssembliesPath = 
         referenceAssembliesPath
         ++ "Framework" 
         ++ ".NETPortable" 
@@ -275,13 +289,13 @@ module AssemblyResolver =
         ++ "Profile" 
         ++ "Profile47" 
 
-    let private silverlightAssembliesPath = 
+    let private silverlight5AssembliesPath = 
         referenceAssembliesPath
         ++ "Framework" 
         ++ "Silverlight" 
         ++ "v5.0" 
 
-    let private silverlightSdkAssembliesPath = 
+    let private silverlight5SdkAssembliesPath = 
         Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
         ++ "Microsoft SDKs" 
         ++ "Silverlight" 
@@ -289,7 +303,7 @@ module AssemblyResolver =
         ++ "Libraries"
         ++ "Client"
 
-    let private fullAssemblies = 
+    let private designTimeAssemblies = 
         AppDomain.CurrentDomain.GetAssemblies()
         |> Seq.map (fun asm -> asm.GetName().Name, asm)
         // If there are dups, Map.ofSeq will take the last one. When the portable version
@@ -306,10 +320,12 @@ module AssemblyResolver =
                 if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
                 then "" else asmName.Version.ToString()
             match asmName.Name, version with
-            | "FSharp.Core", "2.3.5.0" -> fsharpPortableAssembliesPath
-            | "System.Xml.Linq", "5.0.5.0" -> silverlightSdkAssembliesPath
-            | _, "5.0.5.0" -> silverlightAssembliesPath
-            | _, "2.0.5.0" -> frameworkPortableAssembliesPath
+            | "FSharp.Core", "4.3.0.0" -> fsharp30Net40AssembliesPath
+            | "FSharp.Core", "2.3.5.0" -> fsharp30PortableAssembliesPath
+            | _, "4.0.0.0" -> net40AssembliesPath
+            | _, "2.0.5.0" -> portable40AssembliesPath
+            | "System.Xml.Linq", "5.0.5.0" -> silverlight5SdkAssembliesPath
+            | _, "5.0.5.0" -> silverlight5AssembliesPath
             | _, _ -> null
         if folder = null then 
             null
@@ -331,31 +347,40 @@ module AssemblyResolver =
         
         let isPortable = cfg.SystemRuntimeAssemblyVersion = new Version(2, 0, 5, 0)
         let isSilverlight = cfg.SystemRuntimeAssemblyVersion = new Version(5, 0, 5, 0)
-                
+        let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = new Version(4, 3, 1, 0)
+
+        let differentFramework = isPortable || isSilverlight || isFSharp31
+        let useReflectionOnly =
+            differentFramework &&
+            // Ideally we would always use reflectionOnly, but that creates problems in Windows 8
+            // apps with the System.Core.dll version, so we set to false for portable
+            not isPortable
+
         let runtimeAssembly = 
-            if isSilverlight then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
+            if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
             else Assembly.LoadFrom cfg.RuntimeAssembly
 
-        let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
+        let mainRuntimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
         let asmMappings = 
-            if isPortable || isSilverlight then
-                let portableAsmsPairs = 
+            if differentFramework then
+                let runtimeAsmsPairs = 
                     runtimeAssembly.GetReferencedAssemblies()
                     |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
                     |> Seq.choose (fun asmName -> 
-                        fullAssemblies.TryFind asmName.Name
-                        |> Option.bind (fun fullAsm ->
-                            // Ideally we would always use reflectionOnly as true, but that creates problems in Windows 8 apps with the System.Core.dll version
-                            let portableAsm = getAssembly asmName isSilverlight
-                            if portableAsm <> null && portableAsm.FullName <> fullAsm.FullName then Some (fullAsm, portableAsm)
+                        designTimeAssemblies.TryFind asmName.Name
+                        |> Option.bind (fun designTimeAsm ->
+                            let targetAsm = getAssembly asmName useReflectionOnly
+                            if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
+                                                     targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
+                              Some (designTimeAsm, targetAsm)
                             else None))
                     |> Seq.toList
-                if portableAsmsPairs = [] then
+                if runtimeAsmsPairs = [] then
                     failwithf "Something went wrong when creating the assembly mappings"
-                runtimeAssemblyPair::portableAsmsPairs
+                mainRuntimeAssemblyPair::runtimeAsmsPairs
             else
-                [runtimeAssemblyPair]
+                [mainRuntimeAssemblyPair]
 
         runtimeAssembly, AssemblyReplacer.create asmMappings
 
