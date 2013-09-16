@@ -21,10 +21,14 @@ as Portable libraries).
 The root directory contains a number of Visual Studio solutions (`*.sln`) files 
 that group the projects in the main logical groups:
 
- * **FSharp.Data.sln** contains the main projects that implement most of the F# Data
+ * **FSharp.Data.sln** contains the main projects that implement the F# Data
    functionality (such as runtime and design-time type provider libraries). If you want
    to contribute code that is not quite ready yet, but looks interesting, then please
    add it to the experimental projects.
+
+ * **FSharp.Data.ExtraPlatforms.sln** contains the equivalent projects of `FSharp.Data.sln` 
+   but targeting additional platforms like Silverlight, Portable Class Libraries, and
+   Windows Phone 7.1.
 
  * **FSharp.Data.Tests.sln** is a library with tests for F# Data and it also contains
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
@@ -63,7 +67,7 @@ If you open `FSharp.Data.sln`, you'll see the following projects for _runtime co
  * **FSharp.Data** - the desktop .NET 4.0 version
  * **FSharp.Data.Portable** - F# portable library version (targetting desktop .NET 4.0, Windows Phone 8 and Windows 8)
  * **FSharp.Data.Silverlight** - Silverlight 5 version
- * **FSharp.Data.WindowsPhone7** - Windows Phone 7 version
+ * **FSharp.Data.WindowsPhone7** - Windows Phone 7.1 version
  * **FSharp.Data.Experimental** - the desktop .NET 4.0 version of the experimental features
  * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features
 
@@ -79,7 +83,11 @@ The _design time_ components are in the following projects:
  * **FSharp.Data.Experimental.DesignTime** - the main version for desktop editors
  * **FSharp.Data.Experimental.DesignTime.Silverlight** - an experimental version for Try F#
 
-Because the latest available FSharp.Core version for the Windows Phone 7 platform is from F# 2.0,
+To be able to compile the Silverlight 5 projects, you need to have the [Silverlight 5.0 Developer runtime](http://go.microsoft.com/fwlink/?LinkId=229324) installed.
+
+To be able to compile the Windows Phone 7.1 projects, you need to have the [Windows Phone 8.0 SDK](http://go.microsoft.com/fwlink/?LinkId=265772) installed (yes, the 8.0 version, not the 7.1 version).
+
+Because the latest available FSharp.Core version for the Windows Phone 7.1 platform is from F# 2.0,
 this version doesn't support type providers, so it only has the runtime components of FSharp.Data.
 To build it you also need to edit `C:\Program Files (x86)\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.targets`
 to remove the following lines:
