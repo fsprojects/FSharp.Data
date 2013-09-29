@@ -17,3 +17,4 @@ gh-pages
 release
 tests/TestResult.xml
 *.VisualState.xml
+*.userprefs

@@ -83,7 +83,10 @@ let ``Validate signature didn't change `` (testCase:TestCase) =
 let ``Generating expressions works `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
+#if MONO
+#else
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore
+#endif
