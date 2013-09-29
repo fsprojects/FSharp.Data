@@ -45,6 +45,8 @@ let releaseNotes, version =
     ( lastItem.Substring(firstDash + 1 ).Trim(), 
       lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim() )
 
+let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
 
@@ -77,8 +79,14 @@ Target "Clean" (fun _ ->
 // of the runtime library & desktop + Silverlight version of design time library)
 
 Target "Build" (fun _ ->
-    (files ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"; "FSharp.Data.Tests.sln"])
+    files (if runningOnMono then ["FSharp.Data.sln"] else ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"])
     |> MSBuildRelease "" "Rebuild"
+    |> ignore
+)
+
+Target "BuildTests" (fun _ ->
+    files ["FSharp.Data.Tests.sln"]
+    |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"] else []) "Rebuild"
     |> ignore
 )
 
@@ -184,11 +192,10 @@ Target "Release" DoNothing
 
 Target "All" DoNothing
 
-"Clean"
-  ==> "AssemblyInfo"
-  ==> "Build"
-  ==> "RunTests"
-  ==> "NuGet"
-  ==> "All"
+"Clean" ==> "AssemblyInfo" ==> "Build"
+"Build" ==> "All"
+"BuildTests" ==> "All"
+"RunTests" ==> "All"
+"NuGet" ==> "All"
 
 RunTargetOrDefault "All"
