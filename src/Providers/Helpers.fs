@@ -354,7 +354,7 @@ module AssemblyResolver =
             differentFramework &&
             // Ideally we would always use reflectionOnly, but that creates problems in Windows 8
             // apps with the System.Core.dll version, so we set to false for portable
-            not isPortable
+            (not isPortable || isFSharp31)
 
         let runtimeAssembly = 
             if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
