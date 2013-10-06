@@ -1,4 +1,5 @@
 #!/bin/bash
+export EnableNuGetPackageRestore=true
 if [ ! -f tools/FAKE/tools/Fake.exe ]; then
   mono .NuGet/NuGet.exe install FAKE -OutputDirectory tools -ExcludeVersion -Prerelease
 fi
