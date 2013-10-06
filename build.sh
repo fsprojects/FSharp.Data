@@ -6,6 +6,8 @@
 ## Used FAKE to build AssemblyInfo file. Some problems with xbuild and FAKE stop doing more.
 #mono tools/FAKE/tools/FAKE.exe build.fsx AssemblyInfo
 
+export EnableNuGetPackageRestore=true
+
 xbuild FSharp.Data.sln /p:Configuration="Release" 
 xbuild FSharp.Data.Tests.sln /p:Configuration="Release" 
 
