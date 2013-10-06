@@ -150,6 +150,8 @@ let ``Validate signature didn't change `` (testCase:TestCase) =
 let ``Generating expressions works `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
+#if MONO
+#else
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TestCase) = 
@@ -159,3 +161,4 @@ let ``Generating expressions works in portable `` (testCase:TestCase) =
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
     testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore
+#endif
