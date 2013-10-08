@@ -2,8 +2,8 @@
 # F# Data: JSON Parser and Reader
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
-in F#. The parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 
-but F# Data adds simple API that can be used to access values dynamically.
+in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 
+but F# Data adds a simple API that can be used to access values dynamically.
 
 When working with well-defined JSON documents, it is easier to use the 
 [type provider](JsonProvider.html), but in a more dynamic scenario or when writing
@@ -66,6 +66,7 @@ Methods that may need to parse a numeric value or date (such as `AsFloat` and
 
 The following example shows how to process the sample JSON value:
 *)
+
 open FSharp.Data.Json.Extensions
 
 // Print name and birth year
@@ -111,6 +112,7 @@ To split the top-level array into the first record (with overall information)
 and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
 *)
+
 match value with
 | JsonValue.Array [| info; data |] ->
     // Print overall information
@@ -139,10 +141,8 @@ as possible when parsing the file.
 
 ## Related articles
 
- * [F# Data: JSON Type Provider](JsonProvider.html) - discusses F# type provider
+ * [F# Data: JSON Type Provider](JsonProvider.html) - discusses a F# type provider
    that provides type-safe access to JSON data
  * [F# Data: WorldBank Provider](WorldBank.html) - the WorldBank type provider
    can be used to easily access data from the WorldBank
 *)
-
-
