@@ -2,7 +2,7 @@
 # F# Data: CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
-in a statically typed way. This type provider is similar to the the one used on [Try F#](http://www.tryfsharp.org)
+in a statically typed way. This type provider is similar to the one used on the [Try F#](http://www.tryfsharp.org)
 web site in the "Financial Computing" tutorial, so you can find additional examples there.
 
 The CSV type provider takes a sample CSV as input and generates a type based on the data
@@ -60,8 +60,8 @@ for row in msft.Data do
 
 (**
 The generated type has a property `Data` that returns the data from the CSV file as a
-collection of rows. We iterate over the rows using `for` loop. As you can see the
-(generated) type of row has properties such as `High`, `Low` and `Close` that correspond
+collection of rows. We iterate over the rows using a `for` loop. As you can see the
+(generated) type for rows has properties such as `High`, `Low` and `Close` that correspond
 to the columns in the CSV file.
 
 As you can see, the type provider also infers types of individual rows. The `Date`
@@ -142,7 +142,7 @@ meters per second against a value in kilometres per hour.
 
 By default, the CSV type provider uses comma (`,`) as a separator. However, CSV
 files sometime use a different separator character than `,`. In some European
-countries, `,` is already used as the numeric decimal separator, so a semicolon is used
+countries, `,` is already used as the numeric decimal separator, so a semicolon (`;`) is used
 instead to separate CSV columns. The `CsvProvider` has an optional `Separator` static parameter
 where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
@@ -155,7 +155,7 @@ for row in airQuality.Data do
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
-The air quality dataset ([`docs/AirQuality.csv`](../docs/AirQuality.csv)) used above is used in many
+The air quality dataset ([`docs/AirQuality.csv`](../docs/AirQuality.csv)) is used in many
 samples for the Statistical Computing language R. A short description of the dataset can be found 
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
@@ -217,7 +217,7 @@ to assume missing values can occur in any column.
 By default, the CSV type provider checks the first 1000 rows to infer the types, but you can customize
 it by specifying the `InferRows` static parameter of `CsvProvider`. If you specify 0 the entire file will be used.
 
-Columns with only `0`, `1`, `Yes`, `No`, `True`, or `False` will be set to `bool`n. Columns with numerical values
+Columns with only `0`, `1`, `Yes`, `No`, `True`, or `False` will be set to `bool`. Columns with numerical values
 will be set to either `int`, `int64`, `decimal`, or `float`, in that order of preference.
 
 If in any row a value is missing, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
