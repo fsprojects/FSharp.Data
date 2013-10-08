@@ -45,7 +45,7 @@ the use of `AsyncRequestString` is exactly the same.
 ## Query parameters and headers
 
 You can specify query parameters either by constructing
-a URL that includes the parameters (e.g. `http://...?test=foo&more=bar`) or you
+an URL that includes the parameters (e.g. `http://...?test=foo&more=bar`) or you
 can pass them using the optional parameter `query`. The following example also explicitly
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
@@ -61,6 +61,7 @@ The following example uses [The Movie Database](http://www.themoviedb.org) API
 to search for the word "batman". To run the sample, you'll need to register and
 provide your API key:
 *)
+
 // API key for http://www.themoviedb.org
 let apiKey = "<please register to get a key>"
 
