@@ -3,12 +3,12 @@
 
 This article demonstrates how to use the JSON type provider to access JSON files
 in a statically typed way. We first look how the structure is inferred and then 
-demonstrate the provider by parsing data returned by the WorldBank and Twitter.
+demonstrate the provider by parsing data from WorldBank and Twitter.
 
 The JSON type provider provides a statically typed access to JSON documents.
-It takes a sample document as an input (or document containing a JSON array of samples).
+It takes a sample document as an input (or a document containing a JSON array of samples).
 The generated type can then be used to read files with the same structure. If the 
-loaded file does not match the structure of the sample, an exception may occur 
+loaded file does not match the structure of the sample, an runtime error may occur 
 (but only when accessing e.g. non-existing element).
 
 ## Introducing the provider
@@ -18,8 +18,9 @@ is located in the `../../bin` directory, we can load it in F# Interactive as fol
 
 #r "../../bin/FSharp.Data.dll"
 open FSharp.Data
+
 (**
-### Inferring type from sample
+### Inferring types from the sample
 
 The `JsonProvider<...>` takes one static parameter of type `string`. The parameter can 
 be _either_ a sample string _or_ a sample file (relatively to the current folder or online 
@@ -51,7 +52,7 @@ let nums = Numbers.Parse(""" [1.2, 45.1, 98.2, 5] """)
 let total = nums |> Seq.sum
 
 (**
-When the sample is a collection, the type provider finds a type that can be used to store
+When the sample is a collection, the type provider generates a type that can be used to store
 all values in the sample. In this case, the resulting type is `decimal`, because one
 of the values is not an integer. In general, the provider supports (and prefers them 
 in this order): `int`, `int64`, `decimal` and `float`.

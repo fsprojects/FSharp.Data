@@ -10,7 +10,7 @@ The Freebase type provider puts this information at your fingertips, giving you 
 access to a treasure trove of data. This article provides a brief introduction showing
 some of the features. 
 
-The type provide is also used on the [Try F#](http://www.tryfsharp.org) web site in the 
+This type provider is also used on the [Try F#](http://www.tryfsharp.org) web site in the 
 "Data Science" tutorial, so you can find more examples there. The Visual Studio F# Team 
 Blog also has a series of 4 blog posts about it [here](http://blogs.msdn.com/b/fsharpteam/archive/2012/09/21/the-f-3-0-freebase-type-provider-sample-integrating-internet-scale-data-sources-into-a-strongly-typed-language.aspx)
 and you can watch a recorded demo by Don Syme [here](http://skillsmatter.com/podcast/scala/an-informal-deep-dive-with-don-syme-the-freebase-type-provider).
@@ -51,8 +51,9 @@ There is a lot of different data available on Freebase, and you can use it for a
 kinds of purposes. The following snippet uses the database of celebrities to generate
 realistic names for testing purposes. First, we obtain two arrays - one containing
 100 first names (based on names of celebrities) and another obtaining 100 surnames
-(from an Freebase list of last names):
+(from a Freebase list of last names):
 *)
+
 let firstnames = 
     data.Society.Celebrities.Celebrities
     |> Seq.truncate 100
@@ -64,11 +65,13 @@ let surnames =
     |> Seq.truncate 100
     |> Seq.map (fun name -> name.Name)
     |> Array.ofSeq
+
 (**
 To generate realistic test case data, we now write a helper function that picks a 
 random element from the array and then concatenate a random first name with a 
 random surname:
 *)
+
 let randomElement = 
     let random = new System.Random()
     fun (arr : string[]) -> arr.[random.Next(arr.Length)]
@@ -84,16 +87,17 @@ for i in 0 .. 10 do
 
 In the previous examples, we used `Seq` functions to work with the collections returned by 
 Freebase type provider. This works in simple cases, but it is inefficient if we need to 
-filter the data or perform other querying.
+filter the data or perform other querying tasks.
 
 However, the Freebase provider includes support for querying. Queries written using the
 F# 3.0 LINQ syntax are translated to MQL (a querying language used by Freebase). This means 
 you can write queries in F# 3.0 with auto-completion and strong typing, and still execute 
 efficiently on the server, at least for the queries translated to MQL.
 
-The following example returns starts, together with their distance from Earth (stars
+The following example returns stars, together with their distance from Earth (stars
 without known distance are skipped):
 *)
+
 let astronomy = data.``Science and Technology``.Astronomy
 
 query { for e in astronomy.Stars do 
@@ -124,7 +128,8 @@ query { for e in astronomy.Stars do
         sortBy e.Distance.Value
         take 10
         select e } 
-      |> Seq.toList 
+      |> Seq.toList
+
 (**
 
 ### Freebase query operators
@@ -156,9 +161,10 @@ let topBooksWithNameContaining (s:string) =
             select book.Name }
  
 topBooksWithNameContaining "1984" |> Seq.toList
+
 (**
 
-## Advanced provider fatures
+## Advanced provider features
 
 The Freebase type provider has a number of features and it is beyond the scope of this 
 introduction to discuss all of them. Some of the aspects were already demonstrated and more
@@ -201,15 +207,17 @@ let dataWithKey = FreebaseDataWithKey.GetDataContext()
 (**
 ### Debugging MQL queries
 
-If you want to understand how Freebase type provider work, or if you want to debug a 
+If you want to understand how the Freebase type provider work, or if you want to debug a 
 performance issue, it might be useful to see the requests that the provider sends to 
 Freebase. This can be done by subscribing to the `SendingRequest` event:
 *)
+
 data.DataContext.SendingRequest.Add (fun e -> 
   printfn "request: %A" e.RequestUri)
 
 data.``Science and Technology``.Chemistry.
      ``Chemical Elements``.Individuals.Hydrogen.``Atomic mass``.Mass
+
 (**
 ## Related articles
 
