@@ -58,6 +58,7 @@ Methods that may need to parse a numeric value or date (such as `AsFloat` and
 
 The following example shows how to process the sample previous CSV sample using these extensions:
 *)
+
 open FSharp.Data.Csv.Extensions
 
 for row in msft.Data do
@@ -85,5 +86,3 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
  * [F# Data: CSV Type Provider](CsvProvider.html) - discusses F# type provider
    that provides type-safe access to CSV data
 *)
-
-

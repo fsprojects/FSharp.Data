@@ -9,7 +9,7 @@ The XML type provider provides a statically typed access to XML documents.
 It takes a sample document as an input (or document containing a root XML node with
 multiple child nodes that are used as samples). The generated type can then be used 
 to read files with the same structure. If the loaded file does not match the structure 
-of the sample, an exception may occur (but only when accessing e.g. non-existing element).
+of the sample, an runtime error may occur (but only when accessing e.g. non-existing element).
 
 ## Introducing the provider
 
@@ -64,7 +64,7 @@ a primitive value and has no children or attributes.
 
 ### Types for more complex structure
 
-Let's now look at a number of examples that have more interesting structure. First of 
+Now let's look at a number of examples that have more interesting structure. First of 
 all, what if a node contains some value, but also has some attributes?
 *)
 
@@ -77,7 +77,7 @@ printfn "%s (full=%b)" info.Name.Value info.Name.Full
 If the node cannot be represented as a simple type (like `string`) then the provider
 builds a new type with multiple properties. Here, it generates a property `Full` 
 (based on the name of the attribute) and infers its type to be boolean. Then it
-adds property with a (special) name `Value` that returns the content of the element.
+adds a property with a (special) name `Value` that returns the content of the element.
 
 ### Types for multiple simple elements
 
@@ -205,7 +205,7 @@ the type provider:
 type Rss = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 
 (**
-This code builds a type `Rss` that represents RSS feed (with the features that are used
+This code builds a type `Rss` that represents RSS feeds (with the features that are used
 on `http://tomasp.net`). The type `Rss` provides static methods `Parse` and `Load`
 to construct it - here, we just want to reuse the same uri of the schema, so we
 use the `GetSample` static method:

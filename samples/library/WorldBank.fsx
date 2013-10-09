@@ -5,7 +5,7 @@ The [World Bank](http://www.worldbank.org) is an international organization that
 financial and technical assistance to developing countries around the world. As one of the
 activities, the World Bank also collects development indicators and other data about
 countries in the world. The [data catalog](http://data.worldbank.org/) contains over
-8000 indicators that can be all programmatically accessed.
+8000 indicators that can be programmatically accessed.
 
 The WorldBank type provider makes the WorldBank data easily accessible to F# programs and
 scripts in a type safe way. This article provides an introduction. The type provider
@@ -45,12 +45,14 @@ We can easily see how the university enrollment changes over time by using the
 [FSharp.Charting](http://fsharp.github.io/FSharp.Charting/) library and plotting the data:
 
 *)
+
 #load "../../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
 open FSharp.Charting
 
 data.Countries.``United Kingdom``
     .Indicators.``School enrollment, tertiary (% gross)``
 |> Chart.Line
+
 (**
 The `Chart.Line` function takes a sequence of pairs containing X and Y values, so we
 can call it directly with the World Bank data set using the year as the X value and the
@@ -98,10 +100,11 @@ let countries =
     wb.Countries.``United States`` |]
 
 (**
-To download the information in parallel, we can now create a list of asynchronous 
+To download the information in parallel, we can create a list of asynchronous 
 computations, compose them using `Async.Parallel` and then run the (single) obtained 
 computation to perform all the downloads:
 *)
+
 [ for c in countries ->
     c.Indicators.``School enrollment, tertiary (% gross)`` ]
 |> Async.Parallel
