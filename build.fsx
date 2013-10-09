@@ -11,9 +11,6 @@ open Fake
 open Fake.AssemblyInfoFile
 open Fake.Git
 
-!! "./**/packages.config"
-    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = @"./.nuget/NuGet.exe"}))
-
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
 let files includes = 
