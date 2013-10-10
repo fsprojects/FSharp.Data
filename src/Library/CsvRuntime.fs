@@ -123,6 +123,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
       if disposer <> null then disposer.Dispose()
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) =
     new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
 
