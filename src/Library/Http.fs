@@ -123,11 +123,10 @@ type Http private() =
         return Unchecked.defaultof<_>
   }
 
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies,
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                                     ?cookieContainer) = async {
+  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 #else
-                                     ?cookieContainer, ?certificate) = async {
+  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
 #endif
     // Format query parameters
     let url = 
@@ -244,17 +243,12 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                             ?cookieContainer) = 
+  static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
+    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
-                             ?cookieContainer, ?certificate) = 
-#endif
-    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                      ?cookieContainer=cookieContainer)
-#else
-                      ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
+    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -262,18 +256,12 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                                   ?cookieContainer) = async {
+  static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
+    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
-                                   ?cookieContainer, ?certificate)  = async {
-#endif
-
-    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                                      ?cookieContainer=cookieContainer)
-#else
-                                      ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate)  = async {
+    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     return
         match response.Body with
@@ -286,17 +274,12 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member Request(url, ?query, ?headers, ?meth, ?body, ?cookies, 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                        ?cookieContainer) = 
+  static member Request(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
-                        ?cookieContainer, ?certificate) = 
-#endif
-    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                      ?cookieContainer=cookieContainer)
-#else
-                      ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member Request(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
+    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     |> Async.RunSynchronously
 
@@ -305,16 +288,11 @@ type Http private() =
   /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
   /// The body for POST request can be specified either as text or as a list of parameters
   /// that will be encoded, and the method will automatically be set if not specified
-  static member RequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                              ?cookieContainer) = 
+  static member RequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
+    Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else                              
-                              ?cookieContainer, ?certificate) = 
-#endif
-    Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, 
-#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-                            ?cookieContainer=cookieContainer)
-#else
-                            ?cookieContainer=cookieContainer, ?certificate=certificate)
+  static member RequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
+    Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     |> Async.RunSynchronously
