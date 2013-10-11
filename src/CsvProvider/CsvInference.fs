@@ -144,7 +144,6 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode prefe
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
-  makeUnique "AsTuple" |> ignore
 
   // If we do not have header names, then automatically generate names
   let headers = 
