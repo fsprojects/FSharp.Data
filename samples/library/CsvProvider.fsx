@@ -323,14 +323,6 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
           .SaveToString()
 
 (**
-For convenience, you can also treat each row as a tuple by using the `AsTuple` property of the RowType.
-This is usefull when want to treat different CSV files with a similar schema in a uniform way:
-*)
-
-for row in airQuality.Data do
-  printfn "%A" row.AsTuple
-
-(**
 
 ## Handling big datasets
 
