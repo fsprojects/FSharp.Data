@@ -7,6 +7,7 @@ namespace FSharp.Data.Csv
 open System
 open System.Globalization
 open System.IO
+open System.Runtime.InteropServices
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
@@ -39,12 +40,12 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
   member internal __.GetColumnIndex columnName = headerDic.[columnName]
 
   /// Parses the specified CSV content
-  static member Parse(text, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+  static member Parse(text, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
     let readerFunc = Func<_>(fun () -> new StringReader(text) :> TextReader)
     new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified stream
-  static member Load(stream:Stream, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+  static member Load(stream:Stream, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
     let firstTime = ref true
     let readerFunc = Func<_>(fun () -> 
       if firstTime.Value then firstTime := false
@@ -53,7 +54,7 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
     new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified reader
-  static member Load(reader:TextReader, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+  static member Load(reader:TextReader, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
     let firstTime = ref true
     let readerFunc = Func<_>(fun () ->  
       if firstTime.Value then firstTime := false
@@ -66,7 +67,7 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
     new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified uri
-  static member Load(uri, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) = 
+  static member Load(uri, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
     let separators = defaultArg separators ""    
     let separators = 
       let uri = Uri(uri, UriKind.RelativeOrAbsolute)
