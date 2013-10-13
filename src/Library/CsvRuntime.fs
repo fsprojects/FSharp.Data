@@ -2,10 +2,24 @@
 // CSV type provider - runtime components (parsing and type representing CSV)
 // --------------------------------------------------------------------------------------
 
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+
+namespace System.Runtime.InteropServices
+
+open System
+
+[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
+type OptionalAttribute() = 
+    inherit Attribute()
+
+#endif
+
 namespace FSharp.Data.RuntimeImplementation
 
 open System
+open System.ComponentModel
 open System.IO
+open System.Runtime.InteropServices
 open System.Text
 
 // Parser for the CSV format 
@@ -104,6 +118,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     member __.Dispose() = 
       if disposer <> null then disposer.Dispose()
 
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) =
     new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
 
@@ -170,7 +186,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     new CsvFile<'RowType>(rowToStringArray, disposer, data, headers, numberOfColumns, separators, quote)
 
   /// Saves CSV to the specified writer
-  member x.Save(writer:TextWriter, ?separator, ?quote) =
+  member x.Save(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =
 
     let separator = (defaultArg separator x.Separators.[0]).ToString()
     let quote = (defaultArg quote x.Quote).ToString()
@@ -199,20 +215,20 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
           writer.Write item)
 
   /// Saves CSV to the specified stream
-  member x.Save(stream:Stream, ?separator, ?quote) = 
+  member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(stream)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
   /// Saves CSV to the specified file
-  member x.Save(path:string, ?separator, ?quote) = 
+  member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
 #endif
 
   /// Saves CSV to a string
-  member x.SaveToString(?separator, ?quote) = 
+  member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 
      let writer = new StringWriter()
      x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
@@ -226,8 +242,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     Seq.cache |> x.map
 
   /// Returns a new csv containing only the rows for which the given predicate returns "true".
-  member x.Filter predicate = 
-    Seq.filter predicate |> x.map
+  member x.Filter (predicate:Func<_,_>) = 
+    Seq.filter predicate.Invoke |> x.map
   
   /// Returns a new csv with only the first N rows of the underlying csv.
   member x.Take count = 
@@ -235,8 +251,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   
   /// Returns a csv that, when iterated, yields rowswhile the given predicate
   /// returns <c>true</c>, and then returns no further rows.
-  member x.TakeWhile predicate = 
-    Seq.takeWhile predicate |> x.map
+  member x.TakeWhile (predicate:Func<_,_>) = 
+    Seq.takeWhile predicate.Invoke |> x.map
   
   /// Returns a csv that skips N rows and then yields the remaining rows.
   member x.Skip count = 
@@ -244,8 +260,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   
   /// Returns a csv that, when iterated, skips rows while the given predicate returns
   /// <c>true</c>, and then yields the remaining rows.
-  member x.SkipWhile predicate = 
-    Seq.skipWhile predicate |> x.map
+  member x.SkipWhile (predicate:Func<_,_>) = 
+    Seq.skipWhile predicate.Invoke |> x.map
   
   /// Returns a csv that when enumerated returns at most N rows.
   member x.Truncate count = 
