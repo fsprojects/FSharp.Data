@@ -8,10 +8,6 @@ namespace System.Runtime.InteropServices
 
 open System
 
-[<AttributeUsageAttribute(AttributeTargets.Parameter)>]
-type DefaultParameterValueAttribute(value:obj) =
-    inherit Attribute()
-
 [<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
 type OptionalAttribute() = 
     inherit Attribute()
@@ -190,7 +186,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     new CsvFile<'RowType>(rowToStringArray, disposer, data, headers, numberOfColumns, separators, quote)
 
   /// Saves CSV to the specified writer
-  member x.Save(writer:TextWriter, [<Optional;DefaultParameterValue(null)>] ?separator, [<Optional;DefaultParameterValue(null)>] ?quote) =
+  member x.Save(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =
 
     let separator = (defaultArg separator x.Separators.[0]).ToString()
     let quote = (defaultArg quote x.Quote).ToString()
@@ -219,20 +215,20 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
           writer.Write item)
 
   /// Saves CSV to the specified stream
-  member x.Save(stream:Stream, [<Optional;DefaultParameterValue(null)>] ?separator, [<Optional;DefaultParameterValue(null)>] ?quote) = 
+  member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(stream)
     x.Save(writer, ?separator=separator, ?quote=quote)
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
   /// Saves CSV to the specified file
-  member x.Save(path:string, [<Optional;DefaultParameterValue(null)>] ?separator, [<Optional;DefaultParameterValue(null)>] ?quote) = 
+  member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
     let writer = new StreamWriter(File.OpenWrite(path))
     x.Save(writer, ?separator=separator, ?quote=quote)
 #endif
 
   /// Saves CSV to a string
-  member x.SaveToString([<Optional;DefaultParameterValue(null)>] ?separator, [<Optional;DefaultParameterValue(null)>] ?quote) = 
+  member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 
      let writer = new StringWriter()
      x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
