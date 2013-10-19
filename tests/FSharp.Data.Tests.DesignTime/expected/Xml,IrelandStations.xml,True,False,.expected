@@ -1,0 +1,19 @@
+class XmlProvider
+    static member Parse: text:string -> XmlProvider+DomainTypes+ObjStation
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+ObjStation
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+ObjStation
+    static member Load: uri:string -> XmlProvider+DomainTypes+ObjStation
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+ObjStation async
+    static member GetSamples: () -> XmlProvider+DomainTypes+ObjStation[]
+    static member AsyncGetSamples: () -> XmlProvider+DomainTypes+ObjStation[] async
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+ObjStation : FDR.XmlElement
+    member StationAlias: string option with get
+    member StationCode: string with get
+    member StationDesc: string with get
+    member StationId: int with get
+    member StationLatitude: decimal with get
+    member StationLongitude: decimal with get
+
