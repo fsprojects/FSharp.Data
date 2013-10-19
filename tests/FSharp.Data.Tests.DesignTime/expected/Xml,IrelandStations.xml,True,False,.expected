@@ -1,19 +1,45 @@
 class XmlProvider
-    static member Parse: text:string -> XmlProvider+DomainTypes+ObjStation
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+ObjStation
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+ObjStation
-    static member Load: uri:string -> XmlProvider+DomainTypes+ObjStation
-    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+ObjStation async
-    static member GetSamples: () -> XmlProvider+DomainTypes+ObjStation[]
     static member AsyncGetSamples: () -> XmlProvider+DomainTypes+ObjStation[] async
+    XmlElement.AsyncCreateList((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml"))
+
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+ObjStation async
+    XmlElement.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+
+    static member GetSamples: () -> XmlProvider+DomainTypes+ObjStation[]
+    XmlElement.CreateList((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml") |> FSharpAsync.RunSynchronously)
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously)
+
+    static member Parse: text:string -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
 
 class XmlProvider+DomainTypes
 
 class XmlProvider+DomainTypes+ObjStation : FDR.XmlElement
     member StationAlias: string option with get
+    Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationAlias")))
+
     member StationCode: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode")))
+
     member StationDesc: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc")))
+
     member StationId: int with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertInteger("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId")))
+
     member StationLatitude: decimal with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertDecimal("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude")))
+
     member StationLongitude: decimal with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertDecimal("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude")))
+
 

@@ -1,23 +1,229 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    static member Parse: text:string -> CsvProvider
-    static member Load: stream:System.IO.Stream -> CsvProvider
-    static member Load: reader:System.IO.TextReader -> CsvProvider
-    static member Load: uri:string -> CsvProvider
-    static member AsyncLoad: uri:string -> CsvProvider async
-    static member GetSample: () -> CsvProvider
     static member AsyncGetSample: () -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                          Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                          Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                          Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                          Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                          Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                     [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                        Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                        Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                        Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                        Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                        Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                        Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Titanic.csv"), ",", '"', true, false, false)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                          Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                          Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                          Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                          Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                          Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                          Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                     [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                        Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                        Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                        Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                        Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                        Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                        Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                        Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+
+    static member GetSample: () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                     Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                   Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                   Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Titanic.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                     Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                   Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                   Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                     Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                   Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                   Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), reader, ",", '"', true, false, false)
+
+    static member Load: uri:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                     Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                   Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                   Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Parse: text:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("PassengerId", Operations.ConvertInteger("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.ConvertBoolean("", Operations.AsOption(row.[1])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[2])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[3])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[4])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[5])),
+                                                     Operations.ConvertInteger("", Operations.AsOption(row.[6])),
+                                                     Operations.GetNonOptionalValue("ParentsOrChildren", Operations.ConvertInteger("", Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[8])),
+                                                     Operations.ConvertDecimal("", Operations.AsOption(row.[9])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[10])),
+                                                     Operations.ConvertString(Operations.AsOption(row.[11]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                [| Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                   Operations.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                                                                                                                   Operations.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                                                                                                                   Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8)))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                                                                                                                   Operations.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                                                                                                                   Operations.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+
 
 class CsvProvider+Row : int * bool option * int option * string option * string option * decimal option * int option * int * string option * decimal option * string option * string option
-    member PassengerId: int with get
-    member Survived: bool option with get
-    member Class: int option with get
-    member Name: string option with get
-    member Sex: string option with get
     member Age: decimal option with get
-    member SiblingsOrSpouse: int option with get
-    member ParentsOrChildren: int<meter> with get
-    member Ticket: string option with get
-    member Fare: decimal option with get
+    (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6)
+
     member Cabin: string option with get
+    (let _,_,_,_,_,_,_,_,_,_,t11,_ = this in t11)
+
+    member Class: int option with get
+    (let _,_,t3,_,_,_,_,_,_,_,_,_ = this in t3)
+
     member Embarked: string option with get
+    (let _,_,_,_,_,_,_,_,_,_,_,t12 = this in t12)
+
+    member Fare: decimal option with get
+    (let _,_,_,_,_,_,_,_,_,t10,_,_ = this in t10)
+
+    member Name: string option with get
+    (let _,_,_,t4,_,_,_,_,_,_,_,_ = this in t4)
+
+    member ParentsOrChildren: int<meter> with get
+    (let _,_,_,_,_,_,_,t8,_,_,_,_ = this in t8)
+
+    member PassengerId: int with get
+    (let t1,_,_,_,_,_,_,_,_,_,_,_ = this in t1)
+
+    member Sex: string option with get
+    (let _,_,_,_,t5,_,_,_,_,_,_,_ = this in t5)
+
+    member SiblingsOrSpouse: int option with get
+    (let _,_,_,_,_,_,t7,_,_,_,_,_ = this in t7)
+
+    member Survived: bool option with get
+    (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2)
+
+    member Ticket: string option with get
+    (let _,_,_,_,_,_,_,_,t9,_,_,_ = this in t9)
+
 

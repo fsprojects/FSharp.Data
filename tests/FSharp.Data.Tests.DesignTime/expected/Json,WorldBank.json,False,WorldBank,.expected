@@ -1,39 +1,85 @@
 class JsonProvider
-    static member Parse: text:string -> JsonProvider+DomainTypes+WorldBankChoice
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+WorldBankChoice
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+WorldBankChoice
-    static member Load: uri:string -> JsonProvider+DomainTypes+WorldBankChoice
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+WorldBankChoice async
-    static member GetSample: () -> JsonProvider+DomainTypes+WorldBankChoice
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+WorldBankChoice async
+    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), "")
+
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+WorldBankChoice async
+    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+
+    static member GetSample: () -> JsonProvider+DomainTypes+WorldBankChoice
+    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json") |> FSharpAsync.RunSynchronously, "")
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+WorldBankChoice
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+WorldBankChoice
+    JsonDocument.Create(reader, "")
+
+    static member Load: uri:string -> JsonProvider+DomainTypes+WorldBankChoice
+    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, "")
+
+    static member Parse: text:string -> JsonProvider+DomainTypes+WorldBankChoice
+    JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
+
 
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+WorldBankChoice : FDR.JsonDocument
     member Array: JsonProvider+DomainTypes+WorldBankChoice1of2[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetArrayChildByTypeTag(this.JsonValue, "Array")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member Record: JsonProvider+DomainTypes+WorldBankChoice2of2 with get
+    JsonDocument.Create(JsonOperations.GetArrayChildByTypeTag(this.JsonValue, "Record"))
+
 
 class JsonProvider+DomainTypes+WorldBankChoice1of2 : FDR.JsonDocument
     member Country: JsonProvider+DomainTypes+Country with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "country"))
+
     member Date: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "date")).JsonValue, "")
+
     member Decimal: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "decimal")).JsonValue, "")
+
     member Indicator: JsonProvider+DomainTypes+Indicator with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indicator"))
+
     member Value: JsonProvider+DomainTypes+ValueChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "value"))
 
-class JsonProvider+DomainTypes+Country : FDR.JsonDocument
-    member Id: string with get
-    member Value: string with get
-
-class JsonProvider+DomainTypes+Indicator : FDR.JsonDocument
-    member Id: string with get
-    member Value: string with get
-
-class JsonProvider+DomainTypes+ValueChoice : FDR.JsonDocument
-    member Number: decimal option with get
 
 class JsonProvider+DomainTypes+WorldBankChoice2of2 : FDR.JsonDocument
     member Page: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "page")).JsonValue, "")
+
     member Pages: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "pages")).JsonValue, "")
+
     member PerPage: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "per_page")).JsonValue, "")
+
     member Total: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "total")).JsonValue, "")
+
+
+class JsonProvider+DomainTypes+Country : FDR.JsonDocument
+    member Id: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue)
+
+    member Value: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "value")).JsonValue)
+
+
+class JsonProvider+DomainTypes+Indicator : FDR.JsonDocument
+    member Id: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue)
+
+    member Value: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "value")).JsonValue)
+
+
+class JsonProvider+DomainTypes+ValueChoice : FDR.JsonDocument
+    member Number: decimal option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetDecimal(t.JsonValue, "")))
+
 

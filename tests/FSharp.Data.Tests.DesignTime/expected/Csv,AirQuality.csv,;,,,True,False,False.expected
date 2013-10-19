@@ -1,17 +1,127 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    static member Parse: text:string -> CsvProvider
-    static member Load: stream:System.IO.Stream -> CsvProvider
-    static member Load: reader:System.IO.TextReader -> CsvProvider
-    static member Load: uri:string -> CsvProvider
-    static member AsyncLoad: uri:string -> CsvProvider async
-    static member GetSample: () -> CsvProvider
     static member AsyncGetSample: () -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                              [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                 Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                 Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "AirQuality.csv"), ";", '"', true, false, false)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                              [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                 Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                 Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                                 Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ";", '"', true, false, false)
+
+    static member GetSample: () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                         [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                            Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                            Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "AirQuality.csv") |> FSharpAsync.RunSynchronously, ";", '"', true, false, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                         [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                            Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                            Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), ((new StreamReader(stream)) :> TextReader), ";", '"', true, false, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                         [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                            Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                            Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), reader, ";", '"', true, false, false)
+
+    static member Load: uri:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                         [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                            Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                            Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ";", '"', true, false, false)
+
+    static member Parse: text:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Ozone", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Solar.R", Operations.ConvertFloat("", "NaN,NA,#N/A,:", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Wind", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Temp", Operations.ConvertInteger("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Month", Operations.ConvertInteger("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Day", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                         [| Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                            Operations.ConvertFloatBack("", "NaN,NA,#N/A,:", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                            Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                            Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), ((new StringReader(text)) :> TextReader), ";", '"', true, false, false)
+
 
 class CsvProvider+Row : float * float * decimal * int * int * int
-    member Ozone: float with get
-    member Solar.R: float with get
-    member Wind: decimal with get
-    member Temp: int with get
-    member Month: int with get
     member Day: int with get
+    (let _,_,_,_,_,t6 = this in t6)
+
+    member Month: int with get
+    (let _,_,_,_,t5,_ = this in t5)
+
+    member Ozone: float with get
+    (let t1,_,_,_,_,_ = this in t1)
+
+    member Solar.R: float with get
+    (let _,t2,_,_,_,_ = this in t2)
+
+    member Temp: int with get
+    (let _,_,_,t4,_,_ = this in t4)
+
+    member Wind: decimal with get
+    (let _,_,t3,_,_,_ = this in t3)
+
 

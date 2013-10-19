@@ -1,17 +1,39 @@
 class JsonProvider
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    static member GetSample: () -> JsonProvider+DomainTypes+Entity
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
+    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json"), "")
+
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
+    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+
+    static member GetSample: () -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json") |> FSharpAsync.RunSynchronously, "")
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(reader, "")
+
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, "")
+
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
+
 
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
-    member NoTimeZone: System.DateTime with get
-    member UtcTime: System.DateTime with get
     member Anniversary: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "anniversary")).JsonValue, "")
+
     member Birthdate: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "birthdate")).JsonValue, "")
+
+    member NoTimeZone: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "NoTimeZone")).JsonValue, "")
+
+    member UtcTime: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "UtcTime")).JsonValue, "")
+
 

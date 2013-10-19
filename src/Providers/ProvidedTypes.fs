@@ -269,9 +269,9 @@ module internal Misc =
             else r
         trans q
 
-    let transQuotationToCode isGenerated qexprf (argExprs: Quotations.Expr[]) = 
+    let transQuotationToCode isGenerated qexprf (paramNames: string[]) (argExprs: Quotations.Expr[]) = 
         // add let bindings for arguments to ensure that arguments will be evaluated
-        let vars = argExprs |> Array.mapi (fun i e -> Quotations.Var(("var" + string i), e.Type))
+        let vars = argExprs |> Array.mapi (fun i e -> Quotations.Var(paramNames.[i], e.Type))
         let expr = qexprf ([for v in vars -> Quotations.Expr.Var v])
 
         let pairs = Array.zip argExprs vars
@@ -368,7 +368,9 @@ type ProvidedConstructor(parameters : ProvidedParameter list) =
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f -> transQuotationToCode isGenerated f
+        | Some f -> 
+            let paramNames = parameters |> List.map (fun p -> p.Name) |> Array.ofList
+            transQuotationToCode isGenerated f paramNames
         | None -> failwith (sprintf "ProvidedConstructor: no invoker for '%s'" (nameText()))
 
     member this.GetBaseConstructorCallInternal isGenerated =
@@ -429,7 +431,13 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f -> transQuotationToCode isGenerated f
+        | Some f -> 
+            let paramNames = 
+                parameters
+                |> List.map (fun p -> p.Name) 
+                |> List.append (if this.IsStatic then [] else ["this"])
+                |> Array.ofList
+            transQuotationToCode isGenerated f paramNames
         | None -> failwith (sprintf "ProvidedMethod: no invoker for %s on type %s" this.Name (if declaringType=null then "<not yet known type>" else declaringType.FullName))
    // Implement overloads
     override this.GetParameters() = argParams |> Array.ofList

@@ -1,64 +1,164 @@
 class JsonProvider
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity[]
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity[]
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity[]
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity[]
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity[] async
-    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
     static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
+    JsonOperations.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json"), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity[] async
+    JsonOperations.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
+    JsonOperations.ConvertArray(JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json") |> FSharpAsync.RunSynchronously, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity[]
+    JsonOperations.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity[]
+    JsonOperations.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity[]
+    JsonOperations.ConvertArray(JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity[]
+    JsonOperations.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
 
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Assignee: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "assignee"))
+
     member Body: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "body")).JsonValue)
+
     member ClosedAt: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "closed_at"))
+
     member Comments: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "comments")).JsonValue, "")
+
     member CommentsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "comments_url")).JsonValue)
+
     member CreatedAt: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "created_at")).JsonValue, "")
+
     member EventsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "events_url")).JsonValue)
+
     member HtmlUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "html_url")).JsonValue)
+
     member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
     member Labels: JsonProvider+DomainTypes+Label[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "labels")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member LabelsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "labels_url")).JsonValue)
+
     member Milestone: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "milestone"))
+
     member Number: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "number")).JsonValue, "")
+
     member PullRequest: JsonProvider+DomainTypes+PullRequest with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "pull_request"))
+
     member State: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "state")).JsonValue)
+
     member Title: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "title")).JsonValue)
+
     member UpdatedAt: System.DateTime with get
+    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "updated_at")).JsonValue, "")
+
     member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
     member User: JsonProvider+DomainTypes+User with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user"))
+
 
 class JsonProvider+DomainTypes+Label : FDR.JsonDocument
     member Color: JsonProvider+DomainTypes+ColorChoice with get
-    member Name: string with get
-    member Url: string with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "color"))
 
-class JsonProvider+DomainTypes+ColorChoice : FDR.JsonDocument
-    member Number: float option with get
-    member String: string option with get
+    member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
+    member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
 
 class JsonProvider+DomainTypes+PullRequest : FDR.JsonDocument
     member DiffUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "diff_url")).JsonValue)
+
     member HtmlUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "html_url")).JsonValue)
+
     member PatchUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "patch_url")).JsonValue)
+
 
 class JsonProvider+DomainTypes+User : FDR.JsonDocument
     member AvatarUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "avatar_url")).JsonValue)
+
     member EventsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "events_url")).JsonValue)
+
     member FollowersUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "followers_url")).JsonValue)
+
     member FollowingUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "following_url")).JsonValue)
+
     member GistsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "gists_url")).JsonValue)
+
     member GravatarId: System.Guid with get
+    JsonOperations.GetGuid(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "gravatar_id")).JsonValue)
+
     member HtmlUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "html_url")).JsonValue)
+
     member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
     member Login: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "login")).JsonValue)
+
     member OrganizationsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "organizations_url")).JsonValue)
+
     member ReceivedEventsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "received_events_url")).JsonValue)
+
     member ReposUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "repos_url")).JsonValue)
+
     member StarredUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "starred_url")).JsonValue)
+
     member SubscriptionsUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "subscriptions_url")).JsonValue)
+
     member Type: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "type")).JsonValue)
+
     member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+
+class JsonProvider+DomainTypes+ColorChoice : FDR.JsonDocument
+    member Number: float option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetFloat(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
 

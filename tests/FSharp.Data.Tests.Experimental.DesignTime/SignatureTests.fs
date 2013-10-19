@@ -16,30 +16,14 @@ open ProviderImplementation
 //alow tests that access the network to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-type TestCase = 
-    | TestCase of TypeProviderInstantiation
-    override x.ToString() =
-        let (TestCase x) = x
-        match x with
-        | Apiary x -> 
-            ["Apiary"
-             x.ApiName]
-        |> String.concat ","
-
-    static member Parse (line:string) =
-        let args = line.Split [|','|]
-        match args.[0] with
-        | "Apiary" ->
-            Apiary { ApiName = args.[1] }
-        | _ -> failwithf "Unknown: %s" args.[0]
-        |> TestCase
+type TypeProviderInstantiation with
 
     member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
-        let (TestCase x) = x
         let output = 
-            x.generateType resolutionFolder runtimeAssembly 
-            |> Debug.prettyPrint signatureOnly ignoreOutput
+            x.GenerateType resolutionFolder runtimeAssembly 
+            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
         output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
+              .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
 
 let (++) a b = Path.Combine(a, b)
 
@@ -48,7 +32,7 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
-    |> Array.map TestCase.Parse
+    |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
 
@@ -65,7 +49,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly true false
+        let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalizeEndings (str:string) =
@@ -73,20 +57,15 @@ let normalizeEndings (str:string) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Validate signature didn't change `` (testCase:TestCase) = 
+let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly true false |> normalizeEndings 
+    let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalizeEndings 
     output |> should equal expected
-
-[<Test>]
-[<TestCaseSource "testCases">]
-let ``Generating expressions works `` (testCase:TestCase) = 
-    testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 #if MONO
 #else
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Generating expressions works in portable `` (testCase:TestCase) = 
-    testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore
+let ``Generating expressions works in portable `` (testCase:TypeProviderInstantiation) = 
+    testCase.Dump resolutionFolder portableRuntimeAssembly (*signatureOnly*)false  (*ignoreOutput*)true |> ignore
 #endif

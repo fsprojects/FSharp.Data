@@ -1,41 +1,95 @@
 class XmlProvider
-    static member Parse: text:string -> XmlProvider+DomainTypes+Rss
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Rss
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Rss
-    static member Load: uri:string -> XmlProvider+DomainTypes+Rss
-    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Rss async
-    static member GetSample: () -> XmlProvider+DomainTypes+Rss
     static member AsyncGetSample: () -> XmlProvider+DomainTypes+Rss async
+    XmlElement.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "http://tomasp.net/blog/rss.aspx"))
+
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Rss async
+    XmlElement.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+
+    static member GetSample: () -> XmlProvider+DomainTypes+Rss
+    XmlElement.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "http://tomasp.net/blog/rss.aspx") |> FSharpAsync.RunSynchronously)
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Rss
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Rss
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+DomainTypes+Rss
+    XmlElement.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously)
+
+    static member Parse: text:string -> XmlProvider+DomainTypes+Rss
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
 
 class XmlProvider+DomainTypes
 
 class XmlProvider+DomainTypes+Rss : FDR.XmlElement
-    member Version: decimal with get
-    member Value: string option with get
     member Channel: XmlProvider+DomainTypes+Channel with get
+    XmlOperations.GetChild(this, "channel")
+
+    member Value: string option with get
+    Operations.ConvertString(XmlOperations.TryGetValue(this))
+
+    member Version: decimal with get
+    Operations.GetNonOptionalValue("Attribute version", Operations.ConvertDecimal("", XmlOperations.TryGetAttribute(this, "version")), XmlOperations.TryGetAttribute(this, "version"))
+
 
 class XmlProvider+DomainTypes+Channel : FDR.XmlElement
-    member Value: string option with get
     member Copyright: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "copyright"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "copyright")))
+
     member Description: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "description"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "description")))
+
     member GetItems: () -> XmlProvider+DomainTypes+Item[]
+    XmlOperations.ConvertArray(this, "item", new Func<_,_>(id)))
+
     member Link: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "link"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "link")))
+
     member Title: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title")))
+
+    member Value: string option with get
+    Operations.ConvertString(XmlOperations.TryGetValue(this))
+
 
 class XmlProvider+DomainTypes+Item : FDR.XmlElement
-    member Value: string option with get
-    member GetDescriptions: () -> string[]
-    member GetLinks: () -> string[]
-    member GetPubDates: () -> System.DateTime[]
-    member GetTitles: () -> string[]
     member GetCreators: () -> XmlProvider+DomainTypes+Creator[]
+    XmlOperations.ConvertArray(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(id)))
+
+    member GetDescriptions: () -> string[]
+    XmlOperations.ConvertArray(this, "description", new Func<_,_>(fun (t:XmlElement) -> Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(t)), XmlOperations.TryGetValue(t))))
+
+    member GetLinks: () -> string[]
+    XmlOperations.ConvertArray(this, "link", new Func<_,_>(fun (t:XmlElement) -> Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(t)), XmlOperations.TryGetValue(t))))
+
+    member GetPubDates: () -> System.DateTime[]
+    XmlOperations.ConvertArray(this, "pubDate", new Func<_,_>(fun (t:XmlElement) -> Operations.GetNonOptionalValue("Value", Operations.ConvertDateTime("", XmlOperations.TryGetValue(t)), XmlOperations.TryGetValue(t))))
+
     member GetSummaries: () -> XmlProvider+DomainTypes+Summary[]
+    XmlOperations.ConvertArray(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(id)))
+
+    member GetTitles: () -> string[]
+    XmlOperations.ConvertArray(this, "title", new Func<_,_>(fun (t:XmlElement) -> Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(t)), XmlOperations.TryGetValue(t))))
+
+    member Value: string option with get
+    Operations.ConvertString(XmlOperations.TryGetValue(this))
+
 
 class XmlProvider+DomainTypes+Creator : FDR.XmlElement
     member Dc: string with get
+    Operations.GetNonOptionalValue("Attribute dc", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}dc")), XmlOperations.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}dc"))
+
     member Value: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(this)), XmlOperations.TryGetValue(this))
+
 
 class XmlProvider+DomainTypes+Summary : FDR.XmlElement
     member Eex: string with get
+    Operations.GetNonOptionalValue("Attribute eex", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}eex")), XmlOperations.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}eex"))
+
     member Value: string with get
+    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(this)), XmlOperations.TryGetValue(this))
+
 
