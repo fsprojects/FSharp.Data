@@ -1,10 +1,11 @@
 class JsonProvider
-    new : () -> JsonProvider
     static member Parse: text:string -> JsonProvider+DomainTypes+WorldBankChoice
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+WorldBankChoice
     static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+WorldBankChoice
     static member Load: uri:string -> JsonProvider+DomainTypes+WorldBankChoice
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+WorldBankChoice async
     static member GetSample: () -> JsonProvider+DomainTypes+WorldBankChoice
+    static member AsyncGetSample: () -> JsonProvider+DomainTypes+WorldBankChoice async
 
 class JsonProvider+DomainTypes
 

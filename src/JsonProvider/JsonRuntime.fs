@@ -4,19 +4,73 @@
 namespace FSharp.Data.RuntimeImplementation
 
 open System
+open System.ComponentModel
 open System.Globalization
+open System.IO
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
 open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Underlying representation of the generated JSON types
 type JsonDocument = 
+
   // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
   // (but since this is used across multiple files, we have explicit Create method)
   { JsonValue : JsonValue }
+
   /// Creates a JsonDocument representing the specified value
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Create(value:JsonValue) = 
     { JsonValue = value }
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member Create(reader:TextReader, culture) = 
+    use reader = reader
+    let text = reader.ReadToEnd()
+    let culture = Operations.GetCulture culture
+    let value = JsonValue.Parse(text, culture)
+    { JsonValue = value }
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreate(readerAsync:Async<TextReader>, culture) = async {
+    use! reader = readerAsync
+    let text = reader.ReadToEnd()
+    let culture = Operations.GetCulture culture
+    let value = JsonValue.Parse(text, culture)
+    return { JsonValue = value }
+  }
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member CreateList(reader:TextReader, culture) = 
+    use reader = reader
+    let text = reader.ReadToEnd()
+    let culture = Operations.GetCulture culture
+    try
+      JsonValue.Parse(text, culture).AsArray()
+      |> Array.map (fun value -> { JsonValue = value })
+    with _ ->
+      text.Split('\n', '\r')
+      |> Array.filter (not << String.IsNullOrWhiteSpace)
+      |> Array.map (fun text -> { JsonValue = JsonValue.Parse(text, culture) })
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreateList(readerAsync:Async<TextReader>, culture) = async {
+    use! reader = readerAsync
+    let culture = Operations.GetCulture culture
+    return
+      try
+        JsonValue.Load(reader, culture).AsArray()
+        |> Array.map (fun value -> { JsonValue = value })
+      with _ ->
+        reader.ReadToEnd().Split('\n', '\r')
+        |> Array.filter (not << String.IsNullOrWhiteSpace)
+        |> Array.map (fun text -> { JsonValue = JsonValue.Parse(text, culture) })
+  }
 
 /// Static helper methods called from the generated code
 type JsonOperations = 
@@ -34,8 +88,24 @@ type JsonOperations =
   /// Converts JSON array to array of target types
   /// The `packer` function rebuilds representation type (such as
   /// `JsonDocument`) which is then passed to projection function `f`.
-  static member ConvertArray(value:JsonValue, packer:Func<_,_>, f:Func<_,_>) = 
-    value.AsArray() |> Array.map (packer.Invoke >> f.Invoke)
+  /// The `unpacker` function does the opposite
+  static member ConvertArray<'RepresentationT, 'TRes>(doc:'RepresentationT,
+                                                      unpacker:Func<'RepresentationT,JsonValue>, 
+                                                      packer:Func<JsonValue,'RepresentationT>, 
+                                                      mapper:Func<'RepresentationT,'TRes>) = 
+    unpacker.Invoke(doc).AsArray() |> Array.map (packer.Invoke >> mapper.Invoke)
+
+  /// Converts JSON array to array of target types, asynchronously
+  /// The `packer` function rebuilds representation type (such as
+  /// `JsonDocument`) which is then passed to projection function `f`.
+  /// The `unpacker` function does the opposite
+  static member AsyncConvertArray<'RepresentationT, 'TRes>(docAsync:Async<'RepresentationT>, 
+                                                           unpacker:Func<'RepresentationT,JsonValue>, 
+                                                           packer:Func<JsonValue,'RepresentationT>, 
+                                                           mapper:Func<'RepresentationT,'TRes>) = async {
+    let! doc = docAsync
+    return unpacker.Invoke(doc).AsArray() |> Array.map (packer.Invoke >> mapper.Invoke)
+  }
 
   /// Get optional property of a specified type
   static member ConvertOptionalProperty(value:JsonValue, name, packer:Func<_,_>, f:Func<_,_>) =     

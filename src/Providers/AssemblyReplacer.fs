@@ -126,7 +126,8 @@ module AssemblyReplacer =
   // there might be multiple assemblies involved in generic types
   and private getAssemblies t =
     let rec innerGetAssemblies (t:Type) = seq {
-      yield t.Assembly
+      if not <| t :? ProvidedSymbolType then
+        yield t.Assembly
       if t.IsGenericType && not t.IsGenericTypeDefinition then
         for t in t.GetGenericArguments() do
           yield! innerGetAssemblies t

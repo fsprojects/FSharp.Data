@@ -67,17 +67,27 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
     new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified uri
-  static member Load(uri, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
+  static member Load(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
     let separators = defaultArg separators ""    
     let separators = 
-      let uri = Uri(uri, UriKind.RelativeOrAbsolute)
-      if String.IsNullOrEmpty separators &&
-          (uri.IsAbsoluteUri && uri.AbsolutePath.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase) || uri.OriginalString.EndsWith(".tsv", StringComparison.OrdinalIgnoreCase)) then
-        "\t"
-      else
-        separators
-    let readerFunc = Func<_>(fun () -> readTextAtRunTime false "" "" uri :> TextReader)
+        if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase) 
+        then "\t" else separators
+    let readerFunc = Func<_>(fun () -> asyncReadTextAtRuntime false "" "" uri |> Async.RunSynchronously)
     new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+
+  /// Loads CSV from the specified uri asynchronously
+  static member AsyncLoad(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = async {
+    let separators = defaultArg separators ""    
+    let separators = 
+        if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase)
+        then "\t" else separators
+    let! reader = asyncReadTextAtRuntime false "" "" uri
+    let firstTime = ref true
+    let readerFunc = Func<_>(fun () ->  
+      if firstTime.Value then firstTime := false; reader
+      else asyncReadTextAtRuntime false "" "" uri |> Async.RunSynchronously)
+    return new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+  }
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple CSV processing

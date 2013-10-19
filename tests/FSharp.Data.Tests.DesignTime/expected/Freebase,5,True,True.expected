@@ -4,6 +4,7 @@ class FreebaseDataProvider
 class FreebaseDataProvider+ServiceTypes
 
 class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseDataContext
+    member Waste: FreebaseDataProvider+ServiceTypes+DomainObjects+Waste with get
     member Sports: FreebaseDataProvider+ServiceTypes+DomainObjects+Sports with get
     member Arts and Entertainment: FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment with get
     member Products and Services: FreebaseDataProvider+ServiceTypes+DomainObjects+Products and Services with get
@@ -14,6 +15,9 @@ class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseD
     member Time and Space: FreebaseDataProvider+ServiceTypes+DomainObjects+Time and Space with get
     member Transportation: FreebaseDataProvider+ServiceTypes+DomainObjects+Transportation with get
     member Commons: FreebaseDataProvider+ServiceTypes+DomainObjects+Commons with get
+    member afvalnl: FreebaseDataProvider+ServiceTypes+DomainObjects+afvalnl with get
+    member afval: FreebaseDataProvider+ServiceTypes+DomainObjects+afval with get
+    member Afval.nl: FreebaseDataProvider+ServiceTypes+DomainObjects+Afval.nl with get
 
 class FreebaseDataProvider+ServiceTypes+Type
 
@@ -178,6 +182,9 @@ class FreebaseDataProvider+ServiceTypes+Boxing
 class FreebaseDataProvider+ServiceTypes+Uncategorized
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+Waste : FDR.Freebase.FreebaseDomainCategory
+    member afvalnl's types: <NULL> with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Sports : FDR.Freebase.FreebaseDomainCategory
     member Soccer: FreebaseDataProvider+ServiceTypes+DomainObjects+SoccerDomain with get
@@ -355,6 +362,15 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.Fre
     member Cricket: FreebaseDataProvider+ServiceTypes+DomainObjects+CricketDomain with get
     member Conferences and Conventions: FreebaseDataProvider+ServiceTypes+DomainObjects+Conferences and Conventions Domain with get
     member Projects: FreebaseDataProvider+ServiceTypes+DomainObjects+ProjectsDomain with get
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+afvalnl : FDR.Freebase.FreebaseDomainCategory
+    member afvalnl's types: <NULL> with get
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+afval : FDR.Freebase.FreebaseDomainCategory
+    member afvalnl's types: <NULL> with get
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+Afval.nl : FDR.Freebase.FreebaseDomainCategory
+    member afvalnl's types: <NULL> with get
 
 class FreebaseDataProvider+ServiceTypes+Type+Type
 
@@ -784,6 +800,12 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+GovernmentDomain : FDR.Fre
     member Poll respondent categories: FreebaseDataProvider+ServiceTypes+Government+Government+Poll_respondent_categoryDataCollection with get
     member Polled entities: FreebaseDataProvider+ServiceTypes+Government+Government+Polled_entityDataCollection with get
     member Election with polls: FreebaseDataProvider+ServiceTypes+Government+Government+Election_with_pollsDataCollection with get
+    member Government Services: FreebaseDataProvider+ServiceTypes+Government+Government+Government_serviceDataCollection with get
+    member Government Service Channels: FreebaseDataProvider+ServiceTypes+Government+Government+Government_service_channelDataCollection with get
+    member Government Issued Permits: FreebaseDataProvider+ServiceTypes+Government+Government+Government_issued_permitDataCollection with get
+    member Government Service Types: FreebaseDataProvider+ServiceTypes+Government+Government+Government_service_typeDataCollection with get
+    member Government Permit Types: FreebaseDataProvider+ServiceTypes+Government+Government+Government_permit_typeDataCollection with get
+    member /government/service_audience_types: FreebaseDataProvider+ServiceTypes+Government+Government+Government_service_audience_typeDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+LanguageDomain : FDR.Freebase.FreebaseDomain
     member Human Languages: FreebaseDataProvider+ServiceTypes+Language+Language+Human_languageDataCollection with get
@@ -1268,6 +1290,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+MedicineDomain : FDR.Freeb
     member Drug ingredients: FreebaseDataProvider+ServiceTypes+Medicine+Medicine+Drug_ingredientDataCollection with get
     member Drug dosage flavors: FreebaseDataProvider+ServiceTypes+Medicine+Medicine+Drug_dosage_flavorDataCollection with get
     member Drug regulating authorities: FreebaseDataProvider+ServiceTypes+Medicine+Medicine+Drug_regulating_authorityDataCollection with get
+    member Routed drugs: FreebaseDataProvider+ServiceTypes+Medicine+Medicine+Routed_drugDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+MilitaryDomain : FDR.Freebase.FreebaseDomain
     member Armed Forces: FreebaseDataProvider+ServiceTypes+Military+Military+Armed_forceDataCollection with get
@@ -1883,6 +1906,7 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+TimeDomain : FDR.Freebase.
     member Day Of Weeks: FreebaseDataProvider+ServiceTypes+Time+Time+Day_of_weekDataCollection with get
     member Time Zones: FreebaseDataProvider+ServiceTypes+Time+Time+Time_zoneDataCollection with get
     member Commemorative events: FreebaseDataProvider+ServiceTypes+Time+Time+Commemorative_eventDataCollection with get
+    member Defunct time zones: FreebaseDataProvider+ServiceTypes+Time+Time+Defunct_time_zoneDataCollection with get
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+InternetDomain : FDR.Freebase.FreebaseDomain
     member Websites: FreebaseDataProvider+ServiceTypes+Internet+Internet+WebsiteDataCollection with get

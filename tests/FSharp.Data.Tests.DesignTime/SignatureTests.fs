@@ -33,15 +33,15 @@ type TestCase =
         | Xml x -> 
             ["Xml"
              x.Sample
+             x.SampleIsList.ToString()
              x.Global.ToString()
-             x.SampleList.ToString()
              x.Culture]
         | Json x -> 
             ["Json"
              x.Sample
-             x.SampleList.ToString()
-             x.Culture
-             x.RootName]
+             x.SampleIsList.ToString()
+             x.RootName
+             x.Culture]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -72,15 +72,15 @@ type TestCase =
                   ResolutionFolder = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
-                  Global = args.[2] |> bool.Parse
-                  SampleList = args.[3] |> bool.Parse
+                  SampleIsList = args.[2] |> bool.Parse
+                  Global = args.[3] |> bool.Parse
                   Culture = args.[4]
                   ResolutionFolder = "" }
         | "Json" ->
             Json { Sample = args.[1]
-                   SampleList = args.[2] |> bool.Parse
-                   Culture = args.[3] 
-                   RootName = args.[4]
+                   SampleIsList = args.[2] |> bool.Parse
+                   RootName = args.[3]
+                   Culture = args.[4] 
                    ResolutionFolder = ""}
         | "WorldBank" ->
             WorldBank { Sources = args.[1]

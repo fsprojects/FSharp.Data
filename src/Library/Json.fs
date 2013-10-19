@@ -212,21 +212,31 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
 type JsonValue with
 
   /// Parses the specified JSON string
-  static member Parse(text, ?culture) = JsonParser(text, culture).Parse()
+  static member Parse(text, ?culture) = 
+    JsonParser(text, culture).Parse()
 
   /// Loads JSON from the specified stream
   static member Load(stream:Stream, ?culture) = 
     use reader = new StreamReader(stream)
-    JsonParser(reader.ReadToEnd(), culture).Parse()
+    let text = reader.ReadToEnd()
+    JsonParser(text, culture).Parse()
 
   /// Loads JSON from the specified reader
   static member Load(reader:TextReader, ?culture) = 
-    JsonParser(reader.ReadToEnd(), culture).Parse()
+    let text = reader.ReadToEnd()
+    JsonParser(text, culture).Parse()
+
+  /// Loads JSON from the specified uri  asynchronously
+  static member AsyncLoad(uri:string, ?culture) = async {
+    let! reader = asyncReadTextAtRuntime false "" "" uri
+    let text = reader.ReadToEnd()
+    return JsonParser(text, culture).Parse()
+  }
 
   /// Loads JSON from the specified uri
-  static member Load(uri, ?culture) = 
-    use reader = readTextAtRunTime false "" "" uri
-    JsonParser(reader.ReadToEnd(), culture).Parse()
+  static member Load(uri:string, ?culture) =
+    JsonValue.AsyncLoad(uri, ?culture=culture)
+    |> Async.RunSynchronously
 
 // --------------------------------------------------------------------------------------
 // Unsafe extensions for simple JSON processing

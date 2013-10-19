@@ -105,10 +105,14 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "/docs/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../docs/WorldBank.json")
 
-(** 
-To split the top-level array into the first record (with overall information) 
+(** Note that we can also load the data directly from the web, and there's an
+asynchronous version available too: **)
+
+let valueAsync = JsonValue.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
+
+(** To split the top-level array into the first record (with overall information) 
 and the collection of data points, we use pattern matching and match the `value`
 against the `JsonValue.Array` constructor:
 *)

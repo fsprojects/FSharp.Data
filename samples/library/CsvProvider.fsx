@@ -41,8 +41,9 @@ type Stocks = CsvProvider<"../docs/MSFT.csv">
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
 used if we have the data in a `string` value. The `Load` method allows reading the data from
-a file or from a web resource. The following sample calls it with a URL that points to 
-a live CSV file on the Yahoo finance web site:
+a file or from a web resource (and there's also an asynchronous `AsyncLoad` version). We could also
+have used a web url instead of a local file in the sample parameter of the type provider.
+The following sample calls the `Load` method with an URL that points to a live CSV file on the Yahoo finance web site:
 *)
  
 // Download the stock prices
@@ -114,10 +115,10 @@ As you can see, the second and third columns are annotated with `metre` and `s`,
 respectively. To use units of measure in our code, we need to open the namespace with
 standard unit names. Then we pass the `SmallTest.csv` file to the type provider as
 a static argument. Also note that in this case we're using the same data at runtime,
-so there's no need to use the Load method, we can just call the default constructor.
+so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
-let small = new CsvProvider<"../docs/SmallTest.csv">()
+let small = CsvProvider<"../docs/SmallTest.csv">.GetSample()
 
 (**
 As in the previous example, the `small` value exposes the rows using the `Data` property.
@@ -148,7 +149,7 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-let airQuality = new CsvProvider<"../docs/AirQuality.csv", ";">()
+let airQuality = CsvProvider<"../docs/AirQuality.csv", ";">.GetSample()
 
 for row in airQuality.Data do
   if row.Month > 6 then 
@@ -166,7 +167,7 @@ we also set `IgnoreErrors` static parameter to `true` so that lines with incorre
 are automatically skipped (the sample file ([`docs/MortalityNY.csv`](../docs/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
-let mortalityNy = new CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>()
+let mortalityNy = CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
@@ -274,7 +275,7 @@ names are overridden using the `Schema` parameter. Note that you can override on
 and still have the provider infer the type for you. Example:
 *)
 
-let csv = new CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">()
+let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
 for row in csv.Data do
   printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
@@ -288,7 +289,7 @@ the other columns blank in the schema (you also don't need to add all the traili
 
 *)
 
-let titanic1 = new CsvProvider<"../docs/Titanic.csv", Schema=",,Passenger Class,,,float">()
+let titanic1 = CsvProvider<"../docs/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
 for row in titanic1.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
@@ -298,7 +299,7 @@ Alternatively, you can rename and override the type of any column by name instea
 
 *)
 
-let titanic2 = new CsvProvider<"../docs/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">()
+let titanic2 = CsvProvider<"../docs/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
 for row in titanic2.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
@@ -333,7 +334,7 @@ You can still cache the data at some point by using the `Cache` method, but only
 transformed the dataset to be smaller:
 *)
 
-let stocks = new CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>()
+let stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", CacheRows=false>.GetSample()
 stocks.Take(10).Cache()
 
 (**

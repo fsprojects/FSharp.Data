@@ -120,8 +120,17 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors) =
-    new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+  static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+    if cacheRows then uncachedCsv.Cache() else uncachedCsv
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreateNonReentrant (stringArrayToRow, rowToStringArray, asyncReader:Async<TextReader>, separators, quote, hasHeaders, ignoreErrors, cacheRows) = async {
+    let! reader = asyncReader
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+    return if cacheRows then uncachedCsv.Cache() else uncachedCsv
+  }
 
   new (stringArrayToRow, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) as this =
   
