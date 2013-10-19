@@ -237,7 +237,7 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode prefe
     else
       CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
   
-  let rows = if count > 0 then Seq.truncate count rows else rows
+  let rows = if count > 0 then Seq.truncate (if safeMode && count < Int32.MaxValue then count + 1 else count) rows else rows
 
   // Infer the type of collection using structural inference
   let types = 

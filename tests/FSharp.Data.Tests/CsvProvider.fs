@@ -211,3 +211,24 @@ let ``Currency symbols on decimal columns should work``() =
     let csv = CsvProvider<"$66.92,0.9458,Jan-13,0,0,0,1", HasHeaders=false, Culture="en-US">.GetSample()
     let row = csv.Data |> Seq.head
     row.Column1 : decimal |> should equal 66.92M
+
+[<Test>]
+let ``SafeMode works when inferRows limit is reached``() = 
+    let errorMessage =
+        try
+            (CsvProvider<"Data/AdWords.csv", InferRows=4>.GetSample().Data
+             |> Seq.skip 4 |> Seq.head).``Parent ID``.ToString()
+        with e -> e.Message
+    errorMessage |> should equal "Couldn't parse row 5 according to schema: Parent ID is missing"
+
+    let rowWithMissingParentIdNullable = 
+        CsvProvider<"Data/AdWords.csv", InferRows=4, SafeMode=true>.GetSample().Data
+        |> Seq.skip 4 |> Seq.head
+    let parentId : Nullable<int> = rowWithMissingParentIdNullable.``Parent ID``
+    parentId |> should equal null
+
+    let rowWithMissingParentIdOptional = 
+        CsvProvider<"Data/AdWords.csv", InferRows=4, SafeMode=true, PreferOptionals=true>.GetSample().Data
+        |> Seq.skip 4 |> Seq.head
+    let parentId : Option<int> = rowWithMissingParentIdOptional.``Parent ID``
+    parentId |> should equal None
