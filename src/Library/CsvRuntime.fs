@@ -72,7 +72,7 @@ module internal CsvReader =
       | -1 -> ()
       | Char '\r' | Char '\n' -> 
           reader.Read() |> ignore
-          yield! readLines (lineNumber + 1)
+          yield! readLines lineNumber
       | _ -> 
           yield readLine [] (StringBuilder()) |> List.rev |> Array.ofList, lineNumber
           yield! readLines (lineNumber + 1) }
@@ -181,6 +181,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
         if row.Length <> numberOfColumns then
           // Ignore rows with different number of columns when ignoreErrors is set to true
           if not ignoreErrors then
+            let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
             failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
         else
           // Always ignore empty rows
@@ -190,7 +191,9 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
             match convertedRow, ignoreErrors with
             | Choice1Of2 convertedRow, _ -> yield convertedRow
             | Choice2Of2 _, true -> ()
-            | Choice2Of2 exn, false -> failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+            | Choice2Of2 exn, false -> 
+                let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+                failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
     }  
     new CsvFile<'RowType>(rowToStringArray, disposer, data, headers, numberOfColumns, separators, quote)
 
