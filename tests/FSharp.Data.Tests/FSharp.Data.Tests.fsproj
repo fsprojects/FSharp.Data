@@ -63,6 +63,7 @@
     <Content Include="Data/Titanic.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\Adwords.csv" />
     <Content Include="Data/HtmlBody.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
