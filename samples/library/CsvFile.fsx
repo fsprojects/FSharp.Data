@@ -20,8 +20,9 @@ open FSharp.Data.Csv
 (**
 The `FSharp.Data.Csv` namespace contains the `CsvFile` type that provides two static methods
 for loading data. The `Parse` method can be used if we have the data in a `string` value.
-The `Load` method allows reading the data from a file or from a web resource. The following 
-sample calls it with a URL that points to a live CSV file on the Yahoo finance web site:
+The `Load` method allows reading the data from a file or from a web resource (and there's
+also an asynchronous `AsyncLoad` version). The following sample calls `Load` with a URL that
+points to a live CSV file on the Yahoo finance web site:
 *)
  
 // Download the stock prices

@@ -5,109 +5,128 @@
 module FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
 open System
-open System.Collections.Generic
 open System.IO
 open System.Net
-open System.Text
-open System.Reflection
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
-/// If the file is not web based, setup an file system watcher that 
-/// invalidates the generated type whenever the file changes
-///
-/// Asumes that the fileName is a valid file name on the disk
-/// (and not e.g. a web reference)
-let private watchForChanges invalidate (fileName:string) = 
-  let path = Path.GetDirectoryName(fileName)
-  let name = Path.GetFileName(fileName)
-  let watcher = new FileSystemWatcher(Filter = name, Path = path)
-  watcher.Changed.Add(fun _ -> invalidate())
-  watcher.EnableRaisingEvents <- true
-#endif
+type UriResolutionType =
+    | DesignTime
+    | Runtime
+    | RuntimeInFSI
 
 let internal isWeb (uri:Uri) = uri.IsAbsoluteUri && not uri.IsUnc && uri.Scheme <> "file"
 
-/// Resolve the absolute location of a file (or web URL) according to the rules
-/// used by standard F# type providers as described here:
-/// https://github.com/fsharp/fsharpx/issues/195#issuecomment-12141785
-///
-///  * if it is web resource, just return it
-///  * if it is full path, just return it
-///  * otherwise..
-///
-///    At design-time:
-///      * if the user specified resolution folder, use that
-///      * use the default resolution folder
-///    At run-time:
-///      * if the user specified resolution folder, use that
-///      * if it is running in F# interactive (config.IsHostedExecution) 
-///        use the default resolution folder
-///      * otherwise, use 'CurrentDomain.BaseDirectory'
-///
-/// Returns the resolved file name, together with a flag specifying 
-/// whether it is web based (and we need WebClient to download it)
-let private resolveUri
-    //note: don't remove the type annotations, as some parameters aren't used in the portable version and will become generic, making the type generation fail
-    (designTime:bool) (isHosted:bool, defaultResolutionFolder:string) (resolutionFolder:string) (uri:Uri) =
+type UriResolver = 
+    
+    { ResolutionType : UriResolutionType
+      DefaultResolutionFolder : string
+      ResolutionFolder : string }
+    
+    static member Create(resolutionType, defaultResolutionFolder, resolutionFolder) =
+      { ResolutionType = resolutionType
+        DefaultResolutionFolder = defaultResolutionFolder       
+        ResolutionFolder = resolutionFolder }
 
+    /// Resolve the absolute location of a file (or web URL) according to the rules
+    /// used by standard F# type providers as described here:
+    /// https://github.com/fsharp/fsharpx/issues/195#issuecomment-12141785
+    ///
+    ///  * if it is web resource, just return it
+    ///  * if it is full path, just return it
+    ///  * otherwise.
+    ///
+    ///    At design-time:
+    ///      * if the user specified resolution folder, use that
+    ///      * otherwise use the default resolution folder
+    ///    At run-time:
+    ///      * if the user specified resolution folder, use that
+    ///      * if it is running in F# interactive (config.IsHostedExecution) 
+    ///        use the default resolution folder
+    ///      * otherwise, use 'CurrentDomain.BaseDirectory'
+    /// returns an absolute uri * isWeb flag
+    member x.Resolve(uri:Uri) = 
+      if uri.IsAbsoluteUri then uri, isWeb uri
+      else
 #if FX_NO_LOCAL_FILESYSTEM
-  if isWeb uri then
-      uri, true
-  else
-      failwith "Only web locations are supported"
+        failwith "Only web locations are supported"
 #else
-  match uri with
-  | url when isWeb url -> url, true
-  | fullPath when uri.IsAbsoluteUri -> fullPath, false
-  | relative ->
-      let root = 
-        if designTime then
-          if not (String.IsNullOrEmpty(resolutionFolder)) then resolutionFolder
-          else defaultResolutionFolder
-        elif isHosted then defaultResolutionFolder
-        else AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
-      Uri(Path.Combine(root, relative.OriginalString), UriKind.Absolute), false
+        let root = 
+          match x.ResolutionType with
+          | DesignTime -> if String.IsNullOrEmpty x.ResolutionFolder
+                          then x.DefaultResolutionFolder
+                          else x.ResolutionFolder
+          | RuntimeInFSI -> x.DefaultResolutionFolder
+          | Runtime -> AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/')
+        Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
 #endif
 
-/// Given a type provider configuration and a name passed by user, open 
-/// the uri and return it as a stream
-let internal asyncOpenStreamInProvider 
-    designTime cfg (invalidate:(Unit->Unit) option) resolutionFolder uri = async {
+/// consumes a stream asynchronously until the end
+/// and returns a memory stream with the full content
+let asyncRead (stream:Stream) = async {
+    // Allocate 4kb buffer for downloading data
+    let buffer = Array.zeroCreate (4 * 1024)
+    let output = new MemoryStream()
+    let reading = ref true
 
-  let resolvedUri, isWeb = resolveUri designTime cfg resolutionFolder uri
+    while reading.Value do
+      // Download one (at most) 4kb chunk and copy it
+      let! count = stream.AsyncRead(buffer, 0, buffer.Length)
+      output.Write(buffer, 0, count)
+      reading := count > 0
 
-  if isWeb then
-    let req = WebRequest.Create(resolvedUri)
-    let! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-    return resp.GetResponseStream()
+    output.Seek(0L, SeekOrigin.Begin) |> ignore 
+    return output 
+}
+
+/// Opens a stream to the uri using the uriResolver resolution rules
+/// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
+/// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
+let internal asyncOpenStream (invalidate:(unit->unit) option) (uriResolver:UriResolver) (uri:Uri) = async {
+  let uri, isWeb = uriResolver.Resolve uri
+  if isWeb then 
+    let req = WebRequest.Create(uri) :?> HttpWebRequest
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+#else
+    req.AutomaticDecompression <- DecompressionMethods.Deflate ||| DecompressionMethods.GZip
+#endif
+    use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+    use stream = resp.GetResponseStream()
+    let! memoryStream = asyncRead stream
+    return memoryStream :> Stream
   else
 #if FX_NO_LOCAL_FILESYSTEM
     return failwith "Only web locations are supported"
 #else
     // Open the file, even if it is already opened by another application
-    let file = File.Open(resolvedUri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-    invalidate |> Option.iter (fun f -> watchForChanges f resolvedUri.OriginalString)
+    // unlike in the web case, we don't consume the whole file into memory first
+    let file = File.Open(uri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+    match invalidate with
+    | None -> ()
+    | Some invalidate ->
+        let path = Path.GetDirectoryName(uri.OriginalString)
+        let name = Path.GetFileName(uri.OriginalString)
+        let watcher = new FileSystemWatcher(Filter = name, Path = path)
+        watcher.Changed.Add(fun _ -> invalidate())
+        watcher.EnableRaisingEvents <- true        
     return file :> Stream
 #endif
 }
 
-/// Resolve a location of a file (or a web location) and open it for shared
-/// read at runtime (do not monitor file changes and use runtime resolution rules)
-let readTextAtRunTime isHosted defaultResolutionFolder resolutionFolder uri = 
+let private withUri uri f =
   match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
   | false, _ -> failwithf "Invalid uri: %s" uri
-  | true, uri ->
-      let stream = 
-        asyncOpenStreamInProvider false (isHosted, defaultResolutionFolder) None resolutionFolder uri
-        |> Async.RunSynchronously
-      new StreamReader(stream)
+  | true, uri -> f uri
 
-let readTextAtRunTimeWithDesignTimeOptions defaultResolutionFolder resolutionFolder uri = 
-  match Uri.TryCreate(uri, UriKind.RelativeOrAbsolute) with
-  | false, _ -> failwithf "Invalid uri: %s" uri
-  | true, uri ->
-      let stream = 
-        asyncOpenStreamInProvider true (false, defaultResolutionFolder) None resolutionFolder uri
-        |> Async.RunSynchronously
-      new StreamReader(stream)
+/// Returns a TextReader for the uri using the runtime resolution rules
+let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder uri = 
+  withUri uri <| fun uri ->
+    let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
+                                      defaultResolutionFolder, resolutionFolder)
+    async { let! stream = asyncOpenStream None resolver uri
+            return new StreamReader(stream) :> TextReader }
+
+/// Returns a TextReader for the uri using the designtime resolution rules
+let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder uri = 
+  withUri uri <| fun uri ->
+    let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
+    async { let! stream = asyncOpenStream None resolver uri
+            return new StreamReader(stream) :> TextReader }

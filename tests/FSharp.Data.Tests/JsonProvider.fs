@@ -9,11 +9,10 @@
 open NUnit.Framework
 open FsUnit
 open System
-open System.IO
 open FSharp.Data
 
-type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
-type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleList=true>
+type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
+type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 
 [<Test>]
 let ``Decimal required field is read correctly`` () = 
@@ -47,31 +46,23 @@ let ``Reading a required float that is not a valid float throws an exception`` (
 
 [<Test>]
 let ``Optional int correctly infered`` () = 
-  let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSample()
+  let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
   let i = prov.[0].A.Number
   i |> should equal (Some 123)
 
 [<Test>]
-let ``SampleList for json correctly handled``() = 
-    Path.Combine(__SOURCE_DIRECTORY__, "Data/TwitterSample.json")
-    |> File.ReadLines 
-    |> Seq.filter (not << String.IsNullOrWhiteSpace)
-    |> Seq.sumBy (fun line ->
-        let twitter = JsonProvider<"Data/TwitterSample.json", SampleList=true>.Parse line
-        match twitter.Text with
+let ``SampleIsList for json correctly handled``() = 
+    JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
+    |> Seq.sumBy (fun tweet ->
+        match tweet.Text with
         | Some _ -> 0
         | None -> 1)
     |> should equal 2
 
 [<Test>]
 let ``Null values correctly handled``() = 
-    let tweetStr = 
-        Path.Combine(__SOURCE_DIRECTORY__, "Data/TwitterSample.json")
-        |> File.ReadLines 
-        |> Seq.head
-    let tweet = JsonProvider<"Data/TwitterSample.json", SampleList=true>.Parse tweetStr
+    let tweet = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples() |> Seq.head
     tweet.Place |> should equal None
-
 
 type InlinedJSON = JsonProvider<"""{ "firstName": "Max", "lastName": "Mustermann", "age": 26, "isCool": true }""">
 
@@ -93,7 +84,7 @@ let ``Can parse inlined properties``() =
 
 [<Test>]
 let ``Can parse inlined properties but read from file``() = 
-    let person = InlinedJSON.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/Simple.json"))
+    let person = InlinedJSON.Load("Data/Simple.json")
 
     person.FirstName
     |> should equal "John"
@@ -201,7 +192,7 @@ type JsonArray = JsonProvider<"""["Adam","Eve","Bonnie","Clyde","Donald","Daisy"
 
 [<Test>]
 let ``Can parse simple array``() = 
-    let inlined = JsonArray.GetSample()
+    let inlined = JsonArray.GetSamples()
     inlined
       |> should equal [|"Adam";"Eve";"Bonnie";"Clyde";"Donald";"Daisy";"Han";"Leia"|]
 
@@ -209,7 +200,7 @@ type MultipleJsonArray = JsonProvider<"""[["Adam","Eve"],["Bonnie","Clyde"],["Do
 
 [<Test>]
 let ``Can parse multidimensional arrays``() = 
-    let inlined = MultipleJsonArray.GetSample()
+    let inlined = MultipleJsonArray.GetSamples()
     inlined
       |> should equal [| [|"Adam";"Eve"|]
                          [|"Bonnie";"Clyde"|]
@@ -252,7 +243,7 @@ let ``Can parse wiki sample``() =
 
 [<Test>]
 let ``Can load empty json file and fails on property access``() = 
-    let document = WikiSample.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/Empty.json"))
+    let document = WikiSample.Load("Data/Empty.json")
     let failed = ref false
     try
         document.FirstName |> ignore

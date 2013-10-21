@@ -83,44 +83,44 @@ Csv { Sample = "Titanic.csv"
 |> generate |> prettyPrint |> Console.WriteLine
 
 Xml { Sample = "Writers.xml"
+      SampleIsList = false
       Global = false
-      SampleList = false
       Culture = "" 
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Xml { Sample = "HtmlBody.xml"
+      SampleIsList = false
       Global = true
-      SampleList = false
       Culture = "" 
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Xml { Sample = "http://tomasp.net/blog/rss.aspx"
+      SampleIsList = false
       Global = false
-      SampleList = false
       Culture = "" 
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Json { Sample = "WorldBank.json"
-       SampleList = false
-       Culture = "" 
+       SampleIsList = false
        RootName = "WorldBank"
+       Culture = "" 
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Json { Sample = "TwitterStream.json"
-       SampleList = true
-       Culture = "" 
+       SampleIsList = true
        RootName = ""
+       Culture = "" 
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 Json { Sample = "list_my.json"
-       SampleList = false
-       Culture = "" 
+       SampleIsList = false
        RootName = "Topic"
+       Culture = "" 
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 

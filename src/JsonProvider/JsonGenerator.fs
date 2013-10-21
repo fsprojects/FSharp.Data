@@ -26,12 +26,16 @@ open FSharp.Data.RuntimeImplementation.StructuralTypes
 /// Both properties are needed for other uses of the provider 
 /// (most notably in the Apiary provider)
 ///
+#nowarn "10001"
 type internal JsonGenerationContext =
-  { DomainType : ProvidedTypeDefinition
+  { DomainTypesType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
+    // JsonDocument or ApiaryDocument
     Representation : Type
+    // wraps a JsonValue in a Representation type
     Packer : Expr -> Expr
+    // extracts the JsonValue from a Representation type
     Unpacker : Expr -> Expr
     UnpackerStayInDesignTime : Expr -> Expr }
   static member Create(domainTy, replacer) =
@@ -39,7 +43,7 @@ type internal JsonGenerationContext =
     let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
     JsonGenerationContext.Create(domainTy, typeof<JsonDocument>, replacer, packer, unpacker, NameUtils.uniqueGenerator NameUtils.nicePascalName)
   static member internal Create(domainTy, representation, replacer, packer, unpacker, uniqueNiceName) =
-    { DomainType = domainTy
+    { DomainTypesType = domainTy
       Replacer = replacer 
       Representation = replacer.ToRuntime representation
       Packer = replacer.ToDesignTime >> packer >> replacer.ToRuntime 
@@ -56,7 +60,7 @@ module JsonTypeBuilder =
   let rec internal generateMultipleChoiceType culture ctx parentName types codeGenerator =
     // Generate new type for the heterogeneous type
     let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (parentName + "Choice"), Some(ctx.Representation), HideObjectMethods = true)
-    ctx.DomainType.AddMember(objectTy)
+    ctx.DomainTypesType.AddMember(objectTy)
         
     // Generate GetXyz(s) method for every different case
     // (but skip all Null nodes - we simply ingore them)
@@ -123,18 +127,26 @@ module JsonTypeBuilder =
         let convTyp, convFunc = ReflectionHelpers.makeDelegate elementConv ctx.Representation
         // Build a function `packer = fun x -> %%(ctx.Packer x)`
         let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
+        // Build a function `unpacker = fun x -> %%(ctx.Unpacker x)`
+        let _, unpackFunc = ReflectionHelpers.makeDelegate ctx.Unpacker (ctx.Replacer.ToRuntime ctx.Representation)
 
-        // Call `ConvertArray<Representation, 'TRes>(json, packer, mapper)`
-        let conv = fun json -> 
+        // Call `ConvertArray<Representation, 'TRes>(jDoc, unpacker, packer, mapper)`
+        // or `AsyncConvertArray<Representation, 'TRes>(jDoc, unpacker, packer, mapper)`
+        // the async version is only used when the top level element returned by Parse/Load is an array
+        let conv = fun (jDoc:Expr)-> 
           let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonOperations>
-          operationsTyp?ConvertArray (ctx.Representation, convTyp) (ctx.Unpacker json, packFunc, convFunc)
+          let isAsync = jDoc.Type.Name.StartsWith "FSharpAsync`1"
+          if isAsync then
+            operationsTyp?AsyncConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
+          else
+            operationsTyp?ConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
         
         elementTy.MakeArrayType(), conv
 
     | Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if parentName = "" then "Entity" else parentName), Some(ctx.Representation), HideObjectMethods = true)
-        ctx.DomainType.AddMember(objectTy)
+        ctx.DomainTypesType.AddMember(objectTy)
 
         let gen = NameUtils.uniqueGenerator NameUtils.nicePascalName
 

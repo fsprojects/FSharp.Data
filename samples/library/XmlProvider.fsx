@@ -122,7 +122,7 @@ let authors = """
 
 (**
 When initializing the `XmlProvider`, we can pass it a file name or a web url.
-The `Load` method allows reading the data from a file or from a web resource. The
+The `Load` and `AsyncLoad` methods allows reading the data from a file or from a web resource. The
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
@@ -206,7 +206,7 @@ type Rss = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 
 (**
 This code builds a type `Rss` that represents RSS feeds (with the features that are used
-on `http://tomasp.net`). The type `Rss` provides static methods `Parse` and `Load`
+on `http://tomasp.net`). The type `Rss` provides static methods `Parse`, `Load` and `AsyncLoad`
 to construct it - here, we just want to reuse the same uri of the schema, so we
 use the `GetSample` static method:
 *)

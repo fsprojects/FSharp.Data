@@ -1,12 +1,13 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    new : () -> CsvProvider
     static member Parse: text:string -> CsvProvider
     static member Load: stream:System.IO.Stream -> CsvProvider
     static member Load: reader:System.IO.TextReader -> CsvProvider
     static member Load: uri:string -> CsvProvider
+    static member AsyncLoad: uri:string -> CsvProvider async
+    static member GetSample: () -> CsvProvider
+    static member AsyncGetSample: () -> CsvProvider async
 
 class CsvProvider+Row : string * decimal * decimal
-    member AsTuple: string * decimal * decimal with get
     member Name: string with get
     member Distance: decimal<metre> with get
     member Time: decimal<s> with get

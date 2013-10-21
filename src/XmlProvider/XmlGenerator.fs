@@ -18,7 +18,7 @@ open FSharp.Data.RuntimeImplementation.StructuralTypes
 
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
-  { DomainType : ProvidedTypeDefinition
+  { DomainTypesType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer
     UniqueNiceName : string -> string 
     UnifyGlobally : bool
@@ -26,7 +26,7 @@ type internal XmlGenerationContext =
   static member Create(domainTy, unifyGlobally, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     uniqueNiceName "XElement" |> ignore
-    { DomainType = domainTy
+    { DomainTypesType = domainTy
       Replacer = replacer
       GeneratedResults = new Dictionary<_, _>()
       UnifyGlobally = unifyGlobally
@@ -74,7 +74,7 @@ module internal XmlTypeBuilder =
     | Record(Some nameWithNS, props) -> 
         let name = XName.Get(nameWithNS).LocalName
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
-        ctx.DomainType.AddMember(objectTy)
+        ctx.DomainTypesType.AddMember(objectTy)
 
         // If we unify types globally, then save type for this record
         if ctx.UnifyGlobally then
@@ -97,7 +97,7 @@ module internal XmlTypeBuilder =
               // a choice type that is erased to 'option<string>' (for simplicity, assuming that
               // the attribute is always optional)
               let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(typeof<option<string>>), HideObjectMethods = true)
-              ctx.DomainType.AddMember(choiceTy)
+              ctx.DomainTypesType.AddMember(choiceTy)
               for KeyValue(kind, typ) in types do 
                 match typ with
                 | InferedType.Null -> ()

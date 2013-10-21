@@ -9,6 +9,7 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
+open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
 [<RequireQualifiedAccess>]
 type RequestBody =
@@ -57,28 +58,6 @@ type Http private() =
 #endif
     uri
 
-  /// Read the contents of a stream asynchronously and return it as a string
-  static let asyncReadToEnd (stream:Stream) isText = async {
-    // Allocate 4kb buffer for downloading dat
-    let buffer = Array.zeroCreate (4 * 1024)
-    use output = new MemoryStream()
-    let reading = ref true
-
-    while reading.Value do
-      // Download one (at most) 4kb chunk and copy it
-      let! count = stream.AsyncRead(buffer, 0, buffer.Length)
-      output.Write(buffer, 0, count)
-      reading := count > 0
-
-    // Read all data into a string
-    output.Seek(0L, SeekOrigin.Begin) |> ignore
-    return 
-        if isText then
-            use sr = new StreamReader(output)
-            sr.ReadToEnd() |> ResponseBody.Text
-        else
-            output.ToArray() |> ResponseBody.Binary }
-
   static let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
 #else
@@ -89,7 +68,7 @@ type Http private() =
       output.Flush()
   }
 
-  static member inline private reraisePreserveStackTrace (e:Exception) =
+  static let reraisePreserveStackTrace (e:Exception) =
     try
       let remoteStackTraceString = typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic);
       if remoteStackTraceString <> null then
@@ -97,13 +76,13 @@ type Http private() =
     with _ -> ()
     raise e
 
-  static member inline private augmentWebExceptionsWithDetails f = async {
+  static let augmentWebExceptionsWithDetails f = async {
     try
       return! f()
     with 
       // If an exception happens, augment the message with the response
       | :? WebException as exn -> 
-        if exn.Response = null then Http.reraisePreserveStackTrace exn
+        if exn.Response = null then reraisePreserveStackTrace exn
         let responseExn =
             try
               use responseStream = exn.Response.GetResponseStream()
@@ -118,7 +97,7 @@ type Http private() =
             with _ -> None
         match responseExn with
         | Some e -> raise e
-        | None -> Http.reraisePreserveStackTrace exn 
+        | None -> reraisePreserveStackTrace exn 
         // just to keep the type-checker happy:
         return Unchecked.defaultof<_>
   }
@@ -218,13 +197,19 @@ type Http private() =
             mimeType = "application/xml-dtd" ||
             mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
         mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
-        |> Array.exists isText       
+        |> Array.exists isText
 
     // Send the request and get the response
-    return! Http.augmentWebExceptionsWithDetails <| fun () -> async {
+    return! augmentWebExceptionsWithDetails <| fun () -> async {
       use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-      use stream = resp.GetResponseStream()
-      let! respBody = asyncReadToEnd stream (forceText || (isText resp.ContentType))
+      use networkStream = resp.GetResponseStream()
+      use! memoryStream = asyncRead networkStream
+      let respBody = 
+        if forceText || (isText resp.ContentType) then
+            use sr = new StreamReader(memoryStream)
+            sr.ReadToEnd() |> ResponseBody.Text
+        else
+            memoryStream.ToArray() |> ResponseBody.Binary
       let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
       let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
       let statusCode = 
@@ -245,10 +230,10 @@ type Http private() =
   /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
-    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
+    Http.InnerRequest(url, false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
   static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.InnerRequest(url, false, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+    Http.InnerRequest(url, false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -258,10 +243,10 @@ type Http private() =
   /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
-    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
+    let! response = Http.InnerRequest(url, true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
   static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate)  = async {
-    let! response = Http.InnerRequest(url, true, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+    let! response = Http.InnerRequest(url, true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     return
         match response.Body with
@@ -276,10 +261,10 @@ type Http private() =
   /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member Request(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
-    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
+    Http.AsyncRequest(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
   static member Request(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.AsyncRequest(url, ?headers=headers, ?query=query, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+    Http.AsyncRequest(url, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     |> Async.RunSynchronously
 

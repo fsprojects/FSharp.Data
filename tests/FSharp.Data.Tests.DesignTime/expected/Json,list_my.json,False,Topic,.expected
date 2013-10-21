@@ -1,10 +1,11 @@
 class JsonProvider
-    new : () -> JsonProvider
     static member Parse: text:string -> JsonProvider+DomainTypes+Topic[]
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Topic[]
     static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Topic[]
     static member Load: uri:string -> JsonProvider+DomainTypes+Topic[]
-    static member GetSample: () -> JsonProvider+DomainTypes+Topic[]
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Topic[] async
+    static member GetSamples: () -> JsonProvider+DomainTypes+Topic[]
+    static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Topic[] async
 
 class JsonProvider+DomainTypes
 

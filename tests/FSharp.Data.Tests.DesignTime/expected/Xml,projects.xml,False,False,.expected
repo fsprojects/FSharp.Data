@@ -1,10 +1,11 @@
 class XmlProvider
-    new : () -> XmlProvider
     static member Parse: text:string -> XmlProvider+DomainTypes+Ordercontainer
     static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Ordercontainer
     static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Ordercontainer
     static member Load: uri:string -> XmlProvider+DomainTypes+Ordercontainer
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Ordercontainer async
     static member GetSample: () -> XmlProvider+DomainTypes+Ordercontainer
+    static member AsyncGetSample: () -> XmlProvider+DomainTypes+Ordercontainer async
 
 class XmlProvider+DomainTypes
 

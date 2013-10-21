@@ -19,16 +19,16 @@ type CsvProviderArgs =
 
 type XmlProviderArgs = 
     { Sample : string
+      SampleIsList : bool
       Global : bool
-      SampleList : bool
       Culture : string
       ResolutionFolder : string }
 
 type JsonProviderArgs = 
     { Sample : string
-      SampleList : bool
-      Culture : string
+      SampleIsList : bool
       RootName : string
+      Culture : string
       ResolutionFolder : string }
 
 type WorldBankProviderArgs =
@@ -73,16 +73,16 @@ type TypeProviderInstantiation =
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
+                   box x.SampleIsList
                    box x.Global
-                   box x.SampleList
                    box x.Culture
                    box x.ResolutionFolder |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
-                   box x.SampleList
-                   box x.Culture
+                   box x.SampleIsList
                    box x.RootName
+                   box x.Culture
                    box x.ResolutionFolder|] 
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
