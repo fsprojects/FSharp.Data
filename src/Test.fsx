@@ -18,37 +18,20 @@ let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
 let signatureOnly = false
 let ignoreOutput = false
 
-let generate (inst:TypeProviderInstantiation) = inst.generateType resolutionFolder runtimeAssembly
-let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput t
-let prettyPrintWithMaxDepth maxDepth t = Debug.prettyPrintWithMaxDepth signatureOnly ignoreOutput maxDepth t
+let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
+let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
-Csv { Sample = "SmallTest.csv"
-      Separator = "" 
-      Culture = "" 
-      InferRows = Int32.MaxValue
-      Schema = ""
-      HasHeaders = true
-      IgnoreErrors = false
-      SafeMode = false
-      PreferOptionals = false
-      Quote = '"'
-      MissingValues = "NaN,NA,#N/A,:"
-      CacheRows = true
-      ResolutionFolder = "" }
+Json { Sample = "TwitterStream.json"
+       SampleIsList = true
+       RootName = ""
+       Culture = "" 
+       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
-Csv { Sample = "MSFT.csv"
-      Separator = "" 
+Xml { Sample = "HtmlBody.xml"
+      SampleIsList = false
+      Global = true
       Culture = "" 
-      InferRows = Int32.MaxValue
-      Schema = ""
-      HasHeaders = true
-      IgnoreErrors = false
-      SafeMode = false
-      PreferOptionals = false
-      Quote = '"'
-      MissingValues = "NaN,NA,#N/A,:"
-      CacheRows = true
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
@@ -67,77 +50,13 @@ Csv { Sample = "AirQuality.csv"
       ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
-Csv { Sample = "Titanic.csv"
-      Separator = "" 
-      Culture = "" 
-      InferRows = Int32.MaxValue
-      Schema = "passengerid = int , Pclass -> Class, Parch -> ParentsOrChildren = int<meter>,SibSp->SiblingsOrSpouse"
-      HasHeaders = true
-      IgnoreErrors = false
-      SafeMode = true
-      PreferOptionals = true
-      Quote = '"'
-      MissingValues = "NaN,NA,#N/A,:"
-      CacheRows = true
-      ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
+let testCases = 
+    __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests.DesignTime" ++ "SignatureTestCases.config"
+    |> File.ReadAllLines
+    |> Array.map TypeProviderInstantiation.Parse
 
-Xml { Sample = "Writers.xml"
-      SampleIsList = false
-      Global = false
-      Culture = "" 
-      ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Xml { Sample = "HtmlBody.xml"
-      SampleIsList = false
-      Global = true
-      Culture = "" 
-      ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Xml { Sample = "http://tomasp.net/blog/rss.aspx"
-      SampleIsList = false
-      Global = false
-      Culture = "" 
-      ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Json { Sample = "WorldBank.json"
-       SampleIsList = false
-       RootName = "WorldBank"
-       Culture = "" 
-       ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Json { Sample = "TwitterStream.json"
-       SampleIsList = true
-       RootName = ""
-       Culture = "" 
-       ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Json { Sample = "list_my.json"
-       SampleIsList = false
-       RootName = "Topic"
-       Culture = "" 
-       ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
-
-WorldBank { Sources = ""
-            Asynchronous = false }
-|> generate |> prettyPrint |> Console.WriteLine
-
-WorldBank { Sources = "World Development Indicators;Global Development Finance"
-            Asynchronous = true }
-|> generate |> prettyPrint |> Console.WriteLine
-
-Freebase { Key = "none" 
-           ServiceUrl = "https://www.googleapis.com/freebase/v1" 
-           NumIndividuals = 10 
-           UseUnitsOfMeasure = true 
-           Pluralize = true 
-           SnapshotDate = "now" 
-           LocalCache = true 
-           AllowLocalQueryEvaluation = true }
-|> generate |> prettyPrintWithMaxDepth 3 |> Console.WriteLine
+for testCase in testCases do
+    testCase 
+    |> generate 
+    |> prettyPrint
+    |> Console.WriteLine

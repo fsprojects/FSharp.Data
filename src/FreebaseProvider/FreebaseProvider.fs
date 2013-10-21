@@ -400,9 +400,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     let defaultUseUnits = true
     let defaultPluralize = true
     let defaultSnapshotDate = "none"
-    // By default we use the freebaseread API, as this supports cross-domain access
-    //let defaultServiceUrl = "http://freebaseread.com/api"
-    let defaultServiceUrl = "https://www.googleapis.com/freebase/v1"
+    let defaultServiceUrl = FreebaseQueries.DefaultServiceUrl
     let defaultLocalSchemaCache = true
     let defaultApiKey = "none"
     let defaultAllowQueryEvaluateOnClientSide = true

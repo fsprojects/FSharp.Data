@@ -1,17 +1,127 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    static member Parse: text:string -> CsvProvider
-    static member Load: stream:System.IO.Stream -> CsvProvider
-    static member Load: reader:System.IO.TextReader -> CsvProvider
-    static member Load: uri:string -> CsvProvider
-    static member AsyncLoad: uri:string -> CsvProvider async
-    static member GetSample: () -> CsvProvider
     static member AsyncGetSample: () -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                             [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "LastFM.tsv"), "	", '"', false, false, false)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                             [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                                Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "	", '"', false, false, false)
+
+    static member GetSample: () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                        [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                           Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                           Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "LastFM.tsv") |> FSharpAsync.RunSynchronously, "	", '"', false, false, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                        [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                           Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                           Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), ((new StreamReader(stream)) :> TextReader), "	", '"', false, false, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                        [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                           Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                           Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), reader, "	", '"', false, false, false)
+
+    static member Load: uri:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                        [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                           Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                           Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, "	", '"', false, false, false)
+
+    static member Parse: text:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Column1", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Column2", Operations.ConvertDateTime("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.ConvertGuid(Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Column4", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Column5", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Column6", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                        [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                           Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                           Operations.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                                                                           Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), ((new StringReader(text)) :> TextReader), "	", '"', false, false, false)
+
 
 class CsvProvider+Row : string * System.DateTime * System.Guid option * string * string * string
     member Column1: string with get
+    (let t1,_,_,_,_,_ = this in t1)
+
     member Column2: System.DateTime with get
+    (let _,t2,_,_,_,_ = this in t2)
+
     member Column3: System.Guid option with get
+    (let _,_,t3,_,_,_ = this in t3)
+
     member Column4: string with get
+    (let _,_,_,t4,_,_ = this in t4)
+
     member Column5: string with get
+    (let _,_,_,_,t5,_ = this in t5)
+
     member Column6: string with get
+    (let _,_,_,_,_,t6 = this in t6)
+
 

@@ -16,97 +16,16 @@ open ProviderImplementation
 //alow tests that access the network to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-type TestCase = 
-    | TestCase of TypeProviderInstantiation
-    override x.ToString() =
-        let (TestCase x) = x
-        match x with
-        | Csv x -> 
-            ["Csv"
-             x.Sample
-             x.Separator
-             x.Culture
-             x.Schema.Replace(',', ';')
-             x.HasHeaders.ToString()
-             x.SafeMode.ToString()
-             x.PreferOptionals.ToString()]
-        | Xml x -> 
-            ["Xml"
-             x.Sample
-             x.SampleIsList.ToString()
-             x.Global.ToString()
-             x.Culture]
-        | Json x -> 
-            ["Json"
-             x.Sample
-             x.SampleIsList.ToString()
-             x.RootName
-             x.Culture]
-        | WorldBank x -> 
-            ["WorldBank"
-             x.Sources
-             x.Asynchronous.ToString()]
-        | Freebase x -> 
-            ["Freebase"
-             x.NumIndividuals.ToString()
-             x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()]
-        |> String.concat ","
-
-    static member Parse (line:string) =
-        let args = line.Split [|','|]
-        match args.[0] with
-        | "Csv" ->
-            Csv { Sample = args.[1]
-                  Separator = args.[2]
-                  Culture = args.[3]
-                  InferRows = Int32.MaxValue
-                  Schema = args.[4].Replace(';', ',')
-                  HasHeaders = args.[5] |> bool.Parse
-                  IgnoreErrors = false
-                  SafeMode = args.[6] |> bool.Parse
-                  PreferOptionals = args.[7] |> bool.Parse
-                  Quote = '"'
-                  MissingValues = "#N/A,NA,:"
-                  CacheRows = false
-                  ResolutionFolder = "" }
-        | "Xml" ->
-            Xml { Sample = args.[1]
-                  SampleIsList = args.[2] |> bool.Parse
-                  Global = args.[3] |> bool.Parse
-                  Culture = args.[4]
-                  ResolutionFolder = "" }
-        | "Json" ->
-            Json { Sample = args.[1]
-                   SampleIsList = args.[2] |> bool.Parse
-                   RootName = args.[3]
-                   Culture = args.[4] 
-                   ResolutionFolder = ""}
-        | "WorldBank" ->
-            WorldBank { Sources = args.[1]
-                        Asynchronous = args.[2] |> bool.Parse }
-        | "Freebase" ->
-            Freebase { Key = args.[1]
-                       NumIndividuals = args.[2] |> Int32.Parse
-                       UseUnitsOfMeasure = args.[3] |> bool.Parse
-                       Pluralize = args.[4] |> bool.Parse
-                       SnapshotDate = "now"
-                       ServiceUrl = "https://www.googleapis.com/freebase/v1"
-                       LocalCache = true
-                       AllowLocalQueryEvaluation = true }
-        | _ -> failwithf "Unknown: %s" args.[0]
-        |> TestCase
+type TypeProviderInstantiation with
 
     member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
-        let (TestCase x) = x
-        let outputFunc = 
-            match x with
-            | Freebase _ -> Debug.prettyPrintWithMaxDepth signatureOnly ignoreOutput 3
-            | _ -> Debug.prettyPrint signatureOnly ignoreOutput
         let output = 
-            x.generateType resolutionFolder runtimeAssembly 
-            |> outputFunc
+            x.GenerateType resolutionFolder runtimeAssembly 
+            |> match x with
+               | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
+               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
         output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
+              .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
 
 let (++) a b = Path.Combine(a, b)
 
@@ -115,7 +34,7 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
-    |> Array.map TestCase.Parse
+    |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
 
@@ -132,7 +51,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly true false
+        let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalizeEndings (str:string) =
@@ -140,25 +59,20 @@ let normalizeEndings (str:string) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Validate signature didn't change `` (testCase:TestCase) = 
+let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly true false |> normalizeEndings 
+    let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalizeEndings 
     output |> should equal expected
-
-[<Test>]
-[<TestCaseSource "testCases">]
-let ``Generating expressions works `` (testCase:TestCase) = 
-    testCase.Dump resolutionFolder runtimeAssembly false true |> ignore
 
 #if MONO
 #else
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Generating expressions works in portable `` (testCase:TestCase) = 
-    testCase.Dump resolutionFolder portableRuntimeAssembly false true |> ignore
+let ``Generating expressions works in portable `` (testCase:TypeProviderInstantiation) = 
+    testCase.Dump resolutionFolder portableRuntimeAssembly (*signatureOnly*)false  (*ignoreOutput*)true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
-let ``Generating expressions works in silverlight `` (testCase:TestCase) = 
-    testCase.Dump resolutionFolder silverlightRuntimeAssembly false true |> ignore
+let ``Generating expressions works in silverlight `` (testCase:TypeProviderInstantiation) = 
+    testCase.Dump resolutionFolder silverlightRuntimeAssembly (*signatureOnly*)false  (*ignoreOutput*)true |> ignore
 #endif

@@ -81,6 +81,7 @@
     <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
     <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
     <Compile Include="FreebaseProvider\FreebaseProvider.fs" />
+    <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
     <None Include="Test.fsx" />
   </ItemGroup>

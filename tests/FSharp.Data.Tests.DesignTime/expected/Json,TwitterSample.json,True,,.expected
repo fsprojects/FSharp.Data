@@ -1,321 +1,787 @@
 class JsonProvider
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
     static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
+    JsonDocument.AsyncCreateList((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json"), "")
+
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
+    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+
+    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
+    JsonDocument.CreateList((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json") |> FSharpAsync.RunSynchronously, "")
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(reader, "")
+
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, "")
+
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
+
 
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Contributors: FDR.JsonDocument option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "contributors", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member Coordinates: FDR.JsonDocument option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "coordinates", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member CreatedAt: string option with get
-    member Entities: JsonProvider+DomainTypes+Entities option with get
-    member FavoriteCount: int option with get
-    member Favorited: bool option with get
-    member FilterLevel: string option with get
-    member Geo: FDR.JsonDocument option with get
-    member Id: int64 option with get
-    member IdStr: int64 option with get
-    member InReplyToScreenName: string option with get
-    member InReplyToStatusId: JsonProvider+DomainTypes+InReplyToStatusIdChoice option with get
-    member InReplyToStatusIdStr: JsonProvider+DomainTypes+InReplyToStatusIdStrChoice option with get
-    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice option with get
-    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice option with get
-    member Place: JsonProvider+DomainTypes+Place option with get
-    member RetweetCount: int option with get
-    member Retweeted: bool option with get
-    member RetweetedStatus: JsonProvider+DomainTypes+RetweetedStatus option with get
-    member Source: string option with get
-    member Text: string option with get
-    member Truncated: bool option with get
-    member User: JsonProvider+DomainTypes+User2 option with get
-    member PossiblySensitive: bool option with get
-    member Lang: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "created_at", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
     member Delete: JsonProvider+DomainTypes+Delete option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "delete", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member Entities: JsonProvider+DomainTypes+Entities option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "entities", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member FavoriteCount: int option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "favorite_count", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member Favorited: bool option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "favorited", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetBoolean(t.JsonValue)))
+
+    member FilterLevel: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "filter_level", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member Geo: FDR.JsonDocument option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "geo", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member Id: int64 option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "id", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger64(t.JsonValue, "")))
+
+    member IdStr: int64 option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "id_str", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger64(t.JsonValue, "")))
+
+    member InReplyToScreenName: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "in_reply_to_screen_name", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member InReplyToStatusId: JsonProvider+DomainTypes+InReplyToStatusIdChoice option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "in_reply_to_status_id", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member InReplyToStatusIdStr: JsonProvider+DomainTypes+InReplyToStatusIdStrChoice option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "in_reply_to_status_id_str", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "in_reply_to_user_id", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "in_reply_to_user_id_str", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member Lang: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "lang", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member Place: JsonProvider+DomainTypes+Place option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "place", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member PossiblySensitive: bool option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "possibly_sensitive", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetBoolean(t.JsonValue)))
+
+    member RetweetCount: int option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "retweet_count", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member Retweeted: bool option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "retweeted", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetBoolean(t.JsonValue)))
+
+    member RetweetedStatus: JsonProvider+DomainTypes+RetweetedStatus option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "retweeted_status", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member Source: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "source", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member Text: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "text", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member Truncated: bool option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "truncated", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetBoolean(t.JsonValue)))
+
+    member User: JsonProvider+DomainTypes+User2 option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "user", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+
+class JsonProvider+DomainTypes+Delete : FDR.JsonDocument
+    member Status: JsonProvider+DomainTypes+Status with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "status"))
+
 
 class JsonProvider+DomainTypes+Entities : FDR.JsonDocument
     member Hashtags: JsonProvider+DomainTypes+Hashtag[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "hashtags")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member Symbols: JsonProvider+DomainTypes+SymbolsChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "symbols"))
+
     member Urls: JsonProvider+DomainTypes+Url[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "urls")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member UserMentions: JsonProvider+DomainTypes+UserMention[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user_mentions")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
-class JsonProvider+DomainTypes+Hashtag : FDR.JsonDocument
-    member Indices: int[] with get
-    member Text: string with get
-
-class JsonProvider+DomainTypes+SymbolsChoice : FDR.JsonDocument
-
-class JsonProvider+DomainTypes+Url : FDR.JsonDocument
-    member DisplayUrl: string with get
-    member ExpandedUrl: string with get
-    member Indices: int[] with get
-    member Url: string with get
-
-class JsonProvider+DomainTypes+UserMention : FDR.JsonDocument
-    member Id: int with get
-    member IdStr: int with get
-    member Indices: int[] with get
-    member Name: string with get
-    member ScreenName: string with get
 
 class JsonProvider+DomainTypes+InReplyToStatusIdChoice : FDR.JsonDocument
     member Number: int64 option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger64(t.JsonValue, "")))
+
 
 class JsonProvider+DomainTypes+InReplyToStatusIdStrChoice : FDR.JsonDocument
     member Number: int64 option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger64(t.JsonValue, "")))
+
 
 class JsonProvider+DomainTypes+InReplyToUserIdChoice : FDR.JsonDocument
     member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
 
 class JsonProvider+DomainTypes+InReplyToUserIdStrChoice : FDR.JsonDocument
     member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
 
 class JsonProvider+DomainTypes+Place : FDR.JsonDocument
     member Attributes: JsonProvider+DomainTypes+Attributes with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "attributes"))
+
     member BoundingBox: JsonProvider+DomainTypes+BoundingBox with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "bounding_box"))
+
     member Country: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "country")).JsonValue)
+
     member CountryCode: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "country_code")).JsonValue)
+
     member FullName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "full_name")).JsonValue)
+
     member Id: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue)
+
     member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
     member PlaceType: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "place_type")).JsonValue)
+
     member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+
+class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
+    member Contributors: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "contributors"))
+
+    member Coordinates: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "coordinates"))
+
+    member CreatedAt: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "created_at")).JsonValue)
+
+    member Entities: JsonProvider+DomainTypes+Entities2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "entities"))
+
+    member FavoriteCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "favorite_count")).JsonValue, "")
+
+    member Favorited: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "favorited")).JsonValue)
+
+    member Geo: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "geo"))
+
+    member Id: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member InReplyToScreenName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "in_reply_to_screen_name")).JsonValue)
+
+    member InReplyToStatusId: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "in_reply_to_status_id"))
+
+    member InReplyToStatusIdStr: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "in_reply_to_status_id_str"))
+
+    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "in_reply_to_user_id"))
+
+    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "in_reply_to_user_id_str"))
+
+    member Lang: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "lang")).JsonValue)
+
+    member Place: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "place"))
+
+    member PossiblySensitive: bool option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "possibly_sensitive", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetBoolean(t.JsonValue)))
+
+    member RetweetCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "retweet_count")).JsonValue, "")
+
+    member Retweeted: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "retweeted")).JsonValue)
+
+    member Source: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "source")).JsonValue)
+
+    member Text: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "text")).JsonValue)
+
+    member Truncated: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "truncated")).JsonValue)
+
+    member User: JsonProvider+DomainTypes+User with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user"))
+
+
+class JsonProvider+DomainTypes+User2 : FDR.JsonDocument
+    member ContributorsEnabled: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "contributors_enabled")).JsonValue)
+
+    member CreatedAt: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "created_at")).JsonValue)
+
+    member DefaultProfile: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "default_profile")).JsonValue)
+
+    member DefaultProfileImage: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "default_profile_image")).JsonValue)
+
+    member Description: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "description")).JsonValue)
+
+    member FavouritesCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "favourites_count")).JsonValue, "")
+
+    member FollowRequestSent: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "follow_request_sent"))
+
+    member FollowersCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "followers_count")).JsonValue, "")
+
+    member Following: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "following"))
+
+    member FriendsCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "friends_count")).JsonValue, "")
+
+    member GeoEnabled: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "geo_enabled")).JsonValue)
+
+    member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member IsTranslator: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "is_translator")).JsonValue)
+
+    member Lang: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "lang")).JsonValue)
+
+    member ListedCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "listed_count")).JsonValue, "")
+
+    member Location: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "location")).JsonValue)
+
+    member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
+    member Notifications: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "notifications"))
+
+    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_color"))
+
+    member ProfileBackgroundImageUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_image_url")).JsonValue)
+
+    member ProfileBackgroundImageUrlHttps: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_image_url_https")).JsonValue)
+
+    member ProfileBackgroundTile: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_tile")).JsonValue)
+
+    member ProfileBannerUrl: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "profile_banner_url", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member ProfileImageUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_image_url")).JsonValue)
+
+    member ProfileImageUrlHttps: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_image_url_https")).JsonValue)
+
+    member ProfileLinkColor: JsonProvider+DomainTypes+ProfileLinkColorChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_link_color"))
+
+    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_sidebar_border_color"))
+
+    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_sidebar_fill_color"))
+
+    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_text_color"))
+
+    member ProfileUseBackgroundImage: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_use_background_image")).JsonValue)
+
+    member Protected: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "protected")).JsonValue)
+
+    member ScreenName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "screen_name")).JsonValue)
+
+    member StatusesCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "statuses_count")).JsonValue, "")
+
+    member TimeZone: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "time_zone")).JsonValue)
+
+    member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "utc_offset"))
+
+    member Verified: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "verified")).JsonValue)
+
 
 class JsonProvider+DomainTypes+Attributes : FDR.JsonDocument
 
 class JsonProvider+DomainTypes+BoundingBox : FDR.JsonDocument
     member Coordinates: decimal[][][] with get
-    member Type: string with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "coordinates")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.ConvertArray(t, new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.ConvertArray(t, new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetDecimal(t.JsonValue, "")))))))
 
-class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
-    member Contributors: FDR.JsonDocument with get
-    member Coordinates: FDR.JsonDocument with get
-    member CreatedAt: string with get
-    member Entities: JsonProvider+DomainTypes+Entities2 with get
-    member FavoriteCount: int with get
-    member Favorited: bool with get
-    member Geo: FDR.JsonDocument with get
-    member Id: int64 with get
-    member IdStr: int64 with get
-    member InReplyToScreenName: string with get
-    member InReplyToStatusId: FDR.JsonDocument with get
-    member InReplyToStatusIdStr: FDR.JsonDocument with get
-    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice2 with get
-    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 with get
-    member Lang: string with get
-    member Place: FDR.JsonDocument with get
-    member RetweetCount: int with get
-    member Retweeted: bool with get
-    member Source: string with get
-    member Text: string with get
-    member Truncated: bool with get
-    member User: JsonProvider+DomainTypes+User with get
-    member PossiblySensitive: bool option with get
+    member Type: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "type")).JsonValue)
+
 
 class JsonProvider+DomainTypes+Entities2 : FDR.JsonDocument
     member Hashtags: JsonProvider+DomainTypes+Hashtag2[] with get
-    member Symbols: JsonProvider+DomainTypes+SymbolsChoice2 with get
-    member Urls: JsonProvider+DomainTypes+Url2[] with get
-    member UserMentions: JsonProvider+DomainTypes+UserMention2[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "hashtags")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member Media: JsonProvider+DomainTypes+Media[] option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "media", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.ConvertArray(t, new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))))
+
+    member Symbols: JsonProvider+DomainTypes+SymbolsChoice2 with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "symbols"))
+
+    member Urls: JsonProvider+DomainTypes+Url2[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "urls")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+    member UserMentions: JsonProvider+DomainTypes+UserMention2[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user_mentions")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
+
+class JsonProvider+DomainTypes+Hashtag : FDR.JsonDocument
+    member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member Text: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "text")).JsonValue)
+
+
+class JsonProvider+DomainTypes+InReplyToUserIdChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+
+class JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+
+class JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileLinkColorChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileTextColorChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+Status : FDR.JsonDocument
+    member Id: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member UserId: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user_id")).JsonValue, "")
+
+    member UserIdStr: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "user_id_str")).JsonValue, "")
+
+
+class JsonProvider+DomainTypes+SymbolsChoice : FDR.JsonDocument
+
+class JsonProvider+DomainTypes+Url : FDR.JsonDocument
+    member DisplayUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "display_url")).JsonValue)
+
+    member ExpandedUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "expanded_url")).JsonValue)
+
+    member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+
+class JsonProvider+DomainTypes+User : FDR.JsonDocument
+    member ContributorsEnabled: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "contributors_enabled")).JsonValue)
+
+    member CreatedAt: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "created_at")).JsonValue)
+
+    member DefaultProfile: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "default_profile")).JsonValue)
+
+    member DefaultProfileImage: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "default_profile_image")).JsonValue)
+
+    member Description: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "description")).JsonValue)
+
+    member FavouritesCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "favourites_count")).JsonValue, "")
+
+    member FollowRequestSent: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "follow_request_sent"))
+
+    member FollowersCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "followers_count")).JsonValue, "")
+
+    member Following: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "following"))
+
+    member FriendsCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "friends_count")).JsonValue, "")
+
+    member GeoEnabled: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "geo_enabled")).JsonValue)
+
+    member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member IsTranslator: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "is_translator")).JsonValue)
+
+    member Lang: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "lang")).JsonValue)
+
+    member ListedCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "listed_count")).JsonValue, "")
+
+    member Location: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "location")).JsonValue)
+
+    member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
+    member Notifications: FDR.JsonDocument with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "notifications"))
+
+    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_color"))
+
+    member ProfileBackgroundImageUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_image_url")).JsonValue)
+
+    member ProfileBackgroundImageUrlHttps: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_image_url_https")).JsonValue)
+
+    member ProfileBackgroundTile: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_background_tile")).JsonValue)
+
+    member ProfileBannerUrl: string option with get
+    JsonOperations.ConvertOptionalProperty(this.JsonValue, "profile_banner_url", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+    member ProfileImageUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_image_url")).JsonValue)
+
+    member ProfileImageUrlHttps: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_image_url_https")).JsonValue)
+
+    member ProfileLinkColor: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_link_color")).JsonValue)
+
+    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_sidebar_border_color"))
+
+    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_sidebar_fill_color"))
+
+    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_text_color"))
+
+    member ProfileUseBackgroundImage: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "profile_use_background_image")).JsonValue)
+
+    member Protected: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "protected")).JsonValue)
+
+    member ScreenName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "screen_name")).JsonValue)
+
+    member StatusesCount: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "statuses_count")).JsonValue, "")
+
+    member TimeZone: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "time_zone")).JsonValue)
+
+    member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "utc_offset"))
+
+    member Verified: bool with get
+    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "verified")).JsonValue)
+
+
+class JsonProvider+DomainTypes+UserMention : FDR.JsonDocument
+    member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
+    member ScreenName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "screen_name")).JsonValue)
+
+
+class JsonProvider+DomainTypes+UtcOffsetChoice2 : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
 
 class JsonProvider+DomainTypes+Hashtag2 : FDR.JsonDocument
     member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
     member Text: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "text")).JsonValue)
+
+
+class JsonProvider+DomainTypes+Media : FDR.JsonDocument
+    member DisplayUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "display_url")).JsonValue)
+
+    member ExpandedUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "expanded_url")).JsonValue)
+
+    member Id: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
+    member IdStr: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
+    member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member MediaUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "media_url")).JsonValue)
+
+    member MediaUrlHttps: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "media_url_https")).JsonValue)
+
+    member Sizes: JsonProvider+DomainTypes+Sizes with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "sizes"))
+
+    member SourceStatusId: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "source_status_id")).JsonValue, "")
+
+    member SourceStatusIdStr: int64 with get
+    JsonOperations.GetInteger64(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "source_status_id_str")).JsonValue, "")
+
+    member Type: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "type")).JsonValue)
+
+    member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
+
+class JsonProvider+DomainTypes+ProfileBackgroundColorChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
+
+class JsonProvider+DomainTypes+ProfileTextColorChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
+    member String: string option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetString(t.JsonValue)))
+
 
 class JsonProvider+DomainTypes+SymbolsChoice2 : FDR.JsonDocument
 
 class JsonProvider+DomainTypes+Url2 : FDR.JsonDocument
     member DisplayUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "display_url")).JsonValue)
+
     member ExpandedUrl: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "expanded_url")).JsonValue)
+
     member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
     member Url: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "url")).JsonValue)
+
 
 class JsonProvider+DomainTypes+UserMention2 : FDR.JsonDocument
     member Id: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue, "")
+
     member IdStr: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id_str")).JsonValue, "")
+
     member Indices: int[] with get
+    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+
     member Name: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+
     member ScreenName: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "screen_name")).JsonValue)
 
-class JsonProvider+DomainTypes+Media : FDR.JsonDocument
-    member DisplayUrl: string with get
-    member ExpandedUrl: string with get
-    member Id: int64 with get
-    member IdStr: int64 with get
-    member Indices: int[] with get
-    member MediaUrl: string with get
-    member MediaUrlHttps: string with get
-    member Sizes: JsonProvider+DomainTypes+Sizes with get
-    member SourceStatusId: int64 with get
-    member SourceStatusIdStr: int64 with get
-    member Type: string with get
-    member Url: string with get
-
-class JsonProvider+DomainTypes+Sizes : FDR.JsonDocument
-    member Large: JsonProvider+DomainTypes+Large with get
-    member Medium: JsonProvider+DomainTypes+Medium with get
-    member Small: JsonProvider+DomainTypes+Small with get
-    member Thumb: JsonProvider+DomainTypes+Thumb with get
-
-class JsonProvider+DomainTypes+Large : FDR.JsonDocument
-    member H: int with get
-    member Resize: string with get
-    member W: int with get
-
-class JsonProvider+DomainTypes+Medium : FDR.JsonDocument
-    member H: int with get
-    member Resize: string with get
-    member W: int with get
-
-class JsonProvider+DomainTypes+Small : FDR.JsonDocument
-    member H: int with get
-    member Resize: string with get
-    member W: int with get
-
-class JsonProvider+DomainTypes+Thumb : FDR.JsonDocument
-    member H: int with get
-    member Resize: string with get
-    member W: int with get
-
-class JsonProvider+DomainTypes+InReplyToUserIdChoice2 : FDR.JsonDocument
-    member Number: int option with get
-
-class JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 : FDR.JsonDocument
-    member Number: int option with get
-
-class JsonProvider+DomainTypes+User : FDR.JsonDocument
-    member ContributorsEnabled: bool with get
-    member CreatedAt: string with get
-    member DefaultProfile: bool with get
-    member DefaultProfileImage: bool with get
-    member Description: string with get
-    member FavouritesCount: int with get
-    member FollowRequestSent: FDR.JsonDocument with get
-    member FollowersCount: int with get
-    member Following: FDR.JsonDocument with get
-    member FriendsCount: int with get
-    member GeoEnabled: bool with get
-    member Id: int with get
-    member IdStr: int with get
-    member IsTranslator: bool with get
-    member Lang: string with get
-    member ListedCount: int with get
-    member Location: string with get
-    member Name: string with get
-    member Notifications: FDR.JsonDocument with get
-    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice with get
-    member ProfileBackgroundImageUrl: string with get
-    member ProfileBackgroundImageUrlHttps: string with get
-    member ProfileBackgroundTile: bool with get
-    member ProfileBannerUrl: string option with get
-    member ProfileImageUrl: string with get
-    member ProfileImageUrlHttps: string with get
-    member ProfileLinkColor: string with get
-    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice with get
-    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice with get
-    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice with get
-    member ProfileUseBackgroundImage: bool with get
-    member Protected: bool with get
-    member ScreenName: string with get
-    member StatusesCount: int with get
-    member TimeZone: string with get
-    member Url: string with get
-    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice with get
-    member Verified: bool with get
-
-class JsonProvider+DomainTypes+ProfileBackgroundColorChoice : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
-
-class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
-
-class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
-
-class JsonProvider+DomainTypes+ProfileTextColorChoice : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
 
 class JsonProvider+DomainTypes+UtcOffsetChoice : FDR.JsonDocument
     member Number: int option with get
+    JsonOperations.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
 
-class JsonProvider+DomainTypes+User2 : FDR.JsonDocument
-    member ContributorsEnabled: bool with get
-    member CreatedAt: string with get
-    member DefaultProfile: bool with get
-    member DefaultProfileImage: bool with get
-    member Description: string with get
-    member FavouritesCount: int with get
-    member FollowRequestSent: FDR.JsonDocument with get
-    member FollowersCount: int with get
-    member Following: FDR.JsonDocument with get
-    member FriendsCount: int with get
-    member GeoEnabled: bool with get
-    member Id: int with get
-    member IdStr: int with get
-    member IsTranslator: bool with get
-    member Lang: string with get
-    member ListedCount: int with get
-    member Location: string with get
-    member Name: string with get
-    member Notifications: FDR.JsonDocument with get
-    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 with get
-    member ProfileBackgroundImageUrl: string with get
-    member ProfileBackgroundImageUrlHttps: string with get
-    member ProfileBackgroundTile: bool with get
-    member ProfileBannerUrl: string option with get
-    member ProfileImageUrl: string with get
-    member ProfileImageUrlHttps: string with get
-    member ProfileLinkColor: JsonProvider+DomainTypes+ProfileLinkColorChoice with get
-    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 with get
-    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 with get
-    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice2 with get
-    member ProfileUseBackgroundImage: bool with get
-    member Protected: bool with get
-    member ScreenName: string with get
-    member StatusesCount: int with get
-    member TimeZone: string with get
-    member Url: string with get
-    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice2 with get
-    member Verified: bool with get
 
-class JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
+class JsonProvider+DomainTypes+Sizes : FDR.JsonDocument
+    member Large: JsonProvider+DomainTypes+Large with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "large"))
 
-class JsonProvider+DomainTypes+ProfileLinkColorChoice : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
+    member Medium: JsonProvider+DomainTypes+Medium with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "medium"))
 
-class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
+    member Small: JsonProvider+DomainTypes+Small with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "small"))
 
-class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
+    member Thumb: JsonProvider+DomainTypes+Thumb with get
+    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "thumb"))
 
-class JsonProvider+DomainTypes+ProfileTextColorChoice2 : FDR.JsonDocument
-    member Number: int option with get
-    member String: string option with get
 
-class JsonProvider+DomainTypes+UtcOffsetChoice2 : FDR.JsonDocument
-    member Number: int option with get
+class JsonProvider+DomainTypes+Large : FDR.JsonDocument
+    member H: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "h")).JsonValue, "")
 
-class JsonProvider+DomainTypes+Delete : FDR.JsonDocument
-    member Status: JsonProvider+DomainTypes+Status with get
+    member Resize: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "resize")).JsonValue)
 
-class JsonProvider+DomainTypes+Status : FDR.JsonDocument
-    member Id: int64 with get
-    member IdStr: int64 with get
-    member UserId: int with get
-    member UserIdStr: int with get
+    member W: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "w")).JsonValue, "")
+
+
+class JsonProvider+DomainTypes+Medium : FDR.JsonDocument
+    member H: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "h")).JsonValue, "")
+
+    member Resize: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "resize")).JsonValue)
+
+    member W: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "w")).JsonValue, "")
+
+
+class JsonProvider+DomainTypes+Small : FDR.JsonDocument
+    member H: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "h")).JsonValue, "")
+
+    member Resize: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "resize")).JsonValue)
+
+    member W: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "w")).JsonValue, "")
+
+
+class JsonProvider+DomainTypes+Thumb : FDR.JsonDocument
+    member H: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "h")).JsonValue, "")
+
+    member Resize: string with get
+    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "resize")).JsonValue)
+
+    member W: int with get
+    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "w")).JsonValue, "")
+
 

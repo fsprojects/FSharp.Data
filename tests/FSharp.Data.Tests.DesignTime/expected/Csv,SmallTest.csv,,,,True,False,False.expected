@@ -1,14 +1,76 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    static member Parse: text:string -> CsvProvider
-    static member Load: stream:System.IO.Stream -> CsvProvider
-    static member Load: reader:System.IO.TextReader -> CsvProvider
-    static member Load: uri:string -> CsvProvider
-    static member AsyncLoad: uri:string -> CsvProvider async
-    static member GetSample: () -> CsvProvider
     static member AsyncGetSample: () -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv"), ",", '"', true, false, false)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+
+    static member GetSample: () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                          [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                          [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                          [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), reader, ",", '"', true, false, false)
+
+    static member Load: uri:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                          [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Parse: text:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Name", Operations.ConvertString(Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Distance", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("Time", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2]))), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                                                                          [| Operations.ConvertStringBack(Operations.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                                                             Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3 = row in t3))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+
 
 class CsvProvider+Row : string * decimal * decimal
-    member Name: string with get
     member Distance: decimal<metre> with get
+    (let _,t2,_ = this in t2)
+
+    member Name: string with get
+    (let t1,_,_ = this in t1)
+
     member Time: decimal<s> with get
+    (let _,_,t3 = this in t3)
+
 

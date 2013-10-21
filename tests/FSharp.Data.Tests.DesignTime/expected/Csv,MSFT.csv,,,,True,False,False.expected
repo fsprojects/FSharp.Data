@@ -1,18 +1,144 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
-    static member Parse: text:string -> CsvProvider
-    static member Load: stream:System.IO.Stream -> CsvProvider
-    static member Load: reader:System.IO.TextReader -> CsvProvider
-    static member Load: uri:string -> CsvProvider
-    static member AsyncLoad: uri:string -> CsvProvider async
-    static member GetSample: () -> CsvProvider
     static member AsyncGetSample: () -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                          Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                                    [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                       Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv"), ",", '"', true, false, false)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                          Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                          Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                          Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                          Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                          Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                          Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                          Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                                    [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                       Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                       Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+
+    static member GetSample: () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                     Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                  Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                     Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                  Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                     Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                  Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), reader, ",", '"', true, false, false)
+
+    static member Load: uri:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                     Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                  Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+
+    static member Parse: text:string -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     Operations.GetNonOptionalValue("Date", Operations.ConvertDateTime("", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
+                                                     Operations.GetNonOptionalValue("Open", Operations.ConvertDecimal("", Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
+                                                     Operations.GetNonOptionalValue("High", Operations.ConvertDecimal("", Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
+                                                     Operations.GetNonOptionalValue("Low", Operations.ConvertDecimal("", Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
+                                                     Operations.GetNonOptionalValue("Close", Operations.ConvertDecimal("", Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
+                                                     Operations.GetNonOptionalValue("Volume", Operations.ConvertInteger("", Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
+                                                     Operations.GetNonOptionalValue("Adj Close", Operations.ConvertDecimal("", Operations.AsOption(row.[6])), Operations.AsOption(row.[6]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                                                               [| Operations.ConvertDateTimeBack("", Operations.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                                                                  Operations.ConvertIntegerBack("", Operations.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                                                                  Operations.ConvertDecimalBack("", Operations.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+
 
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal
-    member Date: System.DateTime with get
-    member Open: decimal with get
-    member High: decimal with get
-    member Low: decimal with get
-    member Close: decimal with get
-    member Volume: int with get
     member Adj Close: decimal with get
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member Close: decimal with get
+    (let _,_,_,_,t5,_,_ = this in t5)
+
+    member Date: System.DateTime with get
+    (let t1,_,_,_,_,_,_ = this in t1)
+
+    member High: decimal with get
+    (let _,_,t3,_,_,_,_ = this in t3)
+
+    member Low: decimal with get
+    (let _,_,_,t4,_,_,_ = this in t4)
+
+    member Open: decimal with get
+    (let _,t2,_,_,_,_,_ = this in t2)
+
+    member Volume: int with get
+    (let _,_,_,_,_,t6,_ = this in t6)
+
 

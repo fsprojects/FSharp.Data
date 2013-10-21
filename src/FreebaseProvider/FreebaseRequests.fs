@@ -161,6 +161,9 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
         if freebaseV0 && result.Code <> "/api/status/ok" then raise (InvalidOperationException(sprintf "failed query, error: '%s': \n----\n%s\n----" result.Message queryUrl))
         result
             
+    // By default we use the freebaseread API, as this supports cross-domain access
+    //static member defaultServiceUrl = "http://freebaseread.com/api"
+    static member DefaultServiceUrl =  "https://www.googleapis.com/freebase/v1"
 
     member __.LocalCacheLocation = localCacheLocation
     member __.SendingRequest = sendingRequest.Publish
