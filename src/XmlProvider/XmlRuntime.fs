@@ -45,7 +45,7 @@ type XmlElement =
     use reader = reader
     let text = reader.ReadToEnd()
     try
-      XDocument.Parse(text).Root.Descendants()
+      XDocument.Parse(text).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ ->
@@ -60,7 +60,7 @@ type XmlElement =
     let text = reader.ReadToEnd()
     return
       try
-        XDocument.Parse(text).Root.Descendants()
+        XDocument.Parse(text).Root.Elements()
         |> Seq.map (fun value -> { XElement = value })
         |> Seq.toArray
       with _ ->

@@ -37,7 +37,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     let cultureInfo = Operations.GetCulture culture
     let parseSingle _ value = XDocument.Parse(value).Root
-    let parseList _ value = XDocument.Parse(value).Root.Descendants()
+    let parseList _ value = XDocument.Parse(value).Root.Elements()
     
     let getSpecFromSamples samples = 
       let inferedType = 
