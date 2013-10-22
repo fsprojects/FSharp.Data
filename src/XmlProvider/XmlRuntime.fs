@@ -83,10 +83,10 @@ type XmlOperations =
   // Operations that obtain children - depending on the inference, we may
   // want to get an array, option (if it may or may not be there) or 
   // just the value (if we think it is always there)
-  static member GetChildrenArray(value:XmlElement, nameWithNS) =
+  static member private GetChildrenArray(value:XmlElement, nameWithNS) =
     [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> { XElement = c } |]
   
-  static member GetChildOption(value:XmlElement, nameWithNS) =
+  static member private GetChildOption(value:XmlElement, nameWithNS) =
     match XmlOperations.GetChildrenArray(value, nameWithNS) with
     | [| it |] -> Some it
     | [| |] -> None

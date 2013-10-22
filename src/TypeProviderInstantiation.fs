@@ -163,7 +163,7 @@ type TypeProviderInstantiation =
                   SafeMode = args.[6] |> bool.Parse
                   PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
-                  MissingValues = String.Join(",", Operations.DefaultMissingValues)
+                  MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
                   CacheRows = false
                   ResolutionFolder = "" }
 #if SILVERLIGHT

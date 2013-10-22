@@ -28,7 +28,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let sample = args.[0] :?> string
     let separators = args.[1] :?> string
     let culture = args.[2] :?> string
-    let cultureInfo = Operations.GetCulture culture
+    let cultureInfo = CommonRuntime.GetCulture culture
     let inferRows = args.[3] :?> int
     let schema = args.[4] :?> string
     let hasHeaders = args.[5] :?> bool
@@ -75,7 +75,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
                          parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
                          this cfg replacer resolutionFolder
 
-  let defaultMissingValues = String.Join(",", Operations.DefaultMissingValues)
+  let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>) 

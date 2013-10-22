@@ -25,15 +25,19 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Age: int with get
-    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "age")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "age")
+    CommonRuntime.JsonGetNonOptionalValue("age", CommonRuntime.JsonConvertInteger("", value), value)
 
     member FirstName: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "firstName")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "firstName")
+    CommonRuntime.JsonGetNonOptionalValue("firstName", CommonRuntime.JsonConvertString("", value), value)
 
     member IsCool: bool with get
-    JsonOperations.GetBoolean(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "isCool")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "isCool")
+    CommonRuntime.JsonGetNonOptionalValue("isCool", CommonRuntime.JsonConvertBoolean("", value), value)
 
     member LastName: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "lastName")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "lastName")
+    CommonRuntime.JsonGetNonOptionalValue("lastName", CommonRuntime.JsonConvertString("", value), value)
 
 

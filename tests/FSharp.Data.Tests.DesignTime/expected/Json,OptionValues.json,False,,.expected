@@ -25,14 +25,15 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Authors: JsonProvider+DomainTypes+Author[] with get
-    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "authors")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "authors")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
 
 class JsonProvider+DomainTypes+Author : FDR.JsonDocument
     member Age: int option with get
-    JsonOperations.ConvertOptionalProperty(this.JsonValue, "age", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonOperations.GetInteger(t.JsonValue, "")))
+    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "age"))
 
     member Name: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "name")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "name")
+    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
 
 

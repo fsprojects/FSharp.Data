@@ -64,9 +64,9 @@ let niceCamelName (s:string) =
 /// 
 /// This function is curried and should be used with partial function application:
 ///
-///     let gen = nameGenerator nicePascalName
-///     let n1 = gen "sample-name"
-///     let n2 = gen "sample-name"
+///     let makeUnique = uniqueGenerator nicePascalName
+///     let n1 = makeUnique "sample-name"
+///     let n2 = makeUnique "sample-name"
 ///
 let uniqueGenerator niceName =
   let set = new HashSet<_>()

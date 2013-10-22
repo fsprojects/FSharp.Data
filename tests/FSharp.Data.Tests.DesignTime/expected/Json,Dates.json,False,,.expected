@@ -25,15 +25,19 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Anniversary: System.DateTime with get
-    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "anniversary")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "anniversary")
+    CommonRuntime.JsonGetNonOptionalValue("anniversary", CommonRuntime.JsonConvertDateTime("", value), value)
 
     member Birthdate: System.DateTime with get
-    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "birthdate")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "birthdate")
+    CommonRuntime.JsonGetNonOptionalValue("birthdate", CommonRuntime.JsonConvertDateTime("", value), value)
 
     member NoTimeZone: System.DateTime with get
-    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "NoTimeZone")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "NoTimeZone")
+    CommonRuntime.JsonGetNonOptionalValue("NoTimeZone", CommonRuntime.JsonConvertDateTime("", value), value)
 
     member UtcTime: System.DateTime with get
-    JsonOperations.GetDateTime(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "UtcTime")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "UtcTime")
+    CommonRuntime.JsonGetNonOptionalValue("UtcTime", CommonRuntime.JsonConvertDateTime("", value), value)
 
 

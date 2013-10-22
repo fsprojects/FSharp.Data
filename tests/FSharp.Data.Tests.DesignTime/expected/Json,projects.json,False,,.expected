@@ -25,39 +25,41 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Ordercontainer: JsonProvider+DomainTypes+Ordercontainer with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "ordercontainer"))
+    JsonDocument.Create((this.JsonValue.GetProperty "ordercontainer"))
 
 
 class JsonProvider+DomainTypes+Ordercontainer : FDR.JsonDocument
     member Backgrounds: JsonProvider+DomainTypes+Backgrounds with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "backgrounds"))
+    JsonDocument.Create((this.JsonValue.GetProperty "backgrounds"))
 
     member Project: JsonProvider+DomainTypes+Project with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "project"))
+    JsonDocument.Create((this.JsonValue.GetProperty "project"))
 
 
 class JsonProvider+DomainTypes+Backgrounds : FDR.JsonDocument
     member Background: JsonProvider+DomainTypes+Background with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "background"))
+    JsonDocument.Create((this.JsonValue.GetProperty "background"))
 
 
 class JsonProvider+DomainTypes+Project : FDR.JsonDocument
     member Title: JsonProvider+DomainTypes+Title2 with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "title"))
+    JsonDocument.Create((this.JsonValue.GetProperty "title"))
 
 
 class JsonProvider+DomainTypes+Background : FDR.JsonDocument
     member Title: JsonProvider+DomainTypes+Title with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "title"))
+    JsonDocument.Create((this.JsonValue.GetProperty "title"))
 
 
 class JsonProvider+DomainTypes+Title2 : FDR.JsonDocument
     member Text: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "text")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "text")
+    CommonRuntime.JsonGetNonOptionalValue("text", CommonRuntime.JsonConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Title : FDR.JsonDocument
     member Text: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "text")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "text")
+    CommonRuntime.JsonGetNonOptionalValue("text", CommonRuntime.JsonConvertString("", value), value)
 
 

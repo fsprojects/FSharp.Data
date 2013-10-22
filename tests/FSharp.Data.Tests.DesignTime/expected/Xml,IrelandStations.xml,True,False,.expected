@@ -25,21 +25,26 @@ class XmlProvider+DomainTypes
 
 class XmlProvider+DomainTypes+ObjStation : FDR.XmlElement
     member StationAlias: string option with get
-    Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationAlias")))
+    CommonRuntime.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationAlias")))
 
     member StationCode: string with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertString(value), value)
 
     member StationDesc: string with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertString(value), value)
 
     member StationId: int with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertInteger("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertInteger("", value), value)
 
     member StationLatitude: decimal with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertDecimal("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertDecimal("", value), value)
 
     member StationLongitude: decimal with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertDecimal("", XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertDecimal("", value), value)
 
 

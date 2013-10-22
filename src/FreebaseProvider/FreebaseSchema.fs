@@ -84,7 +84,7 @@ type FreebaseProperty =
         | "/type/float" -> Some (typeof<double>, false)
         | "/type/int" -> Some (typeof<int>, false)
         | "/type/datetime" -> Some(typeof<string>, true) // Not System.DateTime because, for example, "1776" is a freebase DateTime, as is 9000BC. 
-        | null -> Some(typeof<string>, true) // Tolerate null and treat as string. We can't really do anything else.
+        | "" -> Some(typeof<string>, true) // Tolerate null and treat as string. We can't really do anything else.
         | _ -> None
     override x.ToString() = x.PropertyName
 
@@ -210,9 +210,9 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
     /// Get the types that correspond to type id. The properties of the type are filled in.
     let getTypeByTypeId typeId =
         match typeIdToType.TryGetValue typeId with
-        | true,res -> res
+        | true, res -> res
         | _ ->   
-            let query = getTypeQuery(quote typeId,"null","null",true)
+            let query = getTypeQuery(quote typeId, "null", "null", true)
             let result = fb.Query<FreebaseType[]>(query, JsonValue.GetArrayVal FreebaseType.FromJson)
             let fbType = match result with [|ft|] -> Some ft | _ -> None
             typeIdToType.[typeId] <- fbType

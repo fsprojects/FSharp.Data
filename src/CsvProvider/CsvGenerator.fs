@@ -21,10 +21,10 @@ module internal CsvTypeBuilder =
   let generateTypes asm ns typeName (missingValues, culture) replacer inferredFields =
     
     let fields = inferredFields |> List.mapi (fun index field ->
-      let typ, typWithoutMeasure, conv, convBack = Conversions.convertValue replacer (missingValues, culture) field
+      let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues culture field
       { TypeForTuple = typWithoutMeasure
         Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
-        Convert = fun rowVarExpr -> conv <@@ Operations.AsOption((%%rowVarExpr:string[]).[index]) @@>
+        Convert = fun rowVarExpr -> conv <@ TextConversions.AsOption((%%rowVarExpr:string[]).[index]) @>
         ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index)) } )
 
     // The erased row type will be a tuple of all the field types (without the units of measure)

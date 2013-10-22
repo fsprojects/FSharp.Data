@@ -94,6 +94,7 @@ type ApiaryContext(rootUrl) =
     x.GlobalHeaders.Add( (key, value) )  
 
 type ApiaryRuntime =
+
   static member ProcessParameters(reqHeaders, headers, query) =
     let headers = ApiaryUtils.parseHeaders reqHeaders @ (ApiaryUtils.emptyIfNull headers)
     let query = ApiaryUtils.emptyIfNull query
@@ -102,4 +103,3 @@ type ApiaryRuntime =
 type ApiaryGenerationHelper = 
   static member AsyncMap<'T, 'R>(work:Async<'T>, f:Func<'T, 'R>) = 
     async { let! v = work in return f.Invoke v }
-    

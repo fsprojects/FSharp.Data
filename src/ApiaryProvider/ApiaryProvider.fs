@@ -39,7 +39,7 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
 
     // Get the schema of API operations from Apiary & generate schema
     let names = ApiarySchema.getOperationTree apiName |> ApiarySchema.asRestApi
-    names |> Seq.iter (ApiaryTypeBuilder.generateSchema "" ctx "" resTy)
+    names |> Seq.iter (ApiaryTypeBuilder.generateSchema ctx "" resTy)
 
     // Return the generated type
     resTy

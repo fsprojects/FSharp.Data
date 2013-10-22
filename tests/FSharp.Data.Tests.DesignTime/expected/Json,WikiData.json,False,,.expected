@@ -25,29 +25,36 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Address: JsonProvider+DomainTypes+Address with get
-    JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "address"))
+    JsonDocument.Create((this.JsonValue.GetProperty "address"))
 
     member Age: int with get
-    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "age")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "age")
+    CommonRuntime.JsonGetNonOptionalValue("age", CommonRuntime.JsonConvertInteger("", value), value)
 
     member FirstName: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "firstName")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "firstName")
+    CommonRuntime.JsonGetNonOptionalValue("firstName", CommonRuntime.JsonConvertString("", value), value)
 
     member LastName: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "lastName")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "lastName")
+    CommonRuntime.JsonGetNonOptionalValue("lastName", CommonRuntime.JsonConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Address : FDR.JsonDocument
     member City: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "city")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "city")
+    CommonRuntime.JsonGetNonOptionalValue("city", CommonRuntime.JsonConvertString("", value), value)
 
     member PostalCode: int with get
-    JsonOperations.GetInteger(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "postalCode")).JsonValue, "")
+    let value = (this.JsonValue.TryGetProperty "postalCode")
+    CommonRuntime.JsonGetNonOptionalValue("postalCode", CommonRuntime.JsonConvertInteger("", value), value)
 
     member State: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "state")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "state")
+    CommonRuntime.JsonGetNonOptionalValue("state", CommonRuntime.JsonConvertString("", value), value)
 
     member StreetAddress: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "streetAddress")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "streetAddress")
+    CommonRuntime.JsonGetNonOptionalValue("streetAddress", CommonRuntime.JsonConvertString("", value), value)
 
 

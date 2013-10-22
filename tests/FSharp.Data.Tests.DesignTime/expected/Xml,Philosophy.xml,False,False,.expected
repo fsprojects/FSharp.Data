@@ -30,7 +30,7 @@ class XmlProvider+DomainTypes
 
 class XmlProvider+DomainTypes+Author : FDR.XmlElement
     member Birth: int option with get
-    Operations.ConvertInteger("", XmlOperations.TryGetAttribute(this, "birth"))
+    CommonRuntime.ConvertInteger("", XmlOperations.TryGetAttribute(this, "birth"))
 
     member GetBooks: () -> XmlProvider+DomainTypes+Book[]
     XmlOperations.ConvertArray(this, "book", new Func<_,_>(id)))
@@ -39,19 +39,23 @@ class XmlProvider+DomainTypes+Author : FDR.XmlElement
     XmlOperations.ConvertOptional(this, "manuscript", new Func<_,_>(id)))
 
     member Name: string with get
-    Operations.GetNonOptionalValue("Attribute name", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "name")), XmlOperations.TryGetAttribute(this, "name"))
+    let value = XmlOperations.TryGetAttribute(this, "name")
+    CommonRuntime.GetNonOptionalValue("Attribute name", CommonRuntime.ConvertString(value), value)
 
     member Surname: string with get
-    Operations.GetNonOptionalValue("Attribute surname", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "surname")), XmlOperations.TryGetAttribute(this, "surname"))
+    let value = XmlOperations.TryGetAttribute(this, "surname")
+    CommonRuntime.GetNonOptionalValue("Attribute surname", CommonRuntime.ConvertString(value), value)
 
 
 class XmlProvider+DomainTypes+Book : FDR.XmlElement
     member Title: string with get
-    Operations.GetNonOptionalValue("Attribute title", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "title")), XmlOperations.TryGetAttribute(this, "title"))
+    let value = XmlOperations.TryGetAttribute(this, "title")
+    CommonRuntime.GetNonOptionalValue("Attribute title", CommonRuntime.ConvertString(value), value)
 
 
 class XmlProvider+DomainTypes+Manuscript : FDR.XmlElement
     member Title: string with get
-    Operations.GetNonOptionalValue("Attribute title", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "title")), XmlOperations.TryGetAttribute(this, "title"))
+    let value = XmlOperations.TryGetAttribute(this, "title")
+    CommonRuntime.GetNonOptionalValue("Attribute title", CommonRuntime.ConvertString(value), value)
 
 
