@@ -126,9 +126,9 @@
       <Link>FsUnit.fs</Link>
     </Compile>
     <Compile Include="HttpUtility.fs" />
-    <Compile Include="Conversions.fs" />
+    <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue..fs" />
-    <Compile Include="JsonExtensions.fs" />
+    <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvProvider.fs" />
     <Compile Include="XmlProvider.fs" />

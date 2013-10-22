@@ -209,28 +209,23 @@ let inferCollectionType allowNulls types =
 /// the value inside a node or value of an attribute)
 let inferPrimitiveType culture (value : string) unit =
 
-  // Helper for calling Operations.AsXyz functions
+  // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func culture value
 
-  let asGuid _ value = Operations.AsGuid value
+  let asGuid _ value = TextConversions.AsGuid value
 
-  // This always returns Primitive, unless the value is `null`. We do not
-  // return `null` if the value is just empty string, because we do not want
-  // to infer the type of XML attributes or JSON fields as `Null` when they
-  // are perfectly valid (empty) strings. This is handled differently in CSV.
   match value with
-  | null -> Null
   | "0" -> Primitive(typeof<Bit0>, unit)
   | "1" -> Primitive(typeof<Bit1>, unit)
-  | Parse Operations.AsBoolean _ -> Primitive(typeof<bool>, unit)
-  | Parse Operations.AsInteger _ -> Primitive(typeof<int>, unit)
-  | Parse Operations.AsInteger64 _ -> Primitive(typeof<int64>, unit)
-  | Parse Operations.AsDecimal _ -> Primitive(typeof<decimal>, unit)
-  | Parse (Operations.AsFloat [||]) _ -> Primitive(typeof<float>, unit)
+  | Parse TextConversions.AsBoolean _ -> Primitive(typeof<bool>, unit)
+  | Parse TextConversions.AsInteger _ -> Primitive(typeof<int>, unit)
+  | Parse TextConversions.AsInteger64 _ -> Primitive(typeof<int64>, unit)
+  | Parse TextConversions.AsDecimal _ -> Primitive(typeof<decimal>, unit)
+  | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> Primitive(typeof<float>, unit)
   | Parse asGuid _ -> Primitive(typeof<Guid>, unit)
-  | Parse Operations.AsDateTime _ 
+  | Parse TextConversions.AsDateTime _ 
         // If this can be considered a decimal under the invariant culture, 
         // it's a safer bet to consider it a string than a DateTime
-        when Operations.AsDecimal CultureInfo.InvariantCulture value = None -> 
+        when TextConversions.AsDecimal CultureInfo.InvariantCulture value = None -> 
       Primitive(typeof<DateTime>, unit)
   | _ -> Primitive(typeof<string>, unit)

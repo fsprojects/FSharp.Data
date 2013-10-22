@@ -25,11 +25,12 @@ class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Items: JsonProvider+DomainTypes+Item[] with get
-    JsonOperations.ConvertArray(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "items")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "items")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
 
 class JsonProvider+DomainTypes+Item : FDR.JsonDocument
     member Id: string with get
-    JsonOperations.GetString(JsonDocument.Create(JsonOperations.GetProperty(this.JsonValue, "id")).JsonValue)
+    let value = (this.JsonValue.TryGetProperty "id")
+    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
 
 

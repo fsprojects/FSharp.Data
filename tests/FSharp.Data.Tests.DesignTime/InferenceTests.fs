@@ -28,7 +28,7 @@ let SimpleCollection typ =
 let WithNull typ = 
   Heterogeneous(Map.ofSeq [typeTag typ, typ; typeTag Null, Null])
 
-let culture = Operations.GetCulture ""
+let culture = CommonRuntime.GetCulture ""
 
 [<Test>]
 let ``Seq.pairBy helper function works``() = 

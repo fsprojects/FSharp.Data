@@ -28,6 +28,7 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
   let convertValue (arg:obj) = 
     match arg with
     | :? Expr as e -> e
+    | :? Var as v -> Expr.Var v
     | value -> Expr.Value(value, value.GetType())
 
   let invokeOperation (tyargs:obj, tyargsT) (args:obj, argsT) =

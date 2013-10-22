@@ -35,7 +35,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let culture = args.[3] :?> string
     let resolutionFolder = args.[4] :?> string
 
-    let cultureInfo = Operations.GetCulture culture
+    let cultureInfo = CommonRuntime.GetCulture culture
     let parseSingle _ value = XDocument.Parse(value).Root
     let parseList _ value = XDocument.Parse(value).Root.Elements()
     
@@ -45,8 +45,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowNulls*)true globalInference sampleXml)
         |> Seq.fold (StructureInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
 
-      let ctx = XmlGenerationContext.Create(domainTy, globalInference, replacer)  
-      let resTy, resTypConv = XmlTypeBuilder.generateXmlType culture ctx inferedType
+      let ctx = XmlGenerationContext.Create(culture, domainTy, globalInference, replacer)  
+      let resTy, resTypConv = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
         RepresentationType = resTy

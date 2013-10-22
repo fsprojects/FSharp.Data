@@ -41,9 +41,12 @@
     <Compile Include="Common\ProviderFileSystem.fs" />
     <Compile Include="Common\StructuralTypes.fs" />
     <Compile Include="Common\HttpUtils.fs" />
-    <Compile Include="Common\Conversions.fs" />
     <Compile Include="Library\Http.fs" />
+    <Compile Include="Library\TextConversions.fs" />
     <Compile Include="Library\Json.fs" />
+    <Compile Include="Library\JsonConversions.fs" />
+    <Compile Include="Library\JsonExtensions.fs" />
+    <Compile Include="Providers\CommonRuntime.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
     <Compile Include="Runtime.Experimental.fs" />

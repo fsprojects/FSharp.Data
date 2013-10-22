@@ -38,11 +38,13 @@ class XmlProvider+DomainTypes+Backgrounds : FDR.XmlElement
 
 class XmlProvider+DomainTypes+Project : FDR.XmlElement
     member Title: string with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertString(value), value)
 
 
 class XmlProvider+DomainTypes+Background : FDR.XmlElement
     member Title: string with get
-    Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title"))), XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title")))
+    let value = XmlOperations.TryGetValue(XmlOperations.GetChild(this, "title"))
+    CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertString(value), value)
 
 

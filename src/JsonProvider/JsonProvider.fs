@@ -36,7 +36,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let culture = args.[3] :?> string
     let resolutionFolder = args.[4] :?> string
 
-    let cultureInfo = Operations.GetCulture culture
+    let cultureInfo = CommonRuntime.GetCulture culture
     let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
     let parseList _ value = JsonValue.Parse(value, cultureInfo).AsArray() :> seq<_>
     
@@ -46,19 +46,22 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowNulls*)true sampleJson ]
         |> Seq.fold (StructureInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
   
-      let ctx = JsonGenerationContext.Create(domainTy, replacer)
-      let resTy, resTypConv = JsonTypeBuilder.generateJsonType culture ctx (NameUtils.singularize rootName) inferedType
+      let ctx = JsonGenerationContext.Create(culture, domainTy, replacer)
+      let input = { ParentName = NameUtils.singularize rootName
+                    CanPassUnpackedOption = false
+                    Optional = false }
+      let output = JsonTypeBuilder.generateJsonType ctx input inferedType
 
       { GeneratedType = tpType
-        RepresentationType = resTy
+        RepresentationType = output.ConvertedType
         CreateFromTextReader = fun reader -> 
-          resTypConv <@@ JsonDocument.Create(%reader, culture) @@>
+          <@@ JsonDocument.Create(%reader, culture) @@> |> output.Converter
         AsyncCreateFromTextReader = fun readerAsync -> 
-          resTypConv <@@ JsonDocument.AsyncCreate(%readerAsync, culture) @@>
+          <@@ JsonDocument.AsyncCreate(%readerAsync, culture) @@> |> output.Converter
         CreateFromTextReaderForSampleList = fun reader -> 
-          resTypConv <@@ JsonDocument.CreateList(%reader, culture) @@>
+          <@@ JsonDocument.CreateList(%reader, culture) @@> |> output.Converter
         AsyncCreateFromTextReaderForSampleList = fun readerAsync -> 
-          resTypConv <@@ JsonDocument.AsyncCreateList(%readerAsync, culture) @@> }
+          <@@ JsonDocument.AsyncCreateList(%readerAsync, culture) @@> |> output.Converter }
 
     generateConstructors "JSON" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 

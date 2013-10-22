@@ -41,13 +41,16 @@
     <Compile Include="Common\ProviderFileSystem.fs" />
     <Compile Include="Common\StructuralTypes.fs" />
     <Compile Include="Common\HttpUtils.fs" />
-    <Compile Include="Common\Conversions.fs" />
     <Compile Include="Common\Caching.fs" />
     <Compile Include="Library\Http.fs" />
-    <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\CsvRuntime.fs" />
+    <Compile Include="Library\TextConversions.fs" />
     <Compile Include="Library\Csv.fs" />
+    <Compile Include="Library\Csv.Untyped.fs" />
+    <Compile Include="Library\Json.fs" />
+    <Compile Include="Library\JsonConversions.fs" />
+    <Compile Include="Library\JsonExtensions.fs" />
     <Compile Include="Library\FreebaseOperators.fs" />
+    <Compile Include="Providers\CommonRuntime.fs" />
     <Compile Include="JsonProvider\JsonRuntime.fs" />
     <Compile Include="XmlProvider\XmlRuntime.fs" />
     <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
@@ -81,7 +84,7 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin\v40" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin\v40" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')"/>
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
 </Project>

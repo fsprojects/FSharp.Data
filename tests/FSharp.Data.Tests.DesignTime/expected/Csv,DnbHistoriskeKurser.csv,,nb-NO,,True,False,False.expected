@@ -1,178 +1,255 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member AsyncGetSample: () -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                          Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                          Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                          Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                          Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                          Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                          Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                          Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                          Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                          Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                          Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                           [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DnbHistoriskeKurser.csv"), ",", '"', true, false, false)
+                                                          let value = TextConversions.AsOption(row.[0])
+                                                          CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                          let value = TextConversions.AsOption(row.[1])
+                                                          CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[2])
+                                                          CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[3])
+                                                          CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[4])
+                                                          CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[5])
+                                                          CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[6])
+                                                          CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[7])
+                                                          CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[8])
+                                                          CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[9])
+                                                          CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[10])
+                                                          CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                 [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DnbHistoriskeKurser.csv"), ",", '"', true, false, false)
 
     static member AsyncLoad: uri:string -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                          Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                          Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                          Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                          Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                          Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                          Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                          Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                          Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                          Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                          Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                           [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                              Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+                                                          let value = TextConversions.AsOption(row.[0])
+                                                          CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                          let value = TextConversions.AsOption(row.[1])
+                                                          CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[2])
+                                                          CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[3])
+                                                          CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[4])
+                                                          CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[5])
+                                                          CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[6])
+                                                          CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[7])
+                                                          CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[8])
+                                                          CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[9])
+                                                          CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                          let value = TextConversions.AsOption(row.[10])
+                                                          CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                 [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                                    CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
 
     static member GetSample: () -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                     Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                     Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                     Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                     Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                     Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                     Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                     Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                     Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                     Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                     Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                      [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DnbHistoriskeKurser.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+                                                     let value = TextConversions.AsOption(row.[0])
+                                                     CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                     let value = TextConversions.AsOption(row.[1])
+                                                     CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[2])
+                                                     CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[3])
+                                                     CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[4])
+                                                     CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[5])
+                                                     CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[6])
+                                                     CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[7])
+                                                     CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[8])
+                                                     CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[9])
+                                                     CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[10])
+                                                     CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DnbHistoriskeKurser.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                     Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                     Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                     Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                     Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                     Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                     Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                     Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                     Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                     Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                     Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                      [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsOption(row.[0])
+                                                     CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                     let value = TextConversions.AsOption(row.[1])
+                                                     CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[2])
+                                                     CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[3])
+                                                     CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[4])
+                                                     CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[5])
+                                                     CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[6])
+                                                     CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[7])
+                                                     CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[8])
+                                                     CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[9])
+                                                     CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[10])
+                                                     CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
 
     static member Load: reader:System.IO.TextReader -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                     Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                     Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                     Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                     Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                     Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                     Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                     Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                     Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                     Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                     Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                      [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), reader, ",", '"', true, false, false)
+                                                     let value = TextConversions.AsOption(row.[0])
+                                                     CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                     let value = TextConversions.AsOption(row.[1])
+                                                     CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[2])
+                                                     CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[3])
+                                                     CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[4])
+                                                     CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[5])
+                                                     CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[6])
+                                                     CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[7])
+                                                     CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[8])
+                                                     CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[9])
+                                                     CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[10])
+                                                     CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), reader, ",", '"', true, false, false)
 
     static member Load: uri:string -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                     Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                     Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                     Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                     Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                     Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                     Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                     Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                     Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                     Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                     Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                      [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+                                                     let value = TextConversions.AsOption(row.[0])
+                                                     CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                     let value = TextConversions.AsOption(row.[1])
+                                                     CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[2])
+                                                     CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[3])
+                                                     CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[4])
+                                                     CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[5])
+                                                     CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[6])
+                                                     CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[7])
+                                                     CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[8])
+                                                     CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[9])
+                                                     CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[10])
+                                                     CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     Operations.GetNonOptionalValue("Dato", Operations.ConvertDateTime("nb-NO", Operations.AsOption(row.[0])), Operations.AsOption(row.[0])),
-                                                     Operations.GetNonOptionalValue("USD", Operations.ConvertString(Operations.AsOption(row.[1])), Operations.AsOption(row.[1])),
-                                                     Operations.GetNonOptionalValue("EUR", Operations.ConvertString(Operations.AsOption(row.[2])), Operations.AsOption(row.[2])),
-                                                     Operations.GetNonOptionalValue("SEK", Operations.ConvertString(Operations.AsOption(row.[3])), Operations.AsOption(row.[3])),
-                                                     Operations.GetNonOptionalValue("DKK", Operations.ConvertString(Operations.AsOption(row.[4])), Operations.AsOption(row.[4])),
-                                                     Operations.GetNonOptionalValue("GBP", Operations.ConvertString(Operations.AsOption(row.[5])), Operations.AsOption(row.[5])),
-                                                     Operations.GetNonOptionalValue("CHF", Operations.ConvertString(Operations.AsOption(row.[6])), Operations.AsOption(row.[6])),
-                                                     Operations.GetNonOptionalValue("JPY", Operations.ConvertString(Operations.AsOption(row.[7])), Operations.AsOption(row.[7])),
-                                                     Operations.GetNonOptionalValue("CAD", Operations.ConvertString(Operations.AsOption(row.[8])), Operations.AsOption(row.[8])),
-                                                     Operations.GetNonOptionalValue("ISK", Operations.ConvertString(Operations.AsOption(row.[9])), Operations.AsOption(row.[9])),
-                                                     Operations.GetNonOptionalValue("AUD", Operations.ConvertString(Operations.AsOption(row.[10])), Operations.AsOption(row.[10]))), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                                                      [| Operations.ConvertDateTimeBack("nb-NO", Operations.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
-                                                                                                                                                                                                         Operations.ConvertStringBack(Operations.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsOption(row.[0])
+                                                     CommonRuntime.GetNonOptionalValue("Dato", CommonRuntime.ConvertDateTime("nb-NO", value), value),
+                                                     let value = TextConversions.AsOption(row.[1])
+                                                     CommonRuntime.GetNonOptionalValue("USD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[2])
+                                                     CommonRuntime.GetNonOptionalValue("EUR", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[3])
+                                                     CommonRuntime.GetNonOptionalValue("SEK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[4])
+                                                     CommonRuntime.GetNonOptionalValue("DKK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[5])
+                                                     CommonRuntime.GetNonOptionalValue("GBP", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[6])
+                                                     CommonRuntime.GetNonOptionalValue("CHF", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[7])
+                                                     CommonRuntime.GetNonOptionalValue("JPY", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[8])
+                                                     CommonRuntime.GetNonOptionalValue("CAD", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[9])
+                                                     CommonRuntime.GetNonOptionalValue("ISK", CommonRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsOption(row.[10])
+                                                     CommonRuntime.GetNonOptionalValue("AUD", CommonRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("nb-NO", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_,_,_,_,_ = row in t2)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_,_,_,_,_ = row in t3)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_,_,_,_,_ = row in t4)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_,_,_,_,_ = row in t5)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_,_,_,_,_ = row in t6)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7,_,_,_,_ = row in t7)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,t8,_,_,_ = row in t8)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
+                                                                                                                                                               CommonRuntime.ConvertStringBack(CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
 
 
 class CsvProvider+Row : System.DateTime * string * string * string * string * string * string * string * string * string * string

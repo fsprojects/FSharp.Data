@@ -1,143 +1,284 @@
 ﻿// --------------------------------------------------------------------------------------
-// CSV untyped API
+// CSV type provider - runtime components (parsing and type representing CSV)
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Csv
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+
+namespace System.Runtime.InteropServices
 
 open System
-open System.Globalization
+
+[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
+type OptionalAttribute() = 
+    inherit Attribute()
+
+#endif
+
+namespace FSharp.Data.RuntimeImplementation
+
+open System
+open System.ComponentModel
 open System.IO
 open System.Runtime.InteropServices
+open System.Text
 open FSharp.Data.RuntimeImplementation
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
-[<StructuredFormatDisplay("{Columns}")>]
-type CsvRow(parent:CsvFile, columns:string[]) =
+// --------------------------------------------------------------------------------------
 
-  member __.Columns = columns
-  member __.GetColumn columnName = columns.[parent.GetColumnIndex columnName]
+// Parser for the CSV format 
+module internal CsvReader = 
 
-/// Represents a CSV file. The lines are read on demand from 'reader'.
-/// Columns are delimited by one of the chars passed by 'separators' (defaults to just ','), and
-/// to escape the separator chars, the 'quote' character will be used (defaults to '"').
-/// If 'hasHeaders' is true (the default), the first line read by 'reader' will not be considered part of data.
-/// If 'ignoreErrors' is true (the default is false), rows with a different number of columns from the header row
-/// (or the first row if headers are not present) will be ignored
-and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
-  inherit CsvFile<CsvRow>(Func<_,_,_>(fun this columns -> CsvRow((box this) :?> CsvFile, columns)),
-                          Func<_,_>(fun (row:CsvRow) -> row.Columns),
-                          readerFunc, defaultArg separators "", defaultArg quote '"', 
-                          defaultArg hasHeaders true, defaultArg ignoreErrors false)
+  /// Lazily reads the specified CSV file using the specified separators
+  /// (Handles most of the RFC 4180 - most notably quoted values and also
+  /// quoted newline characters in columns)
+  let readCsvFile (reader:TextReader) (separators:string) quote =
 
-  let headerDic = 
-    match this.Headers with
-    | Some headers ->
-        headers
-        |> Seq.mapi (fun index header -> header, index)
-        |> dict
-    | None -> [] |> dict
+    let inline (|Char|) (n:int) = char n
+    let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
+    
+    let separators = separators.ToCharArray()
+    let inline (|Separator|_|) (n:int) =
+      if separators.Length = 1 then 
+        if (char n) = separators.[0] then Some() else None
+      else
+        if Array.exists ((=) (char n)) separators then Some() else None
 
-  member internal __.GetColumnIndex columnName = headerDic.[columnName]
+    /// Read quoted string value until the end (ends with end of stream or
+    /// the " character, which can be encoded using double ")
+    let rec readString (chars:StringBuilder) = 
+      match reader.Read() with
+      | -1 -> chars
+      | Quote when reader.Peek() = int quote ->
+          reader.Read() |> ignore
+          readString (chars.Append quote)
+      | Quote -> chars
+      | Char c -> readString (chars.Append c)
 
-  /// Parses the specified CSV content
-  static member Parse(text, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
-    let readerFunc = Func<_>(fun () -> new StringReader(text) :> TextReader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    /// Reads a line with data that are separated using specified separators
+    /// and may be quoted. Ends with newline or end of input.
+    let rec readLine data (chars:StringBuilder) = 
+      match reader.Read() with
+      | -1 | Char '\r' | Char '\n' -> 
+          let item = chars.ToString()
+          item::data
+      | Separator -> 
+          let item = chars.ToString()
+          readLine (item::data) (StringBuilder())
+      | Quote ->
+          readLine data (readString chars)
+      | Char c ->
+          readLine data (chars.Append c)
 
-  /// Loads CSV from the specified stream
-  static member Load(stream:Stream, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () -> 
-      if firstTime.Value then firstTime := false
-      else stream.Position <- 0L
-      new StreamReader(stream) :> TextReader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    /// Reads multiple lines from the input, skipping newline characters
+    let rec readLines lineNumber = seq {
+      match reader.Peek() with
+      | -1 -> ()
+      | Char '\r' | Char '\n' -> 
+          reader.Read() |> ignore
+          yield! readLines lineNumber
+      | _ -> 
+          yield readLine [] (StringBuilder()) |> List.rev |> Array.ofList, lineNumber
+          yield! readLines (lineNumber + 1) }
 
-  /// Loads CSV from the specified reader
-  static member Load(reader:TextReader, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () ->  
-      if firstTime.Value then firstTime := false
-      elif reader :? StreamReader then
-        let sr = reader :?> StreamReader
-        sr.BaseStream.Position <- 0L
-        sr.DiscardBufferedData()
-      else invalidOp "The underlying source stream is not re-entrant. Use the Cache method to cache the data."
-      reader)
-    new CsvFile(readerFunc, ?separators=separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+    readLines 0
 
-  /// Loads CSV from the specified uri
-  static member Load(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = 
-    let separators = defaultArg separators ""    
-    let separators = 
-        if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase) 
-        then "\t" else separators
-    let readerFunc = Func<_>(fun () -> asyncReadTextAtRuntime false "" "" uri |> Async.RunSynchronously)
-    new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+// --------------------------------------------------------------------------------------
 
-  /// Loads CSV from the specified uri asynchronously
-  static member AsyncLoad(uri:string, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) = async {
-    let separators = defaultArg separators ""    
-    let separators = 
-        if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase)
-        then "\t" else separators
-    let! reader = asyncReadTextAtRuntime false "" "" uri
-    let firstTime = ref true
-    let readerFunc = Func<_>(fun () ->  
-      if firstTime.Value then firstTime := false; reader
-      else asyncReadTextAtRuntime false "" "" uri |> Async.RunSynchronously)
-    return new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
+module private CsvHelpers = 
+
+  let inline tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
+    try 
+      stringArrayToRow.Invoke(this, row) |> Choice1Of2 
+    with exn -> 
+      Choice2Of2 exn
+
+// --------------------------------------------------------------------------------------
+
+/// An enumerable that will return elements from the 'firstSeq' first time it
+/// is accessed and then will call 'nextSeq' each time for all future GetEnumerator calls
+type ReentrantEnumerable<'T>(firstSeq:seq<'T>, nextSeq:unit -> seq<'T>) =
+  let mutable first = true
+  interface seq<'T> with
+    member x.GetEnumerator() = 
+      if first then 
+        first <- false
+        firstSeq.GetEnumerator()
+      else nextSeq().GetEnumerator()
+  interface System.Collections.IEnumerable with
+    member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
+
+// --------------------------------------------------------------------------------------
+
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, data:seq<'RowType>, headers, numberOfColumns, separators, quote) =
+
+  member __.Data = data
+  member __.Headers = headers
+  member __.NumberOfColumns = numberOfColumns
+  member __.Separators = separators
+  member __.Quote = quote
+  
+  interface IDisposable with
+    member __.Dispose() = 
+      if disposer <> null then disposer.Dispose()
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+    if cacheRows then uncachedCsv.Cache() else uncachedCsv
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  static member AsyncCreateNonReentrant (stringArrayToRow, rowToStringArray, asyncReader:Async<TextReader>, separators, quote, hasHeaders, ignoreErrors, cacheRows) = async {
+    let! reader = asyncReader
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+    return if cacheRows then uncachedCsv.Cache() else uncachedCsv
   }
 
-// --------------------------------------------------------------------------------------
-// Unsafe extensions for simple CSV processing
-// --------------------------------------------------------------------------------------
-
-/// Adds extension methods that can be used to work with CsvRow in a more convenient, but
-/// less safe way. The module also provides the dynamic operator.
-module Extensions = 
+  new (stringArrayToRow, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) as this =
   
-  type CsvRow with
-      member x.Item with get(index) = x.Columns.[index]
-      member x.Item with get(columnName) = x.GetColumn(columnName)
+    let separators = if String.IsNullOrEmpty separators then "," else separators
   
-  let (?) (csvRow:CsvRow) (columnName:string) = csvRow.[columnName]
+    // Call 'readerFunc' to get the first iterator and read the first line
+    let firstReader = readerFunc.Invoke()
+    let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+    let firstLine = 
+      if linesIterator.MoveNext() then
+        linesIterator.Current
+      else
+        // If it does not have any lines, that's wrong...
+        linesIterator.Dispose()
+        if hasHeaders then failwithf "Invalid CSV file: header row not found" 
+        else failwithf "Invalid CSV file: no data rows found"
 
-  type String with
+    // Get headers and count columns (if no headers, use the first line)
+    let headers = 
+      if not hasHeaders then None
+      else firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
+    let numberOfColumns =
+      let (Some headers, _ | _, (headers, _)) = headers, firstLine
+      headers |> Array.length
 
-    member x.AsDateTime(?culture) = 
-      match x |> Operations.AsDateTime (defaultArg culture CultureInfo.InvariantCulture) with 
-      | Some d -> d
-      | _ -> failwithf "Not a datetime - %s" x
+    // Track created Readers so that we can dispose of all of them
+    let disposeFuncs = new ResizeArray<_>()
+    let disposer = 
+      { new IDisposable with
+          member x.Dispose() = Seq.iter (fun f -> f()) disposeFuncs }
+    disposeFuncs.Add(firstReader.Dispose)
 
-    member x.AsFloat(?culture, ?missingValues) =       
-      let missingValues = defaultArg missingValues Operations.DefaultMissingValues
-      let culture = defaultArg culture CultureInfo.InvariantCulture
-      match x |> Operations.AsFloat missingValues culture with
-      | Some n -> n
-      | _ -> failwithf "Not a float - %s" x
+    // Create sequence that is exposed as 'Data' - on the first read, finish
+    // reading the opened reader; on future reads, get a new reader (and skip headers)
+    let firstData = seq {
+      use ls = linesIterator
+      if not hasHeaders then yield firstLine
+      while ls.MoveNext() do yield ls.Current }
+    let nextData () = seq { 
+      let reader = readerFunc.Invoke()
+      let csv = CsvReader.readCsvFile reader separators quote
+      yield! if hasHeaders then Seq.skip 1 csv else csv }
+    let data = ReentrantEnumerable<_>(firstData, nextData)
 
-    member x.AsDecimal(?culture) = 
-      match x |> Operations.AsDecimal (defaultArg culture CultureInfo.InvariantCulture) with
-      | Some n -> n
-      | _ -> failwithf "Not a decimal - %s" x
+    // Return data with parsed columns
+    let data = seq {
+      for row, lineNumber in data do
+        if row.Length <> numberOfColumns then
+          // Ignore rows with different number of columns when ignoreErrors is set to true
+          if not ignoreErrors then
+            let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
+        else
+          // Always ignore empty rows
+          if not (Array.forall String.IsNullOrWhiteSpace row) then
+            // Try to convert rows to 'RowType      
+            let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
+            match convertedRow, ignoreErrors with
+            | Choice1Of2 convertedRow, _ -> yield convertedRow
+            | Choice2Of2 _, true -> ()
+            | Choice2Of2 exn, false -> 
+                let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+                failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+    }
+    new CsvFile<'RowType>(rowToStringArray, disposer, data, headers, numberOfColumns, separators, quote)
+
+  /// Saves CSV to the specified writer
+  member x.Save(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =
+
+    let separator = (defaultArg separator x.Separators.[0]).ToString()
+    let quote = (defaultArg quote x.Quote).ToString()
+    let doubleQuote = quote + quote
+
+    use writer = writer
+
+    let writeLine writeItem (items:string[]) =
+      for i = 0 to items.Length-2 do
+        writeItem items.[i]
+        writer.Write separator
+      writeItem items.[items.Length-1]
+      writer.WriteLine()
+
+    match x.Headers with
+    | Some headers -> headers |> writeLine writer.Write
+    | None -> ()
+
+    for row in x.Data do
+      row |> rowToStringArray.Invoke |> writeLine (fun item -> 
+        if item.Contains separator then
+          writer.Write quote
+          writer.Write (item.Replace(quote, doubleQuote))
+          writer.Write quote
+        else
+          writer.Write item)
+
+  /// Saves CSV to the specified stream
+  member x.Save(stream:Stream, [<Optional>] ?separator, [<Optional>] ?quote) = 
+    let writer = new StreamWriter(stream)
+    x.Save(writer, ?separator=separator, ?quote=quote)
+
+#if FX_NO_LOCAL_FILESYSTEM
+#else
+  /// Saves CSV to the specified file
+  member x.Save(path:string, [<Optional>] ?separator, [<Optional>] ?quote) = 
+    let writer = new StreamWriter(File.OpenWrite(path))
+    x.Save(writer, ?separator=separator, ?quote=quote)
+#endif
+
+  /// Saves CSV to a string
+  member x.SaveToString([<Optional>] ?separator, [<Optional>] ?quote) = 
+     let writer = new StringWriter()
+     x.Save(writer, ?separator=separator, ?quote=quote)
+     writer.ToString()
+
+  member inline private x.map f =
+    new CsvFile<'RowType>(rowToStringArray, null, x.Data |> f, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  /// Returns a new csv with the same rows as the original but which guarantees
+  /// that each row will be only be read and parsed from the input at most once.
+  member x.Cache() =   
+    Seq.cache |> x.map
+
+  /// Returns a new csv containing only the rows for which the given predicate returns "true".
+  member x.Filter (predicate:Func<_,_>) = 
+    Seq.filter predicate.Invoke |> x.map
   
-    member x.AsInteger(?culture) = 
-      match x |> Operations.AsInteger (defaultArg culture CultureInfo.InvariantCulture) with
-      | Some n -> n
-      | _ -> failwithf "Not an int - %s" x
-
-    member x.AsInteger64(?culture) = 
-      match x |> Operations.AsInteger64 (defaultArg culture CultureInfo.InvariantCulture) with
-      | Some n -> n
-      | _ -> failwithf "Not an int64 - %s" x
-
-    member x.AsBoolean(?culture) =
-      match x |> Operations.AsBoolean (defaultArg culture CultureInfo.InvariantCulture) with
-      | Some n -> n
-      | _ -> failwithf "Not a bool - %s" x
-
-    member x.AsGuid(?culture) =
-      match x |> Operations.AsGuid with
-      | Some n -> n
-      | _ -> failwithf "Not a guid - %s" x
+  /// Returns a new csv with only the first N rows of the underlying csv.
+  member x.Take count = 
+    Seq.take count |> x.map
+  
+  /// Returns a csv that, when iterated, yields rowswhile the given predicate
+  /// returns <c>true</c>, and then returns no further rows.
+  member x.TakeWhile (predicate:Func<_,_>) = 
+    Seq.takeWhile predicate.Invoke |> x.map
+  
+  /// Returns a csv that skips N rows and then yields the remaining rows.
+  member x.Skip count = 
+    Seq.skip count |> x.map
+  
+  /// Returns a csv that, when iterated, skips rows while the given predicate returns
+  /// <c>true</c>, and then yields the remaining rows.
+  member x.SkipWhile (predicate:Func<_,_>) = 
+    Seq.skipWhile predicate.Invoke |> x.map
+  
+  /// Returns a csv that when enumerated returns at most N rows.
+  member x.Truncate count = 
+    Seq.truncate count |> x.map

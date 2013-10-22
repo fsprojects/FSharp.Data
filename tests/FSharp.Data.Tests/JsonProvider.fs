@@ -40,9 +40,9 @@ let ``Reading a required decimal that is not a valid decimal throws an exception
   (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
 
 [<Test>]
-let ``Reading a required float that is not a valid float throws an exception`` () = 
+let ``Reading a required float that is not a valid float returns NaN`` () = 
   let prov = DecimalFields.Parse(""" {"a":"hello", "b":123} """)
-  (fun () -> prov.A |> ignore) |> should throw typeof<Exception>
+  prov.A |> should equal Double.NaN
 
 [<Test>]
 let ``Optional int correctly infered`` () = 
@@ -246,7 +246,7 @@ let ``Can load empty json file and fails on property access``() =
     let document = WikiSample.Load("Data/Empty.json")
     let failed = ref false
     try
-        document.FirstName |> ignore
+        document.Age |> ignore
     with
     | _ -> failed := true
     !failed |> should be True

@@ -26,16 +26,18 @@ class XmlProvider+DomainTypes+Authors : FDR.XmlElement
     XmlOperations.ConvertArray(this, "author", new Func<_,_>(id)))
 
     member Topic: string with get
-    Operations.GetNonOptionalValue("Attribute topic", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "topic")), XmlOperations.TryGetAttribute(this, "topic"))
+    let value = XmlOperations.TryGetAttribute(this, "topic")
+    CommonRuntime.GetNonOptionalValue("Attribute topic", CommonRuntime.ConvertString(value), value)
 
 
 class XmlProvider+DomainTypes
 
 class XmlProvider+DomainTypes+Author : FDR.XmlElement
     member Born: int option with get
-    Operations.ConvertInteger("", XmlOperations.TryGetAttribute(this, "born"))
+    CommonRuntime.ConvertInteger("", XmlOperations.TryGetAttribute(this, "born"))
 
     member Name: string with get
-    Operations.GetNonOptionalValue("Attribute name", Operations.ConvertString(XmlOperations.TryGetAttribute(this, "name")), XmlOperations.TryGetAttribute(this, "name"))
+    let value = XmlOperations.TryGetAttribute(this, "name")
+    CommonRuntime.GetNonOptionalValue("Attribute name", CommonRuntime.ConvertString(value), value)
 
 

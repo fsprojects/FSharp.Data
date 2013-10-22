@@ -248,9 +248,9 @@ let inferType (csv:CsvFile) count (missingValues, culture) schema safeMode prefe
                 match schema.[index] with
                 | Some _ -> Null // this will be ignored, so just return anything
                 | None ->
-                    // Treat empty values as 'null' values.
+                    // If there's only whitespace between commas, treat it as a missing value
                     if String.IsNullOrWhiteSpace value then Null
-                    // Missing values will be treated as float unless the preferOptionals is set to true
+                    // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
                     elif Array.exists ((=) <| value.Trim()) missingValues then 
                         if preferOptionals then Null else Primitive(typeof<float>, unit)
                     else inferPrimitiveType culture value unit

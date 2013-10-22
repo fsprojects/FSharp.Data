@@ -26,13 +26,15 @@ class XmlProvider+DomainTypes+Div : FDR.XmlElement
     XmlOperations.ConvertArray(this, "div", new Func<_,_>(id)))
 
     member GetSpans: () -> string[]
-    XmlOperations.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> Operations.GetNonOptionalValue("Value", Operations.ConvertString(XmlOperations.TryGetValue(t)), XmlOperations.TryGetValue(t))))
+    XmlOperations.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> 
+                                                              let value = XmlOperations.TryGetValue(t)
+                                                              CommonRuntime.GetNonOptionalValue("Value", CommonRuntime.ConvertString(value), value)))
 
     member Id: string option with get
-    Operations.ConvertString(XmlOperations.TryGetAttribute(this, "id"))
+    CommonRuntime.ConvertString(XmlOperations.TryGetAttribute(this, "id"))
 
     member Value: string option with get
-    Operations.ConvertString(XmlOperations.TryGetValue(this))
+    CommonRuntime.ConvertString(XmlOperations.TryGetValue(this))
 
 
 class XmlProvider+DomainTypes

@@ -5,6 +5,7 @@
 namespace ProviderImplementation
 
 open System
+open System.Globalization
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
@@ -20,14 +21,15 @@ type internal ApiaryGenerationContext =
     ApiName : string 
     ApiaryContextSelector : Expr -> Expr }
   static member Create(apiName, domainTy, replacer) =
-    { DomainType = domainTy; ApiName = apiName
+    { DomainType = domainTy
+      ApiName = apiName
       Replacer = replacer 
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
       ApiaryContextSelector = fun e -> <@@ (%%e : ApiaryContext) :> InternalApiaryContext @@> }
   member x.JsonContext = 
     let packer e = <@@ ApiaryDocument(%%e) @@>
     let unpacker e = <@@ ((%%e):ApiaryDocument).JsonValue @@>
-    JsonGenerationContext.Create(x.DomainType, typeof<ApiaryDocument>, x.Replacer, packer, unpacker, x.UniqueNiceName)
+    JsonGenerationContext.Create("", x.DomainType, typeof<ApiaryDocument>, x.Replacer, packer, unpacker, x.UniqueNiceName)
 
 module internal ApiaryTypeBuilder = 
 
@@ -43,15 +45,21 @@ module internal ApiaryTypeBuilder =
   ///
   /// TODO: Lots of room for improvement here (pattern matching based
   /// on error codes, handle other file formats like XML...)
-  let generateMembersForJsonResult culture (ctx:ApiaryGenerationContext) name spec =
+  let generateMembersForJsonResult (ctx:ApiaryGenerationContext) name spec =
     let samples = 
       [ for example in spec?responses do
           if example?status.AsInteger() = 200 then 
             let source = example?body.InnerText
             yield JsonValue.Parse source ]
-    [ for item in samples -> JsonInference.inferType (Operations.GetCulture culture) (*allowNulls*)true item ]
-    |> Seq.fold (StructureInference.subtypeInfered (*allowNulls*)true) InferedType.Top
-    |> JsonTypeBuilder.generateJsonType culture ctx.JsonContext name
+    let input = 
+      { ParentName = name
+        Optional = false
+        CanPassUnpackedOption = false }
+    let output =
+      [ for item in samples -> JsonInference.inferType CultureInfo.InvariantCulture (*allowNulls*)true item ]
+      |> Seq.fold (StructureInference.subtypeInfered (*allowNulls*)true) InferedType.Top
+      |> JsonTypeBuilder.generateJsonType ctx.JsonContext input
+    output.ConvertedType, output.Converter
 
   let ensureGeneratedType ctx parentName (entityTy:Type) = 
     match entityTy with
@@ -63,7 +71,6 @@ module internal ApiaryTypeBuilder =
       prop.GetterCode <- fun (Singleton self) -> Expr.Coerce(self, entityTy)
       objectTy.AddMember(prop)
       objectTy
-
   
   /// Generates formatted string with headers that must be
   /// passed to a call according to apiary.io specification
@@ -177,7 +184,7 @@ module internal ApiaryTypeBuilder =
   ///    a type representing the entity. All nested functions of the entity
   ///    are added to this type (and at runtime we need to keep arguments around)
   ///
-  let rec generateSchema culture ctx parentName (parent:ProvidedTypeDefinition) = function
+  let rec generateSchema ctx parentName (parent:ProvidedTypeDefinition) = function
     | Module(name, nested) ->          
         // Generate new type for the nested module
         let nestedTyp = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<InternalApiaryContext>))
@@ -188,12 +195,12 @@ module internal ApiaryTypeBuilder =
         parent.AddMember(p) 
         // Add all nested operations to this type
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ %%self:InternalApiaryContext @@> }
-        nested |> Seq.iter (generateSchema culture ctx (join parentName name) nestedTyp)
+        nested |> Seq.iter (generateSchema ctx (join parentName name) nestedTyp)
 
     | Function(name, (meth, path)) ->
         // Generate method that calls the function
         let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
-        let methResTy, methResConv = generateMembersForJsonResult culture ctx (join parentName name) spec
+        let methResTy, methResConv = generateMembersForJsonResult ctx (join parentName name) spec
 
         generateOperations ctx (NameUtils.nicePascalName name) ([], meth, path, spec) methResTy methResConv
         |> Seq.iter parent.AddMember
@@ -202,7 +209,7 @@ module internal ApiaryTypeBuilder =
         // Generate new type representing the entity
         // (but it needs to be generated type because we want to add members)
         let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
-        let entityTy, entityConv = generateMembersForJsonResult culture ctx (join parentName name) spec
+        let entityTy, entityConv = generateMembersForJsonResult ctx (join parentName name) spec
         let entityTy = ensureGeneratedType ctx name entityTy  
         
         // Generate method that obtains the entity
@@ -211,7 +218,7 @@ module internal ApiaryTypeBuilder =
 
         // Add all nested operations to this type
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ (%%self:ApiaryDocument).Context @@> }
-        nested |> Seq.iter (generateSchema culture ctx (join parentName name) entityTy)
+        nested |> Seq.iter (generateSchema ctx (join parentName name) entityTy)
 
     | Entity(name, _, nested) -> 
         // Silently ignore...
