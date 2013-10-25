@@ -14,7 +14,7 @@ open FSharp.Data.RuntimeImplementation
 
 [<TypeProvider>]
 type public JsonProvider(cfg:TypeProviderConfig) as this =
-  inherit TypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
   let asm, replacer = AssemblyResolver.init cfg

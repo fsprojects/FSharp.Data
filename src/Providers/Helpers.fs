@@ -79,6 +79,22 @@ module internal ReflectionHelpers =
         
 // ----------------------------------------------------------------------------------------------
 
+type DisposableTypeProviderForNamespaces() =
+  inherit TypeProviderForNamespaces()
+
+  let mutable childDisposables = ResizeArray<IDisposable>()
+
+  member __.AddChild = childDisposables.Add
+
+  interface IDisposable with 
+    member __.Dispose() = 
+      let disposables = childDisposables.ToArray()
+      childDisposables.Clear()
+      for disposable in disposables do 
+        try disposable.Dispose() with _ -> ()
+
+// ----------------------------------------------------------------------------------------------
+
 module ProviderHelpers =
 
   open System.IO
@@ -101,7 +117,7 @@ module ProviderHelpers =
   /// * cfg -> the type provider config
   /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
   let parseTextAtDesignTime sampleOrSampleUri parseFunc formatName
-                            (tp:TypeProviderForNamespaces) (cfg:TypeProviderConfig) resolutionFolder =
+                            (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) resolutionFolder =
   
       let tryGetUri str =
           match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -122,7 +138,7 @@ module ProviderHelpers =
             
             let readText() = 
               Async.RunSynchronously <| async {
-                  use! stream = asyncOpenStream (Some tp.Invalidate) resolver uri
+                  use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
                   use reader = new StreamReader(stream)
                   return reader.ReadToEnd()
               } 
@@ -168,7 +184,7 @@ module ProviderHelpers =
   /// * replaceer -> the assemblyReplacer
   /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
   let generateConstructors formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples
-                           (tp:TypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder =
+                           (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder =
 
     let isRunningInFSI = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder

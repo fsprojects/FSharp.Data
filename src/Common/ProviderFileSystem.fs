@@ -77,10 +77,25 @@ let asyncRead (stream:Stream) = async {
     return output 
 }
 
+// sets up a filesystem watcher that calls the invalidate function whenever the file changes
+// adds the filesystem watcher to the list of objects to dispose by the type provider
+let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit) =
+    let watcher = 
+        let path = Path.GetDirectoryName(uri.OriginalString)
+        let name = Path.GetFileName(uri.OriginalString)
+        let notifyFilters = NotifyFilters.LastWrite ||| NotifyFilters.FileName 
+        new FileSystemWatcher(Filter = name, 
+                              Path = path, 
+                              EnableRaisingEvents = true)
+    watcher.Changed.Add(fun _ -> invalidate())
+    watcher.Deleted.Add(fun _ -> invalidate())
+    watcher.Renamed.Add(fun _ -> invalidate())
+    addDisposer watcher
+
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncOpenStream (invalidate:(unit->unit) option) (uriResolver:UriResolver) (uri:Uri) = async {
+let internal asyncOpenStream (invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) = async {
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then 
     let req = WebRequest.Create(uri) :?> HttpWebRequest
@@ -99,14 +114,7 @@ let internal asyncOpenStream (invalidate:(unit->unit) option) (uriResolver:UriRe
     // Open the file, even if it is already opened by another application
     // unlike in the web case, we don't consume the whole file into memory first
     let file = File.Open(uri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-    match invalidate with
-    | None -> ()
-    | Some invalidate ->
-        let path = Path.GetDirectoryName(uri.OriginalString)
-        let name = Path.GetFileName(uri.OriginalString)
-        let watcher = new FileSystemWatcher(Filter = name, Path = path)
-        watcher.Changed.Add(fun _ -> invalidate())
-        watcher.EnableRaisingEvents <- true        
+    invalidate |> Option.iter (watchForChanges uri)
     return file :> Stream
 #endif
 }

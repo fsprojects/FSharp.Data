@@ -13,7 +13,7 @@ open FSharp.Data.RuntimeImplementation
 
 [<TypeProvider>]
 type public XmlProvider(cfg:TypeProviderConfig) as this =
-  inherit TypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.XmlProvider'
   let asm, replacer = AssemblyResolver.init cfg
