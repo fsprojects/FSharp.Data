@@ -16,7 +16,7 @@ open ProviderImplementation.QuotationBuilder
 
 [<TypeProvider>]
 type public CsvProvider(cfg:TypeProviderConfig) as this =
-  inherit TypeProviderForNamespaces()
+  inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
   let asm, replacer = AssemblyResolver.init cfg
@@ -113,4 +113,3 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
   // Register the main type with F# compiler
   do this.AddNamespace(ns, [ csvProvTy ])
-  
