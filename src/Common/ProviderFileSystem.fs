@@ -83,7 +83,6 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
     let watcher = 
         let path = Path.GetDirectoryName(uri.OriginalString)
         let name = Path.GetFileName(uri.OriginalString)
-        let notifyFilters = NotifyFilters.LastWrite ||| NotifyFilters.FileName 
         new FileSystemWatcher(Filter = name, 
                               Path = path, 
                               EnableRaisingEvents = true)
