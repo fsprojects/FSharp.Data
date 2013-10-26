@@ -48,9 +48,15 @@ module internal XmlTypeBuilder =
   /// We return a list with all possible primitive types and all possible
   /// children types (both may be empty)
   let (|ContentType|_|) content = 
+    let makeOptional key (multiplicity, typ) = 
+      let multiplicity = 
+        match multiplicity with
+        | InferedMultiplicity.Single -> InferedMultiplicity.OptionalSingle
+        | _ -> multiplicity
+      multiplicity, typ
     match content with 
     | { Type = (Primitive _) as typ } -> Some([typ], Map.empty)
-    | { Type = Collection nodes } -> Some([], nodes)
+    | { Type = Collection nodes; Optional = optional } -> Some([], if optional then Map.map makeOptional nodes else nodes)
     | { Type = Heterogeneous cases } ->
         let collections, others = 
           Map.toList cases |> List.partition (fst >> ((=) InferedTypeTag.Collection))
@@ -58,6 +64,8 @@ module internal XmlTypeBuilder =
         | [InferedTypeTag.Collection, Collection nodes] -> Some(List.map snd others, nodes)
         | [] -> Some(List.map snd others, Map.empty)
         | _ -> failwith "(|ContentType|_|): Only one collection type expected"
+    // an empty element
+    | { Type = Top } -> Some([], Map.empty)
     | _ -> None
 
   /// Recursively walks over inferred type information and 
