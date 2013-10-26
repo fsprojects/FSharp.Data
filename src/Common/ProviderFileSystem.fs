@@ -77,6 +77,8 @@ let asyncRead (stream:Stream) = async {
     return output 
 }
 
+#if FX_NO_LOCAL_FILESYSTEM
+#else
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
 let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit) =
@@ -90,6 +92,7 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
     watcher.Deleted.Add(fun _ -> invalidate())
     watcher.Renamed.Add(fun _ -> invalidate())
     addDisposer watcher
+#endif
 
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
