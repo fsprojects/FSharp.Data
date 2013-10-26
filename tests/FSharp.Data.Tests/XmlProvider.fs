@@ -164,3 +164,51 @@ let ``XML elements with same name in different namespaces``() =
     let b1 = xml.B
     let b2 = xml.B2
     ()
+
+[<Test>]
+let ``Optionality infered correctly for child elements``() =
+
+    let items = XmlProvider<"""
+        <root>
+            <child a="1">
+                <inner />
+            </child>
+            <child b="some"></child>
+        </root>""", SampleIsList=true>.GetSamples()
+    
+    items.Length |> should equal 2
+    let child1 = items.[0]
+    let child2 = items.[1]
+
+    child1.A |> should equal (Some 1)
+    child2.A |> should equal None
+    
+    child1.B |> should equal None
+    child2.B |> should equal (Some "some")
+
+    child1.Inner |> should notEqual None
+    child2.Inner |> should equal None
+
+[<Test>]
+let ``Global inference with empty elements doesn't crash``() =
+
+    let items = XmlProvider<"""
+        <root>
+            <child a="1">
+                <inner />
+            </child>
+            <child b="some"></child>
+        </root>""", SampleIsList=true, Global=true>.GetSamples()
+    
+    items.Length |> should equal 2
+    let child1 = items.[0]
+    let child2 = items.[1]
+
+    child1.A |> should equal (Some 1)
+    child2.A |> should equal None
+    
+    child1.B |> should equal None
+    child2.B |> should equal (Some "some")
+
+    child1.Inner |> ignore
+    child2.Inner |> ignore

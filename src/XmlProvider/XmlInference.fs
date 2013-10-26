@@ -37,7 +37,7 @@ let inferGlobalType culture allowNulls (element:XElement) =
         let attributes =
           elements
           |> Seq.map (getAttributes culture)
-          |> Seq.reduce (unionRecordTypes  allowNulls)
+          |> Seq.reduce (unionRecordTypes allowNulls)
 
         // Get type of body based on primitive values only
         let bodyType = 
