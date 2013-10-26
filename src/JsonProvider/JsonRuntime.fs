@@ -77,12 +77,6 @@ type JsonDocument =
 /// Static helper methods called from the generated code
 type JsonRuntime = 
 
-  static member PackOptional(value:JsonValue option) = 
-    value |> Option.map (fun j -> JsonDocument.Create j)
-
-  static member UnpackOptional(value:JsonDocument option) = 
-    value |> Option.map (fun j -> j.JsonValue)
-
   /// Converts JSON array to array of target types
   /// The `packer` function rebuilds representation type (such as
   /// `JsonDocument`) which is then passed to projection function `f`.

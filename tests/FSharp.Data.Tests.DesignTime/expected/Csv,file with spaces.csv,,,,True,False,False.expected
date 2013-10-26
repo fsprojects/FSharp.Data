@@ -24,7 +24,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                      let value = TextConversions.AsOption(row.[1])
                                                      CommonRuntime.GetNonOptionalValue("Time", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _) -> 
                                                                                                                                                                   [| CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let t1,_ = row in t1)))
-                                                                                                                                                                     CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2 = row in t2))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "file with spaces.csv") |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+                                                                                                                                                                     CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2 = row in t2))) |]), FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "file with spaces.csv")), ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -51,7 +51,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                      let value = TextConversions.AsOption(row.[1])
                                                      CommonRuntime.GetNonOptionalValue("Time", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _) -> 
                                                                                                                                                                   [| CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let t1,_ = row in t1)))
-                                                                                                                                                                     CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2 = row in t2))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ",", '"', true, false, false)
+                                                                                                                                                                     CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2 = row in t2))) |]), FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 

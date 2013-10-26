@@ -206,7 +206,7 @@ module ProviderHelpers =
     let spec = getSpecFromSamples typedSamples
     
     let resultType = spec.RepresentationType
-    let resultTypeAsync = typedefof<Async<_>>.MakeGenericType [| spec.RepresentationType |] |> replacer.ToRuntime
+    let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
 
     [ // Generate static Parse method
       let args = [ ProvidedParameter("text", typeof<string>) ]
@@ -239,8 +239,7 @@ module ProviderHelpers =
       let args = [ ProvidedParameter("uri", typeof<string>) ]
       let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
       m.InvokeCode <- fun (Singleton uri) -> 
-        <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri
-           |> Async.RunSynchronously @>
+        <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri) @>
         |> spec.CreateFromTextReader 
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m
@@ -256,26 +255,28 @@ module ProviderHelpers =
       
       if sampleIsList then
 
-        let resultTypeArray = spec.RepresentationType.MakeArrayType()
-        let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType [| resultTypeArray |] |> replacer.ToRuntime
+        // the [,] case needs more work, and it's a weird scenario anyway
+        if not resultType.IsArray then
 
-        // Generate static GetSamples method
-        let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
-        m.InvokeCode <- fun _ -> 
-          (if sampleIsUri 
-           then <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri
-                   |> Async.RunSynchronously @>
-           else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
-          |> spec.CreateFromTextReaderForSampleList
-        yield m 
-                
-        if sampleIsUri then
-          // Generate static AsyncGetSamples method
-          let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
+          let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
+          let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
+          
+          // Generate static GetSamples method
+          let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
           m.InvokeCode <- fun _ -> 
-            <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
-            |> spec.AsyncCreateFromTextReaderForSampleList
-          yield m
+            (if sampleIsUri 
+             then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
+             else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
+            |> spec.CreateFromTextReaderForSampleList
+          yield m 
+                  
+          if sampleIsUri then
+            // Generate static AsyncGetSamples method
+            let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
+            m.InvokeCode <- fun _ -> 
+              <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+              |> spec.AsyncCreateFromTextReaderForSampleList
+            yield m
 
       else 
 
@@ -285,8 +286,7 @@ module ProviderHelpers =
         let m = ProvidedMethod(name, [], resultType, IsStaticMethod = true)
         m.InvokeCode <- fun _ -> 
           (if sampleIsUri 
-           then <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri
-                   |> Async.RunSynchronously @>
+           then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
            else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
           |> spec.CreateFromTextReader
         yield m 

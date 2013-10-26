@@ -15,6 +15,16 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 
+type Platform =
+    | Full
+    | Portable
+    | Silverlight
+    member x.RuntimeAssemblyVersion =
+        match x with
+        | Full -> Version(4, 0, 0, 0)
+        | Portable -> Version(2, 0, 5, 0)
+        | Silverlight -> Version(5, 0, 5, 0)
+
 module Debug = 
 
     /// Converts a sequence of strings to a single string separated with the delimiters
@@ -22,11 +32,15 @@ module Debug =
 
     /// Simulates a real instance of TypeProviderConfig and then creates an instance of the last
     /// type provider added to a namespace by the type provider constructor
-    let generate (resolutionFolder: string) (runtimeAssembly: string) typeProviderForNamespacesConstructor args =
+    let generate (resolutionFolder: string) (runtimeAssembly: string) (platform:Platform) typeProviderForNamespacesConstructor args =
+
         let cfg = new TypeProviderConfig(fun _ -> false)
-        cfg.GetType().GetProperty("ResolutionFolder").GetSetMethod(nonPublic = true).Invoke(cfg, [| box resolutionFolder |]) |> ignore
-        cfg.GetType().GetProperty("RuntimeAssembly").GetSetMethod(nonPublic = true).Invoke(cfg, [| box runtimeAssembly |]) |> ignore
-        cfg.GetType().GetProperty("ReferencedAssemblies").GetSetMethod(nonPublic = true).Invoke(cfg, [| box ([||]: string[]) |]) |> ignore        
+        let (?<-) cfg prop value =
+            cfg.GetType().GetProperty(prop).GetSetMethod(nonPublic = true).Invoke(cfg, [| box value |]) |> ignore
+        cfg?ResolutionFolder <- resolutionFolder
+        cfg?RuntimeAssembly <- runtimeAssembly
+        cfg?ReferencedAssemblies <- Array.zeroCreate<string> 0
+        cfg?SystemRuntimeAssemblyVersion <- platform.RuntimeAssemblyVersion
 
         let typeProviderForNamespaces = typeProviderForNamespacesConstructor cfg :> TypeProviderForNamespaces
 

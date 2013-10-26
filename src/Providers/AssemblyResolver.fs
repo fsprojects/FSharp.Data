@@ -123,9 +123,9 @@ let init (cfg : TypeProviderConfig) =
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
-    let isPortable = cfg.SystemRuntimeAssemblyVersion = new Version(2, 0, 5, 0)
-    let isSilverlight = cfg.SystemRuntimeAssemblyVersion = new Version(5, 0, 5, 0)
-    let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = new Version(4, 3, 1, 0)
+    let isPortable = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
+    let isSilverlight = cfg.SystemRuntimeAssemblyVersion = Version(5, 0, 5, 0)
+    let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
 
     let differentFramework = isPortable || isSilverlight || isFSharp31
     let useReflectionOnly =

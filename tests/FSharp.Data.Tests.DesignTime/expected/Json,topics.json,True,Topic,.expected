@@ -1,12 +1,6 @@
 class JsonProvider
-    static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Topic[] async
-    JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "list_my.json"), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
-
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Topic[] async
     JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
-
-    static member GetSamples: () -> JsonProvider+DomainTypes+Topic[]
-    JsonRuntime.ConvertArray(JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "list_my.json") |> FSharpAsync.RunSynchronously, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -15,7 +9,7 @@ class JsonProvider
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Topic[]
-    JsonRuntime.ConvertArray(JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Topic[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -91,6 +85,9 @@ class JsonProvider+DomainTypes+Topic : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "small_icon_hover")
     CommonRuntime.JsonGetNonOptionalValue("small_icon_hover", CommonRuntime.JsonConvertString("", value), value)
 
+    member SubtitleLanguagesCsv: string option with get
+    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "subtitle_languages_csv"))
+
     member Universities: JsonProvider+DomainTypes+University[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "universities")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
@@ -120,7 +117,7 @@ class JsonProvider+DomainTypes+Category : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "id")
     CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
 
-    member MailingListId: FDR.JsonDocument with get
+    member MailingListId: JsonProvider+DomainTypes+MailingListIdChoice with get
     JsonDocument.Create((this.JsonValue.GetProperty "mailing_list_id"))
 
     member Name: string with get
@@ -149,6 +146,9 @@ class JsonProvider+DomainTypes+Course : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "active")
     CommonRuntime.JsonGetNonOptionalValue("active", CommonRuntime.JsonConvertBoolean("", value), value)
 
+    member AuthReviewCompletionDate: FDR.JsonDocument option with get
+    JsonRuntime.ConvertOptionalProperty(this.JsonValue, "auth_review_completion_date", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+
     member CertificateDescription: string with get
     let value = (this.JsonValue.TryGetProperty "certificate_description")
     CommonRuntime.JsonGetNonOptionalValue("certificate_description", CommonRuntime.JsonConvertString("", value), value)
@@ -172,9 +172,8 @@ class JsonProvider+DomainTypes+Course : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "duration_string")
     CommonRuntime.JsonGetNonOptionalValue("duration_string", CommonRuntime.JsonConvertString("", value), value)
 
-    member EligibleForAce: bool with get
-    let value = (this.JsonValue.TryGetProperty "eligible_for_ACE")
-    CommonRuntime.JsonGetNonOptionalValue("eligible_for_ACE", CommonRuntime.JsonConvertBoolean("", value), value)
+    member EligibleForAce: JsonProvider+DomainTypes+EligibleForAcecHoice with get
+    JsonDocument.Create((this.JsonValue.GetProperty "eligible_for_ACE"))
 
     member EligibleForCertificates: bool with get
     let value = (this.JsonValue.TryGetProperty "eligible_for_certificates")
@@ -308,6 +307,9 @@ class JsonProvider+DomainTypes+University : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "banner")
     CommonRuntime.JsonGetNonOptionalValue("banner", CommonRuntime.JsonConvertString("", value), value)
 
+    member ChinaMirror: int option with get
+    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "china_mirror"))
+
     member ClassLogo: string with get
     let value = (this.JsonValue.TryGetProperty "class_logo")
     CommonRuntime.JsonGetNonOptionalValue("class_logo", CommonRuntime.JsonConvertString("", value), value)
@@ -431,6 +433,13 @@ class JsonProvider+DomainTypes+CreatorIdChoice : FDR.JsonDocument
                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("creator_idChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
 
 
+class JsonProvider+DomainTypes+EligibleForAcecHoice : FDR.JsonDocument
+    member Boolean: bool option with get
+    JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Boolean", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
+                                                                                                                                             let value = Some t.JsonValue
+                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("eligible_for_ACEChoice1of1", CommonRuntime.JsonConvertBoolean("", value), value)))
+
+
 class JsonProvider+DomainTypes+GradesReleaseDateChoice : FDR.JsonDocument
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "DateTime", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
@@ -450,6 +459,13 @@ class JsonProvider+DomainTypes+LocationLngChoice : FDR.JsonDocument
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("location_lngChoice1of1", CommonRuntime.JsonConvertDecimal("", value), value)))
+
+
+class JsonProvider+DomainTypes+MailingListIdChoice : FDR.JsonDocument
+    member Number: int option with get
+    JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
+                                                                                                                                            let value = Some t.JsonValue
+                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("mailing_list_idChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+NameChoice : FDR.JsonDocument
@@ -495,7 +511,7 @@ class JsonProvider+DomainTypes+Record : FDR.JsonDocument
     let value = (this.JsonValue.TryGetProperty "passed_ace")
     CommonRuntime.JsonGetNonOptionalValue("passed_ace", CommonRuntime.JsonConvertBoolean("", value), value)
 
-    member ShareForWork: FDR.JsonDocument with get
+    member ShareForWork: JsonProvider+DomainTypes+ShareForWorkChoice with get
     JsonDocument.Create((this.JsonValue.GetProperty "share_for_work"))
 
     member SignatureTrack: bool with get
@@ -603,16 +619,23 @@ class JsonProvider+DomainTypes+AchievementLevelChoice : FDR.JsonDocument
 
 
 class JsonProvider+DomainTypes+GradeDistinctionChoice : FDR.JsonDocument
-    member Number: int option with get
+    member Number: decimal option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("grade_distinctionChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("grade_distinctionChoice1of1", CommonRuntime.JsonConvertDecimal("", value), value)))
 
 
 class JsonProvider+DomainTypes+GradeNormalChoice : FDR.JsonDocument
-    member Number: int option with get
+    member Number: decimal option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("grade_normalChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("grade_normalChoice1of1", CommonRuntime.JsonConvertDecimal("", value), value)))
+
+
+class JsonProvider+DomainTypes+ShareForWorkChoice : FDR.JsonDocument
+    member Boolean: bool option with get
+    JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Boolean", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
+                                                                                                                                             let value = Some t.JsonValue
+                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("share_for_workChoice1of1", CommonRuntime.JsonConvertBoolean("", value), value)))
 
 
