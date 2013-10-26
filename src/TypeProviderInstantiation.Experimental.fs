@@ -8,13 +8,13 @@ type ApiaryProviderArgs =
 type TypeProviderInstantiation = 
     | Apiary of ApiaryProviderArgs
 
-    member x.GenerateType resolutionFolder runtimeAssembly =
+    member x.GenerateType resolutionFolder runtimeAssembly platform =
         let f, args =
             match x with
             | Apiary x ->
                 (fun cfg -> new ApiaryProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.ApiName |] 
-        Debug.generate resolutionFolder runtimeAssembly f args
+        Debug.generate resolutionFolder runtimeAssembly platform f args
 
     override x.ToString() =
         match x with

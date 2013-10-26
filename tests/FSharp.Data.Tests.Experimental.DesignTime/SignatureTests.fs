@@ -18,9 +18,9 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 type TypeProviderInstantiation with
 
-    member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
+    member x.Dump resolutionFolder runtimeAssembly platform signatureOnly ignoreOutput =
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly 
+            x.GenerateType resolutionFolder runtimeAssembly platform
             |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
         output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
               .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
@@ -49,7 +49,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
+        let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalizeEndings (str:string) =
@@ -59,7 +59,7 @@ let normalizeEndings (str:string) =
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalizeEndings 
+    let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false |> normalizeEndings 
     output |> should equal expected
 
 #if MONO
@@ -67,5 +67,5 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portableRuntimeAssembly (*signatureOnly*)false  (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder portableRuntimeAssembly Platform.Portable (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 #endif

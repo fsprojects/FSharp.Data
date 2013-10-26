@@ -13,12 +13,19 @@ open ProviderImplementation
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.Experimental.dll"
-let runtimeAssembly = __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
+
+let platform = Portable
+
+let runtimeAssembly = 
+    match platform with
+    | Full -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
+    | Portable -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable" ++ assemblyName
+    | Silverlight -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "sl5" ++ assemblyName
 
 let signatureOnly = false
 let ignoreOutput = false
 
-let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
+let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly portable
 let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
 Apiary { ApiName = "themoviedb" }

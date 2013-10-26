@@ -6,7 +6,7 @@ class XmlProvider
     XmlElement.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
 
     static member GetSample: () -> XmlProvider+DomainTypes+Ordercontainer
-    XmlElement.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "projects.xml") |> FSharpAsync.RunSynchronously)
+    XmlElement.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "projects.xml")))
 
     static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Ordercontainer
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
@@ -15,7 +15,7 @@ class XmlProvider
     XmlElement.Create(reader)
 
     static member Load: uri:string -> XmlProvider+DomainTypes+Ordercontainer
-    XmlElement.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously)
+    XmlElement.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
 
     static member Parse: text:string -> XmlProvider+DomainTypes+Ordercontainer
     XmlElement.Create(((new StringReader(text)) :> TextReader))

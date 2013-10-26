@@ -159,6 +159,7 @@ module JsonTypeBuilder =
         let conv = fun (jDoc:Expr)-> 
           let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonRuntime>
           let isAsync = jDoc.Type.Name.StartsWith "FSharpAsync`1"
+          // TODO: use the same as in ApiaryGenerationHelper.AsyncMap
           if isAsync then
             operationsTyp?AsyncConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
           else

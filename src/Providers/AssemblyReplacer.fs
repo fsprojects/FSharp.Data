@@ -45,43 +45,38 @@ module AssemblyReplacer =
 
   // We use a list for asmMappings because the Assembly type is not an IComparable and can't be stored in a map
   // In the originalsAsms list the first assembly has to be the assembly of the outer type
-  let private replace asmMappings (original, originalAsms) f =
-    let toAsm = 
-      asmMappings
-      |> Seq.tryPick (fun (fromAsm, toAsm) -> 
-        if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then        
-          // if we found a replacement for the outer type assembly, return it
-          if fromAsm = originalAsms.Head then Some toAsm 
-          // otherwise just return the original assembly of the outer type,
-          // to signal that it needs to be visited, but it doesn't make sense
-          // to replace it with toAsm, because that is from one of the inner types
-          else Some originalAsms.Head
-        else 
-          None)
-    match toAsm with
-    | Some toAsm -> f toAsm
-    | None -> original
-
-  // A lazy version of the previous method to avoid doing unneeded work in the discriminated unions case
+  // We use a lazy type for the original to avoid doing unneeded work in the discriminated unions case
   let private replaceLazy asmMappings (lazyOriginal : 'a Lazy, originalAsms) f =
     let toAsm = 
       asmMappings
-      |> Seq.tryPick (fun (fromAsm, toAsm) -> 
-        if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then        
+      |> Seq.tryPick (fun (fromAsm, toAsm) ->
+        if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) && fromAsm = originalAsms.Head then
           // if we found a replacement for the outer type assembly, return it
-          if fromAsm = originalAsms.Head then Some toAsm 
-          // otherwise just return the original assembly of the outer type,
-          // to signal that it needs to be visited, but it doesn't make sense
-          // to replace it with toAsm, because that is from one of the inner types
-          else Some originalAsms.Head
-        else 
+          Some toAsm
+        else
           None)
+    let toAsm =
+      match toAsm with
+      | Some toAsm -> Some toAsm
+      | None ->
+          asmMappings
+          |> Seq.tryPick (fun (fromAsm, toAsm) -> 
+            if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then
+              // if we found a replacement for a inner type, just return the original
+              // assembly of the outer type to signal that it needs to be visited, but it
+              // doesn't make sense to replace it with toAsm
+              Some originalAsms.Head
+            else
+              None)
     match toAsm with
     | Some toAsm -> f toAsm
     | None -> lazyOriginal.Value
 
+  let private replace asmMappings (original, originalAsms) f =
+    replaceLazy asmMappings (lazy original, originalAsms) f
+
   let rec private getType (asm:Assembly) (t:Type) asmMappings (typeCache:Dictionary<_,_>) =
-    match typeCache.TryGetValue t with
+    match typeCache.TryGetValue((asm, t)) with
     | true, t -> t
     | false, _ ->
         let fixName (fullName:string) =
@@ -120,7 +115,7 @@ module AssemblyReplacer =
             getType (fixName t.FullName)
         if newT = null then
           failwithf "Type '%O' not found in '%s'" t asm.Location
-        typeCache.Add(t, newT)
+        typeCache.Add((asm, t), newT)
         newT
 
   // there might be multiple assemblies involved in generic types
@@ -211,6 +206,11 @@ module AssemblyReplacer =
     replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), getAssemblies uci.DeclaringType) (fun toAsm ->
       let t = getType toAsm uci.DeclaringType asmMappings typeCache
       let constructorMethod = t.GetMethod(uci.Name)
+      let constructorMethod =
+        if constructorMethod = null then 
+          // property FSharpOption<T>.get_None()
+          t.GetProperty(uci.Name).GetGetMethod() 
+        else constructorMethod
       if constructorMethod = null then
         failwithf "Method '%s' of type '%O' not found in '%s'" uci.Name t toAsm.Location
       Expr.Call (constructorMethod, exprs))
@@ -289,10 +289,14 @@ module AssemblyReplacer =
         match obj with
         | Some obj -> Expr.FieldSet (re obj, rf f, re value)
         | None -> Expr.FieldSet (rf f, re value)
+    | Let (var, value, body) -> 
+        Expr.Let(rv var, re value, re body)
     | ShapeVar v -> 
         Expr.Var (rv v)
     | ShapeLambda (v, expr) -> 
-        Expr.Lambda (rv v, re expr)
+        //Expr.Lambda (rv v, re expr)
+        failwith ("It's not possible to create a Lambda when cross targetting to a different FSharp.Core.\n" +
+                  "Make sure you're not calling a function with signature A->(B->C) instead of A->B->C (using |> causes this).")
     | ShapeCombination (o, exprs) -> 
         RebuildShapeCombination (o, List.map re exprs)
 

@@ -6,7 +6,7 @@ class JsonProvider
     JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSample: () -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Nested.json") |> FSharpAsync.RunSynchronously, "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Nested.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri) |> FSharpAsync.RunSynchronously, "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")

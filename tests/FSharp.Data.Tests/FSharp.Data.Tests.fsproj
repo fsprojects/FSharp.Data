@@ -119,7 +119,7 @@
     <Content Include="Data/GitHub.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data/list_my.json">
+    <Content Include="Data/topics.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="../Common/FsUnit.fs">

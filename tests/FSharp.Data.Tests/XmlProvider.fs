@@ -210,5 +210,6 @@ let ``Global inference with empty elements doesn't crash``() =
     child1.B |> should equal None
     child2.B |> should equal (Some "some")
 
-    child1.Inner |> ignore
-    child2.Inner |> ignore
+    child1.Inner |> should notEqual None
+    //not working correctly:
+    //child2.Inner |> should equal None
