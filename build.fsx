@@ -39,11 +39,12 @@ let descriptionExperimental = description + """"
   provider for Apiary.io."""
 
 // Read additional information from the release notes document
-let releaseNotes, version = 
-    let lastItem = File.ReadLines "RELEASE_NOTES.md" |> Seq.last
-    let firstDash = lastItem.IndexOf('-')
-    ( lastItem.Substring(firstDash + 1 ).Trim(), 
-      lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim() )
+let notes = 
+    File.ReadLines "RELEASE_NOTES.md" 
+    |> ReleaseNotesHelper.parseReleaseNotes
+
+let version = notes.AssemblyVersion
+let releaseNotes = notes.Notes |> String.concat "\n"
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
@@ -188,7 +189,24 @@ Target "Release" DoNothing
 "UpdateBinaries" ==> "Release"
 
 // --------------------------------------------------------------------------------------
-// Run all targets by default. Invoke 'build <Target>' to override
+// Help
+
+Target "Help" (fun _ ->
+    printfn ""
+    printfn "  Please specify the target by calling 'build <Target>'"
+    printfn ""
+    printfn "  Targets for building:"
+    printfn "  * Build"
+    printfn "  * BuildTests"
+    printfn "  * RunTests"
+    printfn "  * NuGet (creates package only, doesn't publish)"
+    printfn "  * All (calls previous 4)"
+    printfn ""
+    printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
+    printfn "  * UpdateDocs"
+    printfn "  * UpdateBinaries"
+    printfn "  * Release (calls previous 2)"
+    printfn "")
 
 Target "All" DoNothing
 
@@ -198,4 +216,4 @@ Target "All" DoNothing
 "RunTests" ==> "All"
 "NuGet" ==> "All"
 
-RunTargetOrDefault "All"
+RunTargetOrDefault "Help"
