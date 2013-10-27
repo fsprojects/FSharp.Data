@@ -2,8 +2,8 @@
 
 open System
 open ProviderImplementation.ProvidedTypes
-open FSharp.Data.RuntimeImplementation
-open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests
+open FSharp.Data.Runtime
+open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
 type CsvProviderArgs = 
     { Sample : string
@@ -194,3 +194,8 @@ type TypeProviderInstantiation =
                        LocalCache = true
                        AllowLocalQueryEvaluation = true }
         | _ -> failwithf "Unknown: %s" args.[0]
+
+open System.Runtime.CompilerServices
+
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.Tests.DesignTime")>]
+do()

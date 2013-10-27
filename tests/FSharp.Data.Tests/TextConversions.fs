@@ -9,7 +9,7 @@
 open NUnit.Framework
 open FsUnit
 open System.Globalization
-open FSharp.Data.RuntimeImplementation
+open FSharp.Data.Runtime
 
 [<Test>]
 let ``Boolean conversions``() = 

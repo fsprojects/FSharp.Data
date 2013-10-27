@@ -24,7 +24,7 @@ type TypeProviderInstantiation with
             |> match x with
                | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
                | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
-        output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
+        output.Replace("FSharp.Data.Runtime.", "FDR.")
               .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
 
 let (++) a b = Path.Combine(a, b)
@@ -70,9 +70,4 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder portableRuntimeAssembly Platform.Portable (*signatureOnly*)false (*ignoreOutput*)true |> ignore
-
-[<Test>]
-[<TestCaseSource "testCases">]
-let ``Generating expressions works in silverlight `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder silverlightRuntimeAssembly Platform.Silverlight (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 #endif

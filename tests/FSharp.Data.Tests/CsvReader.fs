@@ -13,7 +13,7 @@ module FSharp.Data.Tests.CsvReader
 open NUnit.Framework
 open FsUnit
 open System.IO
-open FSharp.Data.RuntimeImplementation.CsvReader
+open FSharp.Data.Runtime.CsvReader
 
 [<Test>]
 let ``Line with quotes parsed`` () = 

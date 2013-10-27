@@ -179,7 +179,7 @@ class ApiaryProvider+DomainTypes+Configuration : FDR.Apiary.ApiaryDocument
     member ChangeKeys: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "change_keys"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                    let value = Some t.JsonValue
-                                                                                                                                                                                                                                   CommonRuntime.JsonGetNonOptionalValue("change_key", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                   JsonRuntime.GetNonOptionalValue("change_key", JsonRuntime.ConvertString("", value), value)))
 
     member Images: ApiaryProvider+DomainTypes+Images with get
     (new ApiaryDocument((this.JsonValue.GetProperty "images")))
@@ -863,27 +863,27 @@ class ApiaryProvider+DomainTypes+Search : FDR.Apiary.InternalApiaryContext
 class ApiaryProvider+DomainTypes+AccountList : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member IncludeAdult: bool with get
     let value = (this.JsonValue.TryGetProperty "include_adult")
-    CommonRuntime.JsonGetNonOptionalValue("include_adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("include_adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Iso31661: string with get
     let value = (this.JsonValue.TryGetProperty "iso_3166_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_3166_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_3166_1", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Username: string with get
     let value = (this.JsonValue.TryGetProperty "username")
-    CommonRuntime.JsonGetNonOptionalValue("username", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("username", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Collection2 : FDR.Apiary.ApiaryDocument
@@ -903,11 +903,11 @@ class ApiaryProvider+DomainTypes+Collection2 : FDR.Apiary.ApiaryDocument
 
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CollectionImages
     let patternInput = 
@@ -925,14 +925,14 @@ class ApiaryProvider+DomainTypes+Collection2 : FDR.Apiary.ApiaryDocument
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Parts: ApiaryProvider+DomainTypes+Part[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "parts"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Company2 : FDR.Apiary.ApiaryDocument
@@ -955,19 +955,19 @@ class ApiaryProvider+DomainTypes+Company2 : FDR.Apiary.ApiaryDocument
 
     member Headquarters: string with get
     let value = (this.JsonValue.TryGetProperty "headquarters")
-    CommonRuntime.JsonGetNonOptionalValue("headquarters", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("headquarters", JsonRuntime.ConvertString("", value), value)
 
     member Homepage: string with get
     let value = (this.JsonValue.TryGetProperty "homepage")
-    CommonRuntime.JsonGetNonOptionalValue("homepage", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("homepage", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member LogoPath: string with get
     let value = (this.JsonValue.TryGetProperty "logo_path")
-    CommonRuntime.JsonGetNonOptionalValue("logo_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("logo_path", JsonRuntime.ConvertString("", value), value)
 
     member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+CompanyMovies
     let patternInput = 
@@ -985,7 +985,7 @@ class ApiaryProvider+DomainTypes+Company2 : FDR.Apiary.ApiaryDocument
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ParentCompany: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "parent_company")))
@@ -994,18 +994,18 @@ class ApiaryProvider+DomainTypes+Company2 : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+DiscoverMovie : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result14[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+GenreList : FDR.Apiary.ApiaryDocument
@@ -1077,30 +1077,30 @@ class ApiaryProvider+DomainTypes+Images : FDR.Apiary.ApiaryDocument
     member BackdropSizes: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "backdrop_sizes"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                       let value = Some t.JsonValue
-                                                                                                                                                                                                                                      CommonRuntime.JsonGetNonOptionalValue("backdrop_size", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                      JsonRuntime.GetNonOptionalValue("backdrop_size", JsonRuntime.ConvertString("", value), value)))
 
     member BaseUrl: string with get
     let value = (this.JsonValue.TryGetProperty "base_url")
-    CommonRuntime.JsonGetNonOptionalValue("base_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("base_url", JsonRuntime.ConvertString("", value), value)
 
     member LogoSizes: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "logo_sizes"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                   let value = Some t.JsonValue
-                                                                                                                                                                                                                                  CommonRuntime.JsonGetNonOptionalValue("logo_size", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                  JsonRuntime.GetNonOptionalValue("logo_size", JsonRuntime.ConvertString("", value), value)))
 
     member PosterSizes: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "poster_sizes"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                     let value = Some t.JsonValue
-                                                                                                                                                                                                                                    CommonRuntime.JsonGetNonOptionalValue("poster_size", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                    JsonRuntime.GetNonOptionalValue("poster_size", JsonRuntime.ConvertString("", value), value)))
 
     member ProfileSizes: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "profile_sizes"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                      let value = Some t.JsonValue
-                                                                                                                                                                                                                                     CommonRuntime.JsonGetNonOptionalValue("profile_size", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                     JsonRuntime.GetNonOptionalValue("profile_size", JsonRuntime.ConvertString("", value), value)))
 
     member SecureBaseUrl: string with get
     let value = (this.JsonValue.TryGetProperty "secure_base_url")
-    CommonRuntime.JsonGetNonOptionalValue("secure_base_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("secure_base_url", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+JobList : FDR.Apiary.ApiaryDocument
@@ -1125,7 +1125,7 @@ class ApiaryProvider+DomainTypes+Keyword3 : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+KeywordMovies
     let patternInput = 
@@ -1143,7 +1143,7 @@ class ApiaryProvider+DomainTypes+Keyword3 : FDR.Apiary.ApiaryDocument
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+List2 : FDR.Apiary.ApiaryDocument
@@ -1208,27 +1208,27 @@ Content-Type:application/json", headers, query)
 
     member CreatedBy: string with get
     let value = (this.JsonValue.TryGetProperty "created_by")
-    CommonRuntime.JsonGetNonOptionalValue("created_by", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("created_by", JsonRuntime.ConvertString("", value), value)
 
     member Description: string with get
     let value = (this.JsonValue.TryGetProperty "description")
-    CommonRuntime.JsonGetNonOptionalValue("description", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
 
     member FavoriteCount: int with get
     let value = (this.JsonValue.TryGetProperty "favorite_count")
-    CommonRuntime.JsonGetNonOptionalValue("favorite_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorite_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member ItemCount: int with get
     let value = (this.JsonValue.TryGetProperty "item_count")
-    CommonRuntime.JsonGetNonOptionalValue("item_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("item_count", JsonRuntime.ConvertInteger("", value), value)
 
     member ItemStatus: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+ListItemStatus
     let patternInput = 
@@ -1249,11 +1249,11 @@ Content-Type:application/json", headers, query)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member RemoveItem: query:string * string list -> headers:string * string list -> FDR.Apiary.ApiaryDocument
     let patternInput = 
@@ -1288,7 +1288,7 @@ class ApiaryProvider+DomainTypes+Movie2 : FDR.Apiary.ApiaryDocument
 
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member AlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieAlternativeTitles
     let patternInput = 
@@ -1489,14 +1489,14 @@ Content-Type:application/json", headers, query)
 
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member BelongsToCollection: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "belongs_to_collection")))
 
     member Budget: int with get
     let value = (this.JsonValue.TryGetProperty "budget")
-    CommonRuntime.JsonGetNonOptionalValue("budget", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("budget", JsonRuntime.ConvertInteger("", value), value)
 
     member Casts: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieCasts
     let patternInput = 
@@ -1531,11 +1531,11 @@ Content-Type:application/json", headers, query)
 
     member Homepage: string with get
     let value = (this.JsonValue.TryGetProperty "homepage")
-    CommonRuntime.JsonGetNonOptionalValue("homepage", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("homepage", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieImages
     let patternInput = 
@@ -1553,7 +1553,7 @@ Content-Type:application/json", headers, query)
 
     member ImdbId: string with get
     let value = (this.JsonValue.TryGetProperty "imdb_id")
-    CommonRuntime.JsonGetNonOptionalValue("imdb_id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("imdb_id", JsonRuntime.ConvertString("", value), value)
 
     member Keywords: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieKeywords
     let patternInput = 
@@ -1585,19 +1585,19 @@ Content-Type:application/json", headers, query)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member Overview: string with get
     let value = (this.JsonValue.TryGetProperty "overview")
-    CommonRuntime.JsonGetNonOptionalValue("overview", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("overview", JsonRuntime.ConvertString("", value), value)
 
     member Popularity: decimal with get
     let value = (this.JsonValue.TryGetProperty "popularity")
-    CommonRuntime.JsonGetNonOptionalValue("popularity", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("popularity", JsonRuntime.ConvertDecimal("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ProductionCompanies: ApiaryProvider+DomainTypes+ProductionCompany[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "production_companies"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -1622,7 +1622,7 @@ Content-Type:application/json", headers, query)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Releases: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReleases
     let patternInput = 
@@ -1640,7 +1640,7 @@ Content-Type:application/json", headers, query)
 
     member Revenue: int with get
     let value = (this.JsonValue.TryGetProperty "revenue")
-    CommonRuntime.JsonGetNonOptionalValue("revenue", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("revenue", JsonRuntime.ConvertInteger("", value), value)
 
     member Reviews: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieReviews
     let patternInput = 
@@ -1658,7 +1658,7 @@ Content-Type:application/json", headers, query)
 
     member Runtime: int with get
     let value = (this.JsonValue.TryGetProperty "runtime")
-    CommonRuntime.JsonGetNonOptionalValue("runtime", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("runtime", JsonRuntime.ConvertInteger("", value), value)
 
     member SimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieSimilarMovies
     let patternInput = 
@@ -1679,15 +1679,15 @@ Content-Type:application/json", headers, query)
 
     member Status: string with get
     let value = (this.JsonValue.TryGetProperty "status")
-    CommonRuntime.JsonGetNonOptionalValue("status", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("status", JsonRuntime.ConvertString("", value), value)
 
     member Tagline: string with get
     let value = (this.JsonValue.TryGetProperty "tagline")
-    CommonRuntime.JsonGetNonOptionalValue("tagline", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("tagline", JsonRuntime.ConvertString("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member Trailers: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+MovieTrailers
     let patternInput = 
@@ -1719,34 +1719,34 @@ Content-Type:application/json", headers, query)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieChanges2 : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result8[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member BackdropPath: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "backdrop_path")))
@@ -1756,7 +1756,7 @@ class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
 
     member Budget: int with get
     let value = (this.JsonValue.TryGetProperty "budget")
-    CommonRuntime.JsonGetNonOptionalValue("budget", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("budget", JsonRuntime.ConvertInteger("", value), value)
 
     member Genres: ApiaryProvider+DomainTypes+GenresChoice with get
     (new ApiaryDocument((this.JsonValue.GetProperty "genres")))
@@ -1766,22 +1766,22 @@ class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member ImdbId: string with get
     let value = (this.JsonValue.TryGetProperty "imdb_id")
-    CommonRuntime.JsonGetNonOptionalValue("imdb_id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("imdb_id", JsonRuntime.ConvertString("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member Overview: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "overview")))
 
     member Popularity: int with get
     let value = (this.JsonValue.TryGetProperty "popularity")
-    CommonRuntime.JsonGetNonOptionalValue("popularity", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("popularity", JsonRuntime.ConvertInteger("", value), value)
 
     member PosterPath: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "poster_path")))
@@ -1794,11 +1794,11 @@ class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Revenue: int with get
     let value = (this.JsonValue.TryGetProperty "revenue")
-    CommonRuntime.JsonGetNonOptionalValue("revenue", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("revenue", JsonRuntime.ConvertInteger("", value), value)
 
     member Runtime: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "runtime")))
@@ -1811,89 +1811,89 @@ class ApiaryProvider+DomainTypes+MovieLatest : FDR.Apiary.ApiaryDocument
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: int with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertInteger("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieNowPlaying : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result5[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MoviePopular : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result6[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieTopRated : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result7[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieUpcoming : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result4[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Person2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member AlsoKnownAs: ApiaryProvider+DomainTypes+AlsoKnownAsChoice with get
     (new ApiaryDocument((this.JsonValue.GetProperty "also_known_as")))
@@ -1942,11 +1942,11 @@ class ApiaryProvider+DomainTypes+Person2 : FDR.Apiary.ApiaryDocument
 
     member Biography: string with get
     let value = (this.JsonValue.TryGetProperty "biography")
-    CommonRuntime.JsonGetNonOptionalValue("biography", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("biography", JsonRuntime.ConvertString("", value), value)
 
     member Birthday: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "birthday")
-    CommonRuntime.JsonGetNonOptionalValue("birthday", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("birthday", JsonRuntime.ConvertDateTime("", value), value)
 
     member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonChanges
     let patternInput = 
@@ -1978,15 +1978,15 @@ class ApiaryProvider+DomainTypes+Person2 : FDR.Apiary.ApiaryDocument
 
     member Deathday: string with get
     let value = (this.JsonValue.TryGetProperty "deathday")
-    CommonRuntime.JsonGetNonOptionalValue("deathday", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("deathday", JsonRuntime.ConvertString("", value), value)
 
     member Homepage: string with get
     let value = (this.JsonValue.TryGetProperty "homepage")
-    CommonRuntime.JsonGetNonOptionalValue("homepage", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("homepage", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Images: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+PersonImages
     let patternInput = 
@@ -2004,38 +2004,38 @@ class ApiaryProvider+DomainTypes+Person2 : FDR.Apiary.ApiaryDocument
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PlaceOfBirth: string with get
     let value = (this.JsonValue.TryGetProperty "place_of_birth")
-    CommonRuntime.JsonGetNonOptionalValue("place_of_birth", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("place_of_birth", JsonRuntime.ConvertString("", value), value)
 
     member ProfilePath: string with get
     let value = (this.JsonValue.TryGetProperty "profile_path")
-    CommonRuntime.JsonGetNonOptionalValue("profile_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+PersonChanges2 : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result10[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+PersonLatest : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member AlsoKnownAs: ApiaryProvider+DomainTypes+AlsoKnownAsChoice2 with get
     (new ApiaryDocument((this.JsonValue.GetProperty "also_known_as")))
@@ -2054,11 +2054,11 @@ class ApiaryProvider+DomainTypes+PersonLatest : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PlaceOfBirth: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "place_of_birth")))
@@ -2070,154 +2070,154 @@ class ApiaryProvider+DomainTypes+PersonLatest : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+PersonPopular : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result9[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ReviewId : FDR.Apiary.ApiaryDocument
     member Author: string with get
     let value = (this.JsonValue.TryGetProperty "author")
-    CommonRuntime.JsonGetNonOptionalValue("author", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)
 
     member Content: string with get
     let value = (this.JsonValue.TryGetProperty "content")
-    CommonRuntime.JsonGetNonOptionalValue("content", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("content", JsonRuntime.ConvertString("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member MediaId: int with get
     let value = (this.JsonValue.TryGetProperty "media_id")
-    CommonRuntime.JsonGetNonOptionalValue("media_id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("media_id", JsonRuntime.ConvertInteger("", value), value)
 
     member MediaTitle: string with get
     let value = (this.JsonValue.TryGetProperty "media_title")
-    CommonRuntime.JsonGetNonOptionalValue("media_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("media_title", JsonRuntime.ConvertString("", value), value)
 
     member MediaType: string with get
     let value = (this.JsonValue.TryGetProperty "media_type")
-    CommonRuntime.JsonGetNonOptionalValue("media_type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("media_type", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchCollection : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result16[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchCompany : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result19[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchKeyword : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result20[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchList : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result18[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchMovie : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result15[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SearchPerson : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result17[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Session : FDR.Apiary.InternalApiaryContext
@@ -2287,39 +2287,39 @@ class ApiaryProvider+DomainTypes+AlsoKnownAsChoice2 : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+AuthenticationGuestSessionNew : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
     let value = (this.JsonValue.TryGetProperty "expires_at")
-    CommonRuntime.JsonGetNonOptionalValue("expires_at", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("expires_at", JsonRuntime.ConvertString("", value), value)
 
     member GuestSessionId: string with get
     let value = (this.JsonValue.TryGetProperty "guest_session_id")
-    CommonRuntime.JsonGetNonOptionalValue("guest_session_id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("guest_session_id", JsonRuntime.ConvertString("", value), value)
 
     member Success: bool with get
     let value = (this.JsonValue.TryGetProperty "success")
-    CommonRuntime.JsonGetNonOptionalValue("success", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("success", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class ApiaryProvider+DomainTypes+AuthenticationSessionNew : FDR.Apiary.ApiaryDocument
     member SessionId: string with get
     let value = (this.JsonValue.TryGetProperty "session_id")
-    CommonRuntime.JsonGetNonOptionalValue("session_id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("session_id", JsonRuntime.ConvertString("", value), value)
 
     member Success: bool with get
     let value = (this.JsonValue.TryGetProperty "success")
-    CommonRuntime.JsonGetNonOptionalValue("success", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("success", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class ApiaryProvider+DomainTypes+AuthenticationTokenNew : FDR.Apiary.ApiaryDocument
     member ExpiresAt: string with get
     let value = (this.JsonValue.TryGetProperty "expires_at")
-    CommonRuntime.JsonGetNonOptionalValue("expires_at", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("expires_at", JsonRuntime.ConvertString("", value), value)
 
     member RequestToken: string with get
     let value = (this.JsonValue.TryGetProperty "request_token")
-    CommonRuntime.JsonGetNonOptionalValue("request_token", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("request_token", JsonRuntime.ConvertString("", value), value)
 
     member Success: bool with get
     let value = (this.JsonValue.TryGetProperty "success")
-    CommonRuntime.JsonGetNonOptionalValue("success", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("success", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class ApiaryProvider+DomainTypes+CollectionImages : FDR.Apiary.ApiaryDocument
@@ -2328,7 +2328,7 @@ class ApiaryProvider+DomainTypes+CollectionImages : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Posters: ApiaryProvider+DomainTypes+Poster2[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "posters"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2337,63 +2337,63 @@ class ApiaryProvider+DomainTypes+CollectionImages : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+CompanyMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result11[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Genre : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Genre3 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+GenreIdMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result12[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+GenresChoice : FDR.Apiary.ApiaryDocument
@@ -2401,100 +2401,100 @@ class ApiaryProvider+DomainTypes+GenresChoice : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+Item3 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Job2 : FDR.Apiary.ApiaryDocument
     member Department: string with get
     let value = (this.JsonValue.TryGetProperty "department")
-    CommonRuntime.JsonGetNonOptionalValue("department", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("department", JsonRuntime.ConvertString("", value), value)
 
     member JobList: string[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "job_list"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                                                                                                 let value = Some t.JsonValue
-                                                                                                                                                                                                                                CommonRuntime.JsonGetNonOptionalValue("job_list", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                                                                                                                JsonRuntime.GetNonOptionalValue("job_list", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+KeywordMovies : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result13[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ListItemStatus : FDR.Apiary.ApiaryDocument
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member ItemPresent: bool with get
     let value = (this.JsonValue.TryGetProperty "item_present")
-    CommonRuntime.JsonGetNonOptionalValue("item_present", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("item_present", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieAccountStates : FDR.Apiary.ApiaryDocument
     member Favorite: bool with get
     let value = (this.JsonValue.TryGetProperty "favorite")
-    CommonRuntime.JsonGetNonOptionalValue("favorite", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorite", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Rated: ApiaryProvider+DomainTypes+Rated with get
     (new ApiaryDocument((this.JsonValue.GetProperty "rated")))
 
     member Watchlist: bool with get
     let value = (this.JsonValue.TryGetProperty "watchlist")
-    CommonRuntime.JsonGetNonOptionalValue("watchlist", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("watchlist", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieAlternativeTitles : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Titles: ApiaryProvider+DomainTypes+Title[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "titles"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2509,7 +2509,7 @@ class ApiaryProvider+DomainTypes+MovieCasts : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieChanges : FDR.Apiary.ApiaryDocument
@@ -2523,7 +2523,7 @@ class ApiaryProvider+DomainTypes+MovieImages : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Posters: ApiaryProvider+DomainTypes+Poster[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "posters"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2532,7 +2532,7 @@ class ApiaryProvider+DomainTypes+MovieImages : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+MovieKeywords : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Keywords: ApiaryProvider+DomainTypes+Keyword[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "keywords"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2541,32 +2541,32 @@ class ApiaryProvider+DomainTypes+MovieKeywords : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+MovieLists : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result3[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieRating : FDR.Apiary.ApiaryDocument
     member StatusCode: int with get
     let value = (this.JsonValue.TryGetProperty "status_code")
-    CommonRuntime.JsonGetNonOptionalValue("status_code", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("status_code", JsonRuntime.ConvertInteger("", value), value)
 
     member StatusMessage: string with get
     let value = (this.JsonValue.TryGetProperty "status_message")
-    CommonRuntime.JsonGetNonOptionalValue("status_message", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("status_message", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieReleases : FDR.Apiary.ApiaryDocument
@@ -2575,51 +2575,51 @@ class ApiaryProvider+DomainTypes+MovieReleases : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieReviews : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result2[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieSimilarMovies : FDR.Apiary.ApiaryDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Results: ApiaryProvider+DomainTypes+Result[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "results"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
 
     member TotalPages: int with get
     let value = (this.JsonValue.TryGetProperty "total_pages")
-    CommonRuntime.JsonGetNonOptionalValue("total_pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_pages", JsonRuntime.ConvertInteger("", value), value)
 
     member TotalResults: int with get
     let value = (this.JsonValue.TryGetProperty "total_results")
-    CommonRuntime.JsonGetNonOptionalValue("total_results", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total_results", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+MovieTrailers : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Quicktime: ApiaryProvider+DomainTypes+QuicktimeChoice with get
     (new ApiaryDocument((this.JsonValue.GetProperty "quicktime")))
@@ -2631,7 +2631,7 @@ class ApiaryProvider+DomainTypes+MovieTrailers : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+MovieTranslations : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Translations: ApiaryProvider+DomainTypes+Translation[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "translations"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2640,23 +2640,23 @@ class ApiaryProvider+DomainTypes+MovieTranslations : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+Part : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+PersonChanges : FDR.Apiary.ApiaryDocument
@@ -2673,13 +2673,13 @@ class ApiaryProvider+DomainTypes+PersonCredits : FDR.Apiary.ApiaryDocument
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+PersonImages : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Profiles: ApiaryProvider+DomainTypes+Profile[] with get
     JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "profiles"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -2688,513 +2688,513 @@ class ApiaryProvider+DomainTypes+PersonImages : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+ProductionCompany : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ProductionCompany2 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ProductionCountry : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     let value = (this.JsonValue.TryGetProperty "iso_3166_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_3166_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_3166_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ProductionCountry2 : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     let value = (this.JsonValue.TryGetProperty "iso_3166_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_3166_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_3166_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result10 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result14 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member Popularity: decimal with get
     let value = (this.JsonValue.TryGetProperty "popularity")
-    CommonRuntime.JsonGetNonOptionalValue("popularity", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("popularity", JsonRuntime.ConvertDecimal("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: int with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertInteger("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result15 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member Popularity: decimal with get
     let value = (this.JsonValue.TryGetProperty "popularity")
-    CommonRuntime.JsonGetNonOptionalValue("popularity", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("popularity", JsonRuntime.ConvertDecimal("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice4 with get
     (new ApiaryDocument((this.JsonValue.GetProperty "release_date")))
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result16 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result17 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ProfilePath: string with get
     let value = (this.JsonValue.TryGetProperty "profile_path")
-    CommonRuntime.JsonGetNonOptionalValue("profile_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result18 : FDR.Apiary.ApiaryDocument
     member Description: string with get
     let value = (this.JsonValue.TryGetProperty "description")
-    CommonRuntime.JsonGetNonOptionalValue("description", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
 
     member FavoriteCount: int with get
     let value = (this.JsonValue.TryGetProperty "favorite_count")
-    CommonRuntime.JsonGetNonOptionalValue("favorite_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorite_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member ItemCount: int with get
     let value = (this.JsonValue.TryGetProperty "item_count")
-    CommonRuntime.JsonGetNonOptionalValue("item_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("item_count", JsonRuntime.ConvertInteger("", value), value)
 
     member ListType: string with get
     let value = (this.JsonValue.TryGetProperty "list_type")
-    CommonRuntime.JsonGetNonOptionalValue("list_type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("list_type", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result19 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member LogoPath: string with get
     let value = (this.JsonValue.TryGetProperty "logo_path")
-    CommonRuntime.JsonGetNonOptionalValue("logo_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("logo_path", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result20 : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result4 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result5 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result6 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member Popularity: decimal with get
     let value = (this.JsonValue.TryGetProperty "popularity")
-    CommonRuntime.JsonGetNonOptionalValue("popularity", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("popularity", JsonRuntime.ConvertDecimal("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result7 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result8 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result9 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ProfilePath: string with get
     let value = (this.JsonValue.TryGetProperty "profile_path")
-    CommonRuntime.JsonGetNonOptionalValue("profile_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SpokenLanguage : FDR.Apiary.ApiaryDocument
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+SpokenLanguage2 : FDR.Apiary.ApiaryDocument
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Backdrop : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     let value = (this.JsonValue.TryGetProperty "aspect_ratio")
-    CommonRuntime.JsonGetNonOptionalValue("aspect_ratio", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("aspect_ratio", JsonRuntime.ConvertDecimal("", value), value)
 
     member FilePath: string with get
     let value = (this.JsonValue.TryGetProperty "file_path")
-    CommonRuntime.JsonGetNonOptionalValue("file_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("file_path", JsonRuntime.ConvertString("", value), value)
 
     member Height: int with get
     let value = (this.JsonValue.TryGetProperty "height")
-    CommonRuntime.JsonGetNonOptionalValue("height", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("height", JsonRuntime.ConvertInteger("", value), value)
 
     member Iso6391: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "iso_639_1")))
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Width: int with get
     let value = (this.JsonValue.TryGetProperty "width")
-    CommonRuntime.JsonGetNonOptionalValue("width", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("width", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Backdrop2 : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     let value = (this.JsonValue.TryGetProperty "aspect_ratio")
-    CommonRuntime.JsonGetNonOptionalValue("aspect_ratio", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("aspect_ratio", JsonRuntime.ConvertDecimal("", value), value)
 
     member FilePath: string with get
     let value = (this.JsonValue.TryGetProperty "file_path")
-    CommonRuntime.JsonGetNonOptionalValue("file_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("file_path", JsonRuntime.ConvertString("", value), value)
 
     member Height: int with get
     let value = (this.JsonValue.TryGetProperty "height")
-    CommonRuntime.JsonGetNonOptionalValue("height", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("height", JsonRuntime.ConvertInteger("", value), value)
 
     member Iso6391: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "iso_639_1")))
 
     member Width: int with get
     let value = (this.JsonValue.TryGetProperty "width")
-    CommonRuntime.JsonGetNonOptionalValue("width", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("width", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Cast : FDR.Apiary.ApiaryDocument
     member Character: string with get
     let value = (this.JsonValue.TryGetProperty "character")
-    CommonRuntime.JsonGetNonOptionalValue("character", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("character", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Order: int with get
     let value = (this.JsonValue.TryGetProperty "order")
-    CommonRuntime.JsonGetNonOptionalValue("order", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("order", JsonRuntime.ConvertInteger("", value), value)
 
     member ProfilePath: string with get
     let value = (this.JsonValue.TryGetProperty "profile_path")
-    CommonRuntime.JsonGetNonOptionalValue("profile_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Cast2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Character: string with get
     let value = (this.JsonValue.TryGetProperty "character")
-    CommonRuntime.JsonGetNonOptionalValue("character", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("character", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: ApiaryProvider+DomainTypes+OriginalTitleChoice with get
     (new ApiaryDocument((this.JsonValue.GetProperty "original_title")))
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice with get
     (new ApiaryDocument((this.JsonValue.GetProperty "release_date")))
@@ -3209,7 +3209,7 @@ class ApiaryProvider+DomainTypes+Change : FDR.Apiary.ApiaryDocument
 
     member Key: string with get
     let value = (this.JsonValue.TryGetProperty "key")
-    CommonRuntime.JsonGetNonOptionalValue("key", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("key", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Change2 : FDR.Apiary.ApiaryDocument
@@ -3218,7 +3218,7 @@ class ApiaryProvider+DomainTypes+Change2 : FDR.Apiary.ApiaryDocument
 
     member Key: string with get
     let value = (this.JsonValue.TryGetProperty "key")
-    CommonRuntime.JsonGetNonOptionalValue("key", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("key", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Country : FDR.Apiary.ApiaryDocument
@@ -3227,149 +3227,149 @@ class ApiaryProvider+DomainTypes+Country : FDR.Apiary.ApiaryDocument
 
     member Iso31661: string with get
     let value = (this.JsonValue.TryGetProperty "iso_3166_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_3166_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_3166_1", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Crew : FDR.Apiary.ApiaryDocument
     member Department: string with get
     let value = (this.JsonValue.TryGetProperty "department")
-    CommonRuntime.JsonGetNonOptionalValue("department", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("department", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Job: string with get
     let value = (this.JsonValue.TryGetProperty "job")
-    CommonRuntime.JsonGetNonOptionalValue("job", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("job", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ProfilePath: string with get
     let value = (this.JsonValue.TryGetProperty "profile_path")
-    CommonRuntime.JsonGetNonOptionalValue("profile_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Crew2 : FDR.Apiary.ApiaryDocument
     member Adult: bool with get
     let value = (this.JsonValue.TryGetProperty "adult")
-    CommonRuntime.JsonGetNonOptionalValue("adult", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("adult", JsonRuntime.ConvertBoolean("", value), value)
 
     member Department: string with get
     let value = (this.JsonValue.TryGetProperty "department")
-    CommonRuntime.JsonGetNonOptionalValue("department", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("department", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Job: string with get
     let value = (this.JsonValue.TryGetProperty "job")
-    CommonRuntime.JsonGetNonOptionalValue("job", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("job", JsonRuntime.ConvertString("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice2 with get
     (new ApiaryDocument((this.JsonValue.GetProperty "release_date")))
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Keyword : FDR.Apiary.ApiaryDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Poster : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     let value = (this.JsonValue.TryGetProperty "aspect_ratio")
-    CommonRuntime.JsonGetNonOptionalValue("aspect_ratio", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("aspect_ratio", JsonRuntime.ConvertDecimal("", value), value)
 
     member FilePath: string with get
     let value = (this.JsonValue.TryGetProperty "file_path")
-    CommonRuntime.JsonGetNonOptionalValue("file_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("file_path", JsonRuntime.ConvertString("", value), value)
 
     member Height: int with get
     let value = (this.JsonValue.TryGetProperty "height")
-    CommonRuntime.JsonGetNonOptionalValue("height", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("height", JsonRuntime.ConvertInteger("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Width: int with get
     let value = (this.JsonValue.TryGetProperty "width")
-    CommonRuntime.JsonGetNonOptionalValue("width", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("width", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Poster2 : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     let value = (this.JsonValue.TryGetProperty "aspect_ratio")
-    CommonRuntime.JsonGetNonOptionalValue("aspect_ratio", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("aspect_ratio", JsonRuntime.ConvertDecimal("", value), value)
 
     member FilePath: string with get
     let value = (this.JsonValue.TryGetProperty "file_path")
-    CommonRuntime.JsonGetNonOptionalValue("file_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("file_path", JsonRuntime.ConvertString("", value), value)
 
     member Height: int with get
     let value = (this.JsonValue.TryGetProperty "height")
-    CommonRuntime.JsonGetNonOptionalValue("height", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("height", JsonRuntime.ConvertInteger("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member Width: int with get
     let value = (this.JsonValue.TryGetProperty "width")
-    CommonRuntime.JsonGetNonOptionalValue("width", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("width", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Profile : FDR.Apiary.ApiaryDocument
     member AspectRatio: decimal with get
     let value = (this.JsonValue.TryGetProperty "aspect_ratio")
-    CommonRuntime.JsonGetNonOptionalValue("aspect_ratio", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("aspect_ratio", JsonRuntime.ConvertDecimal("", value), value)
 
     member FilePath: string with get
     let value = (this.JsonValue.TryGetProperty "file_path")
-    CommonRuntime.JsonGetNonOptionalValue("file_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("file_path", JsonRuntime.ConvertString("", value), value)
 
     member Height: int with get
     let value = (this.JsonValue.TryGetProperty "height")
-    CommonRuntime.JsonGetNonOptionalValue("height", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("height", JsonRuntime.ConvertInteger("", value), value)
 
     member Iso6391: FDR.Apiary.ApiaryDocument with get
     (new ApiaryDocument((this.JsonValue.GetProperty "iso_639_1")))
 
     member Width: int with get
     let value = (this.JsonValue.TryGetProperty "width")
-    CommonRuntime.JsonGetNonOptionalValue("width", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("width", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+QuicktimeChoice : FDR.Apiary.ApiaryDocument
@@ -3377,267 +3377,267 @@ class ApiaryProvider+DomainTypes+QuicktimeChoice : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+Rated : FDR.Apiary.ApiaryDocument
     member Value: decimal with get
     let value = (this.JsonValue.TryGetProperty "value")
-    CommonRuntime.JsonGetNonOptionalValue("value", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertDecimal("", value), value)
 
 
 class ApiaryProvider+DomainTypes+ReleaseDateChoice4 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "DateTime", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                let value = Some t.JsonValue
-                                                                                                                                               CommonRuntime.JsonGetNonOptionalValue("release_dateChoice1of1", CommonRuntime.JsonConvertDateTime("", value), value)))
+                                                                                                                                               JsonRuntime.GetNonOptionalValue("release_dateChoice1of1", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+Result : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result11 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: ApiaryProvider+DomainTypes+ReleaseDateChoice3 with get
     (new ApiaryDocument((this.JsonValue.GetProperty "release_date")))
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result12 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result13 : FDR.Apiary.ApiaryDocument
     member BackdropPath: string with get
     let value = (this.JsonValue.TryGetProperty "backdrop_path")
-    CommonRuntime.JsonGetNonOptionalValue("backdrop_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("backdrop_path", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member OriginalTitle: string with get
     let value = (this.JsonValue.TryGetProperty "original_title")
-    CommonRuntime.JsonGetNonOptionalValue("original_title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
     member ReleaseDate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "release_date")
-    CommonRuntime.JsonGetNonOptionalValue("release_date", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member VoteAverage: decimal with get
     let value = (this.JsonValue.TryGetProperty "vote_average")
-    CommonRuntime.JsonGetNonOptionalValue("vote_average", CommonRuntime.JsonConvertDecimal("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_average", JsonRuntime.ConvertDecimal("", value), value)
 
     member VoteCount: int with get
     let value = (this.JsonValue.TryGetProperty "vote_count")
-    CommonRuntime.JsonGetNonOptionalValue("vote_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("vote_count", JsonRuntime.ConvertInteger("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result2 : FDR.Apiary.ApiaryDocument
     member Author: string with get
     let value = (this.JsonValue.TryGetProperty "author")
-    CommonRuntime.JsonGetNonOptionalValue("author", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)
 
     member Content: string with get
     let value = (this.JsonValue.TryGetProperty "content")
-    CommonRuntime.JsonGetNonOptionalValue("content", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("content", JsonRuntime.ConvertString("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Result3 : FDR.Apiary.ApiaryDocument
     member Description: string with get
     let value = (this.JsonValue.TryGetProperty "description")
-    CommonRuntime.JsonGetNonOptionalValue("description", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
 
     member FavoriteCount: int with get
     let value = (this.JsonValue.TryGetProperty "favorite_count")
-    CommonRuntime.JsonGetNonOptionalValue("favorite_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorite_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member ItemCount: int with get
     let value = (this.JsonValue.TryGetProperty "item_count")
-    CommonRuntime.JsonGetNonOptionalValue("item_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("item_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PosterPath: string with get
     let value = (this.JsonValue.TryGetProperty "poster_path")
-    CommonRuntime.JsonGetNonOptionalValue("poster_path", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("poster_path", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Title : FDR.Apiary.ApiaryDocument
     member Iso31661: string with get
     let value = (this.JsonValue.TryGetProperty "iso_3166_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_3166_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_3166_1", JsonRuntime.ConvertString("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Translation : FDR.Apiary.ApiaryDocument
     member EnglishName: string with get
     let value = (this.JsonValue.TryGetProperty "english_name")
-    CommonRuntime.JsonGetNonOptionalValue("english_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("english_name", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string with get
     let value = (this.JsonValue.TryGetProperty "iso_639_1")
-    CommonRuntime.JsonGetNonOptionalValue("iso_639_1", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("iso_639_1", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+Youtube : FDR.Apiary.ApiaryDocument
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Size: string with get
     let value = (this.JsonValue.TryGetProperty "size")
-    CommonRuntime.JsonGetNonOptionalValue("size", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("size", JsonRuntime.ConvertString("", value), value)
 
     member Source: string with get
     let value = (this.JsonValue.TryGetProperty "source")
-    CommonRuntime.JsonGetNonOptionalValue("source", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("source", JsonRuntime.ConvertString("", value), value)
 
 
 class ApiaryProvider+DomainTypes+CertificationChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("certificationChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("certificationChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("certificationChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("certificationChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+Item : FDR.Apiary.ApiaryDocument
     member Action: string with get
     let value = (this.JsonValue.TryGetProperty "action")
-    CommonRuntime.JsonGetNonOptionalValue("action", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("action", JsonRuntime.ConvertString("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Iso6391: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "iso_639_1"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "iso_639_1"))
 
     member OriginalValue: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "original_value"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "original_value"))
 
     member Time: string with get
     let value = (this.JsonValue.TryGetProperty "time")
-    CommonRuntime.JsonGetNonOptionalValue("time", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("time", JsonRuntime.ConvertString("", value), value)
 
     member Value: ApiaryProvider+DomainTypes+ValueChoice option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "value", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -3646,75 +3646,75 @@ class ApiaryProvider+DomainTypes+Item : FDR.Apiary.ApiaryDocument
 class ApiaryProvider+DomainTypes+Item2 : FDR.Apiary.ApiaryDocument
     member Action: string with get
     let value = (this.JsonValue.TryGetProperty "action")
-    CommonRuntime.JsonGetNonOptionalValue("action", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("action", JsonRuntime.ConvertString("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Time: string with get
     let value = (this.JsonValue.TryGetProperty "time")
-    CommonRuntime.JsonGetNonOptionalValue("time", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("time", JsonRuntime.ConvertString("", value), value)
 
     member Value: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "value"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "value"))
 
 
 class ApiaryProvider+DomainTypes+OriginalTitleChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("original_titleChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("original_titleChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("original_titleChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("original_titleChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+ReleaseDateChoice : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "DateTime", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                let value = Some t.JsonValue
-                                                                                                                                               CommonRuntime.JsonGetNonOptionalValue("release_dateChoice1of1", CommonRuntime.JsonConvertDateTime("", value), value)))
+                                                                                                                                               JsonRuntime.GetNonOptionalValue("release_dateChoice1of1", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+ReleaseDateChoice2 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "DateTime", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                let value = Some t.JsonValue
-                                                                                                                                               CommonRuntime.JsonGetNonOptionalValue("release_dateChoice1of1", CommonRuntime.JsonConvertDateTime("", value), value)))
+                                                                                                                                               JsonRuntime.GetNonOptionalValue("release_dateChoice1of1", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+ReleaseDateChoice3 : FDR.Apiary.ApiaryDocument
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "DateTime", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                                let value = Some t.JsonValue
-                                                                                                                                               CommonRuntime.JsonGetNonOptionalValue("release_dateChoice1of1", CommonRuntime.JsonConvertDateTime("", value), value)))
+                                                                                                                                               JsonRuntime.GetNonOptionalValue("release_dateChoice1of1", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+TitleChoice : FDR.Apiary.ApiaryDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("titleChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("titleChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("titleChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("titleChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+ValueChoice : FDR.Apiary.ApiaryDocument
     member Boolean: bool option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Boolean", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                               let value = Some t.JsonValue
-                                                                                                                                              CommonRuntime.JsonGetNonOptionalValue("valueChoice2of4", CommonRuntime.JsonConvertBoolean("", value), value)))
+                                                                                                                                              JsonRuntime.GetNonOptionalValue("valueChoice2of4", JsonRuntime.ConvertBoolean("", value), value)))
 
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("valueChoice1of4", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("valueChoice1of4", JsonRuntime.ConvertInteger("", value), value)))
 
     member Record: ApiaryProvider+DomainTypes+ValueChoice4of4 option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Record", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
@@ -3722,41 +3722,41 @@ class ApiaryProvider+DomainTypes+ValueChoice : FDR.Apiary.ApiaryDocument
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
                                                                                                                                              let value = Some t.JsonValue
-                                                                                                                                             CommonRuntime.JsonGetNonOptionalValue("valueChoice3of4", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                             JsonRuntime.GetNonOptionalValue("valueChoice3of4", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+DomainTypes+ValueChoice4of4 : FDR.Apiary.ApiaryDocument
     member Certification: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "certification"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "certification"))
 
     member Character: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "character"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "character"))
 
     member Department: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "department"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "department"))
 
     member Id: int option with get
-    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "id"))
+    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "id"))
 
     member Iso31661: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "iso_3166_1"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "iso_3166_1"))
 
     member Job: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "job"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "job"))
 
     member Name: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "name"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "name"))
 
     member Order: int option with get
-    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "order"))
+    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "order"))
 
     member PersonId: int option with get
-    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "person_id"))
+    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "person_id"))
 
     member Primary: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "primary"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "primary"))
 
     member ReleaseDate: System.DateTime option with get
-    CommonRuntime.JsonConvertDateTime("", (this.JsonValue.TryGetProperty "release_date"))
+    JsonRuntime.ConvertDateTime("", (this.JsonValue.TryGetProperty "release_date"))
 
 

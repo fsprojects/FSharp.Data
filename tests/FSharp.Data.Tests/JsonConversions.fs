@@ -10,7 +10,7 @@ open System.Globalization
 open NUnit.Framework
 open FsUnit
 open FSharp.Data.Json
-open FSharp.Data.RuntimeImplementation
+open FSharp.Data.Runtime
 open FSharp.Data.Json.Extensions
 
 [<Test>]

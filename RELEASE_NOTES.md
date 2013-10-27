@@ -96,3 +96,4 @@
 * Fix handling of optional elements in XmlProvider when using multiple samples.
 * Fix generated code doing repeated work.
 * Windows Phone 7 no longer supported.
+* CsvInference is now part of the runtime so it can be reused.

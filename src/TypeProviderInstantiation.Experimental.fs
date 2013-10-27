@@ -28,3 +28,8 @@ type TypeProviderInstantiation =
         | "Apiary" ->
             Apiary { ApiName = args.[1] }
         | _ -> failwithf "Unknown: %s" args.[0]
+
+open System.Runtime.CompilerServices
+
+[<assembly:InternalsVisibleToAttribute("FSharp.Data.Tests.Experimental.DesignTime")>]
+do()

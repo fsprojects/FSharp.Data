@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json"), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json"), "")
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSample: () -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Dates.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -26,18 +26,18 @@ class JsonProvider+DomainTypes
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Anniversary: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "anniversary")
-    CommonRuntime.JsonGetNonOptionalValue("anniversary", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("anniversary", JsonRuntime.ConvertDateTime("", value), value)
 
     member Birthdate: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "birthdate")
-    CommonRuntime.JsonGetNonOptionalValue("birthdate", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("birthdate", JsonRuntime.ConvertDateTime("", value), value)
 
     member NoTimeZone: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "NoTimeZone")
-    CommonRuntime.JsonGetNonOptionalValue("NoTimeZone", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("NoTimeZone", JsonRuntime.ConvertDateTime("", value), value)
 
     member UtcTime: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "UtcTime")
-    CommonRuntime.JsonGetNonOptionalValue("UtcTime", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("UtcTime", JsonRuntime.ConvertDateTime("", value), value)
 
 

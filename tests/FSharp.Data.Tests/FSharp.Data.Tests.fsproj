@@ -125,7 +125,8 @@
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
-    <Compile Include="HttpUtility.fs" />
+    <Compile Include="HttpUtils.fs" />
+    <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue..fs" />
     <Compile Include="JsonConversions.fs" />

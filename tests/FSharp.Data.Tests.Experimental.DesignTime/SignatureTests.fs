@@ -22,7 +22,7 @@ type TypeProviderInstantiation with
         let output = 
             x.GenerateType resolutionFolder runtimeAssembly platform
             |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
-        output.Replace("FSharp.Data.RuntimeImplementation.", "FDR.")
+        output.Replace("FSharp.Data.Runtime.", "FDR.")
               .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
 
 let (++) a b = Path.Combine(a, b)
