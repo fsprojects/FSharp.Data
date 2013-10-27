@@ -35,12 +35,13 @@ module private Helpers =
 
 // --------------------------------------------------------------------------------------
 
+/// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions = 
 
   static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"|]
 
   /// Turns empty or null string value into None, otherwise returns Some
-  static member AsOption str =
+  static member AsString str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
   static member AsInteger culture text = 
@@ -52,6 +53,7 @@ type TextConversions =
   static member AsDecimal culture text =
     Decimal.TryParse(text, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, culture) |> asOption
   
+  /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
   static member AsFloat missingValues useNoneForMissingValues culture (text:string) = 
     match text.Trim() with
     | OneOf missingValues -> if useNoneForMissingValues then None else Some Double.NaN

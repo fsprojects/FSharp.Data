@@ -157,13 +157,13 @@ module JsonTypeBuilder =
         // or `AsyncConvertArray<'Representation, 'T>(jDoc, unpacker, packer, mapper)`
         // the async version is only used when the top level element returned by Parse/Load is an array
         let conv = fun (jDoc:Expr)-> 
-          let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonRuntime>
+          let runtimeType = ctx.Replacer.ToRuntime typeof<JsonRuntime>
           let isAsync = jDoc.Type.Name.StartsWith "FSharpAsync`1"
           // TODO: use the same as in ApiaryGenerationHelper.AsyncMap
           if isAsync then
-            operationsTyp?AsyncConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
+            runtimeType?AsyncConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
           else
-            operationsTyp?ConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
+            runtimeType?ConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
         
         { ConvertedType = output.ConvertedType.MakeArrayType()
           Converter = conv
@@ -249,16 +249,16 @@ module JsonTypeBuilder =
               let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
               let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
               fun (Singleton json) -> 
-                let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-                operationsTyp?GetArrayChildrenByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc)
+                let runtimeType = ctx.Replacer.ToRuntime typeof<JsonRuntime>
+                runtimeType?GetArrayChildrenByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc)
           
           | InferedMultiplicity.OptionalSingle, _ -> 
               // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
               let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
               let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
               fun (Singleton json) -> 
-                let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-                operationsTyp?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
+                let runtimeType = ctx.Replacer.ToRuntime typeof<JsonRuntime>
+                runtimeType?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
 
     | Heterogeneous types ->
 
@@ -271,5 +271,5 @@ module JsonTypeBuilder =
           let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
           let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
           fun (Singleton json) -> 
-            let operationsTyp = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-            operationsTyp?TryGetValueByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
+            let runtimeType = ctx.Replacer.ToRuntime typeof<JsonRuntime>
+            runtimeType?TryGetValueByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))

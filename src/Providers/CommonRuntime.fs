@@ -7,6 +7,7 @@ open System
 open System.Globalization
 open FSharp.Data.Json
 
+/// Static helper methods called from the generated code
 type CommonRuntime = 
 
   /// Returns CultureInfo matching the specified culture string

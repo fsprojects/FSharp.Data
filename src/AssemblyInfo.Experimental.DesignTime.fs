@@ -1,4 +1,4 @@
-﻿module AssemblyInfo
+﻿module internal AssemblyInfo
 open System.Reflection
 
 [<assembly: AssemblyTitleAttribute("FSharp.Data.Experimental.DesignTime")>]

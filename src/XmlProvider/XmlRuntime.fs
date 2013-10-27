@@ -70,7 +70,7 @@ type XmlElement =
   }
 
 /// Static helper methods called from the generated code
-type XmlOperations = 
+type XmlRuntime = 
 
   // Operations for getting node values and values of attributes
   static member TryGetValue(xml:XmlElement) = 
@@ -87,13 +87,13 @@ type XmlOperations =
     [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> { XElement = c } |]
   
   static member private GetChildOption(value:XmlElement, nameWithNS) =
-    match XmlOperations.GetChildrenArray(value, nameWithNS) with
+    match XmlRuntime.GetChildrenArray(value, nameWithNS) with
     | [| it |] -> Some it
     | [| |] -> None
     | array -> failwithf "XML mismatch: Expected zero or one '%s' child, got %d" nameWithNS array.Length
 
   static member GetChild(value:XmlElement, nameWithNS) =
-    match XmlOperations.GetChildrenArray(value, nameWithNS) with
+    match XmlRuntime.GetChildrenArray(value, nameWithNS) with
     | [| it |] -> it
     | array -> failwithf "XML mismatch: Expected exactly one '%s' child, got %d" nameWithNS array.Length
 
@@ -101,7 +101,7 @@ type XmlOperations =
   // function - we need a version for array and option
   // (This is used e.g. when transforming `<a>1</a><a>2</a>` to `int[]`)
   static member ConvertArray<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) : 'R[] = 
-    XmlOperations.GetChildrenArray(xml, nameWithNS) |> Array.map f.Invoke
+    XmlRuntime.GetChildrenArray(xml, nameWithNS) |> Array.map f.Invoke
 
   static member ConvertOptional<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) =
-    XmlOperations.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
+    XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke

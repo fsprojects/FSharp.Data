@@ -81,7 +81,7 @@ module internal XmlTypeBuilder =
     | Record(Some nameWithNs, [{ Name = ""; Optional = opt; Type = Primitive(typ, _) }]) ->
         let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, opt)
         typ, fun xml -> let xml = ctx.Replacer.ToDesignTime xml
-                        conv <@ XmlOperations.TryGetValue(%%xml) @>
+                        conv <@ XmlRuntime.TryGetValue(%%xml) @>
 
     // If the node is more complicated, then we generate a type to represent it properly
     | Record(Some nameWithNS, props) -> 
@@ -132,7 +132,7 @@ module internal XmlTypeBuilder =
               let p = ProvidedProperty(makeUnique name, choiceTy)
               p.GetterCode <- fun (Singleton xml) -> 
                 let xml = ctx.Replacer.ToDesignTime xml
-                ctx.Replacer.ToRuntime <@@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @@>
+                ctx.Replacer.ToRuntime <@@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @@>
               objectTy.AddMember(p)
 
           | Primitive(typ, _) ->
@@ -141,7 +141,7 @@ module internal XmlTypeBuilder =
               let p = ProvidedProperty(makeUnique name, typ)
               p.GetterCode <- fun (Singleton xml) -> 
                 let xml = ctx.Replacer.ToDesignTime xml
-                conv <@ XmlOperations.TryGetAttribute(%%xml, nameWithNS) @>
+                conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @>
               objectTy.AddMember(p)
 
           | _ -> failwith "generateXmlType: Expected Primitive or Choice type"
@@ -166,7 +166,7 @@ module internal XmlTypeBuilder =
                   let p = ProvidedProperty(name, typ)
                   p.GetterCode <- fun (Singleton xml) -> 
                     let xml = ctx.Replacer.ToDesignTime xml
-                    conv <@ XmlOperations.TryGetValue(%%xml) @>
+                    conv <@ XmlRuntime.TryGetValue(%%xml) @>
                   objectTy.AddMember(p)          
               | _ -> failwith "generateXmlType: Primitive type expected"
 
@@ -183,7 +183,7 @@ module internal XmlTypeBuilder =
                         let p = ProvidedProperty(makeUnique name, childTy)
                         p.GetterCode <- fun (Singleton xml) -> 
                           let xml = ctx.Replacer.ToDesignTime xml
-                          childConv <@@ XmlOperations.GetChild(%%xml, nameWithNS) @@>
+                          childConv <@@ XmlRuntime.GetChild(%%xml, nameWithNS) @@>
                         p :> MemberInfo
 
                     // For options and arrays, we need to generate call to ConvertArray or ConvertOption
@@ -193,16 +193,16 @@ module internal XmlTypeBuilder =
                         let m = ProvidedMethod(makeUnique ("Get" + NameUtils.nicePascalName (NameUtils.pluralize name)), [], childTy.MakeArrayType())
                         let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         m.InvokeCode <- fun (Singleton xml) -> 
-                          let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
-                          operationsTyp?ConvertArray (convTyp) (xml, nameWithNS, convFunc)
+                          let runtimeType = ctx.Replacer.ToRuntime typeof<XmlRuntime>
+                          runtimeType?ConvertArray (convTyp) (xml, nameWithNS, convFunc)
                         m :> MemberInfo
 
                     | InferedMultiplicity.OptionalSingle ->
                         let p = ProvidedProperty(makeUnique name, typedefof<option<_>>.MakeGenericType [| childTy |])
                         let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         p.GetterCode <- fun (Singleton xml) -> 
-                          let operationsTyp = ctx.Replacer.ToRuntime typeof<XmlOperations>
-                          operationsTyp?ConvertOptional (convTyp) (xml, nameWithNS, convFunc)
+                          let runtimeType = ctx.Replacer.ToRuntime typeof<XmlRuntime>
+                          runtimeType?ConvertOptional (convTyp) (xml, nameWithNS, convFunc)
                         p :> MemberInfo
 
                 | _ -> failwith "generateXmlType: Child nodes should be named record types" ]

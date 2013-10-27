@@ -7,10 +7,11 @@ namespace FSharp.Data.RuntimeImplementation
 open System
 open FSharp.Data.Json
 
+/// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
 type JsonConversions =
 
   static member AsString useNoneForNullOrEmpty (culture:IFormatProvider) = function
-    | JsonValue.String s -> if useNoneForNullOrEmpty then TextConversions.AsOption s else Some s
+    | JsonValue.String s -> if useNoneForNullOrEmpty then TextConversions.AsString s else Some s
     | JsonValue.Boolean b -> Some <| if b then "true" else "false"
     | JsonValue.Number n -> Some <| n.ToString culture
     | JsonValue.Float f -> Some <| f.ToString culture

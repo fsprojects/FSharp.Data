@@ -12,15 +12,19 @@ open System.Reflection
 open FSharp.Data.RuntimeImplementation.ProviderFileSystem
 
 [<RequireQualifiedAccess>]
+/// The body to send in an HTTP request
 type RequestBody =
     | Text of string
     | Binary of byte[]
     | FormValues of seq<string * string>
 
+[<RequireQualifiedAccess>]
+/// The response body returned by an HTTP request
 type ResponseBody =
     | Text of string
     | Binary of byte[]
 
+/// The response returned by an HTTP request
 type HttpResponse =
   { Body : ResponseBody
     Headers : Map<string,string> 

@@ -1,6 +1,4 @@
 ﻿// --------------------------------------------------------------------------------------
-// Freebase type provider - Extension members for operations permitted in queries of the Freebase service
-// --------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind. 
 // We disclaim all warranties, either express or implied, including the 
@@ -9,6 +7,7 @@
 
 namespace FSharp.Data
 
+/// Extension members for operations permitted in queries of the Freebase service
 module FreebaseOperators = 
 
     open System
@@ -34,11 +33,11 @@ module FreebaseOperators =
            s.Provider.Execute<int32>(expr)
 
        /// Synonym for LINQ's Count
-       // Included so you don't have to open System.LINQ to use the queries
+       /// Included so you don't have to open System.LINQ to use the queries
        [<CompiledName("Count")>]
        member s.Count() : int =  System.Linq.Queryable.Count(s)
 
        /// Synonym for LINQ's Where
-       // Included so you don't have to open System.LINQ to use the queries
+       /// Included so you don't have to open System.LINQ to use the queries
        [<CompiledName("Where")>]
        member s.Where(p:System.Linq.Expressions.Expression<System.Func<_,_>>) =  System.Linq.Queryable.Where(s,p)
