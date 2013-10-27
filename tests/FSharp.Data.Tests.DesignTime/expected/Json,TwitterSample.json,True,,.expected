@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
-    JsonDocument.AsyncCreateList((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json"), "")
+    JsonDocument.AsyncCreateList((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json"), "")
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
-    JsonDocument.CreateList(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json")), "")
+    JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -31,7 +31,7 @@ class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "coordinates", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member CreatedAt: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "created_at"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "created_at"))
 
     member Delete: JsonProvider+DomainTypes+Delete option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "delete", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -40,25 +40,25 @@ class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "entities", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member FavoriteCount: int option with get
-    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "favorite_count"))
+    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "favorite_count"))
 
     member Favorited: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "favorited"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "favorited"))
 
     member FilterLevel: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "filter_level"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "filter_level"))
 
     member Geo: FDR.JsonDocument option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "geo", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member Id: int64 option with get
-    CommonRuntime.JsonConvertInteger64("", (this.JsonValue.TryGetProperty "id"))
+    JsonRuntime.ConvertInteger64("", (this.JsonValue.TryGetProperty "id"))
 
     member IdStr: int64 option with get
-    CommonRuntime.JsonConvertInteger64("", (this.JsonValue.TryGetProperty "id_str"))
+    JsonRuntime.ConvertInteger64("", (this.JsonValue.TryGetProperty "id_str"))
 
     member InReplyToScreenName: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "in_reply_to_screen_name"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "in_reply_to_screen_name"))
 
     member InReplyToStatusId: JsonProvider+DomainTypes+InReplyToStatusIdChoice option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "in_reply_to_status_id", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -73,31 +73,31 @@ class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "in_reply_to_user_id_str", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member Lang: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "lang"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "lang"))
 
     member Place: JsonProvider+DomainTypes+Place option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "place", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member PossiblySensitive: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "possibly_sensitive"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "possibly_sensitive"))
 
     member RetweetCount: int option with get
-    CommonRuntime.JsonConvertInteger("", (this.JsonValue.TryGetProperty "retweet_count"))
+    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "retweet_count"))
 
     member Retweeted: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "retweeted"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "retweeted"))
 
     member RetweetedStatus: JsonProvider+DomainTypes+RetweetedStatus option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "retweeted_status", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member Source: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "source"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "source"))
 
     member Text: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "text"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "text"))
 
     member Truncated: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "truncated"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "truncated"))
 
     member User: JsonProvider+DomainTypes+User2 option with get
     JsonRuntime.ConvertOptionalProperty(this.JsonValue, "user", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -126,28 +126,28 @@ class JsonProvider+DomainTypes+InReplyToStatusIdChoice : FDR.JsonDocument
     member Number: int64 option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_status_idChoice1of1", CommonRuntime.JsonConvertInteger64("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_status_idChoice1of1", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+DomainTypes+InReplyToStatusIdStrChoice : FDR.JsonDocument
     member Number: int64 option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_status_id_strChoice1of1", CommonRuntime.JsonConvertInteger64("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_strChoice1of1", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+DomainTypes+InReplyToUserIdChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_user_idChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_user_idChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+InReplyToUserIdStrChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_user_id_strChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_strChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+Place : FDR.JsonDocument
@@ -159,31 +159,31 @@ class JsonProvider+DomainTypes+Place : FDR.JsonDocument
 
     member Country: string with get
     let value = (this.JsonValue.TryGetProperty "country")
-    CommonRuntime.JsonGetNonOptionalValue("country", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("country", JsonRuntime.ConvertString("", value), value)
 
     member CountryCode: string with get
     let value = (this.JsonValue.TryGetProperty "country_code")
-    CommonRuntime.JsonGetNonOptionalValue("country_code", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("country_code", JsonRuntime.ConvertString("", value), value)
 
     member FullName: string with get
     let value = (this.JsonValue.TryGetProperty "full_name")
-    CommonRuntime.JsonGetNonOptionalValue("full_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("full_name", JsonRuntime.ConvertString("", value), value)
 
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member PlaceType: string with get
     let value = (this.JsonValue.TryGetProperty "place_type")
-    CommonRuntime.JsonGetNonOptionalValue("place_type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("place_type", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
@@ -195,33 +195,33 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
 
     member CreatedAt: string with get
     let value = (this.JsonValue.TryGetProperty "created_at")
-    CommonRuntime.JsonGetNonOptionalValue("created_at", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("created_at", JsonRuntime.ConvertString("", value), value)
 
     member Entities: JsonProvider+DomainTypes+Entities2 with get
     JsonDocument.Create((this.JsonValue.GetProperty "entities"))
 
     member FavoriteCount: int with get
     let value = (this.JsonValue.TryGetProperty "favorite_count")
-    CommonRuntime.JsonGetNonOptionalValue("favorite_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorite_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Favorited: bool with get
     let value = (this.JsonValue.TryGetProperty "favorited")
-    CommonRuntime.JsonGetNonOptionalValue("favorited", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("favorited", JsonRuntime.ConvertBoolean("", value), value)
 
     member Geo: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "geo"))
 
     member Id: int64 with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger64("", value), value)
 
     member IdStr: int64 with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger64("", value), value)
 
     member InReplyToScreenName: string with get
     let value = (this.JsonValue.TryGetProperty "in_reply_to_screen_name")
-    CommonRuntime.JsonGetNonOptionalValue("in_reply_to_screen_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("in_reply_to_screen_name", JsonRuntime.ConvertString("", value), value)
 
     member InReplyToStatusId: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "in_reply_to_status_id"))
@@ -237,33 +237,33 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
 
     member Lang: string with get
     let value = (this.JsonValue.TryGetProperty "lang")
-    CommonRuntime.JsonGetNonOptionalValue("lang", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("lang", JsonRuntime.ConvertString("", value), value)
 
     member Place: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "place"))
 
     member PossiblySensitive: bool option with get
-    CommonRuntime.JsonConvertBoolean("", (this.JsonValue.TryGetProperty "possibly_sensitive"))
+    JsonRuntime.ConvertBoolean("", (this.JsonValue.TryGetProperty "possibly_sensitive"))
 
     member RetweetCount: int with get
     let value = (this.JsonValue.TryGetProperty "retweet_count")
-    CommonRuntime.JsonGetNonOptionalValue("retweet_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("retweet_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Retweeted: bool with get
     let value = (this.JsonValue.TryGetProperty "retweeted")
-    CommonRuntime.JsonGetNonOptionalValue("retweeted", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("retweeted", JsonRuntime.ConvertBoolean("", value), value)
 
     member Source: string with get
     let value = (this.JsonValue.TryGetProperty "source")
-    CommonRuntime.JsonGetNonOptionalValue("source", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("source", JsonRuntime.ConvertString("", value), value)
 
     member Text: string with get
     let value = (this.JsonValue.TryGetProperty "text")
-    CommonRuntime.JsonGetNonOptionalValue("text", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
     member Truncated: bool with get
     let value = (this.JsonValue.TryGetProperty "truncated")
-    CommonRuntime.JsonGetNonOptionalValue("truncated", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("truncated", JsonRuntime.ConvertBoolean("", value), value)
 
     member User: JsonProvider+DomainTypes+User with get
     JsonDocument.Create((this.JsonValue.GetProperty "user"))
@@ -272,73 +272,73 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.JsonDocument
 class JsonProvider+DomainTypes+User2 : FDR.JsonDocument
     member ContributorsEnabled: bool with get
     let value = (this.JsonValue.TryGetProperty "contributors_enabled")
-    CommonRuntime.JsonGetNonOptionalValue("contributors_enabled", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("contributors_enabled", JsonRuntime.ConvertBoolean("", value), value)
 
     member CreatedAt: string with get
     let value = (this.JsonValue.TryGetProperty "created_at")
-    CommonRuntime.JsonGetNonOptionalValue("created_at", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("created_at", JsonRuntime.ConvertString("", value), value)
 
     member DefaultProfile: bool with get
     let value = (this.JsonValue.TryGetProperty "default_profile")
-    CommonRuntime.JsonGetNonOptionalValue("default_profile", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("default_profile", JsonRuntime.ConvertBoolean("", value), value)
 
     member DefaultProfileImage: bool with get
     let value = (this.JsonValue.TryGetProperty "default_profile_image")
-    CommonRuntime.JsonGetNonOptionalValue("default_profile_image", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("default_profile_image", JsonRuntime.ConvertBoolean("", value), value)
 
     member Description: string with get
     let value = (this.JsonValue.TryGetProperty "description")
-    CommonRuntime.JsonGetNonOptionalValue("description", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
 
     member FavouritesCount: int with get
     let value = (this.JsonValue.TryGetProperty "favourites_count")
-    CommonRuntime.JsonGetNonOptionalValue("favourites_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favourites_count", JsonRuntime.ConvertInteger("", value), value)
 
     member FollowRequestSent: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "follow_request_sent"))
 
     member FollowersCount: int with get
     let value = (this.JsonValue.TryGetProperty "followers_count")
-    CommonRuntime.JsonGetNonOptionalValue("followers_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("followers_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Following: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "following"))
 
     member FriendsCount: int with get
     let value = (this.JsonValue.TryGetProperty "friends_count")
-    CommonRuntime.JsonGetNonOptionalValue("friends_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("friends_count", JsonRuntime.ConvertInteger("", value), value)
 
     member GeoEnabled: bool with get
     let value = (this.JsonValue.TryGetProperty "geo_enabled")
-    CommonRuntime.JsonGetNonOptionalValue("geo_enabled", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("geo_enabled", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member IdStr: int with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger("", value), value)
 
     member IsTranslator: bool with get
     let value = (this.JsonValue.TryGetProperty "is_translator")
-    CommonRuntime.JsonGetNonOptionalValue("is_translator", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("is_translator", JsonRuntime.ConvertBoolean("", value), value)
 
     member Lang: string with get
     let value = (this.JsonValue.TryGetProperty "lang")
-    CommonRuntime.JsonGetNonOptionalValue("lang", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("lang", JsonRuntime.ConvertString("", value), value)
 
     member ListedCount: int with get
     let value = (this.JsonValue.TryGetProperty "listed_count")
-    CommonRuntime.JsonGetNonOptionalValue("listed_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("listed_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Location: string with get
     let value = (this.JsonValue.TryGetProperty "location")
-    CommonRuntime.JsonGetNonOptionalValue("location", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Notifications: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "notifications"))
@@ -348,26 +348,26 @@ class JsonProvider+DomainTypes+User2 : FDR.JsonDocument
 
     member ProfileBackgroundImageUrl: string with get
     let value = (this.JsonValue.TryGetProperty "profile_background_image_url")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_image_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_image_url", JsonRuntime.ConvertString("", value), value)
 
     member ProfileBackgroundImageUrlHttps: string with get
     let value = (this.JsonValue.TryGetProperty "profile_background_image_url_https")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_image_url_https", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_image_url_https", JsonRuntime.ConvertString("", value), value)
 
     member ProfileBackgroundTile: bool with get
     let value = (this.JsonValue.TryGetProperty "profile_background_tile")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_tile", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_tile", JsonRuntime.ConvertBoolean("", value), value)
 
     member ProfileBannerUrl: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "profile_banner_url"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "profile_banner_url"))
 
     member ProfileImageUrl: string with get
     let value = (this.JsonValue.TryGetProperty "profile_image_url")
-    CommonRuntime.JsonGetNonOptionalValue("profile_image_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_image_url", JsonRuntime.ConvertString("", value), value)
 
     member ProfileImageUrlHttps: string with get
     let value = (this.JsonValue.TryGetProperty "profile_image_url_https")
-    CommonRuntime.JsonGetNonOptionalValue("profile_image_url_https", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_image_url_https", JsonRuntime.ConvertString("", value), value)
 
     member ProfileLinkColor: JsonProvider+DomainTypes+ProfileLinkColorChoice with get
     JsonDocument.Create((this.JsonValue.GetProperty "profile_link_color"))
@@ -383,34 +383,34 @@ class JsonProvider+DomainTypes+User2 : FDR.JsonDocument
 
     member ProfileUseBackgroundImage: bool with get
     let value = (this.JsonValue.TryGetProperty "profile_use_background_image")
-    CommonRuntime.JsonGetNonOptionalValue("profile_use_background_image", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_use_background_image", JsonRuntime.ConvertBoolean("", value), value)
 
     member Protected: bool with get
     let value = (this.JsonValue.TryGetProperty "protected")
-    CommonRuntime.JsonGetNonOptionalValue("protected", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("protected", JsonRuntime.ConvertBoolean("", value), value)
 
     member ScreenName: string with get
     let value = (this.JsonValue.TryGetProperty "screen_name")
-    CommonRuntime.JsonGetNonOptionalValue("screen_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
     member StatusesCount: int with get
     let value = (this.JsonValue.TryGetProperty "statuses_count")
-    CommonRuntime.JsonGetNonOptionalValue("statuses_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("statuses_count", JsonRuntime.ConvertInteger("", value), value)
 
     member TimeZone: string with get
     let value = (this.JsonValue.TryGetProperty "time_zone")
-    CommonRuntime.JsonGetNonOptionalValue("time_zone", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("time_zone", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
     member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice2 with get
     JsonDocument.Create((this.JsonValue.GetProperty "utc_offset"))
 
     member Verified: bool with get
     let value = (this.JsonValue.TryGetProperty "verified")
-    CommonRuntime.JsonGetNonOptionalValue("verified", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("verified", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class JsonProvider+DomainTypes+Attributes : FDR.JsonDocument
@@ -419,11 +419,11 @@ class JsonProvider+DomainTypes+BoundingBox : FDR.JsonDocument
     member Coordinates: decimal[][][] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "coordinates")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    let value = Some t.JsonValue
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   CommonRuntime.JsonGetNonOptionalValue("coordinate", CommonRuntime.JsonConvertDecimal("", value), value)))))))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   JsonRuntime.GetNonOptionalValue("coordinate", JsonRuntime.ConvertDecimal("", value), value)))))))
 
     member Type: string with get
     let value = (this.JsonValue.TryGetProperty "type")
-    CommonRuntime.JsonGetNonOptionalValue("type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("type", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Entities2 : FDR.JsonDocument
@@ -447,103 +447,103 @@ class JsonProvider+DomainTypes+Hashtag : FDR.JsonDocument
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Text: string with get
     let value = (this.JsonValue.TryGetProperty "text")
-    CommonRuntime.JsonGetNonOptionalValue("text", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+InReplyToUserIdChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_user_idChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_user_idChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("in_reply_to_user_id_strChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_strChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_background_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_background_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_background_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_background_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileLinkColorChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_link_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_link_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_link_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_link_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_border_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_border_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_fill_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileTextColorChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_text_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_text_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_text_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_text_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+Status : FDR.JsonDocument
     member Id: int64 with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger64("", value), value)
 
     member IdStr: int64 with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger64("", value), value)
 
     member UserId: int with get
     let value = (this.JsonValue.TryGetProperty "user_id")
-    CommonRuntime.JsonGetNonOptionalValue("user_id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("user_id", JsonRuntime.ConvertInteger("", value), value)
 
     member UserIdStr: int with get
     let value = (this.JsonValue.TryGetProperty "user_id_str")
-    CommonRuntime.JsonGetNonOptionalValue("user_id_str", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("user_id_str", JsonRuntime.ConvertInteger("", value), value)
 
 
 class JsonProvider+DomainTypes+SymbolsChoice : FDR.JsonDocument
@@ -551,92 +551,92 @@ class JsonProvider+DomainTypes+SymbolsChoice : FDR.JsonDocument
 class JsonProvider+DomainTypes+Url : FDR.JsonDocument
     member DisplayUrl: string with get
     let value = (this.JsonValue.TryGetProperty "display_url")
-    CommonRuntime.JsonGetNonOptionalValue("display_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
 
     member ExpandedUrl: string with get
     let value = (this.JsonValue.TryGetProperty "expanded_url")
-    CommonRuntime.JsonGetNonOptionalValue("expanded_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("expanded_url", JsonRuntime.ConvertString("", value), value)
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+User : FDR.JsonDocument
     member ContributorsEnabled: bool with get
     let value = (this.JsonValue.TryGetProperty "contributors_enabled")
-    CommonRuntime.JsonGetNonOptionalValue("contributors_enabled", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("contributors_enabled", JsonRuntime.ConvertBoolean("", value), value)
 
     member CreatedAt: string with get
     let value = (this.JsonValue.TryGetProperty "created_at")
-    CommonRuntime.JsonGetNonOptionalValue("created_at", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("created_at", JsonRuntime.ConvertString("", value), value)
 
     member DefaultProfile: bool with get
     let value = (this.JsonValue.TryGetProperty "default_profile")
-    CommonRuntime.JsonGetNonOptionalValue("default_profile", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("default_profile", JsonRuntime.ConvertBoolean("", value), value)
 
     member DefaultProfileImage: bool with get
     let value = (this.JsonValue.TryGetProperty "default_profile_image")
-    CommonRuntime.JsonGetNonOptionalValue("default_profile_image", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("default_profile_image", JsonRuntime.ConvertBoolean("", value), value)
 
     member Description: string with get
     let value = (this.JsonValue.TryGetProperty "description")
-    CommonRuntime.JsonGetNonOptionalValue("description", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
 
     member FavouritesCount: int with get
     let value = (this.JsonValue.TryGetProperty "favourites_count")
-    CommonRuntime.JsonGetNonOptionalValue("favourites_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("favourites_count", JsonRuntime.ConvertInteger("", value), value)
 
     member FollowRequestSent: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "follow_request_sent"))
 
     member FollowersCount: int with get
     let value = (this.JsonValue.TryGetProperty "followers_count")
-    CommonRuntime.JsonGetNonOptionalValue("followers_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("followers_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Following: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "following"))
 
     member FriendsCount: int with get
     let value = (this.JsonValue.TryGetProperty "friends_count")
-    CommonRuntime.JsonGetNonOptionalValue("friends_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("friends_count", JsonRuntime.ConvertInteger("", value), value)
 
     member GeoEnabled: bool with get
     let value = (this.JsonValue.TryGetProperty "geo_enabled")
-    CommonRuntime.JsonGetNonOptionalValue("geo_enabled", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("geo_enabled", JsonRuntime.ConvertBoolean("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member IdStr: int with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger("", value), value)
 
     member IsTranslator: bool with get
     let value = (this.JsonValue.TryGetProperty "is_translator")
-    CommonRuntime.JsonGetNonOptionalValue("is_translator", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("is_translator", JsonRuntime.ConvertBoolean("", value), value)
 
     member Lang: string with get
     let value = (this.JsonValue.TryGetProperty "lang")
-    CommonRuntime.JsonGetNonOptionalValue("lang", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("lang", JsonRuntime.ConvertString("", value), value)
 
     member ListedCount: int with get
     let value = (this.JsonValue.TryGetProperty "listed_count")
-    CommonRuntime.JsonGetNonOptionalValue("listed_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("listed_count", JsonRuntime.ConvertInteger("", value), value)
 
     member Location: string with get
     let value = (this.JsonValue.TryGetProperty "location")
-    CommonRuntime.JsonGetNonOptionalValue("location", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertString("", value), value)
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Notifications: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "notifications"))
@@ -646,30 +646,30 @@ class JsonProvider+DomainTypes+User : FDR.JsonDocument
 
     member ProfileBackgroundImageUrl: string with get
     let value = (this.JsonValue.TryGetProperty "profile_background_image_url")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_image_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_image_url", JsonRuntime.ConvertString("", value), value)
 
     member ProfileBackgroundImageUrlHttps: string with get
     let value = (this.JsonValue.TryGetProperty "profile_background_image_url_https")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_image_url_https", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_image_url_https", JsonRuntime.ConvertString("", value), value)
 
     member ProfileBackgroundTile: bool with get
     let value = (this.JsonValue.TryGetProperty "profile_background_tile")
-    CommonRuntime.JsonGetNonOptionalValue("profile_background_tile", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_background_tile", JsonRuntime.ConvertBoolean("", value), value)
 
     member ProfileBannerUrl: string option with get
-    CommonRuntime.JsonConvertString("", (this.JsonValue.TryGetProperty "profile_banner_url"))
+    JsonRuntime.ConvertString("", (this.JsonValue.TryGetProperty "profile_banner_url"))
 
     member ProfileImageUrl: string with get
     let value = (this.JsonValue.TryGetProperty "profile_image_url")
-    CommonRuntime.JsonGetNonOptionalValue("profile_image_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_image_url", JsonRuntime.ConvertString("", value), value)
 
     member ProfileImageUrlHttps: string with get
     let value = (this.JsonValue.TryGetProperty "profile_image_url_https")
-    CommonRuntime.JsonGetNonOptionalValue("profile_image_url_https", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_image_url_https", JsonRuntime.ConvertString("", value), value)
 
     member ProfileLinkColor: string with get
     let value = (this.JsonValue.TryGetProperty "profile_link_color")
-    CommonRuntime.JsonGetNonOptionalValue("profile_link_color", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)
 
     member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice with get
     JsonDocument.Create((this.JsonValue.GetProperty "profile_sidebar_border_color"))
@@ -682,173 +682,173 @@ class JsonProvider+DomainTypes+User : FDR.JsonDocument
 
     member ProfileUseBackgroundImage: bool with get
     let value = (this.JsonValue.TryGetProperty "profile_use_background_image")
-    CommonRuntime.JsonGetNonOptionalValue("profile_use_background_image", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("profile_use_background_image", JsonRuntime.ConvertBoolean("", value), value)
 
     member Protected: bool with get
     let value = (this.JsonValue.TryGetProperty "protected")
-    CommonRuntime.JsonGetNonOptionalValue("protected", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("protected", JsonRuntime.ConvertBoolean("", value), value)
 
     member ScreenName: string with get
     let value = (this.JsonValue.TryGetProperty "screen_name")
-    CommonRuntime.JsonGetNonOptionalValue("screen_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
     member StatusesCount: int with get
     let value = (this.JsonValue.TryGetProperty "statuses_count")
-    CommonRuntime.JsonGetNonOptionalValue("statuses_count", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("statuses_count", JsonRuntime.ConvertInteger("", value), value)
 
     member TimeZone: string with get
     let value = (this.JsonValue.TryGetProperty "time_zone")
-    CommonRuntime.JsonGetNonOptionalValue("time_zone", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("time_zone", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
     member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice with get
     JsonDocument.Create((this.JsonValue.GetProperty "utc_offset"))
 
     member Verified: bool with get
     let value = (this.JsonValue.TryGetProperty "verified")
-    CommonRuntime.JsonGetNonOptionalValue("verified", CommonRuntime.JsonConvertBoolean("", value), value)
+    JsonRuntime.GetNonOptionalValue("verified", JsonRuntime.ConvertBoolean("", value), value)
 
 
 class JsonProvider+DomainTypes+UserMention : FDR.JsonDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member IdStr: int with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger("", value), value)
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ScreenName: string with get
     let value = (this.JsonValue.TryGetProperty "screen_name")
-    CommonRuntime.JsonGetNonOptionalValue("screen_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+UtcOffsetChoice2 : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("utc_offsetChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("utc_offsetChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+Hashtag2 : FDR.JsonDocument
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Text: string with get
     let value = (this.JsonValue.TryGetProperty "text")
-    CommonRuntime.JsonGetNonOptionalValue("text", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Media : FDR.JsonDocument
     member DisplayUrl: string with get
     let value = (this.JsonValue.TryGetProperty "display_url")
-    CommonRuntime.JsonGetNonOptionalValue("display_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
 
     member ExpandedUrl: string with get
     let value = (this.JsonValue.TryGetProperty "expanded_url")
-    CommonRuntime.JsonGetNonOptionalValue("expanded_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("expanded_url", JsonRuntime.ConvertString("", value), value)
 
     member Id: int64 with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger64("", value), value)
 
     member IdStr: int64 with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger64("", value), value)
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member MediaUrl: string with get
     let value = (this.JsonValue.TryGetProperty "media_url")
-    CommonRuntime.JsonGetNonOptionalValue("media_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("media_url", JsonRuntime.ConvertString("", value), value)
 
     member MediaUrlHttps: string with get
     let value = (this.JsonValue.TryGetProperty "media_url_https")
-    CommonRuntime.JsonGetNonOptionalValue("media_url_https", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("media_url_https", JsonRuntime.ConvertString("", value), value)
 
     member Sizes: JsonProvider+DomainTypes+Sizes with get
     JsonDocument.Create((this.JsonValue.GetProperty "sizes"))
 
     member SourceStatusId: int64 with get
     let value = (this.JsonValue.TryGetProperty "source_status_id")
-    CommonRuntime.JsonGetNonOptionalValue("source_status_id", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("source_status_id", JsonRuntime.ConvertInteger64("", value), value)
 
     member SourceStatusIdStr: int64 with get
     let value = (this.JsonValue.TryGetProperty "source_status_id_str")
-    CommonRuntime.JsonGetNonOptionalValue("source_status_id_str", CommonRuntime.JsonConvertInteger64("", value), value)
+    JsonRuntime.GetNonOptionalValue("source_status_id_str", JsonRuntime.ConvertInteger64("", value), value)
 
     member Type: string with get
     let value = (this.JsonValue.TryGetProperty "type")
-    CommonRuntime.JsonGetNonOptionalValue("type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("type", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+ProfileBackgroundColorChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_background_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_background_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_background_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_background_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_border_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_border_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_fill_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+ProfileTextColorChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_text_colorChoice1of2", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_text_colorChoice1of2", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("profile_text_colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("profile_text_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+DomainTypes+SymbolsChoice2 : FDR.JsonDocument
@@ -856,50 +856,50 @@ class JsonProvider+DomainTypes+SymbolsChoice2 : FDR.JsonDocument
 class JsonProvider+DomainTypes+Url2 : FDR.JsonDocument
     member DisplayUrl: string with get
     let value = (this.JsonValue.TryGetProperty "display_url")
-    CommonRuntime.JsonGetNonOptionalValue("display_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
 
     member ExpandedUrl: string with get
     let value = (this.JsonValue.TryGetProperty "expanded_url")
-    CommonRuntime.JsonGetNonOptionalValue("expanded_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("expanded_url", JsonRuntime.ConvertString("", value), value)
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+UserMention2 : FDR.JsonDocument
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member IdStr: int with get
     let value = (this.JsonValue.TryGetProperty "id_str")
-    CommonRuntime.JsonGetNonOptionalValue("id_str", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id_str", JsonRuntime.ConvertInteger("", value), value)
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "indices")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                                                                                                            let value = Some t.JsonValue
-                                                                                                                                                                                                                           CommonRuntime.JsonGetNonOptionalValue("index", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                                                                                                           JsonRuntime.GetNonOptionalValue("index", JsonRuntime.ConvertInteger("", value), value)))
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member ScreenName: string with get
     let value = (this.JsonValue.TryGetProperty "screen_name")
-    CommonRuntime.JsonGetNonOptionalValue("screen_name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+UtcOffsetChoice : FDR.JsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("utc_offsetChoice1of1", CommonRuntime.JsonConvertInteger("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("utc_offsetChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+DomainTypes+Sizes : FDR.JsonDocument
@@ -919,56 +919,56 @@ class JsonProvider+DomainTypes+Sizes : FDR.JsonDocument
 class JsonProvider+DomainTypes+Large : FDR.JsonDocument
     member H: int with get
     let value = (this.JsonValue.TryGetProperty "h")
-    CommonRuntime.JsonGetNonOptionalValue("h", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
 
     member Resize: string with get
     let value = (this.JsonValue.TryGetProperty "resize")
-    CommonRuntime.JsonGetNonOptionalValue("resize", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("resize", JsonRuntime.ConvertString("", value), value)
 
     member W: int with get
     let value = (this.JsonValue.TryGetProperty "w")
-    CommonRuntime.JsonGetNonOptionalValue("w", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
 class JsonProvider+DomainTypes+Medium : FDR.JsonDocument
     member H: int with get
     let value = (this.JsonValue.TryGetProperty "h")
-    CommonRuntime.JsonGetNonOptionalValue("h", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
 
     member Resize: string with get
     let value = (this.JsonValue.TryGetProperty "resize")
-    CommonRuntime.JsonGetNonOptionalValue("resize", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("resize", JsonRuntime.ConvertString("", value), value)
 
     member W: int with get
     let value = (this.JsonValue.TryGetProperty "w")
-    CommonRuntime.JsonGetNonOptionalValue("w", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
 class JsonProvider+DomainTypes+Small : FDR.JsonDocument
     member H: int with get
     let value = (this.JsonValue.TryGetProperty "h")
-    CommonRuntime.JsonGetNonOptionalValue("h", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
 
     member Resize: string with get
     let value = (this.JsonValue.TryGetProperty "resize")
-    CommonRuntime.JsonGetNonOptionalValue("resize", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("resize", JsonRuntime.ConvertString("", value), value)
 
     member W: int with get
     let value = (this.JsonValue.TryGetProperty "w")
-    CommonRuntime.JsonGetNonOptionalValue("w", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
 class JsonProvider+DomainTypes+Thumb : FDR.JsonDocument
     member H: int with get
     let value = (this.JsonValue.TryGetProperty "h")
-    CommonRuntime.JsonGetNonOptionalValue("h", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
 
     member Resize: string with get
     let value = (this.JsonValue.TryGetProperty "resize")
-    CommonRuntime.JsonGetNonOptionalValue("resize", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("resize", JsonRuntime.ConvertString("", value), value)
 
     member W: int with get
     let value = (this.JsonValue.TryGetProperty "w")
-    CommonRuntime.JsonGetNonOptionalValue("w", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 

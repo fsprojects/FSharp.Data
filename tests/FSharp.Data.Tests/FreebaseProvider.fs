@@ -156,8 +156,8 @@ let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
     ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
 
-open FSharp.Data.RuntimeImplementation.Freebase.FreebaseRequests
-open FSharp.Data.RuntimeImplementation.Freebase.FreebaseSchema
+open FSharp.Data.Runtime.Freebase.FreebaseRequests
+open FSharp.Data.Runtime.Freebase.FreebaseSchema
 
 [<Test>]
 let ``Wrong key gives relevant message``() =

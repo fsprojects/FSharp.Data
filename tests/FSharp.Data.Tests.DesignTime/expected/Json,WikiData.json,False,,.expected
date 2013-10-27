@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WikiData.json"), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WikiData.json"), "")
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSample: () -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WikiData.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WikiData.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -29,32 +29,32 @@ class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
 
     member Age: int with get
     let value = (this.JsonValue.TryGetProperty "age")
-    CommonRuntime.JsonGetNonOptionalValue("age", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("age", JsonRuntime.ConvertInteger("", value), value)
 
     member FirstName: string with get
     let value = (this.JsonValue.TryGetProperty "firstName")
-    CommonRuntime.JsonGetNonOptionalValue("firstName", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("firstName", JsonRuntime.ConvertString("", value), value)
 
     member LastName: string with get
     let value = (this.JsonValue.TryGetProperty "lastName")
-    CommonRuntime.JsonGetNonOptionalValue("lastName", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("lastName", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Address : FDR.JsonDocument
     member City: string with get
     let value = (this.JsonValue.TryGetProperty "city")
-    CommonRuntime.JsonGetNonOptionalValue("city", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("city", JsonRuntime.ConvertString("", value), value)
 
     member PostalCode: int with get
     let value = (this.JsonValue.TryGetProperty "postalCode")
-    CommonRuntime.JsonGetNonOptionalValue("postalCode", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("postalCode", JsonRuntime.ConvertInteger("", value), value)
 
     member State: string with get
     let value = (this.JsonValue.TryGetProperty "state")
-    CommonRuntime.JsonGetNonOptionalValue("state", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("state", JsonRuntime.ConvertString("", value), value)
 
     member StreetAddress: string with get
     let value = (this.JsonValue.TryGetProperty "streetAddress")
-    CommonRuntime.JsonGetNonOptionalValue("streetAddress", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("streetAddress", JsonRuntime.ConvertString("", value), value)
 
 

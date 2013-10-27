@@ -29,7 +29,7 @@
           <li><a href="http://bluemountaincapital.github.io/Deedle">Deedle</a></li>
           <li><a href="http://fsharp.github.io/fsharpx/">fsharpx</a></li>
         </ul>
-        <h3 class="muted">@Properties["project-name"]</h3>
+        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -37,13 +37,12 @@
           @RenderBody()
         </div>
         <div class="span3">
-          <a href="@Properties["project-nuget"]">
+          <a href="@Root/index.html">
             <img src="@Root/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
             <li class="nav-header">@Properties["project-name"]</li>
-            <li><a href="@Root/index.html">Home page</a></li>
             <li class="divider"></li>
             <li><a href="@Properties["project-nuget"]">Get Library via NuGet</a></li>
             <li><a href="@Properties["project-github"]">Source Code on GitHub</a></li>

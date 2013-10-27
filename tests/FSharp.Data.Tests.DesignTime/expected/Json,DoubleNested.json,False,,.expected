@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json"), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json"), "")
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSample: () -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -34,12 +34,12 @@ class JsonProvider+DomainTypes+Main : FDR.JsonDocument
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Nested : FDR.JsonDocument
     member NestedTitle: string with get
     let value = (this.JsonValue.TryGetProperty "nestedTitle")
-    CommonRuntime.JsonGetNonOptionalValue("nestedTitle", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("nestedTitle", JsonRuntime.ConvertString("", value), value)
 
 

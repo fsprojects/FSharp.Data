@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
-    JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json"), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json"), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity[] async
-    JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
-    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json")), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json")), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -15,7 +15,7 @@ class JsonProvider
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Load: uri:string -> JsonProvider+DomainTypes+Entity[]
-    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     static member Parse: text:string -> JsonProvider+DomainTypes+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
@@ -29,67 +29,67 @@ class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
 
     member Body: string with get
     let value = (this.JsonValue.TryGetProperty "body")
-    CommonRuntime.JsonGetNonOptionalValue("body", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("body", JsonRuntime.ConvertString("", value), value)
 
     member ClosedAt: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "closed_at"))
 
     member Comments: int with get
     let value = (this.JsonValue.TryGetProperty "comments")
-    CommonRuntime.JsonGetNonOptionalValue("comments", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("comments", JsonRuntime.ConvertInteger("", value), value)
 
     member CommentsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "comments_url")
-    CommonRuntime.JsonGetNonOptionalValue("comments_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("comments_url", JsonRuntime.ConvertString("", value), value)
 
     member CreatedAt: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "created_at")
-    CommonRuntime.JsonGetNonOptionalValue("created_at", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("created_at", JsonRuntime.ConvertDateTime("", value), value)
 
     member EventsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "events_url")
-    CommonRuntime.JsonGetNonOptionalValue("events_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("events_url", JsonRuntime.ConvertString("", value), value)
 
     member HtmlUrl: string with get
     let value = (this.JsonValue.TryGetProperty "html_url")
-    CommonRuntime.JsonGetNonOptionalValue("html_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("html_url", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Labels: JsonProvider+DomainTypes+Label[] with get
     JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "labels")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
 
     member LabelsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "labels_url")
-    CommonRuntime.JsonGetNonOptionalValue("labels_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("labels_url", JsonRuntime.ConvertString("", value), value)
 
     member Milestone: FDR.JsonDocument with get
     JsonDocument.Create((this.JsonValue.GetProperty "milestone"))
 
     member Number: int with get
     let value = (this.JsonValue.TryGetProperty "number")
-    CommonRuntime.JsonGetNonOptionalValue("number", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("number", JsonRuntime.ConvertInteger("", value), value)
 
     member PullRequest: JsonProvider+DomainTypes+PullRequest with get
     JsonDocument.Create((this.JsonValue.GetProperty "pull_request"))
 
     member State: string with get
     let value = (this.JsonValue.TryGetProperty "state")
-    CommonRuntime.JsonGetNonOptionalValue("state", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("state", JsonRuntime.ConvertString("", value), value)
 
     member Title: string with get
     let value = (this.JsonValue.TryGetProperty "title")
-    CommonRuntime.JsonGetNonOptionalValue("title", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
     member UpdatedAt: System.DateTime with get
     let value = (this.JsonValue.TryGetProperty "updated_at")
-    CommonRuntime.JsonGetNonOptionalValue("updated_at", CommonRuntime.JsonConvertDateTime("", value), value)
+    JsonRuntime.GetNonOptionalValue("updated_at", JsonRuntime.ConvertDateTime("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
     member User: JsonProvider+DomainTypes+User with get
     JsonDocument.Create((this.JsonValue.GetProperty "user"))
@@ -101,102 +101,102 @@ class JsonProvider+DomainTypes+Label : FDR.JsonDocument
 
     member Name: string with get
     let value = (this.JsonValue.TryGetProperty "name")
-    CommonRuntime.JsonGetNonOptionalValue("name", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+PullRequest : FDR.JsonDocument
     member DiffUrl: string with get
     let value = (this.JsonValue.TryGetProperty "diff_url")
-    CommonRuntime.JsonGetNonOptionalValue("diff_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("diff_url", JsonRuntime.ConvertString("", value), value)
 
     member HtmlUrl: string with get
     let value = (this.JsonValue.TryGetProperty "html_url")
-    CommonRuntime.JsonGetNonOptionalValue("html_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("html_url", JsonRuntime.ConvertString("", value), value)
 
     member PatchUrl: string with get
     let value = (this.JsonValue.TryGetProperty "patch_url")
-    CommonRuntime.JsonGetNonOptionalValue("patch_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("patch_url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+User : FDR.JsonDocument
     member AvatarUrl: string with get
     let value = (this.JsonValue.TryGetProperty "avatar_url")
-    CommonRuntime.JsonGetNonOptionalValue("avatar_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("avatar_url", JsonRuntime.ConvertString("", value), value)
 
     member EventsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "events_url")
-    CommonRuntime.JsonGetNonOptionalValue("events_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("events_url", JsonRuntime.ConvertString("", value), value)
 
     member FollowersUrl: string with get
     let value = (this.JsonValue.TryGetProperty "followers_url")
-    CommonRuntime.JsonGetNonOptionalValue("followers_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("followers_url", JsonRuntime.ConvertString("", value), value)
 
     member FollowingUrl: string with get
     let value = (this.JsonValue.TryGetProperty "following_url")
-    CommonRuntime.JsonGetNonOptionalValue("following_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("following_url", JsonRuntime.ConvertString("", value), value)
 
     member GistsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "gists_url")
-    CommonRuntime.JsonGetNonOptionalValue("gists_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("gists_url", JsonRuntime.ConvertString("", value), value)
 
     member GravatarId: System.Guid with get
     let value = (this.JsonValue.TryGetProperty "gravatar_id")
-    CommonRuntime.JsonGetNonOptionalValue("gravatar_id", CommonRuntime.JsonConvertGuid(value), value)
+    JsonRuntime.GetNonOptionalValue("gravatar_id", JsonRuntime.ConvertGuid(value), value)
 
     member HtmlUrl: string with get
     let value = (this.JsonValue.TryGetProperty "html_url")
-    CommonRuntime.JsonGetNonOptionalValue("html_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("html_url", JsonRuntime.ConvertString("", value), value)
 
     member Id: int with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
     member Login: string with get
     let value = (this.JsonValue.TryGetProperty "login")
-    CommonRuntime.JsonGetNonOptionalValue("login", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("login", JsonRuntime.ConvertString("", value), value)
 
     member OrganizationsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "organizations_url")
-    CommonRuntime.JsonGetNonOptionalValue("organizations_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("organizations_url", JsonRuntime.ConvertString("", value), value)
 
     member ReceivedEventsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "received_events_url")
-    CommonRuntime.JsonGetNonOptionalValue("received_events_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("received_events_url", JsonRuntime.ConvertString("", value), value)
 
     member ReposUrl: string with get
     let value = (this.JsonValue.TryGetProperty "repos_url")
-    CommonRuntime.JsonGetNonOptionalValue("repos_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("repos_url", JsonRuntime.ConvertString("", value), value)
 
     member StarredUrl: string with get
     let value = (this.JsonValue.TryGetProperty "starred_url")
-    CommonRuntime.JsonGetNonOptionalValue("starred_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("starred_url", JsonRuntime.ConvertString("", value), value)
 
     member SubscriptionsUrl: string with get
     let value = (this.JsonValue.TryGetProperty "subscriptions_url")
-    CommonRuntime.JsonGetNonOptionalValue("subscriptions_url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("subscriptions_url", JsonRuntime.ConvertString("", value), value)
 
     member Type: string with get
     let value = (this.JsonValue.TryGetProperty "type")
-    CommonRuntime.JsonGetNonOptionalValue("type", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("type", JsonRuntime.ConvertString("", value), value)
 
     member Url: string with get
     let value = (this.JsonValue.TryGetProperty "url")
-    CommonRuntime.JsonGetNonOptionalValue("url", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+ColorChoice : FDR.JsonDocument
     member Number: float option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("colorChoice1of2", CommonRuntime.JsonConvertFloat("", "", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("colorChoice1of2", JsonRuntime.ConvertFloat("", "", value), value)))
 
     member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "String", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("colorChoice2of2", CommonRuntime.JsonConvertString("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 

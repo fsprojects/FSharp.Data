@@ -1,171 +1,171 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member AsyncGetSample: () -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          let value = TextConversions.AsOption(row.[0])
-                                                          CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                          let value = TextConversions.AsOption(row.[1])
-                                                          CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[2])
-                                                          CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[3])
-                                                          CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[4])
-                                                          CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[5])
-                                                          CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                          let value = TextConversions.AsOption(row.[6])
-                                                          CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                               CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv"), ",", '"', true, false, false)
+                                                          let value = TextConversions.AsString(row.[0])
+                                                          TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                          let value = TextConversions.AsString(row.[1])
+                                                          TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[2])
+                                                          TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[3])
+                                                          TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[4])
+                                                          TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[5])
+                                                          TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                          let value = TextConversions.AsString(row.[6])
+                                                          TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                        [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                           TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv"), ",", '"', true, false, false)
 
     static member AsyncLoad: uri:string -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          let value = TextConversions.AsOption(row.[0])
-                                                          CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                          let value = TextConversions.AsOption(row.[1])
-                                                          CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[2])
-                                                          CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[3])
-                                                          CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[4])
-                                                          CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsOption(row.[5])
-                                                          CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                          let value = TextConversions.AsOption(row.[6])
-                                                          CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                            [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                               CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                               CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+                                                          let value = TextConversions.AsString(row.[0])
+                                                          TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                          let value = TextConversions.AsString(row.[1])
+                                                          TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[2])
+                                                          TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[3])
+                                                          TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[4])
+                                                          TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                          let value = TextConversions.AsString(row.[5])
+                                                          TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                          let value = TextConversions.AsString(row.[6])
+                                                          TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                        [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                           TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                           TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), (IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
 
     static member GetSample: () -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsOption(row.[0])
-                                                     CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                     let value = TextConversions.AsOption(row.[1])
-                                                     CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[2])
-                                                     CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[3])
-                                                     CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[4])
-                                                     CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[5])
-                                                     CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                     let value = TextConversions.AsOption(row.[6])
-                                                     CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                       [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                          CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv")), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[6])
+                                                     TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                   [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                      TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "MSFT.csv")), ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsOption(row.[0])
-                                                     CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                     let value = TextConversions.AsOption(row.[1])
-                                                     CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[2])
-                                                     CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[3])
-                                                     CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[4])
-                                                     CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[5])
-                                                     CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                     let value = TextConversions.AsOption(row.[6])
-                                                     CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                       [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                          CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[6])
+                                                     TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                   [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                      TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
 
     static member Load: reader:System.IO.TextReader -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsOption(row.[0])
-                                                     CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                     let value = TextConversions.AsOption(row.[1])
-                                                     CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[2])
-                                                     CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[3])
-                                                     CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[4])
-                                                     CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[5])
-                                                     CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                     let value = TextConversions.AsOption(row.[6])
-                                                     CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                       [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                          CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), reader, ",", '"', true, false, false)
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[6])
+                                                     TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                   [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                      TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), reader, ",", '"', true, false, false)
 
     static member Load: uri:string -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsOption(row.[0])
-                                                     CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                     let value = TextConversions.AsOption(row.[1])
-                                                     CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[2])
-                                                     CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[3])
-                                                     CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[4])
-                                                     CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[5])
-                                                     CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                     let value = TextConversions.AsOption(row.[6])
-                                                     CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                       [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                          CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[6])
+                                                     TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                   [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                      TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
     CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsOption(row.[0])
-                                                     CommonRuntime.GetNonOptionalValue("Date", CommonRuntime.ConvertDateTime("", value), value),
-                                                     let value = TextConversions.AsOption(row.[1])
-                                                     CommonRuntime.GetNonOptionalValue("Open", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[2])
-                                                     CommonRuntime.GetNonOptionalValue("High", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[3])
-                                                     CommonRuntime.GetNonOptionalValue("Low", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[4])
-                                                     CommonRuntime.GetNonOptionalValue("Close", CommonRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsOption(row.[5])
-                                                     CommonRuntime.GetNonOptionalValue("Volume", CommonRuntime.ConvertInteger("", value), value),
-                                                     let value = TextConversions.AsOption(row.[6])
-                                                     CommonRuntime.GetNonOptionalValue("Adj Close", CommonRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
-                                                                                                                                                                       [| CommonRuntime.ConvertDateTimeBack("", CommonRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
-                                                                                                                                                                          CommonRuntime.ConvertIntegerBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
-                                                                                                                                                                          CommonRuntime.ConvertDecimalBack("", CommonRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[6])
+                                                     TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                                   [| TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_,_ = row in t1)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_,_ = row in t2)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_,_ = row in t3)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_,_ = row in t4)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_,_ = row in t5)))
+                                                                                                                                                                      TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,t6,_ = row in t6)))
+                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,_,_,_,_,t7 = row in t7))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
 
 
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal

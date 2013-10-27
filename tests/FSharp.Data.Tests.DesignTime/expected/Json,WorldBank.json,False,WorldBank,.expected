@@ -1,12 +1,12 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+DomainTypes+WorldBankChoice async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), "")
 
     static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+WorldBankChoice async
-    JsonDocument.AsyncCreate((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
     static member GetSample: () -> JsonProvider+DomainTypes+WorldBankChoice
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+WorldBankChoice
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -15,7 +15,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+DomainTypes+WorldBankChoice
-    JsonDocument.Create(FSharpAsync.RunSynchronously((ProviderFileSystem.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+DomainTypes+WorldBankChoice
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -37,11 +37,11 @@ class JsonProvider+DomainTypes+WorldBankChoice1of2 : FDR.JsonDocument
 
     member Date: int with get
     let value = (this.JsonValue.TryGetProperty "date")
-    CommonRuntime.JsonGetNonOptionalValue("date", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("date", JsonRuntime.ConvertInteger("", value), value)
 
     member Decimal: int with get
     let value = (this.JsonValue.TryGetProperty "decimal")
-    CommonRuntime.JsonGetNonOptionalValue("decimal", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("decimal", JsonRuntime.ConvertInteger("", value), value)
 
     member Indicator: JsonProvider+DomainTypes+Indicator with get
     JsonDocument.Create((this.JsonValue.GetProperty "indicator"))
@@ -53,45 +53,45 @@ class JsonProvider+DomainTypes+WorldBankChoice1of2 : FDR.JsonDocument
 class JsonProvider+DomainTypes+WorldBankChoice2of2 : FDR.JsonDocument
     member Page: int with get
     let value = (this.JsonValue.TryGetProperty "page")
-    CommonRuntime.JsonGetNonOptionalValue("page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("page", JsonRuntime.ConvertInteger("", value), value)
 
     member Pages: int with get
     let value = (this.JsonValue.TryGetProperty "pages")
-    CommonRuntime.JsonGetNonOptionalValue("pages", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("pages", JsonRuntime.ConvertInteger("", value), value)
 
     member PerPage: int with get
     let value = (this.JsonValue.TryGetProperty "per_page")
-    CommonRuntime.JsonGetNonOptionalValue("per_page", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("per_page", JsonRuntime.ConvertInteger("", value), value)
 
     member Total: int with get
     let value = (this.JsonValue.TryGetProperty "total")
-    CommonRuntime.JsonGetNonOptionalValue("total", CommonRuntime.JsonConvertInteger("", value), value)
+    JsonRuntime.GetNonOptionalValue("total", JsonRuntime.ConvertInteger("", value), value)
 
 
 class JsonProvider+DomainTypes+Country : FDR.JsonDocument
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Value: string with get
     let value = (this.JsonValue.TryGetProperty "value")
-    CommonRuntime.JsonGetNonOptionalValue("value", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+Indicator : FDR.JsonDocument
     member Id: string with get
     let value = (this.JsonValue.TryGetProperty "id")
-    CommonRuntime.JsonGetNonOptionalValue("id", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
     member Value: string with get
     let value = (this.JsonValue.TryGetProperty "value")
-    CommonRuntime.JsonGetNonOptionalValue("value", CommonRuntime.JsonConvertString("", value), value)
+    JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertString("", value), value)
 
 
 class JsonProvider+DomainTypes+ValueChoice : FDR.JsonDocument
     member Number: decimal option with get
     JsonRuntime.TryGetValueByTypeTag(this.JsonValue, "Number", new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(fun (t:JsonDocument) -> 
                                                                                                                                             let value = Some t.JsonValue
-                                                                                                                                            CommonRuntime.JsonGetNonOptionalValue("valueChoice1of1", CommonRuntime.JsonConvertDecimal("", value), value)))
+                                                                                                                                            JsonRuntime.GetNonOptionalValue("valueChoice1of1", JsonRuntime.ConvertDecimal("", value), value)))
 
 

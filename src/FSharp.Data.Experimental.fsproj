@@ -38,17 +38,19 @@
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\ProviderFileSystem.fs" />
-    <Compile Include="Common\StructuralTypes.fs" />
-    <Compile Include="Common\HttpUtils.fs" />
-    <Compile Include="Library\Http.fs" />
-    <Compile Include="Library\TextConversions.fs" />
-    <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\JsonConversions.fs" />
-    <Compile Include="Library\JsonExtensions.fs" />
-    <Compile Include="Providers\CommonRuntime.fs" />
-    <Compile Include="JsonProvider\JsonRuntime.fs" />
-    <Compile Include="ApiaryProvider\ApiaryRuntime.fs" />
+    <Compile Include="CommonRuntime\IO.fs" />
+    <Compile Include="CommonRuntime\Caching.fs" />
+    <Compile Include="CommonRuntime\HttpUtils.fs" />
+    <Compile Include="CommonRuntime\TextConversions.fs" />
+    <Compile Include="CommonRuntime\TextRuntime.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="Net\Http.fs" />
+    <Compile Include="Json\JsonValue.fs" />
+    <Compile Include="Json\JsonConversions.fs" />
+    <Compile Include="Json\JsonExtensions.fs" />
+    <Compile Include="Json\JsonRuntime.fs" />
+    <Compile Include="Apiary\ApiaryRuntime.fs" />
     <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
   </ItemGroup>
