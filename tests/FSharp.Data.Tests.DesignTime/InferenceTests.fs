@@ -4,7 +4,7 @@
 module FSharp.Data.Tests.DesignTime.InferenceTests
 
 #if INTERACTIVE
-#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
+#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #endif

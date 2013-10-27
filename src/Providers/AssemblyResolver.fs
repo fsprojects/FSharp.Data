@@ -128,11 +128,7 @@ let init (cfg : TypeProviderConfig) =
     let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
 
     let differentFramework = isPortable || isSilverlight || isFSharp31
-    let useReflectionOnly =
-        differentFramework &&
-        // Ideally we would always use reflectionOnly, but that creates problems in Windows 8
-        // apps with the System.Core.dll version, so we set to false for portable
-        (not isPortable || isFSharp31)
+    let useReflectionOnly = differentFramework
 
     let runtimeAssembly = 
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly

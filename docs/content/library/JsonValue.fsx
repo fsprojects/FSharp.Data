@@ -15,7 +15,7 @@ To load a sample JSON document, we first need to reference the `FSharp.Data.dll`
 (when using F# Interactive) or to add reference to a project. 
 *)
 
-#r "../../bin/FSharp.Data.dll"
+#r "../../../bin/FSharp.Data.dll"
 open FSharp.Data.Json
 
 (**
@@ -88,7 +88,7 @@ and with the `for` loop.
 ## Parsing WorldBank response
 
 To look at a more complex example, consider a sample document 
-[`docs/WorldBank.json`](../docs/WorldBank.json) which was obtained as a response to 
+[`data/WorldBank.json`](../data/WorldBank.json) which was obtained as a response to 
 a WorldBank request (you can access the WorldBank data more conveniently using
 [a type provider](WorldBank.html)). The document looks as follows:
 
@@ -105,7 +105,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../docs/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../data/WorldBank.json")
 
 (** Note that we can also load the data directly from the web, and there's an
 asynchronous version available too: **)

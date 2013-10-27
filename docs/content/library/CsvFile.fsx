@@ -14,7 +14,7 @@ To load a sample CSV document, we first need to reference the `FSharp.Data.dll` 
 (when using F# Interactive) or to add reference to a project. 
 *)
 
-#r "../../bin/FSharp.Data.dll"
+#r "../../../bin/FSharp.Data.dll"
 open FSharp.Data.Csv
 
 (**

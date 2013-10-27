@@ -1,4 +1,4 @@
-﻿(** 
+(** 
 # F# Data: CSV Type Provider
 
 This article demonstrates how to use the CSV type provider to read CSV files
@@ -15,7 +15,7 @@ The type provider is located in the `FSharp.Data.dll` assembly. Assuming the ass
 is located in the `../../bin` directory, we can load it in F# Interactive as follows:
 *)
 
-#r "../../bin/FSharp.Data.dll"
+#r "../../../bin/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -23,7 +23,7 @@ open FSharp.Data
 ### Parsing stock prices
 
 The Yahoo Finance web site provides daily stock prices in a CSV format that has the
-following structure (you can find a larger example in the [`docs/MSFT.csv`](../docs/MSFT.csv) file):
+following structure (you can find a larger example in the [`data/MSFT.csv`](../data/MSFT.csv) file):
 
     Date,Open,High,Low,Close,Volume,Adj Close
     2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
@@ -36,7 +36,7 @@ and the next rows define the data. We can pass reference to the file to `CsvProv
 get a strongly typed view of the file:
 *)
 
-type Stocks = CsvProvider<"../docs/MSFT.csv">
+type Stocks = CsvProvider<"../data/MSFT.csv">
 
 (**
 The generated type provides two static methods for loading data. The `Parse` method can be
@@ -76,7 +76,7 @@ of MSFT stocks changes since the company was founded:
 *)
 
 // Load the FSharp.Charting library
-#load "../../packages/FSharp.Charting.0.84/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
@@ -105,7 +105,7 @@ Another interesting feature of the CSV type provider is that it supports F# unit
 If the header includes the name or symbol of one of the standard SI units, then the generated type
 returns values annotated with the appropriate unit. 
 
-In this section, we use a simple file [`docs/SmallTest.csv`](../docs/SmallTest.csv) which
+In this section, we use a simple file [`data/SmallTest.csv`](../data/SmallTest.csv) which
 looks as follows:
 
     Name,  Distance (metre), Time (s)
@@ -118,7 +118,7 @@ a static argument. Also note that in this case we're using the same data at runt
 so we use the `GetSample` method instead of calling `Load` and passing the same parameter again.
 *)
 
-let small = CsvProvider<"../docs/SmallTest.csv">.GetSample()
+let small = CsvProvider<"../data/SmallTest.csv">.GetSample()
 
 (**
 As in the previous example, the `small` value exposes the rows using the `Data` property.
@@ -149,14 +149,14 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-let airQuality = CsvProvider<"../docs/AirQuality.csv", ";">.GetSample()
+let airQuality = CsvProvider<"../data/AirQuality.csv", ";">.GetSample()
 
 for row in airQuality.Data do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
-The air quality dataset ([`docs/AirQuality.csv`](../docs/AirQuality.csv)) is used in many
+The air quality dataset ([`data/AirQuality.csv`](../data/AirQuality.csv)) is used in many
 samples for the Statistical Computing language R. A short description of the dataset can be found 
 [in the R language manual](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html).
 
@@ -164,10 +164,10 @@ If you are parsing a tab-separated file that uses `\t` as the separator, you can
 specify the separator explicitly. However, if you're using an url or file that has 
 the `.tsv` extension, the type provider will use `\t` by default. In the following example,
 we also set `IgnoreErrors` static parameter to `true` so that lines with incorrect number of elements
-are automatically skipped (the sample file ([`docs/MortalityNY.csv`](../docs/MortalityNY.tsv)) contains additional unstructured data at the end):
+are automatically skipped (the sample file ([`data/MortalityNY.csv`](../data/MortalityNY.tsv)) contains additional unstructured data at the end):
 *)
 
-let mortalityNy = CsvProvider<"../docs/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
+let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
@@ -185,12 +185,12 @@ for r in mortalityNy.Data do
 Finally, note that it is also possible to specify multiple different separators
 for the `CsvProvider`. This might be useful if a file is irregular and contains 
 rows separated by either semicolon or a colon. You can use:
-`CsvProvider<"../docs/AirQuality.csv", Separator=";,">`.
+`CsvProvider<"../data/AirQuality.csv", Separator=";,">`.
 
 ## Missing values
 
 It is quite common in statistical datasets for some values to be missing. If
-you open the [`docs/AirQuality.csv`](../docs/AirQuality.csv) file you will see
+you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file you will see
 that some values for the Ozone observations are marked `#N/A`. Such values are
 parsed as float and will in F# be marked with `Double.NaN`. The values `#N/A`, `NA`,
 and `:` are recognized as missing values by default, but you can customize it by specifying
@@ -282,14 +282,14 @@ for row in csv.Data do
 (**
 
 You don't need to override all the columns, you can skip the ones to leave as default.
-For example, in the titanic training dataset from Kaggle ([`docs/Titanic.csv`](../docs/Titanic.csv)),
+For example, in the titanic training dataset from Kaggle ([`data/Titanic.csv`](../data/Titanic.csv)),
 if you want to rename the 3rd column (the `PClass` column) to `Passenger Class` and override the
 6th column (the `Fare` column) to be a `float` instead of a `decimal`, you can define only that, and leave
 the other columns blank in the schema (you also don't need to add all the trailing commas).
 
 *)
 
-let titanic1 = CsvProvider<"../docs/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
+let titanic1 = CsvProvider<"../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
 for row in titanic1.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
@@ -299,7 +299,7 @@ Alternatively, you can rename and override the type of any column by name instea
 
 *)
 
-let titanic2 = CsvProvider<"../docs/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
+let titanic2 = CsvProvider<"../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
 for row in titanic2.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 

@@ -18,7 +18,7 @@ is located in the `../../bin` directory, we can load it in F# Interactive as fol
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
 `XDocument` type under the cover): *)
 
-#r "../../bin/FSharp.Data.dll"
+#r "../../../bin/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
 open FSharp.Data
 
@@ -101,7 +101,7 @@ are turned into `int` values and so the `GetValues()` method returns just `int[]
 
 In this section we look at an example that demonstrates how the type provider works 
 on a simple document that lists authors that write about a specific topic. The 
-sample document [`docs/Writers.xml`](../docs/Writers.xml) looks as follows:
+sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
 
     <authors topic="Philosophy of Science">
       <author name="Paul Feyerabend" born="1924" />
@@ -126,7 +126,7 @@ The `Load` and `AsyncLoad` methods allows reading the data from a file or from a
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
 
-type Authors = XmlProvider<"../docs/Writers.xml">
+type Authors = XmlProvider<"../data/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -151,7 +151,7 @@ In the examples shown earlier, an element was never (recursively) contained in a
 element of the same name (for example `<author>` never contained another `<author>`).
 However, when we work with documents such as XHTML files, this can often be the case.
 Consider for example, the following sample (a simplified version of 
-[`docs/HtmlBody.xml`](../docs/HtmlBody.xml)):
+[`data/HtmlBody.xml`](../data/HtmlBody.xml)):
 
     <div id="root">
       <span>Main text</span>
@@ -166,7 +166,7 @@ that processes `<div>` elements. To make this possible, you need to set an optio
 parameter `Global` to `true`:
 *)
 
-type Html = XmlProvider<"../docs/HtmlBody.xml", Global=true>
+type Html = XmlProvider<"../data/HtmlBody.xml", Global=true>
 let html = Html.GetSample()
 
 (**
