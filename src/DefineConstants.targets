@@ -13,15 +13,13 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'WindowsPhone71' Or '$(TargetFrameworkProfile)' == 'Profile47' ">
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == 'Silverlight' ">
     <DefineConstants>$(DefineConstants);FX_NO_GET_ENUM_UNDERLYING_TYPE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_SECURITY_ELEMENT_ESCAPE</DefineConstants>
     <DefineConstants>$(DefineConstants);SILVERLIGHT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
   </PropertyGroup>
 </Project>

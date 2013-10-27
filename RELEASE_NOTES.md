@@ -95,3 +95,4 @@
 * Fixed file change notification not invalidating type providers correctly.
 * Fix handling of optional elements in XmlProvider when using multiple samples.
 * Fix generated code doing repeated work.
+* Windows Phone 7 no longer supported.
