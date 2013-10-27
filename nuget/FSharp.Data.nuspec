@@ -35,8 +35,5 @@
     <file src="..\bin\sl5\FSharp.Data.DesignTime.dll" target="lib/sl5" />
     <file src="..\bin\sl5\FSharp.Data.DesignTime.pdb" target="lib/sl5" />
     <file src="..\bin\sl5\FSharp.Data.DesignTime.xml" target="lib/sl5" />
-    <file src="..\bin\sl4-windowsphone71\FSharp.Data.dll" target="lib/sl4-windowsphone71" />
-    <file src="..\bin\sl4-windowsphone71\FSharp.Data.pdb" target="lib/sl4-windowsphone71" />
-    <file src="..\bin\sl4-windowsphone71\FSharp.Data.xml" target="lib/sl4-windowsphone71" />
   </files>
 </package>

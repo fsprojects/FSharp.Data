@@ -14,8 +14,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.Po
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.DesignTime.Silverlight", "src\FSharp.Data.Experimental.DesignTime.Silverlight.fsproj", "{AE27935C-12FC-4311-8C46-79F97D579D9E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.WindowsPhone7", "src\FSharp.Data.WindowsPhone7.fsproj", "{B6FC3EDF-C988-42A2-A332-7E576C65DFB2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,10 +40,6 @@ Global
 		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE27935C-12FC-4311-8C46-79F97D579D9E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6FC3EDF-C988-42A2-A332-7E576C65DFB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6FC3EDF-C988-42A2-A332-7E576C65DFB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6FC3EDF-C988-42A2-A332-7E576C65DFB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6FC3EDF-C988-42A2-A332-7E576C65DFB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
