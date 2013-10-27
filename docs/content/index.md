@@ -64,7 +64,7 @@ If you're interested in other F# type providers then the [FSharpx library][fshar
 ### Library license
 
 The library is available under Apache 2.0. For more information see the 
-[License file][readme] in the GitHub repository. In summary, this means that you can 
+[License file][license] in the GitHub repository. In summary, this means that you can 
 use the library for commercial purposes, fork it, modify it as you wish.
 
 
@@ -75,5 +75,5 @@ use the library for commercial purposes, fork it, modify it as you wish.
   [gh]: https://github.com/fsharp/FSharp.Data
   [issues]: https://github.com/fsharp/FSharp.Data/issues
   [fsharpx]: https://github.com/fsharp/fsharpx
-  [readme]: https://github.com/fsharp/FSharp.Data/blob/master/README.md
+  [license]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
   [fsharp-oss]: http://groups.google.com/group/fsharp-opensource

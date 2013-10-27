@@ -1,51 +1,64 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
-		samples\contributing.md = samples\contributing.md
-		samples\experimental.md = samples\experimental.md
-		samples\fsharpdata.md = samples\fsharpdata.md
-		samples\index.md = samples\index.md
+		docs\content\contributing.md = docs\content\contributing.md
+		docs\content\experimental.md = docs\content\experimental.md
+		docs\content\fsharpdata.md = docs\content\fsharpdata.md
+		docs\content\index.md = docs\content\index.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA}"
 	ProjectSection(SolutionItems) = preProject
-		samples\docs\AirQuality.csv = samples\docs\AirQuality.csv
-		samples\docs\MSFT.csv = samples\docs\MSFT.csv
-		samples\docs\SmallTest.csv = samples\docs\SmallTest.csv
-		samples\docs\Titanic.csv = samples\docs\Titanic.csv
-		samples\docs\TwitterStream.json = samples\docs\TwitterStream.json
-		samples\docs\WorldBank.json = samples\docs\WorldBank.json
-		samples\docs\Writers.xml = samples\docs\Writers.xml
+		docs\content\data\AirQuality.csv = docs\content\data\AirQuality.csv
+		docs\content\data\MSFT.csv = docs\content\data\MSFT.csv
+		docs\content\data\SmallTest.csv = docs\content\data\SmallTest.csv
+		docs\content\data\Titanic.csv = docs\content\data\Titanic.csv
+		docs\content\data\TwitterStream.json = docs\content\data\TwitterStream.json
+		docs\content\data\WorldBank.json = docs\content\data\WorldBank.json
+		docs\content\data\Writers.xml = docs\content\data\Writers.xml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{EF9F7922-4570-4D6D-8034-C3582756239B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922-4570-4D6D-8034-C3582756239B}"
 	ProjectSection(SolutionItems) = preProject
-		tools\build.fsx = tools\build.fsx
-		tools\template.html = tools\template.html
+		docs\tools\generate.fsx = docs\tools\generate.fsx
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reference", "reference", "{37609C0E-CFDC-4BFA-8C0D-E659127F37C1}"
 	ProjectSection(SolutionItems) = preProject
-		samples\library\CsvFile.fsx = samples\library\CsvFile.fsx
-		samples\library\CsvProvider.fsx = samples\library\CsvProvider.fsx
-		samples\library\Freebase.fsx = samples\library\Freebase.fsx
-		samples\library\Http.fsx = samples\library\Http.fsx
-		samples\library\JsonProvider.fsx = samples\library\JsonProvider.fsx
-		samples\library\JsonValue.fsx = samples\library\JsonValue.fsx
-		samples\library\WorldBank.fsx = samples\library\WorldBank.fsx
-		samples\library\XmlProvider.fsx = samples\library\XmlProvider.fsx
+		docs\tools\reference\default.cshtml = docs\tools\reference\default.cshtml
+		docs\tools\reference\members.cshtml = docs\tools\reference\members.cshtml
+		docs\tools\reference\module.cshtml = docs\tools\reference\module.cshtml
+		docs\tools\reference\namespaces.cshtml = docs\tools\reference\namespaces.cshtml
+		docs\tools\reference\type.cshtml = docs\tools\reference\type.cshtml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
 	ProjectSection(SolutionItems) = preProject
-		samples\tutorials\JsonToXml.fsx = samples\tutorials\JsonToXml.fsx
+		docs\tools\templates\template.cshtml = docs\tools\templates\template.cshtml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Experimental", "Experimental", "{34171948-6CCE-448B-AA7D-A76FCE32A08E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82EB06-4E8B-4733-A0C7-F210925DDD04}"
 	ProjectSection(SolutionItems) = preProject
-		samples\experimental\ApiaryProvider.fsx = samples\experimental\ApiaryProvider.fsx
+		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
+		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
+		docs\content\library\Freebase.fsx = docs\content\library\Freebase.fsx
+		docs\content\library\Http.fsx = docs\content\library\Http.fsx
+		docs\content\library\JsonProvider.fsx = docs\content\library\JsonProvider.fsx
+		docs\content\library\JsonValue.fsx = docs\content\library\JsonValue.fsx
+		docs\content\library\WorldBank.fsx = docs\content\library\WorldBank.fsx
+		docs\content\library\XmlProvider.fsx = docs\content\library\XmlProvider.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimental", "{34171948-6CCE-448B-AA7D-A76FCE32A08E}"
+	ProjectSection(SolutionItems) = preProject
+		docs\content\experimental\ApiaryProvider.fsx = docs\content\experimental\ApiaryProvider.fsx
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{5EF9FF95-1C75-458A-983A-168E43945913}"

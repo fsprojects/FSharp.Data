@@ -3,13 +3,6 @@
 // --------------------------------------------------------------------------------------
 module FSharp.Data.Tests.Documentation
 
-#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.1.0.14/lib/net40"
-#load "../../packages/FSharp.Formatting.1.0.14/literate/literate.fsx"
-#r "../../packages/NUnit.2.6.2/lib/nunit.framework.dll"
-#load "../Common/FsUnit.fs"
-#endif
-
 open FsUnit
 open NUnit.Framework
 open System
@@ -24,11 +17,30 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 // Initialization of the test - lookup the documentation files,
 // create temp folder for the output and load the F# compiler DLL
-let template = Path.Combine(__SOURCE_DIRECTORY__, "../../tools/template.html")
-let sources = Path.Combine(__SOURCE_DIRECTORY__, "../../samples")
-let output = Path.Combine(Path.GetTempPath(), "FSharp.Data.Docs")
+
+let (@@) a b = Path.Combine(a, b)
+
+let template = __SOURCE_DIRECTORY__ @@ "../../docs/tools/templates/template.cshtml"
+let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
+let templates  = __SOURCE_DIRECTORY__ @@ "templates"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.1.6/"
+
+let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
+
 if Directory.Exists(output) then Directory.Delete(output, true)
 Directory.CreateDirectory(output) |> ignore
+
+let replacements =
+  [ "root", ""
+    "project-name", ""
+    "project-author", ""
+    "project-summary", ""
+    "project-github", ""
+    "project-nuget", "" ]
+
+let layoutRoots =
+  [ templates; formatting @@ "templates"
+    formatting @@ "templates/reference" ]
 
 // Lookup compiler DLL
 let locations = 
@@ -60,8 +72,10 @@ let processFile file =
 
   Literate.ProcessScriptFile
     ( Path.Combine(sources, file), template, Path.Combine(output, file), 
+      replacements = replacements,
       errorHandler = errorHandler,
-      fsharpCompiler = compiler )
+      fsharpCompiler = compiler,
+      layoutRoots = layoutRoots )
   errorCount.Value
 
 // ------------------------------------------------------------------------------------
