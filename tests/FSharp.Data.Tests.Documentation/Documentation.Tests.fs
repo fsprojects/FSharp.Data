@@ -23,7 +23,7 @@ let (@@) a b = Path.Combine(a, b)
 let template = __SOURCE_DIRECTORY__ @@ "../../docs/tools/templates/template.cshtml"
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.1.6/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.1/"
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
@@ -60,23 +60,16 @@ let compiler =
 /// the total number of unexpected errors found (print them to the output too)
 let processFile file =
   printfn "Processing '%s'" file
-  let errorCount = ref 0
-
-  let errorHandler(file, SourceError(startl, endl, kind, msg)) = 
-    if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-      printfn "%A %s (%s)" (startl, endl) msg file
-      incr errorCount
 
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
-  Literate.ProcessScriptFile
-    ( Path.Combine(sources, file), template, Path.Combine(output, file), 
-      replacements = replacements,
-      errorHandler = errorHandler,
-      fsharpCompiler = compiler,
-      layoutRoots = layoutRoots )
-  errorCount.Value
+  let literateDoc = Literate.ParseScriptFile( Path.Combine(sources, file), fsharpCompiler = compiler )
+  literateDoc.Errors |> Seq.filter (fun (SourceError(startl, endl, kind, msg)) ->
+    if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+      printfn "%A %s (%s)" (startl, endl) msg file
+      true
+    else false) |> Seq.length
 
 // ------------------------------------------------------------------------------------
 // Core API documentation

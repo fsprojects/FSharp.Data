@@ -149,7 +149,7 @@ Target "NuGet" (fun _ ->
             Description = descriptionExperimental
             Version = version
             ReleaseNotes = releaseNotes
-            Tags = tags
+            Tags = tagsExperimental
             OutputPath = "bin"
             ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
