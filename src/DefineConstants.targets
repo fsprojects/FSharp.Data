@@ -1,33 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == 'Silverlight' ">
+  <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == 'Silverlight' Or '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_LOCAL_FILESYSTEM</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CUSTOMTYPEDESCRIPTOR</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CUSTOMATTRIBUTEDATA</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkIdentifier)' == 'Silverlight' ">
     <DefineConstants>$(DefineConstants);FX_NO_GET_ENUM_UNDERLYING_TYPE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_SECURITY_ELEMENT_ESCAPE</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);SILVERLIGHT</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'WindowsPhone71' ">
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
-    <DefineConstants>$(DefineConstants);FX_NO_LOCAL_FILESYSTEM</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_CUSTOMTYPEDESCRIPTOR</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_CUSTOMATTRIBUTEDATA</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
   </PropertyGroup>
 </Project>

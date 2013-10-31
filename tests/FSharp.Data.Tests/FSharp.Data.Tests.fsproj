@@ -63,6 +63,7 @@
     <Content Include="Data/Titanic.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\Adwords.csv" />
     <Content Include="Data/HtmlBody.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -78,6 +79,7 @@
     <Content Include="Data\search.atom.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\IrelandStations.xml" />
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -117,30 +119,22 @@
     <Content Include="Data/GitHub.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data/list_my.json">
+    <Content Include="Data/topics.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
-    <Compile Include="HttpUtils.Encoding.fs" />
-    <Compile Include="JsonValue.ParseTests.fs" />
-    <Compile Include="JsonValue.SerializationTests.fs" />
-    <Compile Include="JsonValue.XmlConversionTests.fs" />
-    <Compile Include="CsvProvider.Parsing.fs" />
-    <Compile Include="CsvProvider.Tests.fs" />
-    <Compile Include="XmlProvider.Tests.fs" />
-    <Compile Include="XmlProvider.Reader.Tests.fs" />
-    <Compile Include="XmlProvider.Writer.Tests.fs" />
-    <Compile Include="XmlProvider.ProjectFile.Tests.fs" />
-    <Compile Include="JsonProvider.Tests.fs" />
-    <Compile Include="JsonProvider.Reader.Tests.fs" />
-    <Compile Include="JsonProvider.Writer.Tests.fs" />
-    <Compile Include="JsonProvider.WikiSample.Tests.fs" />
-    <Compile Include="JsonProvider.DocumentOverride.Tests.fs" />
-    <Compile Include="JsonProvider.ProjectFile.Tests.fs" />
-    <Compile Include="JsonProvider.Dates.Tests.fs" />
-    <Compile Include="FreebaseProvider.Tests.fs" />
+    <Compile Include="HttpUtils.fs" />
+    <Compile Include="NameUtils.fs" />
+    <Compile Include="TextConversions.fs" />
+    <Compile Include="JsonValue..fs" />
+    <Compile Include="JsonConversions.fs" />
+    <Compile Include="CsvReader.fs" />
+    <Compile Include="CsvProvider.fs" />
+    <Compile Include="XmlProvider.fs" />
+    <Compile Include="JsonProvider.fs" />
+    <Compile Include="FreebaseProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
@@ -153,7 +147,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

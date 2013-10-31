@@ -1,30 +1,131 @@
 class ApiaryProvider : FDR.Apiary.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
+    (new ApiaryContext(rootUrl))
+
     member Snippet: ApiaryProvider+DomainTypes+Snippet with get
+    (this :> InternalApiaryContext)
+
 
 class ApiaryProvider+DomainTypes
 
 class ApiaryProvider+DomainTypes+Snippet : FDR.Apiary.InternalApiaryContext
     member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2 async
-    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2
+    ApiaryGenerationHelper.AsyncMap(let patternInput = 
+                                        let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+                                        let query, headers = patternInput
+                                        let apiCtx = this
+                                        (apiCtx :> ApiaryOperations),
+                                        { Method = "GET"
+                                          Path = "/1/snippet/{id}"
+                                          Arguments = [| ("{id}",
+                                                          id) |]
+                                          Headers = headers
+                                          Query = query }
+                                    let args, apiCtx = patternInput
+                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[] async
+    ApiaryGenerationHelper.AsyncMap(let patternInput = 
+                                        let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+                                        let query, headers = patternInput
+                                        let apiCtx = this
+                                        (apiCtx :> ApiaryOperations),
+                                        { Method = "GET"
+                                          Path = "/1/snippet"
+                                          Arguments = [| |]
+                                          Headers = headers
+                                          Query = query }
+                                    let args, apiCtx = patternInput
+                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(fun (t:ApiaryDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))))
+
+    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2
+    let patternInput = 
+        let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+        let query, headers = patternInput
+        let apiCtx = this
+        (apiCtx :> ApiaryOperations),
+        { Method = "GET"
+          Path = "/1/snippet/{id}"
+          Arguments = [| ("{id}",
+                          id) |]
+          Headers = headers
+          Query = query }
+    let args, apiCtx = patternInput
+    apiCtx.InvokeOperation(args)
+
     member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[]
+    JsonRuntime.ConvertArray(let patternInput = 
+                                 let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+                                 let query, headers = patternInput
+                                 let apiCtx = this
+                                 (apiCtx :> ApiaryOperations),
+                                 { Method = "GET"
+                                   Path = "/1/snippet"
+                                   Arguments = [| |]
+                                   Headers = headers
+                                   Query = query }
+                             let args, apiCtx = patternInput
+                             apiCtx.InvokeOperation(args), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(id)))
+
 
 class ApiaryProvider+DomainTypes+Snippet2 : FDR.Apiary.ApiaryDocument
     member Author: string with get
+    let value = (this.JsonValue.TryGetProperty "author")
+    JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)
+
     member Description: string with get
+    let value = (this.JsonValue.TryGetProperty "description")
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
+
     member Formatted: string with get
+    let value = (this.JsonValue.TryGetProperty "formatted")
+    JsonRuntime.GetNonOptionalValue("formatted", JsonRuntime.ConvertString("", value), value)
+
     member Likes: int with get
+    let value = (this.JsonValue.TryGetProperty "likes")
+    JsonRuntime.GetNonOptionalValue("likes", JsonRuntime.ConvertInteger("", value), value)
+
     member Link: string with get
+    let value = (this.JsonValue.TryGetProperty "link")
+    JsonRuntime.GetNonOptionalValue("link", JsonRuntime.ConvertString("", value), value)
+
     member Published: string with get
+    let value = (this.JsonValue.TryGetProperty "published")
+    JsonRuntime.GetNonOptionalValue("published", JsonRuntime.ConvertString("", value), value)
+
     member Tags: string[] with get
+    JsonRuntime.ConvertArray((new ApiaryDocument((this.JsonValue.GetProperty "tags"))), new Func<_,_>(fun (t:ApiaryDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> (new ApiaryDocument(t))), new Func<_,_>(fun (t:ApiaryDocument) -> 
+                                                                                                                                                                                                                            let value = Some t.JsonValue
+                                                                                                                                                                                                                            JsonRuntime.GetNonOptionalValue("tag", JsonRuntime.ConvertString("", value), value)))
+
     member Title: string with get
+    let value = (this.JsonValue.TryGetProperty "title")
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
+
 
 class ApiaryProvider+DomainTypes+SnippetList : FDR.Apiary.ApiaryDocument
     member Author: string with get
+    let value = (this.JsonValue.TryGetProperty "author")
+    JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)
+
     member Description: string with get
+    let value = (this.JsonValue.TryGetProperty "description")
+    JsonRuntime.GetNonOptionalValue("description", JsonRuntime.ConvertString("", value), value)
+
     member Likes: int with get
+    let value = (this.JsonValue.TryGetProperty "likes")
+    JsonRuntime.GetNonOptionalValue("likes", JsonRuntime.ConvertInteger("", value), value)
+
     member Link: string with get
+    let value = (this.JsonValue.TryGetProperty "link")
+    JsonRuntime.GetNonOptionalValue("link", JsonRuntime.ConvertString("", value), value)
+
     member Published: string with get
+    let value = (this.JsonValue.TryGetProperty "published")
+    JsonRuntime.GetNonOptionalValue("published", JsonRuntime.ConvertString("", value), value)
+
     member Title: string with get
+    let value = (this.JsonValue.TryGetProperty "title")
+    JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
+
 

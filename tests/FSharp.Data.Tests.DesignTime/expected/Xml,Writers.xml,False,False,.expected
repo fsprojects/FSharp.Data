@@ -1,18 +1,43 @@
 class XmlProvider
-    new : () -> XmlProvider
-    static member Parse: text:string -> XmlProvider+DomainTypes+Authors
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Authors
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Authors
-    static member Load: uri:string -> XmlProvider+DomainTypes+Authors
+    static member AsyncGetSample: () -> XmlProvider+DomainTypes+Authors async
+    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Writers.xml"))
+
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Authors async
+    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+
     static member GetSample: () -> XmlProvider+DomainTypes+Authors
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Writers.xml")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Authors
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Authors
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+DomainTypes+Authors
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+DomainTypes+Authors
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+DomainTypes+Authors : FDR.XmlElement
+    member GetAuthors: () -> XmlProvider+DomainTypes+Author[]
+    XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
+
+    member Topic: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "topic")
+    TextRuntime.GetNonOptionalValue("Attribute topic", TextRuntime.ConvertString(value), value)
+
 
 class XmlProvider+DomainTypes
 
-class XmlProvider+DomainTypes+Authors : FDR.XmlElement
-    member Topic: string with get
-    member GetAuthors: () -> XmlProvider+DomainTypes+Author[]
-
 class XmlProvider+DomainTypes+Author : FDR.XmlElement
-    member Name: string with get
     member Born: int option with get
+    TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "born"))
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "name")
+    TextRuntime.GetNonOptionalValue("Attribute name", TextRuntime.ConvertString(value), value)
+
 

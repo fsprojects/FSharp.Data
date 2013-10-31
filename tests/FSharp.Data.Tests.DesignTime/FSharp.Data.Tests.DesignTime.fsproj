@@ -43,7 +43,6 @@
       <Link>FsUnit.fs</Link>
     </Compile>
     <Compile Include="InferenceTests.fs" />
-    <Compile Include="NameUtilsTests.fs" />
     <Compile Include="SignatureTests.fs" />
     <None Include="SignatureTestCases.config" />
     <None Include="packages.config" />

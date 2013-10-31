@@ -1,0 +1,41 @@
+class XmlProvider
+    static member AsyncGetSample: () -> XmlProvider+DomainTypes+Div async
+    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "HtmlBody.xml"))
+
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Div async
+    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+
+    static member GetSample: () -> XmlProvider+DomainTypes+Div
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "HtmlBody.xml")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Div
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Div
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+DomainTypes+Div
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+DomainTypes+Div
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+DomainTypes+Div : FDR.XmlElement
+    member GetDivs: () -> XmlProvider+DomainTypes+Div[]
+    XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
+
+    member GetSpans: () -> string[]
+    XmlRuntime.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> 
+                                                           let value = XmlRuntime.TryGetValue(t)
+                                                           TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Id: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "id"))
+
+    member Value: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
+
+
+class XmlProvider+DomainTypes
+

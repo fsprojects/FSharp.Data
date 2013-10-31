@@ -2,7 +2,7 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#r @"tools/FAKE/tools/FakeLib.dll"
+#r "packages/FAKE/tools/FakeLib.dll"
 
 open System
 open System.IO
@@ -10,14 +10,10 @@ open Fake
 open Fake.AssemblyInfoFile
 open Fake.Git
 
-Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-
-let files includes = 
-  { BaseDirectories = [__SOURCE_DIRECTORY__]
-    Includes = includes
-    Excludes = [] } |> Scan
-
+// --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
+// --------------------------------------------------------------------------------------
+
 let project = "FSharp.Data"
 let authors = ["Tomas Petricek, Gustavo Guerra"]
 let summary = "Library of F# type providers and data access tools"
@@ -31,18 +27,23 @@ let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
 // Information for the project containing experimental providers
 let projectExperimental = "FSharp.Data.Experimental"
 let summaryExperimental = summary + " (experimental extensions)"
-let tagsExperimental = tags + " Apiary"
 let descriptionExperimental = description + """"
   This package (FSharp.Data.Experimental.dll) adds additional type providers that are work
   in progress and do not match high quality standards yet. Currently, it includes a type 
   provider for Apiary.io."""
+let tagsExperimental = tags + " Apiary"
 
-// Read additional information from the release notes document
-let releaseNotes, version = 
-    let lastItem = File.ReadLines "RELEASE_NOTES.md" |> Seq.last
-    let firstDash = lastItem.IndexOf('-')
-    ( lastItem.Substring(firstDash + 1 ).Trim(), 
-      lastItem.Substring(0, firstDash).Trim([|'*'|]).Trim() )
+let gitHome = "https://github.com/fsharp"
+let gitName = "FSharp.Data"
+
+// Read release notes & version info from RELEASE_NOTES.md
+Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
+let release = 
+    File.ReadLines "RELEASE_NOTES.md" 
+    |> ReleaseNotesHelper.parseReleaseNotes
+
+let version = release.AssemblyVersion
+let releaseNotes = release.Notes |> String.concat "\n"
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -63,21 +64,36 @@ Target "AssemblyInfo" (fun _ ->
              Attribute.Version version
              Attribute.FileVersion version] )
 )
-
 // --------------------------------------------------------------------------------------
 // Clean build results
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"]
+    CleanDirs ["bin"; "temp"]
 )
 
+Target "CleanDocs" (fun _ ->
+    CleanDirs ["docs/output"]
+)
 // --------------------------------------------------------------------------------------
 // Build library (builds Visual Studio solution, which builds multiple versions
 // of the runtime library & desktop + Silverlight version of design time library)
 
+let files includes = 
+  { BaseDirectories = [__SOURCE_DIRECTORY__]
+    Includes = includes
+    Excludes = [] } |> Scan
+
+let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
 Target "Build" (fun _ ->
-    (files ["FSharp.Data.sln"; "FSharp.Data.Tests.sln"])
+    files (if runningOnMono then ["FSharp.Data.sln"] else ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"])
     |> MSBuildRelease "" "Rebuild"
+    |> ignore
+)
+
+Target "BuildTests" (fun _ ->
+    files ["FSharp.Data.Tests.sln"]
+    |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"] else []) "Rebuild"
     |> ignore
 )
 
@@ -85,7 +101,6 @@ Target "Build" (fun _ ->
 // Run the unit tests using test runner & kill test runner when complete
 
 Target "RunTests" (fun _ ->
-
     // Will get NUnit.Runner NuGet package if not present
     // (needed to run tests using the 'NUnit' target)
     !! "./**/packages.config"
@@ -93,7 +108,6 @@ Target "RunTests" (fun _ ->
 
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
-
     ActivateFinalTarget "CloseTestRunner"
 
     (files ["tests/*/bin/Release/FSharp.Data.Tests*.dll"])
@@ -113,12 +127,10 @@ FinalTarget "CloseTestRunner" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
-
     // Format the description to fit on a single line (remove \r\n and double-spaces)
     let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let descriptionExperimental = descriptionExperimental.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     let nugetPath = ".nuget/nuget.exe"
-
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -134,7 +146,6 @@ Target "NuGet" (fun _ ->
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
         "nuget/FSharp.Data.nuspec"
-
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -154,45 +165,67 @@ Target "NuGet" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
-// Release Scripts
+// Generate the documentation
 
-Target "UpdateDocs" (fun _ ->
-
-    executeFSI "tools" "build.fsx" [] |> ignore
-
-    DeleteDir "gh-pages"
-    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "gh-pages"
-    Branches.checkoutBranch "gh-pages" "gh-pages"
-    CopyRecursive "docs" "gh-pages" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "gh-pages" (sprintf """commit -a -m "Update generated documentation for version %s""" version) |> printfn "%s"
-    Branches.push "gh-pages"
+Target "GenerateDocs" (fun _ ->
+    executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 )
 
-Target "UpdateBinaries" (fun _ ->
+// --------------------------------------------------------------------------------------
+// Release Scripts
 
-    DeleteDir "release"
-    Repository.clone "" "https://github.com/fsharp/FSharp.Data.git" "release"
-    Branches.checkoutBranch "release" "release"
-    CopyRecursive "bin" "release/bin" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "release" (sprintf """commit -a -m "Update binaries for version %s""" version) |> printfn "%s"
-    Branches.push "release"
+Target "ReleaseDocs" (fun _ ->
+    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/gh-pages"
+    Branches.checkoutBranch "temp/gh-pages" "gh-pages"
+    CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
+    CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
+    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
+    CommandHelper.runSimpleGitCommand "temp/gh-pages" cmd |> printfn "%s"
+    Branches.push "temp/gh-pages"
+)
+
+Target "ReleaseBinaries" (fun _ ->
+    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
+    Branches.checkoutBranch "temp/release" "release"
+    CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
+    let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion
+    CommandHelper.runSimpleGitCommand "temp/release" cmd |> printfn "%s"
+    Branches.push "temp/release"
 )
 
 Target "Release" DoNothing
 
-"UpdateDocs" ==> "Release"
-"UpdateBinaries" ==> "Release"
+"CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
+"ReleaseDocs" ==> "Release"
+"ReleaseBinaries" ==> "Release"
+"NuGet" ==> "Release"
 
 // --------------------------------------------------------------------------------------
-// Run all targets by default. Invoke 'build <Target>' to override
+// Help
+
+Target "Help" (fun _ ->
+    printfn ""
+    printfn "  Please specify the target by calling 'build <Target>'"
+    printfn ""
+    printfn "  Targets for building:"
+    printfn "  * Build"
+    printfn "  * BuildTests"
+    printfn "  * RunTests"
+    printfn "  * All (calls previous 3)"
+    printfn ""
+    printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
+    printfn "  * GenerateDocs"
+    printfn "  * ReleaseDocs (calls previous)"
+    printfn "  * ReleaseBinaries"
+    printfn "  * NuGet (creates package only, doesn't publish)"
+    printfn "  * Release (calls previous 4)"
+    printfn "")
 
 Target "All" DoNothing
 
-"Clean"
-  ==> "AssemblyInfo"
-  ==> "Build"
-  ==> "RunTests"
-  ==> "NuGet"
-  ==> "All"
+"Clean" ==> "AssemblyInfo" ==> "Build"
+"Build" ==> "All"
+"BuildTests" ==> "All"
+"RunTests" ==> "All"
 
-RunTargetOrDefault "All"
+RunTargetOrDefault "Help"

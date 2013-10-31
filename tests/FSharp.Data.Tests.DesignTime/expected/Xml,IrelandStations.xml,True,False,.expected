@@ -1,0 +1,50 @@
+class XmlProvider
+    static member AsyncGetSamples: () -> XmlProvider+DomainTypes+ObjStation[] async
+    XmlElement.AsyncCreateList((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml"))
+
+    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+ObjStation async
+    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+
+    static member GetSamples: () -> XmlProvider+DomainTypes+ObjStation[]
+    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml")))
+
+    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
+
+    static member Parse: text:string -> XmlProvider+DomainTypes+ObjStation
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+
+class XmlProvider+DomainTypes
+
+class XmlProvider+DomainTypes+ObjStation : FDR.XmlElement
+    member StationAlias: string option with get
+    TextRuntime.ConvertString(XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationAlias")))
+
+    member StationCode: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationCode"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member StationDesc: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationDesc"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member StationId: int with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationId"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("", value), value)
+
+    member StationLatitude: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLatitude"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value)
+
+    member StationLongitude: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationLongitude"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value)
+
+

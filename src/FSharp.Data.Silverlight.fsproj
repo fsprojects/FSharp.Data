@@ -48,30 +48,37 @@
     <DocumentationFile>bin\sl5\Release\FSharp.Data.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common\ProviderFileSystem.fs" />
-    <Compile Include="Common\StructuralTypes.fs" />
-    <Compile Include="Common\HttpUtils.fs" />
-    <Compile Include="Common\Conversions.fs" />
-    <Compile Include="Common\Caching.fs" />
-    <Compile Include="Library\Http.fs" />
-    <Compile Include="Library\Json.fs" />
-    <Compile Include="Library\CsvRuntime.fs" />
-    <Compile Include="Library\Csv.fs" />
-    <Compile Include="Library\FreebaseOperators.fs" />
-    <Compile Include="JsonProvider\JsonRuntime.fs" />
-    <Compile Include="WorldBankProvider\WorldBankRuntime.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRequests.fs" />
-    <Compile Include="FreebaseProvider\FreebaseSchema.fs" />
-    <Compile Include="FreebaseProvider\FreebaseRuntime.fs" />
+    <Compile Include="CommonRuntime\IO.fs" />
+    <Compile Include="CommonRuntime\Caching.fs" />
+    <Compile Include="CommonRuntime\HttpUtils.fs" />
+    <Compile Include="CommonRuntime\TextConversions.fs" />
+    <Compile Include="CommonRuntime\TextRuntime.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonRuntime\Pluralizer.fs" />
+    <Compile Include="CommonRuntime\NameUtils.fs" />
+    <Compile Include="Net\Http.fs" />
+    <Compile Include="Json\JsonValue.fs" />
+    <Compile Include="Json\JsonConversions.fs" />
+    <Compile Include="Json\JsonExtensions.fs" />
+    <Compile Include="Json\JsonRuntime.fs" />
+    <Compile Include="Csv\CsvRuntime.fs" />
+    <Compile Include="Csv\CsvFile.fs" />
+    <Compile Include="Csv\CsvExtensions.fs" />
+    <Compile Include="Csv\CsvInference.fs" />
+    <Compile Include="WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="Freebase\FreebaseRequests.fs" />
+    <Compile Include="Freebase\FreebaseSchema.fs" />
+    <Compile Include="Freebase\FreebaseRuntime.fs" />
+    <Compile Include="Freebase\FreebaseOperators.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=2.3.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\3.0\Runtime\.NETPortable\FSharp.Core.dll</HintPath>
-      <Private>True</Private>
     </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml" />

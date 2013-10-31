@@ -1,16 +1,43 @@
 class JsonProvider
-    new : () -> JsonProvider
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Simple.json"), "")
+
+    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
+    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+
     static member GetSample: () -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "Simple.json")), "")
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(reader, "")
+
+    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+
+    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
+
 
 class JsonProvider+DomainTypes
 
 class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
     member Age: int with get
+    let value = (this.JsonValue.TryGetProperty "age")
+    JsonRuntime.GetNonOptionalValue("age", JsonRuntime.ConvertInteger("", value), value)
+
     member FirstName: string with get
+    let value = (this.JsonValue.TryGetProperty "firstName")
+    JsonRuntime.GetNonOptionalValue("firstName", JsonRuntime.ConvertString("", value), value)
+
     member IsCool: bool with get
+    let value = (this.JsonValue.TryGetProperty "isCool")
+    JsonRuntime.GetNonOptionalValue("isCool", JsonRuntime.ConvertBoolean("", value), value)
+
     member LastName: string with get
+    let value = (this.JsonValue.TryGetProperty "lastName")
+    JsonRuntime.GetNonOptionalValue("lastName", JsonRuntime.ConvertString("", value), value)
+
 
