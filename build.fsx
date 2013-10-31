@@ -2,7 +2,6 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#I @"tools/FAKE/tools"
 #r @"tools/FAKE/tools/FakeLib.dll"
 
 open System
@@ -87,6 +86,11 @@ Target "Build" (fun _ ->
 
 Target "RunTests" (fun _ ->
 
+    // Will get NUnit.Runner NuGet package if not present
+    // (needed to run tests using the 'NUnit' target)
+    !! "./**/packages.config"
+    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
+
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
 
@@ -139,7 +143,7 @@ Target "NuGet" (fun _ ->
             Description = descriptionExperimental
             Version = version
             ReleaseNotes = releaseNotes
-            Tags = tags
+            Tags = tagsExperimental
             OutputPath = "bin"
             ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
