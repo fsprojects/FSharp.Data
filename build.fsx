@@ -101,11 +101,6 @@ Target "BuildTests" (fun _ ->
 // Run the unit tests using test runner & kill test runner when complete
 
 Target "RunTests" (fun _ ->
-    // Will get NUnit.Runner NuGet package if not present
-    // (needed to run tests using the 'NUnit' target)
-    !! "./**/packages.config"
-    |> Seq.iter (RestorePackage (fun p -> { p with ToolPath = "./.nuget/NuGet.exe" }))
-
     let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
