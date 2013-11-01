@@ -135,7 +135,8 @@
     <Compile Include="HttpUtils.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
-    <Compile Include="JsonValue..fs" />
+    <Compile Include="JsonValue.fs" />
+    <Compile Include="JsonValue.Writer.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvProvider.fs" />

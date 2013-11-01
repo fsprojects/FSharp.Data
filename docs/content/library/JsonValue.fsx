@@ -84,6 +84,13 @@ the `GetEnumerator` method, which makes it possible to use it in sequence expres
 and with the `for` loop.
 *)
 
+// create a modified document
+let info' = info.Set("name","Steffen").Set("born",182)
+
+(**
+The `Set`-function creates a modified version of the `JsonValue` - the original document is not touched.
+*)
+
 (**
 ## Parsing WorldBank response
 
