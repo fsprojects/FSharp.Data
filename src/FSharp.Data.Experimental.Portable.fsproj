@@ -37,6 +37,7 @@
     <DocumentationFile>bin\portable\Release\FSharp.Data.Experimental.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
     <Compile Include="CommonRuntime\HttpUtils.fs" />
@@ -44,7 +45,6 @@
     <Compile Include="CommonRuntime\TextRuntime.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
-    <Compile Include="Net\Http.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
