@@ -13,6 +13,7 @@ open System
 open System.IO
 open System.Text
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO
@@ -251,7 +252,7 @@ type JsonValue with
     let text = reader.ReadToEnd()
     JsonParser(text, cultureInfo).Parse()
 
-  /// Loads JSON from the specified uri  asynchronously
+  /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
     let! reader = asyncReadTextAtRuntime false "" "" uri
     let text = reader.ReadToEnd()
@@ -263,3 +264,9 @@ type JsonValue with
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
+  /// Posts the JSON to the specified uri
+  member x.Post(uri:string) =  
+    Http.Request(
+      uri,
+      body=RequestBody.Text(x.ToString()),
+      headers=["Content-Type","application/json"])
