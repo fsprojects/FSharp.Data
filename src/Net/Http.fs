@@ -9,7 +9,6 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
-open FSharp.Data.Runtime.IO
 
 [<RequireQualifiedAccess>]
 /// The body to send in an HTTP request
@@ -62,6 +61,24 @@ type Http private() =
 #endif
     uri
 
+  /// consumes a stream asynchronously until the end
+  /// and returns a memory stream with the full content
+  static let asyncRead (stream:Stream) = async {
+      // Allocate 4kb buffer for downloading data
+      let buffer = Array.zeroCreate (4 * 1024)
+      let output = new MemoryStream()
+      let reading = ref true
+  
+      while reading.Value do
+        // Download one (at most) 4kb chunk and copy it
+        let! count = stream.AsyncRead(buffer, 0, buffer.Length)
+        output.Write(buffer, 0, count)
+        reading := count > 0
+  
+      output.Seek(0L, SeekOrigin.Begin) |> ignore 
+      return output 
+  }
+
   static let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
 #else
@@ -106,10 +123,39 @@ type Http private() =
         return Unchecked.defaultof<_>
   }
 
+  static let toHttpResponse forceText responseUrl contentType statusCode cookies headers (memoryStream:MemoryStream) =
+
+    let isText (mimeType:string) =
+      let isText (mimeType:string) =
+        let mimeType = mimeType.Trim()
+        mimeType.StartsWith "text/" || 
+        mimeType = "application/json" || 
+        mimeType = "application/xml" ||
+        mimeType = "application/javascript" ||
+        mimeType = "application/ecmascript" ||
+        mimeType = "application/xml-dtd" ||
+        mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+      mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
+      |> Array.exists isText
+
+    let respBody = 
+      use memoryStream = memoryStream
+      if forceText || (isText contentType) then
+          use sr = new StreamReader(memoryStream)
+          sr.ReadToEnd() |> ResponseBody.Text
+      else
+          memoryStream.ToArray() |> ResponseBody.Binary
+
+    { Body = respBody
+      Headers = headers
+      ResponseUrl = responseUrl
+      Cookies = cookies
+      StatusCode = statusCode }
+
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
+  static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 #else
-  static member private InnerRequest(url:string, forceText, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
+  static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
 #endif
     // Format query parameters
     let url = 
@@ -190,41 +236,18 @@ type Http private() =
         do! writeBody req bytes
     | None -> ()
 
-    let isText (mimeType:string) =
-        let isText (mimeType:string) =
-            let mimeType = mimeType.Trim()
-            mimeType.StartsWith "text/" || 
-            mimeType = "application/json" || 
-            mimeType = "application/xml" ||
-            mimeType = "application/javascript" ||
-            mimeType = "application/ecmascript" ||
-            mimeType = "application/xml-dtd" ||
-            mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
-        mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
-        |> Array.exists isText
-
     // Send the request and get the response
     return! augmentWebExceptionsWithDetails <| fun () -> async {
       use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-      use networkStream = resp.GetResponseStream()
-      use! memoryStream = asyncRead networkStream
-      let respBody = 
-        if forceText || (isText resp.ContentType) then
-            use sr = new StreamReader(memoryStream)
-            sr.ReadToEnd() |> ResponseBody.Text
-        else
-            memoryStream.ToArray() |> ResponseBody.Binary
+      let statusCode = 
+          match resp with
+          | :? HttpWebResponse as resp -> int resp.StatusCode
+          | _ -> 0
       let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
       let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
-      let statusCode = 
-        match resp with
-        | :? HttpWebResponse as resp -> int resp.StatusCode
-        | _ -> 0
-      return { Body = respBody
-               Headers = headers
-               ResponseUrl = resp.ResponseUri.OriginalString
-               Cookies = cookies
-               StatusCode = statusCode } }
+      use networkStream = resp.GetResponseStream()
+      let! memoryStream = asyncRead networkStream
+      return toHttpResponse resp.ResponseUri.OriginalString resp.ContentType statusCode cookies headers memoryStream }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -234,10 +257,10 @@ type Http private() =
   /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = 
-    Http.InnerRequest(url, false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
+    Http.InnerRequest(url, toHttpResponse false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
   static member AsyncRequest(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = 
-    Http.InnerRequest(url, false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+    Http.InnerRequest(url, toHttpResponse false, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
 
   /// Download an HTTP web resource from the specified URL asynchronously
@@ -247,10 +270,10 @@ type Http private() =
   /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
-    let! response = Http.InnerRequest(url, true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
+    let! response = Http.InnerRequest(url, toHttpResponse true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer)
 #else
   static member AsyncRequestString(url, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate)  = async {
-    let! response = Http.InnerRequest(url, true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
+    let! response = Http.InnerRequest(url, toHttpResponse true, ?query=query, ?headers=headers, ?meth=meth, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, ?certificate=certificate)
 #endif
     return
         match response.Body with

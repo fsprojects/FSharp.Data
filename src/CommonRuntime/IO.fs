@@ -8,6 +8,7 @@ module FSharp.Data.Runtime.IO
 open System
 open System.IO
 open System.Net
+open FSharp.Net
 
 type internal UriResolutionType =
     | DesignTime
@@ -60,23 +61,6 @@ type internal UriResolver =
         Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
 #endif
 
-/// consumes a stream asynchronously until the end
-/// and returns a memory stream with the full content
-let internal asyncRead (stream:Stream) = async {
-    // Allocate 4kb buffer for downloading data
-    let buffer = Array.zeroCreate (4 * 1024)
-    let output = new MemoryStream()
-    let reading = ref true
-
-    while reading.Value do
-      // Download one (at most) 4kb chunk and copy it
-      let! count = stream.AsyncRead(buffer, 0, buffer.Length)
-      output.Write(buffer, 0, count)
-      reading := count > 0
-
-    output.Seek(0L, SeekOrigin.Begin) |> ignore 
-    return output 
-}
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
@@ -100,16 +84,9 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
 let internal asyncOpenStream (invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) = async {
   let uri, isWeb = uriResolver.Resolve uri
-  if isWeb then 
-    let req = WebRequest.Create(uri) :?> HttpWebRequest
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-#else
-    req.AutomaticDecompression <- DecompressionMethods.Deflate ||| DecompressionMethods.GZip
-#endif
-    use! resp = Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-    use stream = resp.GetResponseStream()
-    let! memoryStream = asyncRead stream
-    return memoryStream :> Stream
+  if isWeb then
+    let! stream = Http.InnerRequest(uri.OriginalString, fun _ _ _ _ _ stream -> stream)
+    return stream :> Stream
   else
 #if FX_NO_LOCAL_FILESYSTEM
     return failwith "Only web locations are supported"

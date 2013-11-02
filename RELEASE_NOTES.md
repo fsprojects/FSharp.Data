@@ -97,3 +97,4 @@
 * Fix generated code doing repeated work.
 * Windows Phone 7 no longer supported.
 * CsvInference is now part of the runtime so it can be reused.
+* Fixed problem when using uri's with encoded slashes (%2F) in the sample parameter of CsvProvider, JsonProvider & XmlProvider

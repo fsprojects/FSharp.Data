@@ -38,6 +38,7 @@
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.DesignTime.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
     <Compile Include="CommonRuntime\HttpUtils.fs" />
@@ -55,7 +56,6 @@
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
     <Compile Include="CommonProviderImplementation\Debug.fs" />
-    <Compile Include="Net\Http.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
