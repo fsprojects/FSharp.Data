@@ -52,7 +52,7 @@ opening the `FSharp.Data.Csv.Extensions` namespace. Once opened, we can write:
  * `value.AsDateTime()` returns the value as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
- * `value.AsDateTime()` returns the value as a `Guid` value.
+ * `value.AsGuid()` returns the value as a `Guid` value.
 
 Methods that may need to parse a numeric value or date (such as `AsFloat` and
 `AsDateTime`) receive an optional culture parameter.
