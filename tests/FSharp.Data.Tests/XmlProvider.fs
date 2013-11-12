@@ -213,3 +213,5 @@ let ``Global inference with empty elements doesn't crash``() =
     child1.Inner |> should notEqual None
     //not working correctly:
     //child2.Inner |> should equal None
+
+type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256

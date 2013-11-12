@@ -19,6 +19,7 @@ let private (|Lower|_|) = sat Char.IsLower
 
 /// Turns a given non-empty string into a nice 'PascalCase' identifier
 let nicePascalName (s:string) = 
+  if s.Length = 1 then s.ToUpper() else
   // Starting to parse a new segment 
   let rec restart i = seq {
     match tryAt s i with 

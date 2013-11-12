@@ -17,6 +17,14 @@ let ``Formats empty string as camelCase`` () =
   niceCamelName "" |> should equal ""
 
 [<Test>]
+let ``Formats one letter string as PascalCase`` () = 
+  nicePascalName "b" |> should equal "B"
+
+[<Test>]
+let ``Formats one letter string as camelCase`` () = 
+  niceCamelName "a" |> should equal "a"
+
+[<Test>]
 let ``Removes non-character symbols`` () = 
   nicePascalName "__hello__" |> should equal "Hello"
   niceCamelName "__hello__"  |> should equal "hello"
