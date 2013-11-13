@@ -101,7 +101,7 @@ let rec fromXml (xml:XElement) =
 Converting JSON to XML
 ----------------------
 
-When converting JSON value to XML, we fact the same mismatch. Consider the following XML:
+When converting JSON value to XML, we fact the same mismatch. Consider the following JSON value:
 
     { "title" : "Sample input",
       "paging" : { "current": 1 },
@@ -174,11 +174,11 @@ let toXml(x:JsonValue) =
 
 ## Related articles
 
- * [F# Data: JSON Parser and Reader](JsonValue.html) - a tutorial that introduces
+ * [F# Data: JSON Parser and Reader](../library/JsonValue.html) - a tutorial that introduces
    `JsonValue` for working with JSON values dynamically.
- * [F# Data: JSON Type Provider](JsonProvider.html) - discusses F# type provider
+ * [F# Data: JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
    that provides type-safe access to JSON data.
- * [F# Data: XML Type Provider](XmlProvider.html) - discusses the F# type provider
+ * [F# Data: XML Type Provider](../library/XmlProvider.html) - discusses the F# type provider
    that provides type-safe access to XML data.
 
 *)

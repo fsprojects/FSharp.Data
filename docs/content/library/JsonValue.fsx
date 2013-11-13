@@ -79,7 +79,7 @@ for sib in info?siblings do
 
 (**
 Note that the `JsonValue` type does not actually implement the `IEnumerable<'T>` 
-namespace (meaning that it cannot be passed to `Seq.xyz` functions). It only has
+interface (meaning that it cannot be passed to `Seq.xyz` functions). It only has
 the `GetEnumerator` method, which makes it possible to use it in sequence expressions
 and with the `for` loop.
 *)
@@ -108,7 +108,7 @@ reads the document and parses it:
 let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../data/WorldBank.json")
 
 (** Note that we can also load the data directly from the web, and there's an
-asynchronous version available too: **)
+asynchronous version available too: *)
 
 let valueAsync = JsonValue.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
 
