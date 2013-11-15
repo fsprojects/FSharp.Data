@@ -99,3 +99,4 @@
 * CsvInference is now part of the runtime so it can be reused.
 * Fixed problem when using uri's with encoded slashes (%2F) in the sample parameter of CsvProvider, JsonProvider & XmlProvider
 * Fixed XmlProvider problem with one letter tags
+* Added Japanese documentation
