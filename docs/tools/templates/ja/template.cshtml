@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>@Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="@Description">
+    <meta name="author" content="@Properties["project-author"]">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="@Root/content/style.css" />
+    <script type="text/javascript" src="@Root/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="@Properties["project-github"]">github page</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/">F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle">Deedle</a></li>
+          <li><a href="http://fsharp.github.io/fsharpx/">fsharpx</a></li>
+        </ul>
+        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          @RenderBody()
+        </div>
+        <div class="span3">
+          <a href="@Root/index.html">
+            <img src="@Root/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">@Properties["project-name"]</li>
+            <li class="divider"></li>
+            <li><a href="@Properties["project-nuget"]">NuGet経由でライブラリを取得</a></li>
+            <li><a href="@Properties["project-github"]">GitHub上のソースコード</a></li>
+            <li><a href="@Properties["project-github"]/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="@Properties["project-github"]/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><span>
+                <a href="@Root/contributing.html">F# Dataに貢献する</a>
+                (<a href="@Root/../contributing.html">En</a>)
+                </span></li>
+            
+            <li class="nav-header">F# Data ライブラリ</li>
+            <li><span>
+                <a href="@Root/fsharpdata.html">はじめに</a>
+                (<a href="@Root/../fsharpdata.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="@Root/library/JsonProvider.html">JSON 型プロバイダー</a>
+                (<a href="@Root/../library/JsonProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/XmlProvider.html">XML 型プロバイダー</a>
+                (<a href="@Root/../library/XmlProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/CsvProvider.html">CSV 型プロバイダー</a>
+                (<a href="@Root/../library/CsvProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/WorldBank.html">WorldBank プロバイダー</a>
+                (<a href="@Root/../library/WorldBank.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/Freebase.html">Freebase プロバイダー</a>
+                (<a href="@Root/../library/Freebase.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="@Root/library/JsonValue.html">JSON パーサーおよびリーダー</a>
+                (<a href="@Root/../library/JsonValue.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/CsvFile.html">CSV パーサーおよびリーダー</a>
+                (<a href="@Root/../library/CsvFile.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/library/Http.html">HTTP ユーティリティ</a>
+                (<a href="@Root/../library/Http.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">F# Data 試験用ライブラリ</li>
+            <li><span>
+                <a href="@Root/experimental.html">はじめに</a>
+                (<a href="@Root/../experimental.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="@Root/experimental/ApiaryProvider.html">Apiary 型プロバイダー</a>
+                (<a href="@Root/../experimental/ApiaryProvider.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">チュートリアル</li>
+            <li><span>
+                <a href="@Root/tutorials/JsonToXml.html">JsonToXml</a>
+                (<a href="@Root/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">リファレンス</li>
+            <li><span>
+                <a href="@Root/reference/index.html">API リファレンス</a>
+                (<a href="@Root/../reference/index.html">En</a>)
+                </span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="@Properties["project-github"]"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

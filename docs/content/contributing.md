@@ -153,7 +153,7 @@ Here is a documentation for the `AssemblyReplacer` type:
 > the exact same instance that was provided to us initially.
 >
 > Another limitation (not only of this method, but in general with type providers) is that we can never use 
-> expressions that use F# functions as parameters or return values, we always have to use felegates instead.
+> expressions that use F# functions as parameters or return values, we always have to use delegates instead.
 
     [hide]
     open System

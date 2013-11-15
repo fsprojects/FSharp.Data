@@ -14,7 +14,7 @@ loaded file does not match the structure of the sample, an runtime error may occ
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
-is located in the `../../bin` directory, we can load it in F# Interactive as follows: *)
+is located in the `../../../bin` directory, we can load it in F# Interactive as follows: *)
 
 #r "../../../bin/FSharp.Data.dll"
 open FSharp.Data
@@ -148,7 +148,7 @@ type WorldBank = JsonProvider<"../data/WorldBank.json">
 let doc = WorldBank.Load("../data/WorldBank.json")
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
-the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: **)
+the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
 
 let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
 
