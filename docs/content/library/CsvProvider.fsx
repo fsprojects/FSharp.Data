@@ -121,6 +121,15 @@ so we use the `GetSample` method instead of calling `Load` and passing the same 
 let small = CsvProvider<"../data/SmallTest.csv">.GetSample()
 
 (**
+We can also use the default constructor instead of the `GetSample` static method:
+*)
+
+let small2 = new CsvProvider<"../data/SmallTest.csv">()
+
+(**
+but the VisualStudio intellisense for the type provider parameters doesn't work when we use a default
+constructor for a type provider, so we'll keep using `GetSample` instead.
+
 As in the previous example, the `small` value exposes the rows using the `Data` property.
 The generated properties `Distance` and `Time` are now annotated with units. Look at the
 following simple calculation:
@@ -149,7 +158,7 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-let airQuality = CsvProvider<"../data/AirQuality.csv", ";">.GetSample()
+let airQuality = new CsvProvider<"../data/AirQuality.csv", ";">()
 
 for row in airQuality.Data do
   if row.Month > 6 then 

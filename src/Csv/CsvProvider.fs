@@ -74,7 +74,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     generateConstructors "CSV" sample (*sampleIsList*)false 
                          parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
-                         this cfg replacer resolutionFolder
+                         this cfg replacer resolutionFolder true
 
   let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 

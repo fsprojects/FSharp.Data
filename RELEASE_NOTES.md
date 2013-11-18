@@ -82,21 +82,20 @@
 
 #### 1.2.0 - Unreleased
 * Support for sending HTTP requests with a binary body.
-* Allow currency symbols on decimals.
+* Fixed problem when using uri's with encoded slashes (%2F) in the sample parameter of CsvProvider, JsonProvider & XmlProvider.
+* CsvProvider now has GetSample static method like the other providers in addition to the default constructor.
+* Add AsyncLoad(string uri) and AsyncGetSample() to CsvProvider, JsonProvider and XmlProvider.
 * Remove .AsTuple member from CsvProvider.
-* CsvProvider now uses GetSample instead of constructor like the other providers.
 * Renamed SampleList to SampleIsList.
 * Renamed Separator to Separators.
-* Add AsyncLoad(string uri) to CsvProvider, JsonProvider and XmlProvider.
-* Fixed CsvProvider's SafeMode not working when there were more rows than the InferRows limit.
-* Fixed XmlProvider's SampleIsList not working correctly.
 * When SampleIsList is true, a GetSamples method is generated.
-* Exceptions raised by CsvProvider and CsvFile were reporting the wrong line number when reading files with windows line endings.
-* Fixed file change notification not invalidating type providers correctly.
+* Fixed XmlProvider's SampleIsList not working correctly.
 * Fix handling of optional elements in XmlProvider when using multiple samples.
+* Fixed CsvProvider's SafeMode not working when there were more rows than the InferRows limit.
+* Exceptions raised by CsvProvider and CsvFile were reporting the wrong line number when reading files with windows line endings.
+* CsvInference is now part of the runtime so it can be reused by Deedle.
+* Allow currency symbols on decimals.
+* Fixed file change notification not invalidating type providers correctly.
 * Fix generated code doing repeated work.
 * Windows Phone 7 no longer supported.
-* CsvInference is now part of the runtime so it can be reused.
-* Fixed problem when using uri's with encoded slashes (%2F) in the sample parameter of CsvProvider, JsonProvider & XmlProvider
-* Fixed XmlProvider problem with one letter tags
-* Added Japanese documentation
+* Added Japanese documentation.

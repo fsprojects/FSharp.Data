@@ -65,7 +65,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
     generateConstructors "JSON" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 
-                         this cfg replacer resolutionFolder
+                         this cfg replacer resolutionFolder false
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
