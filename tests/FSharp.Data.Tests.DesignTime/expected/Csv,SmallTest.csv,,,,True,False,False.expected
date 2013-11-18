@@ -1,4 +1,16 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                                     let value = TextConversions.AsString(row.[2])
+                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv")), ",", '"', true, false, false)
+
     static member AsyncGetSample: () -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                           let value = TextConversions.AsString(row.[0])

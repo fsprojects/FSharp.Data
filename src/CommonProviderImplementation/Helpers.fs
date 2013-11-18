@@ -6,6 +6,7 @@ namespace ProviderImplementation
 
 open System
 open System.IO
+open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Runtime.StructuralTypes
@@ -158,10 +159,11 @@ module ProviderHelpers =
   /// * getSpecFromSamples - receives a seq of parsed samples and returns a TypeProviderSpec
   /// * tp -> the type provider
   /// * cfg -> the type provider config
-  /// * replaceer -> the assemblyReplacer
+  /// * replacer -> the assemblyReplacer
   /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
+  /// * generateDefaultConstructor -> if true, generates a default constructor that is equivalent to .GetSample(). Only supported when GeneratedType = RepresentationType
   let generateConstructors formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples
-                           (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder =
+                           (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder generateDefaultConstructor =
 
     let isRunningInFSI = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
@@ -181,6 +183,10 @@ module ProviderHelpers =
     let typedSamples, sampleIsUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder
 
     let spec = getSpecFromSamples typedSamples
+
+    if generateDefaultConstructor then        
+        assert (not sampleIsList)
+        assert (spec.GeneratedType :> Type = spec.RepresentationType)
     
     let resultType = spec.RepresentationType
     let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
@@ -192,7 +198,7 @@ module ProviderHelpers =
         <@ new StringReader(%%text) :> TextReader @>
         |> spec.CreateFromTextReader 
       m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
-      yield m
+      yield m :> MemberInfo
       
       // Generate static Load stream method
       let args = [ ProvidedParameter("stream", typeof<Stream>) ]
@@ -201,7 +207,7 @@ module ProviderHelpers =
         <@ new StreamReader(%%stream:Stream) :> TextReader @>
         |> spec.CreateFromTextReader 
       m.AddXmlDoc <| sprintf "Loads %s from the specified stream" formatName
-      yield m
+      yield m :> _
 
       // Generate static Load reader method
       let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
@@ -210,7 +216,7 @@ module ProviderHelpers =
         <@ %%reader:TextReader @>
         |> spec.CreateFromTextReader 
       m.AddXmlDoc <| sprintf "Loads %s from the specified reader" formatName
-      yield m
+      yield m :> _
       
       // Generate static Load uri method
       let args = [ ProvidedParameter("uri", typeof<string>) ]
@@ -219,7 +225,7 @@ module ProviderHelpers =
         <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri) @>
         |> spec.CreateFromTextReader 
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
-      yield m
+      yield m :> _
 
       // Generate static AsyncLoad uri method
       let args = [ ProvidedParameter("uri", typeof<string>) ]
@@ -228,7 +234,7 @@ module ProviderHelpers =
         <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri @>
         |> spec.AsyncCreateFromTextReader
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
-      yield m
+      yield m :> _
       
       if sampleIsList then
 
@@ -245,7 +251,7 @@ module ProviderHelpers =
              then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
              else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
             |> spec.CreateFromTextReaderForSampleList
-          yield m 
+          yield m :> _
                   
           if sampleIsUri then
             // Generate static AsyncGetSamples method
@@ -253,28 +259,33 @@ module ProviderHelpers =
             m.InvokeCode <- fun _ -> 
               <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
               |> spec.AsyncCreateFromTextReaderForSampleList
-            yield m
+            yield m :> _
 
       else 
 
         let name = if resultType.IsArray then "GetSamples" else "GetSample"
 
-        // Generate static GetSample method
-        let m = ProvidedMethod(name, [], resultType, IsStaticMethod = true)
-        m.InvokeCode <- fun _ -> 
+        let getSampleCode = fun _ -> 
           (if sampleIsUri 
            then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
            else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
           |> spec.CreateFromTextReader
-        yield m 
+
+        // Generate static GetSample method
+        yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
         
+        // Generate default constructor
+        if generateDefaultConstructor then
+          yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
+
         if sampleIsUri then
           // Generate static AsyncGetSample method
           let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
           m.InvokeCode <- fun _ -> 
             <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
             |> spec.AsyncCreateFromTextReader
-          yield m
+          yield m :> _
+
     ] |> spec.GeneratedType.AddMembers
 
     spec.GeneratedType

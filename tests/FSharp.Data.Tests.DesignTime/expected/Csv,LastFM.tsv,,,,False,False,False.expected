@@ -1,4 +1,24 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertDateTime("", value), value),
+                                                     TextRuntime.ConvertGuid(TextConversions.AsString(row.[2])),
+                                                     let value = TextConversions.AsString(row.[3])
+                                                     TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsString(row.[4])
+                                                     TextRuntime.GetNonOptionalValue("Column5", TextRuntime.ConvertString(value), value),
+                                                     let value = TextConversions.AsString(row.[5])
+                                                     TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value)), new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                                                                                                                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                                                                                                               TextRuntime.ConvertDateTimeBack("", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                                                                                                               TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                                                                                                                                               TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
+                                                                                                                                                               TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
+                                                                                                                                                               TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,t6 = row in t6))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "LastFM.tsv")), "	", '"', false, false, false)
+
     static member AsyncGetSample: () -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                           let value = TextConversions.AsString(row.[0])

@@ -23,24 +23,12 @@ let (@@) a b = Path.Combine(a, b)
 let template = __SOURCE_DIRECTORY__ @@ "../../docs/tools/templates/template.cshtml"
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.1/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.7-beta/"
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
 if Directory.Exists(output) then Directory.Delete(output, true)
 Directory.CreateDirectory(output) |> ignore
-
-let replacements =
-  [ "root", ""
-    "project-name", ""
-    "project-author", ""
-    "project-summary", ""
-    "project-github", ""
-    "project-nuget", "" ]
-
-let layoutRoots =
-  [ templates; formatting @@ "templates"
-    formatting @@ "templates/reference" ]
 
 // Lookup compiler DLL
 let locations = 

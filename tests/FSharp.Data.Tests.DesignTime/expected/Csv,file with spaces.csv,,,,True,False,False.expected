@@ -1,4 +1,13 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : () -> CsvProvider
+    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                     let value = TextConversions.AsString(row.[0])
+                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertInteger("", value), value),
+                                                     let value = TextConversions.AsString(row.[1])
+                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _) -> 
+                                                                                                                                                              [| TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let t1,_ = row in t1)))
+                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2 = row in t2))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "file with spaces.csv")), ",", '"', true, false, false)
+
     static member AsyncGetSample: () -> CsvProvider async
     CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                           let value = TextConversions.AsString(row.[0])
