@@ -76,7 +76,7 @@ of MSFT stocks changes since the company was founded:
 *)
 
 // Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
