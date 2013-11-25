@@ -79,9 +79,9 @@ Target "CleanDocs" (fun _ ->
 // of the runtime library & desktop + Silverlight version of design time library)
 
 let files includes = 
-  { BaseDirectories = [__SOURCE_DIRECTORY__]
+  { BaseDirectory = __SOURCE_DIRECTORY__
     Includes = includes
-    Excludes = [] } |> Scan
+    Excludes = [] } 
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
