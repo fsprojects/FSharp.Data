@@ -17,24 +17,24 @@ open ProviderImplementation.ProvidedTypes
 /// Context that is used to generate the JSON types.
 type internal JsonGenerationContext =
   { Culture : string
-    DomainTypesType : ProvidedTypeDefinition
+    TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
     IJsonDocumentType : Type
     JsonRuntimeType : Type
     // the type that is used to represent documents (JsonDocument or ApiaryDocument)
     Representation : Type }
-  static member Create(culture, domainTy, replacer) =
+  static member Create(culture, tpType, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    JsonGenerationContext.Create(culture, domainTy, typeof<JsonDocument>, replacer, uniqueNiceName)
-  static member internal Create(culture, domainTy, representation, replacer, uniqueNiceName) =
+    JsonGenerationContext.Create(culture, tpType, typeof<JsonDocument>, replacer, uniqueNiceName)
+  static member internal Create(culture, tpType, representation, replacer, uniqueNiceName) =
     { Culture = culture
-      DomainTypesType = domainTy
+      TypeProviderType = tpType
       Replacer = replacer 
+      UniqueNiceName = uniqueNiceName 
       IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
-      Representation = replacer.ToRuntime representation
-      UniqueNiceName = uniqueNiceName }
+      Representation = replacer.ToRuntime representation }
 
 type internal JsonGenerationInput = 
     { ParentName : string
@@ -72,13 +72,13 @@ module JsonTypeBuilder =
   let rec internal generateMultipleChoiceType ctx parentName types codeGenerator =
     // Generate new type for the heterogeneous type
     let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (parentName + "Choice"), Some(ctx.IJsonDocumentType), HideObjectMethods = true)
-    ctx.DomainTypesType.AddMember(objectTy)
+    ctx.TypeProviderType.AddMember(objectTy)
         
     let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
     makeUnique "JsonValue" |> ignore
 
     // Generate GetXyz(s) method for every different case
-    // (but skip all Null nodes - we simply ingore them)
+    // (but skip all Null nodes - we simply ignore them)
     let types = 
       types 
       |> Seq.map (fun (KeyValue(kind, (multiplicity, typ))) -> kind, multiplicity, typ)
@@ -158,7 +158,7 @@ module JsonTypeBuilder =
     | InferedType.Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if input.ParentName = "" then "Entity" else input.ParentName), Some(ctx.IJsonDocumentType), HideObjectMethods = true)
-        ctx.DomainTypesType.AddMember(objectTy)
+        ctx.TypeProviderType.AddMember(objectTy)
 
         //TODO: handle input.Optional (#163)
 

@@ -1,29 +1,27 @@
 class JsonProvider
-    static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
+    static member AsyncGetSamples: () -> JsonProvider+Entity[] async
     JsonDocument.AsyncCreateList((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json"), "")
 
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
+    static member AsyncLoad: uri:string -> JsonProvider+Entity async
     JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
-    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
+    static member GetSamples: () -> JsonProvider+Entity[]
     JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterSample.json")), "")
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Entity
     JsonDocument.Create(reader, "")
 
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+Entity
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Parse: text:string -> JsonProvider+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-class JsonProvider+DomainTypes
-
-class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
+class JsonProvider+Entity : FDR.IJsonDocument
     member Contributors: FDR.JsonDocument option with get
     JsonRuntime.ConvertOptionalProperty(this, "contributors", new Func<_,_>(id)))
 
@@ -33,10 +31,10 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member CreatedAt: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "created_at"))
 
-    member Delete: JsonProvider+DomainTypes+Delete option with get
+    member Delete: JsonProvider+Delete option with get
     JsonRuntime.ConvertOptionalProperty(this, "delete", new Func<_,_>(id)))
 
-    member Entities: JsonProvider+DomainTypes+Entities option with get
+    member Entities: JsonProvider+Entities option with get
     JsonRuntime.ConvertOptionalProperty(this, "entities", new Func<_,_>(id)))
 
     member FavoriteCount: int option with get
@@ -60,22 +58,22 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member InReplyToScreenName: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "in_reply_to_screen_name"))
 
-    member InReplyToStatusId: JsonProvider+DomainTypes+InReplyToStatusIdChoice option with get
+    member InReplyToStatusId: JsonProvider+InReplyToStatusIdChoice option with get
     JsonRuntime.ConvertOptionalProperty(this, "in_reply_to_status_id", new Func<_,_>(id)))
 
-    member InReplyToStatusIdStr: JsonProvider+DomainTypes+InReplyToStatusIdStrChoice option with get
+    member InReplyToStatusIdStr: JsonProvider+InReplyToStatusIdStrChoice option with get
     JsonRuntime.ConvertOptionalProperty(this, "in_reply_to_status_id_str", new Func<_,_>(id)))
 
-    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice option with get
+    member InReplyToUserId: JsonProvider+InReplyToUserIdChoice option with get
     JsonRuntime.ConvertOptionalProperty(this, "in_reply_to_user_id", new Func<_,_>(id)))
 
-    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice option with get
+    member InReplyToUserIdStr: JsonProvider+InReplyToUserIdStrChoice option with get
     JsonRuntime.ConvertOptionalProperty(this, "in_reply_to_user_id_str", new Func<_,_>(id)))
 
     member Lang: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "lang"))
 
-    member Place: JsonProvider+DomainTypes+Place option with get
+    member Place: JsonProvider+Place option with get
     JsonRuntime.ConvertOptionalProperty(this, "place", new Func<_,_>(id)))
 
     member PossiblySensitive: bool option with get
@@ -87,7 +85,7 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Retweeted: bool option with get
     JsonRuntime.ConvertBoolean("", JsonRuntime.TryGetPropertyUnpacked(this, "retweeted"))
 
-    member RetweetedStatus: JsonProvider+DomainTypes+RetweetedStatus option with get
+    member RetweetedStatus: JsonProvider+RetweetedStatus option with get
     JsonRuntime.ConvertOptionalProperty(this, "retweeted_status", new Func<_,_>(id)))
 
     member Source: string option with get
@@ -99,62 +97,62 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Truncated: bool option with get
     JsonRuntime.ConvertBoolean("", JsonRuntime.TryGetPropertyUnpacked(this, "truncated"))
 
-    member User: JsonProvider+DomainTypes+User2 option with get
+    member User: JsonProvider+User2 option with get
     JsonRuntime.ConvertOptionalProperty(this, "user", new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes+Delete : FDR.IJsonDocument
-    member Status: JsonProvider+DomainTypes+Status with get
+class JsonProvider+Delete : FDR.IJsonDocument
+    member Status: JsonProvider+Status with get
     JsonRuntime.GetPropertyPacked(this, "status")
 
 
-class JsonProvider+DomainTypes+Entities : FDR.IJsonDocument
-    member Hashtags: JsonProvider+DomainTypes+Hashtag[] with get
+class JsonProvider+Entities : FDR.IJsonDocument
+    member Hashtags: JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "hashtags"), new Func<_,_>(id)))
 
-    member Symbols: JsonProvider+DomainTypes+SymbolsChoice with get
+    member Symbols: JsonProvider+SymbolsChoice with get
     JsonRuntime.GetPropertyPacked(this, "symbols")
 
-    member Urls: JsonProvider+DomainTypes+Url[] with get
+    member Urls: JsonProvider+Url[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+DomainTypes+UserMention[] with get
+    member UserMentions: JsonProvider+UserMention[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "user_mentions"), new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes+InReplyToStatusIdChoice : FDR.IJsonDocument
+class JsonProvider+InReplyToStatusIdChoice : FDR.IJsonDocument
     member Number: int64 option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_status_idChoice1of1", JsonRuntime.ConvertInteger64("", value), value)))
 
 
-class JsonProvider+DomainTypes+InReplyToStatusIdStrChoice : FDR.IJsonDocument
+class JsonProvider+InReplyToStatusIdStrChoice : FDR.IJsonDocument
     member Number: int64 option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_strChoice1of1", JsonRuntime.ConvertInteger64("", value), value)))
 
 
-class JsonProvider+DomainTypes+InReplyToUserIdChoice : FDR.IJsonDocument
+class JsonProvider+InReplyToUserIdChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_user_idChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+InReplyToUserIdStrChoice : FDR.IJsonDocument
+class JsonProvider+InReplyToUserIdStrChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_strChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+Place : FDR.IJsonDocument
-    member Attributes: JsonProvider+DomainTypes+Attributes with get
+class JsonProvider+Place : FDR.IJsonDocument
+    member Attributes: JsonProvider+Attributes with get
     JsonRuntime.GetPropertyPacked(this, "attributes")
 
-    member BoundingBox: JsonProvider+DomainTypes+BoundingBox with get
+    member BoundingBox: JsonProvider+BoundingBox with get
     JsonRuntime.GetPropertyPacked(this, "bounding_box")
 
     member Country: string with get
@@ -186,7 +184,7 @@ class JsonProvider+DomainTypes+Place : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+RetweetedStatus : FDR.IJsonDocument
+class JsonProvider+RetweetedStatus : FDR.IJsonDocument
     member Contributors: FDR.JsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "contributors")
 
@@ -197,7 +195,7 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "created_at")
     JsonRuntime.GetNonOptionalValue("created_at", JsonRuntime.ConvertString("", value), value)
 
-    member Entities: JsonProvider+DomainTypes+Entities2 with get
+    member Entities: JsonProvider+Entities2 with get
     JsonRuntime.GetPropertyPacked(this, "entities")
 
     member FavoriteCount: int with get
@@ -229,10 +227,10 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.IJsonDocument
     member InReplyToStatusIdStr: FDR.JsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "in_reply_to_status_id_str")
 
-    member InReplyToUserId: JsonProvider+DomainTypes+InReplyToUserIdChoice2 with get
+    member InReplyToUserId: JsonProvider+InReplyToUserIdChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "in_reply_to_user_id")
 
-    member InReplyToUserIdStr: JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 with get
+    member InReplyToUserIdStr: JsonProvider+InReplyToUserIdStrChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "in_reply_to_user_id_str")
 
     member Lang: string with get
@@ -265,11 +263,11 @@ class JsonProvider+DomainTypes+RetweetedStatus : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "truncated")
     JsonRuntime.GetNonOptionalValue("truncated", JsonRuntime.ConvertBoolean("", value), value)
 
-    member User: JsonProvider+DomainTypes+User with get
+    member User: JsonProvider+User with get
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
-class JsonProvider+DomainTypes+User2 : FDR.IJsonDocument
+class JsonProvider+User2 : FDR.IJsonDocument
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "contributors_enabled")
     JsonRuntime.GetNonOptionalValue("contributors_enabled", JsonRuntime.ConvertBoolean("", value), value)
@@ -343,7 +341,7 @@ class JsonProvider+DomainTypes+User2 : FDR.IJsonDocument
     member Notifications: FDR.JsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "notifications")
 
-    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 with get
+    member ProfileBackgroundColor: JsonProvider+ProfileBackgroundColorChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "profile_background_color")
 
     member ProfileBackgroundImageUrl: string with get
@@ -369,16 +367,16 @@ class JsonProvider+DomainTypes+User2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "profile_image_url_https")
     JsonRuntime.GetNonOptionalValue("profile_image_url_https", JsonRuntime.ConvertString("", value), value)
 
-    member ProfileLinkColor: JsonProvider+DomainTypes+ProfileLinkColorChoice with get
+    member ProfileLinkColor: JsonProvider+ProfileLinkColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "profile_link_color")
 
-    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 with get
+    member ProfileSidebarBorderColor: JsonProvider+ProfileSidebarBorderColorChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "profile_sidebar_border_color")
 
-    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 with get
+    member ProfileSidebarFillColor: JsonProvider+ProfileSidebarFillColorChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "profile_sidebar_fill_color")
 
-    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice2 with get
+    member ProfileTextColor: JsonProvider+ProfileTextColorChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "profile_text_color")
 
     member ProfileUseBackgroundImage: bool with get
@@ -405,7 +403,7 @@ class JsonProvider+DomainTypes+User2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "url")
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
-    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice2 with get
+    member UtcOffset: JsonProvider+UtcOffsetChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "utc_offset")
 
     member Verified: bool with get
@@ -413,9 +411,9 @@ class JsonProvider+DomainTypes+User2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("verified", JsonRuntime.ConvertBoolean("", value), value)
 
 
-class JsonProvider+DomainTypes+Attributes : FDR.IJsonDocument
+class JsonProvider+Attributes : FDR.IJsonDocument
 
-class JsonProvider+DomainTypes+BoundingBox : FDR.IJsonDocument
+class JsonProvider+BoundingBox : FDR.IJsonDocument
     member Coordinates: decimal[][][] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "coordinates"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                                                                                                                                                                                         let value = Some t.JsonValue
@@ -426,24 +424,24 @@ class JsonProvider+DomainTypes+BoundingBox : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("type", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Entities2 : FDR.IJsonDocument
-    member Hashtags: JsonProvider+DomainTypes+Hashtag2[] with get
+class JsonProvider+Entities2 : FDR.IJsonDocument
+    member Hashtags: JsonProvider+Hashtag2[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "hashtags"), new Func<_,_>(id)))
 
-    member Media: JsonProvider+DomainTypes+Media[] option with get
+    member Media: JsonProvider+Media[] option with get
     JsonRuntime.ConvertOptionalProperty(this, "media", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
 
-    member Symbols: JsonProvider+DomainTypes+SymbolsChoice2 with get
+    member Symbols: JsonProvider+SymbolsChoice2 with get
     JsonRuntime.GetPropertyPacked(this, "symbols")
 
-    member Urls: JsonProvider+DomainTypes+Url2[] with get
+    member Urls: JsonProvider+Url2[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "urls"), new Func<_,_>(id)))
 
-    member UserMentions: JsonProvider+DomainTypes+UserMention2[] with get
+    member UserMentions: JsonProvider+UserMention2[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "user_mentions"), new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes+Hashtag : FDR.IJsonDocument
+class JsonProvider+Hashtag : FDR.IJsonDocument
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                                               let value = Some t.JsonValue
@@ -454,21 +452,21 @@ class JsonProvider+DomainTypes+Hashtag : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+InReplyToUserIdChoice2 : FDR.IJsonDocument
+class JsonProvider+InReplyToUserIdChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_user_idChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+InReplyToUserIdStrChoice2 : FDR.IJsonDocument
+class JsonProvider+InReplyToUserIdStrChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_strChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 : FDR.IJsonDocument
+class JsonProvider+ProfileBackgroundColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -480,7 +478,7 @@ class JsonProvider+DomainTypes+ProfileBackgroundColorChoice2 : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_background_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileLinkColorChoice : FDR.IJsonDocument
+class JsonProvider+ProfileLinkColorChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -492,7 +490,7 @@ class JsonProvider+DomainTypes+ProfileLinkColorChoice : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_link_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 : FDR.IJsonDocument
+class JsonProvider+ProfileSidebarBorderColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -504,7 +502,7 @@ class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice2 : FDR.IJsonDocum
                                                                       JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 : FDR.IJsonDocument
+class JsonProvider+ProfileSidebarFillColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -516,7 +514,7 @@ class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice2 : FDR.IJsonDocumen
                                                                       JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileTextColorChoice2 : FDR.IJsonDocument
+class JsonProvider+ProfileTextColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -528,7 +526,7 @@ class JsonProvider+DomainTypes+ProfileTextColorChoice2 : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_text_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+Status : FDR.IJsonDocument
+class JsonProvider+Status : FDR.IJsonDocument
     member Id: int64 with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
     JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger64("", value), value)
@@ -546,9 +544,9 @@ class JsonProvider+DomainTypes+Status : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("user_id_str", JsonRuntime.ConvertInteger("", value), value)
 
 
-class JsonProvider+DomainTypes+SymbolsChoice : FDR.IJsonDocument
+class JsonProvider+SymbolsChoice : FDR.IJsonDocument
 
-class JsonProvider+DomainTypes+Url : FDR.IJsonDocument
+class JsonProvider+Url : FDR.IJsonDocument
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "display_url")
     JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
@@ -567,7 +565,7 @@ class JsonProvider+DomainTypes+Url : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+User : FDR.IJsonDocument
+class JsonProvider+User : FDR.IJsonDocument
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "contributors_enabled")
     JsonRuntime.GetNonOptionalValue("contributors_enabled", JsonRuntime.ConvertBoolean("", value), value)
@@ -641,7 +639,7 @@ class JsonProvider+DomainTypes+User : FDR.IJsonDocument
     member Notifications: FDR.JsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "notifications")
 
-    member ProfileBackgroundColor: JsonProvider+DomainTypes+ProfileBackgroundColorChoice with get
+    member ProfileBackgroundColor: JsonProvider+ProfileBackgroundColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "profile_background_color")
 
     member ProfileBackgroundImageUrl: string with get
@@ -671,13 +669,13 @@ class JsonProvider+DomainTypes+User : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "profile_link_color")
     JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)
 
-    member ProfileSidebarBorderColor: JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice with get
+    member ProfileSidebarBorderColor: JsonProvider+ProfileSidebarBorderColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "profile_sidebar_border_color")
 
-    member ProfileSidebarFillColor: JsonProvider+DomainTypes+ProfileSidebarFillColorChoice with get
+    member ProfileSidebarFillColor: JsonProvider+ProfileSidebarFillColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "profile_sidebar_fill_color")
 
-    member ProfileTextColor: JsonProvider+DomainTypes+ProfileTextColorChoice with get
+    member ProfileTextColor: JsonProvider+ProfileTextColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "profile_text_color")
 
     member ProfileUseBackgroundImage: bool with get
@@ -704,7 +702,7 @@ class JsonProvider+DomainTypes+User : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "url")
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
-    member UtcOffset: JsonProvider+DomainTypes+UtcOffsetChoice with get
+    member UtcOffset: JsonProvider+UtcOffsetChoice with get
     JsonRuntime.GetPropertyPacked(this, "utc_offset")
 
     member Verified: bool with get
@@ -712,7 +710,7 @@ class JsonProvider+DomainTypes+User : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("verified", JsonRuntime.ConvertBoolean("", value), value)
 
 
-class JsonProvider+DomainTypes+UserMention : FDR.IJsonDocument
+class JsonProvider+UserMention : FDR.IJsonDocument
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
     JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
@@ -735,14 +733,14 @@ class JsonProvider+DomainTypes+UserMention : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+UtcOffsetChoice2 : FDR.IJsonDocument
+class JsonProvider+UtcOffsetChoice2 : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("utc_offsetChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+Hashtag2 : FDR.IJsonDocument
+class JsonProvider+Hashtag2 : FDR.IJsonDocument
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                                               let value = Some t.JsonValue
@@ -753,7 +751,7 @@ class JsonProvider+DomainTypes+Hashtag2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Media : FDR.IJsonDocument
+class JsonProvider+Media : FDR.IJsonDocument
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "display_url")
     JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
@@ -783,7 +781,7 @@ class JsonProvider+DomainTypes+Media : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "media_url_https")
     JsonRuntime.GetNonOptionalValue("media_url_https", JsonRuntime.ConvertString("", value), value)
 
-    member Sizes: JsonProvider+DomainTypes+Sizes with get
+    member Sizes: JsonProvider+Sizes with get
     JsonRuntime.GetPropertyPacked(this, "sizes")
 
     member SourceStatusId: int64 with get
@@ -803,7 +801,7 @@ class JsonProvider+DomainTypes+Media : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+ProfileBackgroundColorChoice : FDR.IJsonDocument
+class JsonProvider+ProfileBackgroundColorChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -815,7 +813,7 @@ class JsonProvider+DomainTypes+ProfileBackgroundColorChoice : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_background_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice : FDR.IJsonDocument
+class JsonProvider+ProfileSidebarBorderColorChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -827,7 +825,7 @@ class JsonProvider+DomainTypes+ProfileSidebarBorderColorChoice : FDR.IJsonDocume
                                                                       JsonRuntime.GetNonOptionalValue("profile_sidebar_border_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice : FDR.IJsonDocument
+class JsonProvider+ProfileSidebarFillColorChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -839,7 +837,7 @@ class JsonProvider+DomainTypes+ProfileSidebarFillColorChoice : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+ProfileTextColorChoice : FDR.IJsonDocument
+class JsonProvider+ProfileTextColorChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
@@ -851,9 +849,9 @@ class JsonProvider+DomainTypes+ProfileTextColorChoice : FDR.IJsonDocument
                                                                       JsonRuntime.GetNonOptionalValue("profile_text_colorChoice2of2", JsonRuntime.ConvertString("", value), value)))
 
 
-class JsonProvider+DomainTypes+SymbolsChoice2 : FDR.IJsonDocument
+class JsonProvider+SymbolsChoice2 : FDR.IJsonDocument
 
-class JsonProvider+DomainTypes+Url2 : FDR.IJsonDocument
+class JsonProvider+Url2 : FDR.IJsonDocument
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "display_url")
     JsonRuntime.GetNonOptionalValue("display_url", JsonRuntime.ConvertString("", value), value)
@@ -872,7 +870,7 @@ class JsonProvider+DomainTypes+Url2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+UserMention2 : FDR.IJsonDocument
+class JsonProvider+UserMention2 : FDR.IJsonDocument
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
     JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
@@ -895,28 +893,28 @@ class JsonProvider+DomainTypes+UserMention2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("screen_name", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+UtcOffsetChoice : FDR.IJsonDocument
+class JsonProvider+UtcOffsetChoice : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
                                                                       JsonRuntime.GetNonOptionalValue("utc_offsetChoice1of1", JsonRuntime.ConvertInteger("", value), value)))
 
 
-class JsonProvider+DomainTypes+Sizes : FDR.IJsonDocument
-    member Large: JsonProvider+DomainTypes+Large with get
+class JsonProvider+Sizes : FDR.IJsonDocument
+    member Large: JsonProvider+Large with get
     JsonRuntime.GetPropertyPacked(this, "large")
 
-    member Medium: JsonProvider+DomainTypes+Medium with get
+    member Medium: JsonProvider+Medium with get
     JsonRuntime.GetPropertyPacked(this, "medium")
 
-    member Small: JsonProvider+DomainTypes+Small with get
+    member Small: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "small")
 
-    member Thumb: JsonProvider+DomainTypes+Thumb with get
+    member Thumb: JsonProvider+Thumb with get
     JsonRuntime.GetPropertyPacked(this, "thumb")
 
 
-class JsonProvider+DomainTypes+Large : FDR.IJsonDocument
+class JsonProvider+Large : FDR.IJsonDocument
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "h")
     JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
@@ -930,7 +928,7 @@ class JsonProvider+DomainTypes+Large : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
-class JsonProvider+DomainTypes+Medium : FDR.IJsonDocument
+class JsonProvider+Medium : FDR.IJsonDocument
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "h")
     JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
@@ -944,7 +942,7 @@ class JsonProvider+DomainTypes+Medium : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
-class JsonProvider+DomainTypes+Small : FDR.IJsonDocument
+class JsonProvider+Small : FDR.IJsonDocument
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "h")
     JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)
@@ -958,7 +956,7 @@ class JsonProvider+DomainTypes+Small : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("w", JsonRuntime.ConvertInteger("", value), value)
 
 
-class JsonProvider+DomainTypes+Thumb : FDR.IJsonDocument
+class JsonProvider+Thumb : FDR.IJsonDocument
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "h")
     JsonRuntime.GetNonOptionalValue("h", JsonRuntime.ConvertInteger("", value), value)

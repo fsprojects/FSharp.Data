@@ -197,13 +197,13 @@ let html = Html.GetSample()
 ( `<div>` に指定されたすべての属性をプロパティとして持ち、
 サンプルドキュメント内で見つけられるすべての子要素の組み合わせが考慮されます)。
 
-型は `Html.DomainTypes` 以下に定義されます。
-したがって、`Html.DomainTypes.Div` を引数にとり、
+型は `Html` 以下に定義されます。
+したがって、`Html.Div` を引数にとり、
 各 `<div>` 要素を処理するような `printDiv` 関数を以下のようにして作成できます：
 *)
 
 /// <div> 要素のコンテンツを表示します
-let rec printDiv (div:Html.DomainTypes.Div) =
+let rec printDiv (div:Html.Div) =
   div.GetSpans() |> Seq.iter (printfn "%s")
   div.GetDivs() |> Seq.iter printDiv
   if div.GetSpans().Length = 0 && div.GetDivs().Length = 0 then

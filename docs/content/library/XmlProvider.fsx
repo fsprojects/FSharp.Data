@@ -174,12 +174,12 @@ When the `Global` parameter is `true`, the type provider _unifies_ all elements 
 same name. This means that all `<div>` elements have the same type (with a union
 of all attributes and all possible children nodes that appear in the sample document).
 
-The type is located under a type `Html.DomainTypes`, so we can write a `printDiv` function
-that takes `Html.DomainTypes.Div` and acts as follows:
+The type is located under a type `Html`, so we can write a `printDiv` function
+that takes `Html.Div` and acts as follows:
 *)
 
 /// Prints the content of a <div> element
-let rec printDiv (div:Html.DomainTypes.Div) =
+let rec printDiv (div:Html.Div) =
   div.GetSpans() |> Seq.iter (printfn "%s")
   div.GetDivs() |> Seq.iter printDiv
   if div.GetSpans().Length = 0 && div.GetDivs().Length = 0 then

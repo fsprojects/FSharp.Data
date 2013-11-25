@@ -1,29 +1,27 @@
 class JsonProvider
-    static member AsyncGetSamples: () -> JsonProvider+DomainTypes+Entity[] async
+    static member AsyncGetSamples: () -> JsonProvider+Entity[] async
     JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json"), ""), new Func<_,_>(id)))
 
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity[] async
+    static member AsyncLoad: uri:string -> JsonProvider+Entity[] async
     JsonRuntime.AsyncConvertArray(JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ""), new Func<_,_>(id)))
 
-    static member GetSamples: () -> JsonProvider+DomainTypes+Entity[]
+    static member GetSamples: () -> JsonProvider+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "GitHub.json")), ""), new Func<_,_>(id)))
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity[]
+    static member Load: stream:System.IO.Stream -> JsonProvider+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(id)))
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity[]
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(id)))
 
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity[]
+    static member Load: uri:string -> JsonProvider+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ""), new Func<_,_>(id)))
 
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity[]
+    static member Parse: text:string -> JsonProvider+Entity[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes
-
-class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
+class JsonProvider+Entity : FDR.IJsonDocument
     member Assignee: FDR.JsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "assignee")
 
@@ -58,7 +56,7 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
     JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertInteger("", value), value)
 
-    member Labels: JsonProvider+DomainTypes+Label[] with get
+    member Labels: JsonProvider+Label[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "labels"), new Func<_,_>(id)))
 
     member LabelsUrl: string with get
@@ -72,7 +70,7 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "number")
     JsonRuntime.GetNonOptionalValue("number", JsonRuntime.ConvertInteger("", value), value)
 
-    member PullRequest: JsonProvider+DomainTypes+PullRequest with get
+    member PullRequest: JsonProvider+PullRequest with get
     JsonRuntime.GetPropertyPacked(this, "pull_request")
 
     member State: string with get
@@ -91,12 +89,12 @@ class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "url")
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
-    member User: JsonProvider+DomainTypes+User with get
+    member User: JsonProvider+User with get
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
-class JsonProvider+DomainTypes+Label : FDR.IJsonDocument
-    member Color: JsonProvider+DomainTypes+ColorChoice with get
+class JsonProvider+Label : FDR.IJsonDocument
+    member Color: JsonProvider+ColorChoice with get
     JsonRuntime.GetPropertyPacked(this, "color")
 
     member Name: string with get
@@ -108,7 +106,7 @@ class JsonProvider+DomainTypes+Label : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+PullRequest : FDR.IJsonDocument
+class JsonProvider+PullRequest : FDR.IJsonDocument
     member DiffUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "diff_url")
     JsonRuntime.GetNonOptionalValue("diff_url", JsonRuntime.ConvertString("", value), value)
@@ -122,7 +120,7 @@ class JsonProvider+DomainTypes+PullRequest : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("patch_url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+User : FDR.IJsonDocument
+class JsonProvider+User : FDR.IJsonDocument
     member AvatarUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "avatar_url")
     JsonRuntime.GetNonOptionalValue("avatar_url", JsonRuntime.ConvertString("", value), value)
@@ -188,7 +186,7 @@ class JsonProvider+DomainTypes+User : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("url", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+ColorChoice : FDR.IJsonDocument
+class JsonProvider+ColorChoice : FDR.IJsonDocument
     member Number: float option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue

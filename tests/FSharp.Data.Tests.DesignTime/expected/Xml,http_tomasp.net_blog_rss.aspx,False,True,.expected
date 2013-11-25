@@ -1,30 +1,28 @@
 class XmlProvider
-    static member AsyncGetSample: () -> XmlProvider+DomainTypes+Rss async
+    static member AsyncGetSample: () -> XmlProvider+Rss async
     XmlElement.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "http://tomasp.net/blog/rss.aspx"))
 
-    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Rss async
+    static member AsyncLoad: uri:string -> XmlProvider+Rss async
     XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
 
-    static member GetSample: () -> XmlProvider+DomainTypes+Rss
+    static member GetSample: () -> XmlProvider+Rss
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "http://tomasp.net/blog/rss.aspx")))
 
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Rss
+    static member Load: stream:System.IO.Stream -> XmlProvider+Rss
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Rss
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Rss
     XmlElement.Create(reader)
 
-    static member Load: uri:string -> XmlProvider+DomainTypes+Rss
+    static member Load: uri:string -> XmlProvider+Rss
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
 
-    static member Parse: text:string -> XmlProvider+DomainTypes+Rss
+    static member Parse: text:string -> XmlProvider+Rss
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-class XmlProvider+DomainTypes
-
-class XmlProvider+DomainTypes+Rss : FDR.XmlElement
-    member Channel: XmlProvider+DomainTypes+Channel with get
+class XmlProvider+Rss : FDR.XmlElement
+    member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
     member Value: string option with get
@@ -35,7 +33,7 @@ class XmlProvider+DomainTypes+Rss : FDR.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertDecimal("", value), value)
 
 
-class XmlProvider+DomainTypes+Channel : FDR.XmlElement
+class XmlProvider+Channel : FDR.XmlElement
     member Copyright: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "copyright"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
@@ -44,7 +42,7 @@ class XmlProvider+DomainTypes+Channel : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member GetItems: () -> XmlProvider+DomainTypes+Item[]
+    member GetItems: () -> XmlProvider+Item[]
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
     member Link: string with get
@@ -59,8 +57,8 @@ class XmlProvider+DomainTypes+Channel : FDR.XmlElement
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
 
 
-class XmlProvider+DomainTypes+Item : FDR.XmlElement
-    member GetCreators: () -> XmlProvider+DomainTypes+Creator[]
+class XmlProvider+Item : FDR.XmlElement
+    member GetCreators: () -> XmlProvider+Creator[]
     XmlRuntime.ConvertArray(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(id)))
 
     member GetDescriptions: () -> string[]
@@ -78,7 +76,7 @@ class XmlProvider+DomainTypes+Item : FDR.XmlElement
                                                               let value = XmlRuntime.TryGetValue(t)
                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)))
 
-    member GetSummaries: () -> XmlProvider+DomainTypes+Summary[]
+    member GetSummaries: () -> XmlProvider+Summary[]
     XmlRuntime.ConvertArray(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(id)))
 
     member GetTitles: () -> string[]
@@ -90,7 +88,7 @@ class XmlProvider+DomainTypes+Item : FDR.XmlElement
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
 
 
-class XmlProvider+DomainTypes+Creator : FDR.XmlElement
+class XmlProvider+Creator : FDR.XmlElement
     member Dc: string with get
     let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}dc")
     TextRuntime.GetNonOptionalValue("Attribute dc", TextRuntime.ConvertString(value), value)
@@ -100,7 +98,7 @@ class XmlProvider+DomainTypes+Creator : FDR.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
-class XmlProvider+DomainTypes+Summary : FDR.XmlElement
+class XmlProvider+Summary : FDR.XmlElement
     member Eex: string with get
     let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}eex")
     TextRuntime.GetNonOptionalValue("Attribute eex", TextRuntime.ConvertString(value), value)

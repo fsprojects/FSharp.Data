@@ -18,16 +18,16 @@ open ProviderImplementation.QuotationBuilder
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
   { Culture : string
-    DomainTypesType : ProvidedTypeDefinition
+    TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer
     UniqueNiceName : string -> string 
     UnifyGlobally : bool
     GeneratedResults : IDictionary<string, System.Type * (Expr -> Expr)> }
-  static member Create(culture, domainTy, unifyGlobally, replacer) =
+  static member Create(culture, tpType, unifyGlobally, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     uniqueNiceName "XElement" |> ignore
     { Culture = culture
-      DomainTypesType = domainTy
+      TypeProviderType = tpType
       Replacer = replacer
       GeneratedResults = new Dictionary<_, _>()
       UnifyGlobally = unifyGlobally
@@ -86,7 +86,7 @@ module internal XmlTypeBuilder =
     | InferedType.Record(Some nameWithNS, props) -> 
         let name = XName.Get(nameWithNS).LocalName
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
-        ctx.DomainTypesType.AddMember(objectTy)
+        ctx.TypeProviderType.AddMember(objectTy)
 
         // If we unify types globally, then save type for this record
         if ctx.UnifyGlobally then
@@ -110,7 +110,7 @@ module internal XmlTypeBuilder =
               // a choice type that is erased to 'option<string>' (for simplicity, assuming that
               // the attribute is always optional)
               let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(typeof<option<string>>), HideObjectMethods = true)
-              ctx.DomainTypesType.AddMember(choiceTy)
+              ctx.TypeProviderType.AddMember(choiceTy)
               for KeyValue(kind, typ) in types do 
                 match typ with
                 | InferedType.Null -> ()

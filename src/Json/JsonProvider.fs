@@ -26,10 +26,6 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     // Generate the required type
     let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
 
-    // A type that is used to hide all generated domain types
-    let domainTy = ProvidedTypeDefinition("DomainTypes", Some typeof<obj>)
-    tpType.AddMember(domainTy)
-
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let rootName = args.[2] :?> string
@@ -46,7 +42,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowNulls*)true sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
   
-      let ctx = JsonGenerationContext.Create(culture, domainTy, replacer)
+      let ctx = JsonGenerationContext.Create(culture, tpType, replacer)
       let input = { ParentName = NameUtils.singularize rootName
                     CanPassUnpackedOption = false
                     Optional = false }
