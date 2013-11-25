@@ -190,18 +190,18 @@ module internal XmlTypeBuilder =
                     // return array of XmlElement - it might be for example int[])
                     | InferedMultiplicity.Multiple ->
                         let m = ProvidedMethod(makeUnique ("Get" + NameUtils.nicePascalName (NameUtils.pluralize name)), [], childTy.MakeArrayType())
-                        let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+                        let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         m.InvokeCode <- fun (Singleton xml) -> 
                           let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
-                          xmlRuntime?ConvertArray (convTyp) (xml, nameWithNS, convFunc)
+                          xmlRuntime?ConvertArray (childTy) (xml, nameWithNS, convFunc)
                         m :> MemberInfo
 
                     | InferedMultiplicity.OptionalSingle ->
                         let p = ProvidedProperty(makeUnique name, typedefof<option<_>>.MakeGenericType [| childTy |])
-                        let convTyp, convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+                        let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
                         p.GetterCode <- fun (Singleton xml) -> 
                           let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
-                          xmlRuntime?ConvertOptional (convTyp) (xml, nameWithNS, convFunc)
+                          xmlRuntime?ConvertOptional (childTy) (xml, nameWithNS, convFunc)
                         p :> MemberInfo
 
                 | _ -> failwith "generateXmlType: Child nodes should be named record types" ]

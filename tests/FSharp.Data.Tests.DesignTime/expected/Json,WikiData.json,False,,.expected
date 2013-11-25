@@ -23,38 +23,38 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Address: JsonProvider+DomainTypes+Address with get
-    JsonDocument.Create((this.JsonValue.GetProperty "address"))
+    JsonRuntime.GetPropertyPacked(this, "address")
 
     member Age: int with get
-    let value = (this.JsonValue.TryGetProperty "age")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "age")
     JsonRuntime.GetNonOptionalValue("age", JsonRuntime.ConvertInteger("", value), value)
 
     member FirstName: string with get
-    let value = (this.JsonValue.TryGetProperty "firstName")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "firstName")
     JsonRuntime.GetNonOptionalValue("firstName", JsonRuntime.ConvertString("", value), value)
 
     member LastName: string with get
-    let value = (this.JsonValue.TryGetProperty "lastName")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "lastName")
     JsonRuntime.GetNonOptionalValue("lastName", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Address : FDR.JsonDocument
+class JsonProvider+DomainTypes+Address : FDR.IJsonDocument
     member City: string with get
-    let value = (this.JsonValue.TryGetProperty "city")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "city")
     JsonRuntime.GetNonOptionalValue("city", JsonRuntime.ConvertString("", value), value)
 
     member PostalCode: int with get
-    let value = (this.JsonValue.TryGetProperty "postalCode")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "postalCode")
     JsonRuntime.GetNonOptionalValue("postalCode", JsonRuntime.ConvertInteger("", value), value)
 
     member State: string with get
-    let value = (this.JsonValue.TryGetProperty "state")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "state")
     JsonRuntime.GetNonOptionalValue("state", JsonRuntime.ConvertString("", value), value)
 
     member StreetAddress: string with get
-    let value = (this.JsonValue.TryGetProperty "streetAddress")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "streetAddress")
     JsonRuntime.GetNonOptionalValue("streetAddress", JsonRuntime.ConvertString("", value), value)
 
 

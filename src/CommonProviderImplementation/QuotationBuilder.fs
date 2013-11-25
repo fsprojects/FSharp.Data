@@ -9,6 +9,7 @@ open System.Reflection
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
+open ProviderImplementation.ProvidedTypes
 
 /// Dynamic operator (?) that can be used for constructing quoted F# code without 
 /// quotations (to simplify constructing F# quotations in portable libraries - where
@@ -31,6 +32,24 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | :? Var as v -> Expr.Var v
     | value -> Expr.Value(value, value.GetType())
 
+  let eraseType (t:Type) = 
+    // If we just used 't' (as it is), then the method information
+    // returned by MakeGenericMethod cannot be used in Expr.Call, because
+    // it does not support GetParameters method (doh!)
+    //
+    // We emulate the F# type provider type erasure mechanism to get the 
+    // actual (erased) type and use _that_ as our generic type (because
+    // that is System.RuntimeType). We erase ProvidedTypes to their base
+    // and we erase array of provided type to array of base type.
+    match t with 
+    | :? ProvidedTypeDefinition -> t.BaseType 
+    | :? ProvidedSymbolType as sym ->
+        match sym.Kind, sym.Args with
+        | SymbolKind.SDArray, [typ] ->
+            typ.BaseType.MakeArrayType()
+        | _ -> failwith "eraseType: Unsupported ProvidedSymbolType" 
+    | _ -> t
+
   let invokeOperation (tyargs:obj, tyargsT) (args:obj, argsT) =
     // To support (e1, e2, ..) syntax, we use tuples - extract tuple arguments
     // First, extract type arguments - a list of System.Type values
@@ -52,7 +71,7 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | [| :? MethodInfo as mi |] -> 
         let mi = 
           if tyargs = [] then mi
-          else mi.MakeGenericMethod(tyargs |> Array.ofList)
+          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map eraseType)
         if mi.IsStatic then Expr.Call(mi, args)
         else Expr.Call(List.head args, mi, List.tail args)
     | [| :? ConstructorInfo as ci |] ->

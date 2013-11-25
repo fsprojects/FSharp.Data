@@ -23,5 +23,5 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
 

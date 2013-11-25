@@ -23,21 +23,21 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Age: int with get
-    let value = (this.JsonValue.TryGetProperty "age")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "age")
     JsonRuntime.GetNonOptionalValue("age", JsonRuntime.ConvertInteger("", value), value)
 
     member FirstName: string with get
-    let value = (this.JsonValue.TryGetProperty "firstName")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "firstName")
     JsonRuntime.GetNonOptionalValue("firstName", JsonRuntime.ConvertString("", value), value)
 
     member IsCool: bool with get
-    let value = (this.JsonValue.TryGetProperty "isCool")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "isCool")
     JsonRuntime.GetNonOptionalValue("isCool", JsonRuntime.ConvertBoolean("", value), value)
 
     member LastName: string with get
-    let value = (this.JsonValue.TryGetProperty "lastName")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "lastName")
     JsonRuntime.GetNonOptionalValue("lastName", JsonRuntime.ConvertString("", value), value)
 
 

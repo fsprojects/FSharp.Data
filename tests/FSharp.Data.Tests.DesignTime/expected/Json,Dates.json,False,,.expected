@@ -23,21 +23,21 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Anniversary: System.DateTime with get
-    let value = (this.JsonValue.TryGetProperty "anniversary")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "anniversary")
     JsonRuntime.GetNonOptionalValue("anniversary", JsonRuntime.ConvertDateTime("", value), value)
 
     member Birthdate: System.DateTime with get
-    let value = (this.JsonValue.TryGetProperty "birthdate")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "birthdate")
     JsonRuntime.GetNonOptionalValue("birthdate", JsonRuntime.ConvertDateTime("", value), value)
 
     member NoTimeZone: System.DateTime with get
-    let value = (this.JsonValue.TryGetProperty "NoTimeZone")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "NoTimeZone")
     JsonRuntime.GetNonOptionalValue("NoTimeZone", JsonRuntime.ConvertDateTime("", value), value)
 
     member UtcTime: System.DateTime with get
-    let value = (this.JsonValue.TryGetProperty "UtcTime")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "UtcTime")
     JsonRuntime.GetNonOptionalValue("UtcTime", JsonRuntime.ConvertDateTime("", value), value)
 
 

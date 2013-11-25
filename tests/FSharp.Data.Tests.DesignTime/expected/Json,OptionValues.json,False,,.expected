@@ -23,17 +23,17 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Authors: JsonProvider+DomainTypes+Author[] with get
-    JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "authors")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "authors"), new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes+Author : FDR.JsonDocument
+class JsonProvider+DomainTypes+Author : FDR.IJsonDocument
     member Age: int option with get
-    JsonRuntime.ConvertInteger("", (this.JsonValue.TryGetProperty "age"))
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "age"))
 
     member Name: string with get
-    let value = (this.JsonValue.TryGetProperty "name")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "name")
     JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)
 
 

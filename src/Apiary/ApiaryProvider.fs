@@ -7,7 +7,7 @@ open System.Reflection
 open System.Globalization
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
-open FSharp.Data.Runtime.Apiary
+open FSharp.Data.Runtime
 open ProviderImplementation.ProvidedTypes
 
 [<TypeProvider>]

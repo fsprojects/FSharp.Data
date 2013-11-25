@@ -23,14 +23,14 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Items: JsonProvider+DomainTypes+Item[] with get
-    JsonRuntime.ConvertArray(JsonDocument.Create((this.JsonValue.GetProperty "items")), new Func<_,_>(fun (t:JsonDocument) -> t.JsonValue), new Func<_,_>(fun (t:JsonValue) -> JsonDocument.Create(t)), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "items"), new Func<_,_>(id)))
 
 
-class JsonProvider+DomainTypes+Item : FDR.JsonDocument
+class JsonProvider+DomainTypes+Item : FDR.IJsonDocument
     member Id: string with get
-    let value = (this.JsonValue.TryGetProperty "id")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
     JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
 
 

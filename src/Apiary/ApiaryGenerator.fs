@@ -10,7 +10,6 @@ open Microsoft.FSharp.Quotations
 open FSharp.Data.Json
 open FSharp.Data.Json.Extensions
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.Apiary
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.ProvidedTypes
 
@@ -19,17 +18,15 @@ type internal ApiaryGenerationContext =
     Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
     ApiName : string 
-    ApiaryContextSelector : Expr -> Expr }
+    ApiaryContextSelector : Expr -> Expr<InternalApiaryContext> }
   static member Create(apiName, domainTy, replacer) =
     { DomainType = domainTy
       ApiName = apiName
       Replacer = replacer 
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-      ApiaryContextSelector = fun e -> <@@ (%%e : ApiaryContext) :> InternalApiaryContext @@> }
+      ApiaryContextSelector = fun e -> <@ (%%e:ApiaryContext) :> InternalApiaryContext @> }
   member x.JsonContext = 
-    let packer e = <@@ ApiaryDocument(%%e) @@>
-    let unpacker e = <@@ ((%%e):ApiaryDocument).JsonValue @@>
-    JsonGenerationContext.Create("", x.DomainType, typeof<ApiaryDocument>, x.Replacer, packer, unpacker, x.UniqueNiceName)
+    JsonGenerationContext.Create("", x.DomainType, typeof<ApiaryDocument>, x.Replacer, x.UniqueNiceName)
 
 module internal ApiaryTypeBuilder = 
 
@@ -115,7 +112,7 @@ module internal ApiaryTypeBuilder =
         let argsArray = Expr.NewArray(typeof<string * string>, argsExprs)
 
         <@  let headers, query = ApiaryRuntime.ProcessParameters(reqHeaders, %%headers, %%query)
-            let apiCtx = (%%(ctx.ApiaryContextSelector self):InternalApiaryContext)
+            let apiCtx = %(ctx.ApiaryContextSelector self)
             (apiCtx :> ApiaryOperations), 
             { Method = meth; Path = path; Arguments = %%argsArray;
               Headers = headers; Query = query } @>
@@ -138,26 +135,8 @@ module internal ApiaryTypeBuilder =
       let apiaryGenTy = ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>
       let apiaryDocTy = ctx.Replacer.ToRuntime typeof<ApiaryDocument>
 
-      let resultTy = 
-        // If we just used 'resultTy' (as it is), then the method information
-        // returned by MakeGenericMethod cannot be used in Expr.Call, because
-        // it does not support GetParameters method (doh!)
-        //
-        // We emulate the F# type provider type erasure mechanism to get the 
-        // actual (erased) type and use _that_ as our generic type (because
-        // that is System.RuntimeType). We erase ProvidedTypes to their base
-        // and we erase array of provided type to array of base type.
-        match resultTy with 
-        | :? ProvidedTypeDefinition -> resultTy.BaseType 
-        | :? ProvidedSymbolType as sym ->
-            match sym.Kind, sym.Args with
-            | SymbolKind.SDArray, [typ] ->
-                typ.BaseType.MakeArrayType()
-            | _ -> failwith "asyncMap: Unsupported ProvidedSymbolType" 
-        | _ -> resultTy
-
       let asyncWork = ctx.Replacer.ToRuntime asyncWork
-      let _, convFunc = ReflectionHelpers.makeDelegate bodyResConv apiaryDocTy
+      let convFunc = ReflectionHelpers.makeDelegate bodyResConv apiaryDocTy
       apiaryGenTy?AsyncMap (apiaryDocTy, resultTy) (asyncWork, convFunc)
 
 
@@ -194,7 +173,7 @@ module internal ApiaryTypeBuilder =
         p.GetterCode <- fun (Singleton self) -> ctx.Replacer.ToRuntime (ctx.ApiaryContextSelector (ctx.Replacer.ToDesignTime self))
         parent.AddMember(p) 
         // Add all nested operations to this type
-        let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ %%self:InternalApiaryContext @@> }
+        let ctx = { ctx with ApiaryContextSelector = Expr.Cast }
         nested |> Seq.iter (generateSchema ctx (join parentName name) nestedTyp)
 
     | Function(name, (meth, path)) ->
@@ -217,7 +196,7 @@ module internal ApiaryTypeBuilder =
         |> Seq.iter parent.AddMember
 
         // Add all nested operations to this type
-        let ctx = { ctx with ApiaryContextSelector = fun self -> <@@ (%%self:ApiaryDocument).Context @@> }
+        let ctx = { ctx with ApiaryContextSelector = fun self -> <@ ((%%self:IJsonDocument) :?> ApiaryDocument).Context @> }
         nested |> Seq.iter (generateSchema ctx (join parentName name) entityTy)
 
     | Entity(name, _, nested) -> 

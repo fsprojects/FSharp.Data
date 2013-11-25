@@ -2,7 +2,7 @@
 // Apiary type provider - runtime components
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Runtime.Apiary
+namespace FSharp.Data.Runtime
 
 open System
 open FSharp.Data.Json
@@ -35,6 +35,11 @@ type ApiaryDocument private (json:JsonValue, context:InternalApiaryContext optio
   new(json) = ApiaryDocument(json, None)
 
   member x.JsonValue = json
+
+  interface IJsonDocument with 
+    member x.JsonValue = x.JsonValue
+    member x.CreateNew json = upcast ApiaryDocument json
+
   member x.Context = context.Value
 
   override x.Equals(y) =

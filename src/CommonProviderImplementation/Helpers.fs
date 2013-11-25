@@ -53,7 +53,7 @@ module ReflectionHelpers =
   let makeDelegate (exprfunc:Expr -> Expr) argType = 
     let var = Var.Global("t", argType)
     let convBody = exprfunc (Expr.Var var)
-    convBody.Type, Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
+    Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
         
 // ----------------------------------------------------------------------------------------------
 
