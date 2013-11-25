@@ -44,6 +44,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   
       let ctx = JsonGenerationContext.Create(culture, tpType, replacer)
       let input = { ParentName = NameUtils.singularize rootName
+                    ParentJsonName = ""
                     CanPassUnpackedOption = false
                     Optional = false }
       let output = JsonTypeBuilder.generateJsonType ctx input inferedType

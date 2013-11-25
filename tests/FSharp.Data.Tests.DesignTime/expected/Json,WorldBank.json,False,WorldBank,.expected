@@ -90,6 +90,6 @@ class JsonProvider+ValueChoice : FDR.IJsonDocument
     member Number: decimal option with get
     JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                       let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("valueChoice1of1", JsonRuntime.ConvertDecimal("", value), value)))
+                                                                      JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertDecimal("", value), value)))
 
 

@@ -50,6 +50,7 @@ module internal ApiaryTypeBuilder =
             yield JsonValue.Parse source ]
     let input = 
       { ParentName = name
+        ParentJsonName = ""
         Optional = false
         CanPassUnpackedOption = false }
     let output =
