@@ -163,8 +163,13 @@ module AssemblyReplacer =
   
   let private replaceMethod asmMappings typeCache (m : MethodInfo) =
     if m.GetType() = typeof<ProvidedMethod> then m
-    elif m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then m // these methods don't really exist, so there's no need to replace them
-    else replace asmMappings (m, getAssemblies m.DeclaringType) (fun toAsm ->
+    elif m.Name <> "UnboxGeneric" && m.DeclaringType.FullName = "Microsoft.FSharp.Core.LanguagePrimitives+IntrinsicFunctions" then m // these methods don't really exist, so there's no need to replace them
+    else 
+      let assemblies = 
+        Array.append [| m.DeclaringType |] <| m.GetGenericArguments()
+        |> List.ofArray
+        |> List.collect getAssemblies
+      replace asmMappings (m, assemblies) (fun toAsm ->
         let t = getType toAsm m.DeclaringType asmMappings typeCache
         let parameterTypes = 
           m.GetParameters() 

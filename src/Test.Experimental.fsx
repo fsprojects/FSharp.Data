@@ -14,7 +14,7 @@ let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.Experimental.dll"
 
-let platform = Portable
+let platform = Full
 
 let runtimeAssembly = 
     match platform with
@@ -25,7 +25,7 @@ let runtimeAssembly =
 let signatureOnly = false
 let ignoreOutput = false
 
-let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly portable
+let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly platform
 let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
 Apiary { ApiName = "themoviedb" }

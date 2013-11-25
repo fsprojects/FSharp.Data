@@ -14,6 +14,13 @@ open FSharp.Data.Runtime.StructuralTypes
 #nowarn "10001"
 
 /// [omit]
+type IJsonDocument =
+    abstract JsonValue : JsonValue
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+    abstract CreateNew : JsonValue -> IJsonDocument
+
+/// [omit]
 /// Underlying representation of the generated JSON types
 type JsonDocument = 
 
@@ -21,11 +28,15 @@ type JsonDocument =
   // (but since this is used across multiple files, we have explicit Create method)
   { JsonValue : JsonValue }
 
+  interface IJsonDocument with 
+    member x.JsonValue = x.JsonValue
+    member x.CreateNew json = JsonDocument.Create json
+
   /// Creates a JsonDocument representing the specified value
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Create(value:JsonValue) = 
-    { JsonValue = value }
+    { JsonValue = value } :> IJsonDocument
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
@@ -34,16 +45,13 @@ type JsonDocument =
     let text = reader.ReadToEnd()
     let culture = TextRuntime.GetCulture culture
     let value = JsonValue.Parse(text, culture)
-    { JsonValue = value }
+    { JsonValue = value } :> IJsonDocument
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member AsyncCreate(readerAsync:Async<TextReader>, culture) = async {
     use! reader = readerAsync
-    let text = reader.ReadToEnd()
-    let culture = TextRuntime.GetCulture culture
-    let value = JsonValue.Parse(text, culture)
-    return { JsonValue = value }
+    return JsonDocument.Create(reader, culture)
   }
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -54,25 +62,17 @@ type JsonDocument =
     let culture = TextRuntime.GetCulture culture
     try
       JsonValue.Parse(text, culture).AsArray()
-      |> Array.map (fun value -> { JsonValue = value })
+      |> Array.map JsonDocument.Create
     with _ ->
       text.Split('\n', '\r')
       |> Array.filter (not << String.IsNullOrWhiteSpace)
-      |> Array.map (fun text -> { JsonValue = JsonValue.Parse(text, culture) })
+      |> Array.map (fun text -> JsonValue.Parse(text, culture) |> JsonDocument.Create)
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member AsyncCreateList(readerAsync:Async<TextReader>, culture) = async {
     use! reader = readerAsync
-    let culture = TextRuntime.GetCulture culture
-    return
-      try
-        JsonValue.Load(reader, culture).AsArray()
-        |> Array.map (fun value -> { JsonValue = value })
-      with _ ->
-        reader.ReadToEnd().Split('\n', '\r')
-        |> Array.filter (not << String.IsNullOrWhiteSpace)
-        |> Array.map (fun text -> { JsonValue = JsonValue.Parse(text, culture) })
+    return JsonDocument.CreateList(reader, culture)
   }
 
 /// [omit]
@@ -121,36 +121,32 @@ type JsonRuntime =
     | None, Some originalValue-> failwithf "Expecting %s in %s, got %O" (typeof<'T>.Name) name originalValue
 
   /// Converts JSON array to array of target types
-  /// The `packer` function rebuilds representation type (such as
-  /// `JsonDocument`) which is then passed to projection function `f`.
-  /// The `unpacker` function does the opposite
-  static member ConvertArray<'Representation, 'T>(doc:'Representation,
-                                                  unpacker:Func<'Representation,JsonValue>, 
-                                                  packer:Func<JsonValue,'Representation>, 
-                                                  mapper:Func<'Representation,'T>) = 
-    unpacker.Invoke(doc).AsArray() |> Array.map (packer.Invoke >> mapper.Invoke)
+  static member ConvertArray<'T>(doc:IJsonDocument, mapping:Func<IJsonDocument,'T>) = 
+    doc.JsonValue.AsArray() |> Array.map (doc.CreateNew >> mapping.Invoke)
 
   /// Converts JSON array to array of target types, asynchronously
-  /// The `packer` function rebuilds representation type (such as
-  /// `JsonDocument`) which is then passed to projection function `f`.
-  /// The `unpacker` function does the opposite
-  static member AsyncConvertArray<'Representation, 'T>(docAsync:Async<'Representation>, 
-                                                       unpacker:Func<'Representation,JsonValue>, 
-                                                       packer:Func<JsonValue,'Representation>, 
-                                                       mapper:Func<'Representation,'T>) = async {
+  static member AsyncConvertArray<'T>(docAsync:Async<IJsonDocument>, mapping:Func<IJsonDocument,'T>) = async {
     let! doc = docAsync
-    return unpacker.Invoke(doc).AsArray() |> Array.map (packer.Invoke >> mapper.Invoke)
+    return doc.JsonValue.AsArray() |> Array.map (doc.CreateNew >> mapping.Invoke)
   }
 
-  /// Get optional property of a specified type
-  static member ConvertOptionalProperty(value:JsonValue, name, packer:Func<_,_>, f:Func<_,_>) =     
-    value.TryGetProperty(name) 
+  /// Get json property and wrap in json document
+  static member GetPropertyPacked(doc:IJsonDocument, name) =
+    doc.CreateNew(doc.JsonValue.GetProperty(name))
+
+  /// Get optional json property
+  static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
+    doc.JsonValue.TryGetProperty(name)
     |> Option.bind (function JsonValue.Null -> None | x -> Some x) 
-    |> Option.map (packer.Invoke >> f.Invoke)
+
+  /// Get optional json property and convert to a specified type
+  static member ConvertOptionalProperty<'T>(doc:IJsonDocument, name, mapping:Func<IJsonDocument,'T>) =
+    JsonRuntime.TryGetPropertyUnpacked(doc, name)
+    |> Option.map (doc.CreateNew >> mapping.Invoke)
 
   /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
-  static member GetArrayChildrenByTypeTag<'Representation,'T>(json:JsonValue, tag:string, packer:Func<JsonValue,'Representation>, mapper:Func<'Representation,'T>) = 
+  static member GetArrayChildrenByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
     let tag = InferedTypeTag.ParseCode tag
     let matchesTag = function
       | JsonValue.Null -> false
@@ -160,28 +156,28 @@ type JsonRuntime =
       | JsonValue.Array _ -> tag = InferedTypeTag.Collection
       | JsonValue.Object _ -> tag = InferedTypeTag.Record None
       | JsonValue.String _ -> tag = InferedTypeTag.String
-    match json with
+    match doc.JsonValue with
     | JsonValue.Array ar ->
         ar 
         |> Array.filter matchesTag 
-        |> Array.map (packer.Invoke >> mapper.Invoke)
+        |> Array.map (doc.CreateNew >> mapping.Invoke)
     | _ -> failwith "JSON mismatch: Expected Array node"
 
   /// Returns single or no value from an array matching the specified tag
-  static member TryGetArrayChildByTypeTag<'Representation,'T>(json:JsonValue, tag:string, packer:Func<JsonValue,'Representation>, mapper:Func<'Representation,'T>) = 
-    match JsonRuntime.GetArrayChildrenByTypeTag(json, tag, packer, mapper) with
+  static member TryGetArrayChildByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
+    match JsonRuntime.GetArrayChildrenByTypeTag(doc, tag, mapping) with
     | [| the |] -> Some the
     | [| |] -> None
     | _ -> failwith "JSON mismatch: Expected Array with single or no elements."
 
   /// Returns a single array children that matches the specified tag
-  static member GetArrayChildByTypeTag(json:JsonValue, tag:string) = 
-    match JsonRuntime.GetArrayChildrenByTypeTag(json, tag, Func<_,_>(id), Func<_,_>(id)) with
+  static member GetArrayChildByTypeTag(doc:IJsonDocument, tag:string) = 
+    match JsonRuntime.GetArrayChildrenByTypeTag(doc, tag, Func<_,_>(id)) with
     | [| the |] -> the
     | _ -> failwith "JSON mismatch: Expected single value, but found multiple."
 
   /// Returns a single or no value by tag type
-  static member TryGetValueByTypeTag<'Representation,'T>(json:JsonValue, tag:string, packer:Func<JsonValue,'Representation>, mapper:Func<'Representation,'T>) = 
+  static member TryGetValueByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
     // Build a fake array and reuse `GetArrayChildByTypeTag`
-    let arrayValue = JsonValue.Array [| json |]
-    JsonRuntime.TryGetArrayChildByTypeTag(arrayValue, tag, packer, mapper) 
+    let arrayValue = JsonValue.Array [| doc.JsonValue |] |> doc.CreateNew
+    JsonRuntime.TryGetArrayChildByTypeTag(arrayValue, tag, mapping)

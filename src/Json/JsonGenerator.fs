@@ -12,44 +12,28 @@ open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.JsonInference
 open ProviderImplementation.ProvidedTypes
 
-/// Context that is used to generate the JSON types.
-///
-///  * `Representation` is the type that is used to represent documents
-///    (here `JsonDocument`)
-///
-///  * `Unpacker` is a function that takes an expression representing whatever 
-///    is used to represent the document (here `JsonDocument`) and obtains the
-///    underlying `JsonValue`; `Packer` is the dual (wrap value in `JsonDocument`)
-///
-/// Both properties are needed for other uses of the provider 
-/// (most notably in the Apiary provider)
-///
 #nowarn "10001"
+
+/// Context that is used to generate the JSON types.
 type internal JsonGenerationContext =
   { Culture : string
     DomainTypesType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
-    // JsonDocument or ApiaryDocument
-    Representation : Type
-    // wraps a JsonValue in a Representation type
-    Packer : Expr -> Expr
-    // extracts the JsonValue from a Representation type
-    Unpacker : Expr -> Expr
-    UnpackerStayInDesignTime : Expr -> Expr }
+    IJsonDocumentType : Type
+    JsonRuntimeType : Type
+    // the type that is used to represent documents (JsonDocument or ApiaryDocument)
+    Representation : Type }
   static member Create(culture, domainTy, replacer) =
-    let packer e = <@@ JsonDocument.Create %%e @@>
-    let unpacker e = <@@ ((%%e):JsonDocument).JsonValue @@>
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    JsonGenerationContext.Create(culture, domainTy, typeof<JsonDocument>, replacer, packer, unpacker, uniqueNiceName)
-  static member internal Create(culture, domainTy, representation, replacer, packer, unpacker, uniqueNiceName) =
+    JsonGenerationContext.Create(culture, domainTy, typeof<JsonDocument>, replacer, uniqueNiceName)
+  static member internal Create(culture, domainTy, representation, replacer, uniqueNiceName) =
     { Culture = culture
       DomainTypesType = domainTy
       Replacer = replacer 
+      IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
+      JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
       Representation = replacer.ToRuntime representation
-      Packer = replacer.ToDesignTime >> packer >> replacer.ToRuntime 
-      Unpacker = replacer.ToDesignTime >> unpacker >> replacer.ToRuntime
-      UnpackerStayInDesignTime = replacer.ToDesignTime >> unpacker
       UniqueNiceName = uniqueNiceName }
 
 type internal JsonGenerationInput = 
@@ -62,6 +46,19 @@ type internal JsonGenerationOutput =
     { ConvertedType : Type
       Converter : Expr -> Expr
       ConverterRequiresUnpackedOption : bool }
+    member x.ConverterFunc ctx =
+      ReflectionHelpers.makeDelegate x.Converter ctx.IJsonDocumentType
+    member x.ConvertedTypeErased ctx =
+      if x.ConvertedType.IsArray then
+        match x.ConvertedType.GetElementType() with
+        | :? ProvidedTypeDefinition -> ctx.IJsonDocumentType.MakeArrayType()
+        | x when x = ctx.Representation -> ctx.IJsonDocumentType.MakeArrayType()
+        | _ -> x.ConvertedType
+      else
+        match x.ConvertedType with
+        | :? ProvidedTypeDefinition -> ctx.IJsonDocumentType
+        | x when x = ctx.Representation -> ctx.IJsonDocumentType
+        | _ -> x.ConvertedType
 
 module JsonTypeBuilder = 
   
@@ -74,7 +71,7 @@ module JsonTypeBuilder =
   /// and also by function that generates the actual code.
   let rec internal generateMultipleChoiceType ctx parentName types codeGenerator =
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (parentName + "Choice"), Some(ctx.Representation), HideObjectMethods = true)
+    let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (parentName + "Choice"), Some(ctx.IJsonDocumentType), HideObjectMethods = true)
     ctx.DomainTypesType.AddMember(objectTy)
         
     let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
@@ -100,15 +97,15 @@ module JsonTypeBuilder =
       match multiplicity with 
       | InferedMultiplicity.OptionalSingle ->
           let p = ProvidedProperty(makeUnique kind.NiceName, typedefof<option<_>>.MakeGenericType [| output.ConvertedType |])
-          p.GetterCode <- codeGenerator (multiplicity, typ) output.Converter kindCode
+          p.GetterCode <- codeGenerator (multiplicity, typ) output kindCode
           objectTy.AddMember(p)          
       | InferedMultiplicity.Single ->
           let p = ProvidedProperty(makeUnique kind.NiceName, output.ConvertedType)
-          p.GetterCode <- codeGenerator (multiplicity, typ) output.Converter kindCode
+          p.GetterCode <- codeGenerator (multiplicity, typ) output kindCode
           objectTy.AddMember(p)          
       | InferedMultiplicity.Multiple ->
           let p = ProvidedMethod(makeUnique ("Get" + NameUtils.pluralize kind.NiceName), [], output.ConvertedType.MakeArrayType())
-          p.InvokeCode <- codeGenerator (multiplicity, typ) output.Converter kindCode
+          p.InvokeCode <- codeGenerator (multiplicity, typ) output kindCode
           objectTy.AddMember(p)          
 
     { ConvertedType = objectTy
@@ -122,15 +119,15 @@ module JsonTypeBuilder =
         let typ, conv = 
             PrimitiveInferedProperty.Create(input.ParentName, inferedTyp, input.Optional)
             |> JsonConversionsGenerator.convertJsonValue ctx.Replacer "" ctx.Culture
-        let toOption = fun x -> <@ Some (%%x:JsonValue) @>
-        let asOption = fun x -> <@ %%x:JsonValue option @> 
+        let jDocToJsonOpt = fun x -> <@ Some (%%x:IJsonDocument).JsonValue @>
         { ConvertedType = typ
           Converter = if input.CanPassUnpackedOption
-                      then asOption >> conv
-                      else ctx.UnpackerStayInDesignTime >> toOption >> conv
+                      then ctx.Replacer.ToDesignTime >> Expr.Cast >> conv
+                      else ctx.Replacer.ToDesignTime >> jDocToJsonOpt >> conv
           ConverterRequiresUnpackedOption = input.CanPassUnpackedOption }
 
     | InferedType.Top | InferedType.Null -> 
+
         // Return the underlying JsonDocument without change
         { ConvertedType = ctx.Representation
           Converter = ctx.Replacer.ToRuntime
@@ -145,24 +142,14 @@ module JsonTypeBuilder =
                       Optional = false }
         let output = generateJsonType ctx input typ
 
-        // Build a function `mapper = fun x -> %%(elementConv x)`
-        let convTyp, convFunc = ReflectionHelpers.makeDelegate output.Converter ctx.Representation
-        // Build a function `packer = fun x -> %%(ctx.Packer x)`
-        let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
-        // Build a function `unpacker = fun x -> %%(ctx.Unpacker x)`
-        let _, unpackFunc = ReflectionHelpers.makeDelegate ctx.Unpacker (ctx.Replacer.ToRuntime ctx.Representation)
-
-        // Call `ConvertArray<'Representation, 'T>(jDoc, unpacker, packer, mapper)`
-        // or `AsyncConvertArray<'Representation, 'T>(jDoc, unpacker, packer, mapper)`
         // the async version is only used when the top level element returned by Parse/Load is an array
         let conv = fun (jDoc:Expr)-> 
-          let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
           let isAsync = jDoc.Type.Name.StartsWith "FSharpAsync`1"
           // TODO: use the same as in ApiaryGenerationHelper.AsyncMap
           if isAsync then
-            jsonRuntime?AsyncConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
+            ctx.JsonRuntimeType?AsyncConvertArray (output.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, output.ConverterFunc ctx)
           else
-            jsonRuntime?ConvertArray (ctx.Representation, convTyp) (ctx.Replacer.ToRuntime jDoc, unpackFunc, packFunc, convFunc)
+            ctx.JsonRuntimeType?ConvertArray (output.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, output.ConverterFunc ctx)
         
         { ConvertedType = output.ConvertedType.MakeArrayType()
           Converter = conv
@@ -170,7 +157,7 @@ module JsonTypeBuilder =
 
     | InferedType.Record(_, props) -> 
         // Generate new type for the record (for JSON, we do not try to unify them)
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if input.ParentName = "" then "Entity" else input.ParentName), Some(ctx.Representation), HideObjectMethods = true)
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (if input.ParentName = "" then "Entity" else input.ParentName), Some(ctx.IJsonDocumentType), HideObjectMethods = true)
         ctx.DomainTypesType.AddMember(objectTy)
 
         //TODO: handle input.Optional (#163)
@@ -192,8 +179,9 @@ module JsonTypeBuilder =
               
             if propOutput.ConverterRequiresUnpackedOption then
             
-              let getter = fun (Singleton json) -> 
-                <@@ (%%(ctx.UnpackerStayInDesignTime json):JsonValue).TryGetProperty propName @@>
+              let getter = fun (Singleton jDoc) -> 
+                let jDoc = ctx.Replacer.ToDesignTime jDoc
+                <@@ JsonRuntime.TryGetPropertyUnpacked(%%jDoc, propName) @@>
                 |> propOutput.Converter
               
               propOutput.ConvertedType, getter
@@ -203,19 +191,17 @@ module JsonTypeBuilder =
               let optionType = typedefof<option<_>>.MakeGenericType propOutput.ConvertedType
 
               // Construct function arguments & call `ConvertOptionalProperty` 
-              let convTyp, convFunc = ReflectionHelpers.makeDelegate propOutput.Converter ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
-              let getter = fun (Singleton json) -> 
-                let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-                jsonRuntime?ConvertOptionalProperty (ctx.Representation, convTyp) (ctx.Unpacker json, propName, packFunc, convFunc) :> Expr
-            
+              let getter = fun (Singleton jDoc) -> 
+                ctx.JsonRuntimeType?ConvertOptionalProperty (propOutput.ConvertedTypeErased ctx) (jDoc, propName, propOutput.ConverterFunc ctx) :> Expr
+
               optionType, getter
             
             else
 
-              let getter = fun (Singleton json) -> 
-                <@@ (%%(ctx.UnpackerStayInDesignTime json):JsonValue).GetProperty propName @@>
-                |> ctx.Packer
+              // Construct function arguments & call `ConvertProperty` 
+              let getter = fun (Singleton jDoc) -> 
+                let jDoc = ctx.Replacer.ToDesignTime jDoc
+                <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
                 |> propOutput.Converter
 
               propOutput.ConvertedType, getter
@@ -235,40 +221,32 @@ module JsonTypeBuilder =
 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
-        generateMultipleChoiceType ctx input.ParentName types (fun info valConv kindCode ->
+        generateMultipleChoiceType ctx input.ParentName types (fun info output kindCode ->
           match info with
-          | InferedMultiplicity.Single, _ -> fun (Singleton json) -> 
+          | InferedMultiplicity.Single, _ -> fun (Singleton jDoc) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
-              valConv (ctx.Packer <@@ JsonRuntime.GetArrayChildByTypeTag(%%(ctx.UnpackerStayInDesignTime json), kindCode) @@>)
+              let jDoc = ctx.Replacer.ToDesignTime jDoc
+              output.Converter <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, kindCode) @@>
           
           | InferedMultiplicity.Multiple, _ -> 
               // Generate method that calls `GetArrayChildrenByTypeTag` 
               // (unlike the previous easy case, this needs to call conversion function
               // from the runtime similarly to options and arrays) 
-              let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
-              fun (Singleton json) -> 
-                let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-                jsonRuntime?GetArrayChildrenByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc)
+              fun (Singleton jDoc) -> 
+                ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx)
           
           | InferedMultiplicity.OptionalSingle, _ -> 
               // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
-              let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
-              let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
-              fun (Singleton json) -> 
-                let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-                jsonRuntime?TryGetArrayChildByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
+              fun (Singleton jDoc) -> 
+                ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))
 
     | InferedType.Heterogeneous types ->
 
         //TODO: handle input.Optional
 
-        // Generate a choice type that always calls `GetValueByTypeTag` to 
+        // Generate a choice type that always calls `TryGetValueByTypeTag`
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
-        generateMultipleChoiceType ctx input.ParentName types (fun info valConv kindCode ->
-          // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
-          let convTyp, convFunc = ReflectionHelpers.makeDelegate valConv ctx.Representation
-          let _, packFunc = ReflectionHelpers.makeDelegate ctx.Packer (ctx.Replacer.ToRuntime typeof<JsonValue>)
-          fun (Singleton json) -> 
+        generateMultipleChoiceType ctx input.ParentName types (fun info output kindCode ->
+          fun (Singleton jDoc) -> 
             let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-            jsonRuntime?TryGetValueByTypeTag (ctx.Representation, convTyp) (ctx.Unpacker json, kindCode, packFunc, convFunc))
+            jsonRuntime?TryGetValueByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))

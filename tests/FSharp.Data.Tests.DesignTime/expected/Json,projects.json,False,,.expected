@@ -23,43 +23,43 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Ordercontainer: JsonProvider+DomainTypes+Ordercontainer with get
-    JsonDocument.Create((this.JsonValue.GetProperty "ordercontainer"))
+    JsonRuntime.GetPropertyPacked(this, "ordercontainer")
 
 
-class JsonProvider+DomainTypes+Ordercontainer : FDR.JsonDocument
+class JsonProvider+DomainTypes+Ordercontainer : FDR.IJsonDocument
     member Backgrounds: JsonProvider+DomainTypes+Backgrounds with get
-    JsonDocument.Create((this.JsonValue.GetProperty "backgrounds"))
+    JsonRuntime.GetPropertyPacked(this, "backgrounds")
 
     member Project: JsonProvider+DomainTypes+Project with get
-    JsonDocument.Create((this.JsonValue.GetProperty "project"))
+    JsonRuntime.GetPropertyPacked(this, "project")
 
 
-class JsonProvider+DomainTypes+Backgrounds : FDR.JsonDocument
+class JsonProvider+DomainTypes+Backgrounds : FDR.IJsonDocument
     member Background: JsonProvider+DomainTypes+Background with get
-    JsonDocument.Create((this.JsonValue.GetProperty "background"))
+    JsonRuntime.GetPropertyPacked(this, "background")
 
 
-class JsonProvider+DomainTypes+Project : FDR.JsonDocument
+class JsonProvider+DomainTypes+Project : FDR.IJsonDocument
     member Title: JsonProvider+DomainTypes+Title2 with get
-    JsonDocument.Create((this.JsonValue.GetProperty "title"))
+    JsonRuntime.GetPropertyPacked(this, "title")
 
 
-class JsonProvider+DomainTypes+Background : FDR.JsonDocument
+class JsonProvider+DomainTypes+Background : FDR.IJsonDocument
     member Title: JsonProvider+DomainTypes+Title with get
-    JsonDocument.Create((this.JsonValue.GetProperty "title"))
+    JsonRuntime.GetPropertyPacked(this, "title")
 
 
-class JsonProvider+DomainTypes+Title2 : FDR.JsonDocument
+class JsonProvider+DomainTypes+Title2 : FDR.IJsonDocument
     member Text: string with get
-    let value = (this.JsonValue.TryGetProperty "text")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "text")
     JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Title : FDR.JsonDocument
+class JsonProvider+DomainTypes+Title : FDR.IJsonDocument
     member Text: string with get
-    let value = (this.JsonValue.TryGetProperty "text")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "text")
     JsonRuntime.GetNonOptionalValue("text", JsonRuntime.ConvertString("", value), value)
 
 

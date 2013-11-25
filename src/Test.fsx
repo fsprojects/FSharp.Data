@@ -14,7 +14,7 @@ let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 
-let platform = Portable
+let platform = Full
 
 let runtimeAssembly = 
     match platform with

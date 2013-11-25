@@ -23,23 +23,23 @@ class JsonProvider
 
 class JsonProvider+DomainTypes
 
-class JsonProvider+DomainTypes+Entity : FDR.JsonDocument
+class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
     member Main: JsonProvider+DomainTypes+Main with get
-    JsonDocument.Create((this.JsonValue.GetProperty "main"))
+    JsonRuntime.GetPropertyPacked(this, "main")
 
 
-class JsonProvider+DomainTypes+Main : FDR.JsonDocument
+class JsonProvider+DomainTypes+Main : FDR.IJsonDocument
     member Nested: JsonProvider+DomainTypes+Nested with get
-    JsonDocument.Create((this.JsonValue.GetProperty "nested"))
+    JsonRuntime.GetPropertyPacked(this, "nested")
 
     member Title: string with get
-    let value = (this.JsonValue.TryGetProperty "title")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "title")
     JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Nested : FDR.JsonDocument
+class JsonProvider+DomainTypes+Nested : FDR.IJsonDocument
     member NestedTitle: string with get
-    let value = (this.JsonValue.TryGetProperty "nestedTitle")
+    let value = JsonRuntime.TryGetPropertyUnpacked(this, "nestedTitle")
     JsonRuntime.GetNonOptionalValue("nestedTitle", JsonRuntime.ConvertString("", value), value)
 
 
