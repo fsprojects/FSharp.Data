@@ -6,7 +6,7 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "FSharp.Data.dll" ]
 // Web site location for the generated documentation
-let website = "http://fsharp.github.io/FSharp.Data"
+let website = "/FSharp.Data"
 
 // Specify more information about your project
 let info =
@@ -48,12 +48,15 @@ let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
+let reference  = __SOURCE_DIRECTORY__ @@ "reference"
 let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.7-beta/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
-// Where to look for *.csproj templates (in this order)
+// Where to look for *.cshtml templates (in this order)
 let layoutRoots =
-  [ templates; formatting @@ "templates"
+  [ templates
+    reference 
+    formatting @@ "templates" 
     formatting @@ "templates/reference" ]
 
 // Copy static files and CSS + JS from F# Formatting
@@ -74,6 +77,7 @@ let buildReference () =
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
+                |> Seq.filter (fun x -> not <| x.Contains "ja")
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
     Literate.ProcessDirectory
