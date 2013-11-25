@@ -94,7 +94,7 @@ for sib in info?siblings do
 ## WorldBankからのレスポンスをパースする
 
 もう少し複雑な例として、WorldBankへのリクエストに対する
-レスポンスデータ [`data/WorldBank.json`](../data/WorldBank.json) を
+レスポンスデータ [`data/WorldBank.json`](../../data/WorldBank.json) を
 サンプルドキュメントにしてみます。
 (より便利な方法としては [型プロバイダー](WorldBank.html) を使って
 WorldBankにアクセスすることもできます)。
@@ -114,7 +114,7 @@ WorldBankにアクセスすることもできます)。
 このドキュメントは以下のようにして読み取りおよびパースできます：
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../data/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 
 (**
 なおWeb上から直接データを読み取ることもできます。

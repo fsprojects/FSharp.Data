@@ -116,7 +116,7 @@ Test.GetSample().GetValues()
 
 このセクションでは特定の話題に関する著者のリストを含んだ、単純なドキュメントを
 型プロバイダーで処理する方法についてのデモを紹介します。
-サンプルとなるドキュメント [`data/Writers.xml`](../data/Writers.xml) は
+サンプルとなるドキュメント [`data/Writers.xml`](../../data/Writers.xml) は
 以下のようになっています：
 
     <authors topic="Philosophy of Science">
@@ -144,7 +144,7 @@ let authors = """
 データ内の情報を表示することができます：
 *)
 
-type Authors = XmlProvider<"../data/Writers.xml">
+type Authors = XmlProvider<"../../data/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
@@ -173,7 +173,7 @@ for author in topic.GetAuthors() do
 決して現れないということです)。
 しかしXHTMLファイルのようなドキュメントを扱う場合、こういった状況はよくあることです。
 例として以下のようなサンプルドキュメントがあるとしましょう
-(単純化したバージョンが [`data/HtmlBody.xml`](../data/HtmlBody.xml) にあります)：
+(単純化したバージョンが [`data/HtmlBody.xml`](../../data/HtmlBody.xml) にあります)：
 
     <div id="root">
       <span>Main text</span>
@@ -188,7 +188,7 @@ for author in topic.GetAuthors() do
 このような場合には引数 `Global` に `true` を指定します：
 *)
 
-type Html = XmlProvider<"../data/HtmlBody.xml", Global=true>
+type Html = XmlProvider<"../../data/HtmlBody.xml", Global=true>
 let html = Html.GetSample()
 
 (**
