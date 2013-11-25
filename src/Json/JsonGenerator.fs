@@ -38,6 +38,7 @@ type internal JsonGenerationContext =
 
 type internal JsonGenerationInput = 
     { ParentName : string
+      ParentJsonName : string
       Optional : bool
       // if true, output.Converter will get a JsonValue option, otherwise it will get a JsonDocument
       CanPassUnpackedOption : bool }
@@ -87,6 +88,7 @@ module JsonTypeBuilder =
       |> Seq.toArray
     for index, kind, multiplicity, typ in types do
       let input = { ParentName = sprintf "%sChoice%dof%d" parentName index types.Length
+                    ParentJsonName = parentName
                     CanPassUnpackedOption = false
                     Optional = false }
       let output = generateJsonType ctx input typ
@@ -117,7 +119,7 @@ module JsonTypeBuilder =
   and internal generateJsonType ctx input = function
     | InferedType.Primitive(inferedTyp, _) ->
         let typ, conv = 
-            PrimitiveInferedProperty.Create(input.ParentName, inferedTyp, input.Optional)
+            PrimitiveInferedProperty.Create(input.ParentJsonName, inferedTyp, input.Optional)
             |> JsonConversionsGenerator.convertJsonValue ctx.Replacer "" ctx.Culture
         let jDocToJsonOpt = fun x -> <@ Some (%%x:IJsonDocument).JsonValue @>
         { ConvertedType = typ
@@ -138,6 +140,7 @@ module JsonTypeBuilder =
         // TODO: handle input.Optional
 
         let input = { ParentName = NameUtils.singularize input.ParentName
+                      ParentJsonName = input.ParentName
                       CanPassUnpackedOption = false
                       Optional = false }
         let output = generateJsonType ctx input typ
@@ -173,6 +176,7 @@ module JsonTypeBuilder =
           let propType, getter =
 
             let propInput = { ParentName = propName
+                              ParentJsonName = propName
                               CanPassUnpackedOption = true
                               Optional = prop.Optional }
             let propOutput = generateJsonType ctx propInput prop.Type

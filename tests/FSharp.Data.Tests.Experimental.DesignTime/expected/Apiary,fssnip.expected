@@ -94,7 +94,7 @@ class ApiaryProvider+Snippet2 : FDR.IJsonDocument
     member Tags: string[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "tags"), new Func<_,_>(fun (t:IJsonDocument) -> 
                                                                                            let value = Some t.JsonValue
-                                                                                           JsonRuntime.GetNonOptionalValue("tag", JsonRuntime.ConvertString("", value), value)))
+                                                                                           JsonRuntime.GetNonOptionalValue("tags", JsonRuntime.ConvertString("", value), value)))
 
     member Title: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "title")
