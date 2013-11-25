@@ -1,28 +1,28 @@
 class XmlProvider
-    static member AsyncGetSample: () -> XmlProvider+DomainTypes+Div async
+    static member AsyncGetSample: () -> XmlProvider+Div async
     XmlElement.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "HtmlBody.xml"))
 
-    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+Div async
+    static member AsyncLoad: uri:string -> XmlProvider+Div async
     XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
 
-    static member GetSample: () -> XmlProvider+DomainTypes+Div
+    static member GetSample: () -> XmlProvider+Div
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "HtmlBody.xml")))
 
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+Div
+    static member Load: stream:System.IO.Stream -> XmlProvider+Div
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+Div
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Div
     XmlElement.Create(reader)
 
-    static member Load: uri:string -> XmlProvider+DomainTypes+Div
+    static member Load: uri:string -> XmlProvider+Div
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
 
-    static member Parse: text:string -> XmlProvider+DomainTypes+Div
+    static member Parse: text:string -> XmlProvider+Div
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-class XmlProvider+DomainTypes+Div : FDR.XmlElement
-    member GetDivs: () -> XmlProvider+DomainTypes+Div[]
+class XmlProvider+Div : FDR.XmlElement
+    member GetDivs: () -> XmlProvider+Div[]
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 
     member GetSpans: () -> string[]
@@ -36,6 +36,4 @@ class XmlProvider+DomainTypes+Div : FDR.XmlElement
     member Value: string option with get
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
 
-
-class XmlProvider+DomainTypes
 

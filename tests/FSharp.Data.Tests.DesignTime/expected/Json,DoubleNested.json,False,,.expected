@@ -1,35 +1,33 @@
 class JsonProvider
-    static member AsyncGetSample: () -> JsonProvider+DomainTypes+Entity async
+    static member AsyncGetSample: () -> JsonProvider+Entity async
     JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json"), "")
 
-    static member AsyncLoad: uri:string -> JsonProvider+DomainTypes+Entity async
+    static member AsyncLoad: uri:string -> JsonProvider+Entity async
     JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
 
-    static member GetSample: () -> JsonProvider+DomainTypes+Entity
+    static member GetSample: () -> JsonProvider+Entity
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "DoubleNested.json")), "")
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+DomainTypes+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+Entity
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+DomainTypes+Entity
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Entity
     JsonDocument.Create(reader, "")
 
-    static member Load: uri:string -> JsonProvider+DomainTypes+Entity
+    static member Load: uri:string -> JsonProvider+Entity
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
-    static member Parse: text:string -> JsonProvider+DomainTypes+Entity
+    static member Parse: text:string -> JsonProvider+Entity
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-class JsonProvider+DomainTypes
-
-class JsonProvider+DomainTypes+Entity : FDR.IJsonDocument
-    member Main: JsonProvider+DomainTypes+Main with get
+class JsonProvider+Entity : FDR.IJsonDocument
+    member Main: JsonProvider+Main with get
     JsonRuntime.GetPropertyPacked(this, "main")
 
 
-class JsonProvider+DomainTypes+Main : FDR.IJsonDocument
-    member Nested: JsonProvider+DomainTypes+Nested with get
+class JsonProvider+Main : FDR.IJsonDocument
+    member Nested: JsonProvider+Nested with get
     JsonRuntime.GetPropertyPacked(this, "nested")
 
     member Title: string with get
@@ -37,7 +35,7 @@ class JsonProvider+DomainTypes+Main : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
-class JsonProvider+DomainTypes+Nested : FDR.IJsonDocument
+class JsonProvider+Nested : FDR.IJsonDocument
     member NestedTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "nestedTitle")
     JsonRuntime.GetNonOptionalValue("nestedTitle", JsonRuntime.ConvertString("", value), value)

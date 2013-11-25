@@ -2,14 +2,12 @@ class ApiaryProvider : FDR.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
     (new ApiaryContext(rootUrl))
 
-    member Snippet: ApiaryProvider+DomainTypes+Snippet with get
+    member Snippet: ApiaryProvider+Snippet with get
     (this :> InternalApiaryContext)
 
 
-class ApiaryProvider+DomainTypes
-
-class ApiaryProvider+DomainTypes+Snippet : FDR.InternalApiaryContext
-    member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2 async
+class ApiaryProvider+Snippet : FDR.InternalApiaryContext
+    member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Snippet2 async
     ApiaryGenerationHelper.AsyncMap(let patternInput = 
                                         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
                                         let query, headers = patternInput
@@ -24,7 +22,7 @@ class ApiaryProvider+DomainTypes+Snippet : FDR.InternalApiaryContext
                                     let args, apiCtx = patternInput
                                     apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
 
-    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[] async
+    member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+SnippetList[] async
     ApiaryGenerationHelper.AsyncMap(let patternInput = 
                                         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
                                         let query, headers = patternInput
@@ -38,7 +36,7 @@ class ApiaryProvider+DomainTypes+Snippet : FDR.InternalApiaryContext
                                     let args, apiCtx = patternInput
                                     apiCtx.AsyncInvokeOperation(args), new Func<_,_>(fun (t:ApiaryDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
 
-    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+Snippet2
+    member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Snippet2
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
         let query, headers = patternInput
@@ -53,7 +51,7 @@ class ApiaryProvider+DomainTypes+Snippet : FDR.InternalApiaryContext
     let args, apiCtx = patternInput
     apiCtx.InvokeOperation(args)
 
-    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+DomainTypes+SnippetList[]
+    member List: query:string * string list -> headers:string * string list -> ApiaryProvider+SnippetList[]
     JsonRuntime.ConvertArray(let patternInput = 
                                  let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
                                  let query, headers = patternInput
@@ -68,7 +66,7 @@ class ApiaryProvider+DomainTypes+Snippet : FDR.InternalApiaryContext
                              apiCtx.InvokeOperation(args), new Func<_,_>(id)))
 
 
-class ApiaryProvider+DomainTypes+Snippet2 : FDR.IJsonDocument
+class ApiaryProvider+Snippet2 : FDR.IJsonDocument
     member Author: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "author")
     JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)
@@ -103,7 +101,7 @@ class ApiaryProvider+DomainTypes+Snippet2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)
 
 
-class ApiaryProvider+DomainTypes+SnippetList : FDR.IJsonDocument
+class ApiaryProvider+SnippetList : FDR.IJsonDocument
     member Author: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "author")
     JsonRuntime.GetNonOptionalValue("author", JsonRuntime.ConvertString("", value), value)

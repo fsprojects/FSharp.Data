@@ -25,10 +25,6 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     // Generate the required type
     let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
 
-    // A type that is used to hide all generated domain types
-    let domainTy = ProvidedTypeDefinition("DomainTypes", Some typeof<obj>)
-    tpType.AddMember domainTy
-
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let globalInference = args.[2] :?> bool
@@ -45,7 +41,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowNulls*)true globalInference sampleXml)
         |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
 
-      let ctx = XmlGenerationContext.Create(culture, domainTy, globalInference, replacer)  
+      let ctx = XmlGenerationContext.Create(culture, tpType, globalInference, replacer)  
       let resTy, resTypConv = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType

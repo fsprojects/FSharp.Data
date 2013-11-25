@@ -144,10 +144,10 @@ type Html = XmlProvider<"""
  
 [<Test>]
 let ``Nested xml types compile when only used in type annotations``() =
-    let divWorks (div:Html.DomainTypes.Div) = ()
-    let spanWorks (span:Html.DomainTypes.Span) = ()
-    let ulWorks (ul:Html.DomainTypes.Ul) = ()
-    let liWorks (li:Html.DomainTypes.Li) = ()
+    let divWorks (div:Html.Div) = ()
+    let spanWorks (span:Html.Span) = ()
+    let ulWorks (ul:Html.Ul) = ()
+    let liWorks (li:Html.Li) = ()
     ()
 
 [<Literal>]

@@ -1,29 +1,27 @@
 class XmlProvider
-    static member AsyncGetSamples: () -> XmlProvider+DomainTypes+ObjStation[] async
+    static member AsyncGetSamples: () -> XmlProvider+ObjStation[] async
     XmlElement.AsyncCreateList((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml"))
 
-    static member AsyncLoad: uri:string -> XmlProvider+DomainTypes+ObjStation async
+    static member AsyncLoad: uri:string -> XmlProvider+ObjStation async
     XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
 
-    static member GetSamples: () -> XmlProvider+DomainTypes+ObjStation[]
+    static member GetSamples: () -> XmlProvider+ObjStation[]
     XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "IrelandStations.xml")))
 
-    static member Load: stream:System.IO.Stream -> XmlProvider+DomainTypes+ObjStation
+    static member Load: stream:System.IO.Stream -> XmlProvider+ObjStation
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
-    static member Load: reader:System.IO.TextReader -> XmlProvider+DomainTypes+ObjStation
+    static member Load: reader:System.IO.TextReader -> XmlProvider+ObjStation
     XmlElement.Create(reader)
 
-    static member Load: uri:string -> XmlProvider+DomainTypes+ObjStation
+    static member Load: uri:string -> XmlProvider+ObjStation
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)))
 
-    static member Parse: text:string -> XmlProvider+DomainTypes+ObjStation
+    static member Parse: text:string -> XmlProvider+ObjStation
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-class XmlProvider+DomainTypes
-
-class XmlProvider+DomainTypes+ObjStation : FDR.XmlElement
+class XmlProvider+ObjStation : FDR.XmlElement
     member StationAlias: string option with get
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.irishrail.ie/realtime/}StationAlias")))
 

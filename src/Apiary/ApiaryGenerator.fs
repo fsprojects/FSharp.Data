@@ -14,19 +14,19 @@ open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.ProvidedTypes
 
 type internal ApiaryGenerationContext =
-  { DomainType : ProvidedTypeDefinition
+  { TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
     UniqueNiceName : string -> string 
     ApiName : string 
     ApiaryContextSelector : Expr -> Expr<InternalApiaryContext> }
-  static member Create(apiName, domainTy, replacer) =
-    { DomainType = domainTy
+  static member Create(apiName, tpType, replacer) =
+    { TypeProviderType = tpType
       ApiName = apiName
       Replacer = replacer 
       UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
       ApiaryContextSelector = fun e -> <@ (%%e:ApiaryContext) :> InternalApiaryContext @> }
   member x.JsonContext = 
-    JsonGenerationContext.Create("", x.DomainType, typeof<ApiaryDocument>, x.Replacer, x.UniqueNiceName)
+    JsonGenerationContext.Create("", x.TypeProviderType, typeof<ApiaryDocument>, x.Replacer, x.UniqueNiceName)
 
 module internal ApiaryTypeBuilder = 
 
@@ -63,7 +63,7 @@ module internal ApiaryTypeBuilder =
     | :? ProvidedTypeDefinition as entityTy -> entityTy
     | _ ->
       let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName parentName, Some(typeof<obj>))
-      ctx.DomainType.AddMember(objectTy)
+      ctx.TypeProviderType.AddMember objectTy
       let prop = ProvidedProperty("Value", entityTy)
       prop.GetterCode <- fun (Singleton self) -> Expr.Coerce(self, entityTy)
       objectTy.AddMember(prop)
@@ -167,7 +167,7 @@ module internal ApiaryTypeBuilder =
     | Module(name, nested) ->          
         // Generate new type for the nested module
         let nestedTyp = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<InternalApiaryContext>))
-        ctx.DomainType.AddMember(nestedTyp)
+        ctx.TypeProviderType.AddMember(nestedTyp)
         // Add the new module as nested property of the parent
         let p = ProvidedProperty(NameUtils.nicePascalName name, nestedTyp)
         p.GetterCode <- fun (Singleton self) -> ctx.Replacer.ToRuntime (ctx.ApiaryContextSelector (ctx.Replacer.ToDesignTime self))

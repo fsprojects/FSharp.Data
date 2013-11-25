@@ -25,24 +25,20 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
     let apiName = args.[0] :?> string
 
     // Generate the required type with empty constructor
-    let resTy = ProvidedTypeDefinition(asm, ns, typeName, Some(replacer.ToRuntime typeof<ApiaryContext>))
+    let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some(replacer.ToRuntime typeof<ApiaryContext>))
     let args = [ ProvidedParameter("rootUrl", typeof<string>) ]
     ProvidedConstructor(args, InvokeCode = fun (Singleton root) -> 
         let root = replacer.ToDesignTime root in replacer.ToRuntime <@@ new ApiaryContext(%%root) @@>)
-    |> resTy.AddMember
+    |> tpType.AddMember
 
-    // A type that is used to hide all generated domain types
-    let domainTy = ProvidedTypeDefinition("DomainTypes", Some(typeof<obj>))
-    resTy.AddMember(domainTy)
-
-    let ctx = ApiaryGenerationContext.Create(apiName, domainTy, replacer)
+    let ctx = ApiaryGenerationContext.Create(apiName, tpType, replacer)
 
     // Get the schema of API operations from Apiary & generate schema
     let names = ApiarySchema.getOperationTree apiName |> ApiarySchema.asRestApi
-    names |> Seq.iter (ApiaryTypeBuilder.generateSchema ctx "" resTy)
+    names |> Seq.iter (ApiaryTypeBuilder.generateSchema ctx "" tpType)
 
     // Return the generated type
-    resTy
+    tpType
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = [ ProvidedStaticParameter("ApiName", typeof<string>) ]
