@@ -47,6 +47,7 @@ let bin        = __SOURCE_DIRECTORY__ @@ "../../bin"
 let content    = __SOURCE_DIRECTORY__ @@ "../content"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
+let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
 let reference  = __SOURCE_DIRECTORY__ @@ "reference"
 let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.7-beta/"
@@ -61,6 +62,7 @@ let layoutRoots =
 
 // Copy static files and CSS + JS from F# Formatting
 let copyFiles () =
+  CopyRecursive data (output @@ "data") true |> Log "Copying file: "
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
   CopyRecursive (formatting @@ "content") (output @@ "content") true 

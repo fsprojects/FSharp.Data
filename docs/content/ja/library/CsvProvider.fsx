@@ -28,7 +28,7 @@ open FSharp.Data
 
 Yahoo FinanceのWebサイトでは以下のような構造のCSV形式で
 日単位の株価が公開されています
-(より大きな例としては [`data/MSFT.csv`](../data/MSFT.csv) ファイルを
+(より大きな例としては [`data/MSFT.csv`](../../data/MSFT.csv) ファイルを
 参照してください)：
 
     Date,Open,High,Low,Close,Volume,Adj Close
@@ -43,7 +43,7 @@ Yahoo FinanceのWebサイトでは以下のような構造のCSV形式で
 静的に型付けされた方法でファイルの内容を参照できるようになります：
 *)
 
-type Stocks = CsvProvider<"../data/MSFT.csv">
+type Stocks = CsvProvider<"../../data/MSFT.csv">
 
 (**
 生成された型にはデータをロードするための2つのstaticメソッドがあります。
@@ -91,7 +91,7 @@ for row in msft.Data do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/FSharp.Charting.0.87/FSharp.Charting.fsx"
+#load "../../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
@@ -121,7 +121,7 @@ Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
 生成された型では特定の単位が付加された値が返されるようになります。
 
 このセクションでは以下のような単純なデータが含まれた
-[`data/SmallTest.csv`](../data/SmallTest.csv) を使います：
+[`data/SmallTest.csv`](../../data/SmallTest.csv) を使います：
 
     Name,  Distance (metre), Time (s)
     First, 50.0,             3.7
@@ -135,7 +135,7 @@ Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
 `GetSample` メソッドを使っていることに注意してください。
 *)
 
-let small = CsvProvider<"../data/SmallTest.csv">.GetSample()
+let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
 
 (**
 先ほどの例と同じく、行データは値 `small` の `Data` プロパティで取得できます。
@@ -171,14 +171,14 @@ CSVの列区切り文字には代わりにセミコロン( `;` )が使われま�
 以下では区切り文字として `;` を使っています：
 *)
 
-let airQuality = CsvProvider<"../data/AirQuality.csv", ";">.GetSample()
+let airQuality = CsvProvider<"../../data/AirQuality.csv", ";">.GetSample()
 
 for row in airQuality.Data do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
 (**
-空気質のデータセット([`data/AirQuality.csv`](../data/AirQuality.csv))は
+空気質のデータセット([`data/AirQuality.csv`](../../data/AirQuality.csv))は
 統計解析向け言語 R の多くのサンプルで使われているものです。
 このデータセットの簡単な説明については
 [R の言語マニュアル](http://stat.ethz.ch/R-manual/R-devel/library/datasets/html/airquality.html)
@@ -190,11 +190,11 @@ for row in airQuality.Data do
 型プロバイダーはデフォルトで `\t` を区切り文字とするようになります。
 以下の例ではstatic引数 `IgnoreErrors` を `true` にして、
 要素数が異なる行を自動的に無視するようにもしています
-(サンプルファイル [`data/MortalityNY.csv`](../data/MortalityNY.tsv) には
+(サンプルファイル [`data/MortalityNY.csv`](../../data/MortalityNY.tsv) には
 末尾に構造化されていないデータが追加されています)：
 *)
 
-let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
+let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true>.GetSample()
 
 // 原因名をコードで検索
 // (事故で負傷した自転車走者)
@@ -213,13 +213,13 @@ for r in mortalityNy.Data do
 これはたとえばファイルが不正で、セミコロンかコロンのどちらかで
 行が区切られているような場合に有効です。
 具体的には
-`CsvProvider<"../data/AirQuality.csv", Separator=";,">`
+`CsvProvider<"../../data/AirQuality.csv", Separator=";,">`
 というようにします。
 
 ## 値無し
 
 統計的データセットでは一部の値が無しになっているということがよくあります。
-[`data/AirQuality.csv`](../data/AirQuality.csv) ファイルを開くと、
+[`data/AirQuality.csv`](../../data/AirQuality.csv) ファイルを開くと、
 一部のオゾンの観測値が `#N/A` と記録されていることが確認できます。
 このような値はfloatとしてパースされ、F#であれば `Double.NaN` という値とみなされます。
 デフォルトでは `#N/A` `NA` `:` が値無しを表す値と認識されますが、
@@ -334,7 +334,7 @@ for row in csv.Data do
 必ずしもすべての列を上書きしなければいけないわけではなく、
 一部をデフォルトのままにしておくこともできます。
 たとえばKaggleから取得したタイタニックの乗船者データ
-([`data/Titanic.csv`](../data/Titanic.csv))
+([`data/Titanic.csv`](../../data/Titanic.csv))
 を対象にしている時に、3列目( `PClass` 列)を `Passenger Class` 、
 6列目( `Fare` 列)を `decimal` ではなく `float` にしたい場合、
 これらだけを定義しておいて、その他の行が空になっているようなスキーマを
@@ -342,7 +342,7 @@ for row in csv.Data do
 
 *)
 
-let titanic1 = CsvProvider<"../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
+let titanic1 = CsvProvider<"../../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
 for row in titanic1.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
@@ -352,7 +352,7 @@ for row in titanic1.Data do
 
 *)
 
-let titanic2 = CsvProvider<"../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
+let titanic2 = CsvProvider<"../../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
 for row in titanic2.Data do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
