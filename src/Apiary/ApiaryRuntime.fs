@@ -104,7 +104,3 @@ type ApiaryRuntime =
     let headers = ApiaryUtils.parseHeaders reqHeaders @ (ApiaryUtils.emptyIfNull headers)
     let query = ApiaryUtils.emptyIfNull query
     Array.ofSeq headers, Array.ofSeq query
-
-type ApiaryGenerationHelper = 
-  static member AsyncMap<'T, 'R>(work:Async<'T>, f:Func<'T, 'R>) = 
-    async { let! v = work in return f.Invoke v }

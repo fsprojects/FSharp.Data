@@ -1,99 +1,119 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv")), ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv")), ",", '"', true, false, false)
 
     static member AsyncGetSample: () -> CsvProvider async
-    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          let value = TextConversions.AsString(row.[0])
-                                                          TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                          let value = TextConversions.AsString(row.[1])
-                                                          TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsString(row.[2])
-                                                          TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                                   [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), (IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv"), ",", '"', true, false, false)
+    let f = new Func<_,_>(fun (t:TextReader) -> 
+                             let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                                       let value = TextConversions.AsString(row.[0])
+                                                                       TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[1])
+                                                                       TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                                                       let value = TextConversions.AsString(row.[2])
+                                                                       TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+                             let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                     [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                        TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                        TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+                             CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv"), f)
 
     static member AsyncLoad: uri:string -> CsvProvider async
-    CsvFile<_>.AsyncCreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                          let value = TextConversions.AsString(row.[0])
-                                                          TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                          let value = TextConversions.AsString(row.[1])
-                                                          TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                          let value = TextConversions.AsString(row.[2])
-                                                          TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                                   [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                      TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), (IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), ",", '"', true, false, false)
+    let f = new Func<_,_>(fun (t:TextReader) -> 
+                             let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                                       let value = TextConversions.AsString(row.[0])
+                                                                       TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[1])
+                                                                       TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                                                       let value = TextConversions.AsString(row.[2])
+                                                                       TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+                             let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                                                     [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                                                        TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                                                        TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+                             CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
 
     static member GetSample: () -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv")), ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SmallTest.csv")), ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
 
     static member Load: reader:System.IO.TextReader -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), reader, ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, reader, ",", '"', true, false, false)
 
     static member Load: uri:string -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
-    CsvFile<_>.CreateNonReentrant(new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
-                                                     let value = TextConversions.AsString(row.[0])
-                                                     TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
-                                                     let value = TextConversions.AsString(row.[1])
-                                                     TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
-                                                     let value = TextConversions.AsString(row.[2])
-                                                     TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value)), new Func<_,_>(fun (row:_ * _ * _) -> 
-                                                                                                                                                              [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
-                                                                                                                                                                 TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |]), ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let t1,_,_ = row in t1)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,t2,_ = row in t2)))
+                                               TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3 = row in t3))) |])
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
 
 
 class CsvProvider+Row : string * decimal * decimal

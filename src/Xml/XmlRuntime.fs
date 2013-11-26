@@ -33,15 +33,6 @@ type XmlElement =
   
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member AsyncCreate(readerAsync:Async<TextReader>) = async {
-    use! reader = readerAsync
-    let text = reader.ReadToEnd()
-    let element = XDocument.Parse(text).Root 
-    return { XElement = element }
-  }
-
-  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateList(reader:TextReader) = 
     use reader = reader
     let text = reader.ReadToEnd()
@@ -53,22 +44,6 @@ type XmlElement =
       text.Split('\n', '\r')
       |> Array.filter (not << String.IsNullOrWhiteSpace)
       |> Array.map (fun text -> { XElement = XDocument.Parse(text).Root })
-
-  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member AsyncCreateList(readerAsync:Async<TextReader>) = async {
-    use! reader = readerAsync
-    let text = reader.ReadToEnd()
-    return
-      try
-        XDocument.Parse(text).Root.Elements()
-        |> Seq.map (fun value -> { XElement = value })
-        |> Seq.toArray
-      with _ ->
-        text.Split('\n', '\r')
-        |> Array.filter (not << String.IsNullOrWhiteSpace)
-        |> Array.map (fun text -> { XElement = XDocument.Parse(text).Root })
-  }
 
 /// [omit]
 /// Static helper methods called from the generated code

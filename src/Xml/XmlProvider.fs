@@ -48,12 +48,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         RepresentationType = resTy
         CreateFromTextReader = fun reader -> 
           resTypConv <@@ XmlElement.Create(%reader) @@>
-        AsyncCreateFromTextReader = fun readerAsync -> 
-          resTypConv <@@ XmlElement.AsyncCreate(%readerAsync) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          resTypConv <@@ XmlElement.CreateList(%reader) @@>
-        AsyncCreateFromTextReaderForSampleList = fun readerAsync -> 
-          resTypConv <@@ XmlElement.AsyncCreateList(%readerAsync) @@> }
+          resTypConv <@@ XmlElement.CreateList(%reader) @@> }
 
     generateConstructors "XML" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 

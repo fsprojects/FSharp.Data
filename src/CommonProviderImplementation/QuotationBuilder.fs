@@ -11,6 +11,34 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 
+/// Emulate the F# type provider type erasure mechanism to get the 
+/// actual (erased) type. We erase ProvidedTypes to their base type
+/// and we erase array of provided type to array of base type. This
+/// is also done recursively for all generic type parameters in case
+/// of generics
+let rec getTypeErasedTo (t:Type) =
+  match t with
+  | :? ProvidedTypeDefinition -> getTypeErasedTo t.BaseType 
+  | :? ProvidedSymbolType as sym ->
+      match sym.Kind, sym.Args with
+      | SymbolKind.SDArray, [typ] -> 
+          let (t:Type) = getTypeErasedTo typ
+          t.MakeArrayType()
+      | SymbolKind.Generic genericTypeDefinition, typeArgs ->
+          let genericArguments =
+            typeArgs
+            |> List.toArray
+            |> Array.map getTypeErasedTo
+          genericTypeDefinition.MakeGenericType(genericArguments)
+      | _ -> failwith "getTypeErasedTo: Unsupported ProvidedSymbolType" 
+  | t when t.IsGenericType && not t.IsGenericTypeDefinition ->
+      let genericTypeDefinition = t.GetGenericTypeDefinition()
+      let genericArguments = 
+        t.GetGenericArguments()
+        |> Array.map getTypeErasedTo
+      genericTypeDefinition.MakeGenericType(genericArguments)
+  | t -> t
+
 /// Dynamic operator (?) that can be used for constructing quoted F# code without 
 /// quotations (to simplify constructing F# quotations in portable libraries - where
 /// we need to pass the System.Type of various types as arguments)
@@ -31,24 +59,6 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | :? Expr as e -> e
     | :? Var as v -> Expr.Var v
     | value -> Expr.Value(value, value.GetType())
-
-  let eraseType (t:Type) = 
-    // If we just used 't' (as it is), then the method information
-    // returned by MakeGenericMethod cannot be used in Expr.Call, because
-    // it does not support GetParameters method (doh!)
-    //
-    // We emulate the F# type provider type erasure mechanism to get the 
-    // actual (erased) type and use _that_ as our generic type (because
-    // that is System.RuntimeType). We erase ProvidedTypes to their base
-    // and we erase array of provided type to array of base type.
-    match t with 
-    | :? ProvidedTypeDefinition -> t.BaseType 
-    | :? ProvidedSymbolType as sym ->
-        match sym.Kind, sym.Args with
-        | SymbolKind.SDArray, [typ] ->
-            typ.BaseType.MakeArrayType()
-        | _ -> failwith "eraseType: Unsupported ProvidedSymbolType" 
-    | _ -> t
 
   let invokeOperation (tyargs:obj, tyargsT) (args:obj, argsT) =
     // To support (e1, e2, ..) syntax, we use tuples - extract tuple arguments
@@ -71,7 +81,7 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | [| :? MethodInfo as mi |] -> 
         let mi = 
           if tyargs = [] then mi
-          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map eraseType)
+          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map getTypeErasedTo)
         if mi.IsStatic then Expr.Call(mi, args)
         else Expr.Call(List.head args, mi, List.tail args)
     | [| :? ConstructorInfo as ci |] ->
@@ -93,6 +103,3 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     FSharpValue.MakeFunction(typeof<'R>, fun args2 ->
       invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
   else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
-
-
-

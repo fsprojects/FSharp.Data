@@ -64,13 +64,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       { GeneratedType = csvType
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
-          csvErasedType?CreateNonReentrant () (stringArrayToRow, rowToStringArray, replacer.ToRuntime reader, 
-                                               separators, quote, hasHeaders, ignoreErrors, cacheRows)
-        AsyncCreateFromTextReader = fun readerAsync ->
-          csvErasedType?AsyncCreateNonReentrant () (stringArrayToRow, rowToStringArray, replacer.ToRuntime readerAsync, 
-                                                    separators, quote, hasHeaders, ignoreErrors, cacheRows)
-        CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable"
-        AsyncCreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
+          let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
+          let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
+          let body = 
+            csvErasedType?CreateNonReentrant () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
+                                                 separators, quote, hasHeaders, ignoreErrors, cacheRows)
+          Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
+        CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
     generateConstructors "CSV" sample (*sampleIsList*)false 
                          parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples

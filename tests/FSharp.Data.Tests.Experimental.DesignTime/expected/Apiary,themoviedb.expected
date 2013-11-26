@@ -6,18 +6,19 @@ class ApiaryProvider : FDR.ApiaryContext
     (this :> InternalApiaryContext)
 
     member AsyncConfiguration: query:string * string list -> headers:string * string list -> ApiaryProvider+Configuration async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = (this :> InternalApiaryContext)
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/configuration"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = (this :> InternalApiaryContext)
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/configuration"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Authentication: ApiaryProvider+Authentication with get
     (this :> InternalApiaryContext)
@@ -72,18 +73,19 @@ class ApiaryProvider : FDR.ApiaryContext
 
 class ApiaryProvider+Account : FDR.InternalApiaryContext
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+AccountList async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/account"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/account"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member List: query:string * string list -> headers:string * string list -> ApiaryProvider+AccountList
     let patternInput = 
@@ -113,19 +115,20 @@ class ApiaryProvider+Authentication : FDR.InternalApiaryContext
 
 class ApiaryProvider+Collection : FDR.InternalApiaryContext
     member AsyncGetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Collection2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/collection/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/collection/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member GetCollection: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Collection2
     let patternInput = 
@@ -145,19 +148,20 @@ class ApiaryProvider+Collection : FDR.InternalApiaryContext
 
 class ApiaryProvider+Company : FDR.InternalApiaryContext
     member AsyncGetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Company2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/company/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/company/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member GetCompany: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Company2
     let patternInput = 
@@ -187,18 +191,19 @@ class ApiaryProvider+Configuration : FDR.IJsonDocument
 
 class ApiaryProvider+Discover : FDR.InternalApiaryContext
     member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+DiscoverMovie async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/discover/movie"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/discover/movie"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Movie: query:string * string list -> headers:string * string list -> ApiaryProvider+DiscoverMovie
     let patternInput = 
@@ -217,18 +222,19 @@ class ApiaryProvider+Discover : FDR.InternalApiaryContext
 
 class ApiaryProvider+Genre2 : FDR.InternalApiaryContext
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+GenreList async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/genre/list"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/genre/list"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Id: ApiaryProvider+Id with get
     this
@@ -250,18 +256,19 @@ class ApiaryProvider+Genre2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+Job : FDR.InternalApiaryContext
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+JobList async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/job/list"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/job/list"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member List: query:string * string list -> headers:string * string list -> ApiaryProvider+JobList
     let patternInput = 
@@ -280,19 +287,20 @@ class ApiaryProvider+Job : FDR.InternalApiaryContext
 
 class ApiaryProvider+Keyword2 : FDR.InternalApiaryContext
     member AsyncGetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Keyword3 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/keyword/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/keyword/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member GetKeyword: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Keyword3
     let patternInput = 
@@ -312,19 +320,20 @@ class ApiaryProvider+Keyword2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+List : FDR.InternalApiaryContext
     member AsyncGetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+List2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/list/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/list/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member GetList: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+List2
     let patternInput = 
@@ -344,103 +353,110 @@ class ApiaryProvider+List : FDR.InternalApiaryContext
 
 class ApiaryProvider+Movie : FDR.InternalApiaryContext
     member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieChanges2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/changes"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/changes"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncGetMovie: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Movie2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieLatest async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/latest"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/latest"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieNowPlaying async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/now_playing"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/now_playing"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+MoviePopular async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/popular"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/popular"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieTopRated async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/top_rated"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/top_rated"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/upcoming"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/upcoming"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieChanges2
     let patternInput = 
@@ -544,61 +560,65 @@ class ApiaryProvider+Movie : FDR.InternalApiaryContext
 
 class ApiaryProvider+Person : FDR.InternalApiaryContext
     member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonChanges2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/changes"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/changes"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncGetPerson: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Person2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncLatest: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonLatest async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/latest"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/latest"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonPopular async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/popular"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/popular"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Changes: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonChanges2
     let patternInput = 
@@ -660,18 +680,19 @@ class ApiaryProvider+Person : FDR.InternalApiaryContext
 
 class ApiaryProvider+Review : FDR.InternalApiaryContext
     member AsyncId: query:string * string list -> headers:string * string list -> ApiaryProvider+ReviewId async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/review/{id}"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/review/{id}"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Id: query:string * string list -> headers:string * string list -> ApiaryProvider+ReviewId
     let patternInput = 
@@ -690,88 +711,94 @@ class ApiaryProvider+Review : FDR.InternalApiaryContext
 
 class ApiaryProvider+Search : FDR.InternalApiaryContext
     member AsyncCollection: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchCollection async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/collection"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/collection"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncCompany: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchCompany async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/company"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/company"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncKeyword: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchKeyword async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/keyword"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/keyword"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchList async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/list"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/list"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncMovie: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchMovie async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/movie"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/movie"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncPerson: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchPerson async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/search/person"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/search/person"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Collection: query:string * string list -> headers:string * string list -> ApiaryProvider+SearchCollection
     let patternInput = 
@@ -886,18 +913,19 @@ class ApiaryProvider+AccountList : FDR.IJsonDocument
 
 class ApiaryProvider+Collection2 : FDR.IJsonDocument
     member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+CollectionImages async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/collection/{id}/images"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/collection/{id}/images"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member BackdropPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "backdrop_path")
@@ -935,18 +963,19 @@ class ApiaryProvider+Collection2 : FDR.IJsonDocument
 
 class ApiaryProvider+Company2 : FDR.IJsonDocument
     member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+CompanyMovies async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/company/{id}/movies"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/company/{id}/movies"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Description: FDR.ApiaryDocument with get
     JsonRuntime.GetPropertyPacked(this, "description")
@@ -1013,18 +1042,19 @@ class ApiaryProvider+GenreList : FDR.IJsonDocument
 
 class ApiaryProvider+GuestSession : FDR.InternalApiaryContext
     member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationGuestSessionNew async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/authentication/guest_session/new"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/authentication/guest_session/new"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member New: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationGuestSessionNew
     let patternInput = 
@@ -1043,18 +1073,19 @@ class ApiaryProvider+GuestSession : FDR.InternalApiaryContext
 
 class ApiaryProvider+Id : FDR.InternalApiaryContext
     member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+GenreIdMovies async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/genre/{id}/movies"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/genre/{id}/movies"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Movies: query:string * string list -> headers:string * string list -> ApiaryProvider+GenreIdMovies
     let patternInput = 
@@ -1108,18 +1139,19 @@ class ApiaryProvider+JobList : FDR.IJsonDocument
 
 class ApiaryProvider+Keyword3 : FDR.IJsonDocument
     member AsyncMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+KeywordMovies async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/keyword/{id}/movies"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/keyword/{id}/movies"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
@@ -1161,48 +1193,51 @@ Content-Type:application/json", headers, query)
     apiCtx.InvokeOperation(args)
 
     member AsyncAddItem: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
 Content-Type:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "POST"
-                                          Path = "/3/list/{id}/add_item"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "POST"
+                               Path = "/3/list/{id}/add_item"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncItemStatus: query:string * string list -> headers:string * string list -> ApiaryProvider+ListItemStatus async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/list/{id}/item_status"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/list/{id}/item_status"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncRemoveItem: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
 Content-Type:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "POST"
-                                          Path = "/3/list/{id}/remove_item"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "POST"
+                               Path = "/3/list/{id}/remove_item"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member CreatedBy: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "created_by")
@@ -1303,187 +1338,200 @@ class ApiaryProvider+Movie2 : FDR.IJsonDocument
     apiCtx.InvokeOperation(args)
 
     member AsyncAccountStates: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieAccountStates async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/account_states"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/account_states"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncAlternativeTitles: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieAlternativeTitles async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/alternative_titles"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/alternative_titles"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncCasts: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieCasts async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/casts"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/casts"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieChanges async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/changes"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/changes"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieImages async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/images"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/images"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncKeywords: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieKeywords async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/keywords"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/keywords"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncLists: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieLists async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/lists"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/lists"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncRating: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieRating async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json
 Content-Type:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "POST"
-                                          Path = "/3/movie/{id}/rating"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "POST"
+                               Path = "/3/movie/{id}/rating"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncReleases: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieReleases async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/releases"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/releases"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncReviews: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieReviews async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/reviews"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/reviews"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncSimilarMovies: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/similar_movies"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/similar_movies"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncTrailers: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieTrailers async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/trailers"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/trailers"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncTranslations: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieTranslations async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/movie/{id}/translations"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/movie/{id}/translations"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member BackdropPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "backdrop_path")
@@ -1897,46 +1945,49 @@ class ApiaryProvider+Person2 : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "also_known_as")
 
     member AsyncChanges: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonChanges async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/{id}/changes"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/{id}/changes"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncCredits: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonCredits async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/{id}/credits"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/{id}/credits"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncImages: query:string * string list -> headers:string * string list -> ApiaryProvider+PersonImages async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/person/{id}/images"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = LanguagePrimitives+IntrinsicFunctions.UnboxGeneric(this).Context
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/person/{id}/images"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member Biography: string with get
     let value = JsonRuntime.TryGetPropertyUnpacked(this, "biography")
@@ -2220,18 +2271,19 @@ class ApiaryProvider+SearchPerson : FDR.IJsonDocument
 
 class ApiaryProvider+Session : FDR.InternalApiaryContext
     member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationSessionNew async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/authentication/session/new"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/authentication/session/new"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member New: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationSessionNew
     let patternInput = 
@@ -2250,18 +2302,19 @@ class ApiaryProvider+Session : FDR.InternalApiaryContext
 
 class ApiaryProvider+Token : FDR.InternalApiaryContext
     member AsyncNew: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationTokenNew async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/3/authentication/token/new"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/3/authentication/token/new"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member New: query:string * string list -> headers:string * string list -> ApiaryProvider+AuthenticationTokenNew
     let patternInput = 

@@ -108,8 +108,7 @@ module AssemblyReplacer =
             else
               let typeArguments = 
                 t.GetGenericArguments()
-                |> Seq.map (replaceType asmMappings typeCache)
-                |> Seq.toArray
+                |> Array.map (replaceType asmMappings typeCache)
               newT.MakeGenericType(typeArguments)
           else 
             getType (fixName t.FullName)
@@ -173,8 +172,7 @@ module AssemblyReplacer =
         let t = getType toAsm m.DeclaringType asmMappings typeCache
         let parameterTypes = 
           m.GetParameters() 
-          |> Seq.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
-          |> Seq.toArray
+          |> Array.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
         let newM =
           if m.IsGenericMethod then 
             let genericMethod = t.GetMethod(m.Name)
@@ -183,8 +181,7 @@ module AssemblyReplacer =
             else
               let typeArguments = 
                 m.GetGenericArguments()
-                |> Seq.map (fun t -> replaceType asmMappings typeCache t) 
-                |> Seq.toArray            
+                |> Array.map (fun t -> replaceType asmMappings typeCache t) 
               genericMethod.MakeGenericMethod(typeArguments)
           else 
             t.GetMethod(m.Name, parameterTypes)
@@ -199,8 +196,7 @@ module AssemblyReplacer =
       let t = getType toAsm c.DeclaringType asmMappings typeCache
       let parameterTypes = 
         c.GetParameters() 
-        |> Seq.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
-        |> Seq.toArray
+        |> Array.map (fun p -> replaceType asmMappings typeCache p.ParameterType) 
       let newC = t.GetConstructor(parameterTypes)
       if newC = null then
         failwithf "Constructor '%O' of type '%O' not found in '%s'" c t toAsm.Location

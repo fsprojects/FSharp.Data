@@ -129,23 +129,12 @@ module internal ApiaryTypeBuilder =
       |> bodyResConv
 
     // Generating code for async is more tricky, because we need to perform
-    // the mapping not on the result (as above) but inside async block. So we
-    // generate function and apply 'ApiaryGenerationHelper.AsyncMap(work, f)'
-    let asyncMap (asyncWork:Expr) =
-      let (?) = ProviderImplementation.QuotationBuilder.(?)
-      let apiaryGenTy = ctx.Replacer.ToRuntime typeof<ApiaryGenerationHelper>
-      let apiaryDocTy = ctx.Replacer.ToRuntime typeof<ApiaryDocument>
-
-      let asyncWork = ctx.Replacer.ToRuntime asyncWork
-      let convFunc = ReflectionHelpers.makeDelegate bodyResConv apiaryDocTy
-      apiaryGenTy?AsyncMap (apiaryDocTy, resultTy) (asyncWork, convFunc)
-
-
+    // the mapping not on the result (as above) but inside async block.
     asyncM.InvokeCode <- fun parameters ->
       let parameters = parameters |> Seq.map ctx.Replacer.ToDesignTime 
-      <@@ let apiCtx, args = %(makeInvokeCode parameters)
-          apiCtx.AsyncInvokeOperation(args) @@>
-      |> asyncMap
+      let asyncInvoke = <@ let apiCtx, args = %(makeInvokeCode parameters)
+                           apiCtx.AsyncInvokeOperation(args) @>
+      ProviderHelpers.asyncMap ctx.Replacer resultTy asyncInvoke bodyResConv
 
     asyncM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
     normalM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
