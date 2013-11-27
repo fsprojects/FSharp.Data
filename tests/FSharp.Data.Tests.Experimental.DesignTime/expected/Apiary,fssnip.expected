@@ -8,33 +8,35 @@ class ApiaryProvider : FDR.ApiaryContext
 
 class ApiaryProvider+Snippet : FDR.InternalApiaryContext
     member AsyncGetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Snippet2 async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/1/snippet/{id}"
-                                          Arguments = [| ("{id}",
-                                                          id) |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(id)))
+    let f = new Func<_,_>(id))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/1/snippet/{id}"
+                               Arguments = [| ("{id}",
+                                               id) |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+SnippetList[] async
-    ApiaryGenerationHelper.AsyncMap(let patternInput = 
-                                        let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-                                        let query, headers = patternInput
-                                        let apiCtx = this
-                                        (apiCtx :> ApiaryOperations),
-                                        { Method = "GET"
-                                          Path = "/1/snippet"
-                                          Arguments = [| |]
-                                          Headers = headers
-                                          Query = query }
-                                    let args, apiCtx = patternInput
-                                    apiCtx.AsyncInvokeOperation(args), new Func<_,_>(fun (t:ApiaryDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+    let f = new Func<_,_>(fun (t:ApiaryDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id))))
+    TextRuntime.AsyncMap(let patternInput = 
+                             let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
+                             let query, headers = patternInput
+                             let apiCtx = this
+                             (apiCtx :> ApiaryOperations),
+                             { Method = "GET"
+                               Path = "/1/snippet"
+                               Arguments = [| |]
+                               Headers = headers
+                               Query = query }
+                         let args, apiCtx = patternInput
+                         apiCtx.AsyncInvokeOperation(args), f)
 
     member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Snippet2
     let patternInput = 

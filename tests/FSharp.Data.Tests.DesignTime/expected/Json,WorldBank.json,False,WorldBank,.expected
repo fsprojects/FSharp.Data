@@ -1,9 +1,11 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+WorldBankChoice async
-    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), "")
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+WorldBankChoice async
-    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
 
     static member GetSample: () -> JsonProvider+WorldBankChoice
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json")), "")

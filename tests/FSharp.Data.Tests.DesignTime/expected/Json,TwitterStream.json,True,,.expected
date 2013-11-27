@@ -1,9 +1,11 @@
 class JsonProvider
     static member AsyncGetSamples: () -> JsonProvider+Entity[] async
-    JsonDocument.AsyncCreateList((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterStream.json"), "")
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.CreateList(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterStream.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Entity async
-    JsonDocument.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), "")
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
 
     static member GetSamples: () -> JsonProvider+Entity[]
     JsonDocument.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "TwitterStream.json")), "")

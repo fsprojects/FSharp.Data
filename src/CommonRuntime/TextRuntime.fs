@@ -112,3 +112,7 @@ type TextRuntime =
   /// Turn a .NET type Nullable<'T> to an F# option type Option<'T>
   static member NullableToOption (nullable:Nullable<_>) =
     if nullable.HasValue then Some nullable.Value else None
+
+  /// Turn a sync operation into an async operation
+  static member AsyncMap<'T, 'R>(valueAsync:Async<'T>, mapping:Func<'T, 'R>) = 
+    async { let! value = valueAsync in return mapping.Invoke value }

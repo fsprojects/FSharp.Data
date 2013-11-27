@@ -14,6 +14,7 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.QuotationBuilder
 
 type Platform =
     | Full
@@ -402,19 +403,6 @@ module Debug =
                 print "    "                
                 print str
                 println()
-
-            let rec getTypeErasedTo (t:Type) =
-                if t :? ProvidedTypeDefinition then
-                    t.BaseType
-                elif t.GetGenericArguments() |> Seq.exists (fun t -> t :? ProvidedTypeDefinition) then
-                     let genericTypeDefinition = t.GetGenericTypeDefinition()
-                     let genericArguments = 
-                        t.GetGenericArguments()
-                        |> Seq.map getTypeErasedTo
-                        |> Seq.toArray
-                     genericTypeDefinition.MakeGenericType(genericArguments)
-                else
-                    t
 
             let getMethodBody (m: ProvidedMethod) = 
                 seq { if not m.IsStatic then yield (getTypeErasedTo m.DeclaringType.BaseType)

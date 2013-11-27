@@ -51,10 +51,10 @@ module ReflectionHelpers =
   open Microsoft.FSharp.Quotations
 
   let makeDelegate (exprfunc:Expr -> Expr) argType = 
-    let var = Var.Global("t", argType)
+    let var = Var("t", argType)
     let convBody = exprfunc (Expr.Var var)
     Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
-        
+
 // ----------------------------------------------------------------------------------------------
 
 type DisposableTypeProviderForNamespaces() =
@@ -76,8 +76,16 @@ type DisposableTypeProviderForNamespaces() =
 module ProviderHelpers =
 
   open System.IO
+  open FSharp.Data.Runtime
   open FSharp.Data.Runtime.Caching
   open FSharp.Data.Runtime.IO
+
+  let asyncMap (replacer:AssemblyReplacer) (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
+      let (?) = ProviderImplementation.QuotationBuilder.(?)
+      let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
+      let f = Var("f", convFunc.Type)
+      let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f)
+      Expr.Let(f, convFunc, body) |> replacer.ToRuntime
 
   let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
   let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" (TimeSpan.FromMinutes 30.0)
@@ -144,12 +152,8 @@ module ProviderHelpers =
       RepresentationType : Type 
       // the constructor from a text reader to the representation
       CreateFromTextReader : Expr<TextReader> -> Expr
-      // async version of the constructor from a text reader to the representation
-      AsyncCreateFromTextReader : Expr<Async<TextReader>> -> Expr
       // the constructor from a text reader to an array of the representation
-      CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr
-      // async version of the constructor from a text reader to an array of the representation
-      AsyncCreateFromTextReaderForSampleList : Expr<Async<TextReader>> -> Expr }
+      CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 
   /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s)
   /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
@@ -185,8 +189,8 @@ module ProviderHelpers =
     let spec = getSpecFromSamples typedSamples
 
     if generateDefaultConstructor then        
-        assert (not sampleIsList)
-        assert (spec.GeneratedType :> Type = spec.RepresentationType)
+      assert (not sampleIsList)
+      assert (spec.GeneratedType :> Type = spec.RepresentationType)
     
     let resultType = spec.RepresentationType
     let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
@@ -213,8 +217,7 @@ module ProviderHelpers =
       let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
       let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
       m.InvokeCode <- fun (Singleton reader) -> 
-        <@ %%reader:TextReader @>
-        |> spec.CreateFromTextReader 
+        reader |> Expr.Cast |> spec.CreateFromTextReader
       m.AddXmlDoc <| sprintf "Loads %s from the specified reader" formatName
       yield m :> _
       
@@ -231,14 +234,14 @@ module ProviderHelpers =
       let args = [ ProvidedParameter("uri", typeof<string>) ]
       let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, IsStaticMethod = true)
       m.InvokeCode <- fun (Singleton uri) -> 
-        <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri @>
-        |> spec.AsyncCreateFromTextReader
+        let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri @>
+        asyncMap replacer resultType readerAsync spec.CreateFromTextReader
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m :> _
       
       if sampleIsList then
 
-        // the [,] case needs more work, and it's a weird scenario anyway
+        // the [,] case needs more work, and it's a weird scenario anyway, so we won't support it
         if not resultType.IsArray then
 
           let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
@@ -257,8 +260,8 @@ module ProviderHelpers =
             // Generate static AsyncGetSamples method
             let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
             m.InvokeCode <- fun _ -> 
-              <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
-              |> spec.AsyncCreateFromTextReaderForSampleList
+              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+              asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
             yield m :> _
 
       else 
@@ -282,8 +285,8 @@ module ProviderHelpers =
           // Generate static AsyncGetSample method
           let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
           m.InvokeCode <- fun _ -> 
-            <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
-            |> spec.AsyncCreateFromTextReader
+            let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+            asyncMap replacer resultType readerAsync spec.CreateFromTextReader
           yield m :> _
 
     ] |> spec.GeneratedType.AddMembers

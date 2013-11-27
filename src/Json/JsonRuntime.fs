@@ -49,13 +49,6 @@ type JsonDocument =
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member AsyncCreate(readerAsync:Async<TextReader>, culture) = async {
-    use! reader = readerAsync
-    return JsonDocument.Create(reader, culture)
-  }
-
-  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member CreateList(reader:TextReader, culture) = 
     use reader = reader
     let text = reader.ReadToEnd()
@@ -67,13 +60,6 @@ type JsonDocument =
       text.Split('\n', '\r')
       |> Array.filter (not << String.IsNullOrWhiteSpace)
       |> Array.map (fun text -> JsonValue.Parse(text, culture) |> JsonDocument.Create)
-
-  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-  static member AsyncCreateList(readerAsync:Async<TextReader>, culture) = async {
-    use! reader = readerAsync
-    return JsonDocument.CreateList(reader, culture)
-  }
 
 /// [omit]
 /// Static helper methods called from the generated code
@@ -123,12 +109,6 @@ type JsonRuntime =
   /// Converts JSON array to array of target types
   static member ConvertArray<'T>(doc:IJsonDocument, mapping:Func<IJsonDocument,'T>) = 
     doc.JsonValue.AsArray() |> Array.map (doc.CreateNew >> mapping.Invoke)
-
-  /// Converts JSON array to array of target types, asynchronously
-  static member AsyncConvertArray<'T>(docAsync:Async<IJsonDocument>, mapping:Func<IJsonDocument,'T>) = async {
-    let! doc = docAsync
-    return doc.JsonValue.AsArray() |> Array.map (doc.CreateNew >> mapping.Invoke)
-  }
 
   /// Get json property and wrap in json document
   static member GetPropertyPacked(doc:IJsonDocument, name) =

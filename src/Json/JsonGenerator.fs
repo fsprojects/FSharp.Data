@@ -146,13 +146,8 @@ module JsonTypeBuilder =
         let output = generateJsonType ctx input typ
 
         // the async version is only used when the top level element returned by Parse/Load is an array
-        let conv = fun (jDoc:Expr)-> 
-          let isAsync = jDoc.Type.Name.StartsWith "FSharpAsync`1"
-          // TODO: use the same as in ApiaryGenerationHelper.AsyncMap
-          if isAsync then
-            ctx.JsonRuntimeType?AsyncConvertArray (output.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, output.ConverterFunc ctx)
-          else
-            ctx.JsonRuntimeType?ConvertArray (output.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, output.ConverterFunc ctx)
+        let conv = fun (jDoc:Expr) -> 
+          ctx.JsonRuntimeType?ConvertArray (output.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, output.ConverterFunc ctx)
         
         { ConvertedType = output.ConvertedType.MakeArrayType()
           Converter = conv

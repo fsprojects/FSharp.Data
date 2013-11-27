@@ -53,12 +53,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         RepresentationType = output.ConvertedType
         CreateFromTextReader = fun reader -> 
           <@@ JsonDocument.Create(%reader, culture) @@> |> output.Converter
-        AsyncCreateFromTextReader = fun readerAsync -> 
-          <@@ JsonDocument.AsyncCreate(%readerAsync, culture) @@> |> output.Converter
         CreateFromTextReaderForSampleList = fun reader -> 
-          <@@ JsonDocument.CreateList(%reader, culture) @@> |> output.Converter
-        AsyncCreateFromTextReaderForSampleList = fun readerAsync -> 
-          <@@ JsonDocument.AsyncCreateList(%readerAsync, culture) @@> |> output.Converter }
+          <@@ JsonDocument.CreateList(%reader, culture) @@> |> output.Converter }
 
     generateConstructors "JSON" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 

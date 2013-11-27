@@ -1,9 +1,11 @@
 class XmlProvider
     static member AsyncGetSample: () -> XmlProvider+Ordercontainer async
-    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "projects.xml"))
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "projects.xml"), f)
 
     static member AsyncLoad: uri:string -> XmlProvider+Ordercontainer async
-    XmlElement.AsyncCreate((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri))
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
 
     static member GetSample: () -> XmlProvider+Ordercontainer
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "projects.xml")))
