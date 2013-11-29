@@ -23,7 +23,7 @@ let (@@) a b = Path.Combine(a, b)
 let template = __SOURCE_DIRECTORY__ @@ "../../docs/tools/templates/template.cshtml"
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.7-beta/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.10-beta/"
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
