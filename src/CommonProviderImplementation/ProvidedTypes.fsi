@@ -44,6 +44,7 @@ type ProvidedConstructor =
     /// Set the quotation used to compute the implementation of invocations of this constructor.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
     member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
 
     /// Set the target and arguments of the base constructor call. Only used for generated types.
@@ -57,6 +58,7 @@ type ProvidedConstructor =
     /// Add definition location information to the provided constructor.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
     
+    member IsTypeInitializer : bool with get,set
 
 type ProvidedMethod = 
     inherit System.Reflection.MethodInfo
@@ -88,6 +90,7 @@ type ProvidedMethod =
     /// Set the quotation used to compute the implementation of invocations of this method.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
     member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
 
     /// Add definition location information to the provided type definition.
@@ -116,6 +119,7 @@ type ProvidedProperty =
     member AddXmlDocComputed   : xmlDocFunction: (unit -> string) -> unit   
     
     /// Get or set a flag indicating if the property is static.
+    /// FSharp.Data addition: the getter is used by Debug.fs
     member IsStatic             : bool with get,set
 
     /// Set the quotation used to compute the implementation of gets of this property.
@@ -202,6 +206,9 @@ type ProvidedField =
     /// Add definition location information to the provided field definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
+    member SetFieldAttributes : attributes : FieldAttributes -> unit
+
+/// FSharp.Data addition: SymbolKind is used by AssemblyReplacer.fs
 /// Represents the type constructor in a provided symbol type.
 type SymbolKind = 
     | SDArray 
@@ -211,6 +218,7 @@ type SymbolKind =
     | Generic of System.Type 
     | FSharpTypeAbbreviation of (System.Reflection.Assembly * string * string[])
 
+/// FSharp.Data addition: ProvidedSymbolType is used by AssemblyReplacer.fs
 /// Represents an array or other symbolic type involving a provided type as the argument.
 /// See the type provider spec for the methods that must be implemented.
 /// Note that the type provider specification does not require us to implement pointer-equality for provided types.
@@ -345,7 +353,16 @@ type ProvidedTypeDefinition =
     [<Experimental("SuppressRelocation is a workaround and likely to be removed")>]
     member SuppressRelocation : bool  with get,set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
     member MakeParametricType : name:string * args:obj[] -> ProvidedTypeDefinition
+
+    /// FSharp.Data addition: this method is used by Debug.fs and QuotationBuilder.fs
+    /// Emulate the F# type provider type erasure mechanism to get the 
+    /// actual (erased) type. We erase ProvidedTypes to their base type
+    /// and we erase array of provided type to array of base type. In the
+    /// case of generics all the generic type arguments are also recursively
+    /// replaced with the erased-to types
+    static member EraseType : t:Type -> Type
 
 /// A provided generated assembly
 type ProvidedAssembly =
@@ -382,6 +399,7 @@ type TypeProviderForNamespaces =
     /// Add a namespace of provided types.
     member internal AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
 
+    /// FSharp.Data addition: this method is used by Debug.fs
     /// Get all namespace with their provided types.
     member Namespaces : (string * ProvidedTypeDefinition list) seq with get
 

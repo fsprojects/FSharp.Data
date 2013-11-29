@@ -11,34 +11,6 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 
-/// Emulate the F# type provider type erasure mechanism to get the 
-/// actual (erased) type. We erase ProvidedTypes to their base type
-/// and we erase array of provided type to array of base type. This
-/// is also done recursively for all generic type parameters in case
-/// of generics
-let rec getTypeErasedTo (t:Type) =
-  match t with
-  | :? ProvidedTypeDefinition -> getTypeErasedTo t.BaseType 
-  | :? ProvidedSymbolType as sym ->
-      match sym.Kind, sym.Args with
-      | SymbolKind.SDArray, [typ] -> 
-          let (t:Type) = getTypeErasedTo typ
-          t.MakeArrayType()
-      | SymbolKind.Generic genericTypeDefinition, typeArgs ->
-          let genericArguments =
-            typeArgs
-            |> List.toArray
-            |> Array.map getTypeErasedTo
-          genericTypeDefinition.MakeGenericType(genericArguments)
-      | _ -> failwith "getTypeErasedTo: Unsupported ProvidedSymbolType" 
-  | t when t.IsGenericType && not t.IsGenericTypeDefinition ->
-      let genericTypeDefinition = t.GetGenericTypeDefinition()
-      let genericArguments = 
-        t.GetGenericArguments()
-        |> Array.map getTypeErasedTo
-      genericTypeDefinition.MakeGenericType(genericArguments)
-  | t -> t
-
 /// Dynamic operator (?) that can be used for constructing quoted F# code without 
 /// quotations (to simplify constructing F# quotations in portable libraries - where
 /// we need to pass the System.Type of various types as arguments)
@@ -81,7 +53,7 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
     | [| :? MethodInfo as mi |] -> 
         let mi = 
           if tyargs = [] then mi
-          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map getTypeErasedTo)
+          else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map ProvidedTypeDefinition.EraseType)
         if mi.IsStatic then Expr.Call(mi, args)
         else Expr.Call(List.head args, mi, List.tail args)
     | [| :? ConstructorInfo as ci |] ->
