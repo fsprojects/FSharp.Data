@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "FSharp.Data.dll" ]
+let referenceBinaries = [ "FSharp.Data.dll"; "FSharp.Data.Experimental.dll" ]
 // Web site location for the generated documentation
 let website = "/FSharp.Data"
 
@@ -20,7 +20,7 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Formatting.2.2.7-beta/lib/net40"
+#I "../../packages/FSharp.Formatting.2.2.10-beta/lib/net40"
 #I "../../packages/RazorEngine.3.4.0/lib/net45/"
 #r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
@@ -49,14 +49,12 @@ let output     = __SOURCE_DIRECTORY__ @@ "../output"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let reference  = __SOURCE_DIRECTORY__ @@ "reference"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.7-beta/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.10-beta/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)
 let layoutRoots =
   [ templates
-    reference 
     formatting @@ "templates" 
     formatting @@ "templates/reference" ]
 
@@ -72,10 +70,10 @@ let copyFiles () =
 // Build API reference from XML comments
 let buildReference () =
   CleanDir (output @@ "reference")
-  for lib in referenceBinaries do
-    MetadataFormat.Generate
-      ( bin @@ lib, output @@ "reference", layoutRoots, 
-        parameters = ("root", root)::info )
+  MetadataFormat.Generate
+    ( referenceBinaries |> List.map ((@@) bin),
+      output @@ "reference", layoutRoots, 
+      parameters = ("root", root)::info )
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
