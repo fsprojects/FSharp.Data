@@ -129,7 +129,7 @@ module AssemblyReplacer =
     t |> innerGetAssemblies |> Seq.distinct |> Seq.toList
 
   and private replaceType asmMappings typeCache (t : Type) =    
-    if t.GetType().Name = "ProvidedSymbolType" then t
+    if t.GetType() = typeof<ProvidedSymbolType> then t
     elif t.GetType() = typeof<ProvidedTypeDefinition> then t
     else replace asmMappings (t, getAssemblies t) (fun toAsm -> getType toAsm t asmMappings typeCache)
 

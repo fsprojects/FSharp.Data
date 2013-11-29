@@ -272,9 +272,10 @@ module internal Misc =
             else r
         trans q
 
-    let transQuotationToCode isGenerated qexprf (argExprs: Quotations.Expr[]) = 
+    // FSharp.Data change: use the real variable names instead of indices, to improve output of Debug.fs
+    let transQuotationToCode isGenerated qexprf (paramNames: string[]) (argExprs: Quotations.Expr[]) = 
         // add let bindings for arguments to ensure that arguments will be evaluated
-        let vars = argExprs |> Array.mapi (fun i e -> Quotations.Var(("var" + string i), e.Type))
+        let vars = argExprs |> Array.mapi (fun i e -> Quotations.Var(paramNames.[i], e.Type))
         let expr = qexprf ([for v in vars -> Quotations.Expr.Var v])
 
         let pairs = Array.zip argExprs vars
@@ -378,7 +379,10 @@ type ProvidedConstructor(parameters : ProvidedParameter list) =
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f -> transQuotationToCode isGenerated f
+        | Some f -> 
+            // FSharp.Data change: use the real variable names instead of indices, to improve output of Debug.fs
+            let paramNames = parameters |> List.map (fun p -> p.Name) |> Array.ofList
+            transQuotationToCode isGenerated f paramNames
         | None -> failwith (sprintf "ProvidedConstructor: no invoker for '%s'" (nameText()))
 
     member this.GetBaseConstructorCallInternal isGenerated =
@@ -439,7 +443,14 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
 
     member this.GetInvokeCodeInternal isGenerated =
         match invokeCode with
-        | Some f ->  transQuotationToCode isGenerated f
+        | Some f -> 
+            // FSharp.Data change: use the real variable names instead of indices, to improve output of Debug.fs
+            let paramNames = 
+                parameters
+                |> List.map (fun p -> p.Name) 
+                |> List.append (if this.IsStatic then [] else ["this"])
+                |> Array.ofList
+            transQuotationToCode isGenerated f paramNames
         | None -> failwith (sprintf "ProvidedMethod: no invoker for %s on type %s" this.Name (if declaringType=null then "<not yet known type>" else declaringType.FullName))
    // Implement overloads
     override this.GetParameters() = argParams |> Array.ofList
@@ -887,6 +898,19 @@ type ProvidedTypeBuilder() =
 [<Class>]
 type ProvidedMeasureBuilder() =
 
+    // TODO: this shouldn't be hardcoded, but without creating a dependency on Microsoft.FSharp.Metadata in F# PowerPack
+    // there seems to be no way to check if a type abbreviation exists
+    let unitNamesTypeAbbreviations = 
+        [ "meter"; "hertz"; "newton"; "pascal"; "joule"; "watt"; "coulomb"; 
+          "volt"; "farad"; "ohm"; "siemens"; "weber"; "tesla"; "henry"
+          "lumen"; "lux"; "becquerel"; "gray"; "sievert"; "katal" ]
+        |> Set.ofList
+
+    let unitSymbolsTypeAbbreviations = 
+        [ "m"; "kg"; "s"; "A"; "K"; "mol"; "cd"; "Hz"; "N"; "Pa"; "J"; "W"; "C"
+          "V"; "F"; "S"; "Wb"; "T"; "lm"; "lx"; "Bq"; "Gy"; "Sv"; "kat"; "H" ]
+        |> Set.ofList
+
     static let theBuilder = ProvidedMeasureBuilder()
     static member Default = theBuilder
     member b.One = typeof<Core.CompilerServices.MeasureOne> 
@@ -894,16 +918,30 @@ type ProvidedMeasureBuilder() =
     member b.Inverse m = typedefof<Core.CompilerServices.MeasureInverse<_>>.MakeGenericType [| m |] 
     member b.Ratio (m1, m2) = b.Product(m1, b.Inverse m2)
     member b.Square m = b.Product(m, m)
-    member b.SI m = 
-        match typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames."+m) with 
-        | null ->         
+
+    // FSharp.Data change: if the unit is not a valid type, instead 
+    // of assuming it's a type abbreviation, which may not be the case and cause a
+    // problem later on, check the list of valid abbreviations
+    member b.SI (m:string) = 
+        let mLowerCase = m.ToLowerInvariant()
+        let abbreviation =            
+            if unitNamesTypeAbbreviations.Contains mLowerCase then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", mLowerCase)
+            elif unitSymbolsTypeAbbreviations.Contains m then
+                Some ("Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols", m)
+            else
+                None
+        match abbreviation with
+        | Some (ns, unitName) ->
             ProvidedSymbolType
                (SymbolKind.FSharpTypeAbbreviation
                    (typeof<Core.CompilerServices.MeasureOne>.Assembly,
-                    "Microsoft.FSharp.Data.UnitSystems.SI.UnitNames", 
-                    [| m |]), 
+                    ns,
+                    [| unitName |]), 
                 []) :> Type
-        | v -> v
+        | None ->
+            typedefof<list<int>>.Assembly.GetType("Microsoft.FSharp.Data.UnitSystems.SI.UnitNames." + mLowerCase)
+
     member b.AnnotateType (basicType, annotation) = ProvidedSymbolType(Generic basicType, annotation) :> Type
 
 
@@ -1188,6 +1226,35 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     override this.MakePointerType() = ProvidedSymbolType(SymbolKind.Pointer, [this]) :> Type
     override this.MakeByRefType() = ProvidedSymbolType(SymbolKind.ByRef, [this]) :> Type
 
+    // FSharp.Data addition: this method is used by Debug.fs and QuotationBuilder.fs
+    // Emulate the F# type provider type erasure mechanism to get the 
+    // actual (erased) type. We erase ProvidedTypes to their base type
+    // and we erase array of provided type to array of base type. In the
+    // case of generics all the generic type arguments are also recursively
+    // replaced with the erased-to types
+    static member EraseType(t:Type) =
+        match t with
+        | :? ProvidedTypeDefinition -> ProvidedTypeDefinition.EraseType t.BaseType 
+        | :? ProvidedSymbolType as sym ->
+            match sym.Kind, sym.Args with
+            | SymbolKind.SDArray, [typ] -> 
+                let (t:Type) = ProvidedTypeDefinition.EraseType typ
+                t.MakeArrayType()
+            | SymbolKind.Generic genericTypeDefinition, typeArgs ->
+                let genericArguments =
+                  typeArgs
+                  |> List.toArray
+                  |> Array.map ProvidedTypeDefinition.EraseType
+                genericTypeDefinition.MakeGenericType(genericArguments)
+            | _ -> failwith "getTypeErasedTo: Unsupported ProvidedSymbolType" 
+        | t when t.IsGenericType && not t.IsGenericTypeDefinition ->
+            let genericTypeDefinition = t.GetGenericTypeDefinition()
+            let genericArguments = 
+              t.GetGenericArguments()
+              |> Array.map ProvidedTypeDefinition.EraseType
+            genericTypeDefinition.MakeGenericType(genericArguments)
+        | t -> t
+
     // The binding attributes are always set to DeclaredOnly ||| Static ||| Instance ||| Public when GetMembers is called directly by the F# compiler
     // However, it's possible for the framework to generate other sets of flags in some corner cases (e.g. via use of `enum` with a provided type as the target)
     override this.GetMembers bindingAttr = 
@@ -1215,7 +1282,9 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
         if bindingAttr.HasFlag(BindingFlags.DeclaredOnly) || this.BaseType = null then mems
         else 
-            let baseMems = this.BaseType.GetMembers bindingAttr
+            // FSharp.Data change: just using this.BaseType is not enough in the case of CsvProvider,
+            // because the base type is CsvRow<RowType>, so we have to erase recursively to CsvRow<TupleType>
+            let baseMems = (ProvidedTypeDefinition.EraseType this.BaseType).GetMembers bindingAttr
             Array.append mems baseMems
 
     override this.GetNestedTypes bindingAttr = 
@@ -2078,7 +2147,11 @@ module Local =
         }
 
 
+#if FX_NO_LOCAL_FILESYSTEM
+type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) =
+#else
 type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) as this =
+#endif
     let otherNamespaces = ResizeArray<string * list<ProvidedTypeDefinition>>()
 
     let providedNamespaces = 
@@ -2127,6 +2200,8 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
+    // FSharp.Data addition: this method is used by Debug.fs
+    member __.Namespaces = Seq.readonly otherNamespaces
     member self.Invalidate() = invalidateE.Trigger(self,EventArgs())
     interface ITypeProvider with
         [<CLIEvent>]

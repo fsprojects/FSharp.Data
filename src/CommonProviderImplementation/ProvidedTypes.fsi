@@ -17,13 +17,13 @@ open System.Linq.Expressions
 open Microsoft.FSharp.Core.CompilerServices
 
 /// Represents an erased provided parameter
-type internal ProvidedParameter =
+type ProvidedParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType: Type * ?isOut:bool * ?optionalValue:obj -> ProvidedParameter
     member IsParamArray : bool with get,set
 
 /// Represents an erased provided constructor.
-type internal ProvidedConstructor =    
+type ProvidedConstructor =    
     inherit System.Reflection.ConstructorInfo
 
     /// Create a new provided constructor. It is not initially associated with any specific provided type definition.
@@ -44,6 +44,9 @@ type internal ProvidedConstructor =
     /// Set the quotation used to compute the implementation of invocations of this constructor.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
+    member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
+
     /// Set the target and arguments of the base constructor call. Only used for generated types.
     member BaseConstructorCall : (Quotations.Expr list -> ConstructorInfo * Quotations.Expr list) with set
 
@@ -57,7 +60,7 @@ type internal ProvidedConstructor =
     
     member IsTypeInitializer : bool with get,set
 
-type internal ProvidedMethod = 
+type ProvidedMethod = 
     inherit System.Reflection.MethodInfo
 
     /// Create a new provided method. It is not initially associated with any specific provided type definition.
@@ -87,6 +90,8 @@ type internal ProvidedMethod =
     /// Set the quotation used to compute the implementation of invocations of this method.
     member InvokeCode         : (Quotations.Expr list -> Quotations.Expr) with set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
+    member internal GetInvokeCodeInternal : bool -> (Quotations.Expr [] -> Quotations.Expr)
 
     /// Add definition location information to the provided type definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
@@ -94,7 +99,7 @@ type internal ProvidedMethod =
 
 
 /// Represents an erased provided property.
-type internal ProvidedProperty =
+type ProvidedProperty =
     inherit System.Reflection.PropertyInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -114,7 +119,8 @@ type internal ProvidedProperty =
     member AddXmlDocComputed   : xmlDocFunction: (unit -> string) -> unit   
     
     /// Get or set a flag indicating if the property is static.
-    member IsStatic             : bool with set
+    /// FSharp.Data addition: the getter is used by Debug.fs
+    member IsStatic             : bool with get,set
 
     /// Set the quotation used to compute the implementation of gets of this property.
     member GetterCode           : (Quotations.Expr list -> Quotations.Expr) with set
@@ -126,7 +132,7 @@ type internal ProvidedProperty =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided property.
-type internal ProvidedEvent =
+type ProvidedEvent =
     inherit System.Reflection.EventInfo
 
     /// Create a new provided type. It is not initially associated with any specific provided type definition.
@@ -155,7 +161,7 @@ type internal ProvidedEvent =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type internal ProvidedLiteralField =
+type ProvidedLiteralField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -178,7 +184,7 @@ type internal ProvidedLiteralField =
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
 /// Represents an erased provided field.
-type internal ProvidedField =
+type ProvidedField =
     inherit System.Reflection.FieldInfo
 
     /// Create a new provided field. It is not initially associated with any specific provided type definition.
@@ -202,9 +208,33 @@ type internal ProvidedField =
 
     member SetFieldAttributes : attributes : FieldAttributes -> unit
 
+/// FSharp.Data addition: SymbolKind is used by AssemblyReplacer.fs
+/// Represents the type constructor in a provided symbol type.
+type SymbolKind = 
+    | SDArray 
+    | Array of int 
+    | Pointer 
+    | ByRef 
+    | Generic of System.Type 
+    | FSharpTypeAbbreviation of (System.Reflection.Assembly * string * string[])
+
+/// FSharp.Data addition: ProvidedSymbolType is used by AssemblyReplacer.fs
+/// Represents an array or other symbolic type involving a provided type as the argument.
+/// See the type provider spec for the methods that must be implemented.
+/// Note that the type provider specification does not require us to implement pointer-equality for provided types.
+[<Class>]
+type ProvidedSymbolType =
+    inherit System.Type
+
+    /// Returns the kind of this symbolic type
+    member Kind : SymbolKind
+    /// Return the provided types used as arguments of this symbolic type
+    member Args : list<System.Type>
+
+
 /// Provides symbolic provided types
 [<Class>]
-type internal ProvidedTypeBuilder =
+type ProvidedTypeBuilder =
     /// Like typ.MakeGenericType, but will also work with unit-annotated types
     static member MakeGenericType: genericTypeDefinition: System.Type * genericArguments: System.Type list -> System.Type
     /// Like methodInfo.MakeGenericMethod, but will also work with unit-annotated types and provided types
@@ -212,7 +242,7 @@ type internal ProvidedTypeBuilder =
 
 /// Helps create erased provided unit-of-measure annotations.
 [<Class>]
-type internal ProvidedMeasureBuilder =
+type ProvidedMeasureBuilder =
     
     /// The ProvidedMeasureBuilder for building measures.
     static member Default : ProvidedMeasureBuilder
@@ -238,7 +268,7 @@ type internal ProvidedMeasureBuilder =
 
 
 /// Represents a provided static parameter.
-type internal ProvidedStaticParameter =
+type ProvidedStaticParameter =
     inherit System.Reflection.ParameterInfo
     new : parameterName: string * parameterType:Type * ?parameterDefaultValue:obj -> ProvidedStaticParameter
 
@@ -249,7 +279,7 @@ type internal ProvidedStaticParameter =
     member AddXmlDocDelayed   : xmlDocFunction: (unit -> string) -> unit   
 
 /// Represents a provided type definition.
-type internal ProvidedTypeDefinition =
+type ProvidedTypeDefinition =
     inherit System.Type
 
     /// Create a new provided type definition in a namespace. 
@@ -323,6 +353,17 @@ type internal ProvidedTypeDefinition =
     [<Experimental("SuppressRelocation is a workaround and likely to be removed")>]
     member SuppressRelocation : bool  with get,set
 
+    /// FSharp.Data addition: this method is used by Debug.fs
+    member MakeParametricType : name:string * args:obj[] -> ProvidedTypeDefinition
+
+    /// FSharp.Data addition: this method is used by Debug.fs and QuotationBuilder.fs
+    /// Emulate the F# type provider type erasure mechanism to get the 
+    /// actual (erased) type. We erase ProvidedTypes to their base type
+    /// and we erase array of provided type to array of base type. In the
+    /// case of generics all the generic type arguments are also recursively
+    /// replaced with the erased-to types
+    static member EraseType : t:Type -> Type
+
 /// A provided generated assembly
 type ProvidedAssembly =
     new : assemblyFileName:string -> ProvidedAssembly
@@ -357,6 +398,10 @@ type TypeProviderForNamespaces =
 
     /// Add a namespace of provided types.
     member internal AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
+
+    /// FSharp.Data addition: this method is used by Debug.fs
+    /// Get all namespace with their provided types.
+    member Namespaces : (string * ProvidedTypeDefinition list) seq with get
 
     /// Invalidate the information provided by the provider
     member Invalidate : unit -> unit

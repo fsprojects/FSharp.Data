@@ -14,7 +14,6 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
-open ProviderImplementation.QuotationBuilder
 
 type Platform =
     | Full
@@ -405,14 +404,14 @@ module Debug =
                 println()
 
             let getMethodBody (m: ProvidedMethod) = 
-                seq { if not m.IsStatic then yield (getTypeErasedTo m.DeclaringType.BaseType)
-                      for param in m.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
+                seq { if not m.IsStatic then yield (ProvidedTypeDefinition.EraseType m.DeclaringType)
+                      for param in m.GetParameters() do yield (ProvidedTypeDefinition.EraseType param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> m.GetInvokeCodeInternal false
 
             let getConstructorBody (c: ProvidedConstructor) = 
-                seq { for param in c.GetParameters() do yield (getTypeErasedTo param.ParameterType) }
+                seq { for param in c.GetParameters() do yield (ProvidedTypeDefinition.EraseType param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> c.GetInvokeCodeInternal false

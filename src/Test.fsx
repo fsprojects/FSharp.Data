@@ -30,7 +30,10 @@ let signatureOnly = false
 let ignoreOutput = false
 
 let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly platform
-let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
+let prettyPrint (t:ProvidedTypes.ProvidedTypeDefinition) = 
+    if t.Name.StartsWith "FreebaseDataProvider" 
+    then Debug.prettyPrint signatureOnly ignoreOutput 5 10 t
+    else Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
 Json { Sample = "topics.json"
        SampleIsList = true
