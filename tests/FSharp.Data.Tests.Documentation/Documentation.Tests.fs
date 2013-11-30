@@ -1,7 +1,16 @@
-﻿// --------------------------------------------------------------------------------------
-// Test that the documentation is generated correctly withtout F# errors 
-// --------------------------------------------------------------------------------------
+﻿#if INTERACTIVE
+#I "../../packages/FSharp.Formatting.2.2.10-beta/lib/net40"
+#I "../../packages/RazorEngine.3.4.0/lib/net45/"
+#r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
+#r "RazorEngine.dll"
+#r "FSharp.Literate.dll"
+#r "FSharp.CodeFormat.dll"
+#r "FSharp.MetadataFormat.dll"
+#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#load "../Common/FsUnit.fs"
+#else
 module FSharp.Data.Tests.Documentation
+#endif
 
 open FsUnit
 open NUnit.Framework
@@ -20,10 +29,7 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 let (@@) a b = Path.Combine(a, b)
 
-let template = __SOURCE_DIRECTORY__ @@ "../../docs/tools/templates/template.cshtml"
 let sources = __SOURCE_DIRECTORY__ @@ "../../docs/content"
-let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.2.10-beta/"
 
 let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 
@@ -53,11 +59,12 @@ let processFile file =
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
   let literateDoc = Literate.ParseScriptFile( Path.Combine(sources, file), fsharpCompiler = compiler )
-  literateDoc.Errors |> Seq.filter (fun (SourceError(startl, endl, kind, msg)) ->
+  literateDoc.Errors 
+  |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
     if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-      printfn "%A %s (%s)" (startl, endl) msg file
-      true
-    else false) |> Seq.length
+      Some <| sprintf "%A %s (%s)" (startl, endl) msg file
+    else None)
+  |> String.concat "\n"
 
 // ------------------------------------------------------------------------------------
 // Core API documentation
@@ -68,8 +75,15 @@ let docFiles =
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
             yield sub + "/" + Path.GetFileName(file) }
 
+#if INTERACTIVE
+for file in docFiles do 
+    printfn "%s" (processFile file)
+#else
+
 [<Test>]
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` file = 
   processFile file
-  |> should equal 0
+  |> should equal ""
+
+#endif
