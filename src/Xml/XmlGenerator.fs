@@ -109,7 +109,7 @@ module internal XmlTypeBuilder =
               // If the attribute has multiple possible type (e.g. "bool|int") then we generate
               // a choice type that is erased to 'option<string>' (for simplicity, assuming that
               // the attribute is always optional)
-              let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(typeof<option<string>>), HideObjectMethods = true)
+              let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(ctx.Replacer.ToRuntime typeof<option<string>>), HideObjectMethods = true)
               ctx.TypeProviderType.AddMember(choiceTy)
               for KeyValue(kind, typ) in types do 
                 match typ with

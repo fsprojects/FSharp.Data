@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable", "src\FSharp.Data.Portable.fsproj", "{993A6EEF-6E82-4964-8F91-BE72CC63D000}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime.Silverlight", "src\FSharp.Data.DesignTime.Silverlight.fsproj", "{AD03F725-3AE4-4369-907F-58D8563B4AB4}"

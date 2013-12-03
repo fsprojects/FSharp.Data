@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
 		docs\content\contributing.md = docs\content\contributing.md
@@ -61,14 +63,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimenta
 		docs\content\experimental\ApiaryProvider.fsx = docs\content\experimental\ApiaryProvider.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{5EF9FF95-1C75-458A-983A-168E43945913}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.DesignTime", "tests\FSharp.Data.Tests.DesignTime\FSharp.Data.Tests.DesignTime.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimental.DesignTime", "tests\FSharp.Data.Tests.Experimental.DesignTime\FSharp.Data.Tests.Experimental.DesignTime.fsproj", "{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{27BD4F2C-3450-4DC8-91F2-9C069C69585C}"
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\templates\ja\template.cshtml = docs\tools\templates\ja\template.cshtml
@@ -103,6 +97,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{
 	ProjectSection(SolutionItems) = preProject
 		docs\content\ja\tutorials\JsonToXml.fsx = docs\content\ja\tutorials\JsonToXml.fsx
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{5EF9FF95-1C75-458A-983A-168E43945913}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.DesignTime", "tests\FSharp.Data.Tests.DesignTime\FSharp.Data.Tests.DesignTime.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimental.DesignTime", "tests\FSharp.Data.Tests.Experimental.DesignTime\FSharp.Data.Tests.Experimental.DesignTime.fsproj", "{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
