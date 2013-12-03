@@ -217,7 +217,12 @@ type Http private() =
     | Some cookies ->
         for name, value in cookies do
           cookieContainer.Add(req.RequestUri, Cookie(name, value))
-    req.CookieContainer <- cookieContainer
+    try
+      req.CookieContainer <- cookieContainer
+    with :? NotImplementedException ->
+      // silverlight doesn't support setting cookies
+      if cookies.IsSome then
+        failwith "Cookies not supported by this platform"
 
     match body with
     | Some body ->
