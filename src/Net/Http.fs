@@ -91,7 +91,11 @@ type Http private() =
 
   static let reraisePreserveStackTrace (e:Exception) =
     try
+#if FX_NET_CORE_REFLECTION
+      let remoteStackTraceString = typeof<exn>.GetRuntimeField("_remoteStackTraceString");
+#else
       let remoteStackTraceString = typeof<exn>.GetField("_remoteStackTraceString", BindingFlags.Instance ||| BindingFlags.NonPublic);
+#endif
       if remoteStackTraceString <> null then
         remoteStackTraceString.SetValue(e, e.StackTrace + Environment.NewLine)
     with _ -> ()

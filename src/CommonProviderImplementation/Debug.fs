@@ -18,9 +18,10 @@ open ProviderImplementation.ProvidedTypes
 type Platform =
     | Full
     | Portable47
+    | Portable7
     member x.RuntimeAssemblyVersion =
         match x with
-        | Full -> Version(4, 0, 0, 0)
+        | Full | Portable7 -> Version(4, 0, 0, 0)
         | Portable47 -> Version(2, 0, 5, 0)
 
 module Debug = 
