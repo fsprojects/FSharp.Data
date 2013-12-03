@@ -20,15 +20,12 @@ type CsvProviderArgs =
       CacheRows : bool
       ResolutionFolder : string }
 
-#if SILVERLIGHT
-#else
 type XmlProviderArgs = 
     { Sample : string
       SampleIsList : bool
       Global : bool
       Culture : string
       ResolutionFolder : string }
-#endif
 
 type JsonProviderArgs = 
     { Sample : string
@@ -53,10 +50,7 @@ type FreebaseProviderArgs =
 
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
-#if SILVERLIGHT
-#else
     | Xml of XmlProviderArgs
-#endif
     | Json of JsonProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs    
@@ -79,8 +73,6 @@ type TypeProviderInstantiation =
                    box x.MissingValues
                    box x.CacheRows
                    box x.ResolutionFolder |] 
-#if SILVERLIGHT
-#else
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -88,7 +80,6 @@ type TypeProviderInstantiation =
                    box x.Global
                    box x.Culture
                    box x.ResolutionFolder |] 
-#endif
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -123,15 +114,12 @@ type TypeProviderInstantiation =
              x.HasHeaders.ToString()
              x.SafeMode.ToString()
              x.PreferOptionals.ToString()]
-#if SILVERLIGHT
-#else
         | Xml x -> 
             ["Xml"
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture]
-#endif
         | Json x -> 
             ["Json"
              x.Sample
@@ -166,15 +154,12 @@ type TypeProviderInstantiation =
                   MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
                   CacheRows = false
                   ResolutionFolder = "" }
-#if SILVERLIGHT
-#else
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
                   ResolutionFolder = "" }
-#endif
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse

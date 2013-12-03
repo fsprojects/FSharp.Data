@@ -75,8 +75,7 @@ Target "CleanDocs" (fun _ ->
     CleanDirs ["docs/output"]
 )
 // --------------------------------------------------------------------------------------
-// Build library (builds Visual Studio solution, which builds multiple versions
-// of the runtime library & desktop + Silverlight version of design time library)
+// Build Visual Studio solutions
 
 let files includes = 
   { BaseDirectory = __SOURCE_DIRECTORY__

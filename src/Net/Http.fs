@@ -165,7 +165,7 @@ type Http private() =
           url + (if url.Contains "?" then "&" else "?") + (String.concat "&" [ for k, v in query -> k + "=" + v ])
     let uri = Uri url |> enableUriSlashes
 
-    // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
+    // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION

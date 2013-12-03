@@ -37,7 +37,7 @@ let private nameToType =
    "string option",  (typeof<string>  , TypeWrapper.Option  )]
   |> dict
 
-// Compiled regex is not supported in Silverlight
+// Compiled regex is not supported in Portable profile
 let private regexOptions = 
 #if FX_NO_REGEX_COMPILATION
   RegexOptions.RightToLeft

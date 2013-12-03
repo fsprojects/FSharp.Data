@@ -17,13 +17,11 @@ open ProviderImplementation.ProvidedTypes
 
 type Platform =
     | Full
-    | Portable
-    | Silverlight
+    | Portable47
     member x.RuntimeAssemblyVersion =
         match x with
         | Full -> Version(4, 0, 0, 0)
-        | Portable -> Version(2, 0, 5, 0)
-        | Silverlight -> Version(5, 0, 5, 0)
+        | Portable47 -> Version(2, 0, 5, 0)
 
 module Debug = 
 
