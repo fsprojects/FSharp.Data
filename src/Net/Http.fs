@@ -165,7 +165,7 @@ type Http private() =
           url + (if url.Contains "?" then "&" else "?") + (String.concat "&" [ for k, v in query -> k + "=" + v ])
     let uri = Uri url |> enableUriSlashes
 
-    // do not use WebRequest.CreateHttp otherwise the silverlight proxy won't work
+    // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
@@ -217,7 +217,12 @@ type Http private() =
     | Some cookies ->
         for name, value in cookies do
           cookieContainer.Add(req.RequestUri, Cookie(name, value))
-    req.CookieContainer <- cookieContainer
+    try
+      req.CookieContainer <- cookieContainer
+    with :? NotImplementedException ->
+      // silverlight doesn't support setting cookies
+      if cookies.IsSome then
+        failwith "Cookies not supported by this platform"
 
     match body with
     | Some body ->

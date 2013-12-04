@@ -5,33 +5,6 @@ open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 
-#if SILVERLIGHT
-
-let onUiThread f = 
-    if System.Windows.Deployment.Current.Dispatcher.CheckAccess() then 
-        f() 
-    else
-        let resultTask = System.Threading.Tasks.TaskCompletionSource<'T>()
-        System.Windows.Deployment.Current.Dispatcher.BeginInvoke(Action(fun () -> try resultTask.SetResult (f()) with err -> resultTask.SetException err)) |> ignore
-        resultTask.Task.Result
-
-let init (cfg : TypeProviderConfig) = 
-
-    let runtimeAssembly = 
-        onUiThread (fun () ->
-            let assemblyPart = System.Windows.AssemblyPart()
-            let FileStreamReadShim(fileName) = 
-                match System.Windows.Application.GetResourceStream(System.Uri(fileName,System.UriKind.Relative)) with 
-                | null -> System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().OpenFile(fileName, System.IO.FileMode.Open) :> System.IO.Stream 
-                | resStream -> resStream.Stream
-            let assemblyStream = FileStreamReadShim cfg.RuntimeAssembly
-        
-            assemblyPart.Load(assemblyStream))
-
-    runtimeAssembly, AssemblyReplacer.create []
-
-#else
-
 let private (++) a b = Path.Combine(a,b)
 
 let private referenceAssembliesPath = 
@@ -67,20 +40,6 @@ let private portable40AssembliesPath =
     ++ "Profile" 
     ++ "Profile47" 
 
-let private silverlight5AssembliesPath = 
-    referenceAssembliesPath
-    ++ "Framework" 
-    ++ "Silverlight" 
-    ++ "v5.0" 
-
-let private silverlight5SdkAssembliesPath = 
-    Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
-    ++ "Microsoft SDKs" 
-    ++ "Silverlight" 
-    ++ "v5.0" 
-    ++ "Libraries"
-    ++ "Client"
-
 let private designTimeAssemblies = 
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
@@ -102,8 +61,6 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         | "FSharp.Core", "2.3.5.0" -> fsharp30PortableAssembliesPath
         | _, "4.0.0.0" -> net40AssembliesPath
         | _, "2.0.5.0" -> portable40AssembliesPath
-        | "System.Xml.Linq", "5.0.5.0" -> silverlight5SdkAssembliesPath
-        | _, "5.0.5.0" -> silverlight5AssembliesPath
         | _, _ -> null
     if folder = null then 
         null
@@ -124,10 +81,9 @@ let init (cfg : TypeProviderConfig) =
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
     let isPortable = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
-    let isSilverlight = cfg.SystemRuntimeAssemblyVersion = Version(5, 0, 5, 0)
     let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
 
-    let differentFramework = isPortable || isSilverlight || isFSharp31
+    let differentFramework = isPortable || isFSharp31
     let useReflectionOnly = differentFramework
 
     let runtimeAssembly = 
@@ -157,5 +113,3 @@ let init (cfg : TypeProviderConfig) =
             [mainRuntimeAssemblyPair]
 
     runtimeAssembly, AssemblyReplacer.create asmMappings
-
-#endif

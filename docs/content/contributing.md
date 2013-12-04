@@ -27,7 +27,7 @@ that group the projects in the main logical groups:
    add it to the experimental projects.
 
  * **FSharp.Data.ExtraPlatforms.sln** contains the equivalent projects of `FSharp.Data.sln` 
-   but targeting additional platforms such as Silverlight and Portable Class Libraries.
+   but targeting additional platforms such as Portable Class Libraries.
 
  * **FSharp.Data.Tests.sln** is a library with tests for F# Data and it also contains
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
@@ -54,34 +54,24 @@ component, because that is always going to be executed on desktop .NET in Visual
 or MonoDevelop. (Well, the truth is that we actually need another _design time_ version
 for Silverlight to support the [tryfsharp.org](http://tryfsharp.org) web site...)
 
-So, there are 4 versions of _runtime_ components and 2 versions of _design time_ 
+So, there are 2 versions of _runtime_ components and 1 version of _design time_ 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
-using `#if`. There are also 2 versions of _runtime_ components and 2 versions of _design time_ components
+using `#if`. There are also 2 versions of _runtime_ components and 1 version of _design time_ components
 for the experimental projects.
 
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
- * **FSharp.Data.Portable** - F# portable library version (targetting desktop .NET 4.0, Windows Phone 8 and Windows 8)
- * **FSharp.Data.Silverlight** - Silverlight 5 version
+ * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.0, Silverlight 5.0, Windows Phone 8 and Windows 8)
  * **FSharp.Data.Experimental** - the desktop .NET 4.0 version of the experimental features
- * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features
-
-Although you could use the portable library in Silverlight, the Freebase provider doesn't work because 
-of problems referencing the correct version of the System.Core assembly which has the LINQ query operators.
-The XmlProvider also doesn't work in Silverlight both when using the portable version or the Silverlight specific version.
-For the experimental project there's no need to have a separate Silverlight build.
+ * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features (Profile 47 targetting desktop .NET 4.0, Silverlight 5.0, Windows Phone 8 and Windows 8)
 
 The _design time_ components are in the following projects:
 
- * **FSharp.Data.DesignTime** - the main version for desktop editors
- * **FSharp.Data.DesignTime.Silverlight** - an experimental version for Try F#
- * **FSharp.Data.Experimental.DesignTime** - the main version for desktop editors
- * **FSharp.Data.Experimental.DesignTime.Silverlight** - an experimental version for Try F#
-
-To be able to compile the Silverlight 5 projects, you need to have the [Silverlight 5.0 Developer runtime](http://go.microsoft.com/fwlink/?LinkId=229324) installed.
+ * **FSharp.Data.DesignTime**
+ * **FSharp.Data.Experimental.DesignTime**
 
 ### Type provider structure
 

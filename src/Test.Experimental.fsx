@@ -23,8 +23,7 @@ let platform = Full
 let runtimeAssembly = 
     match platform with
     | Full -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
-    | Portable -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable" ++ assemblyName
-    | Silverlight -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "sl5" ++ assemblyName
+    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
 
 let signatureOnly = false
 let ignoreOutput = false

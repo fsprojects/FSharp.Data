@@ -70,7 +70,7 @@
 * Fixed problem with portable version of FSharp.Net.Http.
 
 #### 1.1.9 - July 21 2013
-* Infer booleans for ints that only manifest 0 and 1.    
+* Infer booleans for ints that only manifest 0 and 1.
 * Support for partially overriding the Schema in CsvProvider.
 * PreferOptionals and SafeMode parameters for CsvProvider.
 

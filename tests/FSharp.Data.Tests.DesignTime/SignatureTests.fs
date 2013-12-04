@@ -44,8 +44,7 @@ let getExpectedPath testCase =
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
-let portableRuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable" ++ assemblyName
-let silverlightRuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "sl5" ++ assemblyName
+let portableRuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
@@ -69,5 +68,5 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Generating expressions works in portable `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portableRuntimeAssembly Platform.Portable (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder portableRuntimeAssembly Platform.Portable47 (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 #endif
