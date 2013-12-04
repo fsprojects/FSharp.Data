@@ -39,12 +39,6 @@ let private fsharp31AssembliesPath =
     ++ "v4.0"
     ++ "v4.3.1.0"
 
-let private net40AssembliesPath = 
-    referenceAssembliesPath
-    ++ "Framework" 
-    ++ ".NETFramework" 
-    ++ "v4.0" 
-
 let private portable47AssembliesPath = 
     referenceAssembliesPath
     ++ "Framework" 
@@ -52,14 +46,6 @@ let private portable47AssembliesPath =
     ++ "v4.0" 
     ++ "Profile" 
     ++ "Profile47" 
-
-let private portable7AssembliesPath = 
-    referenceAssembliesPath
-    ++ "Framework" 
-    ++ ".NETPortable" 
-    ++ "v4.5" 
-    ++ "Profile" 
-    ++ "Profile7" 
 
 let private designTimeAssemblies = 
     AppDomain.CurrentDomain.GetAssemblies()
@@ -82,12 +68,11 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         | "FSharp.Core", "4.3.1.0" -> fsharp31AssembliesPath
         | "FSharp.Core", "2.3.5.0" -> fsharp30Portable47AssembliesPath
         | "FSharp.Core", "3.3.1.0" -> fsharp31Portable7AssembliesPath
-        | "System.Runtime", "4.0.0.0" -> portable7AssembliesPath
-        | _, "4.0.0.0" -> net40AssembliesPath
         | _, "2.0.5.0" -> portable47AssembliesPath
         | _, _ -> null
     if folder = null then 
-        null
+        if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
+        else Assembly.Load asmName.FullName
     else
         let assemblyPath = folder ++ (asmName.Name + ".dll")
         if File.Exists assemblyPath then
