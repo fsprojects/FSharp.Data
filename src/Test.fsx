@@ -24,6 +24,7 @@ let runtimeAssembly =
     match platform with
     | Full -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
     | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
+    | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
 
 let signatureOnly = false
 let ignoreOutput = false

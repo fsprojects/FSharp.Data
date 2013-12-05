@@ -12,27 +12,34 @@ let private referenceAssembliesPath =
     ++ "Reference Assemblies" 
     ++ "Microsoft" 
 
-let private fsharp30PortableAssembliesPath = 
+let private fsharp30Portable47AssembliesPath = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ "3.0" 
     ++ "Runtime" 
     ++ ".NETPortable"
 
-let private fsharp30Net40AssembliesPath = 
+let private fsharp31Portable7AssembliesPath = 
+    referenceAssembliesPath
+    ++ "FSharp" 
+    ++ ".NETCore" 
+    ++ "3.3.1.0" 
+
+let private fsharp30AssembliesPath = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ "3.0" 
     ++ "Runtime" 
     ++ "v4.0"
 
-let private net40AssembliesPath = 
+let private fsharp31AssembliesPath = 
     referenceAssembliesPath
-    ++ "Framework" 
+    ++ "FSharp" 
     ++ ".NETFramework" 
-    ++ "v4.0" 
+    ++ "v4.0"
+    ++ "v4.3.1.0"
 
-let private portable40AssembliesPath = 
+let private portable47AssembliesPath = 
     referenceAssembliesPath
     ++ "Framework" 
     ++ ".NETPortable" 
@@ -57,13 +64,15 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
             if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
             then "" else asmName.Version.ToString()
         match asmName.Name, version with
-        | "FSharp.Core", "4.3.0.0" -> fsharp30Net40AssembliesPath
-        | "FSharp.Core", "2.3.5.0" -> fsharp30PortableAssembliesPath
-        | _, "4.0.0.0" -> net40AssembliesPath
-        | _, "2.0.5.0" -> portable40AssembliesPath
+        | "FSharp.Core", "4.3.0.0" -> fsharp30AssembliesPath
+        | "FSharp.Core", "4.3.1.0" -> fsharp31AssembliesPath
+        | "FSharp.Core", "2.3.5.0" -> fsharp30Portable47AssembliesPath
+        | "FSharp.Core", "3.3.1.0" -> fsharp31Portable7AssembliesPath
+        | _, "2.0.5.0" -> portable47AssembliesPath
         | _, _ -> null
     if folder = null then 
-        null
+        if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
+        else null
     else
         let assemblyPath = folder ++ (asmName.Name + ".dll")
         if File.Exists assemblyPath then
@@ -80,10 +89,11 @@ let init (cfg : TypeProviderConfig) =
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
-    let isPortable = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
+    let isPortable47 = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
+    //portable7 has SystemRuntimeAssemblyVersion = 4.0.0.0, so we can't detect it, but it's only supported in F# 3.1, so there's no problem
     let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
 
-    let differentFramework = isPortable || isFSharp31
+    let differentFramework = isPortable47 || isFSharp31
     let useReflectionOnly = differentFramework
 
     let runtimeAssembly = 

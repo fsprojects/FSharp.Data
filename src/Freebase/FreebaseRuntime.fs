@@ -622,13 +622,22 @@ module internal QueryImplementation =
         | Constant ((:? IWithFreebaseQueryData as bd), _) -> Some bd
         | _ -> None 
 
+#if FX_NET_CORE_REFLECTION
+    let isNullableTy (ty:Type) = ty.IsConstructedGenericType && ty.GetGenericTypeDefinition() = typedefof<Nullable<_>>
+#else
     let isNullableTy (ty:Type) = ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<Nullable<_>>
+#endif
     let whenAllElseFails (e:Expression) : 'TResult = 
         match e with 
         | MethodCall(None, meth, (SourceWithQueryData sourceData :: args)) when evaluateOnClientSideWhereNecessary ->
             let sourceExpr = 
+#if FX_NET_CORE_REFLECTION
+                if typeof<'TResult>.IsConstructedGenericType && typeof<'TResult>.GetGenericTypeDefinition() = typedefof<IQueryable<_>> then
+#else
                 if typeof<'TResult>.IsGenericType && typeof<'TResult>.GetGenericTypeDefinition() = typedefof<IQueryable<_>> then
+#endif
                     let sourceObj = ((queryDataAsEnumerable sourceData.FreebaseDataConnection sourceData.FreebaseQueryData) |> Seq.cast<IFreebaseObject>).AsQueryable()
+
                     Expression.Constant(sourceObj, typeof<IQueryable<IFreebaseObject>>) :> Expression
                 else
                     let sourceObj = ((queryDataAsEnumerable sourceData.FreebaseDataConnection sourceData.FreebaseQueryData) |> Seq.cast<'TResult>).AsQueryable()
@@ -639,10 +648,12 @@ module internal QueryImplementation =
         | MethodCall(_, meth, _) -> badQueryOperation meth.Name
         | _ -> failwithf "Unrecognized operation '%A' in web data query" e
 
-    type FreebaseQueryable<'T>(fbDataConn,data:FreebaseQueryData) = 
+    type FreebaseQueryable<'T>(fbDataConn, data:FreebaseQueryData) = 
     
         static member Create(typeId, fbDataConn) = 
-            FreebaseQueryable<'T>(fbDataConn,Base (typeId)) :> IQueryable<'T>
+            FreebaseQueryable<'T>(fbDataConn, Base typeId) :> IQueryable<'T>
+
+        static member Constructor(fbDataConn, data) = FreebaseQueryable<'T>(fbDataConn, data)
 
         interface IQueryable<'T> 
         interface IQueryable with 
@@ -659,7 +670,8 @@ module internal QueryImplementation =
 
     and FreebaseOrderedQueryable<'T>(fbDataConn, data:FreebaseQueryData) = 
     
-        static member Create(typeId, fbDataConn) = FreebaseQueryable<'T>(fbDataConn, Base (typeId)) :> IQueryable<'T>
+        static member Constructor(fbDataConn, data) = FreebaseOrderedQueryable<'T>(fbDataConn, data)
+
         interface IOrderedQueryable<'T> 
         interface IQueryable<'T> 
         interface IQueryable with 
@@ -676,7 +688,11 @@ module internal QueryImplementation =
 
         static let createQueryable(isOrdered,fbDataConn,data:FreebaseQueryData,ty:System.Type) : obj = 
             let qty = (if isOrdered then typedefof<FreebaseOrderedQueryable<_>> else typedefof<FreebaseQueryable<_>>).MakeGenericType [| ty |]
-            qty.GetConstructors().[0].Invoke [|fbDataConn;data|]
+#if FX_NET_CORE_REFLECTION
+            qty.GetRuntimeMethods().Where(fun x -> x.Name = "Constructor").Single().Invoke(null, [| fbDataConn; data |])
+#else
+            qty.GetConstructors().Single().Invoke [|fbDataConn;data|]
+#endif
 
         static let translationFailure (fb: FreebaseDataConnection) msg = 
             if fb.AllowQueryEvaluateOnClientSide then None else failwith msg 

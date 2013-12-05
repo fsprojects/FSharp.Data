@@ -14,9 +14,6 @@
     <releaseNotes>@releaseNotes@</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>@tags@</tags>
-    <dependencies>
-        <dependency id="FSharp.Data" version="@build.number@" />
-    </dependencies>
   </metadata>
   <files>
     <file src="..\bin\FSharp.Data.Experimental.dll" target="lib/net40" />
@@ -31,5 +28,11 @@
     <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
     <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
     <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.dll" target="lib/portable-net45+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.pdb" target="lib/portable-net45+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.xml" target="lib/portable-net45+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net45+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net45+win8" />
+    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net45+win8" />
   </files>
 </package>
