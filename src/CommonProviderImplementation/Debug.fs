@@ -120,10 +120,10 @@ module Debug =
                           let name, reverse = 
                               match t with
                               | t when hasUnitOfMeasure -> toString useFullName t.UnderlyingSystemType, false
-                              | t when t.GetGenericTypeDefinition() = typeof<int seq>.GetGenericTypeDefinition() -> "seq", true
-                              | t when t.GetGenericTypeDefinition() = typeof<int list>.GetGenericTypeDefinition() -> "list", true
-                              | t when t.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() -> "option", true
-                              | t when t.GetGenericTypeDefinition() = typeof<int ref>.GetGenericTypeDefinition() -> "ref", true
+                              | t when t.GetGenericTypeDefinition().Name = typeof<int seq>.GetGenericTypeDefinition().Name -> "seq", true
+                              | t when t.GetGenericTypeDefinition().Name = typeof<int list>.GetGenericTypeDefinition().Name -> "list", true
+                              | t when t.GetGenericTypeDefinition().Name = typeof<int option>.GetGenericTypeDefinition().Name -> "option", true
+                              | t when t.GetGenericTypeDefinition().Name = typeof<int ref>.GetGenericTypeDefinition().Name -> "ref", true
                               | t when t.Name = "FSharpAsync`1" -> "async", true
                               | t when ns.Contains t.Namespace -> t.Name, false
                               | t -> (if useFullName then fullName t else t.Name), false
@@ -175,6 +175,13 @@ module Debug =
             | Let _ | NewArray _ | NewTuple _ -> true
             | _ -> false
 
+            let inline getAttrs attrName m = 
+                ( ^a : (member GetCustomAttributesData : unit -> IList<CustomAttributeData>) m)
+                |> Seq.filter (fun attr -> attr.AttributeType.Name = attrName) 
+
+            let inline hasAttr attrName m = 
+                not (Seq.isEmpty (getAttrs attrName m))
+
             let rec printSeparatedByCommas exprs = 
                 match exprs with
                 | [] -> ()
@@ -187,7 +194,7 @@ module Debug =
             and printCall fromPipe printName (mi:MethodInfo) args = 
                 if fromPipe && List.length args = 1 then
                     printName()
-                elif mi.GetCustomAttributes(typeof<Core.CompilationArgumentCountsAttribute>, true) |> Seq.isEmpty then
+                elif not (hasAttr "CompilationArgumentCountsAttribute" mi) then
                     printName()
                     match args with
                     | [] -> print "()"
@@ -216,7 +223,7 @@ module Debug =
                         print ".["
                         printExpr false true args.Tail.Head
                         print "]"
-                    elif mi.DeclaringType.IsGenericType && mi.DeclaringType.GetGenericTypeDefinition() = typeof<int option>.GetGenericTypeDefinition() then
+                    elif mi.DeclaringType.IsGenericType && mi.DeclaringType.GetGenericTypeDefinition().Name = typeof<int option>.GetGenericTypeDefinition().Name then
                         if args.IsEmpty then print "None"
                         else 
                           print "Some "
@@ -249,7 +256,7 @@ module Debug =
                             print "."
                             print mi.Name
                         let isOptional (arg:Expr, param:ParameterInfo) =
-                            not (Seq.isEmpty <| param.GetCustomAttributes(typeof<OptionalArgumentAttribute>, true))
+                            hasAttr "OptionalArgumentAttribute" param
                             && arg.ToString() = "Call (None, get_None, [])"
                         let args = 
                             mi.GetParameters()
@@ -293,8 +300,13 @@ module Debug =
                 | Var (var) ->
                     print var.Name
                 | NewObject (ci, args) ->
-                    let compilationMappings = ci.DeclaringType.GetCustomAttributes(typeof<CompilationMappingAttribute>, true) |> Seq.cast<CompilationMappingAttribute>
-                    if not <| Seq.isEmpty compilationMappings && (Seq.head compilationMappings).SourceConstructFlags = SourceConstructFlags.RecordType then
+                    let getSourceConstructFlags (attr:CustomAttributeData) =
+                        let arg = attr.ConstructorArguments
+                                  |> Seq.filter (fun arg -> arg.ArgumentType.Name = "SourceConstructFlags") 
+                                  |> Seq.head
+                        arg.Value :?> int
+                    let compilationMappings = getAttrs "CompilationMappingAttribute" ci.DeclaringType
+                    if not (Seq.isEmpty compilationMappings) && (getSourceConstructFlags (Seq.head compilationMappings)) = int SourceConstructFlags.RecordType then
                         print "{ "
                         let indent = getCurrentIndent()
                         let recordFields = FSharpType.GetRecordFields(ci.DeclaringType)

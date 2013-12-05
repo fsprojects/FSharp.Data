@@ -72,7 +72,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         | _, _ -> null
     if folder = null then 
         if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
-        else Assembly.Load asmName.FullName
+        else null
     else
         let assemblyPath = folder ++ (asmName.Name + ".dll")
         if File.Exists assemblyPath then
