@@ -72,10 +72,16 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
         let name = Path.GetFileName(uri.OriginalString)
         new FileSystemWatcher(Filter = name, 
                               Path = path, 
-                              EnableRaisingEvents = true)
+                              EnableRaisingEvents = true,
+                              NotifyFilter = (NotifyFilters.FileName |||
+                                              NotifyFilters.DirectoryName |||
+                                              NotifyFilters.CreationTime ||| 
+                                              NotifyFilters.LastWrite ||| 
+                                              NotifyFilters.Size |||
+                                              NotifyFilters.LastAccess |||
+                                              NotifyFilters.Attributes |||
+                                              NotifyFilters.Security))
     watcher.Changed.Add(fun _ -> invalidate())
-    watcher.Deleted.Add(fun _ -> invalidate())
-    watcher.Renamed.Add(fun _ -> invalidate())
     addDisposer watcher
 #endif
 
