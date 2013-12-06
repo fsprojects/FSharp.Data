@@ -67,6 +67,7 @@ type internal UriResolver =
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
 let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit) =
+    let lastWrite = ref (File.GetLastWriteTime uri.OriginalString)
     let watcher = 
         let path = Path.GetDirectoryName(uri.OriginalString)
         let name = Path.GetFileName(uri.OriginalString)
@@ -81,7 +82,16 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
                                               NotifyFilters.LastAccess |||
                                               NotifyFilters.Attributes |||
                                               NotifyFilters.Security))
-    watcher.Changed.Add(fun _ -> invalidate())
+
+    let invalidate _ = 
+        let lastWrite' = File.GetLastWriteTime uri.OriginalString
+        if lastWrite' <> !lastWrite then
+            lastWrite := lastWrite'
+            invalidate()
+
+    watcher.Changed.Add invalidate
+    watcher.Renamed.Add invalidate
+    watcher.Deleted.Add invalidate
     addDisposer watcher
 #endif
 
