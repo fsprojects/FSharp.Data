@@ -67,29 +67,32 @@ type internal UriResolver =
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
 let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit) =
-    let lastWrite = ref (File.GetLastWriteTime uri.OriginalString)
-    let watcher = 
-        let path = Path.GetDirectoryName(uri.OriginalString)
-        let name = Path.GetFileName(uri.OriginalString)
-        new FileSystemWatcher(Filter = name, 
-                              Path = path, 
-                              EnableRaisingEvents = true,
-                              NotifyFilter = (NotifyFilters.FileName |||
-                                              NotifyFilters.DirectoryName |||
-                                              NotifyFilters.CreationTime ||| 
-                                              NotifyFilters.LastWrite ||| 
-                                              NotifyFilters.Size |||
-                                              NotifyFilters.LastAccess |||
-                                              NotifyFilters.Attributes |||
-                                              NotifyFilters.Security))
+    let getLastWrite() = 
+        if File.Exists uri.OriginalString
+        then Some (File.GetLastWriteTime uri.OriginalString) 
+        else None
 
-    let invalidate _ = 
-        let lastWrite' = File.GetLastWriteTime uri.OriginalString
-        if lastWrite' <> !lastWrite then
-            lastWrite := lastWrite'
+    let lastWrite = ref (getLastWrite())
+
+    let watcher = 
+        let path = Path.GetDirectoryName uri.OriginalString
+        let name = Path.GetFileName uri.OriginalString 
+        new FileSystemWatcher(Filter = name, Path = path, EnableRaisingEvents = true)
+
+    let invalidate _ =
+        let curr = getLastWrite()
+
+        let needInvalidate = 
+            match !lastWrite, curr with
+            | Some _, None -> true
+            | None, Some _ -> true
+            | Some last, Some curr -> last <> curr
+            | None, None -> false
+            
+        if needInvalidate then
+            lastWrite := curr
             invalidate()
 
-    watcher.Changed.Add invalidate
     watcher.Renamed.Add invalidate
     watcher.Deleted.Add invalidate
     addDisposer watcher
