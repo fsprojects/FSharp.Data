@@ -42,8 +42,7 @@ let release =
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
 
-let version = release.AssemblyVersion
-let releaseNotes = release.Notes |> String.concat "\n"
+let releaseNotes = (release.Notes |> String.concat "\n").Replace("&","&amp;")
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -61,8 +60,8 @@ Target "AssemblyInfo" (fun _ ->
            [ Attribute.Title title
              Attribute.Product project
              Attribute.Description summary
-             Attribute.Version version
-             Attribute.FileVersion version] )
+             Attribute.Version release.AssemblyVersion
+             Attribute.FileVersion release.AssemblyVersion] )
 )
 // --------------------------------------------------------------------------------------
 // Clean build results
@@ -131,7 +130,7 @@ Target "NuGet" (fun _ ->
             Project = project
             Summary = summary
             Description = description
-            Version = version
+            Version = release.NugetVersion
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
@@ -146,7 +145,7 @@ Target "NuGet" (fun _ ->
             Project = projectExperimental
             Summary = summaryExperimental
             Description = descriptionExperimental
-            Version = version
+            Version = release.NugetVersion
             ReleaseNotes = releaseNotes
             Tags = tagsExperimental
             OutputPath = "bin"
