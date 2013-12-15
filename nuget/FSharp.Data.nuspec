@@ -22,6 +22,9 @@
         <dependency id="Zlib.Portable" version="1.9.2" />
       </group>
     </dependencies>
+    <references>
+      <reference file="FSharp.Data.dll" />
+    </references>
   </metadata>
   <files>
     <file src="..\bin\FSharp.Data.dll" target="lib/net40" />
