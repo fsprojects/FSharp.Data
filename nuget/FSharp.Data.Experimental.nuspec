@@ -21,6 +21,7 @@
       <group targetFramework="portable-net45+win8">
         <dependency id="Zlib.Portable" version="1.9.2" />
       </group>
+      <group targetFramework="net40" />
     </dependencies>
     <references>
       <reference file="FSharp.Data.Experimental.dll" />
