@@ -80,8 +80,10 @@
 * Support for compressed HTTP responses. 
 * Fix JSON conversion of 0 and 1 to booleans.
 
-#### 1.2.0 - Unreleased
+#### 2.0.0-alpha - Unreleased
+* Support for F# 3.1 and for new portable class library projects.
 * Support for sending HTTP requests with a binary body.
+* Support for HTTP compression in portable class library versions.
 * Fixed problem when using uri's with encoded slashes (%2F) in the sample parameter of CsvProvider, JsonProvider & XmlProvider.
 * CsvProvider now has GetSample static method like the other providers in addition to the default constructor.
 * Add AsyncLoad(string uri) and AsyncGetSample() to CsvProvider, JsonProvider and XmlProvider.

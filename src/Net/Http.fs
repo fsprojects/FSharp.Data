@@ -127,7 +127,7 @@ type Http private() =
         return Unchecked.defaultof<_>
   }
 
-  static let toHttpResponse forceText responseUrl contentType statusCode cookies headers (memoryStream:MemoryStream) =
+  static let toHttpResponse forceText responseUrl (contentType:string) (contentEncoding:string) statusCode cookies headers (memoryStream:MemoryStream) =
 
     let isText (mimeType:string) =
       let isText (mimeType:string) =
@@ -143,7 +143,15 @@ type Http private() =
       |> Array.exists isText
 
     let respBody = 
-      use memoryStream = memoryStream
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+      let memoryStream = 
+        if contentEncoding = "gzip" then
+          new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
+        elif contentEncoding = "deflate" then
+          new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
+        else
+          memoryStream
+#endif
       if forceText || (isText contentType) then
           use sr = new StreamReader(memoryStream)
           sr.ReadToEnd() |> ResponseBody.Text
@@ -171,11 +179,6 @@ type Http private() =
 
     // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
-
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-#else
-    req.AutomaticDecompression <- DecompressionMethods.Deflate ||| DecompressionMethods.GZip
-#endif
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
 #else
@@ -213,6 +216,12 @@ type Http private() =
         | StringEquals "host" -> req.Host <- value
 #endif       
         | _ -> req.Headers.[header] <- value)
+
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+    req.Headers.[HttpRequestHeader.AcceptEncoding] <- "gzip,deflate"
+#else
+    req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
+#endif
 
     // set cookies    
     let cookieContainer = defaultArg cookieContainer (new CookieContainer())
@@ -256,7 +265,8 @@ type Http private() =
       let headers = Map.ofList [ for header in resp.Headers.AllKeys -> header, resp.Headers.[header] ]
       use networkStream = resp.GetResponseStream()
       let! memoryStream = asyncRead networkStream
-      return toHttpResponse resp.ResponseUri.OriginalString resp.ContentType statusCode cookies headers memoryStream }
+      let contentEncoding = defaultArg (Map.tryFind "Content-Encoding" headers) ""
+      return toHttpResponse resp.ResponseUri.OriginalString resp.ContentType contentEncoding statusCode cookies headers memoryStream }
   }
 
   /// Download an HTTP web resource from the specified URL asynchronously
