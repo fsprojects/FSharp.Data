@@ -374,25 +374,26 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             let c = getDomainCategories()
             try
                 [ for domainCategory in c do
-                    let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
-                    let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
-                    t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                    t.AddMembersDelayed(fun () -> 
-                        [ for domainInfo in domainCategory.Domains do
-                              let domainName = domainInfo.DomainName
-                              let domainTypeName = typeNameForDomainObjects domainName
-                              let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
-                              let propertyName = tidyName domainName
-                              let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
-                                                        GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.Id)])))
-                              pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.Id |> xmlDoc)
-                              yield pi]) 
-                    theDomainObjectsClass.AddMember t
-                    let domainCategoryIdVal = domainCategory.Id
-                    let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
-                                             GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategoryIdVal)])))
-                    p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                    yield p ]
+                    if not <| domainCategory.Id.StartsWith("/user/") then
+                        let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
+                        let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
+                        t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                        t.AddMembersDelayed(fun () -> 
+                            [ for domainInfo in domainCategory.Domains do
+                                  let domainName = domainInfo.DomainName
+                                  let domainTypeName = typeNameForDomainObjects domainName
+                                  let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
+                                  let propertyName = tidyName domainName
+                                  let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
+                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.Id)])))
+                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.Id |> xmlDoc)
+                                  yield pi]) 
+                        theDomainObjectsClass.AddMember t
+                        let domainCategoryIdVal = domainCategory.Id
+                        let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
+                                                 GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategoryIdVal)])))
+                        p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                        yield p ]
                 with e -> 
                     let errorMessage = e.Message
                     let propertyName = 

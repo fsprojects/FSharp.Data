@@ -4,9 +4,6 @@ class FreebaseDataProvider
 
 
 class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseDataContext
-    member Afval.nl: FreebaseDataProvider+ServiceTypes+DomainObjects+Afval.nl with get
-    this.GetDomainCategoryById("/user/afvalnl/default_domain/afval_nl")
-
     member Arts and Entertainment: FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment with get
     this.GetDomainCategoryById("/en/arts_entertainment")
 
@@ -40,19 +37,8 @@ class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseD
     member Waste: FreebaseDataProvider+ServiceTypes+DomainObjects+Waste with get
     this.GetDomainCategoryById("/en/waste")
 
-    member afval: FreebaseDataProvider+ServiceTypes+DomainObjects+afval with get
-    this.GetDomainCategoryById("/user/afvalnl/default_domain/afval")
-
-    member afvalnl: FreebaseDataProvider+ServiceTypes+DomainObjects+afvalnl with get
-    this.GetDomainCategoryById("/user/afvalnl")
-
 
 class FreebaseDataProvider+ServiceTypes
-
-class FreebaseDataProvider+ServiceTypes+DomainObjects+Afval.nl : FDR.Freebase.FreebaseDomainCategory
-    member afvalnl's types: <NULL> with get
-    this.GetDomainById("/user/afvalnl/default_domain")
-
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment : FDR.Freebase.FreebaseDomainCategory
     member Books: FreebaseDataProvider+ServiceTypes+DomainObjects+BooksDomain with get
@@ -502,6 +488,26 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+System : FDR.Freebase.Free
 
     member Metaweb System Types: FreebaseDataProvider+ServiceTypes+DomainObjects+Metaweb System Types Domain with get
     this.GetDomainById("/type")
+
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+Time and Space : FDR.Freebase.FreebaseDomainCategory
+    member Event: FreebaseDataProvider+ServiceTypes+DomainObjects+EventDomain with get
+    this.GetDomainById("/event")
+
+    member Location: FreebaseDataProvider+ServiceTypes+DomainObjects+LocationDomain with get
+    this.GetDomainById("/location")
+
+    member Measurement Unit: FreebaseDataProvider+ServiceTypes+DomainObjects+Measurement Unit Domain with get
+    this.GetDomainById("/measurement_unit")
+
+    member Physical Geography: FreebaseDataProvider+ServiceTypes+DomainObjects+Physical Geography Domain with get
+    this.GetDomainById("/geography")
+
+    member Protected Places: FreebaseDataProvider+ServiceTypes+DomainObjects+Protected Places Domain with get
+    this.GetDomainById("/protected_sites")
+
+    member Time: FreebaseDataProvider+ServiceTypes+DomainObjects+TimeDomain with get
+    this.GetDomainById("/time")
 
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain : FDR.Freebase.FreebaseDomain

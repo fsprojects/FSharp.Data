@@ -17,10 +17,13 @@ open FSharp.Data.FreebaseOperators
 [<Literal>]
 let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
 
+[<Literal>]
+let snapshotDate = "2013-10-19T20:32:39"
+
 //alow tests to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-let data = FreebaseDataProvider<apiKey>.GetDataContext()
+let data = FreebaseDataProvider<apiKey, SnapshotDate=snapshotDate>.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
