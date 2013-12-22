@@ -67,6 +67,21 @@ module internal XmlTypeBuilder =
     | { Type = InferedType.Top } -> Some([], Map.empty)
     | _ -> None
 
+  /// Succeeds when type is a heterogeneous type containing recors
+  /// If the type is heterogeneous, but contains other things, exception
+  /// is thrown (this is unexpected, because XML nodes are always records)
+  let (|HeterogeneousRecords|_|) = function
+    | InferedType.Heterogeneous(cases) ->
+        let records = 
+          cases 
+          |> List.ofSeq
+          |> List.choose (function 
+              | KeyValue(InferedTypeTag.Record (Some name), v) -> Some(name, v) 
+              | _ -> None)
+        if cases.Count = records.Length then Some records
+        else failwith "HeterogeneousRecords: Unexpected mix of records and other type kinds"
+    | _ -> None
+
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   let rec generateXmlType ctx = function
@@ -81,6 +96,31 @@ module internal XmlTypeBuilder =
         let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, opt)
         typ, fun xml -> let xml = ctx.Replacer.ToDesignTime xml
                         conv <@ XmlRuntime.TryGetValue(%%xml) @>
+
+    // If the node is heterogeneous type containin records, generate type with multiple
+    // optional properties (this can only happen when using sample list with multiple root
+    // elements of different names). Otherwise, heterogeneous types appear only as child nodes
+    // of an element (handled similarly below)
+    | HeterogeneousRecords(cases) ->
+        // Generate new choice type for the element
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
+        ctx.TypeProviderType.AddMember(objectTy)
+
+        // For each case, add property of optional type
+        let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
+        [ for nameWithNS, case in cases ->
+            let name = XName.Get(nameWithNS).LocalName
+            let childTy, childConv = generateXmlType ctx case
+            let p = ProvidedProperty(makeUnique name, typedefof<option<_>>.MakeGenericType [| childTy |])
+            let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+            // XmlRuntime.ConvertAsName checks that the name of the current node
+            // has the required name and returns Some/None
+            p.GetterCode <- fun (Singleton xml) -> 
+              let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
+              xmlRuntime?ConvertAsName (childTy) (xml, nameWithNS, convFunc)
+            p :> MemberInfo ]
+        |> objectTy.AddMembers
+        upcast objectTy, ctx.Replacer.ToRuntime
 
     // If the node is more complicated, then we generate a type to represent it properly
     | InferedType.Record(Some nameWithNS, props) -> 

@@ -1,15 +1,17 @@
-﻿module FSharp.Data.Tests.XmlProvider
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.XmlProvider
 #endif
 
 open NUnit.Framework
 open FSharp.Data
 open FsUnit
 open System.Xml
+open System.Xml.Linq
 
 type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
 
@@ -215,3 +217,34 @@ let ``Global inference with empty elements doesn't crash``() =
     //child2.Inner |> should equal None
 
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
+
+type ChoiceFeed = XmlProvider<"<s><a /><b /></s>", SampleIsList=true>
+
+let ``Infers type for sample list with different root elements`` () =
+  ChoiceFeed.Parse("<a />").A.IsSome |> should equal true
+  ChoiceFeed.Parse("<b />").A.IsSome |> should equal false
+  ChoiceFeed.Parse("<a />").B.IsSome |> should equal false
+  ChoiceFeed.Parse("<b />").B.IsSome |> should equal true
+
+type AnyFeed = XmlProvider<"Data/AnyFeed.xml",SampleIsList=true>
+
+let ``Infers type and reads mixed RSS/Atom feed document`` () =
+  let feeds = XDocument.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/AnyFeed.xml"))
+  let rss = feeds.Root.Element(XName.Get "rss").ToString()
+  let atom = feeds.Root.Element(XName.Get("feed", "http://www.w3.org/2005/Atom")).ToString()
+
+  let rssFeed = AnyFeed.Parse(rss)
+  rssFeed.Rss.IsSome |> shouldEqual true
+  rssFeed.Rss.Value.Channel.Title |> shouldEqual "W3Schools Home Page"
+  
+  let atomFeed = AnyFeed.Parse(atom)
+  atomFeed.Feed.IsSome |> shouldEqual true
+  atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
+
+
+
+
+
+  
+
+
