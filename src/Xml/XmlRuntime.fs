@@ -82,3 +82,10 @@ type XmlRuntime =
 
   static member ConvertOptional<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) =
     XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
+
+  /// Returns Some if the specified XmlElement has the specified name
+  /// (otherwise None is returned). This is used when the current element
+  /// can be one of multiple elements.
+  static member ConvertAsName<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) = 
+    if xml.XElement.Name = XName.Get(nameWithNS) then Some(f.Invoke xml)
+    else None
