@@ -117,3 +117,41 @@ type TextRuntime =
   /// Turn a sync operation into an async operation
   static member AsyncMap<'T, 'R>(valueAsync:Async<'T>, mapping:Func<'T, 'R>) = 
     async { let! value = valueAsync in return mapping.Invoke value }
+
+
+module TextParser = 
+
+    let (|NullChar|_|) (c : Char) =
+        if (c |> int) = 0 then Some c else None
+
+    let (|EndOfFile|_|) (c : Char) =
+        let value = c |> int
+        if (value = -1 || value = 65535) then Some c else None
+
+    let (|UpperAtoZ|_|) (c : Char) =
+        if Char.IsUpper(c) then Some c else None
+
+    let (|LowerAtoZ|_|) (c : Char) =
+        if Char.IsLower(c) then Some c else None
+
+    let (|Number|_|) (c : Char) =
+        if Char.IsNumber(c) then Some c else None
+
+    let (|Symbol|_|) (c : Char) =
+        if Char.IsPunctuation(c) then Some c else None
+
+    let (|Whitespace|_|) (c : Char) =
+        if Char.IsWhiteSpace(c) then Some c else None
+
+    let (|LetterDigit|_|) = function
+        | LowerAtoZ c -> Some c
+        | Number c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | _ -> None
+
+    let (|LetterDigitSymbol|_|) = function
+        | LowerAtoZ c -> Some c
+        | Number c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | Symbol c -> Some c
+        | _ -> None
