@@ -24,7 +24,7 @@ solution before trying out the samples to ensure that all needed packages are in
 
 ## Building
 
-- Simply build
+- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script (`build.cmd` on Windows or `./build.sh` on Unix)
 
 ## Library license
 

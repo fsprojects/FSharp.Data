@@ -42,7 +42,7 @@ let release =
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
 
-let releaseNotes = (release.Notes |> String.concat "\n").Replace("&","&amp;")
+let releaseNotes = release.Notes |> String.concat "\n"
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
