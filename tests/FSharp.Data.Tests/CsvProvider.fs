@@ -232,3 +232,11 @@ let ``SafeMode works when inferRows limit is reached``() =
         |> Seq.skip 4 |> Seq.head
     let parentId : Option<int> = rowWithMissingParentIdOptional.``Parent ID``
     parentId |> should equal None
+
+type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
+
+let ``Sample which also is a valid filename``() = 
+    let row = CsvWithSampleWhichIsAValidFilename.GetSample().Data |> Seq.head
+    row.Column1 |> should equal 1
+    row.Column2 |> should equal 2
+    row.Column3 |> should equal 3

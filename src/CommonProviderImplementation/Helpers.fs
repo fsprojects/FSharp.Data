@@ -112,22 +112,27 @@ module ProviderHelpers =
               if not uri.IsAbsoluteUri && (str |> Seq.exists (fun c -> invalidChars.Contains c)) 
               then None else Some uri
   
-      try
-        match tryGetUri sampleOrSampleUri with
-        | None -> parseFunc "" sampleOrSampleUri, false
-        | Some uri ->
+      match tryGetUri sampleOrSampleUri with
+      | None -> 
 
-            let resolver = 
-              { ResolutionType = DesignTime
-                DefaultResolutionFolder = cfg.ResolutionFolder
-                ResolutionFolder = resolutionFolder }
-            
-            let readText() = 
-              Async.RunSynchronously <| async {
-                  use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
-                  use reader = new StreamReader(stream)
-                  return reader.ReadToEnd()
-              } 
+          try parseFunc "" sampleOrSampleUri, false
+          with e -> failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
+
+      | Some uri ->
+
+          let resolver = 
+            { ResolutionType = DesignTime
+              DefaultResolutionFolder = cfg.ResolutionFolder
+              ResolutionFolder = resolutionFolder }
+          
+          let readText() = 
+            Async.RunSynchronously <| async {
+                use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
+                use reader = new StreamReader(stream)
+                return reader.ReadToEnd()
+            } 
+
+          try
             
             let sample = 
               if isWeb uri then
@@ -140,9 +145,18 @@ module ProviderHelpers =
               else readText()
                 
             parseFunc (Path.GetExtension uri.OriginalString) sample, true
-        
-      with e ->
-        failwithf "Specified argument is neither a file, nor well-formed %s: %s" formatName e.Message
+
+          with e ->
+
+            if not uri.IsAbsoluteUri then
+              // even if it's a valid uri, it could be sample text
+              try 
+                parseFunc "" sampleOrSampleUri, false
+              with _ -> 
+                // if not, return the first exception
+                failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+            else
+              failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
 
   // carries part of the information needed by generateConstructors
   type TypeProviderSpec = 
