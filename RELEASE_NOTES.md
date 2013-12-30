@@ -112,3 +112,7 @@
 * Reference System.Xml.Linq in NuGet package.
 * Filter out user domains in Freebase.
 * Fix Zlib.Portable being referenced by Nuget on non PCL projects.
+
+#### 2.0.0-alpha3 - December 30 2013
+* Fixed the use of samples which also are valid filenames in CsvProvider.
+* Allow to specify only the Schema without a Sample in CsvProvider.
