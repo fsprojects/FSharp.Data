@@ -30,9 +30,9 @@ type HtmlElement =
             with get() =
                let rec getValues = function
                    | HtmlDocument(content)
-                   | HtmlElement(_, _, content) -> List.collect (getValues) content
+                   | HtmlElement(_, _, content) -> List.collect getValues content
                    | HtmlContent c -> [c.Trim()]
-               getValues x
+               getValues x |> List.filter (fun s -> String.IsNullOrEmpty(s) |> not)
         member x.Children
             with get() =
                     match x with
@@ -245,6 +245,13 @@ module HtmlRuntime =
     let first f = descendants >> Seq.find f
     
     let values elems = Seq.map (fun (e:HtmlElement) -> e.Value) elems
+
+    type TableHeaderType = 
+        | FirstRowHeaders 
+        | HasHeaders
+
+    let getTables (element:HtmlElement) = 
+        descendantsBy (fun e -> e.Name.ToLower() = "table") element
     
     let write (writer:TextWriter) (element:HtmlElement) =
         let createXmlWriter(baseWriter:TextWriter) =
@@ -272,3 +279,7 @@ module HtmlRuntime =
     
         use writer = createXmlWriter(writer)
         writeElement writer element
+
+type HtmlTable(id:string, values:string) =
+    member x.Id with get() = id
+    member x.Value with get() = values
