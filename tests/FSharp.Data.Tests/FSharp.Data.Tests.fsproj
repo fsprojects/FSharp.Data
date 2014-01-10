@@ -148,6 +148,7 @@
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
+    <Compile Include="HtmlProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
@@ -157,6 +158,9 @@
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\bin\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.Experimental">
+      <HintPath>..\..\bin\FSharp.Data.Experimental.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="nunit.framework">

@@ -68,6 +68,8 @@
     <Compile Include="Apiary\ApiarySchema.fs" />
     <Compile Include="Apiary\ApiaryGenerator.fs" />
     <Compile Include="Apiary\ApiaryProvider.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
+    <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.DesignTime.fs" />
     <None Include="Test.Experimental.fsx" />
@@ -79,6 +81,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

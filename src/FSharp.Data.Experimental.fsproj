@@ -52,6 +52,7 @@
     <Compile Include="Json\JsonExtensions.fs" />
     <Compile Include="Json\JsonRuntime.fs" />
     <Compile Include="Apiary\ApiaryRuntime.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
   </ItemGroup>
@@ -62,6 +63,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
