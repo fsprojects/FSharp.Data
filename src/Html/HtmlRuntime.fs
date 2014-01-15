@@ -1,6 +1,14 @@
 ﻿namespace FSharp.Data.Runtime
 
 open System
+open System.IO
+open System.Xml
+open System.Reflection
+open System.Text
+open FSharp.Data.Runtime.StructuralTypes
+#if INTERACTIVE 
+open FSharp.Data.Runtime
+#endif
 
 type HtmlAttribute = | HtmlAttribute of string * string
     with
@@ -32,7 +40,7 @@ type HtmlElement =
                    | HtmlDocument(content)
                    | HtmlElement(_, _, content) -> List.collect getValues content
                    | HtmlContent c -> [c.Trim()]
-               getValues x |> List.filter (fun s -> String.IsNullOrEmpty(s) |> not)
+               getValues x |> List.filter (fun s -> String.IsNullOrEmpty(s) |> not) |> Seq.ofList
         member x.Children
             with get() =
                     match x with
@@ -50,10 +58,8 @@ type HtmlElement =
                | Some(attr) ->  attr.Value.ToLowerInvariant() = (value.ToLowerInvariant())
                | None -> false
 
-module HtmlRuntime = 
+module internal HtmlHelpers = 
     
-    open System.IO
-
     type System.IO.StreamReader with
    
         static member NullChar = Convert.ToChar(0x0)
@@ -140,14 +146,13 @@ module HtmlRuntime =
 
         member x.ConsContent() = (!x.Content).Cons(x.Reader.ReadChar())
         member x.ConsTag() = (!x.CurrentTag).Cons(x.Reader.ReadChar())
+
+module Html = 
     
-    open System
-    open System.IO
-    open System.Xml
-    open System.Reflection
+    open HtmlHelpers
 
     //Tokenises a stream into a sequence of HTML tokens. 
-    let tokenise (sr : #StreamReader) =
+    let private tokenise (sr : #StreamReader) =
             let state = HtmlState.Create(sr)
             let rec data (state:HtmlState) =
                     match state.Reader.PeekChar() with
@@ -205,9 +210,8 @@ module HtmlRuntime =
                while state.Reader.EndOfStream |> not do
                    yield data state
             }
-                    
-    //Parses a stream into a tree of HTML Elements that represents the document
-    let parse (sr : #StreamReader) =
+    
+    let parse sr = 
         let rec parse' elements tokens =
             match tokens with
             | Tag(true, name, attributes) :: rest ->
@@ -224,35 +228,7 @@ module HtmlRuntime =
                  tokenise sr
                  |> (Seq.toList >> parse' []) 
                  |> snd)
-    
-    let rec descendantsBy f = function
-        | HtmlDocument(elements)
-        | HtmlElement(_, _, elements) ->
-            seq {
-                for element in elements do
-                    if f element then yield element
-                    yield! descendantsBy f element
-            }
-        | HtmlContent _ -> Seq.empty
-    
-    let descendantsByName (name : string) =
-        descendantsBy (fun e -> 
-            e.Name.ToLowerInvariant() = (name.ToLowerInvariant())
-            )
-    
-    let descendants = descendantsBy (fun _ -> true)
-    
-    let first f = descendants >> Seq.find f
-    
-    let values elems = Seq.map (fun (e:HtmlElement) -> e.Value) elems
 
-    type TableHeaderType = 
-        | FirstRowHeaders 
-        | HasHeaders
-
-    let getTables (element:HtmlElement) = 
-        descendantsBy (fun e -> e.Name.ToLower() = "table") element
-    
     let write (writer:TextWriter) (element:HtmlElement) =
         let createXmlWriter(baseWriter:TextWriter) =
             let s = new System.Xml.XmlWriterSettings(Indent = false,
@@ -279,7 +255,129 @@ module HtmlRuntime =
     
         use writer = createXmlWriter(writer)
         writeElement writer element
+         
+    
+    let rec descendantsBy f = function
+        | HtmlDocument(elements)
+        | HtmlElement(_, _, elements) ->
+            seq {
+                for element in elements do
+                    if f element then yield element
+                    yield! descendantsBy f element
+            }
+        | HtmlContent _ -> Seq.empty
+    
+    let descendantsByName (name : string) =
+        descendantsBy (fun e -> 
+            e.Name.ToLowerInvariant() = (name.ToLowerInvariant())
+            )
+    
+    let descendants = descendantsBy (fun _ -> true)
+    
+    let first f = descendants >> Seq.find f
+    
+    let values elems = Seq.map (fun (e:HtmlElement) -> e.Value) elems
 
-type HtmlTable(id:string, values:string) =
+    let inferRowType (headers:string[]) values = 
+        let culture = System.Globalization.CultureInfo.CurrentCulture
+        let inferProperty index value =
+            {
+                Name = (headers.[index])
+                Optional = false
+                Type = (StructuralInference.inferPrimitiveType culture value None)
+            }
+        StructuralTypes.InferedType.Record(None, values |> List.mapi inferProperty) 
+
+    let getTables (element:HtmlElement) = 
+        descendantsBy (fun e -> e.Name.ToLower() = "table") element
+
+    let tryGetName (element:HtmlElement) = 
+        let tryGetName' choices =
+            choices
+            |> List.tryPick (fun (attrName) -> 
+                match element.TryGetAttribute(attrName) with
+                | Some(HtmlAttribute(_,value)) -> Some <| value
+                | None -> None
+            )
+        tryGetName' [ "id"; "name"; "title"]
+
+type HtmlElement with            
+//Parses a stream into a tree of HTML Elements that represents the document
+    static member Parse (sr : #StreamReader) = Html.parse sr
+    static member Parse (sr:string, ?enc:Encoding) = 
+        use ms = new MemoryStream((defaultArg enc Encoding.UTF8).GetBytes(sr))
+        use sr = new StreamReader(ms)
+        HtmlElement.Parse(sr)
+
+type HtmlTableRow private(data:seq<string>, headers:seq<string>) = 
+    let culture = Globalization.CultureInfo.CurrentCulture
+    member x.Data with get() = data |> Array.ofSeq
+
+    static member Create(data, headers) = HtmlTableRow(data, headers)
+
+    member x.GetColumn(name) = 
+        let index = Seq.findIndex ((=) name) headers
+        let data = x.Data.[index]
+        data
+
+    static member GetColumn(row:HtmlTableRow, name) = 
+        row.GetColumn(name)
+
+    member x.GetInferedRowType() = 
+        Html.inferRowType (headers|>Seq.toArray) (data |> Seq.toList)
+
+type HtmlTable<'rowType> internal(id:string, headers:seq<string>, data:seq<'rowType>) =
+    let mutable rows = data
+    
     member x.Id with get() = id
-    member x.Value with get() = values
+    member x.Headers with get() = headers
+    member x.Rows with get() = rows and internal set(v) = rows <- v
+
+    static member Create(rowConverter:Func<string[],'rowType>, id, headers, src:string) =
+       let element = HtmlElement.Parse(src)
+       let data =  
+            Html.descendantsByName "tr" element 
+            |> Seq.skip 1 
+            |> Html.values 
+            |> Seq.toArray 
+            |> Array.map (fun r -> rowConverter.Invoke(r |> Seq.toArray))
+       new HtmlTable<'rowType>(id, headers, data) 
+
+
+type HtmlTable private(id, headers:seq<string>, data) = 
+    inherit HtmlTable<HtmlTableRow>(id, headers, data |> Seq.map (fun r -> HtmlTableRow.Create(r, headers)))   
+
+    static let getRows element = Html.descendantsByName "tr" element
+    static let getHeaders (rows:seq<HtmlElement>) = (rows |> Seq.head).Value
+    static let getData rows = rows |> Seq.skip 1 |> Html.values 
+
+    static member Create(defaultName, element) =
+        let rows = getRows element
+        let headers = getHeaders rows
+        let data = getData rows
+        let name = Html.tryGetName element
+        HtmlTable(defaultArg name defaultName, headers, data)
+
+    member x.Load(src:string, ?enc:Encoding) = 
+        let element = HtmlElement.Parse(src, ?enc = enc)
+        x.Rows <- getData (getRows element) |> Seq.map (fun r -> HtmlTableRow.Create(r, headers))
+
+    member x.GetInferedRowType() = 
+        let inferedType =
+            x.Rows 
+            |> Seq.map (fun r -> r.GetInferedRowType())
+            |> Seq.reduce (StructuralInference.subtypeInfered true) 
+        match inferedType with
+        | StructuralTypes.InferedType.Record(_, props) -> 
+            inferedType, props |> List.map (fun p -> 
+                                  match p.Type with
+                                  | InferedType.Primitive(typ, unitType) -> PrimitiveInferedProperty.Create(p.Name, typ, p.Optional)
+                                  | _ -> failwithf "expected primitive")
+        | _ -> failwith "expected record" 
+
+type HtmlElement with
+    member x.Write(textWriter) = Html.write textWriter x
+    member x.Tables() = 
+        Html.getTables x
+        |> Seq.mapi (fun i t -> HtmlTable.Create("Table_" + (string i), t))
+

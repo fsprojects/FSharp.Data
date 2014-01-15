@@ -26,13 +26,13 @@ let exampleHtml =
         <div>
             <table id="myTable">
               <tr>
-                <th>Column1</th><th>Column2</th><th>Column3</th>
+                <th>Column1</th><th>Column6</th><th>Column3</th>
               </tr>
               <tr>
-                <td>True</td><td>no</td><td>3</td>
+                <td>True</td><td>1</td><td>3</td>
               </tr>
               <tr>
-                <td>yes</td><td>false</td><td>1.92</td>
+                <td>yes</td><td>2</td><td>1.92</td>
               </tr>
             </table>
             </div>
@@ -42,23 +42,29 @@ let exampleHtml =
 
 type ExampleHtml = HtmlProvider<exampleHtml>
 
-let ts = ExampleHtml.Tables.myTable()
+let ts = ExampleHtml.Tables.myTable.Parse(exampleHtml)
+
+ts.Rows |> Seq.map (fun r -> r.Column3) |> printfn "%A" 
+//
+//printfn "%A" ts.Rows.[0].Data
+
+
 //printfn "%s" ts.Id
-printfn "%A" ts.Value
-let body = 
-    let response = FSharp.Net.Http.Request("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet")
-    match response.Body with
-    | FSharp.Net.ResponseBody.Text(text) -> Encoding.UTF8.GetBytes(text)
-    | ResponseBody.Binary(bytes) -> bytes
-
-let tables = 
-    use ms = new MemoryStream(body)
-    use sr = new StreamReader(ms)
-    let dom = HtmlRuntime.parse sr
-    HtmlRuntime.getTables dom |> Seq.map (fun t -> t.Value) |> Seq.toList
-
-printfn "%A" tables
-tables.Value
+//printfn "%A" ts.Value
+//let body = 
+//    let response = FSharp.Net.Http.Request("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet")
+//    match response.Body with
+//    | FSharp.Net.ResponseBody.Text(text) -> Encoding.UTF8.GetBytes(text)
+//    | ResponseBody.Binary(bytes) -> bytes
+//
+//let tables = 
+//    use ms = new MemoryStream(body)
+//    use sr = new StreamReader(ms)
+//    let dom = HtmlRuntime.parse sr
+//    HtmlRuntime.getTables dom |> Seq.map (fun t -> t.Value) |> Seq.toList
+//
+//printfn "%A" tables
+//tables.Value
 //
 //type Wiki = HtmlProvider<>
 //

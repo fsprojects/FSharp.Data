@@ -54,9 +54,9 @@
     <Compile Include="Json\JsonExtensions.fs" />
     <Compile Include="Json\JsonRuntime.fs" />
     <Compile Include="Apiary\ApiaryRuntime.fs" />
-    <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
