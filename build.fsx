@@ -2,7 +2,8 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#r "packages/FAKE/tools/FakeLib.dll"
+#I "packages/FAKE/tools/"
+#r "FakeLib.dll"
 
 open System
 open System.IO
@@ -77,20 +78,19 @@ Target "CleanDocs" (fun _ ->
 // Build Visual Studio solutions
 
 let files includes = 
-  { BaseDirectory = __SOURCE_DIRECTORY__
-    Includes = includes
-    Excludes = [] } 
+    includes
+    |> Scan
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
 Target "Build" (fun _ ->
-    files (if runningOnMono then ["FSharp.Data.sln"] else ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"])
+    files (if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 )
 
 Target "BuildTests" (fun _ ->
-    files ["FSharp.Data.Tests.sln"]
+    files (!! "FSharp.Data.Tests.sln")
     |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"] else []) "Rebuild"
     |> ignore
 )
@@ -103,7 +103,7 @@ Target "RunTests" (fun _ ->
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
-    (files ["tests/*/bin/Release/FSharp.Data.Tests*.dll"])
+    (files (!! "tests/*/bin/Release/FSharp.Data.Tests*.dll"))
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath
