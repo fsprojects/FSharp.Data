@@ -14,6 +14,7 @@ APIの **ひな形** を記述するだけで独自のREST APIを作成できま
 (適切なcontent-typeを含んだ) `GET` リクエストに対しては、
 以下のようなJSONデータが返されます：
 
+    [lang=text]
     GET /1/snippet/{id}
     < 200
     < Content-Type: application/json
@@ -108,7 +109,7 @@ for person in res.Results do
 let person = db.Person.GetPerson("8784")
 printfn "Born: %s" person.PlaceOfBirth
 
-let credits = person.Credits()
+let credits = person.MovieCredits()
 for cast in credits.Cast do
   printfn "%s (as %s)" cast.Title.String.Value cast.Character
 

@@ -11,6 +11,7 @@ expected response. For example, a [documentation for F# Snippets API](http://doc
 specifies that `GET` request to a URL of a form `/1/snippet/{id}` (with an appropriate
 content-type header) returns JSON data as follows:
 
+    [lang=text]
     GET /1/snippet/{id}
     < 200
     < Content-Type: application/json
@@ -99,7 +100,7 @@ The following snippet prints some information about Daniel Craig:
 let person = db.Person.GetPerson("8784")
 printfn "Born: %s" person.PlaceOfBirth
 
-let credits = person.Credits()
+let credits = person.MovieCredits()
 for cast in credits.Cast do
   printfn "%s (as %s)" cast.Title.String.Value cast.Character
 

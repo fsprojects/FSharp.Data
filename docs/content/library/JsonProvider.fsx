@@ -125,6 +125,7 @@ object, we would have a `GetSample` method instead.
 Let's now use the type provider to process some real data. We use a data set returned by 
 [the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
 
+    [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
       [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
           "country": {"id":"CZ","value":"Czech Republic"},

@@ -119,6 +119,7 @@ Test.GetSample().GetValues()
 サンプルとなるドキュメント [`data/Writers.xml`](../../data/Writers.xml) は
 以下のようになっています：
 
+    [lang=xml]
     <authors topic="Philosophy of Science">
       <author name="Paul Feyerabend" born="1924" />
       <author name="Thomas Kuhn" />
@@ -175,6 +176,7 @@ for author in topic.GetAuthors() do
 例として以下のようなサンプルドキュメントがあるとしましょう
 (単純化したバージョンが [`data/HtmlBody.xml`](../../data/HtmlBody.xml) にあります)：
 
+    [lang=xml]
     <div id="root">
       <span>Main text</span>
       <div id="first">
