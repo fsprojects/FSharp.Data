@@ -18,7 +18,7 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Formatting.2.3.3-beta/lib/net40"
+#I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
 #I "../../packages/RazorEngine.3.4.0/lib/net45/"
 #r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
@@ -49,7 +49,7 @@ let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates/ja"
 let reference  = __SOURCE_DIRECTORY__ @@ "reference"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.3.3-beta/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.3.4-beta/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)

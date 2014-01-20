@@ -1,5 +1,5 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.3.3-beta/lib/net40"
+#I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
 #I "../../packages/RazorEngine.3.4.0/lib/net45/"
 #r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
 #r "../../packages/FSharp.Compiler.Service.0.0.11-alpha/lib/net40/FSharp.Compiler.Service.dll"
