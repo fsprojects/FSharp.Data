@@ -103,6 +103,7 @@ In this section we look at an example that demonstrates how the type provider wo
 on a simple document that lists authors that write about a specific topic. The 
 sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
 
+    [lang=xml]
     <authors topic="Philosophy of Science">
       <author name="Paul Feyerabend" born="1924" />
       <author name="Thomas Kuhn" />
@@ -153,6 +154,7 @@ However, when we work with documents such as XHTML files, this can often be the 
 Consider for example, the following sample (a simplified version of 
 [`data/HtmlBody.xml`](../data/HtmlBody.xml)):
 
+    [lang=xml]
     <div id="root">
       <span>Main text</span>
       <div id="first">

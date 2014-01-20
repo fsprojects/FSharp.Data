@@ -31,6 +31,7 @@ Yahoo FinanceのWebサイトでは以下のような構造のCSV形式で
 (より大きな例としては [`data/MSFT.csv`](../../data/MSFT.csv) ファイルを
 参照してください)：
 
+    [lang=text]
     Date,Open,High,Low,Close,Volume,Adj Close
     2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
     2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50
@@ -123,6 +124,7 @@ Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
 このセクションでは以下のような単純なデータが含まれた
 [`data/SmallTest.csv`](../../data/SmallTest.csv) を使います：
 
+    [lang=text]
     Name,  Distance (metre), Time (s)
     First, 50.0,             3.7
 
@@ -302,6 +304,7 @@ static引数 `PreferOptionals` を `true` にします。
 型と測定単位の両方を( `float<metre>` のようにして)指定することもできます。
 たとえば以下の通りです：
 
+    [lang=text]
     Name,  Distance (decimal?<metre>), Time (float)
     First, 50,                        3
 

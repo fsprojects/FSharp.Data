@@ -151,6 +151,7 @@ for item in Values.GetSamples() do
 受信したデータセットを使います。
 このデータは以下のような構造になっています：
 
+    [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
       [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
           "country": {"id":"CZ","value":"Czech Republic"},

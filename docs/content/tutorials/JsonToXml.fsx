@@ -41,6 +41,7 @@ In particular, XML distinguishes between _attributes_ and _child elements_. More
 all XML elements have a name, while JSON arrays or records are anonymous (but records
 have named fields). Consider, for example, the following XML:
 
+    [lang=xml]
     <channel version="1.0">
       <title text="Sample input" />
       <item value="First" />
@@ -51,6 +52,7 @@ The JSON that we produce will ignore the top-level element name (`channel`). It 
 a record that contains a unique field for every attribute and a name of a child element.
 If an element appears multiple times, it is turned into an array:
 
+    [lang=js]
     { "version": "1.0",
       "title": { "text": "Sample input" },
       "items": [ { "value": "First" }, 
@@ -103,6 +105,7 @@ Converting JSON to XML
 
 When converting JSON value to XML, we fact the same mismatch. Consider the following JSON value:
 
+    [lang=js]
     { "title" : "Sample input",
       "paging" : { "current": 1 },
       "items" : [ "First", "Second" ] }
@@ -112,6 +115,7 @@ values that can be wrapped into an `XElement` by the user (who has to specify th
 name). Record fields that are a primitive value are turned into attributes, while 
 complex values (array or record) become objects:
 
+    [lang=xml]
     <root title="Sample input">
       <items>
         <item>First</item>

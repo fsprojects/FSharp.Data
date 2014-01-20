@@ -25,6 +25,7 @@ open FSharp.Data
 The Yahoo Finance web site provides daily stock prices in a CSV format that has the
 following structure (you can find a larger example in the [`data/MSFT.csv`](../data/MSFT.csv) file):
 
+    [lang=text]
     Date,Open,High,Low,Close,Volume,Adj Close
     2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
     2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50
@@ -108,6 +109,7 @@ returns values annotated with the appropriate unit.
 In this section, we use a simple file [`data/SmallTest.csv`](../data/SmallTest.csv) which
 looks as follows:
 
+    [lang=text]
     Name,  Distance (metre), Time (s)
     First, 50.0,             3.7
 
@@ -266,6 +268,7 @@ specify the units of measure. This will override both `SafeMode` and `PreferOpti
 
 You can also specify both the type and a unit (e.g `float<metre>`). Example:
 
+    [lang=text]
     Name,  Distance (decimal?<metre>), Time (float)
     First, 50,                        3
 
