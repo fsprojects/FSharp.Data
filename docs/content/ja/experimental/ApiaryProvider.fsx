@@ -109,7 +109,7 @@ for person in res.Results do
 let person = db.Person.GetPerson("8784")
 printfn "Born: %s" person.PlaceOfBirth
 
-let credits = person.MovieCredits()
+let credits = person.Credits()
 for cast in credits.Cast do
   printfn "%s (as %s)" cast.Title.String.Value cast.Character
 
