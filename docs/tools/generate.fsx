@@ -6,6 +6,7 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "FSharp.Data.dll"; "FSharp.Data.Experimental.dll" ]
 // Web site location for the generated documentation
+let repo = "https://github.com/fsharp/FSharp.Data/tree/master/"
 let website = "/FSharp.Data"
 
 // Specify more information about your project
@@ -20,9 +21,10 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
+#I "../../packages/FSharp.Compiler.Service.0.0.11-alpha/lib/net40"
 #I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
-#I "../../packages/RazorEngine.3.4.0/lib/net45/"
-#r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
+#I "../../packages/RazorEngine.3.3.0/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
@@ -73,7 +75,9 @@ let buildReference () =
   MetadataFormat.Generate
     ( referenceBinaries |> List.map ((@@) bin),
       output @@ "reference", layoutRoots, 
-      parameters = ("root", root)::info )
+      parameters = ("root", root)::info,
+      sourceRepo = repo,
+      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =

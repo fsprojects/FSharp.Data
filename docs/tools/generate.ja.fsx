@@ -18,9 +18,10 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
+#I "../../packages/FSharp.Compiler.Service.0.0.11-alpha/lib/net40"
 #I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
-#I "../../packages/RazorEngine.3.4.0/lib/net45/"
-#r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
+#I "../../packages/RazorEngine.3.3.0/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
@@ -48,14 +49,12 @@ let outputJa   = __SOURCE_DIRECTORY__ @@ "../output/ja"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates/ja"
-let reference  = __SOURCE_DIRECTORY__ @@ "reference"
 let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.3.4-beta/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)
 let layoutRoots =
   [ templates
-    reference 
     formatting @@ "templates" 
     formatting @@ "templates/reference" ]
 
@@ -65,7 +64,7 @@ let copyFiles () =
   CopyRecursive data (output @@ "data") true |> Log "Copying data files: "
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
-  CopyRecursive (formatting @@ "content") (output @@ "content") true 
+  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
 
 // Build documentation from `fsx` and `md` files in `docs/content`

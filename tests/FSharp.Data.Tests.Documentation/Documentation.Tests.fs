@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
-#I "../../packages/RazorEngine.3.4.0/lib/net45/"
-#r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
+#I "../../packages/RazorEngine.3.3.0/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FSharp.Compiler.Service.0.0.11-alpha/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
