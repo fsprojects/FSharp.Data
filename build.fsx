@@ -16,7 +16,7 @@ open Fake.Git
 // --------------------------------------------------------------------------------------
 
 let project = "FSharp.Data"
-let authors = ["Tomas Petricek, Gustavo Guerra"]
+let authors = ["Tomas Petricek"; "Gustavo Guerra"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
