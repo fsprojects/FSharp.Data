@@ -14,13 +14,29 @@ open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime
 open FSharp.Net
+open System.Collections.Generic
 
 type private FieldInfo = 
   { TypeForTuple : Type
     Property : ProvidedProperty
     Convert: Expr -> Expr
-    ConvertBack: Expr -> Expr }     
+    ConvertBack: Expr -> Expr } 
 
+module Helpers = 
+
+    type Cache private () =
+       static let mutable instance = Dictionary<_, _>()
+       static member Instance = instance   
+          
+    let memoize f =
+        fun n ->
+            match Cache.Instance.TryGetValue(n) with
+            | (true, v) -> v
+            | _ ->
+                let temp = f(n)
+                Cache.Instance.Add(n, temp)
+                temp   
+    
 [<TypeProvider>]
 type public HtmlProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
@@ -31,37 +47,18 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
   let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", Some typeof<obj>)
   
   
-  let buildTypes (typeName:string) (args:obj[]) =
+  let buildTypes (typeName:string,sample,culture,resolutionFolder) =
       
-      let sample = args.[0] :?> string
-      let culture = args.[1] :?> string
       let cultureInfo = TextRuntime.GetCulture culture
       let missingValues = String.Join(",", TextConversions.DefaultMissingValues)
-      //let resolutionFolder = args.[1] :?> string
-      //TODO: Sample currently assumed to be a url 
       let generatedType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
-      let typeContainer = ProvidedTypeDefinition("TypeContainer", Some typeof<obj>)
       let tableContainer = ProvidedTypeDefinition("Tables", Some typeof<obj>)
+      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> HtmlElement.Parse(sample)) "HTML" this cfg resolutionFolder
 
-
-      generatedType.AddMember(typeContainer)
-      let body =
-        match Uri.TryCreate(sample,UriKind.Absolute) with
-        | true, uri ->
-            let response = FSharp.Net.Http.Request(uri.AbsoluteUri)
-            match response.Body with
-            | ResponseBody.Text(text) -> Encoding.UTF8.GetBytes(text)
-            | ResponseBody.Binary(bytes) -> bytes
-        | false, _ -> 
-            Encoding.UTF8.GetBytes(sample)
-
-      use ms = new MemoryStream(body)
-      use sr = new StreamReader(ms)
-      let dom = HtmlElement.Parse(sr)
       let providedTableTypes = 
           dom.Tables()
           |> Seq.map (fun table ->
-                let _, props = table.GetInferedRowType()
+                let _, props = table.GetInferedRowType(cultureInfo)
                 let fields = props |> List.mapi (fun index field ->
                     let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues culture field
                     { TypeForTuple = typWithoutMeasure
@@ -97,7 +94,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                     Expr.NewDelegate(delegateType, [rowVar], body)
 
                 let args = [ ProvidedParameter("text", typeof<string>) ]
-                let m = ProvidedMethod("Parse", args, tableType, IsStaticMethod = true)
+                let m = ProvidedMethod("Load", args, tableType, IsStaticMethod = true)
                 m.InvokeCode <- (fun (Singleton text) -> 
                                     let stringArrayToRowVar = Var("rowConveter", rowConverter.Type)
                                     let body = 
@@ -105,7 +102,6 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                                     Expr.Let(stringArrayToRowVar, rowConverter, body)
                                 )
                 tableType.AddMember(m)
-                //System.Diagnostics.Debug.WriteLine (Debug.prettyPrint false false 10 120 tableType)
                 tableType
              )
       tableContainer.AddMembers(providedTableTypes |> Seq.toList)
@@ -116,9 +112,14 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     [ 
         ProvidedStaticParameter("Sample", typeof<string>)
         ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
+        ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
     ] 
 
-  do htmlProvTy.DefineStaticParameters(parameters, buildTypes)
+  do htmlProvTy.DefineStaticParameters(
+                parameters, 
+                (fun typeName [|:? string as sample; :? string as culture; :? string as resolutionFolder |] -> 
+                        Helpers.memoize buildTypes (typeName, sample, culture, resolutionFolder)
+                ))
 
   // Register the main type with F# compiler
   do this.AddNamespace(ns, [ htmlProvTy ])

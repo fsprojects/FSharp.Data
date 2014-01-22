@@ -35,37 +35,77 @@ let exampleHtml =
                 <td>yes</td><td>2</td><td>1.92</td>
               </tr>
             </table>
-            </div>
+        </div>
+        <div>
+            <table>
+              <tr>
+                <th>Date</th><th>CptyId</th><th>Value</th>
+              </tr>
+              <tr>
+                <td>01/01/2012</td><td>1</td><td>3</td>
+              </tr>
+              <tr>
+                <td>01/02/2012</td><td>2</td><td>1.92</td>
+              </tr>
+            </table>
+        </div>
         </body>
         </html>
     """
 
 type ExampleHtml = HtmlProvider<exampleHtml>
 
-let ts = ExampleHtml.Tables.myTable.Parse(exampleHtml)
+let dataHtml = """
+        <html>
+        <head></head>
+        <body>
+        <div>
+            <table id="myTable">
+              <tr>
+                <th>Column1</th><th>Column6</th><th>Column3</th>
+              </tr>
+              <tr>
+                <td>True</td><td>1</td><td>3</td>
+              </tr>
+              <tr>
+                <td>yes</td><td>2</td><td>45.67</td>
+              </tr>
+            </table>
+            </div>
+        </body>
+        </html>
+    """
 
-ts.Rows |> Seq.map (fun r -> r.Column3) |> printfn "%A" 
-//
-//printfn "%A" ts.Rows.[0].Data
+let myTable = ExampleHtml.Tables.myTable.Load(dataHtml)
+myTable.Rows |> printfn "%A"
 
+let anotherTable = ExampleHtml.Tables.Table_1.Load(exampleHtml)
+anotherTable.Rows |> Seq.map (fun r -> r.CptyId, r.Date) |> printfn "%A"
 
-//printfn "%s" ts.Id
-//printfn "%A" ts.Value
-//let body = 
-//    let response = FSharp.Net.Http.Request("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet")
-//    match response.Body with
-//    | FSharp.Net.ResponseBody.Text(text) -> Encoding.UTF8.GetBytes(text)
-//    | ResponseBody.Binary(bytes) -> bytes
+let marketDepthFile = File.ReadAllText(__SOURCE_DIRECTORY__ + "/Data/MarketDepth.htm")
+let ms = new System.IO.MemoryStream(Encoding.UTF8.GetBytes(marketDepthFile))
+let sr = new System.IO.StreamReader(ms)
+
+//let elem = 
+FSharp.Data.Runtime.Html.parse(sr) 
+|> Html.getTables 
+|> Seq.iteri (fun i s -> 
+                let fname = __SOURCE_DIRECTORY__ + "/Data/PArsedMaarketDepth_" + string i + ".htm"
+                if File.Exists(fname) then File.Delete(fname)
+                use wr = new System.IO.StreamWriter(File.OpenWrite(fname))
+                FSharp.Data.Runtime.Html.write wr s) 
+                
+//.Tables() |> Seq.head// |> Seq.nth 3
+//elem.Rows |> Seq.map (fun r -> r.Data) |> printfn "%A"
 //
-//let tables = 
-//    use ms = new MemoryStream(body)
-//    use sr = new StreamReader(ms)
-//    let dom = HtmlRuntime.parse sr
-//    HtmlRuntime.getTables dom |> Seq.map (fun t -> t.Value) |> Seq.toList
+//type BmReports = HtmlProvider<"Data/MarketDepth.htm", Culture="en-GB">
 //
-//printfn "%A" tables
-//tables.Value
+//BmReports.Tables.Table_0.
+//let rep = BmReports.Tables.Table_3.Load(File.ReadAllText(__SOURCE_DIRECTORY__ + "/Data/MarketDepth.htm"))
+//let result = rep.Rows |> Seq.map (fun r -> r.``Settlement Day``, r.``Accepted Bid Vol``)
 //
-//type Wiki = HtmlProvider<>
+//result |> Seq.iter (printfn "%A")
+
+//type Wiki = HtmlProvider<"http://en.wikipedia.org/wiki/2013_Wimbledon_Championships">
 //
-//let w = Wiki.Tables.
+//Wiki

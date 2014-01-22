@@ -40,7 +40,11 @@ type HtmlElement =
                    | HtmlDocument(content)
                    | HtmlElement(_, _, content) -> List.collect getValues content
                    | HtmlContent c -> [c.Trim()]
-               getValues x |> List.filter (fun s -> String.IsNullOrEmpty(s) |> not) |> Seq.ofList
+                        
+               getValues x 
+               |> List.filter (fun s -> String.IsNullOrEmpty(s) |> not) 
+               |> List.map (fun c -> c.Replace("&nbsp;", "")) //Really should handle replacements (&nbsp; &copy; etc..) in the parser.
+               |> Seq.ofList
         member x.Children
             with get() =
                     match x with
@@ -242,7 +246,7 @@ module Html =
                     writeElement writer elem
             | HtmlContent(c) -> writer.WriteValue(c)
             | HtmlElement(name, attrs, elems) ->
-                writer.WriteStartElement(name)
+                writer.WriteStartElement(if String.IsNullOrEmpty name then "SomeElement" else name)
                 for attr in attrs do
                     match attr with
                     | HtmlAttribute(key,value) -> 
@@ -257,39 +261,40 @@ module Html =
         writeElement writer element
          
     
-    let rec descendantsBy f = function
+    let rec descendantsBy recurseOnMatch f = function
         | HtmlDocument(elements)
         | HtmlElement(_, _, elements) ->
             seq {
                 for element in elements do
-                    if f element then yield element
-                    yield! descendantsBy f element
+                    match f element with
+                    | true -> yield element
+                              if recurseOnMatch then yield! descendantsBy recurseOnMatch f element
+                    | false -> yield! descendantsBy recurseOnMatch f element
             }
         | HtmlContent _ -> Seq.empty
     
     let descendantsByName (name : string) =
-        descendantsBy (fun e -> 
+        descendantsBy true (fun e -> 
             e.Name.ToLowerInvariant() = (name.ToLowerInvariant())
             )
     
-    let descendants = descendantsBy (fun _ -> true)
+    let descendants = descendantsBy true (fun _ -> true)
     
     let first f = descendants >> Seq.find f
     
     let values elems = Seq.map (fun (e:HtmlElement) -> e.Value) elems
 
-    let inferRowType (headers:string[]) values = 
-        let culture = System.Globalization.CultureInfo.CurrentCulture
+    let inferRowType culture (headers:string[]) values = 
         let inferProperty index value =
             {
-                Name = (headers.[index])
+                Name = (if Array.isEmpty headers && index >= headers.Length then "Column_" + (string index) else headers.[index])
                 Optional = false
                 Type = (StructuralInference.inferPrimitiveType culture value None)
             }
         StructuralTypes.InferedType.Record(None, values |> List.mapi inferProperty) 
 
     let getTables (element:HtmlElement) = 
-        descendantsBy (fun e -> e.Name.ToLower() = "table") element
+        descendantsBy false (fun e -> e.Name.ToLower() = "table") element
 
     let tryGetName (element:HtmlElement) = 
         let tryGetName' choices =
@@ -323,8 +328,8 @@ type HtmlTableRow private(data:seq<string>, headers:seq<string>) =
     static member GetColumn(row:HtmlTableRow, name) = 
         row.GetColumn(name)
 
-    member x.GetInferedRowType() = 
-        Html.inferRowType (headers|>Seq.toArray) (data |> Seq.toList)
+    member x.GetInferedRowType(culture) = 
+        Html.inferRowType culture (headers|>Seq.toArray) (data |> Seq.toList)
 
 type HtmlTable<'rowType> internal(id:string, headers:seq<string>, data:seq<'rowType>) =
     let mutable rows = data
@@ -334,10 +339,22 @@ type HtmlTable<'rowType> internal(id:string, headers:seq<string>, data:seq<'rowT
     member x.Rows with get() = rows and internal set(v) = rows <- v
 
     static member Create(rowConverter:Func<string[],'rowType>, id, headers, src:string) =
-       let element = HtmlElement.Parse(src)
+       let element = (HtmlElement.Parse(src))
+       let table =
+        element 
+        |> Html.getTables |> Seq.mapi (fun i x -> (i,x))
+        |> Seq.pick (fun (pos,table) ->
+            match Html.tryGetName table with
+            | Some(name) when name = id -> Some table
+            | a -> 
+                if id = ("Table_" + (string pos))
+                then Some table
+                else None)
+       let dataElements = 
+            let rows = Html.descendantsByName "tr" table
+            rows |> Seq.skip 1 
        let data =  
-            Html.descendantsByName "tr" element 
-            |> Seq.skip 1 
+            dataElements
             |> Html.values 
             |> Seq.toArray 
             |> Array.map (fun r -> rowConverter.Invoke(r |> Seq.toArray))
@@ -349,7 +366,12 @@ type HtmlTable private(id, headers:seq<string>, data) =
 
     static let getRows element = Html.descendantsByName "tr" element
     static let getHeaders (rows:seq<HtmlElement>) = (rows |> Seq.head).Value
-    static let getData rows = rows |> Seq.skip 1 |> Html.values 
+    static let getData rows = rows |> Seq.skip 1 |> Html.values
+    
+    let inferedTypeToProperty name optional (typ:InferedType) = 
+        match typ with
+        | InferedType.Primitive(typ, unitType) -> PrimitiveInferedProperty.Create(name, typ, optional)                              
+        | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, optional) 
 
     static member Create(defaultName, element) =
         let rows = getRows element
@@ -362,22 +384,18 @@ type HtmlTable private(id, headers:seq<string>, data) =
         let element = HtmlElement.Parse(src, ?enc = enc)
         x.Rows <- getData (getRows element) |> Seq.map (fun r -> HtmlTableRow.Create(r, headers))
 
-    member x.GetInferedRowType() = 
+    member x.GetInferedRowType(culture) = 
         let inferedType =
             x.Rows 
-            |> Seq.map (fun r -> r.GetInferedRowType())
+            |> Seq.map (fun r -> r.GetInferedRowType(culture))
             |> Seq.reduce (StructuralInference.subtypeInfered true) 
         match inferedType with
         | StructuralTypes.InferedType.Record(_, props) -> 
-            inferedType, props |> List.map (fun p -> 
-                                  match p.Type with
-                                  | InferedType.Primitive(typ, unitType) -> PrimitiveInferedProperty.Create(p.Name, typ, p.Optional)
-                                  | _ -> failwithf "expected primitive")
+            inferedType, props |> List.map (fun p -> inferedTypeToProperty p.Name p.Optional p.Type)
         | _ -> failwith "expected record" 
 
 type HtmlElement with
     member x.Write(textWriter) = Html.write textWriter x
     member x.Tables() = 
-        Html.getTables x
-        |> Seq.mapi (fun i t -> HtmlTable.Create("Table_" + (string i), t))
+        Html.getTables x |> Seq.mapi (fun i t -> HtmlTable.Create("Table_" + (string i), t))
 
