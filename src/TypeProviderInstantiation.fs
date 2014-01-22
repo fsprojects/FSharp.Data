@@ -136,8 +136,7 @@ type TypeProviderInstantiation =
             ["Freebase"
              x.NumIndividuals.ToString()
              x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()
-             x.UseRefinedTypes.ToString()]
+             x.Pluralize.ToString()]
         |> String.concat ","
 
     static member Parse (line:string) =
@@ -181,7 +180,7 @@ type TypeProviderInstantiation =
                        ServiceUrl = FreebaseQueries.DefaultServiceUrl
                        LocalCache = true
                        AllowLocalQueryEvaluation = true 
-                       UseRefinedTypes = args.[5] |> bool.Parse }
+                       UseRefinedTypes = true }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices
