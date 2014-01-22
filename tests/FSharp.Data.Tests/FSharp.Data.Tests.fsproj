@@ -94,6 +94,8 @@
     <Content Include="Data/IrelandStations.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\IrelandStations.xml" />
+    <None Include="Data\MarketDepth.htm" />
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
