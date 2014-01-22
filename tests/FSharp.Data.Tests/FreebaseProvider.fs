@@ -1,9 +1,10 @@
-﻿module FSharp.Data.Tests.FreebaseProvider
-
+﻿
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.FreebaseProvider
 #endif
 
 open NUnit.Framework
@@ -13,6 +14,7 @@ open System.Linq
 open System.Net
 open FSharp.Data
 open FSharp.Data.FreebaseOperators
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
@@ -45,6 +47,17 @@ let ``Can access the symbol for hydrogen``() =
 
     let hydrogen = elements.Individuals.Hydrogen
     hydrogen.Symbol |> should equal "H"
+
+[<Test>]
+let ``Can access specific properties for hydrogen individual``() =
+
+    let elements = data.``Science and Technology``.Chemistry.``Chemical Elements``
+
+    let hydrogen = elements.Individuals.Hydrogen
+    hydrogen.``Atomic number`` |> should equal 1
+    hydrogen.``Atomic mass``.Mass.HasValue |> should equal true
+    abs (1.0 - hydrogen.``Atomic mass``.Mass.Value / 1.713498e-27<kilogram>) < 0.00001 |> should equal true
+    abs (1.0 - hydrogen.``Boiling Point`` / 20.28<kelvin>) < 0.00001 |> should equal true
 
 let findCountryByFifaCode code = 
     query { for x in data.``Time and Space``.Location.Countries do 
@@ -158,6 +171,30 @@ let ``tvrage_id is not unique in mql query``() =
 let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
     ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check Individuals10 works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check Individuals100 works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check IndividualsAZ works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check IndividualsAZ good for large collections``() =
+    let bible = data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
+    bible.Characters.Any(fun x -> x.Name = "Satan") |> should equal true
+    bible.Characters.Any(fun x -> x.Name = "John the Baptist") |> should equal true
+    bible.Characters.Any(fun x -> x.Name = "Jesus") |> should equal true
+    // I couldn't resist....
+    bible.Characters.Any(fun x -> x.Name = "Bart Simpson") |> should equal false
 
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
