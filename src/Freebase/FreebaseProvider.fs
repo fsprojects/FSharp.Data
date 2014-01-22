@@ -362,7 +362,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                                                     yield string c1 ] (* @ [ for c in '0' .. '9' -> string c  ] @  [ "Other" ] *) do 
                                         let tC = ProvidedTypeDefinition(itemType.Name + "IndividualsIndexed" + c, baseType=Some fbRuntimeInfo.FreebaseIndividualsType,HideObjectMethods=true)
                                         tC.AddXmlDoc (xmlDoc (sprintf "Represents an indexing of specific named individuals of type '%s' in the web data store" fbType.TypeName))
-                                        tC.AddMembersDelayed(fun () ->  membersForIndividuals(tC, numIndividuals*2, Some c))
+                                        tC.AddMembersDelayed(fun () ->  membersForIndividuals(tC, numIndividuals*10, Some c))
                                         yield (c, tC)
                                     ]
                                 [ for (c,tC) in tCs do 
@@ -399,7 +399,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                             yield pIndividuals
 
                             let pIndividualsAZ = ProvidedProperty("IndividualsAZ", tAZ, GetterCode = (fun args -> Expr.Call(getIndividualsObject, [ Expr.Coerce(args.[0], typeof<obj>) ])))
-                            pIndividualsAZ.AddXmlDocDelayed(fun () -> sprintf "A sample of named individuals of type '%s', (bucketed by first character with each bucket up to %d in size). The buckets may be slow to explore" fbType.TypeName (numIndividuals*2) |> xmlDoc)
+                            pIndividualsAZ.AddXmlDocDelayed(fun () -> sprintf "A sample of named individuals of type '%s', (bucketed by first character with each bucket up to %d in size). The buckets may be slow to explore" fbType.TypeName (numIndividuals*10) |> xmlDoc)
                             yield pIndividualsAZ
 
                             let pIndividuals10 = ProvidedProperty("Individuals10", t10, GetterCode = (fun args -> Expr.Call(getIndividualsObject, [ Expr.Coerce(args.[0], typeof<obj>) ])))

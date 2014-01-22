@@ -187,6 +187,15 @@ let ``Check IndividualsAZ works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
     ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
 
+[<Test>]
+let ``Check IndividualsAZ good for large collections``() =
+    let bible = data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
+    bible.Characters.Any(fun x -> x.Name = "Satan") |> should equal true
+    bible.Characters.Any(fun x -> x.Name = "John the Baptist") |> should equal true
+    bible.Characters.Any(fun x -> x.Name = "Jesus") |> should equal true
+    // I couldn't resist....
+    bible.Characters.Any(fun x -> x.Name = "Bart Simpson") |> should equal false
+
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
 
