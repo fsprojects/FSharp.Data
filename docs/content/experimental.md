@@ -27,7 +27,4 @@ It does not aim to be a comprehensive collection of F# type
 providers (which can be used for numerous other purposes). Moreover, this library 
 (currently) does not provide API for _creating_ documents.
 
-If you're interested in other F# type providers then the [FSharpx 
-library](https://github.com/fsharp/fsharpx/) might be of interest. 
-
   [gh]: https://github.com/fsharp/FSharp.Data

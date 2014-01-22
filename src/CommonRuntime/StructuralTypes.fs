@@ -117,16 +117,16 @@ type InferedTypeTag with
     | "Choice" -> Heterogeneous
     | _ -> failwith "Invalid InferredTypeTag code"
 
-/// dummy type to represent that only "0" was found.
-/// will be generated as 'int', unless it's converted to Bit
+/// Dummy type to represent that only "0" was found.
+/// Will be generated as 'int', unless it's converted to Bit.
 type Bit0 = Bit0
 
-/// dummy type to represent that only "1" was found
-/// will be generated as 'int', unless it's converted to Bit
+/// Dummy type to represent that only "1" was found
+/// Will be generated as 'int', unless it's converted to Bit
 type Bit1 = Bit1
 
-/// dummy type to represent that only one of "0" and "1" were found
-/// will be generated as a 'bool', unless it's converted to another numerical type
+/// Dummy type to represent that only one of "0" and "1" were found
+/// Will be generated as a 'bool', unless it's converted to another numerical type
 type Bit = Bit
 
 // ------------------------------------------------------------------------------------------------
@@ -153,4 +153,13 @@ type PrimitiveInferedProperty =
   static member Create(name, typ, optional) =
     PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), ?unit=None)
 
-and [<RequireQualifiedAccess>] TypeWrapper = None | Option | Nullable
+and     
+    [<RequireQualifiedAccess>] 
+    /// Represents a transformation of a type
+    TypeWrapper = 
+    /// No transformation will be made to the type
+    | None 
+    /// The type T will be converter to type T option
+    | Option 
+    /// The type T will be converter to type Nullable<T>
+    | Nullable
