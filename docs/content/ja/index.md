@@ -77,9 +77,6 @@ F#型プロバイダに関する包括的なコレクションとなることを
 さらに、このライブラリでは（現時点では）ドキュメントを作成したり、
 変更したりするようなAPIは公開されていません。
 
-その他のF#型プロバイダに関心がある場合は
-[FSharpx library][fsharpx] を参照されるとよいでしょう。
-
 ### ライブラリのライセンス
 
 ライブラリは Apache 2.0ライセンスの元に公開されています。
@@ -94,6 +91,5 @@ F#型プロバイダに関する包括的なコレクションとなることを
   [samples]: https://github.com/fsharp/FSharp.Data/tree/master/samples
   [gh]: https://github.com/fsharp/FSharp.Data
   [issues]: https://github.com/fsharp/FSharp.Data/issues
-  [fsharpx]: https://github.com/fsharp/fsharpx
   [license]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
   [fsharp-oss]: http://groups.google.com/group/fsharp-opensource

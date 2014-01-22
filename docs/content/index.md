@@ -59,8 +59,6 @@ and other data sources. It does not aim to be a comprehensive collection of F# t
 (which can be used for numerous other purposes). Moreover, this library (currently) does not 
 provide API for creating or mutating documents.
 
-If you're interested in other F# type providers then the [FSharpx library][fsharpx] might be of interest.
-
 ### Library license
 
 The library is available under Apache 2.0. For more information see the 
@@ -74,6 +72,5 @@ use the library for commercial purposes, fork it, modify it as you wish.
   [samples]: https://github.com/fsharp/FSharp.Data/tree/master/samples
   [gh]: https://github.com/fsharp/FSharp.Data
   [issues]: https://github.com/fsharp/FSharp.Data/issues
-  [fsharpx]: https://github.com/fsharp/fsharpx
   [license]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
   [fsharp-oss]: http://groups.google.com/group/fsharp-opensource

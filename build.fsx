@@ -68,7 +68,7 @@ Target "AssemblyInfo" (fun _ ->
 // Clean build results
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"]
+    CleanDirs ["bin"]
 )
 
 Target "CleanDocs" (fun _ ->
@@ -163,10 +163,12 @@ Target "GenerateDocs" (fun _ ->
 Target "GenerateDocsJa" (fun _ ->
     executeFSIWithArgs "docs/tools" "generate.ja.fsx" ["--define:RELEASE"] [] |> ignore
 )
+
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
 Target "ReleaseDocs" (fun _ ->
+    CleanDirs ["temp/gh-pages"]
     Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/gh-pages"
     Branches.checkoutBranch "temp/gh-pages" "gh-pages"
     CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
@@ -177,6 +179,7 @@ Target "ReleaseDocs" (fun _ ->
 )
 
 Target "ReleaseBinaries" (fun _ ->
+    CleanDirs ["temp/release"]
     Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
     Branches.checkoutBranch "temp/release" "release"
     CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
