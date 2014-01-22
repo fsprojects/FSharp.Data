@@ -138,7 +138,7 @@ type PrimitiveInferedProperty =
   { Name : string
     InferedType : Type
     RuntimeType : Type
-    UnitOfMeasure : Type option
+    UnitOfMeasureId : Type option
     TypeWrapper : TypeWrapper }
   static member Create(name, typ, ?typWrapper, ?unit) =
     let runtimeTyp = 
@@ -148,7 +148,7 @@ type PrimitiveInferedProperty =
     { Name = name
       InferedType = typ
       RuntimeType = runtimeTyp
-      UnitOfMeasure = unit
+      UnitOfMeasureId = unit
       TypeWrapper = defaultArg typWrapper TypeWrapper.None }
   static member Create(name, typ, optional) =
     PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), ?unit=None)

@@ -45,38 +45,51 @@ module Utilities =
     /// Represents one object's values for all the properties of one type id.
     let dictionaryFromJson (jsonValue:JsonValue) = jsonValue.Properties |> dict
 
+type FreebaseId = 
+    | FreebaseId of string
+    member x.Id = (match x with FreebaseId(v) -> v)
+
+type FreebaseMachineId = 
+    | FreebaseMachineId of string
+    member x.MId = (match x with FreebaseMachineId(v) -> v)
+
+
 type FreebaseDomainId = 
-    { Id:string
+    { DomainId:FreebaseId
+      DomainHidden: bool
       DomainName:string }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id")
+        { DomainId = FreebaseId(fbr.GetStringValWithKey("/type/object/id"))
+          DomainHidden = (fbr.GetStringValWithKey("/freebase/domain_profile/hidden") = "true")
           DomainName = fbr.GetStringValWithKey("/type/object/name")  }
     override x.ToString() = x.DomainName
 
 type FreebaseProperty = 
-    { Id:string
+    { PropertyId:FreebaseId
+      MachineId:string
       PropertyName:string
-      ExpectedType:string
-      MasterProperty:string
+      ExpectedTypeId:FreebaseId
+      //MasterProperty:string
       /// Name of the enumeration type. Like /authority/gnis
-      Enumeration:string
+      EnumerationId:FreebaseId
       Delegated:string
       /// The unit of measure for the property, if any. e.g. /en/kilometer
-      UnitOfMeasure:string
+      UnitOfMeasureId:FreebaseId
       Unique:string }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
+        { PropertyId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
+          MachineId = fbr.GetStringValWithKey("/type/object/mid") 
           PropertyName = fbr.GetStringValWithKey("/type/object/name") 
-          ExpectedType = fbr.GetStringValWithKey("/type/property/expected_type") 
-          MasterProperty = fbr.GetStringValWithKey("/type/property/master_property") 
-          Enumeration = fbr.GetStringValWithKey("/type/property/enumeration") 
+          ExpectedTypeId = FreebaseId(fbr.GetStringValWithKey("/type/property/expected_type")) 
+          //MasterProperty = fbr.GetStringValWithKey("/type/property/master_property") 
+          EnumerationId = FreebaseId(fbr.GetStringValWithKey("/type/property/enumeration"))
           Delegated = fbr.GetStringValWithKey("/type/property/delegated") 
-          UnitOfMeasure = fbr.GetStringValWithKey("/type/property/unit") 
+          UnitOfMeasureId = FreebaseId(fbr.GetStringValWithKey("/type/property/unit")) 
           Unique = fbr.GetStringValWithKey("/type/property/unique")  }
     member fp.IsUnique = match fp.Unique with "true" | "True" -> true | _ -> false
-    member fp.IsEnum = not(String.IsNullOrEmpty fp.Enumeration)
+    member fp.IsEnum = not(String.IsNullOrEmpty fp.EnumerationId.Id)
     member fp.BasicSystemType =
-        match fp.ExpectedType with 
+        match fp.ExpectedTypeId.Id with 
         | "/type/enumeration" -> Some (typeof<string>, true)
         | "/type/rawstring" -> Some (typeof<string>, true)
         | "/type/text" -> Some (typeof<string>, true)
@@ -89,65 +102,63 @@ type FreebaseProperty =
     override x.ToString() = x.PropertyName
 
 type FreebaseArticle = 
-    { ArticleId:string }
+    { ArticleId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { ArticleId = fbr.GetStringValWithKey("/type/object/id")  }
+        { ArticleId = FreebaseId(fbr.GetStringValWithKey("/type/object/id"))  }
       
 type FreebaseTypeId = 
-    { Id:string 
-      Domain:string }
+    { TypeId:FreebaseId
+      DomainId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") ;
-          Domain = fbr.GetStringValWithKey("/type/type/domain") ;}
+        { TypeId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) ;
+          DomainId = FreebaseId(fbr.GetStringValWithKey("/type/type/domain")) ;}
 
 type FreebaseObjectId = 
-    { Id:string
+    { MachineId:FreebaseMachineId
       ObjectName:string }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") ;
+        { MachineId = FreebaseMachineId (fbr.GetStringValWithKey("/type/object/mid")) ;
           ObjectName = fbr.GetStringValWithKey("/type/object/name") ;}
 
 type FreebaseTypesSupportedByObject = 
-    { Id:string
-      TypesSupportedByObject:FreebaseTypeId[] }
+    { TypesSupportedByObject:FreebaseTypeId[] }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") ;
-          TypesSupportedByObject = fbr.GetOptionalArrayValWithKey("/type/object/type") |> Array.map FreebaseTypeId.FromJson }      
+        { TypesSupportedByObject = fbr.GetOptionalArrayValWithKey("/type/object/type") |> Array.map FreebaseTypeId.FromJson }      
 
 type FreebaseImageInformation = 
-    { Id:string }
+    { ImageId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") }
-    static member GetImages(fb:FreebaseQueries, objectId:string) = 
-        let query = @"[{'/type/object/id':null,'/type/object/type':'/common/image','!/common/topic/image': [{'/type/object/id':'" + objectId + "'}]}]" 
+        { ImageId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) }
+    static member GetImages(fb:FreebaseQueries, objectId:FreebaseMachineId) = 
+        let query = @"[{'/type/object/id':null,'/type/object/type':'/common/image','!/common/topic/image': [{'/type/object/mid':'" + objectId.MId + "'}]}]" 
         fb.Query<FreebaseImageInformation[]>(query, JsonValue.GetArrayVal FreebaseImageInformation.FromJson)
-        |> Seq.map (fun image -> fb.GetImageUrl image.Id)
+        |> Seq.map (fun image -> fb.GetImageUrl image.ImageId.Id)
 
 type FreebaseType = 
-    { Id:string
+    { TypeId:FreebaseId
       TypeName:string
       Mediator:string
       Deprecated:string
-      Domain:string
+      Domain:FreebaseId
       IncludedTypes: FreebaseTypeId[]
       Properties:FreebaseProperty[] }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
+        { TypeId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
           TypeName = fbr.GetStringValWithKey("/type/object/name") 
           Mediator = fbr.GetStringValWithKey("/freebase/type_hints/mediator") 
           Deprecated = fbr.GetStringValWithKey("/freebase/type_hints/deprecated")
-          Domain = fbr.GetStringValWithKey("/type/type/domain")
+          Domain = FreebaseId(fbr.GetStringValWithKey("/type/type/domain"))
           IncludedTypes = fbr.GetArrayValWithKey("/freebase/type_hints/included_types") |> Array.map FreebaseTypeId.FromJson
           Properties = fbr.GetOptionalArrayValWithKey("/type/type/properties") |> Array.map FreebaseProperty.FromJson }      
     override x.ToString() = x.TypeName
 
 type FreebaseDomain = 
-    { Id:string
+    { DomainId:FreebaseId
       DomainName:string    
       NamespaceKinds:string[]
       Hidden:string    }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
+        { DomainId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
           DomainName = fbr.GetStringValWithKey("/type/object/name") 
           NamespaceKinds = fbr.GetArrayValWithKey("/type/object/type") |> Array.map (fun j -> j.AsString())
           Hidden = fbr.GetStringValWithKey("/freebase/domain_profile/hidden") }
@@ -163,55 +174,58 @@ type FreebaseNamespaceKey =
 
 /// The element type returned by GetDomainStructure.
 type FreebaseDomainStructure = 
-    { Id:string
-      NamespaceKeys:FreebaseNamespaceKey[] }
+    { NamespaceKeys:FreebaseNamespaceKey[] }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
-          NamespaceKeys = fbr.GetArrayValWithKey("/type/namespace/keys") |> Array.map FreebaseNamespaceKey.FromJson }
+        { NamespaceKeys = fbr.GetArrayValWithKey("/type/namespace/keys") |> Array.map FreebaseNamespaceKey.FromJson }
 
 /// The element type returned by GetDomainCategories
 type FreebaseDomainCategory = 
-    { Id:string
+    { DomainCategoryId:FreebaseId
       Name:string
       Domains:FreebaseDomainId[] }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
+        { DomainCategoryId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
           Name = fbr.GetStringValWithKey("/type/object/name") 
           Domains = fbr.GetArrayValWithKey("/freebase/domain_category/domains") |> Array.map FreebaseDomainId.FromJson }
     override x.ToString() = x.Name
 
-type DocumentationById = 
-    { Id:string
-      Articles: FreebaseArticle[] 
+type FreebaseDocumentation = 
+    { Articles: FreebaseArticle[] 
       Tip:string  }
     static member FromJson(fbr:JsonValue) = 
-        { Id = fbr.GetStringValWithKey("/type/object/id") 
-          Articles = fbr.GetArrayValWithKey("/common/topic/article") |> Array.map FreebaseArticle.FromJson
+        { Articles = fbr.GetArrayValWithKey("/common/topic/article") |> Array.map FreebaseArticle.FromJson
           Tip = fbr.GetStringValWithKey("/freebase/documented_object/tip") }
 
-    static member GetBlurbById (fb: FreebaseQueries, topicId: string) : string list =
-        let query = "{ '/type/object/id' : '" + topicId + "', '/common/topic/article' : [{ '/type/object/id' : null, 'optional' : true}], '/freebase/documented_object/tip' : null}" 
-        let articlesById = fb.Query<DocumentationById>(query,DocumentationById.FromJson)
-        [ match articlesById.Articles with
+    static member GetDocs (fb: FreebaseQueries, query:string) =
+        let fbDoc = fb.Query<FreebaseDocumentation>(query,FreebaseDocumentation.FromJson)
+        [ match fbDoc.Articles with
           | null -> ()
           | articles ->
               for a in articles do
-                  match fb.GetBlurbByArticleId a.ArticleId with
+                  match fb.GetBlurbByArticleId a.ArticleId.Id with
                   | Some v -> yield v
                   | None -> () 
 
-          match articlesById.Tip with
+          match fbDoc.Tip with
           | null -> ()
           | tip -> yield tip ]
 
+    static member GetBlurbById (fb: FreebaseQueries, objectId: FreebaseId) =
+        let query = "{ '/type/object/id' : '" + objectId.Id + "', '/common/topic/article' : [{ '/type/object/id' : null, 'optional' : true}], '/freebase/documented_object/tip' : null}" 
+        FreebaseDocumentation.GetDocs(fb, query)
+
+    static member GetBlurbByMachineId (fb: FreebaseQueries, objectId: FreebaseMachineId) : string list =
+        let query = "{ '/type/object/mid' : '" + objectId.MId + "', '/common/topic/article' : [{ '/type/object/id' : null, 'optional' : true}], '/freebase/documented_object/tip' : null}" 
+        FreebaseDocumentation.GetDocs(fb, query)
+
 type FreebaseSchemaConnection(fb:FreebaseQueries) = 
     let getTypeQuery(typeId:string,typeName:string,domainId:string,includeProperties) = 
-        let properties = @"[{ '/type/object/id': null, '/type/object/name': null, '/type/property/expected_type': null, '/type/property/master_property': null, '/type/property/enumeration': null, '/type/property/delegated': null, '/type/property/unit': null, '/type/property/unique': null, 'optional':true}]"
+        let properties = @"[{ '/type/object/id': null, '/type/object/mid': null, '/type/object/name': null, '/type/property/expected_type': null, '/type/property/master_property': null, '/type/property/enumeration': null, '/type/property/delegated': null, '/type/property/unit': null, '/type/property/unique': null, 'optional':true}]"
         let properties = if includeProperties then "'/type/type/properties':"+properties+"," else ""
         sprintf @"[{'/type/object/type':'/type/type', '/type/object/id':%s, '/type/object/name':%s, '/type/type/domain':%s, '/freebase/type_hints/deprecated' : null, '/freebase/type_hints/mediator' : null, '/freebase/type_hints/included_types' : [ {'/type/object/id':null,'/type/type/domain':null,'optional':true } ], %s '/freebase/type_profile/instance_count': null, 'limit':10000 }]" typeId typeName domainId properties
 
     /// Cache policy for type properties. This will be used at runtime.
-    let typeIdToType = Dictionary<_,_>()
+    let typeIdToType = Dictionary<FreebaseId,_>()
     let quote s = "'"+s+"'"
 
     /// Get the types that correspond to type id. The properties of the type are filled in.
@@ -219,15 +233,15 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
         match typeIdToType.TryGetValue typeId with
         | true, res -> res
         | _ ->   
-            let query = getTypeQuery(quote typeId, "null", "null", true)
+            let query = getTypeQuery(quote typeId.Id, "null", "null", true)
             let result = fb.Query<FreebaseType[]>(query, JsonValue.GetArrayVal FreebaseType.FromJson)
             let fbType = match result with [|ft|] -> Some ft | _ -> None
             typeIdToType.[typeId] <- fbType
             fbType
 
-    let rec allIncludedTypesOfTypeId (typeId:string) =
+    let rec allIncludedTypesOfTypeId (typeId:FreebaseId) =
         seq { match getTypeByTypeId typeId with
-              | Some ty -> yield ty; for ity in ty.IncludedTypes do  yield! allIncludedTypesOfTypeId ity.Id
+              | Some ty -> yield ty; for ity in ty.IncludedTypes do  yield! allIncludedTypesOfTypeId ity.TypeId
               | None -> () }
 
     let getAllIncludedTypesOfTypeId = memoize (allIncludedTypesOfTypeId >> Seq.distinct >> Seq.toArray)
@@ -244,7 +258,8 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
     member __.GetDomainCategories () = fb.QuerySequence(@"[{ '/type/object/type': '/freebase/domain_category', '/type/object/id': null, '/type/object/name': null, '/freebase/domain_category/domains': [{  '/type/object/id': null, '/type/object/name': null, '/freebase/domain_profile/hidden': null, 'optional':true, 'limit':20000 }] }]", FreebaseDomainCategory.FromJson, None)
             
     /// Return all typesin a domain. Design-time only.
-    member __.GetAllTypesInDomainSansProperties(domainId:string) = fb.QuerySequence<FreebaseType>(getTypeQuery("null","null",quote domainId,false), FreebaseType.FromJson, None)
+    member __.GetAllTypesInDomainSansProperties(domainId:FreebaseId) = 
+        fb.QuerySequence<FreebaseType>(getTypeQuery("null","null",quote domainId.Id,false), FreebaseType.FromJson, None)
 
     /// Return all types. Design-time only.
     member __.GetAllTypesInAllDomainsSansProperties() = fb.QuerySequence<FreebaseType>(getTypeQuery("null","null","null",false), FreebaseType.FromJson, None)
@@ -253,7 +268,10 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
     member __.GetTypeByTypeId typeId = getTypeByTypeId typeId
 
     /// Get the 'blurb' text for this topic ID 
-    member __.GetBlurbById (topicId:string) = DocumentationById.GetBlurbById(fb, topicId)
+    member __.GetBlurbById objectId = FreebaseDocumentation.GetBlurbById(fb, objectId)
+
+    /// Get the 'blurb' text for this topic ID 
+    member __.GetBlurbByMachineId objectId = FreebaseDocumentation.GetBlurbByMachineId(fb, objectId)
 
     /// Get property bags for all the objects of the given type, at the given type
     member __.GetAllObjectsOfType(fbType:FreebaseType, limit:int, prefixName) =
@@ -262,15 +280,20 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
             | None -> "'/type/object/name' : null"
             | Some s -> "'/type/object/name' : null, '/type/object/name~=' : '^" + s + "*'"
         
-        let query = "[{ '/type/object/type' : '" + fbType.Id + "', '/type/object/id' : null, " + nameCx + ", 'limit': " + string limit + " }]" 
+        let query = 
+            "[{ '/type/object/type' : '" + fbType.TypeId.Id + 
+            "', '/type/object/mid' : null, " + 
+            nameCx  + 
+            ", 'limit': " + string limit  +
+            " }]" 
         fb.QuerySequence<FreebaseObjectId>(query, FreebaseObjectId.FromJson, Some limit)
 
-    member __.GetAllTypesOfObject(fbObjId:string) =
-        let query = sprintf "{ '/type/object/type' : [{ '/type/object/id': null, '/type/type/domain': null }], '/type/object/id' : '%s' }" fbObjId 
+    member __.GetAllTypesOfObject(fbObjId:FreebaseMachineId) =
+        let query = "{ '/type/object/type' : [{ '/type/object/id': null, '/type/type/domain': null }], '/type/object/mid' : '" + fbObjId.MId + "' }" 
         fb.Query(query, FreebaseTypesSupportedByObject.FromJson) 
 
     // Perform one query to determine the existence of data in the properties of a specific object
-    member fbSchema.GetDataExistenceForKnownObject(fbTypes, fbObjId:string) =
+    member fbSchema.GetDataExistenceForSpecificObject(fbTypes, fbObjId:FreebaseMachineId) =
         let fbProps = 
             [ for fbType in fbTypes do 
                 yield (fbType, getProperties fbType) ]
@@ -278,15 +301,14 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
         let fields = 
             [ for (_fbType, props)  in fbProps do 
                for p in props do
-                if p.IsUnique then 
-                    yield ", '" + p.Id + "' : null"  
-                else 
-                    yield ", '" + p.Id + "' : [ ]" ]
+                match p.IsUnique, p.BasicSystemType with 
+                | true, Some _ -> yield ", '" + p.PropertyId.Id + "' : null"  
+                | _ -> 
+                    yield ", '" + p.PropertyId.Id + "' : [ ]" ]
                     //yield ", '" + p.Id + "' : [ {  'type': [], 'limit': 1 } ]" ]
             |> String.concat ""
 
-        let query = sprintf "{ '/type/object/id' : '%s'  %s }"  fbObjId fields 
-        //printfn "query = <<<%s>>>" query
+        let query = sprintf "{ '/type/object/mid' : '" + fbObjId.MId + "'  " + fields  + " }"   
 
         let data =  fb.Query<IDictionary<string,JsonValue> >(query, dictionaryFromJson) 
 
@@ -294,7 +316,7 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
             let ps = 
              [ for fbProp in props do
                 let hasData = 
-                    match data.TryGetValue(fbProp.Id) with 
+                    match data.TryGetValue(fbProp.PropertyId.Id) with 
                     | true, JsonValue.Array [| |] -> false
                     | true, JsonValue.Null -> false
                     | true, _ -> true
@@ -315,7 +337,7 @@ type FreebaseProperty with
         match property.BasicSystemType with
         | Some elementType -> elementType
         | None -> 
-        let fbtype = fb.GetTypeByTypeId(property.ExpectedType)
+        let fbtype = fb.GetTypeByTypeId(property.ExpectedTypeId)
         match fbtype with 
         | Some fbtype -> 
             match tryTypeReprFunction fbtype with 

@@ -54,8 +54,10 @@ let ``Can access specific properties for hydrogen individual``() =
     let elements = data.``Science and Technology``.Chemistry.``Chemical Elements``
 
     let hydrogen = elements.Individuals.Hydrogen
-    hydrogen.``Atomic number`` |> should equal 10
-    (hydrogen.``Boiling Point`` - 20.28<kelvin>) < 0.00001<_> |> should equal true
+    hydrogen.``Atomic number`` |> should equal 1
+    hydrogen.``Atomic mass``.Mass.HasValue |> should equal true
+    abs (1.0 - hydrogen.``Atomic mass``.Mass.Value / 1.713498e-27<kilogram>) < 0.00001 |> should equal true
+    abs (1.0 - hydrogen.``Boiling Point`` / 20.28<kelvin>) < 0.00001 |> should equal true
 
 let findCountryByFifaCode code = 
     query { for x in data.``Time and Space``.Location.Countries do 
@@ -168,6 +170,21 @@ let ``tvrage_id is not unique in mql query``() =
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check Individuals10 works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check Individuals100 works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+
+[<Test>]
+let ``Check IndividualsAZ works for small collection``() =
+    let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
     ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
 
 open FSharp.Data.Runtime.Freebase.FreebaseRequests

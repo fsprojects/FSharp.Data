@@ -19,7 +19,7 @@ open ProviderImplementation.ProvidedTypes
 module PrimitiveInferedPropertyExtensions =
   type PrimitiveInferedProperty with
     member x.TypeWithMeasure =
-      match x.UnitOfMeasure with
+      match x.UnitOfMeasureId with
       | None -> x.RuntimeType
       | Some unit -> 
           if supportsUnitsOfMeasure x.RuntimeType

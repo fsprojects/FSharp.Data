@@ -60,7 +60,7 @@ type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
     member this.RuntimeAssembly = runtimeAssembly
 
-type internal DomainId = KnownDomain of string | UnknownDomain
+type internal DomainId = KnownDomain of FreebaseId | UnknownDomain
 
 /// This is the Freebase type provider.    
 [<TypeProvider>]
@@ -91,6 +91,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     #endif
 
         let blurbOfId id = fbSchema.GetBlurbById id |> String.concat " "  
+        let blurbOfMachineId id = fbSchema.GetBlurbByMachineId id |> String.concat " "  
 
         let createDataContext = fbRuntimeInfo.FreebaseDataContextType.GetMethod "_Create"
         let getDomainCategoryById = fbRuntimeInfo.IFreebaseDataContextType.GetMethod "GetDomainCategoryById"
@@ -105,15 +106,15 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                     if nsk.Namespace.Hidden <> "true" then
                       if nsk.Namespace.NamespaceKinds |> Array.exists (fun s -> s = "/type/domain") then
                         yield nsk.Namespace ]
-                |> Seq.distinctBy (fun nsp -> (nsp.Id, nsp.DomainName))
+                |> Seq.distinctBy (fun nsp -> (nsp.DomainId.Id, nsp.DomainName))
 
-        let domainCategories = lazy  fbSchema.GetDomainCategories() 
+        let domainCategories = lazy  fbSchema.GetDomainCategories()  
 
         let domainTypes = 
            lazy 
               let allRealDomains = 
                   [ for domain in domains.Force() do
-                       yield (KnownDomain domain.Id, lazy (fbSchema.GetAllTypesInDomainSansProperties(domain.Id)) ) ]
+                       yield (KnownDomain domain.DomainId, lazy (fbSchema.GetAllTypesInDomainSansProperties(domain.DomainId)) ) ]
               dict 
                 [ yield! allRealDomains
                   yield (UnknownDomain, 
@@ -121,9 +122,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                                 let hashSet = HashSet()
                                 for (_, lazyTypesInDomain) in allRealDomains do 
                                     for ty in lazyTypesInDomain.Force() do
-                                       hashSet.Add ty.Id |> ignore
+                                       hashSet.Add ty.TypeId |> ignore
                                 [ for ty in fbSchema.GetAllTypesInAllDomainsSansProperties() do
-                                      if not (hashSet.Contains ty.Id) then
+                                      if not (hashSet.Contains ty.TypeId) then
                                           yield ty ] :> seq<_>) ]
 
         let getDomains() =  domains.Force()
@@ -138,11 +139,11 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
         let containerTypeNameForDomainTypes (fbDomainIdOpt:DomainId) = 
             match fbDomainIdOpt with 
             | UnknownDomain -> "Uncategorized"
-            | KnownDomain fbDomainId -> fbDomainId.TrimStart('/').Replace('/',' ') |> firstCap
+            | KnownDomain fbDomainId -> fbDomainId.Id.TrimStart('/').Replace('/',' ') |> firstCap
 
-        let pathToTypeForFreebaseTypeId (fbDomainId:string, fbTypeId:string) = 
-            let domainPath = [containerTypeNameForDomainTypes  (match fbDomainId with null -> UnknownDomain | t -> KnownDomain t)]
-            let path, final = fbTypeId.Split '/' |> List.ofArray |> List.frontAndBack 
+        let pathToTypeForFreebaseTypeId (fbDomainId:FreebaseId, fbTypeId:FreebaseId) = 
+            let domainPath = [containerTypeNameForDomainTypes  (match fbDomainId.Id with null -> UnknownDomain | _ -> KnownDomain fbDomainId)]
+            let path, final = fbTypeId.Id.Split '/' |> List.ofArray |> List.frontAndBack 
             match path with
             | [] -> failwith "Unexpected 9078543"
             | [_hd] -> failwith "Unexpected 0984509"
@@ -151,7 +152,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
         /// Given a description of a Freebase type, return the path where the corresponding provided type lives 
         /// under FreebaseData.DataTypes.
         let pathToTypeForFreebaseType (fbType:FreebaseType) = 
-            pathToTypeForFreebaseTypeId (fbType.Domain, fbType.Id)
+            pathToTypeForFreebaseTypeId (fbType.Domain, fbType.TypeId)
 
         /// Given a description of a Freebase type, find the corresponding provided type that lives 
         /// under FreebaseData.DataTypes.
@@ -182,9 +183,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
         // PARAMETER: Unit normalization
         let refinedFSharpTypeOfFreebaseProperty (fp: FreebaseProperty) =
             // NOTE: if you alter this mapping, see GetProperty in FreebaseRuntime.fs
-            match fp.ExpectedType with 
+            match fp.ExpectedTypeId.Id with 
             | "/type/float" -> 
-                match fp.UnitOfMeasure with 
+                match fp.UnitOfMeasureId.Id with 
                 | u when useUnits && units.ContainsKey u -> 
                         let (measureAnnotation,_multipler,_offset) = units.[u]
                         let rec trans u = 
@@ -212,18 +213,18 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                                                 ((fun args -> 
                                                   if alwaysThere then 
                                                     fbRuntimeInfo.IFreebaseObjectType?GetRequiredPropertyByIdTyped (runtimePropertyType)
-                                                                                                                            (args.[0], typeWithProperties.Id, property.Id)
+                                                                                                                            (args.[0], typeWithProperties.TypeId.Id, property.PropertyId.Id)
                                                    else
                                                     fbRuntimeInfo.IFreebaseObjectType?GetPropertyByIdTyped (runtimePropertyType)
-                                                                                                                            (args.[0], typeWithProperties.Id, property.Id))))
-                p.AddXmlDocDelayed(fun () -> blurbOfId property.Id |> xmlDoc)
+                                                                                                                            (args.[0], typeWithProperties.TypeId.Id, property.PropertyId.Id))))
+                p.AddXmlDocDelayed(fun () -> blurbOfId property.PropertyId |> xmlDoc)
                 yield p
                 ]
 
         /// Given a description of a Freebase type, make the members for the corresponding provided type that lives 
         /// under FreebaseData.DataTypes.  
         let makeMembersForFreebaseType (fbType: FreebaseType) =
-            [ let typeWithProperties = fbSchema.GetTypeByTypeId fbType.Id
+            [ let typeWithProperties = fbSchema.GetTypeByTypeId fbType.TypeId
               match typeWithProperties with
               | None -> ()
               | Some typeWithProperties -> 
@@ -237,12 +238,12 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                 let itemRefinedType = ProvidedTypeDefinition(itemName + " Item",baseType = Some (itemType :> Type), HideObjectMethods = true)
                 itemRefinedType.AddXmlDocDelayed(fun () -> "<summary>The type representing the refined view of item '" + itemName + "'</summary>")
 
-                let allTypesForItemLazy = lazy fbSchema.GetAllTypesOfObject(fbObj.Id).TypesSupportedByObject 
+                let allTypesForItemLazy = lazy fbSchema.GetAllTypesOfObject(fbObj.MachineId).TypesSupportedByObject 
                 // Make this object inherit from all types that this specific object supports
                 itemRefinedType.AddInterfaceImplementationsDelayed(fun () -> 
                     let allTypesForItem = allTypesForItemLazy.Force()
                     [ for ity in allTypesForItem do 
-                        match tryFindRefinedTypeForFreebaseTypeId (ity.Domain, ity.Id) with 
+                        match tryFindRefinedTypeForFreebaseTypeId (ity.DomainId, ity.TypeId) with 
                         | Some i -> yield i
                         | None -> 
                             //System.Diagnostics.Debug.Assert(false,"included type not found")
@@ -255,14 +256,14 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                     let allTypesForItem = allTypesForItemLazy.Force()
                     let allTypeIdsForitem = 
                         [ for oneTypeForItem in allTypesForItem do 
-                            match fbSchema.GetTypeByTypeId(oneTypeForItem.Id) with 
+                            match fbSchema.GetTypeByTypeId(oneTypeForItem.TypeId) with 
                             | None -> () // If getting the type failed for some reason then don't supply its properties
                             | Some fbOneTypeForItem -> 
-                            match tryFindRefinedTypeForFreebaseTypeId (oneTypeForItem.Domain, oneTypeForItem.Id) with 
+                            match tryFindRefinedTypeForFreebaseTypeId (oneTypeForItem.DomainId, oneTypeForItem.TypeId) with 
                             | None -> () // If the type for the item doesn't exist in our view of the world, then don't supply its properties
                             | Some _ -> 
                                yield fbOneTypeForItem ]
-                    let fbObjData = fbSchema.GetDataExistenceForKnownObject(allTypeIdsForitem, fbObj.Id)
+                    let fbObjData = fbSchema.GetDataExistenceForSpecificObject(allTypeIdsForitem, fbObj.MachineId)
                     [ for (fbOneTypeForItem, fbProps) in fbObjData do
                        for (fbProp, hasData) in fbProps do    
                         // Make the properties based on strong knowlege of the presence of data
@@ -317,13 +318,13 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                     t.AddMembersDelayed (fun () -> makeMembersForFreebaseType fbType)
                     t.AddInterfaceImplementationsDelayed(fun () -> 
                       [ for ity in fbType.IncludedTypes do 
-                          match tryFindRefinedTypeForFreebaseTypeId (ity.Domain, ity.Id) with 
+                          match tryFindRefinedTypeForFreebaseTypeId (ity.DomainId, ity.TypeId) with 
                           | Some i -> yield i
                           | None -> 
                               //System.Diagnostics.Debug.Assert(false,"included type not found")
                               () ])
 
-                    t.AddXmlDocDelayed (fun () -> blurbOfId fbType.Id |> xmlDoc)
+                    t.AddXmlDocDelayed (fun () -> blurbOfId fbType.TypeId |> xmlDoc)
                     t
 
                 //printfn "FreebaseProvider: creating individuals type, typeName='%A', fullPath='%A', domainId '%+A', declaringType.Name = '%s'" typeName fullPath domainId declaringType.Name
@@ -334,8 +335,8 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                             let itemName = fbObj.ObjectName
                             let itemRefinedType =  getRefinedTypeOfItem (itemName, itemType, fbObj, t)
                             let p = ProvidedProperty(itemName, itemRefinedType,
-                                                    GetterCode = (fun args -> Expr.Call(args.[0], getIndividualById,[Expr.Value fbType.Id;Expr.Value fbObj.Id])))
-                            p.AddXmlDocDelayed(fun () -> blurbOfId fbObj.Id |> xmlDoc)
+                                                    GetterCode = (fun args -> Expr.Call(args.[0], getIndividualById,[Expr.Value fbType.TypeId.Id;Expr.Value fbObj.MachineId.MId])))
+                            p.AddXmlDocDelayed(fun () -> blurbOfMachineId fbObj.MachineId |> xmlDoc)
                             yield (p :> MemberInfo) ]
 
                     if numIndividuals > 0 then 
@@ -437,7 +438,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
 
             try
                 [ for domain in getDomains() do 
-                    yield makeTypeForFreebaseDomainTypes (KnownDomain domain.Id, domain.DomainName)
+                    yield makeTypeForFreebaseDomainTypes (KnownDomain domain.DomainId, domain.DomainName)
                   yield makeTypeForFreebaseDomainTypes (UnknownDomain, "Uncategorized") ]
             with _ -> [])
 
@@ -448,12 +449,12 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             let domainTypeName = typeNameForDomainObjects domainInfo.DomainName
 
             let t = ProvidedTypeDefinition(domainTypeName,baseType=Some fbRuntimeInfo.FreebaseDomainType,HideObjectMethods=true)
-            t.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.Id |> xmlDoc)
+            t.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
             t.HideObjectMethods <- true
 
             t.AddMembersDelayed(fun () -> 
     
-                [ for childType in getTypesOfDomain (KnownDomain domainInfo.Id) do
+                [ for childType in getTypesOfDomain (KnownDomain domainInfo.DomainId) do
                       // Note, don't include mediator types in the all-objects-categorized-by-type presentation
                       if not(String.IsNullOrEmpty(childType.TypeName)) && childType.Mediator <> "true" then
                           match tryFindRefinedCollectionTypeForFreebaseType childType with 
@@ -461,10 +462,10 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                           | Some collectionType -> 
                         
                               let p = ProvidedProperty(pluralize childType.TypeName, collectionType, 
-                                                        GetterCode = (fun args -> Expr.Call(args.[0],getObjectsOfTypeId,[Expr.Value childType.Id])))
+                                                        GetterCode = (fun args -> Expr.Call(args.[0],getObjectsOfTypeId,[Expr.Value childType.TypeId.Id])))
                               if childType.Deprecated="true" then 
                                   p.AddObsoleteAttribute "This type is marked 'deprecated' in the data store"
-                              p.AddXmlDocDelayed (fun () -> blurbOfId childType.Id |> xmlDoc) 
+                              p.AddXmlDocDelayed (fun () -> blurbOfId childType.TypeId |> xmlDoc) 
                               yield p ])
                     
             t
@@ -484,27 +485,28 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
         /// Populate the root type (FreebaseData) with properties, one for each Freebase domain. Also include the DomainObjects 
         /// and DataTypes classes.
         do theServiceType.AddMembersDelayed (fun () -> 
-            let c = getDomainCategories()
+            let domainCategories = getDomainCategories()
             try
-                [ for domainCategory in c do
-                    if not <| domainCategory.Id.StartsWith("/user/") then
+                [ for domainCategory in domainCategories do
+                    if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
+                      if not <| domainCategory.DomainCategoryId.Id.StartsWith("/user/") then
                         let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
                         let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
                         t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
                         t.AddMembersDelayed(fun () -> 
                             [ for domainInfo in domainCategory.Domains do
+                                if not domainInfo.DomainHidden then 
                                   let domainName = domainInfo.DomainName
                                   let domainTypeName = typeNameForDomainObjects domainName
                                   let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
                                   let propertyName = tidyName domainName
                                   let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
-                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.Id)])))
-                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.Id |> xmlDoc)
+                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
+                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
                                   yield pi]) 
                         theDomainObjectsClass.AddMember t
-                        let domainCategoryIdVal = domainCategory.Id
                         let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
-                                                 GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategoryIdVal)])))
+                                                 GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
                         p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
                         yield p ]
                 with e -> 

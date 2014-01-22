@@ -46,7 +46,8 @@ type FreebaseProviderArgs =
       Pluralize : bool 
       SnapshotDate : string
       LocalCache : bool
-      AllowLocalQueryEvaluation : bool }
+      AllowLocalQueryEvaluation : bool
+      UseRefinedTypes: bool }
 
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
@@ -100,7 +101,8 @@ type TypeProviderInstantiation =
                    box x.Pluralize
                    box x.SnapshotDate
                    box x.LocalCache
-                   box x.AllowLocalQueryEvaluation |]
+                   box x.AllowLocalQueryEvaluation 
+                   box x.UseRefinedTypes |]
         Debug.generate resolutionFolder runtimeAssembly platform f args
 
     override x.ToString() =
@@ -134,7 +136,8 @@ type TypeProviderInstantiation =
             ["Freebase"
              x.NumIndividuals.ToString()
              x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()]
+             x.Pluralize.ToString()
+             x.UseRefinedTypes.ToString()]
         |> String.concat ","
 
     static member Parse (line:string) =
@@ -177,7 +180,8 @@ type TypeProviderInstantiation =
                        SnapshotDate = "2013-10-19T20:32:39"
                        ServiceUrl = FreebaseQueries.DefaultServiceUrl
                        LocalCache = true
-                       AllowLocalQueryEvaluation = true }
+                       AllowLocalQueryEvaluation = true 
+                       UseRefinedTypes = args.[5] |> bool.Parse }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices
