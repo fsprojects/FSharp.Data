@@ -125,8 +125,12 @@ type public IFreebaseObject =
     abstract GetImages : unit -> seq<string>
     /// Get a property by identifier, with a strong type
     abstract GetPropertyByIdTyped<'T> : declaringTypeId: string * propertyId:string -> 'T 
-    /// Get a property by identifier, with a strong type
+    /// Get a property by identifier
     abstract GetPropertyById : declaringTypeId: string * propertyId:string -> obj
+    /// Get a property by identifier, with a strong type, where the property is known to be populated
+    abstract GetRequiredPropertyByIdTyped<'T> : declaringTypeId: string * propertyId:string -> 'T 
+    /// Get a property by identifier, where the property is known to be populated
+    abstract GetRequiredPropertyById : declaringTypeId: string * propertyId:string -> obj
 
 module private RuntimeConversion = 
     // The handwritten JSON deserializer uses 'JsonValue.N of decimal | JsonValue.D of double' for numbers, but the schema typing expects 'double | Nullable<double>'
@@ -189,7 +193,10 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
 
     // This is the public entry point
     member public fbo.GetPropertyByIdTyped<'T>(declaringTypeId: string, propertyId:string) : 'T = 
-        fbo.GetPropertyById (declaringTypeId, propertyId) |> unbox
+        fbo.GetPropertyById (declaringTypeId, propertyId, false) |> unbox
+
+    member public fbo.GetRequiredPropertyByIdTyped<'T>(declaringTypeId: string, propertyId:string) : 'T = 
+        fbo.GetPropertyById (declaringTypeId, propertyId, true) |> unbox
 
     // Get a non-compund property. If it is eagerly populated then we fetch from 'objProps'
     // directly. Otherwise, the property must be populated on-demand.
@@ -220,7 +227,7 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                    | true, res -> res
                    | _ -> failwith (sprintf "could not lazily populate property '%s' for type '%s' for object '%s', keys = %s" propertyId declaringTypeId this.Id (String.concat "," [ for k in obj.Dictionary.Keys -> "'" + k + "'"]))
 
-    member internal this.GetPropertyById(declaringTypeId:string, propertyId:string) : obj = 
+    member internal this.GetPropertyById(declaringTypeId:string, propertyId:string, alwaysThere: bool) : obj = 
         if propertyId = "/type/object/id" then box objProps.["/type/object/id"]
         elif propertyId = "/type/object/name" then box objProps.["/type/object/name"]
         else
@@ -259,7 +266,7 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                 
                     let rawResult = this.GetSimplePropertyById(declaringTypeId, propertyId)
                     if isUnique then
-                        let targetType = if supportsNull then basicType else makeRuntimeNullableTy basicType
+                        let targetType = if supportsNull || alwaysThere then basicType else makeRuntimeNullableTy basicType
                         RuntimeConversion.convertOne fb.UseUnits true rawResult targetType fbProp
                     elif basicType=typeof<string> then
                         this.GetSimplePropertyById(declaringTypeId, propertyId)
@@ -298,7 +305,9 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
         member x.Blurb = x.Blurb
         member x.GetImages() = x.GetImages()
         member x.GetPropertyByIdTyped<'T>(declaringTypeId, propertyId) = x.GetPropertyByIdTyped<'T>(declaringTypeId, propertyId)
-        member x.GetPropertyById(declaringTypeId, propertyId) = x.GetPropertyById(declaringTypeId, propertyId)
+        member x.GetPropertyById(declaringTypeId, propertyId) = x.GetPropertyById(declaringTypeId, propertyId, false)
+        member x.GetRequiredPropertyByIdTyped<'T>(declaringTypeId, propertyId) = x.GetRequiredPropertyByIdTyped<'T>(declaringTypeId, propertyId)
+        member x.GetRequiredPropertyById(declaringTypeId, propertyId) = x.GetRequiredPropertyByIdTyped(declaringTypeId, propertyId)
 
     member this.DisplayText = this.ToString()
     override this.ToString() =
@@ -340,14 +349,14 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                             // mangling the property name to make properties available for WPF data binding
                             let propName = p.PropertyName |> mangle
                             // Compute the erased type
-                            let typ = p.FSharpPropertyRuntimeType(fb.Schema,typeof<FreebaseObject>)
+                            let typ = p.FSharpPropertyRuntimeType(fb.Schema,typeof<FreebaseObject>,alwaysThere=false)
                             yield
                                 { new System.ComponentModel.PropertyDescriptor(propName, [||]) with
                                         override __.IsReadOnly = true
                                         override __.ComponentType = typeof<FreebaseObject>
                                         override __.PropertyType = typ
                                         override __.CanResetValue _ = false
-                                        override __.GetValue o = (o :?> FreebaseObject).GetPropertyById(firstType.Id,p.Id) 
+                                        override __.GetValue o = (o :?> FreebaseObject).GetPropertyById(firstType.Id,p.Id,false) 
                                         override __.ResetValue _ = failwith "Not implemented"
                                         override __.SetValue(_,_) = failwith "Not implemented"
                                         override __.ShouldSerializeValue _ = false }

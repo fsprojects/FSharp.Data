@@ -1,9 +1,10 @@
-﻿module FSharp.Data.Tests.FreebaseProvider
-
+﻿
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.FreebaseProvider
 #endif
 
 open NUnit.Framework
@@ -13,6 +14,7 @@ open System.Linq
 open System.Net
 open FSharp.Data
 open FSharp.Data.FreebaseOperators
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
@@ -45,6 +47,15 @@ let ``Can access the symbol for hydrogen``() =
 
     let hydrogen = elements.Individuals.Hydrogen
     hydrogen.Symbol |> should equal "H"
+
+[<Test>]
+let ``Can access specific properties for hydrogen individual``() =
+
+    let elements = data.``Science and Technology``.Chemistry.``Chemical Elements``
+
+    let hydrogen = elements.Individuals.Hydrogen
+    hydrogen.``Atomic number`` |> should equal 10
+    (hydrogen.``Boiling Point`` - 20.28<kelvin>) < 0.00001<_> |> should equal true
 
 let findCountryByFifaCode code = 
     query { for x in data.``Time and Space``.Location.Countries do 

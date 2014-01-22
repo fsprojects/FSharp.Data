@@ -107,6 +107,13 @@ type FreebaseObjectId =
         { Id = fbr.GetStringValWithKey("/type/object/id") ;
           ObjectName = fbr.GetStringValWithKey("/type/object/name") ;}
 
+type FreebaseTypesSupportedByObject = 
+    { Id:string
+      TypesSupportedByObject:FreebaseTypeId[] }
+    static member FromJson(fbr:JsonValue) = 
+        { Id = fbr.GetStringValWithKey("/type/object/id") ;
+          TypesSupportedByObject = fbr.GetOptionalArrayValWithKey("/type/object/type") |> Array.map FreebaseTypeId.FromJson }      
+
 type FreebaseImageInformation = 
     { Id:string }
     static member FromJson(fbr:JsonValue) = 
@@ -227,6 +234,7 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
     let getProperties (fbType:FreebaseType) = match fbType.Properties with | null -> [| |] | props -> props
     let getAllPropertiesOfAllIncludedTypesOfTypeId = memoize (getAllIncludedTypesOfTypeId >> Array.collect getProperties)
 
+    member __.GetAllPropertiesOfType(fbType:FreebaseType) = getProperties fbType
     member __.GetAllPropertiesOfAllIncludedTypesOfTypeId typeId = getAllPropertiesOfAllIncludedTypesOfTypeId typeId 
     member __.QueryConnection = fb
     /// Query the structure of common domains and all the type types in that domain.  Design-time only.
@@ -245,12 +253,54 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
     member __.GetTypeByTypeId typeId = getTypeByTypeId typeId
 
     /// Get the 'blurb' text for this topic ID 
-    member __.GetBlurbById (topicId:string) : string list = DocumentationById.GetBlurbById(fb, topicId)
+    member __.GetBlurbById (topicId:string) = DocumentationById.GetBlurbById(fb, topicId)
 
     /// Get property bags for all the objects of the given type, at the given type
-    member __.GetAllObjectsOfType(fbType:FreebaseType) =
-        let query = "[{ '/type/object/type' : '" + fbType.Id + "', '/type/object/id' : null, '/type/object/name' : null }]" 
-        fb.QuerySequence<FreebaseObjectId>(query, FreebaseObjectId.FromJson, None)
+    member __.GetAllObjectsOfType(fbType:FreebaseType, limit:int, prefixName) =
+        let nameCx = 
+            match prefixName with 
+            | None -> "'/type/object/name' : null"
+            | Some s -> "'/type/object/name' : null, '/type/object/name~=' : '^" + s + "*'"
+        
+        let query = "[{ '/type/object/type' : '" + fbType.Id + "', '/type/object/id' : null, " + nameCx + ", 'limit': " + string limit + " }]" 
+        fb.QuerySequence<FreebaseObjectId>(query, FreebaseObjectId.FromJson, Some limit)
+
+    member __.GetAllTypesOfObject(fbObjId:string) =
+        let query = sprintf "{ '/type/object/type' : [{ '/type/object/id': null, '/type/type/domain': null }], '/type/object/id' : '%s' }" fbObjId 
+        fb.Query(query, FreebaseTypesSupportedByObject.FromJson) 
+
+    // Perform one query to determine the existence of data in the properties of a specific object
+    member fbSchema.GetDataExistenceForKnownObject(fbTypes, fbObjId:string) =
+        let fbProps = 
+            [ for fbType in fbTypes do 
+                yield (fbType, getProperties fbType) ]
+
+        let fields = 
+            [ for (_fbType, props)  in fbProps do 
+               for p in props do
+                if p.IsUnique then 
+                    yield ", '" + p.Id + "' : null"  
+                else 
+                    yield ", '" + p.Id + "' : [ ]" ]
+                    //yield ", '" + p.Id + "' : [ {  'type': [], 'limit': 1 } ]" ]
+            |> String.concat ""
+
+        let query = sprintf "{ '/type/object/id' : '%s'  %s }"  fbObjId fields 
+        //printfn "query = <<<%s>>>" query
+
+        let data =  fb.Query<IDictionary<string,JsonValue> >(query, dictionaryFromJson) 
+
+        [ for (fbType, props)  in fbProps do 
+            let ps = 
+             [ for fbProp in props do
+                let hasData = 
+                    match data.TryGetValue(fbProp.Id) with 
+                    | true, JsonValue.Array [| |] -> false
+                    | true, JsonValue.Null -> false
+                    | true, _ -> true
+                    | false, _ -> false
+                yield (fbProp, hasData) ]
+            yield (fbType, ps) ]
 
 let makeRuntimeNullableTy  (ty:Type) = typedefof<Nullable<_>>.MakeGenericType [|ty|]
 let makeRuntimeSeqTy  (ty:Type) = typedefof<seq<_>>.MakeGenericType [|ty|]
@@ -277,15 +327,14 @@ type FreebaseProperty with
 
     /// Compute the provided or erased runtime type corresponding to the Freebase property.
     /// 'typeReprFunction' indicates if erasure is happening or not.
-    member property.FSharpPropertyType(fb:FreebaseSchemaConnection, propertyReprFunction, tryTypeReprFunction, makeNullable, makeSeq) =
+    member property.FSharpPropertyType(fb:FreebaseSchemaConnection, propertyReprFunction, tryTypeReprFunction, makeNullable, makeSeq, alwaysThere) =
         let elementType, supportsNull = property.FSharpPropertyElementType(fb, propertyReprFunction, tryTypeReprFunction)
         match property.IsUnique with
-        | true -> if supportsNull then elementType else makeNullable elementType
+        | true -> if supportsNull || alwaysThere then elementType else makeNullable elementType
         | false -> makeSeq elementType
 
-    member property.FSharpPropertyRuntimeType(fb:FreebaseSchemaConnection, fbCompoundObjTy) =
-        property.FSharpPropertyType(fb,(fun _ -> None), (fun _ -> Some fbCompoundObjTy), makeRuntimeNullableTy, makeRuntimeSeqTy)
-
+    member property.FSharpPropertyRuntimeType(fb:FreebaseSchemaConnection, fbCompoundObjTy, alwaysThere) =
+        property.FSharpPropertyType(fb,(fun _ -> None), (fun _ -> Some fbCompoundObjTy), makeRuntimeNullableTy, makeRuntimeSeqTy, alwaysThere)
 
 type FreebaseUnit = 
     | SI of string 
