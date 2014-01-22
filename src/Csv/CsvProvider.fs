@@ -4,6 +4,7 @@
 namespace ProviderImplementation
 
 open System
+open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open ProviderImplementation.ProvidedTypes
@@ -42,15 +43,28 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let cacheRows = args.[11] :?> bool
     let resolutionFolder = args.[12] :?> string
     
+    if sample = "" then
+      if schema = "" then
+        failwith "When the Sample parameter is not specified, the Schema parameter must be provided"
+      if hasHeaders then
+        failwith "When the Sample parameter is not specified, the HasHeaders parameter must be set to false"
+
     let parse (extension:string) value =
       let separators = 
         if String.IsNullOrEmpty separators && extension.ToLowerInvariant() = ".tsv"
         then "\t" else separators
+      let value = 
+        if value = "" then 
+          use reader = new StringReader(schema)
+          let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
+          Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
+        else
+          value
       CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors)
 
     let getSpecFromSamples samples = 
       
-      use sampleCsv : CsvFile = Seq.head samples
+      use sampleCsv : CsvFile = Seq.exactlyOne samples
       let separators = sampleCsv.Separators
   
       let inferredFields = 
@@ -79,7 +93,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ ProvidedStaticParameter("Sample", typeof<string>) 
+    [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("Separators", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("InferRows", typeof<int>, parameterDefaultValue = 1000)

@@ -100,6 +100,7 @@ for sib in info?siblings do
 WorldBankにアクセスすることもできます)。
 このドキュメントは以下のようになっています：
 
+    [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
       [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
           "country": {"id":"CZ","value":"Czech Republic"},

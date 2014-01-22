@@ -92,6 +92,7 @@ To look at a more complex example, consider a sample document
 a WorldBank request (you can access the WorldBank data more conveniently using
 [a type provider](WorldBank.html)). The document looks as follows:
 
+    [lang=js]
     [ { "page": 1, "pages": 1, "total": 53 },
       [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
           "country": {"id":"CZ","value":"Czech Republic"},

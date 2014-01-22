@@ -1,7 +1,8 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.2.10-beta/lib/net40"
-#I "../../packages/RazorEngine.3.4.0/lib/net45/"
-#r "../../packages/Microsoft.AspNet.Razor.3.0.0/lib/net45/System.Web.Razor.dll"
+#I "../../packages/FSharp.Formatting.2.3.4-beta/lib/net40"
+#I "../../packages/RazorEngine.3.3.0/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
+#r "../../packages/FSharp.Compiler.Service.0.0.11-alpha/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
@@ -21,7 +22,7 @@ open System.Reflection
 open FSharp.Literate
 open FSharp.CodeFormat
 
-//alow tests that access the network to work when you're behind a proxy
+// Alow tests that access the network to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 // Initialization of the test - lookup the documentation files,
@@ -36,20 +37,6 @@ let output = Path.GetTempPath() @@ "FSharp.Data.Docs"
 if Directory.Exists(output) then Directory.Delete(output, true)
 Directory.CreateDirectory(output) |> ignore
 
-// Lookup compiler DLL
-let locations = 
-  [ "%ProgramFiles%\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\FSharp.Compiler.dll"
-    "%ProgramFiles(x86)%\\Microsoft SDKs\\F#\\3.0\\Framework\\v4.0\\FSharp.Compiler.dll"
-    "/Library/Frameworks/Mono.framework/Libraries/mono/Microsoft F#/v4.0/FSharp.Compiler.dll" ]
-
-let compiler = 
-  locations |> Seq.pick (fun location ->
-    try 
-      let location = Environment.ExpandEnvironmentVariables(location)
-      if not (File.Exists(location)) then None else
-        Some(Assembly.LoadFile(Environment.ExpandEnvironmentVariables(location)))
-    with _ -> None)
-
 /// Process a specified file in the documentation folder and return 
 /// the total number of unexpected errors found (print them to the output too)
 let processFile file =
@@ -58,7 +45,7 @@ let processFile file =
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
-  let literateDoc = Literate.ParseScriptFile( Path.Combine(sources, file), fsharpCompiler = compiler )
+  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
   literateDoc.Errors 
   |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
     if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then

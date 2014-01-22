@@ -11,6 +11,7 @@ expected response. For example, a [documentation for F# Snippets API](http://doc
 specifies that `GET` request to a URL of a form `/1/snippet/{id}` (with an appropriate
 content-type header) returns JSON data as follows:
 
+    [lang=text]
     GET /1/snippet/{id}
     < 200
     < Content-Type: application/json

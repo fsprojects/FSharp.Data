@@ -2,7 +2,8 @@
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#r "packages/FAKE/tools/FakeLib.dll"
+#I "packages/FAKE/tools/"
+#r "FakeLib.dll"
 
 open System
 open System.IO
@@ -15,7 +16,7 @@ open Fake.Git
 // --------------------------------------------------------------------------------------
 
 let project = "FSharp.Data"
-let authors = ["Tomas Petricek, Gustavo Guerra"]
+let authors = ["Tomas Petricek"; "Gustavo Guerra"]
 let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
@@ -42,7 +43,7 @@ let release =
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
 
-let releaseNotes = (release.Notes |> String.concat "\n").Replace("&","&amp;")
+let releaseNotes = release.Notes |> String.concat "\n"
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -76,21 +77,16 @@ Target "CleanDocs" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build Visual Studio solutions
 
-let files includes = 
-  { BaseDirectory = __SOURCE_DIRECTORY__
-    Includes = includes
-    Excludes = [] } 
-
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
 Target "Build" (fun _ ->
-    files (if runningOnMono then ["FSharp.Data.sln"] else ["FSharp.Data.sln"; "FSharp.Data.ExtraPlatforms.sln"])
+    (if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 )
 
 Target "BuildTests" (fun _ ->
-    files ["FSharp.Data.Tests.sln"]
+    !! "FSharp.Data.Tests.sln"
     |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"] else []) "Rebuild"
     |> ignore
 )
@@ -103,7 +99,7 @@ Target "RunTests" (fun _ ->
     let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
     ActivateFinalTarget "CloseTestRunner"
 
-    (files ["tests/*/bin/Release/FSharp.Data.Tests*.dll"])
+    !! "tests/*/bin/Release/FSharp.Data.Tests*.dll"
     |> NUnit (fun p ->
         { p with
             ToolPath = nunitPath

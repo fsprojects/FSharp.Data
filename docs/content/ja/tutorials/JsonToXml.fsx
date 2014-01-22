@@ -47,6 +47,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 名前のつけられたフィールドがあります)。
 たとえば以下のようなXMLがあるとします：
 
+    [lang=xml]
     <channel version="1.0">
       <title text="Sample input" />
       <item value="First" />
@@ -58,6 +59,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 各属性および子要素に対してユニークなフィールドが含まれます。
 ある要素が繰り返し現れる場合には配列へと変換されます：
 
+    [lang=js]
     { "version": "1.0",
       "title": { "text": "Sample input" },
       "items": [ { "value": "First" }, 
@@ -112,6 +114,7 @@ JSONからXMLへの変換
 JSONからXMLへ変換する場合、同じようなミスマッチが起こります。
 たとえば以下のようなJSONデータがあるとします：
 
+    [lang=js]
     { "title" : "Sample input",
       "paging" : { "current": 1 },
       "items" : [ "First", "Second" ] }
@@ -123,6 +126,7 @@ JSONからXMLへ変換する場合、同じようなミスマッチが起こり�
 レコード内にあるプリミティブな値のフィールドは属性になり、
 (配列やレコードのような)複雑な値はオブジェクトになります：
 
+    [lang=xml]
     <root title="Sample input">
       <items>
         <item>First</item>

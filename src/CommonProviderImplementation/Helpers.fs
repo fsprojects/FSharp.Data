@@ -109,25 +109,30 @@ module ProviderHelpers =
           match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
           | false, _ -> None
           | true, uri ->
-              if not uri.IsAbsoluteUri && (str |> Seq.exists (fun c -> invalidChars.Contains c)) 
+              if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str
               then None else Some uri
   
-      try
-        match tryGetUri sampleOrSampleUri with
-        | None -> parseFunc "" sampleOrSampleUri, false
-        | Some uri ->
+      match tryGetUri sampleOrSampleUri with
+      | None -> 
 
-            let resolver = 
-              { ResolutionType = DesignTime
-                DefaultResolutionFolder = cfg.ResolutionFolder
-                ResolutionFolder = resolutionFolder }
-            
-            let readText() = 
-              Async.RunSynchronously <| async {
-                  use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
-                  use reader = new StreamReader(stream)
-                  return reader.ReadToEnd()
-              } 
+          try parseFunc "" sampleOrSampleUri, false
+          with e -> failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
+
+      | Some uri ->
+
+          let resolver = 
+            { ResolutionType = DesignTime
+              DefaultResolutionFolder = cfg.ResolutionFolder
+              ResolutionFolder = resolutionFolder }
+          
+          let readText() = 
+            Async.RunSynchronously <| async {
+                use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
+                use reader = new StreamReader(stream)
+                return reader.ReadToEnd()
+            } 
+
+          try
             
             let sample = 
               if isWeb uri then
@@ -140,9 +145,18 @@ module ProviderHelpers =
               else readText()
                 
             parseFunc (Path.GetExtension uri.OriginalString) sample, true
-        
-      with e ->
-        failwithf "Specified argument is neither a file, nor well-formed %s: %s" formatName e.Message
+
+          with e ->
+
+            if not uri.IsAbsoluteUri then
+              // even if it's a valid uri, it could be sample text
+              try 
+                parseFunc "" sampleOrSampleUri, false
+              with _ -> 
+                // if not, return the first exception
+                failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+            else
+              failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
 
   // carries part of the information needed by generateConstructors
   type TypeProviderSpec = 
@@ -239,55 +253,57 @@ module ProviderHelpers =
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m :> _
       
-      if sampleIsList then
+      if sampleOrSampleUri <> "" then
 
-        // the [,] case needs more work, and it's a weird scenario anyway, so we won't support it
-        if not resultType.IsArray then
-
-          let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
-          let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
-          
-          // Generate static GetSamples method
-          let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
-          m.InvokeCode <- fun _ -> 
+        if sampleIsList then
+        
+          // the [,] case needs more work, and it's a weird scenario anyway, so we won't support it
+          if not resultType.IsArray then
+        
+            let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
+            let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
+            
+            // Generate static GetSamples method
+            let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
+            m.InvokeCode <- fun _ -> 
+              (if sampleIsUri 
+               then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
+               else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
+              |> spec.CreateFromTextReaderForSampleList
+            yield m :> _
+                    
+            if sampleIsUri then
+              // Generate static AsyncGetSamples method
+              let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
+              m.InvokeCode <- fun _ -> 
+                let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+                asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
+              yield m :> _
+        
+        else 
+        
+          let name = if resultType.IsArray then "GetSamples" else "GetSample"
+        
+          let getSampleCode = fun _ -> 
             (if sampleIsUri 
              then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
              else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
-            |> spec.CreateFromTextReaderForSampleList
-          yield m :> _
-                  
+            |> spec.CreateFromTextReader
+        
+          // Generate static GetSample method
+          yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
+          
+          // Generate default constructor
+          if generateDefaultConstructor then
+            yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
+        
           if sampleIsUri then
-            // Generate static AsyncGetSamples method
-            let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
+            // Generate static AsyncGetSample method
+            let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
             m.InvokeCode <- fun _ -> 
               let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
-              asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
+              asyncMap replacer resultType readerAsync spec.CreateFromTextReader
             yield m :> _
-
-      else 
-
-        let name = if resultType.IsArray then "GetSamples" else "GetSample"
-
-        let getSampleCode = fun _ -> 
-          (if sampleIsUri 
-           then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
-           else <@ new StringReader(sampleOrSampleUri) :> TextReader @>)
-          |> spec.CreateFromTextReader
-
-        // Generate static GetSample method
-        yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
-        
-        // Generate default constructor
-        if generateDefaultConstructor then
-          yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
-
-        if sampleIsUri then
-          // Generate static AsyncGetSample method
-          let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
-          m.InvokeCode <- fun _ -> 
-            let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
-            asyncMap replacer resultType readerAsync spec.CreateFromTextReader
-          yield m :> _
 
     ] |> spec.GeneratedType.AddMembers
 

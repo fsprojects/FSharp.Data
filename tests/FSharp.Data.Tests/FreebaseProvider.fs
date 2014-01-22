@@ -71,7 +71,7 @@ let ``Can access the webpages for music composers``() =
         |> Seq.map (fun composer -> String.concat "\n" composer.``Topical webpage``)
         |> Seq.find (not << String.IsNullOrWhiteSpace)
 
-    webPage |> should equal "http://www.discogs.com/artist/John+Barry"
+    webPage.Split('\n').[0] |> should equal "http://www.discogs.com/artist/John+Barry"
 
 [<Test>]
 let ``Can access the webpages of stock exchanges``() =

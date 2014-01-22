@@ -14,6 +14,7 @@ APIの **ひな形** を記述するだけで独自のREST APIを作成できま
 (適切なcontent-typeを含んだ) `GET` リクエストに対しては、
 以下のようなJSONデータが返されます：
 
+    [lang=text]
     GET /1/snippet/{id}
     < 200
     < Content-Type: application/json

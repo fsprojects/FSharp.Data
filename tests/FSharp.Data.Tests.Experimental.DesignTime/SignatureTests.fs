@@ -52,14 +52,16 @@ let generateAllExpected() =
         let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false
         File.WriteAllText(getExpectedPath testCase, output)
 
-let normalizeEndings (str:string) =
-  str.Replace("\r\n", "\n").Replace("\r", "\n")
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+     .Replace(" \"<SOURCE_DIRECTORY>/../FSharp.Data.Tests/Data", " @\"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data")
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText |> normalizeEndings
-    let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false |> normalizeEndings 
+    let expected = getExpectedPath testCase |> File.ReadAllText |> normalize
+    let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false |> normalize 
     output |> should equal expected
 
 #if MONO
