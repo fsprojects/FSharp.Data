@@ -131,7 +131,7 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
       SchemaParseResult.Full prop
   | None, None when isOverrideByName -> SchemaParseResult.Rename(name, originalName)
   | None, None -> SchemaParseResult.Name str
-  | None, Some unit when forSchemaOverride -> SchemaParseResult.Name str
+  | None, Some _unit when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
 /// Infers the type of a CSV file using the specified number of rows
@@ -228,10 +228,10 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
         finally
           rowsIterator.Dispose()
         if safeMode then
-          yield CsvRow(csv, [| for i in 1..headers.Length -> "" |])
+          yield CsvRow(csv, [| for _i in 1..headers.Length -> "" |])
       }
     else
-      CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
+      CsvRow(csv, [| for _i in 1..headers.Length -> "" |]) |> Seq.singleton 
   
   let rows = if count > 0 then Seq.truncate (if safeMode && count < Int32.MaxValue then count + 1 else count) rows else rows
 
