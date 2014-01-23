@@ -208,18 +208,15 @@ let dataWithKey = FreebaseDataWithKey.GetDataContext()
 ### Further Individuals
 
 As you saw above, individual entities can be addressed through the ``Individuals`` property.
-By default this the first 1000 individuals returned by Freebase. Three other versions of individuals exist - 
+By default the first 1000 individuals are returned by Freebase. Three other versions of individuals exist - 
 ``Individuals10`` (containing 10,000 individuals), ``Individuals100`` (containing 100,000 individuals) and
-``IndividualsAZ`` (containing individuals bucketd by first letter of their name, with each bucket containing 
+``IndividualsAZ`` (containing individuals bucketed by first letter of their name, with each bucket containing 
 up to 10,000 individuals). Together these help provide alternative, more stable ways of scaling to larger tables, 
 but where navigation may be slower. *)
 
 data.``Science and Technology``.Astronomy.Stars.Individuals10.``Alpha Centauri A``
 
 data.``Science and Technology``.Astronomy.Stars.IndividualsAZ.A.``Alpha Centauri A``
-
-
-*)
 
 (** 
 For example, there are at least 3,921,979 books in Freebase:
@@ -235,8 +232,8 @@ Listing the first 100,000 reveals the Bible but is very, very slow:
 (** 
  This provides a stable but more efficient way of address that specific book:
 *)
-data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
 
+data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
 
 (**
 ### Debugging MQL queries
