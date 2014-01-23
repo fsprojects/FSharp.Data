@@ -67,8 +67,16 @@ Target "AssemblyInfo" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Clean build results
 
+let internetCache = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
+
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"]
+    CleanDirs ["bin"
+               internetCache @@ "ApiarySchema"
+               internetCache @@ "DesignTimeURIs"
+               internetCache @@ "FreebaseSchema"
+               internetCache @@ "FreebaseRuntime"
+               internetCache @@ "WorldBankSchema"
+               internetCache @@ "WorldBankRuntime"]
 )
 
 Target "CleanDocs" (fun _ ->
