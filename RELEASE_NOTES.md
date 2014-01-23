@@ -116,3 +116,9 @@
 #### 2.0.0-alpha3 - December 30 2013
 * Fixed the use of samples which also are valid filenames in CsvProvider.
 * Allow to specify only the Schema without a Sample in CsvProvider.
+
+#### 2.0.0-beta - Unreleased
+* Adds specific types for Freebase individuals, so each individual X only has properties P where X.P actually returns interesting data. This makes Individuals much more useful for exploring sparse data, as you can "dot" through an individual and see exactly what properties actually have interesting data. The feature is on by default but can be turned off using UseRefinedTypes=false as a static parameter.
+* Individuals10 and Individuals100 views of Freebase individuals, which increases the number of items in the table by 10x and 100x.
+* IndividualsAZ view of Freebase individuals, which buckets the individuals by first character of name A-Z, with each bucket containing up to 10,000 individuals.
+* Added SendingQuery event which triggers for overall Freebase MQL queries and can be run in the Freebase query editor, instead of for individual REST requests including cursor-advancing requests and documentation requests.
