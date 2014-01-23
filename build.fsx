@@ -74,6 +74,18 @@ Target "Clean" (fun _ ->
 Target "CleanDocs" (fun _ ->
     CleanDirs ["docs/output"]
 )
+
+let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
+
+Target "CleanInternetCaches" (fun _ ->
+    CleanDirs [internetCacheFolder @@ "ApiarySchema"
+               internetCacheFolder @@ "DesignTimeURIs"
+               internetCacheFolder @@ "FreebaseSchema"
+               internetCacheFolder @@ "FreebaseRuntime"
+               internetCacheFolder @@ "WorldBankSchema"
+               internetCacheFolder @@ "WorldBankRuntime"]
+)
+
 // --------------------------------------------------------------------------------------
 // Build Visual Studio solutions
 
@@ -214,6 +226,9 @@ Target "Help" (fun _ ->
     printfn "  * ReleaseBinaries"
     printfn "  * NuGet (creates package only, doesn't publish)"
     printfn "  * Release (calls previous 4)"
+    printfn ""
+    printfn "  Other targets:"
+    printfn "  * CleanInternetCaches"
     printfn "")
 
 Target "All" DoNothing
