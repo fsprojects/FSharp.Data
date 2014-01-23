@@ -2,12 +2,12 @@
 // Tests for Http Utilities (mainly HttpUtility.JavaScriptStringEncode now)
 // --------------------------------------------------------------------------------------
 
-module FSharp.Data.Tests.HttpUtility
-
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.HttpUtility
 #endif
 
 open FsUnit
