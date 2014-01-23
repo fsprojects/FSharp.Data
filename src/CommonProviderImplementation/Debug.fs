@@ -138,7 +138,7 @@ module Debug =
 
                 let rec warnIfWrongAssembly (t:Type) =
                     match t with
-                    | :? ProvidedTypeDefinition as t -> ""
+                    | :? ProvidedTypeDefinition -> ""
                     | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
                     | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
                     | t -> if not t.IsGenericParameter && t.Assembly = Assembly.GetExecutingAssembly() then " [DESIGNTIME]" else ""
@@ -246,7 +246,7 @@ module Debug =
                         printExpr false false args.Head
                         print " |> "
                         match args.Tail.Head with
-                        | Lambda (var, (Call(_,_,_) as call)) -> printExpr true false call
+                        | Lambda (_, (Call(_,_,_) as call)) -> printExpr true false call
                         | _ as expr -> printExpr false false expr
                     else
                         let printName() =
@@ -431,7 +431,7 @@ module Debug =
                 if not ignoreOutput then
                     let rec removeParams x = 
                       match x with
-                      | Let (var, Value(null, _), body) -> removeParams body
+                      | Let (_, Value(null, _), body) -> removeParams body
                       | _ -> x
                     let formattedExpr = printExpr (removeParams x)
                     print formattedExpr
@@ -503,7 +503,7 @@ module Debug =
                 | t when t.IsClass && t.IsSealed && t.IsAbstract -> "static class "
                 | t when t.IsClass && t.IsAbstract -> "abstract class "
                 | t when t.IsClass -> "class "
-                | t -> ""
+                | _ -> ""
                 |> print
                 print (toString true t)
                 if t.BaseType <> typeof<obj> then

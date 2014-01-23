@@ -299,7 +299,7 @@ type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConne
                   yield Country(connection, country.Id) :?> 'T }  
     interface seq<'T> with member x.GetEnumerator() = items.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
-    interface ICountryCollection with member x.GetCountry(countryCode, countryName) = Country(connection, countryCode)
+    interface ICountryCollection with member x.GetCountry(countryCode, (*this parameter is only here to help FunScript*)_countryName) = Country(connection, countryCode)
     
 /// [omit]
 type IRegion =

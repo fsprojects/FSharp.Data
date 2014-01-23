@@ -71,7 +71,8 @@ type TextRuntime =
           value.ToString(TextRuntime.GetCulture culture)
     | None -> ""
   
-  static member ConvertBooleanBack(culture, value:bool option, use0and1) = 
+  //culture is ignored for now, but might not be in the future, so we're keeping in in the API
+  static member ConvertBooleanBack(_culture, value:bool option, use0and1) =     
     match value with
     | Some value when use0and1 -> if value then "1" else "0"
     | Some value -> if value then "true" else "false"

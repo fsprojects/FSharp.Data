@@ -234,7 +234,7 @@ let private tryToSingular (word: string) suffixRule =
 let toPlural noun =
     if String.IsNullOrEmpty noun then noun
     else 
-        let suffixRules, specialSingulars, specialPlurals = tables.Value
+        let suffixRules, _, specialPlurals = tables.Value
         let plural = 
             match specialPlurals.TryGetValue noun with
             | true, plural -> plural
@@ -252,7 +252,7 @@ let toPlural noun =
 let toSingular noun =
     if String.IsNullOrEmpty noun then noun
     else 
-        let suffixRules, specialSingulars, specialPlurals = tables.Value
+        let suffixRules, specialSingulars, _ = tables.Value
         let singular = 
             match specialSingulars.TryGetValue noun with
             | true, singular -> singular

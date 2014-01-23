@@ -137,7 +137,7 @@ module ApiarySchema =
       | NameNode(name, ops, nested) when isSpecialName name ->
           Entity(parentName.Value, ops, List.map (loop parentName) nested)
 
-      | NameNode(name, ops, nested) as odd ->
+      | NameNode _ as odd ->
           failwithf "REST API does not match any common pattern: %A" odd
 
     nodes |> List.map (loop (lazy failwith "Missing root element"))
@@ -149,7 +149,7 @@ module ApiarySchemaAuto =
   /// Find an operation that uses HTTP method specified by 'findMeth'
   /// and return the arguments together with (the method and) a path
   let (|FindMethod|_|) findMeth (ops:list<string * string>) =
-    ops |> Seq.tryFind (fun (meth, path) -> meth = findMeth)
+    ops |> Seq.tryFind (fun (meth, _) -> meth = findMeth)
         |> Option.map (fun (meth, path) ->
              let pathParts = path |> getPathComponents 
              let args = pathParts |> List.filter isSpecialName

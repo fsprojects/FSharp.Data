@@ -189,6 +189,6 @@ module internal ApiaryTypeBuilder =
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@ ((%%self:IJsonDocument) :?> ApiaryDocument).Context @> }
         nested |> Seq.iter (generateSchema ctx (join parentName name) entityTy)
 
-    | Entity(name, _, nested) -> 
+    | Entity _-> 
         // Silently ignore...
         ()

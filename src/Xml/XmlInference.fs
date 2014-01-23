@@ -58,7 +58,7 @@ let inferGlobalType culture allowNulls (element:XElement) =
     changed <- false
     for KeyValue(_, value) in assignment do
       match value with 
-      | elements, InferedType.Record(Some name, body::attributes) -> 
+      | elements, InferedType.Record(Some _name, body::_attributes) -> 
           if body.Name <> "" then failwith "inferGlobalType: Assumed body element first"
           let children = [ for e in elements.Elements() -> assignment.[e.Name.ToString()] |> snd ]
           let bodyType = 

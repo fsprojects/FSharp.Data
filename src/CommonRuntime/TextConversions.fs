@@ -61,7 +61,8 @@ type TextConversions =
            |> asOption
            |> Option.bind (fun f -> if useNoneForMissingValues && Double.IsNaN f then None else Some f)
   
-  static member AsBoolean (culture:IFormatProvider) (text:string) = 
+  //culture is ignored for now, but might not be in the future, so we're keeping in in the API
+  static member AsBoolean (_culture:IFormatProvider) (text:string) =     
     match text.Trim() with
     | StringEquals "true" | StringEquals "yes" | StringEquals "1" -> Some true
     | StringEquals "false" | StringEquals "no" | StringEquals "0" -> Some false

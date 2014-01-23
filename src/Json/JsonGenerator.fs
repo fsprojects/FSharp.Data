@@ -99,15 +99,15 @@ module JsonTypeBuilder =
       match multiplicity with 
       | InferedMultiplicity.OptionalSingle ->
           let p = ProvidedProperty(makeUnique kind.NiceName, typedefof<option<_>>.MakeGenericType [| output.ConvertedType |])
-          p.GetterCode <- codeGenerator (multiplicity, typ) output kindCode
+          p.GetterCode <- codeGenerator multiplicity output kindCode
           objectTy.AddMember(p)          
       | InferedMultiplicity.Single ->
           let p = ProvidedProperty(makeUnique kind.NiceName, output.ConvertedType)
-          p.GetterCode <- codeGenerator (multiplicity, typ) output kindCode
+          p.GetterCode <- codeGenerator multiplicity output kindCode
           objectTy.AddMember(p)          
       | InferedMultiplicity.Multiple ->
           let p = ProvidedMethod(makeUnique ("Get" + NameUtils.pluralize kind.NiceName), [], output.ConvertedType.MakeArrayType())
-          p.InvokeCode <- codeGenerator (multiplicity, typ) output kindCode
+          p.InvokeCode <- codeGenerator multiplicity output kindCode
           objectTy.AddMember(p)          
 
     { ConvertedType = objectTy
@@ -220,21 +220,21 @@ module JsonTypeBuilder =
 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
-        generateMultipleChoiceType ctx input.ParentName types (fun info output kindCode ->
-          match info with
-          | InferedMultiplicity.Single, _ -> fun (Singleton jDoc) -> 
+        generateMultipleChoiceType ctx input.ParentName types (fun multiplicity output kindCode ->
+          match multiplicity with
+          | InferedMultiplicity.Single -> fun (Singleton jDoc) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
               let jDoc = ctx.Replacer.ToDesignTime jDoc
               output.Converter <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, kindCode) @@>
           
-          | InferedMultiplicity.Multiple, _ -> 
+          | InferedMultiplicity.Multiple -> 
               // Generate method that calls `GetArrayChildrenByTypeTag` 
               // (unlike the previous easy case, this needs to call conversion function
               // from the runtime similarly to options and arrays) 
               fun (Singleton jDoc) -> 
                 ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx)
           
-          | InferedMultiplicity.OptionalSingle, _ -> 
+          | InferedMultiplicity.OptionalSingle -> 
               // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
               fun (Singleton jDoc) -> 
                 ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))
@@ -245,7 +245,8 @@ module JsonTypeBuilder =
 
         // Generate a choice type that always calls `TryGetValueByTypeTag`
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
-        generateMultipleChoiceType ctx input.ParentName types (fun info output kindCode ->
+        generateMultipleChoiceType ctx input.ParentName types (fun multiplicity output kindCode ->
+          assert (multiplicity = InferedMultiplicity.OptionalSingle)
           fun (Singleton jDoc) -> 
             let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
             jsonRuntime?TryGetValueByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))

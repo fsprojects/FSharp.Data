@@ -45,8 +45,7 @@ type String with
     | Some d -> d
     | _ -> failwithf "Not a datetime - %s" x
 
-  member x.AsGuid(?culture) =
-    let culture = defaultArg culture CultureInfo.InvariantCulture
+  member x.AsGuid() =
     match x |> TextConversions.AsGuid with
     | Some g -> g
     | _ -> failwithf "Not a guid - %s" x
