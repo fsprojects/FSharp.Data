@@ -80,10 +80,13 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
 
     /// Get property bags for all the objects of the given type, at the given type
     member fbDataConn.GetInitialDataForObjectsFromQueryText(queryConstraints:(string * string) list, typeId:string, objectLimit) =
+        // Add the "/type/object/type" constraint if it doesn't exist (it will for a standard call)
+        let queryConstraints = if (queryConstraints |> List.exists (fst >> (=) "/type/object/type")) then queryConstraints else ("/type/object/type", typeId)::queryConstraints
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (typeId, queryConstraints)
         let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
+
         let limitText, explicitLimit = getLimitText objectLimit queryConstraints
-        let query = sprintf "[{ '/type/object/type' : '%s' %s %s , '/type/object/id' : null, '/type/object/name' : null %s}]" typeId queryText fields  limitText
+        let query = sprintf "[{ '/type/object/id' : null, '/type/object/name' : null %s %s %s}]" queryText fields  limitText
         fbDataConn.GetInitialDataForObjects (query, explicitLimit)
     
     member fbDataConn.GetInitialDataForKnownObject(fbTypeId, fbObjId:string) =
@@ -585,7 +588,7 @@ module internal QueryImplementation =
     /// Format as query text for MQL
     let rec formatQueryData fbDataConn q = 
         match q with 
-        | Base typeId -> [("type", quote typeId)]
+        | Base typeId -> [("/type/object/type", quote typeId)]
         | Filter (xs,q) -> formatQueryData fbDataConn xs  @ [ formatQueryCondition fbDataConn q ]
         | Take (xs,n) -> formatQueryData fbDataConn xs  @ [ ("limit", string n) ]
         | Sort (xs,[(direction,propIds)]) -> 

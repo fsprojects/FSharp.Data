@@ -84,7 +84,7 @@ let ``Can parse inlined properties``() =
 
 [<Test>]
 let ``Can parse inlined properties but read from file``() = 
-    let person = InlinedJSON.Load("Data/Simple.json")
+    let person = InlinedJSON.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/Simple.json"))
 
     person.FirstName
     |> should equal "John"
@@ -243,7 +243,7 @@ let ``Can parse wiki sample``() =
 
 [<Test>]
 let ``Can load empty json file and fails on property access``() = 
-    let document = WikiSample.Load("Data/Empty.json")
+    let document = WikiSample.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/Empty.json"))
     let failed = ref false
     try
         document.Age |> ignore
