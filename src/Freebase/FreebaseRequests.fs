@@ -74,6 +74,7 @@ let isStringNone s = String.IsNullOrEmpty s || s = "none"
 type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
     let snapshotDate = if isStringNone snapshotDate then None else Some snapshotDate
     let sendingRequest = Event<Uri>()
+    let sendingQuery = Event<string>()
     let localCache, localCacheLocation = createInternetFileCache localCacheName (TimeSpan.FromDays 30.0)
     let noLocalCache = createNonCachingCache()
     let mutable useLocalCache = useLocalCache
@@ -167,11 +168,13 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
 
     member __.LocalCacheLocation = localCacheLocation
     member __.SendingRequest = sendingRequest.Publish
+    member __.SendingQuery = sendingQuery.Publish
     member __.UseLocalCache with get() = useLocalCache and set v = useLocalCache <- v
     member __.ServiceUrl with get() = serviceUrl and set v = serviceUrl  <- v
     member __.SnapshotDate = snapshotDate
         
     member __.Query<'T>(query:string, fromJson) : 'T =
+        sendingQuery.Trigger query
         let queryUrl = createQueryUrl(query,None)
         queryString(queryUrl, fromJson).Result
 
@@ -183,7 +186,8 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             url
 
     member __.QuerySequence<'T>(query:string,fromJson, explicitLimit) : 'T seq =
-        seq { let cursor = ref (Some "")
+        seq { sendingQuery.Trigger query
+              let cursor = ref (Some "")
               let complete = ref false
               let count = ref 0
               while not !complete && (match explicitLimit with None -> true | Some -1 -> true | Some lim -> !count < lim) do 

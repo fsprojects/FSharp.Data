@@ -53,7 +53,7 @@ type Http private() =
 #else
     if runningOnMono then uri else
     let uri = Uri(uri.OriginalString)
-    let paq = uri.PathAndQuery
+    uri.PathAndQuery |> ignore
     let flagsFieldInfo = typeof<Uri>.GetField("m_Flags", BindingFlags.Instance ||| BindingFlags.NonPublic)
     let flags = flagsFieldInfo.GetValue(uri) :?> uint64
     let flags = flags &&& (~~~0x30UL)
@@ -127,7 +127,7 @@ type Http private() =
         return Unchecked.defaultof<_>
   }
 
-  static let toHttpResponse forceText responseUrl (contentType:string) (contentEncoding:string) statusCode cookies headers (memoryStream:MemoryStream) =
+  static let toHttpResponse forceText responseUrl (contentType:string) (_contentEncoding:string) statusCode cookies headers (memoryStream:MemoryStream) =
 
     let isText (mimeType:string) =
       let isText (mimeType:string) =
@@ -145,9 +145,9 @@ type Http private() =
     let respBody = 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
       let memoryStream = 
-        if contentEncoding = "gzip" then
+        if _contentEncoding = "gzip" then
           new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-        elif contentEncoding = "deflate" then
+        elif _contentEncoding = "deflate" then
           new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
         else
           memoryStream

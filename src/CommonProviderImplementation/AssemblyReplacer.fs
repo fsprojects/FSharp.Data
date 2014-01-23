@@ -60,7 +60,7 @@ module AssemblyReplacer =
       | Some toAsm -> Some toAsm
       | None ->
           asmMappings
-          |> Seq.tryPick (fun (fromAsm, toAsm) -> 
+          |> Seq.tryPick (fun (fromAsm, _) -> 
             if originalAsms |> List.exists (fun originalAsm -> originalAsm = fromAsm) then
               // if we found a replacement for a inner type, just return the original
               // assembly of the outer type to signal that it needs to be visited, but it
@@ -294,8 +294,7 @@ module AssemblyReplacer =
         Expr.Let(rv var, re value, re body)
     | ShapeVar v -> 
         Expr.Var (rv v)
-    | ShapeLambda (v, expr) -> 
-        //Expr.Lambda (rv v, re expr)
+    | ShapeLambda _ -> 
         failwith ("It's not possible to create a Lambda when cross targetting to a different FSharp.Core.\n" +
                   "Make sure you're not calling a function with signature A->(B->C) instead of A->B->C (using |> causes this).")
     | ShapeCombination (o, exprs) -> 

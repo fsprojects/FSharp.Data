@@ -205,12 +205,48 @@ type FreebaseDataWithKey = FreebaseDataProvider<Key=FreebaseApiKey>
 let dataWithKey = FreebaseDataWithKey.GetDataContext()
 
 (**
+### Further Individuals
+
+As you saw above, individual entities can be addressed through the ``Individuals`` property.
+By default the first 1000 individuals are returned by Freebase. Three other versions of individuals exist - 
+``Individuals10`` (containing 10,000 individuals), ``Individuals100`` (containing 100,000 individuals) and
+``IndividualsAZ`` (containing individuals bucketed by first letter of their name, with each bucket containing 
+up to 10,000 individuals). Together these help provide alternative, more stable ways of scaling to larger tables, 
+but where navigation may be slower. *)
+
+data.``Science and Technology``.Astronomy.Stars.Individuals10.``Alpha Centauri A``
+
+data.``Science and Technology``.Astronomy.Stars.IndividualsAZ.A.``Alpha Centauri A``
+
+(** 
+For example, there are at least 3,921,979 books in Freebase:
+*)
+
+data.``Arts and Entertainment``.Books.Books.ApproximateCount()
+
+(** 
+Listing the first 100,000 reveals the Bible but is very, very slow:
+*)
+// data.``Arts and Entertainment``.Books.Books.Individuals100.``The Bible``
+
+(** 
+ This provides a stable but more efficient way of address that specific book:
+*)
+
+data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
+
+(**
 ### Debugging MQL queries
 
 If you want to understand how the Freebase type provider work, or if you want to debug a 
 performance issue, it might be useful to see the requests that the provider sends to 
-Freebase. This can be done by subscribing to the `SendingRequest` event:
+Freebase. This can be done by subscribing to the `SendingQuery` and `SendingRequest` events.
+The former triggers for overall Freebase MQL queries and can be run in the [Freebase query editor](http://www.freebase.com/query).
+The latter triggers for individual REST requests including cursor-advancing requests and documentation requests.
 *)
+
+data.DataContext.SendingQuery.Add (fun e -> 
+  printfn "query: %A" e.QueryText)
 
 data.DataContext.SendingRequest.Add (fun e -> 
   printfn "request: %A" e.RequestUri)
