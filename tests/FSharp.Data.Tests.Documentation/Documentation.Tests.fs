@@ -70,7 +70,8 @@ for file in docFiles do
 [<Test>]
 [<TestCaseSource "docFiles">]
 let ``Documentation generated correctly `` file = 
-  processFile file
-  |> should equal ""
+  let errors = processFile file
+  if errors <> "" then
+    Assert.Fail("Found errors when processing file '" + file + "':\n" + errors)
 
 #endif
