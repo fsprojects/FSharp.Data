@@ -230,6 +230,7 @@ Target "Release" DoNothing
 "CleanDocs" ==> "GenerateDocsJa" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
+"SourceLink" ==> "NuGet"
 "NuGet" ==> "Release"
 
 // --------------------------------------------------------------------------------------
@@ -249,8 +250,9 @@ Target "Help" (fun _ ->
     printfn "  * GenerateDocs"
     printfn "  * ReleaseDocs (calls previous)"
     printfn "  * ReleaseBinaries"
+    printfn "  * SourceLink (requires autocrlf=false)"
     printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * Release (calls previous 4)"
+    printfn "  * Release (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
@@ -262,6 +264,5 @@ Target "All" DoNothing
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
-"Build" ==> "SourceLink" ==> "NuGet"
 
 RunTargetOrDefault "Help"
