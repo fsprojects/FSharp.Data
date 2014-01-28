@@ -213,7 +213,7 @@ let ``Currency symbols on decimal columns should work``() =
     row.Column1 : decimal |> should equal 66.92M
 
 [<Test>]
-let ``SafeMode works when inferRows limit is reached``() = 
+let ``AssumeMissingValues works when inferRows limit is reached``() = 
     let errorMessage =
         try
             (CsvProvider<"Data/AdWords.csv", InferRows=4>.GetSample().Rows
@@ -222,13 +222,13 @@ let ``SafeMode works when inferRows limit is reached``() =
     errorMessage |> should equal "Couldn't parse row 5 according to schema: Parent ID is missing"
 
     let rowWithMissingParentIdNullable = 
-        CsvProvider<"Data/AdWords.csv", InferRows=4, SafeMode=true>.GetSample().Rows
+        CsvProvider<"Data/AdWords.csv", InferRows=4, AssumeMissingValues=true>.GetSample().Data
         |> Seq.skip 4 |> Seq.head
     let parentId : Nullable<int> = rowWithMissingParentIdNullable.``Parent ID``
     parentId |> should equal null
 
     let rowWithMissingParentIdOptional = 
-        CsvProvider<"Data/AdWords.csv", InferRows=4, SafeMode=true, PreferOptionals=true>.GetSample().Rows
+        CsvProvider<"Data/AdWords.csv", InferRows=4, AssumeMissingValues=true, PreferOptionals=true>.GetSample().Data
         |> Seq.skip 4 |> Seq.head
     let parentId : Option<int> = rowWithMissingParentIdOptional.``Parent ID``
     parentId |> should equal None

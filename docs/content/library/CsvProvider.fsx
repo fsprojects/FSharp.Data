@@ -221,7 +221,7 @@ let mean =
 (**
 
 If the sample doesn't have missing values on all columns, but at runtime missing values could
-appear anywhere, you can set the static parameter `SafeMode` to `true` in order to force `CsvProvider` 
+appear anywhere, you can set the static parameter `AssumeMissingValues` to `true` in order to force `CsvProvider` 
 to assume missing values can occur in any column.
 
 ## Controlling the column types
@@ -240,7 +240,7 @@ so by default we won't generate a `string option`. If you prefer to use optional
 
 If you have other preferences, e.g. if you want a column to be a `float` instead of a `decimal`,
 you can override the default behaviour by specifying the types in the header column between braces, similar to what can be done to
-specify the units of measure. This will override both `SafeMode` and `PreferOptionals`. The valid types are:
+specify the units of measure. This will override both `AssumeMissingValues` and `PreferOptionals`. The valid types are:
 
 * `int`
 * `int?`
