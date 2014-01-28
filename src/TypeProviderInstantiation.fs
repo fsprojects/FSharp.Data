@@ -13,7 +13,7 @@ type CsvProviderArgs =
       Schema : string
       HasHeaders : bool
       IgnoreErrors : bool
-      SafeMode : bool
+      AssumeMissingValues : bool
       PreferOptionals : bool
       Quote : char
       MissingValues : string
@@ -68,7 +68,7 @@ type TypeProviderInstantiation =
                    box x.Schema
                    box x.HasHeaders
                    box x.IgnoreErrors
-                   box x.SafeMode
+                   box x.AssumeMissingValues
                    box x.PreferOptionals
                    box x.Quote
                    box x.MissingValues
@@ -114,7 +114,7 @@ type TypeProviderInstantiation =
              x.Culture
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
-             x.SafeMode.ToString()
+             x.AssumeMissingValues.ToString()
              x.PreferOptionals.ToString()]
         | Xml x -> 
             ["Xml"
@@ -150,7 +150,7 @@ type TypeProviderInstantiation =
                   Schema = args.[4].Replace(';', ',')
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
-                  SafeMode = args.[6] |> bool.Parse
+                  AssumeMissingValues = args.[6] |> bool.Parse
                   PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
                   MissingValues = String.Join(",", TextConversions.DefaultMissingValues)

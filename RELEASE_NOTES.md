@@ -123,3 +123,4 @@
 * IndividualsAZ view of Freebase individuals, which buckets the individuals by first character of name A-Z, with each bucket containing up to 10,000 individuals.
 * Added SendingQuery event which triggers for overall Freebase MQL queries and can be run in the Freebase query editor, instead of for individual REST requests including cursor-advancing requests and documentation requests.
 * Renamed CsvProvider Data property to Rows
+* Renamed CsvProvider static parameter "SafeMode" to "AssumeMissingValues"

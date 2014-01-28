@@ -136,7 +136,7 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture schema safeMode preferOptionals =
+let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture schema assumeMissingValues preferOptionals =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -227,13 +227,13 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
             yield rowsIterator.Current
         finally
           rowsIterator.Dispose()
-        if safeMode then
+        if assumeMissingValues then
           yield CsvRow(csv, Array.create headers.Length "")
       }
     else
       CsvRow(csv, Array.create headers.Length "") |> Seq.singleton 
   
-  let rows = if count > 0 then Seq.truncate (if safeMode && count < Int32.MaxValue then count + 1 else count) rows else rows
+  let rows = if count > 0 then Seq.truncate (if assumeMissingValues && count < Int32.MaxValue then count + 1 else count) rows else rows
 
   // Infer the type of collection using structural inference
   let types = 
@@ -344,9 +344,10 @@ type CsvFile with
     /// * missingValues - The set of strings recogized as missing values
     /// * culture - The culture used for parsing numbers and dates
     /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
+    /// * assumeMissingValues - Assumes all columns can have missing values
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
     /// * getUnitOfMeasure - optional function to resolve Units of Measure
-    member x.InferColumnTypes(inferRows, missingValues, culture, schema, safeMode, preferOptionals, ?getUnitOfMeasure) =
+    member x.InferColumnTypes(inferRows, missingValues, culture, schema, assumeMissingValues, preferOptionals, ?getUnitOfMeasure) =
         let tryGetUnit = defaultArg getUnitOfMeasure (fun (_:string) -> null:Type) 
-        inferType tryGetUnit x inferRows missingValues culture schema safeMode preferOptionals
+        inferType tryGetUnit x inferRows missingValues culture schema assumeMissingValues preferOptionals
         ||> getFields preferOptionals
