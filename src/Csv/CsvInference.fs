@@ -217,7 +217,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
-  let rowsIterator = csv.Data.GetEnumerator()
+  let rowsIterator = csv.Rows.GetEnumerator()
   let rows = 
     if rowsIterator.MoveNext() then
       seq {
