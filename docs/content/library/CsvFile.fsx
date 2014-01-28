@@ -29,13 +29,13 @@ points to a live CSV file on the Yahoo finance web site:
 let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT").Cache()
 
 // Print the prices in the HLOC format
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (**
 
 Note that unlike `CsvProvider`, `CsvFile` works in streaming mode for performance reasons, which means
-that `Data` can only be iterated once. If you need to iterate multiple times, use the `Cache` method, 
+that `Rows` can only be iterated once. If you need to iterate multiple times, use the `Cache` method, 
 but please note that this will increase memory usage and should not be used in large datasets.
 
 ## Using CSV extensions
@@ -62,7 +62,7 @@ The following example shows how to process the sample previous CSV sample using 
 
 open FSharp.Data.Csv.Extensions
 
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (**

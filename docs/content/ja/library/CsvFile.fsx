@@ -35,14 +35,14 @@ open FSharp.Data.Csv
 let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT").Cache()
 
 // HLOC形式で株価を表示
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (**
 
 `CsvProvider` とは異なり、 `CsvFile` はパフォーマンスを上げるために
 ストリーミングモードで動作します。
-つまり `Data` は1度だけしか走査できません。
+つまり `Rows` は1度だけしか走査できません。
 複数回走査する必要がある場合には `Cache` メソッドを使用することになります。
 ただしこのメソッドはメモリを多く使用するため、
 巨大なデータセットを処理する場合には使用すべきではありません。
@@ -75,7 +75,7 @@ for row in msft.Data do
 
 open FSharp.Data.Csv.Extensions
 
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (**
