@@ -111,10 +111,10 @@ type private ReentrantEnumerable<'T>(firstSeq:seq<'T>, nextSeq:unit -> seq<'T>) 
 // --------------------------------------------------------------------------------------
 
 /// [omit]
-type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, data:seq<'RowType>, headers, numberOfColumns, separators, quote) =
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
   /// The rows with data
-  member __.Data = data
+  member __.Rows = rows
   /// The names of the columns
   member __.Headers = headers
   member __.NumberOfColumns = numberOfColumns
@@ -216,7 +216,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     | Some headers -> headers |> writeLine writer.Write
     | None -> ()
 
-    for row in x.Data do
+    for row in x.Rows do
       row |> rowToStringArray.Invoke |> writeLine (fun item -> 
         if item.Contains separator then
           writer.Write quote
@@ -245,7 +245,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      writer.ToString()
 
   member inline private x.map f =
-    new CsvFile<'RowType>(rowToStringArray, null, x.Data |> f, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+    new CsvFile<'RowType>(rowToStringArray, null, f x.Rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
 
   /// Returns a new csv with the same rows as the original but which guarantees
   /// that each row will be only be read and parsed from the input at most once.

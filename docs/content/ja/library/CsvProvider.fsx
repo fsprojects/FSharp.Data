@@ -62,12 +62,12 @@ let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // 最新の行をチェックする。なお 'Date' プロパティは
 // 'DateTime' 型で、 'Open' プロパティは 'decimal' 型であることに注意
-let firstRow = msft.Data |> Seq.head
+let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
 
 // 株価を四本値形式で表示
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
 (**
@@ -97,7 +97,7 @@ open System
 open FSharp.Charting
 
 // 株価をビジュアル化
-[ for row in msft.Data -> row.Date, row.Open ]
+[ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
 
 (**
@@ -107,7 +107,7 @@ open FSharp.Charting
 
 // 先月の株価を四本値形式で取得
 let recent = 
-  [ for row in msft.Data do
+  [ for row in msft.Rows do
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
@@ -147,7 +147,7 @@ let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-for row in small.Data do
+for row in small.Rows do
   let speed = row.Distance / row.Time
   if speed > 15.0M<metre/second> then 
     printfn "%s (%A m/s)" row.Name speed
@@ -175,7 +175,7 @@ CSVの列区切り文字には代わりにセミコロン( `;` )が使われま�
 
 let airQuality = CsvProvider<"../../data/AirQuality.csv", ";">.GetSample()
 
-for row in airQuality.Data do
+for row in airQuality.Rows do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
@@ -200,12 +200,12 @@ let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true>.G
 
 // 原因名をコードで検索
 // (事故で負傷した自転車走者)
-let cause = mortalityNy.Data |> Seq.find (fun r -> 
+let cause = mortalityNy.Rows |> Seq.find (fun r -> 
   r.``Cause of death Code`` = "V13.4")
 
 // 負傷した走者数を出力
 printfn "原因: %s" cause.``Cause of death``
-for r in mortalityNy.Data do
+for r in mortalityNy.Rows do
   if r.``Cause of death Code`` = "V13.4" then 
     printfn "%s (%d 件)" r.County r.Count
 
@@ -235,7 +235,7 @@ for r in mortalityNy.Data do
 *)
 
 let mean = 
-  airQuality.Data 
+  airQuality.Rows 
   |> Seq.map (fun row -> row.Ozone) 
   |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
   |> Seq.average 
@@ -329,7 +329,7 @@ static引数 `PreferOptionals` を `true` にします。
 *)
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
-for row in csv.Data do
+for row in csv.Rows do
   printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
 (**
@@ -346,7 +346,7 @@ for row in csv.Data do
 *)
 
 let titanic1 = CsvProvider<"../../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
-for row in titanic1.Data do
+for row in titanic1.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -356,7 +356,7 @@ for row in titanic1.Data do
 *)
 
 let titanic2 = CsvProvider<"../../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
-for row in titanic2.Data do
+for row in titanic2.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
