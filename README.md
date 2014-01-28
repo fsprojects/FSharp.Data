@@ -4,10 +4,6 @@ The F# Data library (`FSharp.Data.dll`) implements everything you need to access
 and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and 
 for accessing the WorldBank and Freebase data. It also includes helpers for parsing JSON files and for sending HTTP requests.
 
-Build Status: 
-* Mono: [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
-* Windows: [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
-
 ## Documentation 
 
 One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 
@@ -28,7 +24,10 @@ solution before trying out the samples to ensure that all needed packages are in
 
 ## Building
 
-- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script (`build.cmd` on Windows or `./build.sh` on Unix)
+- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+
+* Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
+* Windows: Run *build.cmd* [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
 
 ## Library license
 
