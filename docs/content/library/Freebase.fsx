@@ -148,7 +148,6 @@ open FSharp.Data.FreebaseOperators
 data.Society.Government.``US Presidents``.Count()
 data.Society.Government.``US Presidents``.ApproximateCount()
 
-//data.``Science and Technology``.Computers.``Computer Scientists``.Individuals.``Simon Peyton Jones``.
 (**
 The `ApproximatelyMatches` operator can be used, for example, when working with strings.
 The following snippet searches for books that have a name _approximately matching_ the 
