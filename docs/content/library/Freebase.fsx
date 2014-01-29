@@ -164,6 +164,32 @@ topBooksWithNameContaining "1984" |> Seq.toList
 
 (**
 
+### Units of Measure
+
+Units of measure are supported. For example, the `Atomic mass` property of chemical elements
+is automatically converted to SI units and it is exposed in Kilograms. This is statically
+tracked in the F# type system using units of measure. 
+
+Here is an example from data about cyclones and hurricanes:
+*)
+
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
+let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
+
+// The type here is float<metre/second>, since the Freebase project uses normalized SI units
+let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
+
+(**
+We can convert this figure into 185 km/h like this:
+*)
+
+let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
+
+
+(**
+
 ## Advanced provider features
 
 The Freebase type provider has a number of features and it is beyond the scope of this 
@@ -183,9 +209,6 @@ summary, here is a list of features:
   Freebase database on a specific date (also meaning that your application will not break
   when the schema changes).
 * Optional client-side caching of schema information makes type checking quick and efficient
-* Units of measure are supported. For example, the `Atomic mass` property of chemical elements
-  is automatically converted to SI units and it is exposed in Kilograms. This is statically
-  tracked in the F# type system using units of measure.
 * If you want to query larger amount of Freebase data, you can register at Google and
   obtain a custom API key. The key can be passed as a static parameter to the type provider.
 

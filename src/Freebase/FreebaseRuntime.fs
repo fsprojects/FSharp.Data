@@ -185,7 +185,7 @@ module private RuntimeConversion =
 // This bias also extends to how the object is presented via ToString and the ICustomTypeDescriptor
 // property descriptions, since only the properties from 'firstType' are returned. 
 [<StructuredFormatDisplay("{DisplayText}")>]
-type internal FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebasePropertyBag, firstTypeId:FreebaseId) = 
+type FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebasePropertyBag, firstTypeId:FreebaseId) = 
     // Some properties are computed on-demand. This is a lookaside table for those properties.
     let objPropsOnDemand = Dictionary<string,obj>(HashIdentity.Structural)
 
@@ -196,10 +196,10 @@ type internal FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freeb
               | _ -> invalidArg "rawResult" "not a sequence"  }
 
     // This is the public entry point
-    member public fbo.GetPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
+    member internal fbo.GetPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
         fbo.GetPropertyById (declaringTypeId, propertyId, false) |> unbox
 
-    member public fbo.GetRequiredPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
+    member internal fbo.GetRequiredPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
         fbo.GetPropertyById (declaringTypeId, propertyId, true) |> unbox
 
     // Get a non-compund property. If it is eagerly populated then we fetch from 'objProps'
@@ -288,11 +288,13 @@ type internal FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freeb
     /// Images associated with this item. 
     member this.GetImages() = FreebaseImageInformation.GetImages(fb.Connection,this.MachineId)
 
-    /// The machine ID of this item
-    member internal this.MachineId = 
+    member this.Id = 
         match objProps.["/type/object/mid"] with 
-        | JsonValue.String s -> FreebaseMachineId(s) 
+        | JsonValue.String s -> s
         | _ -> failwith "id was not a string"
+
+    /// The machine ID of this item
+    member internal this.MachineId = FreebaseMachineId(this.Id) 
 
     /// The Name of this item
     member this.Name = match objProps.["/type/object/name"] with JsonValue.String s -> s | JsonValue.Null -> null |  _ -> failwith "name was not a string"

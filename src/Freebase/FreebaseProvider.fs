@@ -114,7 +114,8 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
            lazy 
               let allRealDomains = 
                   [ for domain in domains.Force() do
-                       yield (KnownDomain domain.DomainId, lazy (fbSchema.GetAllTypesInDomainSansProperties(domain.DomainId)) ) ]
+                       if not (String.IsNullOrWhiteSpace domain.DomainId.Id) then 
+                           yield (KnownDomain domain.DomainId, lazy (fbSchema.GetAllTypesInDomainSansProperties(domain.DomainId)) ) ]
               dict 
                 [ yield! allRealDomains
                   yield (UnknownDomain, 
@@ -142,7 +143,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             | KnownDomain fbDomainId -> fbDomainId.Id.TrimStart('/').Replace('/',' ') |> firstCap
 
         let pathToTypeForFreebaseTypeId (fbDomainId:FreebaseId, fbTypeId:FreebaseId) = 
-            let domainPath = [containerTypeNameForDomainTypes  (match fbDomainId.Id with null -> UnknownDomain | _ -> KnownDomain fbDomainId)]
+            let domainPath = [containerTypeNameForDomainTypes  (match fbDomainId.Id with null | "" -> UnknownDomain | _ -> KnownDomain fbDomainId)]
             let path, final = fbTypeId.Id.Split '/' |> List.ofArray |> List.frontAndBack 
             match path with
             | [] -> failwith "Unexpected 9078543"
@@ -489,7 +490,8 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             try
                 [ for domainCategory in domainCategories do
                     if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
-                      if not <| domainCategory.DomainCategoryId.Id.StartsWith("/user/") then
+                      if not (domainCategory.DomainCategoryId.Id.StartsWith("/user/")) &&
+                         not (domainCategory.Domains |> Array.forall (fun c -> c.DomainId.Id.StartsWith("/user/"))) then
                         let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
                         let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
                         t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
