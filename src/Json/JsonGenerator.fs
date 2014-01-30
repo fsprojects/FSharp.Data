@@ -225,19 +225,22 @@ module JsonTypeBuilder =
           | InferedMultiplicity.Single -> fun (Singleton jDoc) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
               let jDoc = ctx.Replacer.ToDesignTime jDoc
-              output.Converter <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, kindCode) @@>
+              let culture = ctx.Culture
+              output.Converter <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, culture, kindCode) @@>
           
           | InferedMultiplicity.Multiple -> 
               // Generate method that calls `GetArrayChildrenByTypeTag` 
               // (unlike the previous easy case, this needs to call conversion function
               // from the runtime similarly to options and arrays) 
               fun (Singleton jDoc) -> 
-                ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx)
+                let culture = ctx.Culture
+                ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (output.ConvertedTypeErased ctx) (jDoc, culture, kindCode, output.ConverterFunc ctx)
           
           | InferedMultiplicity.OptionalSingle -> 
               // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
               fun (Singleton jDoc) -> 
-                ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))
+                let culture = ctx.Culture
+                ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (output.ConvertedTypeErased ctx) (jDoc, culture, kindCode, output.ConverterFunc ctx))
 
     | InferedType.Heterogeneous types ->
 
@@ -248,5 +251,5 @@ module JsonTypeBuilder =
         generateMultipleChoiceType ctx input.ParentName types (fun multiplicity output kindCode ->
           assert (multiplicity = InferedMultiplicity.OptionalSingle)
           fun (Singleton jDoc) -> 
-            let jsonRuntime = ctx.Replacer.ToRuntime typeof<JsonRuntime>
-            jsonRuntime?TryGetValueByTypeTag (output.ConvertedTypeErased ctx) (jDoc, kindCode, output.ConverterFunc ctx))
+            let culture = ctx.Culture
+            ctx.JsonRuntimeType?TryGetValueByTypeTag (output.ConvertedTypeErased ctx) (jDoc, culture, kindCode, output.ConverterFunc ctx))

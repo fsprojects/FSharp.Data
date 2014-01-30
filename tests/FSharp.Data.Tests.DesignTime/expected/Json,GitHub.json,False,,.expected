@@ -190,13 +190,13 @@ class JsonProvider+User : FDR.IJsonDocument
 
 class JsonProvider+ColorChoice : FDR.IJsonDocument
     member Number: float option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("color", JsonRuntime.ConvertFloat("", "", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("color", JsonRuntime.ConvertFloat("", "", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("color", JsonRuntime.ConvertString("", value), value)))
 
 

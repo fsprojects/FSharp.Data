@@ -140,30 +140,30 @@ class JsonProvider+Geo : FDR.IJsonDocument
 
 class JsonProvider+InReplyToStatusIdChoice : FDR.IJsonDocument
     member Number: int64 option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_status_id", JsonRuntime.ConvertInteger64("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_status_id", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+InReplyToStatusIdStrChoice : FDR.IJsonDocument
     member Number: int64 option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_str", JsonRuntime.ConvertInteger64("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_str", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+InReplyToUserIdChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_user_id", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_user_id", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+InReplyToUserIdStrChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_str", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_str", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+Place : FDR.IJsonDocument
@@ -463,42 +463,42 @@ class JsonProvider+Hashtag : FDR.IJsonDocument
 
 class JsonProvider+InReplyToStatusIdChoice2 : FDR.IJsonDocument
     member Number: int64 option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_status_id", JsonRuntime.ConvertInteger64("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_status_id", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+InReplyToStatusIdStrChoice2 : FDR.IJsonDocument
     member Number: int64 option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_str", JsonRuntime.ConvertInteger64("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_status_id_str", JsonRuntime.ConvertInteger64("", value), value)))
 
 
 class JsonProvider+InReplyToUserIdChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_user_id", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_user_id", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+InReplyToUserIdStrChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_str", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("in_reply_to_user_id_str", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+LocationChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("location", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+Media : FDR.IJsonDocument
@@ -545,62 +545,62 @@ class JsonProvider+Media : FDR.IJsonDocument
 
 class JsonProvider+ProfileBackgroundColorChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileLinkColorChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileSidebarBorderColorChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileSidebarFillColorChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileTextColorChoice : FDR.IJsonDocument
     member Number: float option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertFloat("", "", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertFloat("", "", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+Status : FDR.IJsonDocument
@@ -809,9 +809,9 @@ class JsonProvider+UserMention : FDR.IJsonDocument
 
 class JsonProvider+UtcOffsetChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("utc_offset", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("utc_offset", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+Hashtag2 : FDR.IJsonDocument
@@ -869,62 +869,62 @@ class JsonProvider+Media2 : FDR.IJsonDocument
 
 class JsonProvider+ProfileBackgroundColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_background_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileLinkColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_link_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileSidebarBorderColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_border_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileSidebarFillColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_sidebar_fill_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+ProfileTextColorChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("profile_text_color", JsonRuntime.ConvertString("", value), value)))
 
 
 class JsonProvider+Sizes : FDR.IJsonDocument
@@ -985,9 +985,9 @@ class JsonProvider+UserMention2 : FDR.IJsonDocument
 
 class JsonProvider+UtcOffsetChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("utc_offset", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("utc_offset", JsonRuntime.ConvertInteger("", value), value)))
 
 
 class JsonProvider+Large : FDR.IJsonDocument

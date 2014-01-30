@@ -25,10 +25,10 @@ class JsonProvider
 
 class JsonProvider+WorldBankChoice : FDR.IJsonDocument
     member Array: JsonProvider+WorldBankChoice1of2[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "Array"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "", "Array"), new Func<_,_>(id)))
 
     member Record: JsonProvider+WorldBankChoice2of2 with get
-    JsonRuntime.GetArrayChildByTypeTag(this, "Record")
+    JsonRuntime.GetArrayChildByTypeTag(this, "", "Record")
 
 
 class JsonProvider+WorldBankChoice1of2 : FDR.IJsonDocument
@@ -90,8 +90,8 @@ class JsonProvider+Indicator : FDR.IJsonDocument
 
 class JsonProvider+ValueChoice : FDR.IJsonDocument
     member Number: decimal option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertDecimal("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertDecimal("", value), value)))
 
 

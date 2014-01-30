@@ -349,6 +349,6 @@ let ``Parsing of values wrapped in quotes should work on heterogenous values``()
 
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on arrays``() =
-    let objs = JsonProvider<"""["01/02/2000", "01/02/2001", "3", 4]""">.GetSample()
+    let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
     objs.GetDateTimes() |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
     objs.GetNumbers() |> should equal [| 3; 4 |]
