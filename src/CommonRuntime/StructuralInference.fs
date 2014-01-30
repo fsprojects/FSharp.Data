@@ -53,7 +53,7 @@ let typeTag = function
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
-      else failwith "inferCollectionType: Unknown primitive type"
+      else failwith "typeTag: Unknown primitive type"
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.

@@ -4696,50 +4696,50 @@ class ApiaryProvider+Keyword : FDR.IJsonDocument
 
 class ApiaryProvider+NameChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+NameChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("name", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+OriginalNameChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+OriginalNameChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_name", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+Poster : FDR.IJsonDocument
@@ -4854,9 +4854,9 @@ class ApiaryProvider+Rated : FDR.IJsonDocument
 
 class ApiaryProvider+ReleaseDateChoice6 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+Result11 : FDR.IJsonDocument
@@ -5221,14 +5221,14 @@ class ApiaryProvider+Youtube : FDR.IJsonDocument
 
 class ApiaryProvider+CertificationChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("certification", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("certification", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("certification", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("certification", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+Episode2 : FDR.IJsonDocument
@@ -5304,16 +5304,16 @@ class ApiaryProvider+Episode3 : FDR.InternalApiaryContext
 
 class ApiaryProvider+FirstAirDateChoice : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("first_air_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("first_air_date", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+FirstAirDateChoice2 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("first_air_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("first_air_date", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+Item : FDR.IJsonDocument
@@ -5358,105 +5358,105 @@ class ApiaryProvider+Item2 : FDR.IJsonDocument
 
 class ApiaryProvider+OriginalTitleChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+OriginalTitleChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("original_title", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+ReleaseDateChoice : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+ReleaseDateChoice2 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+ReleaseDateChoice3 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+ReleaseDateChoice4 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+ReleaseDateChoice5 : FDR.IJsonDocument
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                        let value = Some t.JsonValue
-                                                                        JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                            let value = Some t.JsonValue
+                                                                            JsonRuntime.GetNonOptionalValue("release_date", JsonRuntime.ConvertDateTime("", value), value)))
 
 
 class ApiaryProvider+TitleChoice : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+TitleChoice2 : FDR.IJsonDocument
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertInteger("", value), value)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("title", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+TvSeasonSeasonCredits : FDR.IJsonDocument
@@ -5709,22 +5709,22 @@ class ApiaryProvider+TvSeasonSeasonEpisodeEpisode : FDR.IJsonDocument
 
 class ApiaryProvider+ValueChoice : FDR.IJsonDocument
     member Boolean: bool option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                       let value = Some t.JsonValue
-                                                                       JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertBoolean("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                           let value = Some t.JsonValue
+                                                                           JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertBoolean("", value), value)))
 
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertInteger("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertInteger("", value), value)))
 
     member Record: ApiaryProvider+ValueChoice4of4 option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "Record", new Func<_,_>(id)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Record", new Func<_,_>(id)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "String", new Func<_,_>(fun (t:IJsonDocument) -> 
-                                                                      let value = Some t.JsonValue
-                                                                      JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertString("", value), value)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> 
+                                                                          let value = Some t.JsonValue
+                                                                          JsonRuntime.GetNonOptionalValue("value", JsonRuntime.ConvertString("", value), value)))
 
 
 class ApiaryProvider+TvSeasonSeasonEpisodeEpisodeCredits : FDR.IJsonDocument

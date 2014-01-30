@@ -86,7 +86,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
 type InferedTypeTag with
   member x.NiceName = 
     match x with
-    | Null -> failwith "Null nodes should be skipped."
+    | Null -> failwith "Null nodes should be skipped"
     | Number -> "Number"
     | Boolean -> "Boolean"
     | String -> "String"
@@ -115,6 +115,7 @@ type InferedTypeTag with
     | "Guid" -> Guid
     | "Array" -> Collection
     | "Choice" -> Heterogeneous
+    | "Null" -> failwith "Null nodes should be skipped"
     | _ -> failwith "Invalid InferredTypeTag code"
 
 /// Dummy type to represent that only "0" was found.

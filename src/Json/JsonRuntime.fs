@@ -126,16 +126,32 @@ type JsonRuntime =
 
   /// Returns all array values that match the specified tag
   /// (Follows the same pattern as ConvertXyz functions above)
-  static member GetArrayChildrenByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
-    let tag = InferedTypeTag.ParseCode tag
-    let matchesTag = function
-      | JsonValue.Null -> false
-      | JsonValue.Boolean _ -> tag = InferedTypeTag.Boolean
-      | JsonValue.Number _ -> tag = InferedTypeTag.Number
-      | JsonValue.Float _ -> tag = InferedTypeTag.Number
-      | JsonValue.Array _ -> tag = InferedTypeTag.Collection
-      | JsonValue.Object _ -> tag = InferedTypeTag.Record None
-      | JsonValue.String _ -> tag = InferedTypeTag.String
+  static member GetArrayChildrenByTypeTag<'T>(doc:IJsonDocument, culture, tag, mapping:Func<IJsonDocument,'T>) =     
+    let matchesTag =
+        match InferedTypeTag.ParseCode tag with
+        | InferedTypeTag.Number -> 
+            let culture = TextRuntime.GetCulture culture
+            fun json -> (JsonConversions.AsDecimal culture json).IsSome ||
+                        (JsonConversions.AsFloat [| |] (*useNoneForMissingValues*)true culture json).IsSome
+        | InferedTypeTag.Boolean -> 
+            let culture = TextRuntime.GetCulture culture
+            JsonConversions.AsBoolean culture >> Option.isSome
+        | InferedTypeTag.String -> 
+            let culture = TextRuntime.GetCulture culture
+            JsonConversions.AsString (*useNoneForNullOrEmpty*)true culture >> Option.isSome
+        | InferedTypeTag.DateTime -> 
+            let culture = TextRuntime.GetCulture culture
+            JsonConversions.AsDateTime culture >> Option.isSome
+        | InferedTypeTag.Guid -> 
+            JsonConversions.AsGuid >> Option.isSome
+        | InferedTypeTag.Collection -> 
+            function JsonValue.Array _ -> true | _ -> false
+        | InferedTypeTag.Record _ -> 
+            function JsonValue.Object _ -> true | _ -> false
+        | InferedTypeTag.Null -> 
+            failwith "Null type not supported"
+        | InferedTypeTag.Heterogeneous -> 
+            failwith "Heterogeneous type not supported"
     match doc.JsonValue with
     | JsonValue.Array ar ->
         ar 
@@ -144,20 +160,20 @@ type JsonRuntime =
     | _ -> failwith "JSON mismatch: Expected Array node"
 
   /// Returns single or no value from an array matching the specified tag
-  static member TryGetArrayChildByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
-    match JsonRuntime.GetArrayChildrenByTypeTag(doc, tag, mapping) with
+  static member TryGetArrayChildByTypeTag<'T>(doc, culture, tag, mapping:Func<IJsonDocument,'T>) = 
+    match JsonRuntime.GetArrayChildrenByTypeTag(doc, culture, tag, mapping) with
     | [| the |] -> Some the
     | [| |] -> None
     | _ -> failwith "JSON mismatch: Expected Array with single or no elements."
 
   /// Returns a single array children that matches the specified tag
-  static member GetArrayChildByTypeTag(doc:IJsonDocument, tag:string) = 
-    match JsonRuntime.GetArrayChildrenByTypeTag(doc, tag, Func<_,_>(id)) with
+  static member GetArrayChildByTypeTag(doc, culture, tag) = 
+    match JsonRuntime.GetArrayChildrenByTypeTag(doc, culture, tag, Func<_,_>(id)) with
     | [| the |] -> the
     | _ -> failwith "JSON mismatch: Expected single value, but found multiple."
 
   /// Returns a single or no value by tag type
-  static member TryGetValueByTypeTag<'T>(doc:IJsonDocument, tag:string, mapping:Func<IJsonDocument,'T>) = 
+  static member TryGetValueByTypeTag<'T>(doc:IJsonDocument, culture, tag, mapping:Func<IJsonDocument,'T>) = 
     // Build a fake array and reuse `GetArrayChildByTypeTag`
     let arrayValue = JsonValue.Array [| doc.JsonValue |] |> doc.CreateNew
-    JsonRuntime.TryGetArrayChildByTypeTag(arrayValue, tag, mapping)
+    JsonRuntime.TryGetArrayChildByTypeTag(arrayValue, culture, tag, mapping)

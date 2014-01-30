@@ -338,3 +338,17 @@ let ``Can parse ISO 8601 dates in the specified culture``() =
     dates.Birthdate.Month |> should equal 1
     let dates = JsonProvider<"""{"birthdate": "01/02/2000"}""", Culture="pt-PT">.GetSample()
     dates.Birthdate.Month |> should equal 2
+
+[<Test>]
+let ``Parsing of values wrapped in quotes should work on heterogenous values``() =
+    let objs = JsonProvider<"""[{"a": "01/02/2000"}, {"a" : "3"}]""">.GetSamples()
+    objs.[0].A.DateTime |> should equal (Some (DateTime(2000,01,02)))
+    objs.[0].A.Number |> should equal None
+    objs.[1].A.DateTime |> should equal None
+    objs.[1].A.Number |> should equal (Some 3)
+
+[<Test>]
+let ``Parsing of values wrapped in quotes should work on arrays``() =
+    let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
+    objs.GetDateTimes() |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
+    objs.GetNumbers() |> should equal [| 3; 4 |]
