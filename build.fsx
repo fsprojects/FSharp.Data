@@ -4,12 +4,14 @@
 
 #I "packages/FAKE/tools/"
 #r "FakeLib.dll"
+#load "packages/SourceLink.Fake/tools/Fake.fsx"
 
 open System
 open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
+open SourceLink
 
 // --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
@@ -127,6 +129,27 @@ FinalTarget "CloseTestRunner" (fun _ ->
 )
 
 // --------------------------------------------------------------------------------------
+// Source link the pdb files
+
+Target "SourceLink" (fun _ ->
+    #if MONO
+    ()
+    #else
+    use repo = new GitRepo(__SOURCE_DIRECTORY__)
+    !! "src/*.fsproj" 
+    |> Seq.iter (fun f ->
+        let proj = VsProj.LoadRelease f
+        logfn "source linking %s" proj.OutputFilePdb
+        let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
+        repo.VerifyChecksums files
+        proj.VerifyPdbChecksums files
+        proj.CreateSrcSrv "https://raw.github.com/fsharp/FSharp.Data/{0}/%var2%" repo.Revision (repo.Paths files)
+        Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
+    )
+    #endif
+)
+
+// --------------------------------------------------------------------------------------
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
@@ -207,6 +230,7 @@ Target "Release" DoNothing
 "CleanDocs" ==> "GenerateDocsJa" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
+"SourceLink" ==> "NuGet"
 "NuGet" ==> "Release"
 
 // --------------------------------------------------------------------------------------
@@ -226,8 +250,9 @@ Target "Help" (fun _ ->
     printfn "  * GenerateDocs"
     printfn "  * ReleaseDocs (calls previous)"
     printfn "  * ReleaseBinaries"
+    printfn "  * SourceLink (requires autocrlf=false)"
     printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * Release (calls previous 4)"
+    printfn "  * Release (calls previous 5)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
