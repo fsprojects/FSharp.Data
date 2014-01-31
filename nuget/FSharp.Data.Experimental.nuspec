@@ -28,23 +28,23 @@
     </references>
   </metadata>
   <files>
-    <file src="..\bin\FSharp.Data.Experimental.dll" target="lib/net40" />
-    <file src="..\bin\FSharp.Data.Experimental.pdb" target="lib/net40" />
-    <file src="..\bin\FSharp.Data.Experimental.xml" target="lib/net40" />
-    <file src="..\bin\FSharp.Data.Experimental.DesignTime.dll" target="lib/net40" />
-    <file src="..\bin\FSharp.Data.Experimental.DesignTime.pdb" target="lib/net40" />
-    <file src="..\bin\FSharp.Data.Experimental.DesignTime.xml" target="lib/net40" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.dll" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.pdb" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.xml" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable47\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.dll" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.pdb" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.xml" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net45+win8" />
-    <file src="..\bin\portable7\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.dll" target="lib/net40" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.pdb" target="lib/net40" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.xml" target="lib/net40" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.dll" target="lib/net40" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.pdb" target="lib/net40" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.xml" target="lib/net40" />
+    <file src="..\src\bin\portable47\Release\FSharp.Data.Experimental.dll" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\portable47\Release\FSharp.Data.Experimental.pdb" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\portable47\Release\FSharp.Data.Experimental.xml" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net40+sl5+wp8+win8" />
+    <file src="..\src\bin\portable7\Release\FSharp.Data.Experimental.dll" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\portable7\Release\FSharp.Data.Experimental.pdb" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\portable7\Release\FSharp.Data.Experimental.xml" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.dll" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.pdb" target="lib/portable-net45+win8" />
+    <file src="..\src\bin\Release\FSharp.Data.Experimental.DesignTime.xml" target="lib/portable-net45+win8" />
   </files>
 </package>
