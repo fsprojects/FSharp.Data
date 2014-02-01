@@ -130,4 +130,4 @@
 #### 2.0.0-alpha5 - Unreleased
 * Renamed the 'FSharp.Data.Json.Extensions' module to 'FSharp.Data.JsonExtensions'.
 * Renamed the 'FSharp.Data.Csv.Extensions' module to 'FSharp.Data.CsvExtensions'.
-* Moved content of the 'FSharp.Data.Net', 'FSharp.Data.Csv', and 'FSharp.Data.Json' namespaces to the 'FSharp.Data' namespace.
+* Moved the contents of the 'FSharp.Net', 'FSharp.Data.Csv', and 'FSharp.Data.Json' namespaces to the 'FSharp.Data' namespace.
