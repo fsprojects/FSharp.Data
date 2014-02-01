@@ -87,7 +87,7 @@ let ``Can create type for small document``() =
 
 [<Test>]
 let ``CsvFile.Rows is re-entrant if the underlying stream is``() =
-  let csv = Csv.CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
+  let csv = CsvFile.Load(Path.Combine(__SOURCE_DIRECTORY__, "Data/SmallTest.csv"))
   let twice = [ yield! csv.Rows; yield! csv.Rows ]
   twice |> Seq.length |> should equal 6
 

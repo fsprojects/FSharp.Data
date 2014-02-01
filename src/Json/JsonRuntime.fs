@@ -7,8 +7,8 @@ open System
 open System.ComponentModel
 open System.Globalization
 open System.IO
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.StructuralTypes
 
 #nowarn "10001"

@@ -7,8 +7,8 @@ namespace ProviderImplementation
 open System
 open System.Globalization
 open Microsoft.FSharp.Quotations
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.ProvidedTypes

@@ -2,7 +2,7 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Net
+namespace FSharp.Data
 
 open System
 open System.IO

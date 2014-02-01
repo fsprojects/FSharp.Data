@@ -17,10 +17,9 @@ open System.Diagnostics
 open System.IO
 open System.Net 
 open System.Collections.Generic
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
-open FSharp.Net
 
 [<AutoOpen>]
 module Utilities = 

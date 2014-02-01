@@ -15,10 +15,10 @@ To load a sample CSV document, we first need to reference the `FSharp.Data.dll` 
 *)
 
 #r "../../../bin/FSharp.Data.dll"
-open FSharp.Data.Csv
+open FSharp.Data
 
 (**
-The `FSharp.Data.Csv` namespace contains the `CsvFile` type that provides two static methods
+The `FSharp.Data` namespace contains the `CsvFile` type that provides two static methods
 for loading data. The `Parse` method can be used if we have the data in a `string` value.
 The `Load` method allows reading the data from a file or from a web resource (and there's
 also an asynchronous `AsyncLoad` version). The following sample calls `Load` with a URL that
@@ -41,7 +41,7 @@ but please note that this will increase memory usage and should not be used in l
 ## Using CSV extensions
 
 Now we look at a number of extensions that become available after 
-opening the `FSharp.Data.Csv.Extensions` namespace. Once opened, we can write:
+opening the `FSharp.Data.CsvExtensions` namespace. Once opened, we can write:
 
  * `row?column` uses the dynamic operator to obtain the column value named `column`;
     alternatively, you can also use an indexer `row.[column]`.
@@ -60,7 +60,7 @@ Methods that may need to parse a numeric value or date (such as `AsFloat` and
 The following example shows how to process the sample previous CSV sample using these extensions:
 *)
 
-open FSharp.Data.Csv.Extensions
+open FSharp.Data.CsvExtensions
 
 for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())

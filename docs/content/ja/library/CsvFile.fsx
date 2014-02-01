@@ -19,10 +19,10 @@ F#の [CSV 型プロバイダー](CsvProvider.html) はF#で作成された
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Data.Csv
+open FSharp.Data
 
 (**
-`FSharp.Data.Csv` 名前空間には `CsvFile` 型が含まれていて、
+`FSharp.Data` 名前空間には `CsvFile` 型が含まれていて、
 この型ではデータの読み取り用に2つのstaticメソッドが公開されています。
 `Parse` メソッドはデータを `string` 型の値として指定できます。
 `Load` メソッドはデータをファイルあるいはWeb上のリソースから読み取ることができます
@@ -49,7 +49,7 @@ for row in msft.Rows do
 
 ## CSV の拡張機能を使用する
 
-ここでは `FSharp.Data.Csv.Extensions` 名前空間をオープンすることで
+ここでは `FSharp.Data.CsvExtensions` 名前空間をオープンすることで
 使用できるようになる拡張機能について説明します。
 この名前空間をオープンすると以下のような記述ができるようになります：
 
@@ -73,7 +73,7 @@ for row in msft.Rows do
 これらの拡張メソッドを呼び出しています：
 *)
 
-open FSharp.Data.Csv.Extensions
+open FSharp.Data.CsvExtensions
 
 for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())

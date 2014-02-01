@@ -4,7 +4,7 @@ module FSharp.Data.Runtime.CsvInference
 open System
 open System.IO
 open System.Text.RegularExpressions
-open FSharp.Data.Csv
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference

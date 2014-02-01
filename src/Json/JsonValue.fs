@@ -7,13 +7,12 @@
 // A simple F# portable parser for JSON data
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Json
+namespace FSharp.Data
 
 open System
 open System.IO
 open System.Text
 open System.Globalization
-open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO

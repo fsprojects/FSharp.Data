@@ -19,13 +19,13 @@ Initialization
 --------------
 
 We will be using the LINQ to XML API (available in `System.Xml.Linq.dll`) and the
-`JsonValue` which is available in the `FSharp.Data.Json` namespace:
+`JsonValue` which is available in the `FSharp.Data` namespace:
 *)
 
 #r "System.Xml.Linq.dll"
 #r "../../../bin/FSharp.Data.dll"
 open System.Xml.Linq
-open FSharp.Data.Json
+open FSharp.Data
 
 (**
 

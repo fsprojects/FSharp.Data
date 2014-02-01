@@ -10,8 +10,8 @@ open NUnit.Framework
 open System
 open System.Globalization
 open System.Threading
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FsUnit
 
 [<Test>]

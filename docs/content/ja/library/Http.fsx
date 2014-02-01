@@ -25,7 +25,7 @@ F# Dataライブラリにはオーバーロードを持った4つのメソッド
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Net
+open FSharp.Data
 
 (**
 ## 単純なリクエストの送信

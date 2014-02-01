@@ -19,8 +19,8 @@ open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open System
 open System.Collections.Generic
 open System.Text
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 
 [<AutoOpen>]
 module Utilities = 

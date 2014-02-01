@@ -21,10 +21,10 @@ F# Dataでは値を動的にアクセスできるようにするための単純�
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Data.Json
+open FSharp.Data
 
 (**
-`FShapr.Data.Json` 名前空間にある `JsonValue` 型を使うと、
+`FSharp.Data` 名前空間にある `JsonValue` 型を使うと、
 以下のようにしてJSON形式の文字列をパースできます：
 *)
 
@@ -40,7 +40,7 @@ let info =
 ## JSON用拡張機能を使用する
 
 ここではすべての機能を紹介しません。
-その代わり、 `FSharp.Data.Json.Extensions` 名前空間をオープンすることで
+その代わり、 `FSharp.Data.JsonExtensions` 名前空間をオープンすることで
 利用できるようになるいくつかの拡張機能について説明します。
 この名前空間をオープンすると、以下のような記述ができるようになります：
 
@@ -73,7 +73,7 @@ let info =
 以下のコードはサンプルで指定したJSONの値を処理する方法の一例です：
 *)
 
-open FSharp.Data.Json.Extensions
+open FSharp.Data.JsonExtensions
 
 // 名前と誕生日を表示
 let n = info?name
