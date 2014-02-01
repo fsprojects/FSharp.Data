@@ -1,6 +1,6 @@
 ﻿/// Unsafe extension methods that can be used to work with CsvRow in a less safe, but shorter way.
 /// This module also provides the dynamic operator.
-module FSharp.Data.Csv.Extensions
+module FSharp.Data.CsvExtensions
 
 open System
 open System.Globalization

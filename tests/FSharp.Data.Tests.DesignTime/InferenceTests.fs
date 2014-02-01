@@ -12,9 +12,8 @@ module FSharp.Data.Tests.DesignTime.InferenceTests
 open FsUnit
 open System
 open System.IO
-open FSharp.Data.Json
 open NUnit.Framework
-open FSharp.Data.Csv
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference

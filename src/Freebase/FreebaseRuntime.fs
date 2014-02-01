@@ -14,8 +14,8 @@ open System.Linq
 open System.Text
 open System.Collections.Generic
 open Microsoft.FSharp.Core.CompilerServices
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 

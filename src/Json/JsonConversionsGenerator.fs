@@ -6,7 +6,7 @@ module ProviderImplementation.JsonConversionsGenerator
 
 open System
 open Microsoft.FSharp.Quotations
-open FSharp.Data.Json
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.QuotationBuilder

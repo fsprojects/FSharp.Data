@@ -1,6 +1,6 @@
 ﻿/// Unsafe extension methods that can be used to work with JsonValue in a less safe, but shorter way.
 /// This module also provides the dynamic operator.
-module FSharp.Data.Json.Extensions
+module FSharp.Data.JsonExtensions
 
 open System
 open System.Globalization

@@ -5,8 +5,7 @@
 namespace FSharp.Data.Runtime
 
 open System
-open FSharp.Data.Json
-open FSharp.Net
+open FSharp.Data
 
 module internal ApiaryUtils =
   let formatHeaders headers = 

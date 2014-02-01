@@ -8,7 +8,7 @@ module FSharp.Data.Runtime.IO
 open System
 open System.IO
 open System.Net
-open FSharp.Net
+open FSharp.Data
 
 type internal UriResolutionType =
     | DesignTime

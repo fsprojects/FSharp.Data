@@ -2,7 +2,7 @@
 // Untyped CSV api
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Csv
+namespace FSharp.Data
 
 open System
 open System.Globalization

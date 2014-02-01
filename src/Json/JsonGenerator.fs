@@ -6,7 +6,6 @@ namespace ProviderImplementation
 open System
 open Microsoft.FSharp.Quotations
 open FSharp.Data
-open FSharp.Data.Json
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.JsonInference
@@ -63,7 +62,7 @@ type internal JsonGenerationOutput =
 
 module JsonTypeBuilder = 
   
-  open FSharp.Data.Json.Extensions
+  open FSharp.Data.JsonExtensions
   let (?) = QuotationBuilder.(?)
 
   /// Common code that is shared by code generators that generate 
