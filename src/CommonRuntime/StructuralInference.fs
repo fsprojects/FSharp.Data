@@ -206,10 +206,10 @@ let inferCollectionType allowNulls types =
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
-let inferPrimitiveType culture (value : string) unit =
+let inferPrimitiveType cultureInfo (value : string) unit =
 
   // Helper for calling TextConversions.AsXyz functions
-  let (|Parse|_|) func value = func culture value
+  let (|Parse|_|) func value = func cultureInfo value
 
   let asGuid _ value = TextConversions.AsGuid value
 

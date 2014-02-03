@@ -28,16 +28,18 @@ type OperationArguments =
 
 /// Underlying representation of the generated JSON types
 [<StructuredFormatDisplay("{JsonValue}")>]
-type ApiaryDocument private (json:JsonValue, context:InternalApiaryContext option) =
+type ApiaryDocument private (json:JsonValue, path:string, context:InternalApiaryContext option) =
 
-  new(json, context) = ApiaryDocument(json, Some context)
-  new(json) = ApiaryDocument(json, None)
+  new(json, path, context) = ApiaryDocument(json, path, Some context)
+  new(json, path) = ApiaryDocument(json, path, None)
 
   member x.JsonValue = json
+  member x.Path = path
 
   interface IJsonDocument with 
     member x.JsonValue = x.JsonValue
-    member x.CreateNew json = upcast ApiaryDocument json
+    member x.Path = x.Path
+    member x.CreateNew(json, pathIncrement) = upcast ApiaryDocument(json, x.Path + pathIncrement)
 
   member x.Context = context.Value
 
@@ -83,7 +85,7 @@ and InternalApiaryContext private
 
         // Create context that captures all arguments already specified
         let context = InternalApiaryContext(rootUrl, globalQuery, globalHeaders, allArguments)
-        return ApiaryDocument(JsonValue.Parse(res), context)
+        return ApiaryDocument(JsonValue.Parse(res), "", context)
       else
         return failwith "Only GET supported" }
 

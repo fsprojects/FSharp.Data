@@ -11,41 +11,69 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.QuotationBuilder
 
-let getConversionQuotation missingValues culture typ (value:Expr<JsonValue option>) =
-  if typ = typeof<string> then <@@ JsonRuntime.ConvertString(culture, %value) @@>
-  elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ JsonRuntime.ConvertInteger(culture, %value) @@>
-  elif typ = typeof<int64> then <@@ JsonRuntime.ConvertInteger64(culture, %value) @@>
-  elif typ = typeof<decimal> then <@@ JsonRuntime.ConvertDecimal(culture, %value) @@>
-  elif typ = typeof<float> then <@@ JsonRuntime.ConvertFloat(culture, missingValues, %value) @@>
-  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(culture, %value) @@>
-  elif typ = typeof<DateTime> then <@@ JsonRuntime.ConvertDateTime(culture, %value) @@>
+let getConversionQuotation missingValues cultureStr typ (value:Expr<JsonValue option>) =
+  if typ = typeof<string> then <@@ JsonRuntime.ConvertString(cultureStr, %value) @@>
+  elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ JsonRuntime.ConvertInteger(cultureStr, %value) @@>
+  elif typ = typeof<int64> then <@@ JsonRuntime.ConvertInteger64(cultureStr, %value) @@>
+  elif typ = typeof<decimal> then <@@ JsonRuntime.ConvertDecimal(cultureStr, %value) @@>
+  elif typ = typeof<float> then <@@ JsonRuntime.ConvertFloat(cultureStr, missingValues, %value) @@>
+  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(cultureStr, %value) @@>
+  elif typ = typeof<DateTime> then <@@ JsonRuntime.ConvertDateTime(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ JsonRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"
 
+type JsonConversionCallingType = 
+    JsonDocument | JsonValueOption | JsonValueOptionAndPath
+
 /// Creates a function that takes Expr<JsonValue option> and converts it to 
 /// an expression of other type - the type is specified by `field`
-let convertJsonValue (replacer:AssemblyReplacer) missingValues culture (field:PrimitiveInferedProperty) = 
+let convertJsonValue (replacer:AssemblyReplacer) missingValues cultureStr canPassAllConversionCallingTypes (field:PrimitiveInferedProperty) = 
 
   assert (field.TypeWithMeasure = field.RuntimeType)
+  assert (field.Name = "")
 
-  let returnTyp = 
+  let returnType = 
     match field.TypeWrapper with
     | TypeWrapper.None -> field.RuntimeType
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.RuntimeType
     | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.RuntimeType
-
-  let convert (value:Expr<JsonValue option>) =
-    let convert value = 
-      getConversionQuotation missingValues culture field.InferedType value
-    match field.TypeWrapper with
-    | TypeWrapper.None ->
-        //prevent value being calculated twice
-        let var = Var("value", typeof<JsonValue option>)
-        let varExpr = Expr.Cast<JsonValue option> (Expr.Var var)
-        let body = typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (field.Name, convert varExpr, varExpr)
-        Expr.Let(var, value, body)
-    | TypeWrapper.Option -> convert value
-    | TypeWrapper.Nullable -> typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert value)
     |> replacer.ToRuntime
 
-  returnTyp, convert
+  let wrapInLetIfNeeded (value:Expr) getBody =
+    match value with
+    | Patterns.Var var ->
+        let varExpr = Expr.Cast<'T> (Expr.Var var)
+        getBody varExpr
+    | _ ->
+        let var = Var("value", typeof<'T>)
+        let varExpr = Expr.Cast<'T> (Expr.Var var)
+        Expr.Let(var, value, getBody varExpr)
+
+  let convert (value:Expr) =
+    let convert value = 
+      getConversionQuotation missingValues cultureStr field.InferedType value
+    match field.TypeWrapper, canPassAllConversionCallingTypes with
+    | TypeWrapper.None, true ->
+        wrapInLetIfNeeded value <| fun (varExpr:Expr<JsonValueOptionAndPath>) ->
+          typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path @>, convert <@ (%varExpr).JsonOpt @>, <@ (%varExpr).JsonOpt @>)
+    | TypeWrapper.None, false ->
+        wrapInLetIfNeeded value <| fun (varExpr:Expr<IJsonDocument>) ->
+          typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>)
+    | TypeWrapper.Option, true ->
+        convert <@ (%%value:JsonValue option) @>
+    | TypeWrapper.Option, false ->
+        convert <@ Some (%%value:IJsonDocument).JsonValue @>
+    | TypeWrapper.Nullable, true -> 
+        typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ (%%value:JsonValue option) @>)
+    | TypeWrapper.Nullable, false -> 
+        typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ Some (%%value:IJsonDocument).JsonValue @>)
+    |> replacer.ToRuntime
+
+  let conversionCallingType =
+    if canPassAllConversionCallingTypes then
+        match field.TypeWrapper with
+        | TypeWrapper.None -> JsonValueOptionAndPath
+        | TypeWrapper.Option | TypeWrapper.Nullable -> JsonValueOption
+    else JsonDocument
+
+  returnType, convert, conversionCallingType

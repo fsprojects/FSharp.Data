@@ -29,8 +29,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     let sample = args.[0] :?> string
     let separators = args.[1] :?> string
-    let culture = args.[2] :?> string
-    let cultureInfo = TextRuntime.GetCulture culture
+    let cultureStr = args.[2] :?> string
+    let cultureInfo = TextRuntime.GetCulture cultureStr
     let inferRows = args.[3] :?> int
     let schema = args.[4] :?> string
     let hasHeaders = args.[5] :?> bool
@@ -73,7 +73,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, culture) replacer 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, cultureStr) replacer 
   
       { GeneratedType = csvType
         RepresentationType = csvType

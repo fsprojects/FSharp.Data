@@ -91,7 +91,7 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncOpenStream (invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) = async {
+let internal asyncOpenStream (_invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) = async {
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     let! stream = Http.InnerRequest(uri.OriginalString, fun _ _ _ _ _ _ stream -> stream)
@@ -103,7 +103,7 @@ let internal asyncOpenStream (invalidate:((unit->unit)*(IDisposable->unit)) opti
     // Open the file, even if it is already opened by another application
     // unlike in the web case, we don't consume the whole file into memory first
     let file = File.Open(uri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
-    invalidate |> Option.iter (watchForChanges uri)
+    _invalidate |> Option.iter (watchForChanges uri)
     return file :> Stream
 #endif
 }

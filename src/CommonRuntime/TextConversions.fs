@@ -44,25 +44,25 @@ type TextConversions =
   static member AsString str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
-  static member AsInteger culture text = 
-    Int32.TryParse(text, NumberStyles.Integer, culture) |> asOption
+  static member AsInteger cultureInfo text = 
+    Int32.TryParse(text, NumberStyles.Integer, cultureInfo) |> asOption
   
-  static member AsInteger64 culture text = 
-    Int64.TryParse(text, NumberStyles.Integer, culture) |> asOption
+  static member AsInteger64 cultureInfo text = 
+    Int64.TryParse(text, NumberStyles.Integer, cultureInfo) |> asOption
   
-  static member AsDecimal culture text =
-    Decimal.TryParse(text, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, culture) |> asOption
+  static member AsDecimal cultureInfo text =
+    Decimal.TryParse(text, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, cultureInfo) |> asOption
   
   /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
-  static member AsFloat missingValues useNoneForMissingValues culture (text:string) = 
+  static member AsFloat missingValues useNoneForMissingValues cultureInfo (text:string) = 
     match text.Trim() with
     | OneOf missingValues -> if useNoneForMissingValues then None else Some Double.NaN
-    | _ -> Double.TryParse(text, NumberStyles.Float, culture)
+    | _ -> Double.TryParse(text, NumberStyles.Float, cultureInfo)
            |> asOption
            |> Option.bind (fun f -> if useNoneForMissingValues && Double.IsNaN f then None else Some f)
   
-  //culture is ignored for now, but might not be in the future, so we're keeping in in the API
-  static member AsBoolean (_culture:IFormatProvider) (text:string) =     
+  // cultureInfo is ignored for now, but might not be in the future, so we're keeping in in the API
+  static member AsBoolean (_cultureInfo:IFormatProvider) (text:string) =     
     match text.Trim() with
     | StringEquals "true" | StringEquals "yes" | StringEquals "1" -> Some true
     | StringEquals "false" | StringEquals "no" | StringEquals "0" -> Some false
@@ -71,7 +71,7 @@ type TextConversions =
   /// Parse date time using either the JSON milliseconds format or using ISO 8601
   /// that is, either "\/Date(<msec-since-1/1/1970>)\/" or something
   /// along the lines of "2013-01-28T00:37Z"
-  static member AsDateTime culture (text:string) =
+  static member AsDateTime cultureInfo (text:string) =
     // Try parse "Date(<msec>)" style format
     let matchesMS = msDateRegex.Value.Match (text.Trim())
     if matchesMS.Success then
@@ -82,7 +82,7 @@ type TextConversions =
     else
       // Parse ISO 8601 format, fixing time zone if needed
       let dateTimeStyles = DateTimeStyles.AllowWhiteSpaces ||| DateTimeStyles.RoundtripKind
-      match DateTime.TryParse(text, culture, dateTimeStyles) with
+      match DateTime.TryParse(text, cultureInfo, dateTimeStyles) with
       | true, d ->
           if d.Kind = DateTimeKind.Unspecified then 
             new DateTime(d.Ticks, DateTimeKind.Local) |> Some

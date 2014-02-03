@@ -1,5 +1,6 @@
 ﻿namespace ProviderImplementation
 
+open System
 open System.IO
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
@@ -29,32 +30,30 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let rootName = args.[2] :?> string
-    let culture = args.[3] :?> string
+    let cultureStr = args.[3] :?> string
     let resolutionFolder = args.[4] :?> string
 
-    let cultureInfo = TextRuntime.GetCulture culture
+    let cultureInfo = TextRuntime.GetCulture cultureStr
     let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
     let parseList _ value = JsonValue.Parse(value, cultureInfo).AsArray() :> seq<_>
     
     let getSpecFromSamples samples = 
 
       let inferedType = 
-        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowNulls*)true sampleJson ]
+        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowNulls*)true (NameUtils.singularize rootName) sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
   
-      let ctx = JsonGenerationContext.Create(culture, tpType, replacer)
-      let input = { ParentName = NameUtils.singularize rootName
-                    ParentJsonName = ""
-                    CanPassUnpackedOption = false
+      let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
+      let input = { CanPassAllConversionCallingTypes = false
                     Optional = false }
       let output = JsonTypeBuilder.generateJsonType ctx input inferedType
 
       { GeneratedType = tpType
         RepresentationType = output.ConvertedType
         CreateFromTextReader = fun reader -> 
-          <@@ JsonDocument.Create(%reader, culture) @@> |> output.Converter
+          output.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          <@@ JsonDocument.CreateList(%reader, culture) @@> |> output.Converter }
+          output.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateConstructors "JSON" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 
@@ -72,7 +71,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     """<summary>Typed representation of a JSON document</summary>
        <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
        <param name='SampleIsList'>If true, sample should be a list of individual samples for the inference.</param>
-       <param name='RootName'>The name to be used to the root type. Defaults to 'Entity'.</param>
+       <param name='RootName'>The name to be used to the root type. Defaults to 'Root'.</param>
        <param name='Culture'>The culture used for parsing numbers and dates.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 

@@ -1,36 +1,36 @@
 class JsonProvider
-    static member AsyncGetSample: () -> JsonProvider+Entity async
+    static member AsyncGetSample: () -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SimpleArray.json"), f)
 
-    static member AsyncLoad: uri:string -> JsonProvider+Entity async
+    static member AsyncLoad: uri:string -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
 
-    static member GetSample: () -> JsonProvider+Entity
+    static member GetSample: () -> JsonProvider+Root
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "SimpleArray.json")), "")
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+Entity
+    static member Load: stream:System.IO.Stream -> JsonProvider+Root
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+Entity
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Root
     JsonDocument.Create(reader, "")
 
-    static member Load: uri:string -> JsonProvider+Entity
+    static member Load: uri:string -> JsonProvider+Root
     JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
 
-    static member Parse: text:string -> JsonProvider+Entity
+    static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-class JsonProvider+Entity : FDR.IJsonDocument
+class JsonProvider+Root : FDR.IJsonDocument
     member Items: JsonProvider+Item[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "items"), new Func<_,_>(id)))
 
 
 class JsonProvider+Item : FDR.IJsonDocument
     member Id: string with get
-    let value = JsonRuntime.TryGetPropertyUnpacked(this, "id")
-    JsonRuntime.GetNonOptionalValue("id", JsonRuntime.ConvertString("", value), value)
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
