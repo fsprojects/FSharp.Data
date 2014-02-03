@@ -95,7 +95,7 @@ type JsonValue with
   /// (assuming that the value is an object)
   member x.Properties = 
     match x with
-    | JsonValue.Object map -> Map.toSeq map |> Seq.sortBy fst
+    | JsonValue.Object map -> Map.toSeq map
     | _ -> failwithf "Not an object - %A" x
 
   /// Try get property of a JSON object. Returns None if the value is not

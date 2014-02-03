@@ -23,24 +23,29 @@ type IJsonDocument =
 
 /// [omit]
 /// Underlying representation of the generated JSON types
+[<StructuredFormatDisplay("{_Print}")>]
 type JsonDocument = 
 
-  // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
-  // (but since this is used across multiple files, we have explicit Create method)
-  { JsonValue : JsonValue
-    Path : string }
+  private { Json : JsonValue
+            Path : string }
 
   interface IJsonDocument with 
-    member x.JsonValue = x.JsonValue
+    member x.JsonValue = x.Json
     member x.Path = x.Path
     member x.CreateNew(value, pathIncrement) = 
         JsonDocument.Create(value, x.Path + pathIncrement)
+
+  member x.JsonValue = x.Json
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  member x._Print = x.Json.ToString()
 
   /// Creates a JsonDocument representing the specified value
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   static member Create(value, path) = 
-    { JsonValue = value
+    { Json = value
       Path = path } :> IJsonDocument
 
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]

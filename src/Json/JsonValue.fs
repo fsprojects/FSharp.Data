@@ -17,6 +17,13 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO
 
+/// Specifies the formatting behaviour of JSON values
+type SaveOptions = 
+  /// Format (indent) the JsonValue
+  | None = 0
+  /// Print the JsonValue in one line in a compact way
+  | DisableFormatting = 1
+
 /// Represents a JSON value. Large numbers that do not fit in the 
 /// Decimal type are represented using the Float case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
@@ -30,9 +37,16 @@ type JsonValue =
   | Boolean of bool
   | Null
 
-  override this.ToString() = 
+  override x.ToString() = x.ToString(SaveOptions.None)
 
-    let rec serialize (sb:StringBuilder) = function
+  member x.ToString saveOptions = 
+
+    let rec serialize (sb:StringBuilder) indentation json =
+      let newLine plus =
+        if saveOptions = SaveOptions.None then
+          sb.AppendLine() |> ignore
+          System.String(' ', indentation + plus) |> sb.Append |> ignore
+      match json with
       | Null -> sb.Append "null"
       | Boolean b -> sb.Append(if b then "true" else "false")
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
@@ -42,20 +56,32 @@ type JsonValue =
       | Object properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
-          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, _)) -> k) do
+          let getOrder = function
+            | JsonValue.Array _ -> 2
+            | JsonValue.Object _ -> 1
+            | _ -> 0
+          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
-            sb.AppendFormat("\"{0}\":", k)  |> ignore
-            serialize sb v |> ignore
+            newLine 2
+            if saveOptions = SaveOptions.None then
+              sb.AppendFormat("\"{0}\": ", k) |> ignore
+            else
+              sb.AppendFormat("\"{0}\":", k) |> ignore
+            serialize sb (indentation + 2) v |> ignore
+          newLine 0
           sb.Append "}"
       | Array elements -> 
           let isNotFirst = ref false
           sb.Append "[" |> ignore
           for element in elements do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
-            serialize sb element |> ignore
+            newLine 2
+            serialize sb (indentation + 2) element |> ignore
+          if elements.Length > 0 then 
+            newLine 0
           sb.Append "]"
 
-    (serialize (new StringBuilder()) this).ToString()
+    (serialize (new StringBuilder()) 0 x).ToString()
 
 // --------------------------------------------------------------------------------------
 // JSON parser
