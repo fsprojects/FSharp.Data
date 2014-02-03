@@ -16,6 +16,7 @@ open ProviderImplementation.ProvidedTypes
 type internal ApiaryGenerationContext =
   { TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
+    // to nameclash type names
     UniqueNiceName : string -> string 
     ApiName : string 
     ApiaryContextSelector : Expr -> Expr<InternalApiaryContext> }
@@ -49,15 +50,13 @@ module internal ApiaryTypeBuilder =
             let source = example?body.InnerText
             yield JsonValue.Parse source ]
     let input = 
-      { ParentName = name
-        ParentJsonName = ""
-        Optional = false
-        CanPassUnpackedOption = false }
+      { Optional = false
+        CanPassAllConversionCallingTypes = false }
     let output =
-      [ for item in samples -> JsonInference.inferType CultureInfo.InvariantCulture (*allowNulls*)true item ]
+      [ for item in samples -> JsonInference.inferType CultureInfo.InvariantCulture (*allowNulls*)true name item ]
       |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) InferedType.Top
       |> JsonTypeBuilder.generateJsonType ctx.JsonContext input
-    output.ConvertedType, output.Converter
+    output.ConvertedType, output.GetConverter ctx.JsonContext
 
   let ensureGeneratedType ctx parentName (entityTy:Type) = 
     match entityTy with

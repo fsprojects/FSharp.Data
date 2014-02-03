@@ -18,10 +18,10 @@ type private FieldInfo =
 
 module internal CsvTypeBuilder =
 
-  let generateTypes asm ns typeName (missingValues, culture) replacer inferredFields =
+  let generateTypes asm ns typeName (missingValues, cultureStr) replacer inferredFields =
     
     let fields = inferredFields |> List.mapi (fun index field ->
-      let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues culture field
+      let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues cultureStr field
       { TypeForTuple = typWithoutMeasure
         Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
         Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>

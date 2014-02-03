@@ -17,23 +17,24 @@ open ProviderImplementation.QuotationBuilder
 
 /// Context that is used to generate the XML types.
 type internal XmlGenerationContext =
-  { Culture : string
+  { CultureStr : string
     TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer
+    // to nameclash type names
     UniqueNiceName : string -> string 
     UnifyGlobally : bool
     GeneratedResults : IDictionary<string, System.Type * (Expr -> Expr)> }
-  static member Create(culture, tpType, unifyGlobally, replacer) =
+  static member Create(cultureStr, tpType, unifyGlobally, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     uniqueNiceName "XElement" |> ignore
-    { Culture = culture
+    { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer
       GeneratedResults = new Dictionary<_, _>()
       UnifyGlobally = unifyGlobally
       UniqueNiceName = uniqueNiceName }
   member x.ConvertValue prop =
-    let typ, _, conv, _ = ConversionsGenerator.convertStringValue x.Replacer "" x.Culture prop
+    let typ, _, conv, _ = ConversionsGenerator.convertStringValue x.Replacer "" x.CultureStr prop
     typ, conv
 
 module internal XmlTypeBuilder = 
@@ -102,12 +103,16 @@ module internal XmlTypeBuilder =
     // elements of different names). Otherwise, heterogeneous types appear only as child nodes
     // of an element (handled similarly below)
     | HeterogeneousRecords(cases) ->
+
         // Generate new choice type for the element
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
         ctx.TypeProviderType.AddMember(objectTy)
 
-        // For each case, add property of optional type
+        // to nameclash property names
         let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
+        makeUnique "XElement" |> ignore
+
+        // For each case, add property of optional type
         [ for nameWithNS, case in cases ->
             let name = XName.Get(nameWithNS).LocalName
             let childTy, childConv = generateXmlType ctx case
@@ -124,6 +129,7 @@ module internal XmlTypeBuilder =
 
     // If the node is more complicated, then we generate a type to represent it properly
     | InferedType.Record(Some nameWithNS, props) -> 
+
         let name = XName.Get(nameWithNS).LocalName
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
         ctx.TypeProviderType.AddMember(objectTy)
@@ -137,6 +143,7 @@ module internal XmlTypeBuilder =
         let attrs, content =
           props |> List.partition (fun prop -> prop.Name <> "")
 
+        // to nameclash property names
         let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
         makeUnique "XElement" |> ignore
 
@@ -151,13 +158,13 @@ module internal XmlTypeBuilder =
               // the attribute is always optional)
               let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(ctx.Replacer.ToRuntime typeof<option<string>>), HideObjectMethods = true)
               ctx.TypeProviderType.AddMember(choiceTy)
-              for KeyValue(kind, typ) in types do 
+              for KeyValue(tag, typ) in types do 
                 match typ with
                 | InferedType.Null -> ()
                 | InferedType.Primitive(primTyp, _) ->
                     // Conversion function takes 'option<string>' to the required type
-                    let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(kind.NiceName, primTyp, true)
-                    let p = ProvidedProperty(kind.NiceName, typ)
+                    let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true)
+                    let p = ProvidedProperty(tag.NiceName, typ)
                     p.GetterCode <- fun (Singleton attrVal) -> 
                       let attrVal = ctx.Replacer.ToDesignTime attrVal
                       conv <@ %%attrVal:string option @>
@@ -191,7 +198,7 @@ module internal XmlTypeBuilder =
         match content with 
         | [ContentType(primitives, nodes)] ->
 
-            // For every possible primitive type add '<Kind>Value' property that 
+            // For every possible primitive type add '<Tag>Value' property that 
             // returns it converted to the right type (or an option)
             for primitive in primitives do 
               match primitive with 

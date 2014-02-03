@@ -8,40 +8,40 @@ open FSharp.Data.Runtime
   
 type String with
 
-  member x.AsInteger(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match TextConversions.AsInteger culture x with
+  member x.AsInteger(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsInteger cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int - %s" x
 
-  member x.AsInteger64(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match TextConversions.AsInteger64 culture x with
+  member x.AsInteger64(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsInteger64 cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int64 - %s" x
 
-  member x.AsDecimal(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match TextConversions.AsDecimal culture x with
+  member x.AsDecimal(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsDecimal cultureInfo x with
     | Some d -> d
     | _ -> failwithf "Not a decimal - %s" x
 
-  member x.AsFloat(?culture, ?missingValues) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
+  member x.AsFloat(?cultureInfo, ?missingValues) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-    match TextConversions.AsFloat missingValues (*useNoneForMissingValues*)false culture x with
+    match TextConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
     | Some f -> f
     | _ -> failwithf "Not a float - %s" x
 
-  member x.AsBoolean(?culture) =
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match TextConversions.AsBoolean culture x with
+  member x.AsBoolean(?cultureInfo) =
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsBoolean cultureInfo x with
     | Some b -> b
     | _ -> failwithf "Not a boolean - %s" x
 
-  member x.AsDateTime(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match TextConversions.AsDateTime culture x with 
+  member x.AsDateTime(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
+    match TextConversions.AsDateTime cultureInfo x with 
     | Some d -> d
     | _ -> failwithf "Not a datetime - %s" x
 

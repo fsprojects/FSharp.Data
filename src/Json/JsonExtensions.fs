@@ -26,53 +26,53 @@ type JsonValue with
 
   /// Get the string value of an element (assuming that the value is a scalar)
   /// Returns the empty string for JsonValue.Null
-  member x.AsString(?culture) =
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false culture x with
+  member x.AsString(?cultureInfo ) =
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x with
     | Some s -> s
     | _ -> failwithf "Not a string - %A" x  
 
   /// Get a number as an integer (assuming that the value fits in integer)
-  member x.AsInteger(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsInteger culture x with
+  member x.AsInteger(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsInteger cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int - %A" x  
 
   /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
-  member x.AsInteger64(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsInteger64 culture x with
+  member x.AsInteger64(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsInteger64 cultureInfo x with
     | Some i -> i
     | _ -> failwithf "Not an int64 - %A" x  
 
   /// Get a number as a decimal (assuming that the value fits in decimal)
-  member x.AsDecimal(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsDecimal culture x with
+  member x.AsDecimal(?cultureInfo ) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsDecimal cultureInfo x with
     | Some d -> d
     | _ -> failwithf "Not a decimal - %A" x
 
   /// Get a number as a float (assuming that the value is convertible to a float)
-  member x.AsFloat(?culture, ?missingValues) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
+  member x.AsFloat(?cultureInfo, ?missingValues) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
-    match JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)false culture x with
+    match JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
     | Some f -> f
     | _ -> failwithf "Not a float - %A" x
 
   /// Get the boolean value of an element (assuming that the value is a boolean)
-  member x.AsBoolean(?culture) =
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsBoolean culture x with
+  member x.AsBoolean(?cultureInfo) =
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsBoolean cultureInfo x with
     | Some b -> b
     | _ -> failwithf "Not a boolean - %A" x
 
   /// Get the datetime value of an element (assuming that the value is a string
   /// containing well-formed ISO date or MSFT JSON date)
-  member x.AsDateTime(?culture) = 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
-    match JsonConversions.AsDateTime culture x with
+  member x.AsDateTime(?cultureInfo) = 
+    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
+    match JsonConversions.AsDateTime cultureInfo x with
     | Some d -> d
     | _ -> failwithf "Not a datetime - %A" x
 

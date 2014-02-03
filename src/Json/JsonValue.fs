@@ -61,9 +61,9 @@ type JsonValue =
 // JSON parser
 // --------------------------------------------------------------------------------------
 
-type private JsonParser(jsonText:string, culture:CultureInfo option) =
+type private JsonParser(jsonText:string, cultureInfo) =
 
-    let culture = defaultArg culture CultureInfo.InvariantCulture
+    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
     let mutable i = 0
     let s = jsonText
@@ -72,7 +72,7 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
     let skipWhitespace() =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
-    let decimalSeparator = culture.NumberFormat.NumberDecimalSeparator.[0]
+    let decimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
     let isNumChar c = 
       Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
     let throw() = 
@@ -144,10 +144,10 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match TextConversions.AsDecimal culture (s.Substring(start,len)) with  
+        match TextConversions.AsDecimal cultureInfo (s.Substring(start,len)) with  
         | Some x -> JsonValue.Number x
         | _ -> 
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false culture (s.Substring(start,len)) with  
+            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo (s.Substring(start,len)) with  
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
@@ -211,29 +211,29 @@ type private JsonParser(jsonText:string, culture:CultureInfo option) =
 type JsonValue with
 
   /// Parses the specified JSON string
-  static member Parse(text, ?culture) = 
-    JsonParser(text, culture).Parse()
+  static member Parse(text, ?cultureInfo) = 
+    JsonParser(text, cultureInfo).Parse()
 
   /// Loads JSON from the specified stream
-  static member Load(stream:Stream, ?culture) = 
+  static member Load(stream:Stream, ?cultureInfo) = 
     use reader = new StreamReader(stream)
     let text = reader.ReadToEnd()
-    JsonParser(text, culture).Parse()
+    JsonParser(text, cultureInfo).Parse()
 
   /// Loads JSON from the specified reader
-  static member Load(reader:TextReader, ?culture) = 
+  static member Load(reader:TextReader, ?cultureInfo) = 
     let text = reader.ReadToEnd()
-    JsonParser(text, culture).Parse()
+    JsonParser(text, cultureInfo).Parse()
 
   /// Loads JSON from the specified uri  asynchronously
-  static member AsyncLoad(uri:string, ?culture) = async {
+  static member AsyncLoad(uri:string, ?cultureInfo) = async {
     let! reader = asyncReadTextAtRuntime false "" "" uri
     let text = reader.ReadToEnd()
-    return JsonParser(text, culture).Parse()
+    return JsonParser(text, cultureInfo).Parse()
   }
 
   /// Loads JSON from the specified uri
-  static member Load(uri:string, ?culture) =
-    JsonValue.AsyncLoad(uri, ?culture=culture)
+  static member Load(uri:string, ?cultureInfo) =
+    JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
