@@ -13,7 +13,6 @@ open System
 open System.IO
 open System.Text
 open System.Globalization
-open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO
@@ -268,5 +267,5 @@ type JsonValue with
   member x.Post(uri:string) =  
     Http.Request(
       uri,
-      body=RequestBody.Text(x.ToString()),
+      body=RequestBody.Text(x.ToString(SaveOptions.DisableFormatting)),
       headers=["Content-Type","application/json"])

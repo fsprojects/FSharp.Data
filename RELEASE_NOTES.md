@@ -134,3 +134,6 @@
 * Reuse identical types in JsonProvider.
 * Improve JsonProvider error messages to include full path of the json part that caused the problem.
 * JsonValue.ToString() now formats (indents) the output by default (can be turned off by using SaveOptions.DisableFormatting).
+
+#### 2.0.0-alpha6 - February 4 2014
+* JsonValue.Post() allows to post the JSON to the specified uri using HTTP
