@@ -11,12 +11,17 @@ open System.Globalization
 
 /// [omit]
 /// Underlying representation of the generated XML types
+[<StructuredFormatDisplay("{_Print}")>]
 type XmlElement = 
   
   // NOTE: Using a record here to hide the ToString, GetHashCode & Equals
   // (but since this is used across multiple files, we have explicit Create method)
   { XElement : XElement }
   
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  member x._Print = x.XElement.ToString()
+
   /// Creates a XmlElement representing the specified value
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
