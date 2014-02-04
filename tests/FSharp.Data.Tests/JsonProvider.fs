@@ -1,9 +1,9 @@
-﻿module FSharp.Data.Tests.JsonProvider
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.JsonProvider
 #endif
 
 open NUnit.Framework
@@ -352,3 +352,24 @@ let ``Parsing of values wrapped in quotes should work on arrays``() =
     let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
     objs.GetDateTimes() |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
     objs.GetNumbers() |> should equal [| 3; 4 |]
+
+[<Literal>]
+let jsonSample = """[{"Facts": [{"Description": "sdfsdfsdfsdfs",
+                            "Name": "sdfsdf",
+                            "Unit": "kg",
+                            "Value": "89.00"}],
+                "Name" : "sdfsdf"},
+                {"Facts": [{"Description": "sdfsdfsdfsdfs",
+                            "Name": "ddd",
+                            "Value": "sdfsdfs"}]}]"""
+
+[<Test>]
+let ``Test error messages``() =    
+    let j = JsonProvider<jsonSample>.Parse """[{"Facts": [{"Name": "foo"}]}]"""
+    let errorMessage = 
+        try
+            j.[0].Facts.[0].Value |> ignore
+            ""
+        with e ->
+            e.Message
+    errorMessage |> should equal """Property 'Value' not found at '[0]/Facts[0]': {"Name":"foo"}"""

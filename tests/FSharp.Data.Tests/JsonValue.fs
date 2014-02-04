@@ -1,9 +1,9 @@
-﻿module FSharp.Data.Tests.JsonValue
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.JsonValue
 #endif
 
 open NUnit.Framework
@@ -218,3 +218,23 @@ let ``Can serialize document with array, null and number``() =
     let text = "{\"items\":[{\"id\":\"Open\"},null,{\"id\":25}]}"
     let json = JsonValue.Parse text
     json.ToString(SaveOptions.DisableFormatting) |> should equal text
+
+[<Test>]
+let ``Pretty printing works``() =
+    let text = """{"items":[{"id":"Open"},null,{"id":25}],"x":{"y":2},"z":[]}"""
+    let json = JsonValue.Parse text
+    json.ToString() |> should equal """{
+  "x": {
+    "y": 2
+  },
+  "items": [
+    {
+      "id": "Open"
+    },
+    null,
+    {
+      "id": 25
+    }
+  ],
+  "z": []
+}"""
