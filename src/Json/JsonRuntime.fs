@@ -114,13 +114,18 @@ type JsonRuntime =
   /// If the originalValue is a scalar, for missing strings we return "", and for missing doubles we return NaN
   /// For other types an error is thrown
   static member GetNonOptionalValue<'T>(path:string, opt:option<'T>, originalValue) : 'T = 
+    let getTypeName() = 
+        let name = typeof<'T>.Name
+        if name.StartsWith "int" 
+        then "an " + name
+        else "a " + name
     match opt, originalValue with 
     | Some value, _ -> value
-    | None, (Some (JsonValue.Array _ | JsonValue.Object _)) -> failwithf "Expecting %s at '%s', got %O" (typeof<'T>.Name) path originalValue
+    | None, Some ((JsonValue.Array _ | JsonValue.Object _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(SaveOptions.DisableFormatting)
     | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
     | None, _ when typeof<'T> = typeof<float> -> Double.NaN |> unbox
     | None, None -> failwithf "'%s' is missing" path
-    | None, Some originalValue -> failwithf "Expecting %s at '%s', got %O" (typeof<'T>.Name) path originalValue
+    | None, Some x -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(SaveOptions.DisableFormatting)
 
   /// Converts JSON array to array of target types
   static member ConvertArray<'T>(doc:IJsonDocument, mapping:Func<IJsonDocument,'T>) = 
@@ -129,11 +134,13 @@ type JsonRuntime =
         elements 
         |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
     | JsonValue.Null -> [| |]
-    | x -> failwithf "Expecting an array at '%s', got %O" doc.Path x
+    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(SaveOptions.DisableFormatting)
 
   /// Get json property and wrap in json document
   static member GetPropertyPacked(doc:IJsonDocument, name) =
-    doc.CreateNew(doc.JsonValue.GetProperty(name), "/" + name) 
+    match JsonRuntime.TryGetPropertyPacked(doc, name) with
+    | Some doc -> doc
+    | None -> failwithf "Property '%s' not found at '%s': %s" name doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
 
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
@@ -189,20 +196,20 @@ type JsonRuntime =
         |> Array.filter (JsonRuntime.Matches cultureStr (InferedTypeTag.ParseCode tagCode))
         |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
     | JsonValue.Null -> [| |]
-    | x -> failwithf "Expecting an array at '%s', got %O" doc.Path x
+    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(SaveOptions.DisableFormatting)
 
   /// Returns single or no value from an array matching the specified tag
   static member TryGetArrayChildByTypeTag<'T>(doc, cultureStr, tagCode, mapping:Func<IJsonDocument,'T>) = 
     match JsonRuntime.GetArrayChildrenByTypeTag(doc, cultureStr, tagCode, mapping) with
     | [| child |] -> Some child
     | [| |] -> None
-    | _ -> failwithf "Expecting an array with single or no elements at '%s', got %O" doc.Path doc.JsonValue
+    | _ -> failwithf "Expecting an array with single or no elements at '%s', got %s" doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
 
   /// Returns a single array children that matches the specified tag
   static member GetArrayChildByTypeTag(doc, cultureStr, tagCode) = 
     match JsonRuntime.GetArrayChildrenByTypeTag(doc, cultureStr, tagCode, Func<_,_>(id)) with
     | [| child |] -> child
-    | _ -> failwithf "Expecting an array with single element at '%s', got %O" doc.Path doc.JsonValue
+    | _ -> failwithf "Expecting an array with single element at '%s', got %s" doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
 
   /// Returns a single or no value by tag type
   static member TryGetValueByTypeTag<'T>(doc:IJsonDocument, cultureStr, tagCode, mapping:Func<IJsonDocument,'T>) = 

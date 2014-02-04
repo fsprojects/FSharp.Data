@@ -4,14 +4,14 @@
 
 #I "packages/FAKE/tools/"
 #r "FakeLib.dll"
-#load "packages/SourceLink.Fake/tools/Fake.fsx"
 
 open System
 open System.IO
 open Fake 
 open Fake.AssemblyInfoFile
 open Fake.Git
-open SourceLink
+
+Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 
 // --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
@@ -40,7 +40,6 @@ let gitHome = "https://github.com/fsharp"
 let gitName = "FSharp.Data"
 
 // Read release notes & version info from RELEASE_NOTES.md
-Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 let release = 
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
@@ -131,10 +130,16 @@ FinalTarget "CloseTestRunner" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
 
+#if MONO
+
+Target "SourceLink" (fun _ -> ())
+
+#else
+
+#load "packages/SourceLink.Fake/tools/Fake.fsx"
+open SourceLink
+
 Target "SourceLink" (fun _ ->
-    #if MONO
-    ()
-    #else
     use repo = new GitRepo(__SOURCE_DIRECTORY__)
     !! "src/*.fsproj" 
     |> Seq.iter (fun f ->
@@ -146,8 +151,12 @@ Target "SourceLink" (fun _ ->
         proj.CreateSrcSrv "https://raw.github.com/fsharp/FSharp.Data/{0}/%var2%" repo.Revision (repo.Paths files)
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     )
-    #endif
+    CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
+    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
+    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.*.DesignTime.*")
 )
+#endif
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -230,7 +239,6 @@ Target "Release" DoNothing
 "CleanDocs" ==> "GenerateDocsJa" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
-"SourceLink" ==> "NuGet"
 "NuGet" ==> "Release"
 
 // --------------------------------------------------------------------------------------
@@ -250,12 +258,15 @@ Target "Help" (fun _ ->
     printfn "  * GenerateDocs"
     printfn "  * ReleaseDocs (calls previous)"
     printfn "  * ReleaseBinaries"
-    printfn "  * SourceLink (requires autocrlf=false)"
     printfn "  * NuGet (creates package only, doesn't publish)"
-    printfn "  * Release (calls previous 5)"
+    printfn "  * Release (calls previous 4)"
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
+#if MONO
+#else
+    printfn "  * SourceLink (requires autocrlf=false)"
+#endif
     printfn "")
 
 Target "All" DoNothing
