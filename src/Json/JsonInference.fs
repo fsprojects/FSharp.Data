@@ -32,7 +32,13 @@ let rec inferType cultureInfo allowNulls parentName json =
   // More interesting types 
   | JsonValue.Array ar -> StructuralInference.inferCollectionType allowNulls (Seq.map (inferType cultureInfo allowNulls (NameUtils.singularize parentName)) ar)
   | JsonValue.Object o ->
+      let name = 
+        if String.IsNullOrEmpty parentName 
+        then None 
+        else Some parentName
       let props = 
-        [ for KeyValue(k, v) in o -> 
-            { Name = k; Optional = false; Type = inferType cultureInfo allowNulls k v } ]      
-      InferedType.Record((if String.IsNullOrEmpty parentName then None else Some parentName), props)
+        [ for k, v in o |> Map.toArray |> Array.sortBy fst -> 
+            { Name = k
+              Optional = false
+              Type = inferType cultureInfo allowNulls k v } ]
+      InferedType.Record(name, props)
