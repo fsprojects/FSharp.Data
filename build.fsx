@@ -7,7 +7,7 @@
 
 #if MONO
 #else
-#load "packages/SourceLink.Fake/tools/Fake.fsx"
+#load "packages/SourceLink.Fake/tools/SourceLink.fsx"
 #endif
 
 open System
