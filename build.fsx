@@ -74,7 +74,7 @@ Target "AssemblyInfo" (fun _ ->
 // Clean build results
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin"]
+    !! "**/bin/" ++ "**/obj/" |> CleanDirs 
 )
 
 Target "CleanDocs" (fun _ ->

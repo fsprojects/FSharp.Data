@@ -92,14 +92,5 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target> -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable7" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable7" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable7" />
-  </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
