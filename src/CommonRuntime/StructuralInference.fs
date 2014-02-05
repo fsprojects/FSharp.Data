@@ -204,6 +204,25 @@ let inferCollectionType allowNulls types =
       tag, (multiple, Seq.fold (subtypeInfered allowNulls) InferedType.Top types) )
   |> Map.ofSeq |> InferedType.Collection
 
+[<AutoOpen>]
+module private Helpers =
+
+  open System.Text.RegularExpressions
+
+  let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+    RegexOptions.None
+#else
+    RegexOptions.Compiled
+#endif
+  let wordRegex = lazy Regex("\\w+", regexOptions)
+
+  let numberOfNumberGroups value = 
+    wordRegex.Value.Matches value
+    |> Seq.cast
+    |> Seq.choose (fun (x:Match) -> TextConversions.AsInteger CultureInfo.InvariantCulture x.Value)
+    |> Seq.length
+
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
 let inferPrimitiveType cultureInfo (value : string) unit =
@@ -222,9 +241,16 @@ let inferPrimitiveType cultureInfo (value : string) unit =
   | Parse TextConversions.AsDecimal _ -> InferedType.Primitive(typeof<decimal>, unit)
   | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> InferedType.Primitive(typeof<float>, unit)
   | Parse asGuid _ -> InferedType.Primitive(typeof<Guid>, unit)
-  | Parse TextConversions.AsDateTime _ 
-        // If this can be considered a decimal under the invariant culture, 
-        // it's a safer bet to consider it a string than a DateTime
-        when TextConversions.AsDecimal CultureInfo.InvariantCulture value = None -> 
-      InferedType.Primitive(typeof<DateTime>, unit)
+  | Parse TextConversions.AsDateTime date ->
+
+      // If this can be considered a decimal under the invariant culture, 
+      // it's a safer bet to consider it a string than a DateTime
+      if TextConversions.AsDecimal CultureInfo.InvariantCulture value |> Option.isSome then
+          InferedType.Primitive(typeof<string>, unit)
+      // Prevent stuff like 12-002 being considered a date
+      elif date.Year < 1000 && numberOfNumberGroups value <> 3 then
+         InferedType.Primitive(typeof<string>, unit)
+      else
+        InferedType.Primitive(typeof<DateTime>, unit)
+
   | _ -> InferedType.Primitive(typeof<string>, unit)
