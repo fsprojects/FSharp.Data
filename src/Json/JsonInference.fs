@@ -37,8 +37,9 @@ let rec inferType cultureInfo allowNulls parentName json =
         then None 
         else Some parentName
       let props = 
-        [ for k, v in o |> Map.toArray |> Array.sortBy fst -> 
-            { Name = k
+        [ for propName, value in o |> Map.toArray |> Array.sortBy fst -> 
+            let t = inferType cultureInfo allowNulls propName value
+            { Name = propName
               Optional = false
-              Type = inferType cultureInfo allowNulls k v } ]
+              Type = t } ]
       InferedType.Record(name, props)

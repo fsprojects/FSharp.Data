@@ -201,7 +201,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     member Instructors: int[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Name: JsonProvider+IntOrStringOrDateTime with get
+    member Name: JsonProvider+IntOrString with get
     JsonRuntime.GetPropertyPacked(this, "name")
 
     member NotifiedSubscribers: bool with get
@@ -423,10 +423,7 @@ class JsonProvider+DecimalChoice : FDR.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))
 
 
-class JsonProvider+IntOrStringOrDateTime : FDR.IJsonDocument
-    member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
-
+class JsonProvider+IntOrString : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 

@@ -354,3 +354,14 @@ let ``Inference schema override by parameter``() =
   let expected = [ col1; col2; col3; col4; col5; col6 ]
 
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Doesn't infer 12-002 as a date``() =
+  // a previous version inferred a IntOrStringOrDateTime
+  let source = JsonValue.Parse """[ "12-002", "001", "2012-selfservice" ]"""
+  let expected = 
+    [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None))
+      InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<int>, None)) ]
+    |> Map.ofSeq |> InferedType.Collection
+  let actual = JsonInference.inferType culture true "" source
+  actual |> shouldEqual expected
