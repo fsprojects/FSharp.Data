@@ -97,7 +97,7 @@ Target "CleanInternetCaches" (fun _ ->
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
-let easyBuild = runningOnMono // || buildServer = TeamCity 
+let easyBuild = runningOnMono || buildServer = TeamCity 
 
 Target "Build" (fun _ ->
     (if easyBuild then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
