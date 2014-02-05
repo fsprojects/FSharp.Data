@@ -64,6 +64,8 @@ let normalize (str:string) =
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalize
     let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false |> normalize
+    if output <> expected then
+        printfn "Obtained Signature:\n%s" output
     output |> should equal expected
 
 #if MONO
