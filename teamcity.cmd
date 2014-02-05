@@ -1,4 +1,4 @@
-build CleanInternetCaches
-build All
-build SourceLink
-build NuGet
+call build CleanInternetCaches
+call build All
+call build SourceLink
+call build NuGet
