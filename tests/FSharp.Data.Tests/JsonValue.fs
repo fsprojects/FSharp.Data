@@ -219,11 +219,15 @@ let ``Can serialize document with array, null and number``() =
     let json = JsonValue.Parse text
     json.ToString(SaveOptions.DisableFormatting) |> should equal text
 
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
 [<Test>]
 let ``Pretty printing works``() =
     let text = """{"items":[{"id":"Open"},null,{"id":25}],"x":{"y":2},"z":[]}"""
     let json = JsonValue.Parse text
-    json.ToString() |> should equal """{
+    json.ToString() |> normalize |> should equal (normalize """{
   "x": {
     "y": 2
   },
@@ -237,4 +241,4 @@ let ``Pretty printing works``() =
     }
   ],
   "z": []
-}"""
+}""")
