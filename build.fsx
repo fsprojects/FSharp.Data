@@ -4,6 +4,11 @@
 
 #I "packages/FAKE/tools/"
 #r "FakeLib.dll"
+#load "packages/SourceLink.Fake/tools/Fake.fsx"
+#if MONO
+#else
+#load "packages/SourceLink.Fake/tools/Fake.fsx"
+#endif
 
 open System
 open System.IO
@@ -136,7 +141,6 @@ Target "SourceLink" (fun _ -> ())
 
 #else
 
-#load "packages/SourceLink.Fake/tools/Fake.fsx"
 open SourceLink
 
 Target "SourceLink" (fun _ ->
