@@ -4,7 +4,7 @@
 
 #I "packages/FAKE/tools/"
 #r "FakeLib.dll"
-#load "packages/SourceLink.Fake/tools/Fake.fsx"
+
 #if MONO
 #else
 #load "packages/SourceLink.Fake/tools/Fake.fsx"
