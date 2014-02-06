@@ -107,7 +107,7 @@ Target "Build" (fun _ ->
 
 Target "BuildTests" (fun _ ->
     !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" (if easyBuild then ["DefineConstants","NO_PCL"] else []) "Rebuild"
+    |> MSBuildReleaseExt "" (if noPCL then ["DefineConstants","NO_PCL"] else []) "Rebuild"
     |> ignore
 )
 
