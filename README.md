@@ -4,6 +4,10 @@ The F# Data library (`FSharp.Data.dll`) implements everything you need to access
 and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and 
 for accessing the WorldBank and Freebase data. It also includes helpers for parsing JSON files and for sending HTTP requests.
 
+We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&state=open) issues, or help to improve the [documentation][3].
+
+You can see the version history [here](RELEASE_NOTES.md).
+
 ## Building
 
 - Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
@@ -14,7 +18,7 @@ for accessing the WorldBank and Freebase data. It also includes helpers for pars
 ## Documentation 
 
 One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 
-automatically generated from `*.fsx` files in [the samples folder][2]. If you find a typo, please submit a pull request! 
+automatically generated from `*.fsx` files in [the content folder][2]. If you find a typo, please submit a pull request! 
  - [F# Data Library home page][3] with more information about the library, contributions etc.
  - [F# Data Library documentation][4] with links to pages that document individual type providers 
    (CSV, XML, JSON and WorldBank) as well as for other public types available in FSharp.Data.dll. 
@@ -33,6 +37,6 @@ solution before trying out the samples to ensure that all needed packages are in
 The library is available under Apache 2.0. For more information see the [License file][1] in the GitHub repository.
 
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
- [2]: https://github.com/fsharp/FSharp.Data/tree/master/samples
+ [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
  [3]: http://fsharp.github.io/FSharp.Data/
  [4]: http://fsharp.github.io/FSharp.Data/fsharpdata.html
