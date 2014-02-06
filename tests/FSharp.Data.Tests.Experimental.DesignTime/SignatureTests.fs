@@ -29,9 +29,12 @@ let (++) a b = Path.Combine(a, b)
 
 let sourceDirectory = __SOURCE_DIRECTORY__
 
+let isMono = Type.GetType("Mono.Runtime") <> null
+
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
+    |> Array.filter (fun str -> not (str.Contains "themoviedb"))
     |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
