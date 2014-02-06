@@ -34,7 +34,8 @@ let isMono = Type.GetType("Mono.Runtime") <> null
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
-    |> Array.filter (fun str -> not (str.Contains "themoviedb"))
+    // moviedb has problems in mono because of the / escaping problem
+    |> Array.filter (fun str -> not (isMono && str.Contains "themoviedb"))
     |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
