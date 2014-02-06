@@ -33,12 +33,10 @@ let ``Encoding of simple string is the same as in System.Web`` () =
   let expected = JavaScriptStringEncodeDotNet input    
   actual |> should equal expected
 
-#if MONO
-#else
 [<Test>]
+[<Platform("Net")>]
 let ``Encoding of characters 0 .. 65535 is the same as in System.Web`` () = 
   let input = new String([| for i in 0 .. 65535 -> char i |])
   let actual = JavaScriptStringEncode input
   let expected = JavaScriptStringEncodeDotNet input    
   actual |> should equal expected
-#endif

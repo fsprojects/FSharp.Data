@@ -56,11 +56,15 @@ let processFile file =
 // ------------------------------------------------------------------------------------
 // Core API documentation
 
+let isMono = Type.GetType("Mono.Runtime") <> null
+
 let docFiles = 
   seq { for sub in [ "library"; "tutorials"; "experimental"
                      "ja/library"; "ja/tutorials"; "ja/experimental" ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
-            yield sub + "/" + Path.GetFileName(file) }
+            // temporary: type providers are failing to resolve methods of FSharp.Data.dll with option<> when running the doc tests
+            if not (isMono && file.Contains "Provider") then
+              yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE
 for file in docFiles do 

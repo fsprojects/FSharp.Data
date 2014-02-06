@@ -68,7 +68,7 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
         printfn "Obtained Signature:\n%s" output
     output |> should equal expected
 
-#if MONO
+#if NO_PCL
 #else
 
 [<Test>]
