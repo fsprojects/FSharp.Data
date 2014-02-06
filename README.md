@@ -4,11 +4,17 @@ The F# Data library (`FSharp.Data.dll`) implements everything you need to access
 and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and 
 for accessing the WorldBank and Freebase data. It also includes helpers for parsing JSON files and for sending HTTP requests.
 
+## Building
+
+- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+
+  * Windows: Run *build.cmd* [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
+  * Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
+
 ## Documentation 
 
 One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 
 automatically generated from `*.fsx` files in [the samples folder][2]. If you find a typo, please submit a pull request! 
-
  - [F# Data Library home page][3] with more information about the library, contributions etc.
  - [F# Data Library documentation][4] with links to pages that document individual type providers 
    (CSV, XML, JSON and WorldBank) as well as for other public types available in FSharp.Data.dll. 
@@ -21,13 +27,6 @@ solution before trying out the samples to ensure that all needed packages are in
  - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
  - If you want to submit a bug, a feature request or help witht fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to F# Data](http://fsharp.github.io/FSharp.Data/contributing.html).
  - To discuss more general issues about F# Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
-
-## Building
-
-- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
-
-* Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
-* Windows: Run *build.cmd* [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
 
 ## Library license
 
