@@ -35,6 +35,20 @@ let ``Makes first letter uppercase`` () =
   niceCamelName "abc"  |> should equal "abc"
 
 [<Test>]
+let ``Handles acronyms`` () =
+  nicePascalName "ABC" |> should equal "Abc"
+  niceCamelName "ABC"  |> should equal "abc"
+
+  nicePascalName "TVSeries" |> should equal "TvSeries"
+  niceCamelName "TVSeries"  |> should equal "tvSeries"
+
+  nicePascalName "ABCWord" |> should equal "AbcWord"
+  niceCamelName "ABCWord"  |> should equal "abcWord"
+
+  nicePascalName "abcABCWord" |> should equal "AbcAbcWord"
+  niceCamelName "abcABCWord"  |> should equal "abcAbcWord"
+
+[<Test>]
 let ``Detects word after underscore`` () = 
   nicePascalName "hello_world" |> should equal "HelloWorld"
   niceCamelName "hello_world"  |> should equal "helloWorld"

@@ -38,6 +38,9 @@ let nicePascalName (s:string) =
     match tryAt s i with
     | Lower _ when not takeUpper -> yield! consume from takeUpper (i + 1)
     | Upper _ when takeUpper -> yield! consume from takeUpper (i + 1)
+    | Lower _ when takeUpper ->
+        yield from, (i - 1)
+        yield! restart (i - 1)
     | _ -> 
         yield from, i
         yield! restart i }
