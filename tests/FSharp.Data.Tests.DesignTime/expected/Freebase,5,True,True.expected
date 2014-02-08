@@ -1,6 +1,6 @@
 class FreebaseDataProvider
     static member GetDataContext: () -> FreebaseDataProvider+ServiceTypes+FreebaseService
-    FreebaseDataContext._Create("AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY", "https://www.googleapis.com/freebase/v1", true, "2013-10-19T20:32:39", true, true)
+    FreebaseDataContext._Create("AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY", "https://www.googleapis.com/freebase/v1", true, "", true, true)
 
 
 class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseDataContext
@@ -991,6 +991,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebas
     member Award Winners: FreebaseDataProvider+ServiceTypes+Award+Award+Award_winnerDataCollection with get
     this.GetObjectsOfTypeId("/award/award_winner")
 
+    member Award achievement levels: FreebaseDataProvider+ServiceTypes+Award+Award+Award_achievement_levelDataCollection with get
+    this.GetObjectsOfTypeId("/award/award_achievement_level")
+
     member Award categories: FreebaseDataProvider+ServiceTypes+Award+Award+Award_categoryDataCollection with get
     this.GetObjectsOfTypeId("/award/award_category")
 
@@ -1044,6 +1047,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebas
 
     member Ranked lists: FreebaseDataProvider+ServiceTypes+Award+Award+Ranked_listDataCollection with get
     this.GetObjectsOfTypeId("/award/ranked_list")
+
+    member Recurring award ceremonies: FreebaseDataProvider+ServiceTypes+Award+Award+Recurring_award_ceremonyDataCollection with get
+    this.GetObjectsOfTypeId("/award/recurring_award_ceremony")
 
     member Recurring competitions: FreebaseDataProvider+ServiceTypes+Award+Award+Recurring_competitionDataCollection with get
     this.GetObjectsOfTypeId("/award/recurring_competition")
@@ -1539,9 +1545,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Curtiss NC-4: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Curtiss NC-4 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/022yqs")
 
-    member Double Eagle: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Double Eagle Item with get
-    this.GetIndividualById("/aviation/aircraft", "/m/0269f0b")
-
     member Double Eagle II: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Double Eagle II Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/05nyts")
 
@@ -1623,6 +1626,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Santos-Dumont number 6: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Santos-Dumont number 6 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0bsbnz")
 
+    member Scaled Composites ATTT: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Scaled Composites ATTT Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0dyrvm")
+
     member Some Punkins: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+Some Punkins Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0fyg0t")
 
@@ -1693,6 +1699,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member Big Stink: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Big Stink Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0fr9pk")
+
+    member Black Cat: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Black Cat Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0yp337r")
 
     member Bockscar: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Bockscar Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/018sk0")
@@ -1777,6 +1786,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member Heliocourier (WHOI): FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Heliocourier (WHOI) Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0h8296h")
+
+    member Hemaseh: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Hemaseh Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0z2phf6")
 
     member Intrepid: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Intrepid Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/03y9cb6")
@@ -1901,6 +1913,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Saro Shrimp: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Saro Shrimp Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/02pvsm6")
 
+    member Scaled Composites ATTT: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Scaled Composites ATTT Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0dyrvm")
+
     member Sentimental Journey: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Sentimental Journey Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0286sl2")
 
@@ -1909,6 +1924,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member Sir Baboon McGoon: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Sir Baboon McGoon Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0j_6rwf")
+
+    member SmartBird: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+SmartBird Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0gkzq9w")
 
     member Some Punkins: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Some Punkins Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0fyg0t")
@@ -2090,6 +2108,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
     member Airbus: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Airbus Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/015zfz")
 
+    member Airbus Helicopters: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Airbus Helicopters Item with get
+    this.GetIndividualById("/aviation/aircraft_designer", "/m/0n3z0")
+
     member Alexander Graham Bell: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Alexander Graham Bell Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/0k70")
 
@@ -2132,9 +2153,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
     member Bölkow: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Bölkow Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01603c")
 
-    member Eurocopter: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Eurocopter Item with get
-    this.GetIndividualById("/aviation/aircraft_designer", "/m/0n3z0")
-
     member Geoffrey de Havilland: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Geoffrey de Havilland Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01jp40")
 
@@ -2143,6 +2161,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
 
     member Heinkel: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Heinkel Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/022ws6")
+
+    member Hindustan Aeronautics Limited: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Hindustan Aeronautics Limited Item with get
+    this.GetIndividualById("/aviation/aircraft_designer", "/m/01k1jb")
 
     member Horten brothers: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Horten brothers Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01tkkx")
@@ -2221,9 +2242,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
 
     member Sydney Camm: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Sydney Camm Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01vlh5")
-
-    member Thomas Sopwith: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Thomas Sopwith Item with get
-    this.GetIndividualById("/aviation/aircraft_designer", "/m/024mrb")
 
     member William Boeing: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+William Boeing Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01t920")
