@@ -62,9 +62,7 @@ let docFiles =
   seq { for sub in [ "library"; "tutorials"; "experimental"
                      "ja/library"; "ja/tutorials"; "ja/experimental" ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
-            // temporary: type providers are failing to resolve methods of FSharp.Data.dll with option<> when running the doc tests
-            // freebase is also returning 503's to the travis CI
-            if not (isMono && (file.Contains "Provider" || file.Contains "Freebase")) then
+            if not (isMono && file.Contains "Apiary") then
               yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE
