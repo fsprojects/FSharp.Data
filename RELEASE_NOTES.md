@@ -136,4 +136,7 @@
 * JsonValue.ToString() now formats (indents) the output by default (can be turned off by using SaveOptions.DisableFormatting).
 
 #### 2.0.0-alpha6 - February 4 2014
-* JsonValue.Post() allows to post the JSON to the specified uri using HTTP
+* JsonValue.Post() allows to post the JSON to the specified uri using HTTP.
+
+#### 2.0.0-alpha7 - Unreleased
+* Improved name generation algorithm to cope better with acronymns.
