@@ -58,7 +58,7 @@ let private designTimeAssemblies =
     |> Seq.distinctBy fst 
     |> Map.ofSeq
 
-let private getAssembly (asmName:AssemblyName) reflectionOnly = 
+let private getAssembly (asmName:AssemblyName) = 
     let folder = 
         let version = 
             if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
@@ -70,14 +70,12 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         | "FSharp.Core", "3.3.1.0" -> fsharp31Portable7AssembliesPath
         | _, "2.0.5.0" -> portable47AssembliesPath
         | _, _ -> null
-    if folder = null then 
-        if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
-        else null
+    if folder = null
+    then Assembly.ReflectionOnlyLoad asmName.FullName
     else
         let assemblyPath = folder ++ (asmName.Name + ".dll")
-        if File.Exists assemblyPath then
-            if reflectionOnly then Assembly.ReflectionOnlyLoadFrom assemblyPath
-            else Assembly.LoadFrom assemblyPath 
+        if File.Exists assemblyPath
+        then Assembly.ReflectionOnlyLoadFrom assemblyPath
         else null
 
 let mutable private initialized = false    
@@ -86,40 +84,20 @@ let init (cfg : TypeProviderConfig) =
 
     if not initialized then
         initialized <- true
-        AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
-        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
+        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name))
     
-    let isPortable47 = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
-    //portable7 has SystemRuntimeAssemblyVersion = 4.0.0.0, so we can't detect it, but it's only supported in F# 3.1, so there's no problem
-    let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
+    let runtimeAssembly = Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
 
-    let differentFramework = isPortable47 || isFSharp31
-    let useReflectionOnly = differentFramework
+    let runtimeAsmsPairs = 
+        runtimeAssembly.GetReferencedAssemblies()
+        |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
+        |> Seq.choose (fun asmName -> 
+            designTimeAssemblies.TryFind asmName.Name
+            |> Option.bind (fun designTimeAsm ->
+                let targetAsm = getAssembly asmName
+                if targetAsm <> null then Some (designTimeAsm, targetAsm) else None))
+        |> Seq.toList
 
-    let runtimeAssembly = 
-        if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
-        else Assembly.LoadFrom cfg.RuntimeAssembly
-
-    let mainRuntimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
-
-    let asmMappings = 
-        if differentFramework then
-            let runtimeAsmsPairs = 
-                runtimeAssembly.GetReferencedAssemblies()
-                |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
-                |> Seq.choose (fun asmName -> 
-                    designTimeAssemblies.TryFind asmName.Name
-                    |> Option.bind (fun designTimeAsm ->
-                        let targetAsm = getAssembly asmName useReflectionOnly
-                        if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
-                                                 targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
-                          Some (designTimeAsm, targetAsm)
-                        else None))
-                |> Seq.toList
-            if runtimeAsmsPairs = [] then
-                failwithf "Something went wrong when creating the assembly mappings"
-            mainRuntimeAssemblyPair::runtimeAsmsPairs
-        else
-            [mainRuntimeAssemblyPair]
+    let asmMappings = (Assembly.GetExecutingAssembly(), runtimeAssembly)::runtimeAsmsPairs
 
     runtimeAssembly, AssemblyReplacer.create asmMappings

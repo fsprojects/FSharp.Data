@@ -67,7 +67,7 @@
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
     <Compile Include="Runtime.fs" />
-    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="AssemblyInfo.Portable47.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

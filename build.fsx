@@ -17,6 +17,7 @@ open Fake.AssemblyInfoFile
 open Fake.Git
 
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
+let (!!) includes = (!! includes).SetBaseDirectory __SOURCE_DIRECTORY__
 
 // --------------------------------------------------------------------------------------
 // Information about the project to be used at NuGet and in AssemblyInfo files
@@ -49,128 +50,118 @@ let release =
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
 
-let releaseNotes = release.Notes |> String.concat "\n"
-
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
 
-Target "AssemblyInfo" (fun _ ->
-    [ ("src/AssemblyInfo.fs", "FSharp.Data", project, summary)
-      ("src/AssemblyInfo.DesignTime.fs", "FSharp.Data.DesignTime", project, summary)
-      ( "src/AssemblyInfo.Experimental.fs", "FSharp.Data.Experimental", 
-        projectExperimental, summaryExperimental )
-      ( "src/AssemblyInfo.Experimental.DesignTime.fs", 
-        "FSharp.Data.Experimental.DesignTime", projectExperimental,
-        summaryExperimental) ]
-    |> Seq.iter (fun (fileName, title, project, summary) ->
-        CreateFSharpAssemblyInfo fileName
+Target "AssemblyInfo" <| fun () ->
+    for file in !! "src/AssemblyInfo*.fs" do
+        let replace (oldValue:string) newValue (str:string) = str.Replace(oldValue, newValue)
+        let title = 
+            Path.GetFileNameWithoutExtension file
+            |> replace ".Portable47" ""
+            |> replace ".Portable7" ""
+            |> replace "AssemblyInfo" "FSharp.Data"
+        let project, summary = 
+            if file.Contains "Experimental" 
+            then projectExperimental, summaryExperimental 
+            else project, summary
+        let versionSuffix =
+            if file.Contains ".Portable47" then ".47"
+            elif file.Contains ".Portable7" then ".7"
+            else ".0"
+        let version = release.AssemblyVersion + versionSuffix
+        CreateFSharpAssemblyInfo file
            [ Attribute.Title title
              Attribute.Product project
              Attribute.Description summary
-             Attribute.Version release.AssemblyVersion
-             Attribute.FileVersion release.AssemblyVersion] )
-)
+             Attribute.Version version
+             Attribute.FileVersion version]
+
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" (fun _ ->
+Target "Clean" <| fun () ->
     CleanDirs ["bin"]
-)
 
-Target "CleanDocs" (fun _ ->
+Target "CleanDocs" <| fun () ->
     CleanDirs ["docs/output"]
-)
 
 let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
-Target "CleanInternetCaches" (fun _ ->
+Target "CleanInternetCaches" <| fun () ->
     CleanDirs [internetCacheFolder @@ "ApiarySchema"
                internetCacheFolder @@ "DesignTimeURIs"
                internetCacheFolder @@ "FreebaseSchema"
                internetCacheFolder @@ "FreebaseRuntime"
                internetCacheFolder @@ "WorldBankSchema"
                internetCacheFolder @@ "WorldBankRuntime"]
-)
 
 // --------------------------------------------------------------------------------------
-// Build Visual Studio solutions
+// Build library & test projects
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
 let noPCL = runningOnMono
 
-Target "Build" (fun _ ->
+Target "Build" <| fun () ->
     (if noPCL then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
     |> MSBuildRelease "" "Rebuild"
     |> ignore
-)
 
-Target "BuildTests" (fun _ ->
+Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
     |> MSBuildReleaseExt "" (if noPCL then ["DefineConstants","NO_PCL"] else []) "Rebuild"
     |> ignore
-)
 
 // --------------------------------------------------------------------------------------
-// Run the unit tests using test runner & kill test runner when complete
+// Run the unit tests using test runner
 
-Target "RunTests" (fun _ ->
-    let nunitVersion = GetPackageVersion "packages" "NUnit.Runners"
-    let nunitPath = sprintf "packages/NUnit.Runners.%s/Tools" nunitVersion
-    ActivateFinalTarget "CloseTestRunner"
-
+Target "RunTests" <| fun () ->
     !! "tests/*/bin/Release/FSharp.Data.Tests*.dll"
     |> NUnit (fun p ->
         { p with
-            ToolPath = nunitPath
             DisableShadowCopy = true
             TimeOut = TimeSpan.FromMinutes 20.
             OutputFile = "TestResults.xml" })
-)
-
-FinalTarget "CloseTestRunner" (fun _ ->  
-    ProcessHelper.killProcess "nunit-agent.exe"
-)
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
 
 #if MONO
 
-Target "SourceLink" (fun _ -> ())
+Target "SourceLink" <| id
 
 #else
 
 open SourceLink
 
-Target "SourceLink" (fun _ ->
+Target "SourceLink" <| fun () ->
     use repo = new GitRepo(__SOURCE_DIRECTORY__)
-    !! "src/*.fsproj" 
-    |> Seq.iter (fun f ->
-        let proj = VsProj.LoadRelease f
+    for file in !! "src/*.fsproj" do
+        let proj = VsProj.LoadRelease file
         logfn "source linking %s" proj.OutputFilePdb
         let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
         repo.VerifyChecksums files
         proj.VerifyPdbChecksums files
         proj.CreateSrcSrv "https://raw.github.com/fsharp/FSharp.Data/{0}/%var2%" repo.Revision (repo.Paths files)
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
-    )
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.*.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
     CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.*.DesignTime.*")
-)
+
 #endif
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" (fun _ ->
+Target "NuGet" <| fun () ->
     // Format the description to fit on a single line (remove \r\n and double-spaces)
-    let description = description.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
+    let description = description
     let descriptionExperimental = descriptionExperimental.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
-    let nugetPath = ".nuget/nuget.exe"
+    // Format the release notes
+    let releaseNotes = release.Notes |> String.concat "\n"
     NuGet (fun p -> 
         { p with   
             Authors = authors
@@ -181,7 +172,6 @@ Target "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
-            ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
@@ -196,48 +186,38 @@ Target "NuGet" (fun _ ->
             ReleaseNotes = releaseNotes
             Tags = tagsExperimental
             OutputPath = "bin"
-            ToolPath = nugetPath
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
         "nuget/FSharp.Data.Experimental.nuspec"
 
-)
-
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-Target "GenerateDocs" (fun _ ->
+Target "GenerateDocs" <| fun () ->
     executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
-)
 
-Target "GenerateDocsJa" (fun _ ->
+Target "GenerateDocsJa" <| fun () ->
     executeFSIWithArgs "docs/tools" "generate.ja.fsx" ["--define:RELEASE"] [] |> ignore
-)
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-Target "ReleaseDocs" (fun _ ->
-    CleanDirs ["temp/gh-pages"]
-    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/gh-pages"
-    Branches.checkoutBranch "temp/gh-pages" "gh-pages"
-    CopyRecursive "docs/output" "temp/gh-pages" true |> printfn "%A"
-    CommandHelper.runSimpleGitCommand "temp/gh-pages" "add ." |> printfn "%s"
-    let cmd = sprintf """commit -a -m "Update generated documentation for version %s""" release.NugetVersion
-    CommandHelper.runSimpleGitCommand "temp/gh-pages" cmd |> printfn "%s"
-    Branches.push "temp/gh-pages"
-)
+let publishFiles what branch fromFolder toFolder =
+    let tempFolder = "temp/" + branch
+    CleanDir tempFolder
+    Repository.cloneSingleBranch "" (gitHome + "/" + gitName + ".git") branch tempFolder
+    fullclean tempFolder
+    CopyRecursive fromFolder (tempFolder + "/" + toFolder) true |> tracefn "%A"
+    StageAll tempFolder
+    Commit tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
+    Branches.push tempFolder
 
-Target "ReleaseBinaries" (fun _ ->
-    CleanDirs ["temp/release"]
-    Repository.clone "" (gitHome + "/" + gitName + ".git") "temp/release"
-    Branches.checkoutBranch "temp/release" "release"
-    CopyRecursive "bin" "temp/release/bin" true |> printfn "%A"
-    let cmd = sprintf """commit -a -m "Update binaries for version %s""" release.NugetVersion
-    CommandHelper.runSimpleGitCommand "temp/release" cmd |> printfn "%s"
-    Branches.push "temp/release"
-)
+Target "ReleaseDocs" <| fun () ->
+    publishFiles "generated documentation" "gh-pages" "docs/output" "" 
+
+Target "ReleaseBinaries" <| fun () ->
+    publishFiles "binaries" "release" "bin" "bin" 
 
 Target "Release" DoNothing
 
@@ -249,7 +229,7 @@ Target "Release" DoNothing
 // --------------------------------------------------------------------------------------
 // Help
 
-Target "Help" (fun _ ->
+Target "Help" <| fun () ->
     printfn ""
     printfn "  Please specify the target by calling 'build <Target>'"
     printfn ""
@@ -272,7 +252,7 @@ Target "Help" (fun _ ->
 #else
     printfn "  * SourceLink (requires autocrlf=false)"
 #endif
-    printfn "")
+    printfn ""
 
 Target "All" DoNothing
 

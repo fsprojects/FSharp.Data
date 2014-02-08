@@ -19,24 +19,24 @@ type internal ApiaryGenerationContext =
     // to nameclash type names
     UniqueNiceName : string -> string 
     ApiName : string 
-    ApiaryContextSelector : Expr -> Expr<InternalApiaryContext> }
+    ApiaryContextSelector : Expr -> Expr<InternalApiaryContext>
+    JsonContext : JsonGenerationContext }
   static member Create(apiName, tpType, replacer) =
+    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     { TypeProviderType = tpType
       ApiName = apiName
       Replacer = replacer 
-      UniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-      ApiaryContextSelector = fun e -> <@ (%%e:ApiaryContext) :> InternalApiaryContext @> }
-  member x.JsonContext = 
-    JsonGenerationContext.Create("", x.TypeProviderType, typeof<ApiaryDocument>, x.Replacer, x.UniqueNiceName)
+      UniqueNiceName = uniqueNiceName
+      ApiaryContextSelector = fun e -> <@ (%%e:ApiaryContext) :> InternalApiaryContext @> 
+      JsonContext = JsonGenerationContext.Create("", tpType, typeof<ApiaryDocument>, replacer, uniqueNiceName) } 
 
 module internal ApiaryTypeBuilder = 
 
   let join parentName name =
     let name = NameUtils.nicePascalName name
-    if name = parentName then
-        name
-    else
-        parentName + name
+    if name = parentName
+    then name
+    else parentName + name
 
   /// Given a specification (returned by the apiary.io service) 
   /// infer structure of JSON and generate a type for the result

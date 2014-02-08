@@ -57,7 +57,7 @@
     <Compile Include="Json\JsonRuntime.fs" />
     <Compile Include="Apiary\ApiaryRuntime.fs" />
     <Compile Include="Runtime.Experimental.fs" />
-    <Compile Include="AssemblyInfo.Experimental.fs" />
+    <Compile Include="AssemblyInfo.Experimental.Portable7.fs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
