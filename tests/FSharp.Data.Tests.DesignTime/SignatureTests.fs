@@ -34,6 +34,9 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
+#if TEAM_CITY
+    |> Array.filter (fun x -> not (x.Contains "themoviedb"))
+#endif
     |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
@@ -68,17 +71,14 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
         printfn "Obtained Signature:\n%s" output
     output |> should equal expected
 
-#if NO_PCL
-#else
-
 [<Test>]
 [<TestCaseSource "testCases">]
+[<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder portable47RuntimeAssembly Platform.Portable47 (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
+[<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder portable7RuntimeAssembly Platform.Portable7 (*signatureOnly*)false (*ignoreOutput*)true |> ignore
-
-#endif
