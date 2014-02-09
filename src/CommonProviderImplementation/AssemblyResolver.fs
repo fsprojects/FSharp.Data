@@ -58,7 +58,7 @@ let private designTimeAssemblies =
     |> Seq.distinctBy fst 
     |> Map.ofSeq
 
-let private getAssembly (asmName:AssemblyName) = 
+let private getAssembly (asmName:AssemblyName) reflectionOnly = 
     let folder = 
         let version = 
             if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
@@ -70,12 +70,14 @@ let private getAssembly (asmName:AssemblyName) =
         | "FSharp.Core", "3.3.1.0" -> fsharp31Portable7AssembliesPath
         | _, "2.0.5.0" -> portable47AssembliesPath
         | _, _ -> null
-    if folder = null
-    then Assembly.ReflectionOnlyLoad asmName.FullName
+    if folder = null then 
+        if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
+        else null
     else
         let assemblyPath = folder ++ (asmName.Name + ".dll")
-        if File.Exists assemblyPath
-        then Assembly.ReflectionOnlyLoadFrom assemblyPath
+        if File.Exists assemblyPath then
+            if reflectionOnly then Assembly.ReflectionOnlyLoadFrom assemblyPath
+            else Assembly.LoadFrom assemblyPath 
         else null
 
 let mutable private initialized = false    
@@ -84,20 +86,29 @@ let init (cfg : TypeProviderConfig) =
 
     if not initialized then
         initialized <- true
-        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name))
+        AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
+        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
-    let runtimeAssembly = Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
+    let runningOnMono = Type.GetType("Mono.Runtime") <> null
+    let useReflectionOnly = not runningOnMono
 
-    let runtimeAsmsPairs = 
+    let runtimeAssembly = 
+        if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
+        else Assembly.LoadFrom cfg.RuntimeAssembly
+
+    let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
+
+    let referencedAssembliesPairs = 
         runtimeAssembly.GetReferencedAssemblies()
         |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
         |> Seq.choose (fun asmName -> 
             designTimeAssemblies.TryFind asmName.Name
             |> Option.bind (fun designTimeAsm ->
-                let targetAsm = getAssembly asmName
-                if targetAsm <> null then Some (designTimeAsm, targetAsm) else None))
+                let targetAsm = getAssembly asmName useReflectionOnly
+                if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
+                                            targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
+                    Some (designTimeAsm, targetAsm)
+                else None))
         |> Seq.toList
-
-    let asmMappings = (Assembly.GetExecutingAssembly(), runtimeAssembly)::runtimeAsmsPairs
-
-    runtimeAssembly, AssemblyReplacer.create asmMappings
+    
+    runtimeAssembly, AssemblyReplacer.create (runtimeAssemblyPair::referencedAssembliesPairs)
