@@ -138,11 +138,16 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             resultText
           with 
             | :? WebException as exn -> 
-                let pos = exn.Message.IndexOf '\n'
+                let msg = exn.Message 
+                let pos = msg.IndexOf '\n'
                 if pos = -1 then reraise()
+                let msg = msg.Substring (pos+1)
+                let pos = msg.IndexOf '\n'
+                if pos = -1 then reraise()
+                let msg = msg.Substring (pos+1)
                 let freebaseExn =
                     try
-                        let json = exn.Message.Substring (pos+1) |> JsonValue.Parse 
+                        let json = JsonValue.Parse msg
                         let error = json.GetProperty("error").GetArrayValWithKey("errors").[0]
                         let domain = error.GetStringValWithKey("domain")
                         let reason = error.GetStringValWithKey("reason")

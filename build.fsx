@@ -100,17 +100,18 @@ Target "CleanInternetCaches" <| fun () ->
 // Build library & test projects
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
-
-let noPCL = runningOnMono
+let runninOnTeamCity = buildServer = TeamCity
 
 Target "Build" <| fun () ->
-    (if noPCL then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
+    (if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" (if noPCL then ["DefineConstants","NO_PCL"] else []) "Rebuild"
+    |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"]
+                             elif runninOnTeamCity then ["DefineConstants","TEAM_CITY"]
+                             else []) "Rebuild"
     |> ignore
 
 // --------------------------------------------------------------------------------------
