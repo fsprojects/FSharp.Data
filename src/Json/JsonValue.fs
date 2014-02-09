@@ -87,7 +87,7 @@ type JsonValue =
 // JSON parser
 // --------------------------------------------------------------------------------------
 
-type private JsonParser(jsonText:string, cultureInfo) =
+type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
 
     let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
 
@@ -106,7 +106,7 @@ type private JsonParser(jsonText:string, cultureInfo) =
         sprintf 
           "Invalid Json starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
           i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) (if jsonText.Length > 1000 then jsonText.Substring(0, 1000) else jsonText)
-      raise <| new Exception(msg)
+      failwith msg
     let ensure cond = 
       if not cond then throw()  
 
@@ -185,19 +185,37 @@ type private JsonParser(jsonText:string, cultureInfo) =
         skipWhitespace()
         key, parseValue()
 
+    and parseEllipsis() =
+        let mutable openingBrace = false
+        if i < s.Length && s.[i] = '{' then
+            openingBrace <- true
+            i <- i + 1
+            skipWhitespace()
+        while i < s.Length && s.[i] = '.' do
+            i <- i + 1
+            skipWhitespace()
+        if openingBrace && i < s.Length && s.[i] = '}' then
+            i <- i + 1
+            skipWhitespace()
+
     and parseObject() =
         ensure(i < s.Length && s.[i] = '{')
         i <- i + 1
         skipWhitespace()
         let pairs = ResizeArray<_>()
-        if i<s.Length && s.[i]='"' then
+        if i < s.Length && s.[i] = '"' then
             pairs.Add(parsePair())
             skipWhitespace()
-            while i<s.Length && s.[i]=',' do
+            while i < s.Length && s.[i] = ',' do
                 i <- i + 1
                 skipWhitespace()
-                pairs.Add(parsePair())
-                skipWhitespace()
+                if tolerateErrors && s.[i] = '}' then
+                    () // tolerate a trailing comma, even though is not valid json
+                else
+                    pairs.Add(parsePair())
+                    skipWhitespace()
+        if tolerateErrors && i < s.Length && s.[i] <> '}' then
+            parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
         JsonValue.Object(pairs |> Map.ofSeq)
@@ -207,14 +225,16 @@ type private JsonParser(jsonText:string, cultureInfo) =
         i <- i + 1
         skipWhitespace()
         let vals = ResizeArray<_>()
-        if i<s.Length && s.[i]<>']' then
+        if i < s.Length && s.[i] <> ']' then
             vals.Add(parseValue())
             skipWhitespace()
-            while i<s.Length && s.[i]=',' do
+            while i < s.Length && s.[i] = ',' do
                 i <- i + 1
                 skipWhitespace()
                 vals.Add(parseValue())
                 skipWhitespace()
+        if tolerateErrors && i < s.Length && s.[i] <> ']' then
+            parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = ']')
         i <- i + 1
         JsonValue.Array(vals |> Seq.toArray)
@@ -238,24 +258,24 @@ type JsonValue with
 
   /// Parses the specified JSON string
   static member Parse(text, ?cultureInfo) = 
-    JsonParser(text, cultureInfo).Parse()
+    JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified stream
   static member Load(stream:Stream, ?cultureInfo) = 
     use reader = new StreamReader(stream)
     let text = reader.ReadToEnd()
-    JsonParser(text, cultureInfo).Parse()
+    JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified reader
   static member Load(reader:TextReader, ?cultureInfo) = 
     let text = reader.ReadToEnd()
-    JsonParser(text, cultureInfo).Parse()
+    JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
     let! reader = asyncReadTextAtRuntime false "" "" uri
     let text = reader.ReadToEnd()
-    return JsonParser(text, cultureInfo).Parse()
+    return JsonParser(text, cultureInfo, false).Parse()
   }
 
   /// Loads JSON from the specified uri
@@ -269,3 +289,7 @@ type JsonValue with
       uri,
       body=RequestBody.Text(x.ToString(SaveOptions.DisableFormatting)),
       headers=["Content-Type","application/json"])
+
+  // for apiary only
+  static member internal ParseSample(text) =
+    JsonParser(text, None, true).Parse()

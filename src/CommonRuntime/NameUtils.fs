@@ -79,7 +79,7 @@ let uniqueGenerator niceName =
         lastLetterPos <- lastLetterPos - 1
       if lastLetterPos = name.Length - 1 then
         name <- name + "2"
-      elif lastLetterPos = 0 then
+      elif lastLetterPos = 0 && name.Length = 1 then
         name <- (UInt64.Parse name + 1UL).ToString()
       else
         let number = name.Substring(lastLetterPos + 1)

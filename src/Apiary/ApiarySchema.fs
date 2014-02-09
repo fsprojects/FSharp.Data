@@ -85,23 +85,23 @@ module ApiarySchema =
           getPathComponents path, (meth, path) ]
     operationsWithPath |> buildTree "root" |> trimRoot
 
-  let isSpecialName (s:string) = 
-    s.StartsWith(":") || (s.StartsWith("{") && s.EndsWith("}"))
+  let isSpecialName (specialNames:Map<string, string>) (s:string) = 
+    s.StartsWith(":") || (s.StartsWith("{") && s.EndsWith("}")) || specialNames.ContainsKey s
 
   /// Is there any specially named child node?
-  let (|SpeciallyNamed|_|) items = 
-    let special, other = items |> List.partition (fun (NameNode(name, _, _)) -> isSpecialName name)
+  let (|SpeciallyNamed|_|) specialNames items = 
+    let special, other = items |> List.partition (fun (NameNode(name, _, _)) -> isSpecialName specialNames name)
     match special with
     | spec::rest -> Some(spec, rest @ other)
     | _ -> None
 
   /// Convert name tree obtained from Apiary to our view of REST API
-  let asRestApi nodes =
+  let asRestApi specialNames nodes =
     let rec loop (parentName:Lazy<string>) = function
       | NameNode(name, [info], []) -> 
-          Function(name, info)
+          Some <| Function(name, info)
       | NameNode(name, [], nested) ->
-          Module(name, List.map (loop (lazy name)) nested)
+          Some <| Module(name, List.choose (loop (lazy name)) nested)
 
       // Detect pattern when we have:
       //
@@ -109,7 +109,7 @@ module ApiarySchema =
       //   /foo     (POST)
       //
       | NameNode(name, ops, []) ->
-          Entity(name, ops, [])
+          Some <| Entity(name, ops, [])
 
       // Detect pattern when we have:
       //
@@ -118,28 +118,27 @@ module ApiarySchema =
       //  /foo/{id} (GET  - get foo {id})
       //  /foo/{id} (PUT  - update foo {id})
       //
-      | NameNode(name, ops, SpeciallyNamed(NameNode(_, specialOps, specialNested), nested)) ->
+      | NameNode(name, ops, SpeciallyNamed specialNames (NameNode(_, specialOps, specialNested), nested)) ->
           // Find the operation for listing
           let get, others = ops |> List.partition (fun (meth, _) -> 
             String.Compare(meth, "get", StringComparison.InvariantCultureIgnoreCase) = 0)
           let list = get |> List.map (fun info -> Function("List", info))
 
           // Create module with nested entity and 'list' operation
-          let entity = Entity(name, others @ specialOps, nested @ specialNested |> List.map (loop (lazy name)))
-          Module(name, entity :: list)
+          let entity = Entity(name, others @ specialOps, nested @ specialNested |> List.choose (loop (lazy name)))
+          Some <| Module(name, entity :: list)
 
       // Detect pattern when we have:
       // 
       //   /foo/{id}
       //   /foo/{id}/bar
       //
-      | NameNode(name, ops, nested) when isSpecialName name ->
-          Entity(parentName.Value, ops, List.map (loop parentName) nested)
+      | NameNode(name, ops, nested) when isSpecialName specialNames name ->
+          Some <| Entity(parentName.Value, ops, List.choose (loop parentName) nested)
 
-      | NameNode _ as odd ->
-          failwithf "REST API does not match any common pattern: %A" odd
+      | NameNode _ -> None
 
-    nodes |> List.map (loop (lazy failwith "Missing root element"))
+    nodes |> List.choose (loop (lazy failwith "Missing root element"))
 
 [<AutoOpen>]
 module ApiarySchemaAuto = 
@@ -147,9 +146,35 @@ module ApiarySchemaAuto =
 
   /// Find an operation that uses HTTP method specified by 'findMeth'
   /// and return the arguments together with (the method and) a path
-  let (|FindMethod|_|) findMeth (ops:list<string * string>) =
-    ops |> Seq.tryFind (fun (meth, _) -> meth = findMeth)
+  let (|FindMethod|_|) specialNames findMeth (ops:list<string * string>) =
+    ops |> Seq.tryFind (fun (meth, _) -> String.Compare(meth, findMeth, StringComparison.OrdinalIgnoreCase) = 0)
         |> Option.map (fun (meth, path) ->
              let pathParts = path |> getPathComponents 
-             let args = pathParts |> List.filter isSpecialName
+             let args = pathParts |> List.filter (isSpecialName specialNames)
              args, (meth, path))
+
+  let (|NormalizedFunction|_|) (specialNames:Map<string,string>) = function
+    | Function(name:string, (meth, path:string)) ->
+        let name, args, servicePath =
+          match path.IndexOf "{?", path.IndexOf "}" with
+          | x, y when x > 0 && x < y-2 -> 
+              let name = name.Replace(path.Substring(x), "")
+              let args = path.Substring(x+2, y-x-2).Split(',') |> List.ofArray
+              let argsWithBraces = [ for arg in args -> "{" + arg + "}" ]
+              let servicePath = Http.AppendQueryToUrl(path.Substring(0, x), List.zip args argsWithBraces, true)
+              name, argsWithBraces, servicePath
+          | _, _ -> 
+              let segments = 
+                path.Split('/')
+                |> Array.map (fun segment -> match specialNames.TryFind segment with
+                                             | Some arg -> "{" + arg + "}", ["{" + arg + "}"]
+                                             | None -> segment, [])
+              let servicePath = segments |> Array.map fst |> String.concat "/"
+              let args = segments |> Array.map snd |> Array.reduce (@)
+              let name = 
+                if specialNames.TryFind name |> Option.isSome
+                then segments |> Array.filter (snd >> (=) []) |> Seq.last |> fst
+                else name
+              name, args, servicePath
+        Some (name, meth, args, servicePath, path)
+    | _ -> None

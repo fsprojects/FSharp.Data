@@ -20,15 +20,17 @@ type internal ApiaryGenerationContext =
     UniqueNiceName : string -> string 
     ApiName : string 
     ApiaryContextSelector : Expr -> Expr<InternalApiaryContext>
-    JsonContext : JsonGenerationContext }
-  static member Create(apiName, tpType, replacer) =
+    JsonContext : JsonGenerationContext 
+    SpecialNames : Map<string, string> }
+  static member Create(apiName, tpType, replacer, specialNames) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     { TypeProviderType = tpType
       ApiName = apiName
       Replacer = replacer 
       UniqueNiceName = uniqueNiceName
       ApiaryContextSelector = fun e -> <@ (%%e:ApiaryContext) :> InternalApiaryContext @> 
-      JsonContext = JsonGenerationContext.Create("", tpType, typeof<ApiaryDocument>, replacer, uniqueNiceName) } 
+      JsonContext = JsonGenerationContext.Create("", tpType, typeof<ApiaryDocument>, replacer, uniqueNiceName) 
+      SpecialNames = specialNames } 
 
 module internal ApiaryTypeBuilder = 
 
@@ -44,11 +46,16 @@ module internal ApiaryTypeBuilder =
   /// TODO: Lots of room for improvement here (pattern matching based
   /// on error codes, handle other file formats like XML...)
   let generateMembersForJsonResult (ctx:ApiaryGenerationContext) name spec =
+
     let samples = 
       [ for example in spec?responses do
           if example?status.AsInteger() = 200 then 
-            let source = example?body.InnerText
-            yield JsonValue.Parse source ]
+            match example.TryGetProperty "body" with
+            | Some body -> 
+                let source = body.InnerText
+                yield JsonValue.ParseSample source
+            | None -> () ]
+
     let input = 
       { Optional = false
         CanPassAllConversionCallingTypes = false }
@@ -88,7 +95,7 @@ module internal ApiaryTypeBuilder =
     // Headers required by the apiary specification
     let reqHeaders = generateHeadersForCall spec
                     
-    // Combine arguments with opetional ?query and ?headers
+    // Combine arguments with optional ?query and ?headers
     let providedArgs = [ 
       for a in args do 
         yield ProvidedParameter(NameUtils.niceCamelName a, typeof<string>) 
@@ -135,8 +142,13 @@ module internal ApiaryTypeBuilder =
                            apiCtx.AsyncInvokeOperation(args) @>
       ProviderHelpers.asyncMap ctx.Replacer resultTy asyncInvoke bodyResConv
 
-    asyncM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
-    normalM.AddXmlDoc(NameUtils.trimHtml <| spec?description.AsString())
+    match spec.TryGetProperty "description" with
+    | None -> ()
+    | Some description ->
+        let xmlDoc = description.AsString() |> NameUtils.trimHtml 
+        asyncM.AddXmlDoc xmlDoc
+        normalM.AddXmlDoc xmlDoc
+
     [asyncM; normalM]
 
   /// This is the main recursive function that generates type for a "RestApi" specification. 
@@ -153,7 +165,27 @@ module internal ApiaryTypeBuilder =
   ///    are added to this type (and at runtime we need to keep arguments around)
   ///
   let rec generateSchema ctx parentName (parent:ProvidedTypeDefinition) = function
-    | Module(name, nested) ->          
+
+    | Module(name, [NormalizedFunction ctx.SpecialNames (name2, meth, args, servicePath, apiaryPath)]) when name = name2 ->
+        
+        // Generate method that calls the function
+        let spec = ApiarySchema.downloadSpecification ctx.ApiName meth apiaryPath
+        let methResTy, methResConv = generateMembersForJsonResult ctx (join parentName name) spec
+
+        generateOperations ctx (NameUtils.nicePascalName name) (args, meth, servicePath, spec) methResTy methResConv
+        |> Seq.iter parent.AddMember
+        
+    | NormalizedFunction ctx.SpecialNames (name, meth, args, servicePath, apiaryPath) ->
+
+        // Generate method that calls the function
+        let spec = ApiarySchema.downloadSpecification ctx.ApiName meth apiaryPath
+        let methResTy, methResConv = generateMembersForJsonResult ctx (join parentName name) spec
+
+        generateOperations ctx (NameUtils.nicePascalName name) (args, meth, servicePath, spec) methResTy methResConv
+        |> Seq.iter parent.AddMember
+
+    | Module(name, nested) ->
+
         // Generate new type for the nested module
         let nestedTyp = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<InternalApiaryContext>))
         ctx.TypeProviderType.AddMember(nestedTyp)
@@ -165,15 +197,8 @@ module internal ApiaryTypeBuilder =
         let ctx = { ctx with ApiaryContextSelector = Expr.Cast }
         nested |> Seq.iter (generateSchema ctx (join parentName name) nestedTyp)
 
-    | Function(name, (meth, path)) ->
-        // Generate method that calls the function
-        let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
-        let methResTy, methResConv = generateMembersForJsonResult ctx (join parentName name) spec
+    | Entity(name, FindMethod ctx.SpecialNames "GET" (args, (meth, path)), nested) ->
 
-        generateOperations ctx (NameUtils.nicePascalName name) ([], meth, path, spec) methResTy methResConv
-        |> Seq.iter parent.AddMember
-
-    | Entity(name, FindMethod "GET" (args, (meth, path)), nested) ->
         // Generate new type representing the entity
         // (but it needs to be generated type because we want to add members)
         let spec = ApiarySchema.downloadSpecification ctx.ApiName meth path
@@ -188,6 +213,7 @@ module internal ApiaryTypeBuilder =
         let ctx = { ctx with ApiaryContextSelector = fun self -> <@ ((%%self:IJsonDocument) :?> ApiaryDocument).Context @> }
         nested |> Seq.iter (generateSchema ctx (join parentName name) entityTy)
 
-    | Entity _-> 
+    | _-> 
+
         // Silently ignore...
         ()

@@ -267,7 +267,7 @@ module Debug =
                         printCall fromPipe printName mi args
                 | Let (var1, TupleGet (Var x, 1), Let (var2, TupleGet (Var y, 0), body)) when x = y ->
                     let indent = getCurrentIndent()
-                    bprintf sb "let %s, %s = %s" var1.Name var2.Name x.Name
+                    bprintf sb "let %s, %s = %s" var2.Name var1.Name x.Name
                     breakLine indent
                     printExpr false false body
                 | Let (var, value, body) ->

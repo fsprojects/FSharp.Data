@@ -118,7 +118,7 @@ type Http private() =
                 responseStream.Position <- 0L
               with _ -> ()
               if String.IsNullOrEmpty response then None
-              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
+              else Some(WebException(sprintf "%s\nResponse from %s:\n%s" exn.Message exn.Response.ResponseUri.OriginalString response, exn, exn.Status, exn.Response))
             with _ -> None
         match responseExn with
         | Some e -> raise e
@@ -164,18 +164,22 @@ type Http private() =
       Cookies = cookies
       StatusCode = statusCode }
 
+  /// Appends the query parameters to the url, taking care of proper escaping
+  static member internal AppendQueryToUrl(url:string, query, ?valuesArePlaceholders) =
+    match query with
+    | [] -> url
+    | query ->
+        let valuesArePlaceholders = defaultArg valuesArePlaceholders false
+        url
+        + if url.Contains "?" then "&" else "?"
+        + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + if valuesArePlaceholders then v else Uri.EscapeUriString v ]
+
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 #else
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
 #endif
-    // Format query parameters
-    let url = 
-      match query with
-      | None -> url
-      | Some query ->
-          url + (if url.Contains "?" then "&" else "?") + (String.concat "&" [ for k, v in query -> k + "=" + v ])
-    let uri = Uri url |> enableUriSlashes
+    let uri = Uri(Http.AppendQueryToUrl(url, defaultArg query [])) |> enableUriSlashes
 
     // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest

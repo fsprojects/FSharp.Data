@@ -84,6 +84,7 @@ let ``Unique generator works on single letter names`` () =
   let gen = uniqueGenerator nicePascalName
   gen "a" |> should equal "A"
   gen "a" |> should equal "A2"
+  gen "a" |> should equal "A3"
 
 [<Test>]
 let ``Trims HTML tags from string`` () = 
@@ -109,6 +110,7 @@ let ``Can pluralize names``() =
    check "fungus" "fungi"
    check "woman" "women"
    check "index" "indices"
+   check "status" "statuses"
 
 [<Test>]
 let ``Can singularize names``() =
@@ -132,3 +134,4 @@ let ``Can singularize names``() =
    check "women" "woman"
    check "indices" "index"
    check "indexes" "index"
+   check "statuses" "status"

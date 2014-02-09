@@ -47,6 +47,7 @@ let private tables = lazy(
          "course",   "courses"
          
          "cis",      "ces"
+         "us",       "uses"
          "sis",      "ses"
          "xis",      "xes"
          
@@ -76,8 +77,7 @@ let private tables = lazy(
          "leaf",     "leaves"
          "nife",     "nives"
          "life",     "lives"
-         "wife",     "wives"
-         "us",       "uses"]
+         "wife",     "wives"]
 
     let specialWords = 
         ["agendum",          "agenda",           ""
