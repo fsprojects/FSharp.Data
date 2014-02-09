@@ -62,7 +62,7 @@ let docFiles =
   seq { for sub in [ "library"; "tutorials"; "experimental"
                      "ja/library"; "ja/tutorials"; "ja/experimental" ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
-            if not (isMono && file.Contains "Apiary") then
+            if not (isMono && file.Contains "Provider") then
               yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE
