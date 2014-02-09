@@ -34,9 +34,6 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
-#if TEAM_CITY
-    |> Array.filter (fun x -> not (x.Contains "themoviedb"))
-#endif
     |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
