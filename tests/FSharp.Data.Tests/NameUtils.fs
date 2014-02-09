@@ -109,6 +109,7 @@ let ``Can pluralize names``() =
    check "fungus" "fungi"
    check "woman" "women"
    check "index" "indices"
+   check "status" "statuses"
 
 [<Test>]
 let ``Can singularize names``() =
@@ -132,3 +133,4 @@ let ``Can singularize names``() =
    check "women" "woman"
    check "indices" "index"
    check "indexes" "index"
+   check "statuses" "status"

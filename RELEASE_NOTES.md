@@ -140,3 +140,4 @@
 
 #### 2.0.0-alpha7 - Unreleased
 * Improved name generation algorithm to cope better with acronymns.
+* Fixed wrong singularization of words ending with 'uses'.
