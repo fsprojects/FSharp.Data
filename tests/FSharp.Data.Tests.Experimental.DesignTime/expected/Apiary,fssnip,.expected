@@ -11,7 +11,7 @@ class ApiaryProvider+Snippet : FDR.InternalApiaryContext
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-                             let query, headers = patternInput
+                             let headers, query = patternInput
                              let apiCtx = this
                              (apiCtx :> ApiaryOperations),
                              { Method = "GET"
@@ -20,14 +20,14 @@ class ApiaryProvider+Snippet : FDR.InternalApiaryContext
                                                id) |]
                                Headers = headers
                                Query = query }
-                         let args, apiCtx = patternInput
+                         let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
     member AsyncList: query:string * string list -> headers:string * string list -> ApiaryProvider+SnippetList[] async
     let f = new Func<_,_>(fun (t:ApiaryDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id))))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-                             let query, headers = patternInput
+                             let headers, query = patternInput
                              let apiCtx = this
                              (apiCtx :> ApiaryOperations),
                              { Method = "GET"
@@ -35,13 +35,13 @@ class ApiaryProvider+Snippet : FDR.InternalApiaryContext
                                Arguments = [| |]
                                Headers = headers
                                Query = query }
-                         let args, apiCtx = patternInput
+                         let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
     member GetSnippet: id:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+Snippet2
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-        let query, headers = patternInput
+        let headers, query = patternInput
         let apiCtx = this
         (apiCtx :> ApiaryOperations),
         { Method = "GET"
@@ -50,13 +50,13 @@ class ApiaryProvider+Snippet : FDR.InternalApiaryContext
                           id) |]
           Headers = headers
           Query = query }
-    let args, apiCtx = patternInput
+    let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
     member List: query:string * string list -> headers:string * string list -> ApiaryProvider+SnippetList[]
     JsonRuntime.ConvertArray(let patternInput = 
                                  let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
-                                 let query, headers = patternInput
+                                 let headers, query = patternInput
                                  let apiCtx = this
                                  (apiCtx :> ApiaryOperations),
                                  { Method = "GET"
@@ -64,7 +64,7 @@ class ApiaryProvider+Snippet : FDR.InternalApiaryContext
                                    Arguments = [| |]
                                    Headers = headers
                                    Query = query }
-                             let args, apiCtx = patternInput
+                             let apiCtx, args = patternInput
                              apiCtx.InvokeOperation(args), new Func<_,_>(id)))
 
 
