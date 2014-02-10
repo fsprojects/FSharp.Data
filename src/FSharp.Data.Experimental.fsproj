@@ -13,6 +13,8 @@
     <Name>FSharp.Data.Experimental</Name>
     <TargetFrameworkProfile />
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,33 +40,6 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Net\Http.fs" />
-    <Compile Include="CommonRuntime\IO.fs" />
-    <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\HttpUtils.fs" />
-    <Compile Include="CommonRuntime\TextConversions.fs" />
-    <Compile Include="CommonRuntime\TextRuntime.fs" />
-    <Compile Include="CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="CommonRuntime\StructuralInference.fs" />
-    <Compile Include="Json\JsonValue.fs" />
-    <Compile Include="Json\JsonConversions.fs" />
-    <Compile Include="Json\JsonExtensions.fs" />
-    <Compile Include="Json\JsonRuntime.fs" />
-    <Compile Include="Apiary\ApiaryRuntime.fs" />
-    <Compile Include="Runtime.Experimental.fs" />
-    <Compile Include="AssemblyInfo.Experimental.fs" />
-    <Compile Include="Html\HtmlRuntime.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -85,4 +60,34 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ItemGroup>
+    <Compile Include="Net\Http.fs" />
+    <Compile Include="CommonRuntime\IO.fs" />
+    <Compile Include="CommonRuntime\Caching.fs" />
+    <Compile Include="CommonRuntime\HttpUtils.fs" />
+    <Compile Include="CommonRuntime\TextConversions.fs" />
+    <Compile Include="CommonRuntime\TextRuntime.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonRuntime\HtmlParser.fs" />
+    <Compile Include="Json\JsonValue.fs" />
+    <Compile Include="Json\JsonConversions.fs" />
+    <Compile Include="Json\JsonExtensions.fs" />
+    <Compile Include="Json\JsonRuntime.fs" />
+    <Compile Include="Apiary\ApiaryRuntime.fs" />
+    <Compile Include="Runtime.Experimental.fs" />
+    <Compile Include="AssemblyInfo.Experimental.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
+    <None Include="Html\HtmlText-Remove.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
 </Project>

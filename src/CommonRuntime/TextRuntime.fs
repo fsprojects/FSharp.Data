@@ -2,6 +2,9 @@
 
 open System
 open System.Globalization
+#if INTERACTIVE 
+open FSharp.Data.Runtime
+#endif
 
 /// [omit]
 /// Static helper methods called from the generated code
@@ -145,6 +148,11 @@ module TextParser =
     let (|LetterDigit|_|) = function
         | LowerAtoZ c -> Some c
         | Number c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | _ -> None
+
+    let (|Letter|_|) = function
+        | LowerAtoZ c -> Some c
         | UpperAtoZ c -> Some (Char.ToLower(c))
         | _ -> None
 

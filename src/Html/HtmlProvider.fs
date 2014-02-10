@@ -15,6 +15,7 @@ open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime
 open FSharp.Net
 open System.Collections.Generic
+open FSharp.Data.Runtime.StructuralTypes
 
 type private FieldInfo = 
   { TypeForTuple : Type
@@ -53,12 +54,37 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
       let missingValues = String.Join(",", TextConversions.DefaultMissingValues)
       let generatedType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
       let tableContainer = ProvidedTypeDefinition("Tables", Some typeof<obj>)
-      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> HtmlElement.Parse(sample)) "HTML" this cfg resolutionFolder
+      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse (sample)) "HTML" this cfg resolutionFolder
+
+      let getInferedRowType culture (table:HtmlTable) = 
+          let inferedTypeToProperty name optional (typ:InferedType) = 
+                match typ with
+                | InferedType.Primitive(typ, unitType) -> PrimitiveInferedProperty.Create(name, typ, optional)                              
+                | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, optional) 
+
+          let inferRowType' culture (headers:string list) values = 
+              let inferProperty index value =
+                  {
+                      Name = (if List.isEmpty headers && index >= headers.Length then "Column_" + (string index) else headers.[index])
+                      Optional = false
+                      Type = (StructuralInference.inferPrimitiveType culture value None)
+                  }
+              StructuralTypes.InferedType.Record(None, values |> List.mapi inferProperty)
+               
+          let inferedType =
+              table.Rows
+              |> Seq.map (inferRowType' culture table.Headers)
+              |> Seq.reduce (StructuralInference.subtypeInfered true)
+
+          match inferedType with
+          | StructuralTypes.InferedType.Record(_, props) -> 
+              inferedType, props |> List.map (fun p -> inferedTypeToProperty p.Name p.Optional p.Type)
+          | _ -> failwith "expected record" 
 
       let providedTableTypes = 
-          dom.Tables()
-          |> Seq.map (fun table ->
-                let _, props = table.GetInferedRowType(cultureInfo)
+          dom
+          |> List.map (fun table ->
+                let _, props = getInferedRowType cultureInfo table
                 let fields = props |> List.mapi (fun index field ->
                     let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues culture field
                     { TypeForTuple = typWithoutMeasure
@@ -78,7 +104,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
                 let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowErasedType)
                 let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
-                let tableType = ProvidedTypeDefinition(table.Id, Some tableErasedTypeWithGeneratedRow)
+                let tableType = ProvidedTypeDefinition(table.Name, Some tableErasedTypeWithGeneratedRow)
                 tableType.AddMember(rowType)
 
                 let rowConverter =             
@@ -98,7 +124,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 m.InvokeCode <- (fun (Singleton text) -> 
                                     let stringArrayToRowVar = Var("rowConveter", rowConverter.Type)
                                     let body = 
-                                        tableErasedWithRowErasedType?Create () (Expr.Var stringArrayToRowVar, table.Id, table.Headers, text)
+                                        tableErasedWithRowErasedType?Create () (Expr.Var stringArrayToRowVar, table.Name, table.Headers, text)
                                     Expr.Let(stringArrayToRowVar, rowConverter, body)
                                 )
                 tableType.AddMember(m)
