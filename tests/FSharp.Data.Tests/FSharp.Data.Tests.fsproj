@@ -96,6 +96,8 @@
     </Content>
     <Content Include="Data\IrelandStations.xml" />
     <None Include="Data\MarketDepth.htm" />
+    <None Include="Data\SimpleHtmlTablesWithTr.html" />
+    <None Include="Data\SimpleHtmlTablesWithThead.html" />
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -157,7 +159,8 @@
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
-    <Compile Include="HtmlProvider.fs" />
+    <Compile Include="HtmlParser.fs" />
+    <None Include="Script1.fsx" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>

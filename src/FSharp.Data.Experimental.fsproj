@@ -13,6 +13,8 @@
     <Name>FSharp.Data.Experimental</Name>
     <TargetFrameworkProfile />
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +42,27 @@
     <DocumentationFile>bin\Release\FSharp.Data.Experimental.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="DefineConstants.targets" />
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' != '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>  -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
+  </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <ItemGroup>
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
@@ -49,6 +72,7 @@
     <Compile Include="CommonRuntime\TextRuntime.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonRuntime\HtmlParser.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
@@ -57,6 +81,7 @@
     <Compile Include="Runtime.Experimental.fs" />
     <Compile Include="AssemblyInfo.Experimental.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
+    <None Include="Html\HtmlText-Remove.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

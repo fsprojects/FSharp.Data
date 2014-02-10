@@ -13,6 +13,8 @@
     <Name>FSharp.Data.Experimental.DesignTime</Name>
     <TargetFrameworkProfile />
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +53,7 @@
     <Compile Include="CommonRuntime\StructuralInference.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />
     <Compile Include="CommonRuntime\NameUtils.fs" />
+    <Compile Include="CommonRuntime\HtmlParser.fs" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
@@ -111,4 +114,5 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
