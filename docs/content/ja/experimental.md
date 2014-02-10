@@ -30,8 +30,4 @@ F#型プロバイダに関する包括的なコレクションとなることを
 さらに、このライブラリでは（現時点では）ドキュメントを **作成** するための
 APIは公開されていません。
 
-その他のF#型プロバイダに関心がある場合には
-[FSharpx library](https://github.com/fsharp/fsharpx/)
-を参照されるとよいでしょう。
-
   [gh]: https://github.com/fsharp/FSharp.Data

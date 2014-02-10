@@ -21,13 +21,13 @@ JSONとXML間の変換を自身のコードで使いたい場合には
 ------
 
 ここでは( `System.Xml.Linq.dll` 内にある)LINQ to XMLのAPIと、
-`FSharp.Data.Json` 名前空間にある `JsonValue` を使います：
+`FSharp.Data` 名前空間にある `JsonValue` を使います：
 *)
 
 #r "System.Xml.Linq.dll"
 #r "../../../../bin/FSharp.Data.dll"
 open System.Xml.Linq
-open FSharp.Data.Json
+open FSharp.Data
 
 (**
 

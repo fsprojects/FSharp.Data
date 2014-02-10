@@ -14,8 +14,8 @@ open System.Linq
 open System.Text
 open System.Collections.Generic
 open Microsoft.FSharp.Core.CompilerServices
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
@@ -38,7 +38,7 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
         | _ -> sprintf ", 'limit': %d" objectLimit, None
 
     // A look aside table for computing schema information for properties.
-    let propsById = Dictionary<(string * string),FreebaseProperty>(HashIdentity.Structural) 
+    let propsById = Dictionary<(FreebaseId * FreebaseId),FreebaseProperty>(HashIdentity.Structural) 
     let defaultObjectLimit = 500
        
     member internal __.Connection = fb
@@ -55,21 +55,21 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
            match fbSchema.GetTypeByTypeId typeId with 
            | None -> None
            | Some fbType ->
-               for p in fbType.Properties do propsById.[(typeId,p.Id)] <- p 
+               for p in fbType.Properties do propsById.[(typeId,p.PropertyId)] <- p 
                match propsById.TryGetValue((typeId, propId)) with 
                | true, res -> Some res
                | _ -> None
 
-    member __.QueryFragmentsOfPropertiesOfAllIncludedTypes(typeId:string, queryConstraints ) =
+    member __.QueryFragmentsOfPropertiesOfAllIncludedTypes(typeId:FreebaseId, queryConstraints ) =
          [ for p in fbSchema.GetAllPropertiesOfAllIncludedTypesOfTypeId typeId do
-               if not (queryConstraints |> List.exists (fun (k,_v) -> k = p.Id)) then
+               if not (queryConstraints |> List.exists (fun (k,_v) -> k = p.PropertyId.Id)) then
                    match p.BasicSystemType, p.IsUnique with 
                    // Compund, non-unique: not eagerly loaded
-                   | Some _, false -> yield sprintf ", '%s' : []" p.Id
+                   | Some _, false -> yield sprintf ", '%s' : []" p.PropertyId.Id
                   // Could add this for unique objects with BasicSystemType.IsNone??
-                  //| None, true -> sprintf ", '%s' : [{ '/type/object/type' : null, '/type/object/id' : null, '/type/object/name' : null, 'limit':1 }]" p.Id
+                  //| None, true -> sprintf ", '%s' : [{ '/type/object/type' : null, '/type/object/mid' : null, '/type/object/name' : null, 'limit':1 }]" p.Id
                    // Compund, unique: not eagerly loaded
-                   | Some _, true -> yield sprintf ", '%s' : null" p.Id
+                   | Some _, true -> yield sprintf ", '%s' : null" p.PropertyId.Id
                    // Non-compund: eagerly loaded as field
                    | None, _ -> () ]
          |> String.concat ""
@@ -79,33 +79,38 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
                 yield FreebasePropertyBag(obj) } 
 
     /// Get property bags for all the objects of the given type, at the given type
-    member fbDataConn.GetInitialDataForObjectsFromQueryText(queryConstraints:(string * string) list, typeId:string, objectLimit) =
+    member fbDataConn.GetInitialDataForObjectsFromQueryText(queryConstraints:(string * string) list, typeId:FreebaseId, objectLimit) =
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (typeId, queryConstraints)
         let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
         let limitText, explicitLimit = getLimitText objectLimit queryConstraints
-        let query = sprintf "[{ '/type/object/type' : '%s' %s %s , '/type/object/id' : null, '/type/object/name' : null %s}]" typeId queryText fields  limitText
+        let query = sprintf "[{ '/type/object/type' : '%s' %s %s , '/type/object/mid' : null, '/type/object/name' : null %s}]" typeId.Id queryText fields  limitText
         fbDataConn.GetInitialDataForObjects (query, explicitLimit)
     
-    member fbDataConn.GetInitialDataForKnownObject(fbTypeId, fbObjId:string) =
+    member fbDataConn.GetInitialDataForSpecificObject(fbTypeId:FreebaseId, fbObjId:FreebaseMachineId) =
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (fbTypeId, [])
-        let query = sprintf "[{ '/type/object/type' : '%s', '/type/object/id' : '%s', '/type/object/name' : null %s }]" fbTypeId fbObjId fields 
+        let query = sprintf "[{ '/type/object/type' : '%s', '/type/object/mid' : '%s', '/type/object/name' : null %s }]" fbTypeId.Id fbObjId.MId fields 
         match fbDataConn.GetInitialDataForObjects (query, None) |> Seq.toArray with 
         | [| obj |] -> obj
-        | _ -> failwith (sprintf "object id '%s' not available" fbObjId)
+        | _ -> failwith (sprintf "object mid '%s' not available" fbObjId.MId)
     
     /// Get a property bag for a specific object, giving values for the properties of the given type 
-    member fbDataConn.GetInitialDataForSpecificObjectOfType(fbTypeId:string, fbId: string) =
+    member fbDataConn.GetInitialDataForSpecificObjectOfType(fbTypeId:FreebaseId, fbObjId: FreebaseMachineId) =
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (fbTypeId, [])
-        let query = sprintf "[{ '/type/object/type'  '%s', '/type/object/id' : '%s', '/type/object/name' : null %s }]" fbTypeId fbId fields 
+        let query = sprintf "[{ '/type/object/type'  '%s', '/type/object/mid' : '%s', '/type/object/name' : null %s }]" fbTypeId.Id fbObjId.MId fields 
         match fbDataConn.GetInitialDataForObjects (query, None) |> Seq.toArray with 
         | [| obj |] -> obj
-        | _ -> failwith (sprintf "object id '%s' not available" fbId)
+        | _ -> failwith (sprintf "object mid '%s' not available" fbObjId.MId)
 
     /// Get property bags for all the objects in the specific property relation to a given object, giving values for the properties of the given property type 
-    member fbDataConn.GetInitialDataForAllObjectsForPropertyOfObject(declaringObjectId:string,declaringTypeId:string,property:FreebaseProperty,fbTypeId:string,objectLimit) =
+    member fbDataConn.GetInitialDataForAllObjectsForPropertyOfObject(declaringObjectId:FreebaseMachineId,declaringTypeId:FreebaseId,property:FreebaseProperty,fbTypeId:FreebaseId,objectLimit) =
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (fbTypeId, [])
         let limitText, explicitLimit = getLimitText objectLimit []
-        let query = sprintf "[{'/type/object/id':null, '/type/object/name':null %s, 'optional':true, '/type/object/type':'%s', '!%s': [{'/type/object/id':'%s','/type/object/type':'%s' %s}]}]"  fields property.ExpectedType property.Id declaringObjectId declaringTypeId limitText
+        let query = 
+            "[{'/type/object/mid':null, '/type/object/name':null " + 
+            fields + ", " +
+            "'optional':true, '/type/object/type':'" + property.ExpectedTypeId.Id + "'," + 
+            "'!" + property.PropertyId.Id + "': [{'/type/object/mid':'" + declaringObjectId.MId + "','/type/object/type':'" + declaringTypeId.Id + "' " + 
+            limitText + "}]}]"      
         fbDataConn.GetInitialDataForObjects (query, explicitLimit)
 
 
@@ -113,8 +118,7 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
 /// [omit]
 /// Represents a single object drawn from Freebase. 
 type public IFreebaseObject = 
-    /// The ID of this item
-    abstract Id: string
+    abstract MachineId: string
     /// The name of this item
     abstract Name: string
     /// The main image associated with this item
@@ -125,16 +129,20 @@ type public IFreebaseObject =
     abstract GetImages : unit -> seq<string>
     /// Get a property by identifier, with a strong type
     abstract GetPropertyByIdTyped<'T> : declaringTypeId: string * propertyId:string -> 'T 
-    /// Get a property by identifier, with a strong type
+    /// Get a property by identifier
     abstract GetPropertyById : declaringTypeId: string * propertyId:string -> obj
+    /// Get a property by identifier, with a strong type, where the property is known to be populated
+    abstract GetRequiredPropertyByIdTyped<'T> : declaringTypeId: string * propertyId:string -> 'T 
+    /// Get a property by identifier, where the property is known to be populated
+    abstract GetRequiredPropertyById : declaringTypeId: string * propertyId:string -> obj
 
 module private RuntimeConversion = 
     // The handwritten JSON deserializer uses 'JsonValue.N of decimal | JsonValue.D of double' for numbers, but the schema typing expects 'double | Nullable<double>'
     //   - convJsonPrimValue has converted this to (null | boxed-decimal | boxed-double)
     let convertUnits (useUnits:bool) (isIncoming:bool) (fbProp: FreebaseProperty) (fv:double)  = 
-        let u = fbProp.UnitOfMeasure
-        if useUnits && units.ContainsKey u  then 
-            let (_measureAnnotation,conversionFactor,offset) = units.[u]
+        let u = fbProp.UnitOfMeasureId
+        if useUnits && units.ContainsKey u.Id  then 
+            let (_measureAnnotation,conversionFactor,offset) = units.[u.Id]
             let offset = match offset with Some x -> x | None -> 0.0
             if isIncoming then (fv + offset) * conversionFactor
             else (fv / conversionFactor) - offset
@@ -177,7 +185,7 @@ module private RuntimeConversion =
 // This bias also extends to how the object is presented via ToString and the ICustomTypeDescriptor
 // property descriptions, since only the properties from 'firstType' are returned. 
 [<StructuredFormatDisplay("{DisplayText}")>]
-type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebasePropertyBag, firstTypeId:string) = 
+type FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebasePropertyBag, firstTypeId:FreebaseId) = 
     // Some properties are computed on-demand. This is a lookaside table for those properties.
     let objPropsOnDemand = Dictionary<string,obj>(HashIdentity.Structural)
 
@@ -188,12 +196,15 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
               | _ -> invalidArg "rawResult" "not a sequence"  }
 
     // This is the public entry point
-    member public fbo.GetPropertyByIdTyped<'T>(declaringTypeId: string, propertyId:string) : 'T = 
-        fbo.GetPropertyById (declaringTypeId, propertyId) |> unbox
+    member internal fbo.GetPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
+        fbo.GetPropertyById (declaringTypeId, propertyId, false) |> unbox
+
+    member internal fbo.GetRequiredPropertyByIdTyped<'T>(declaringTypeId: FreebaseId, propertyId:FreebaseId) : 'T = 
+        fbo.GetPropertyById (declaringTypeId, propertyId, true) |> unbox
 
     // Get a non-compund property. If it is eagerly populated then we fetch from 'objProps'
     // directly. Otherwise, the property must be populated on-demand.
-    member internal this.GetSimplePropertyById(declaringTypeId:string, propertyId:string) : obj = 
+    member internal this.GetSimplePropertyById(declaringTypeId:FreebaseId, propertyId:FreebaseId) : obj = 
         let extractPrimValue v = 
             match v with 
             // Some constraints cause Freebase primitives to be extracted to { 'value' : 3 }
@@ -203,42 +214,42 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                 | _ -> convJsonPrimValue v
             | v -> convJsonPrimValue v
         
-        if objProps.Dictionary.ContainsKey propertyId then 
-            extractPrimValue objProps.[propertyId]
+        if objProps.Dictionary.ContainsKey propertyId.Id then 
+            extractPrimValue objProps.[propertyId.Id]
         else
-           match objPropsOnDemand.TryGetValue(propertyId) with
+           match objPropsOnDemand.TryGetValue(propertyId.Id) with
            | true, res -> res
            | _ -> 
                //printf "lazily populating properties for type '%s' for object '%s'" declaringTypeId this.Id 
                match fb.Schema.GetTypeByTypeId declaringTypeId with 
                | None -> null
                | Some fbDeclaringType ->
-                   let obj = fb.GetInitialDataForSpecificObjectOfType(fbDeclaringType.Id, this.Id)
+                   let obj = fb.GetInitialDataForSpecificObjectOfType(fbDeclaringType.TypeId, this.MachineId)
                    for KeyValue(k,v) in obj.Dictionary do
                        objPropsOnDemand.[k] <- extractPrimValue v
-                   match objPropsOnDemand.TryGetValue(propertyId) with
+                   match objPropsOnDemand.TryGetValue(propertyId.Id) with
                    | true, res -> res
-                   | _ -> failwith (sprintf "could not lazily populate property '%s' for type '%s' for object '%s', keys = %s" propertyId declaringTypeId this.Id (String.concat "," [ for k in obj.Dictionary.Keys -> "'" + k + "'"]))
+                   | _ -> failwith (sprintf "could not lazily populate property '%s' for type '%s' for object mid '%s', keys = %s" propertyId.Id declaringTypeId.Id this.MachineId.MId (String.concat "," [ for k in obj.Dictionary.Keys -> "'" + k + "'"]))
 
-    member internal this.GetPropertyById(declaringTypeId:string, propertyId:string) : obj = 
-        if propertyId = "/type/object/id" then box objProps.["/type/object/id"]
-        elif propertyId = "/type/object/name" then box objProps.["/type/object/name"]
+    member internal this.GetPropertyById(declaringTypeId:FreebaseId, propertyId:FreebaseId, alwaysThere: bool) : obj = 
+        if propertyId.Id = "/type/object/mid" then box objProps.["/type/object/mid"]
+        elif propertyId.Id = "/type/object/name" then box objProps.["/type/object/name"]
         else
             let fbPropOpt = fb.TryGetPropertyById((declaringTypeId, propertyId))
             match fbPropOpt with 
-            | None -> failwith (sprintf "couldn't find information for property '%s' of type '%s'" propertyId declaringTypeId)
+            | None -> failwith (sprintf "couldn't find information for property '%s' of type '%s'" propertyId.Id declaringTypeId.Id)
             | Some fbProp ->
                 let isUnique = fbProp.IsUnique
                 match fbProp.BasicSystemType with
                 // Unique or sequence of compound type: no basic system type
                 | None -> 
-                    let propTypeOpt = fb.Schema.GetTypeByTypeId fbProp.ExpectedType
+                    let propTypeOpt = fb.Schema.GetTypeByTypeId fbProp.ExpectedTypeId
                     match propTypeOpt with 
                     | Some propType ->
-                      memoizeLookup objPropsOnDemand propertyId (fun _propertyId -> 
+                      memoizeLookup objPropsOnDemand propertyId.Id (fun _propertyId -> 
                         let results = 
-                            seq { for objData in fb.GetInitialDataForAllObjectsForPropertyOfObject(this.Id,declaringTypeId,fbProp,propType.Id,fb.Limit) do
-                                     yield FreebaseObject(fb,objData,propType.Id) }
+                            seq { for objData in fb.GetInitialDataForAllObjectsForPropertyOfObject(this.MachineId,declaringTypeId,fbProp,propType.TypeId,fb.Limit) do
+                                     yield FreebaseObject(fb,objData,propType.TypeId) }
                         if fbProp.IsUnique then 
                             match results |> Seq.toList with
                             | objData :: _ -> objData |> box
@@ -259,7 +270,7 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                 
                     let rawResult = this.GetSimplePropertyById(declaringTypeId, propertyId)
                     if isUnique then
-                        let targetType = if supportsNull then basicType else makeRuntimeNullableTy basicType
+                        let targetType = if supportsNull || alwaysThere then basicType else makeRuntimeNullableTy basicType
                         RuntimeConversion.convertOne fb.UseUnits true rawResult targetType fbProp
                     elif basicType=typeof<string> then
                         this.GetSimplePropertyById(declaringTypeId, propertyId)
@@ -275,16 +286,21 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
 
     
     /// Images associated with this item. 
-    member this.GetImages() = FreebaseImageInformation.GetImages(fb.Connection,this.Id)
+    member this.GetImages() = FreebaseImageInformation.GetImages(fb.Connection,this.MachineId)
 
-    /// The ID of this item
-    member this.Id = match objProps.["/type/object/id"] with JsonValue.String s -> s | _ -> failwith "id was not a string"
+    member this.Id = 
+        match objProps.["/type/object/mid"] with 
+        | JsonValue.String s -> s
+        | _ -> failwith "id was not a string"
+
+    /// The machine ID of this item
+    member internal this.MachineId = FreebaseMachineId(this.Id) 
 
     /// The Name of this item
     member this.Name = match objProps.["/type/object/name"] with JsonValue.String s -> s | JsonValue.Null -> null |  _ -> failwith "name was not a string"
 
     /// The Blurb text for this item, if any
-    member this.Blurb = fb.Schema.GetBlurbById this.Id
+    member this.Blurb = fb.Schema.GetBlurbByMachineId this.MachineId
 
     /// The main image associated with this item, if any
     // It seems like there's not a good way at bind-time to pick the first out of the Images array.
@@ -292,21 +308,23 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
     member this.MainImage = this.GetImages().FirstOrDefault()
 
     interface IFreebaseObject with 
-        member x.Id = x.Id
+        member x.MachineId = x.MachineId.MId
         member x.Name = x.Name
         member x.MainImage = x.MainImage
         member x.Blurb = x.Blurb
         member x.GetImages() = x.GetImages()
-        member x.GetPropertyByIdTyped<'T>(declaringTypeId, propertyId) = x.GetPropertyByIdTyped<'T>(declaringTypeId, propertyId)
-        member x.GetPropertyById(declaringTypeId, propertyId) = x.GetPropertyById(declaringTypeId, propertyId)
+        member x.GetPropertyByIdTyped<'T>(declaringTypeId, propertyId) = x.GetPropertyByIdTyped<'T>(FreebaseId declaringTypeId, FreebaseId propertyId)
+        member x.GetPropertyById(declaringTypeId, propertyId) = x.GetPropertyById(FreebaseId declaringTypeId, FreebaseId propertyId, false)
+        member x.GetRequiredPropertyByIdTyped<'T>(declaringTypeId, propertyId) = x.GetRequiredPropertyByIdTyped<'T>(FreebaseId declaringTypeId, FreebaseId propertyId)
+        member x.GetRequiredPropertyById(declaringTypeId, propertyId) = x.GetRequiredPropertyByIdTyped(FreebaseId declaringTypeId, FreebaseId propertyId)
 
     member this.DisplayText = this.ToString()
     override this.ToString() =
         match box dict with
-        | null -> "null:" + firstTypeId
+        | null -> "null:" + firstTypeId.Id
         | _ -> 
             match this.Name with 
-            | null -> this.Id + ":" + firstTypeId
+            | null -> this.MachineId.MId + ":" + firstTypeId.Id
             | nm -> nm
 #if FX_NO_CUSTOMTYPEDESCRIPTOR
 #else
@@ -340,14 +358,14 @@ type public FreebaseObject internal (fb:FreebaseDataConnection, objProps:Freebas
                             // mangling the property name to make properties available for WPF data binding
                             let propName = p.PropertyName |> mangle
                             // Compute the erased type
-                            let typ = p.FSharpPropertyRuntimeType(fb.Schema,typeof<FreebaseObject>)
+                            let typ = p.FSharpPropertyRuntimeType(fb.Schema,typeof<FreebaseObject>,alwaysThere=false)
                             yield
                                 { new System.ComponentModel.PropertyDescriptor(propName, [||]) with
                                         override __.IsReadOnly = true
                                         override __.ComponentType = typeof<FreebaseObject>
                                         override __.PropertyType = typ
                                         override __.CanResetValue _ = false
-                                        override __.GetValue o = (o :?> FreebaseObject).GetPropertyById(firstType.Id,p.Id) 
+                                        override __.GetValue o = (o :?> FreebaseObject).GetPropertyById(firstType.TypeId,p.PropertyId,false) 
                                         override __.ResetValue _ = failwith "Not implemented"
                                         override __.SetValue(_,_) = failwith "Not implemented"
                                         override __.ShouldSerializeValue _ = false }
@@ -462,7 +480,7 @@ module internal QueryImplementation =
         | AsType(FreebasePropertyGet(v),_) -> Some v //look through 'Coerce' nodes
         | MethodCall(Some e, (MethodWithName "GetPropertyByIdTyped"), [String typeId; String propId]) -> Some (e, typeId, propId)
         | PropertyGet(Some e, PropertyWithName "Name") -> Some(e, "/type/object", "/type/object/name")
-        | PropertyGet(Some e, PropertyWithName "Id") -> Some(e, "/type/object", "/type/object/id")
+        | PropertyGet(Some e, PropertyWithName "Id") -> Some(e, "/type/object", "/type/object/mid")
         | LetExpr(v,e,FreebasePropertyGet(Var v2, typeId, propId)) when v = v2 -> Some (e, typeId, propId)
         | _ -> None
 
@@ -494,7 +512,7 @@ module internal QueryImplementation =
         match e with 
         | FreebasePropertyGets(e,props) -> 
             let (typeId, propId) = List.head (List.rev props)
-            match conn.TryGetPropertyById(typeId, propId) with 
+            match conn.TryGetPropertyById(FreebaseId(typeId), FreebaseId(propId)) with 
             | Some prop when prop.IsUnique -> Some (e, props, prop)
             | _ -> None
         | _ -> None
@@ -509,7 +527,7 @@ module internal QueryImplementation =
         | PropertyOpConstants of FreebasePropAccess * string * obj list
 
     type FreebaseQueryData = 
-        | Base of string 
+        | Base of FreebaseId
         | TailSelect of FreebaseQueryData * (obj -> obj)
         | Filter of FreebaseQueryData * FreebaseQueryQualification
         | Take of FreebaseQueryData * int
@@ -562,30 +580,30 @@ module internal QueryImplementation =
         | UniquePropertyNotNull (propAccess,isCompound) -> 
             let constraintText = 
                 if isCompound then 
-                    "{ '/type/object/id':null, 'limit':1 }"
+                    "{ '/type/object/mid':null, 'limit':1 }"
                 else 
                     "{ 'value':null, 'limit':1 }"
             formatPropAccessCx fbDataConn propAccess "" constraintText
         | UniquePropertyNull (propAccess,isCompound) -> 
             let constraintText = 
                 if isCompound then 
-                    "{ '/type/object/id': null, 'optional':'forbidden', 'limit':1 }"
+                    "{ '/type/object/mid': null, 'optional':'forbidden', 'limit':1 }"
                 else 
                     "{ 'value':null, 'optional':'forbidden', 'limit':1 }"
             formatPropAccessCx fbDataConn propAccess "" constraintText
         | PropertyOpConstant (propAccess, op, o) -> 
             let (typeId, propId) = List.head (List.rev propAccess)
-            let fbPropOpt = fbDataConn.TryGetPropertyById(typeId, propId) 
+            let fbPropOpt = fbDataConn.TryGetPropertyById(FreebaseId(typeId), FreebaseId(propId)) 
             (formatPropAccessCx fbDataConn propAccess (if op = "=" then "" else op) (formatQueryConstant fbDataConn fbPropOpt o))
         | PropertyOpConstants (propAccess, op, objs) -> 
             let (typeId, propId) = List.head (List.rev propAccess)
-            let fbPropOpt = fbDataConn.TryGetPropertyById(typeId, propId) 
+            let fbPropOpt = fbDataConn.TryGetPropertyById(FreebaseId(typeId), FreebaseId(propId)) 
             (formatPropAccessCx fbDataConn propAccess (if op = "=" then "" else op) ("[" + (objs |> List.map (formatQueryConstant fbDataConn fbPropOpt) |> String.concat ",") + "]" ))
 
     /// Format as query text for MQL
     let rec formatQueryData fbDataConn q = 
         match q with 
-        | Base typeId -> [("type", quote typeId)]
+        | Base typeId -> [("type", quote typeId.Id)]
         | Filter (xs,q) -> formatQueryData fbDataConn xs  @ [ formatQueryCondition fbDataConn q ]
         | Take (xs,n) -> formatQueryData fbDataConn xs  @ [ ("limit", string n) ]
         | Sort (xs,[(direction,propIds)]) -> 
@@ -818,7 +836,7 @@ module internal QueryImplementation =
                     let queryConstraints = formatQueryData source.FreebaseDataConnection queryData @ extraConstraint
                     let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
                     let typeId = getBaseTypeId queryData
-                    let query = sprintf "{ '/type/object/type' : '%s' %s }" typeId queryText 
+                    let query = sprintf "{ '/type/object/type' : '%s' %s }" typeId.Id queryText 
                     let count = source.FreebaseDataConnection.Connection.Query<int>(query, fun j -> j.AsInteger())
                     box count  :?> 'T
                 | _ ->
@@ -836,7 +854,7 @@ type public FreebaseDomain internal (fbDataConn,domainId:string) =
         member __.Id = domainId
         /// Get all the Freebase objects which have the given Freebase type id.
         member __.GetObjectsOfTypeId typeId =
-            QueryImplementation.FreebaseQueryable.Create (typeId, fbDataConn)
+            QueryImplementation.FreebaseQueryable.Create (FreebaseId(typeId), fbDataConn)
 
 /// [omit]
 type IFreebaseDomainCategory =
@@ -861,8 +879,8 @@ type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) =
     /// Get all the Freebase objects which have the given type id and object id.
     interface IFreebaseIndividuals with 
         member __.GetIndividualById (typeId, objId) =
-            let objData = fbDataConn.GetInitialDataForKnownObject(typeId,objId)
-            FreebaseObject(fbDataConn,objData,typeId) :> _
+            let objData = fbDataConn.GetInitialDataForSpecificObject(FreebaseId typeId, FreebaseMachineId objId)
+            FreebaseObject(fbDataConn,objData,FreebaseId typeId) :> _
 
     /// Get all the Freebase objects which have the given Freebase type id.
     static member public _GetIndividualsObject (collectionObj:obj) =
@@ -873,6 +891,10 @@ type FreebaseIndividuals internal (fbDataConn: FreebaseDataConnection) =
 /// Arguments of the DataContext.SendingRequest event
 type FreebaseSendingRequestArgs(uri: System.Uri) = 
     member x.RequestUri = uri
+
+/// Arguments of the DataContext.SendingQuery event
+type FreebaseSendingQueryArgs(queryText: string) = 
+    member x.QueryText = queryText
 
 /// [omit]
 type IFreebaseDataContext =
@@ -895,7 +917,10 @@ type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useU
 /// [omit]
 and FreebaseDataContextSettings internal (fbQueries,fbDataConn) = 
     let sendingRequest = fbQueries.SendingRequest  |> Event.map (fun uri -> FreebaseSendingRequestArgs(uri))
+    let sendingQuery = fbQueries.SendingQuery |> Event.map (fun queryText -> FreebaseSendingQueryArgs(queryText))
 
+    [<CLIEvent>]
+    member __.SendingQuery = sendingQuery
     [<CLIEvent>]
     member __.SendingRequest = sendingRequest
     member __.ServiceUrl with get() = fbQueries.ServiceUrl and set v = fbQueries.ServiceUrl <- v

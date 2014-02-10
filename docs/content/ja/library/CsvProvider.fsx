@@ -62,12 +62,12 @@ let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // 最新の行をチェックする。なお 'Date' プロパティは
 // 'DateTime' 型で、 'Open' プロパティは 'decimal' 型であることに注意
-let firstRow = msft.Data |> Seq.head
+let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
 
 // 株価を四本値形式で表示
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
 (**
@@ -75,7 +75,7 @@ for row in msft.Data do
 > 訳注：四本値とは高値、安値、始値、終値の4種の値段のこと
 
 生成された型にはCSVファイルのデータを行コレクションとして返す
-`Data` プロパティがあります。
+`Rows` プロパティがあります。
 ここでは `for` ループを使って各行を走査しています。
 見て分かるように、行のための(生成された)型には `High` や `Low` 、
 `Close` など、CSVファイルの各列に対応するプロパティがあります。
@@ -97,7 +97,7 @@ open System
 open FSharp.Charting
 
 // 株価をビジュアル化
-[ for row in msft.Data -> row.Date, row.Open ]
+[ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
 
 (**
@@ -107,7 +107,7 @@ open FSharp.Charting
 
 // 先月の株価を四本値形式で取得
 let recent = 
-  [ for row in msft.Data do
+  [ for row in msft.Rows do
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
@@ -140,14 +140,14 @@ Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
 let small = CsvProvider<"../../data/SmallTest.csv">.GetSample()
 
 (**
-先ほどの例と同じく、行データは値 `small` の `Data` プロパティで取得できます。
+先ほどの例と同じく、行データは値 `small` の `Rows` プロパティで取得できます。
 今回は生成されたプロパティ `Distance` と `Time` に単位が付加されています。
 以下の単純な計算をみてください：
 *)
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-for row in small.Data do
+for row in small.Rows do
   let speed = row.Distance / row.Time
   if speed > 15.0M<metre/second> then 
     printfn "%s (%A m/s)" row.Name speed
@@ -175,7 +175,7 @@ CSVの列区切り文字には代わりにセミコロン( `;` )が使われま�
 
 let airQuality = CsvProvider<"../../data/AirQuality.csv", ";">.GetSample()
 
-for row in airQuality.Data do
+for row in airQuality.Rows do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
@@ -200,12 +200,12 @@ let mortalityNy = CsvProvider<"../../data/MortalityNY.tsv", IgnoreErrors=true>.G
 
 // 原因名をコードで検索
 // (事故で負傷した自転車走者)
-let cause = mortalityNy.Data |> Seq.find (fun r -> 
+let cause = mortalityNy.Rows |> Seq.find (fun r -> 
   r.``Cause of death Code`` = "V13.4")
 
 // 負傷した走者数を出力
 printfn "原因: %s" cause.``Cause of death``
-for r in mortalityNy.Data do
+for r in mortalityNy.Rows do
   if r.``Cause of death Code`` = "V13.4" then 
     printfn "%s (%d 件)" r.County r.Count
 
@@ -235,7 +235,7 @@ for r in mortalityNy.Data do
 *)
 
 let mean = 
-  airQuality.Data 
+  airQuality.Rows 
   |> Seq.map (fun row -> row.Ozone) 
   |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
   |> Seq.average 
@@ -244,7 +244,7 @@ let mean =
 
 サンプルとして指定するデータにはどの列にも値無しのデータが含まれていないものの、
 実行時にはどこかで値無しが現れる可能性があるという場合には
-`SafeMode` を `true` に設定すれば、
+`AssumeMissingValues` を `true` に設定すれば、
 `CsvProvider` がどこかの列には値無しが現れるだろうと想定するようになります。
 
 ## 列の型を制御する
@@ -274,7 +274,7 @@ static引数 `PreferOptionals` を `true` にします。
 別の設定を使いたい場合には、ヘッダ行で列の型を丸括弧で囲んで記述することで
 デフォルトの動作を上書きできます。
 これは測定単位を指定する方法と同じです。
-ヘッダ行による指定方法は `SafeMode` や `PreferOptionals` の動作を上書きします。
+ヘッダ行による指定方法は `AssumeMissingValues` や `PreferOptionals` の動作を上書きします。
 指定可能な型は以下の通りです：
 
 * `int`
@@ -329,7 +329,7 @@ static引数 `PreferOptionals` を `true` にします。
 *)
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
-for row in csv.Data do
+for row in csv.Rows do
   printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
 (**
@@ -346,7 +346,7 @@ for row in csv.Data do
 *)
 
 let titanic1 = CsvProvider<"../../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
-for row in titanic1.Data do
+for row in titanic1.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -356,7 +356,7 @@ for row in titanic1.Data do
 *)
 
 let titanic2 = CsvProvider<"../../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
-for row in titanic2.Data do
+for row in titanic2.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -372,7 +372,7 @@ for row in titanic2.Data do
 これらはいずれもスキーマを維持するようになっているため、
 変形後は `Save` メソッドのいずれかのオーバーロードを使って結果を保存できます。
 結果をCSV形式で保存したくない場合、あるいはデータの形式を変更したい場合には、
-`Data` プロパティで取得できる行のシーケンスに対して直接
+`Rows` プロパティで取得できる行のシーケンスに対して直接
 `Seq` モジュールの機能を使うこともできます。
 
 *)
@@ -387,7 +387,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 
 ## ビッグデータの処理
 
-デフォルトでは行がキャッシュされるため、 `Data` プロパティを複数回走査しても
+デフォルトでは行がキャッシュされるため、 `Rows` プロパティを複数回走査しても
 特に問題はありません。
 しかし1回しか走査しないのであれば、 `CsvProvider` のstatic引数
 `CacheRows` を `false` にすればキャッシュを無効化できます。

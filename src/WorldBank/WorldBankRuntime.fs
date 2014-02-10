@@ -9,10 +9,9 @@ open System.Collections
 open System.Diagnostics
 open System.Globalization
 open System.Net
-open FSharp.Data.Json
-open FSharp.Data.Json.Extensions
+open FSharp.Data
+open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
-open FSharp.Net
 
 [<AutoOpen>]
 /// [omit]
@@ -43,14 +42,12 @@ module Implementation =
     type internal ServiceConnection(restCache:ICache<_>,serviceUrl:string, sources) =
 
         let worldBankUrl (functions: string list) (props: (string * string) list) = 
-            seq { yield serviceUrl
-                  for item in functions do
-                      yield "/" + Uri.EscapeUriString(item)
-                  yield "?per_page=1000"
-                  for key, value in props do
-                      yield "&" + key + "=" + Uri.EscapeUriString(value:string) 
-                  yield "&format=json" } 
-            |> String.concat ""
+            let url = 
+                serviceUrl::(List.map Uri.EscapeUriString functions)
+                |> String.concat "/"
+            let query = [ "per_page", "1000"
+                          "format", "json" ] @ props
+            Http.AppendQueryToUrl(url, query)
 
         // The WorldBank data changes very slowly indeed (monthly updates to values, rare updates to schema), hence caching it is ok.
 
@@ -71,13 +68,13 @@ module Implementation =
                         Debug.WriteLine (sprintf "[WorldBank] error: %s" (e.ToString()))
                         if attempt > 0 then
                             return! worldBankRequest (attempt - 1) funcs args
-                        else return! failwithf "Failed to request '%s'. Error: %A" url (e.ToString()) }
+                        else return! failwithf "Failed to request '%s'. Error: %O" url e }
 
         let rec getDocuments funcs args page parallelPages = 
             async { let! docs = 
                         Async.Parallel 
                             [ for i in 0 .. parallelPages - 1 -> 
-                                  worldBankRequest retryCount funcs (args@["page", string (page+i)]) ]
+                                  worldBankRequest retryCount funcs (args @ ["page", string (page+i)]) ]
                     let docs = docs |> Array.map JsonValue.Parse
                     Debug.WriteLine (sprintf "[WorldBank] geting page count")
                     let pages = docs.[0].[0]?pages.AsInteger()
@@ -179,14 +176,14 @@ module Implementation =
         member internal __.GetDataAsync(countryOrRegionCode, indicatorCode) = 
             async { let! data = 
                       getData
-                        [ yield "countries"
-                          yield countryOrRegionCode
-                          yield "indicators";
-                          yield indicatorCode ]
+                        [ "countries"
+                          countryOrRegionCode
+                          "indicators"
+                          indicatorCode ]
                         [ "date", "1900:2050" ]
                         "date"
                     return 
-                      seq { for (k, v) in data do
+                      seq { for k, v in data do
                               if not (String.IsNullOrEmpty v) then 
                                  yield int k, float v } 
                       // It's a time series - sort it :-)  We should probably also interpolate (e.g. see R time series library)
@@ -299,7 +296,7 @@ type CountryCollection<'T when 'T :> Country> internal (connection: ServiceConne
                   yield Country(connection, country.Id) :?> 'T }  
     interface seq<'T> with member x.GetEnumerator() = items.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (items :> IEnumerable).GetEnumerator()
-    interface ICountryCollection with member x.GetCountry(countryCode, countryName) = Country(connection, countryCode)
+    interface ICountryCollection with member x.GetCountry(countryCode, (*this parameter is only here to help FunScript*)_countryName) = Country(connection, countryCode)
     
 /// [omit]
 type IRegion =

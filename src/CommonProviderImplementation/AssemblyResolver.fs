@@ -93,37 +93,26 @@ let init (cfg : TypeProviderConfig) =
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
-    let isPortable47 = cfg.SystemRuntimeAssemblyVersion = Version(2, 0, 5, 0)
-    //portable7 has SystemRuntimeAssemblyVersion = 4.0.0.0, so we can't detect it, but it's only supported in F# 3.1, so there's no problem
-    let isFSharp31 = typedefof<option<_>>.Assembly.GetName().Version = Version(4, 3, 1, 0)
-
-    let differentFramework = isPortable47 || isFSharp31
-    let useReflectionOnly = differentFramework
+    let runningOnMono = Type.GetType("Mono.Runtime") <> null
+    let useReflectionOnly = not runningOnMono
 
     let runtimeAssembly = 
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
         else Assembly.LoadFrom cfg.RuntimeAssembly
 
-    let mainRuntimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
+    let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
-    let asmMappings = 
-        if differentFramework then
-            let runtimeAsmsPairs = 
-                runtimeAssembly.GetReferencedAssemblies()
-                |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
-                |> Seq.choose (fun asmName -> 
-                    designTimeAssemblies.TryFind asmName.Name
-                    |> Option.bind (fun designTimeAsm ->
-                        let targetAsm = getAssembly asmName useReflectionOnly
-                        if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
-                                                 targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
-                          Some (designTimeAsm, targetAsm)
-                        else None))
-                |> Seq.toList
-            if runtimeAsmsPairs = [] then
-                failwithf "Something went wrong when creating the assembly mappings"
-            mainRuntimeAssemblyPair::runtimeAsmsPairs
-        else
-            [mainRuntimeAssemblyPair]
-
-    runtimeAssembly, AssemblyReplacer.create asmMappings
+    let referencedAssembliesPairs = 
+        runtimeAssembly.GetReferencedAssemblies()
+        |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
+        |> Seq.choose (fun asmName -> 
+            designTimeAssemblies.TryFind asmName.Name
+            |> Option.bind (fun designTimeAsm ->
+                let targetAsm = getAssembly asmName useReflectionOnly
+                if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
+                                            targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
+                    Some (designTimeAsm, targetAsm)
+                else None))
+        |> Seq.toList
+    
+    runtimeAssembly, AssemblyReplacer.create (runtimeAssemblyPair::referencedAssembliesPairs)

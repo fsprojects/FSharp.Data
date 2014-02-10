@@ -4,7 +4,7 @@ module FSharp.Data.Runtime.CsvInference
 open System
 open System.IO
 open System.Text.RegularExpressions
-open FSharp.Data.Csv
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
@@ -131,12 +131,12 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
       SchemaParseResult.Full prop
   | None, None when isOverrideByName -> SchemaParseResult.Rename(name, originalName)
   | None, None -> SchemaParseResult.Name str
-  | None, Some unit when forSchemaOverride -> SchemaParseResult.Name str
+  | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
-let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture schema safeMode preferOptionals =
+let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo schema assumeMissingValues preferOptionals =
 
   // This has to be done now otherwise subtypeInfered will get confused
   let makeUnique = NameUtils.uniqueGenerator id
@@ -217,7 +217,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
 
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
-  let rowsIterator = csv.Data.GetEnumerator()
+  let rowsIterator = csv.Rows.GetEnumerator()
   let rows = 
     if rowsIterator.MoveNext() then
       seq {
@@ -227,13 +227,13 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
             yield rowsIterator.Current
         finally
           rowsIterator.Dispose()
-        if safeMode then
-          yield CsvRow(csv, [| for i in 1..headers.Length -> "" |])
+        if assumeMissingValues then
+          yield CsvRow(csv, Array.create headers.Length "")
       }
     else
-      CsvRow(csv, [| for i in 1..headers.Length -> "" |]) |> Seq.singleton 
+      CsvRow(csv, Array.create headers.Length "") |> Seq.singleton 
   
-  let rows = if count > 0 then Seq.truncate (if safeMode && count < Int32.MaxValue then count + 1 else count) rows else rows
+  let rows = if count > 0 then Seq.truncate (if assumeMissingValues && count < Int32.MaxValue then count + 1 else count) rows else rows
 
   // Infer the type of collection using structural inference
   let types = 
@@ -249,7 +249,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues culture sche
                     // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
                     elif Array.exists ((=) <| value.Trim()) missingValues then 
                         if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit)
-                    else inferPrimitiveType culture value unit
+                    else inferPrimitiveType cultureInfo value unit
               { Name = name
                 Optional = false
                 Type = typ } ]
@@ -342,11 +342,12 @@ type CsvFile with
     /// Parameters:
     /// * inferRows - Number of rows to use for inference. If this is zero, all rows are used
     /// * missingValues - The set of strings recogized as missing values
-    /// * culture - The culture used for parsing numbers and dates
+    /// * cultureInfo - The culture used for parsing numbers and dates
     /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
+    /// * assumeMissingValues - Assumes all columns can have missing values
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
     /// * getUnitOfMeasure - optional function to resolve Units of Measure
-    member x.InferColumnTypes(inferRows, missingValues, culture, schema, safeMode, preferOptionals, ?getUnitOfMeasure) =
+    member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, ?getUnitOfMeasure) =
         let tryGetUnit = defaultArg getUnitOfMeasure (fun (_:string) -> null:Type) 
-        inferType tryGetUnit x inferRows missingValues culture schema safeMode preferOptionals
+        inferType tryGetUnit x inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals
         ||> getFields preferOptionals

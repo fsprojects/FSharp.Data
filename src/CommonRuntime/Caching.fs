@@ -52,7 +52,7 @@ let createInMemoryCache expiration =
 
 #if FX_NO_LOCAL_FILESYSTEM
 
-let createInternetFileCache (prefix:string) expiration = createInMemoryCache expiration, null
+let createInternetFileCache (_prefix:string) expiration = createInMemoryCache expiration, null
 
 #else
 
@@ -72,7 +72,7 @@ let private hashString (plainText:string) =
 /// Creates a cache that stores data in a local file system
 let createInternetFileCache prefix expiration =
 
-  // e.g. C:\Users\<user>\AppData\Local\Microsoft\Windows\Temporary Internet Files
+  // %UserProfile%\AppData\Local\Microsoft\Windows\INetCache
   let cacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
   let downloadCache = Path.Combine(cacheFolder, prefix)
 

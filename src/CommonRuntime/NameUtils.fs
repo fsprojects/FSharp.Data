@@ -38,6 +38,9 @@ let nicePascalName (s:string) =
     match tryAt s i with
     | Lower _ when not takeUpper -> yield! consume from takeUpper (i + 1)
     | Upper _ when takeUpper -> yield! consume from takeUpper (i + 1)
+    | Lower _ when takeUpper ->
+        yield from, (i - 1)
+        yield! restart (i - 1)
     | _ -> 
         yield from, i
         yield! restart i }
@@ -76,7 +79,7 @@ let uniqueGenerator niceName =
         lastLetterPos <- lastLetterPos - 1
       if lastLetterPos = name.Length - 1 then
         name <- name + "2"
-      elif lastLetterPos = 0 then
+      elif lastLetterPos = 0 && name.Length = 1 then
         name <- (UInt64.Parse name + 1UL).ToString()
       else
         let number = name.Substring(lastLetterPos + 1)

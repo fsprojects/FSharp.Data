@@ -5,7 +5,7 @@
 module ProviderImplementation.JsonInference
 
 open System
-open FSharp.Data.Json
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -13,7 +13,7 @@ open FSharp.Data.Runtime.StructuralTypes
 /// functionality is handled in `StructureInference` (most notably, by
 /// `inferCollectionType` and various functions to find common subtype), so
 /// here we just need to infer types of primitive JSON values.
-let rec inferType culture allowNulls json = 
+let rec inferType cultureInfo allowNulls parentName json = 
   let inline inrange lo hi v = (v >= decimal lo) && (v <= decimal hi)
   let inline integer v = Math.Round(v:decimal) = v
 
@@ -21,7 +21,7 @@ let rec inferType culture allowNulls json =
   // Null and primitives without subtyping hiearchies
   | JsonValue.Null -> InferedType.Null
   | JsonValue.Boolean _ -> InferedType.Primitive(typeof<bool>, None)
-  | JsonValue.String s -> StructuralInference.inferPrimitiveType culture s None 
+  | JsonValue.String s -> StructuralInference.inferPrimitiveType cultureInfo s None 
   // For numbers, we test if it is integer and if it fits in smaller range
   | JsonValue.Number 0M -> InferedType.Primitive(typeof<Bit0>, None)
   | JsonValue.Number 1M -> InferedType.Primitive(typeof<Bit1>, None)
@@ -30,9 +30,16 @@ let rec inferType culture allowNulls json =
   | JsonValue.Number _ -> InferedType.Primitive(typeof<decimal>, None)
   | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None)
   // More interesting types 
-  | JsonValue.Array ar -> StructuralInference.inferCollectionType allowNulls (Seq.map (inferType culture allowNulls) ar)
+  | JsonValue.Array ar -> StructuralInference.inferCollectionType allowNulls (Seq.map (inferType cultureInfo allowNulls (NameUtils.singularize parentName)) ar)
   | JsonValue.Object o ->
+      let name = 
+        if String.IsNullOrEmpty parentName 
+        then None 
+        else Some parentName
       let props = 
-        [ for KeyValue(k, v) in o -> 
-            { Name = k; Optional = false; Type = inferType culture allowNulls v } ]
-      InferedType.Record(None, props)
+        [ for propName, value in o |> Map.toArray |> Array.sortBy fst -> 
+            let t = inferType cultureInfo allowNulls propName value
+            { Name = propName
+              Optional = false
+              Type = t } ]
+      InferedType.Record(name, props)

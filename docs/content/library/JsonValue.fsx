@@ -16,10 +16,10 @@ To load a sample JSON document, we first need to reference the `FSharp.Data.dll`
 *)
 
 #r "../../../bin/FSharp.Data.dll"
-open FSharp.Data.Json
+open FSharp.Data
 
 (**
-The `FSharp.Data.Json` namespace contains the `JsonValue` type that can be used
+The `FSharp.Data` namespace contains the `JsonValue` type that can be used
 to parse strings formatted using JSON as follows:
 *)
 
@@ -36,7 +36,7 @@ can be used to examine the structure.
 ## Using JSON extensions
 
 We do not cover this technique in this introduction. Instead, we look at a number
-of extensions that become available after opening the `FSharp.Data.Json.Extensions` 
+of extensions that become available after opening the `FSharp.Data.JsonExtensions` 
 namespace. Once opened, we can write:
 
  * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`
@@ -67,7 +67,7 @@ Methods that may need to parse a numeric value or date (such as `AsFloat` and
 The following example shows how to process the sample JSON value:
 *)
 
-open FSharp.Data.Json.Extensions
+open FSharp.Data.JsonExtensions
 
 // Print name and birth year
 let n = info?name

@@ -2,7 +2,7 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Net
+namespace FSharp.Data
 
 open System
 open System.IO
@@ -53,7 +53,7 @@ type Http private() =
 #else
     if runningOnMono then uri else
     let uri = Uri(uri.OriginalString)
-    let paq = uri.PathAndQuery
+    uri.PathAndQuery |> ignore
     let flagsFieldInfo = typeof<Uri>.GetField("m_Flags", BindingFlags.Instance ||| BindingFlags.NonPublic)
     let flags = flagsFieldInfo.GetValue(uri) :?> uint64
     let flags = flags &&& (~~~0x30UL)
@@ -118,7 +118,7 @@ type Http private() =
                 responseStream.Position <- 0L
               with _ -> ()
               if String.IsNullOrEmpty response then None
-              else Some(WebException(sprintf "%s\n%s" exn.Message response, exn, exn.Status, exn.Response))
+              else Some(WebException(sprintf "%s\nResponse from %s:\n%s" exn.Message exn.Response.ResponseUri.OriginalString response, exn, exn.Status, exn.Response))
             with _ -> None
         match responseExn with
         | Some e -> raise e
@@ -127,7 +127,7 @@ type Http private() =
         return Unchecked.defaultof<_>
   }
 
-  static let toHttpResponse forceText responseUrl (contentType:string) (contentEncoding:string) statusCode cookies headers (memoryStream:MemoryStream) =
+  static let toHttpResponse forceText responseUrl (contentType:string) (_contentEncoding:string) statusCode cookies headers (memoryStream:MemoryStream) =
 
     let isText (mimeType:string) =
       let isText (mimeType:string) =
@@ -145,9 +145,9 @@ type Http private() =
     let respBody = 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
       let memoryStream = 
-        if contentEncoding = "gzip" then
+        if _contentEncoding = "gzip" then
           new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-        elif contentEncoding = "deflate" then
+        elif _contentEncoding = "deflate" then
           new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
         else
           memoryStream
@@ -164,18 +164,22 @@ type Http private() =
       Cookies = cookies
       StatusCode = statusCode }
 
+  /// Appends the query parameters to the url, taking care of proper escaping
+  static member internal AppendQueryToUrl(url:string, query, ?valuesArePlaceholders) =
+    match query with
+    | [] -> url
+    | query ->
+        let valuesArePlaceholders = defaultArg valuesArePlaceholders false
+        url
+        + if url.Contains "?" then "&" else "?"
+        + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + if valuesArePlaceholders then v else Uri.EscapeUriString v ]
+
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {
 #else
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
 #endif
-    // Format query parameters
-    let url = 
-      match query with
-      | None -> url
-      | Some query ->
-          url + (if url.Contains "?" then "&" else "?") + (String.concat "&" [ for k, v in query -> k + "=" + v ])
-    let uri = Uri url |> enableUriSlashes
+    let uri = Uri(Http.AppendQueryToUrl(url, defaultArg query [])) |> enableUriSlashes
 
     // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest

@@ -22,3 +22,6 @@
 *.RTF diff=astextplain
 
 *.sh text eol=lf
+
+*.png binary
+*.exe binary

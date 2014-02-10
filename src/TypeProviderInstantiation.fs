@@ -13,7 +13,7 @@ type CsvProviderArgs =
       Schema : string
       HasHeaders : bool
       IgnoreErrors : bool
-      SafeMode : bool
+      AssumeMissingValues : bool
       PreferOptionals : bool
       Quote : char
       MissingValues : string
@@ -46,7 +46,8 @@ type FreebaseProviderArgs =
       Pluralize : bool 
       SnapshotDate : string
       LocalCache : bool
-      AllowLocalQueryEvaluation : bool }
+      AllowLocalQueryEvaluation : bool
+      UseRefinedTypes: bool }
 
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
@@ -67,7 +68,7 @@ type TypeProviderInstantiation =
                    box x.Schema
                    box x.HasHeaders
                    box x.IgnoreErrors
-                   box x.SafeMode
+                   box x.AssumeMissingValues
                    box x.PreferOptionals
                    box x.Quote
                    box x.MissingValues
@@ -100,7 +101,8 @@ type TypeProviderInstantiation =
                    box x.Pluralize
                    box x.SnapshotDate
                    box x.LocalCache
-                   box x.AllowLocalQueryEvaluation |]
+                   box x.AllowLocalQueryEvaluation 
+                   box x.UseRefinedTypes |]
         Debug.generate resolutionFolder runtimeAssembly platform f args
 
     override x.ToString() =
@@ -112,7 +114,7 @@ type TypeProviderInstantiation =
              x.Culture
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
-             x.SafeMode.ToString()
+             x.AssumeMissingValues.ToString()
              x.PreferOptionals.ToString()]
         | Xml x -> 
             ["Xml"
@@ -148,7 +150,7 @@ type TypeProviderInstantiation =
                   Schema = args.[4].Replace(';', ',')
                   HasHeaders = args.[5] |> bool.Parse
                   IgnoreErrors = false
-                  SafeMode = args.[6] |> bool.Parse
+                  AssumeMissingValues = args.[6] |> bool.Parse
                   PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
                   MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
@@ -174,10 +176,11 @@ type TypeProviderInstantiation =
                        NumIndividuals = args.[2] |> Int32.Parse
                        UseUnitsOfMeasure = args.[3] |> bool.Parse
                        Pluralize = args.[4] |> bool.Parse
-                       SnapshotDate = "2013-10-19T20:32:39"
+                       SnapshotDate = ""
                        ServiceUrl = FreebaseQueries.DefaultServiceUrl
                        LocalCache = true
-                       AllowLocalQueryEvaluation = true }
+                       AllowLocalQueryEvaluation = true 
+                       UseRefinedTypes = true }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices

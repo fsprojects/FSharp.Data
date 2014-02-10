@@ -12,9 +12,8 @@ module FSharp.Data.Tests.DesignTime.InferenceTests
 open FsUnit
 open System
 open System.IO
-open FSharp.Data.Json
 open NUnit.Framework
-open FSharp.Data.Csv
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
@@ -54,14 +53,14 @@ let ``Seq.pairBy helper function preserves order``() =
 let ``Finds common subtype of numeric types (decimal)``() =
   let source = JsonValue.Parse """[ 10, 10.23 ]"""
   let expected = SimpleCollection(InferedType.Primitive(typeof<decimal>, None))
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (int64)``() =
   let source = JsonValue.Parse """[ 10, 2147483648 ]"""
   let expected = SimpleCollection(InferedType.Primitive(typeof<int64>, None))
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -71,7 +70,7 @@ let ``Infers heterogeneous type of InferedType.Primitives``() =
     [ InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> InferedType.Collection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -82,14 +81,14 @@ let ``Infers heterogeneous type of InferedType.Primitives and nulls``() =
       InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None))
       InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None)) ]
     |> Map.ofSeq |> InferedType.Collection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``Finds common subtype of numeric types (float)``() =
   let source = JsonValue.Parse """[ 10, 10.23, 79228162514264337593543950336 ]"""
   let expected = SimpleCollection(InferedType.Primitive(typeof<float>, None))
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -100,7 +99,7 @@ let ``Infers heterogeneous type of InferedType.Primitives and records``() =
       InferedTypeTag.Record None, 
         (Single, InferedType.Record(None, [ { Name="a"; Optional=false; Type=InferedType.Primitive(typeof<Bit0>, None) } ])) ]
     |> Map.ofSeq |> InferedType.Collection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -110,7 +109,7 @@ let ``Merges types in a collection of collections``() =
     InferedType.Record(None, [ {Name = "a"; Optional = true; Type = InferedType.Primitive(typeof<bool>, None) }
                                {Name = "b"; Optional = true; Type = InferedType.Primitive(typeof<decimal>, None) } ])
     |> SimpleCollection |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
     
 [<Test>]
@@ -121,7 +120,7 @@ let ``Unions properties of records in a collection``() =
                                {Name = "b"; Optional = true; Type = InferedType.Primitive(typeof<string>, None) }
                                {Name = "c"; Optional = true; Type = InferedType.Primitive(typeof<bool>, None) }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -130,7 +129,7 @@ let ``InferedType.Null is a valid value of string``() =
   let expected =
     InferedType.Record(None, [ {Name = "a"; Optional = false; Type = InferedType.Primitive(typeof<string>, None) } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -149,18 +148,18 @@ let ``Infers mixed fields of a a record as heterogeneous type with nulls (1.)``(
   let expected =
     InferedType.Record(None, [ {Name = "a"; Optional = false; Type = WithNull(InferedType.Primitive(typeof<int>, None)) } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
 let ``InferedType.Null is a valid value of record``() =
   let source = JsonValue.Parse """[ {"a":null}, {"a":{"b": 1}} ]"""
   let nestedRecord = 
-    InferedType.Record(None, [{ Name = "b"; Optional = false; Type = InferedType.Primitive(typeof<Bit1>, None) }])
+    InferedType.Record(Some "a", [{ Name = "b"; Optional = false; Type = InferedType.Primitive(typeof<Bit1>, None) }])
   let expected =
     InferedType.Record(None, [ {Name = "a"; Optional = false; Type = nestedRecord } ])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -172,7 +171,7 @@ let ``Infers mixed fields of a record as heterogeneous type``() =
   let expected = 
     InferedType.Record(None, [ { Name = "a"; Optional = false; Type = InferedType.Heterogeneous cases }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -184,7 +183,7 @@ let ``Infers mixed fields of a record as heterogeneous type with nulls (2.)``() 
   let expected = 
     InferedType.Record(None, [ { Name = "a"; Optional = false; Type = WithNull(InferedType.Primitive(typeof<int>, None)) }])
     |> SimpleCollection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -195,7 +194,7 @@ let ``Inference of multiple nulls works``() =
     [ InferedTypeTag.Collection, (Single, SimpleCollection(InferedType.Record(None, [prop])))
       InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit0>, None)) ]
     |> Map.ofSeq |> InferedType.Collection
-  let actual = JsonInference.inferType culture true source
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
 
 [<Test>]
@@ -354,4 +353,15 @@ let ``Inference schema override by parameter``() =
   let col6 = "C"       , typeof<float>, "float<m>"     , TypeWrapper.None
   let expected = [ col1; col2; col3; col4; col5; col6 ]
 
+  actual |> shouldEqual expected
+
+[<Test>]
+let ``Doesn't infer 12-002 as a date``() =
+  // a previous version inferred a IntOrStringOrDateTime
+  let source = JsonValue.Parse """[ "12-002", "001", "2012-selfservice" ]"""
+  let expected = 
+    [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None))
+      InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<int>, None)) ]
+    |> Map.ofSeq |> InferedType.Collection
+  let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected

@@ -35,6 +35,20 @@ let ``Makes first letter uppercase`` () =
   niceCamelName "abc"  |> should equal "abc"
 
 [<Test>]
+let ``Handles acronyms`` () =
+  nicePascalName "ABC" |> should equal "Abc"
+  niceCamelName "ABC"  |> should equal "abc"
+
+  nicePascalName "TVSeries" |> should equal "TvSeries"
+  niceCamelName "TVSeries"  |> should equal "tvSeries"
+
+  nicePascalName "ABCWord" |> should equal "AbcWord"
+  niceCamelName "ABCWord"  |> should equal "abcWord"
+
+  nicePascalName "abcABCWord" |> should equal "AbcAbcWord"
+  niceCamelName "abcABCWord"  |> should equal "abcAbcWord"
+
+[<Test>]
 let ``Detects word after underscore`` () = 
   nicePascalName "hello_world" |> should equal "HelloWorld"
   niceCamelName "hello_world"  |> should equal "helloWorld"
@@ -70,6 +84,7 @@ let ``Unique generator works on single letter names`` () =
   let gen = uniqueGenerator nicePascalName
   gen "a" |> should equal "A"
   gen "a" |> should equal "A2"
+  gen "a" |> should equal "A3"
 
 [<Test>]
 let ``Trims HTML tags from string`` () = 
@@ -95,6 +110,7 @@ let ``Can pluralize names``() =
    check "fungus" "fungi"
    check "woman" "women"
    check "index" "indices"
+   check "status" "statuses"
 
 [<Test>]
 let ``Can singularize names``() =
@@ -118,3 +134,4 @@ let ``Can singularize names``() =
    check "women" "woman"
    check "indices" "index"
    check "indexes" "index"
+   check "statuses" "status"

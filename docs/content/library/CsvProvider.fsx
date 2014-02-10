@@ -52,16 +52,16 @@ let msft = Stocks.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT")
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
-let firstRow = msft.Data |> Seq.head
+let firstRow = msft.Rows |> Seq.head
 let lastDate = firstRow.Date
 let lastOpen = firstRow.Open
 
 // Print the prices in the HLOC format
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close
 
 (**
-The generated type has a property `Data` that returns the data from the CSV file as a
+The generated type has a property `Rows` that returns the data from the CSV file as a
 collection of rows. We iterate over the rows using a `for` loop. As you can see the
 (generated) type for rows has properties such as `High`, `Low` and `Close` that correspond
 to the columns in the CSV file.
@@ -82,7 +82,7 @@ open System
 open FSharp.Charting
 
 // Visualize the stock prices
-[ for row in msft.Data -> row.Date, row.Open ]
+[ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
 
 (**
@@ -92,7 +92,7 @@ data over the last month:
 
 // Get last months' prices in HLOC format 
 let recent = 
-  [ for row in msft.Data do
+  [ for row in msft.Rows do
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
@@ -132,14 +132,14 @@ let small2 = new CsvProvider<"../data/SmallTest.csv">()
 but the VisualStudio intellisense for the type provider parameters doesn't work when we use a default
 constructor for a type provider, so we'll keep using `GetSample` instead.
 
-As in the previous example, the `small` value exposes the rows using the `Data` property.
+As in the previous example, the `small` value exposes the rows using the `Rows` property.
 The generated properties `Distance` and `Time` are now annotated with units. Look at the
 following simple calculation:
 *)
 
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-for row in small.Data do
+for row in small.Rows do
   let speed = row.Distance / row.Time
   if speed > 15.0M<metre/second> then 
     printfn "%s (%A m/s)" row.Name speed
@@ -162,7 +162,7 @@ any textual tabular format. Here is an example using `;` as a separator:
 
 let airQuality = new CsvProvider<"../data/AirQuality.csv", ";">()
 
-for row in airQuality.Data do
+for row in airQuality.Rows do
   if row.Month > 6 then 
     printfn "Temp: %i Ozone: %f " row.Temp row.Ozone
 
@@ -182,12 +182,12 @@ let mortalityNy = CsvProvider<"../data/MortalityNY.tsv", IgnoreErrors=true>.GetS
 
 // Find the name of a cause based on code
 // (Pedal cyclist injured in an accident)
-let cause = mortalityNy.Data |> Seq.find (fun r -> 
+let cause = mortalityNy.Rows |> Seq.find (fun r -> 
   r.``Cause of death Code`` = "V13.4")
 
 // Print the number of injured cyclists 
 printfn "CAUSE: %s" cause.``Cause of death``
-for r in mortalityNy.Data do
+for r in mortalityNy.Rows do
   if r.``Cause of death Code`` = "V13.4" then 
     printfn "%s (%d cases)" r.County r.Count
 
@@ -213,7 +213,7 @@ each row, then remove missing values and then use the standard `Seq.average` fun
 *)
 
 let mean = 
-  airQuality.Data 
+  airQuality.Rows 
   |> Seq.map (fun row -> row.Ozone) 
   |> Seq.filter (fun elem -> not (Double.IsNaN elem)) 
   |> Seq.average 
@@ -221,7 +221,7 @@ let mean =
 (**
 
 If the sample doesn't have missing values on all columns, but at runtime missing values could
-appear anywhere, you can set the static parameter `SafeMode` to `true` in order to force `CsvProvider` 
+appear anywhere, you can set the static parameter `AssumeMissingValues` to `true` in order to force `CsvProvider` 
 to assume missing values can occur in any column.
 
 ## Controlling the column types
@@ -240,7 +240,7 @@ so by default we won't generate a `string option`. If you prefer to use optional
 
 If you have other preferences, e.g. if you want a column to be a `float` instead of a `decimal`,
 you can override the default behaviour by specifying the types in the header column between braces, similar to what can be done to
-specify the units of measure. This will override both `SafeMode` and `PreferOptionals`. The valid types are:
+specify the units of measure. This will override both `AssumeMissingValues` and `PreferOptionals`. The valid types are:
 
 * `int`
 * `int?`
@@ -288,7 +288,7 @@ and still have the provider infer the type for you. Example:
 *)
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
-for row in csv.Data do
+for row in csv.Rows do
   printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
 
 (**
@@ -302,7 +302,7 @@ the other columns blank in the schema (you also don't need to add all the traili
 *)
 
 let titanic1 = CsvProvider<"../data/Titanic.csv", Schema=",,Passenger Class,,,float">.GetSample()
-for row in titanic1.Data do
+for row in titanic1.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -312,7 +312,7 @@ Alternatively, you can rename and override the type of any column by name instea
 *)
 
 let titanic2 = CsvProvider<"../data/Titanic.csv", Schema="Fare=float,PClass->Passenger Class">.GetSample()
-for row in titanic2.Data do
+for row in titanic2.Rows do
   printfn "%s Class = %d Fare = %g" row.Name row.``Passenger Class`` row.Fare
 
 (**
@@ -326,7 +326,7 @@ available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`
 preserve the schema, so after transforming you can save the results by using one of the overloads of
 the `Save` method. If you don't need to save the results in the CSV format, or if your transformations
 need to change the shape of the data, you can also use the operations available in the `Seq` module on the the 
-sequence of rows exposed via the `Data` property directly.
+sequence of rows exposed via the `Rows` property directly.
 *)
 
 // Saving the first 10 rows that don't have missing values to a new csv file
@@ -339,7 +339,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 
 ## Handling big datasets
 
-By default, the rows are cached so you can iterate over the `Data` property multiple times without worrying.
+By default, the rows are cached so you can iterate over the `Rows` property multiple times without worrying.
 But if you will only iterate once, you can disable caching by settting the `CacheRows` static parameter of `CsvProvider`
 to `false` . If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already

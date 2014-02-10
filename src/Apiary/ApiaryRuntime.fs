@@ -5,8 +5,8 @@
 namespace FSharp.Data.Runtime
 
 open System
-open FSharp.Data.Json
-open FSharp.Net
+open System.ComponentModel
+open FSharp.Data
 
 module internal ApiaryUtils =
   let formatHeaders headers = 
@@ -27,29 +27,32 @@ type OperationArguments =
     Headers:(string * string)[]
     Query:(string * string)[] }
 
-/// Underlying representation of the generated JSON types
-[<StructuredFormatDisplay("{JsonValue}")>]
-type ApiaryDocument private (json:JsonValue, context:InternalApiaryContext option) =
+[<StructuredFormatDisplay("{_Print}")>]
+type ApiaryDocument private (json:JsonValue, path:string, context:InternalApiaryContext option) =
 
-  new(json, context) = ApiaryDocument(json, Some context)
-  new(json) = ApiaryDocument(json, None)
+  new(json, path, context) = ApiaryDocument(json, path, Some context)
+  new(json, path) = ApiaryDocument(json, path, None)
 
-  member x.JsonValue = json
+  member private x.Json = json
+  member private x.Path = path
 
   interface IJsonDocument with 
-    member x.JsonValue = x.JsonValue
-    member x.CreateNew json = upcast ApiaryDocument json
+    member x.JsonValue = x.Json
+    member x.Path = x.Path
+    member x.CreateNew(json, pathIncrement) = upcast ApiaryDocument(json, x.Path + pathIncrement)
+
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+  member x._Print = x.Json.ToString()
 
   member x.Context = context.Value
 
   override x.Equals(y) =
     match y with
-    | :? ApiaryDocument as y -> x.JsonValue = y.JsonValue
+    | :? ApiaryDocument as y -> x.Json = y.Json && x.Path = y.Path
     | _ -> false 
 
-  override x.GetHashCode() = x.JsonValue.GetHashCode()
-
-  override x.ToString() = x.JsonValue.ToString()
+  override x.GetHashCode() = x.Json.GetHashCode()
 
 and ApiaryOperations = 
   abstract InvokeOperation : OperationArguments -> ApiaryDocument
@@ -84,7 +87,7 @@ and InternalApiaryContext private
 
         // Create context that captures all arguments already specified
         let context = InternalApiaryContext(rootUrl, globalQuery, globalHeaders, allArguments)
-        return ApiaryDocument(JsonValue.Parse(res), context)
+        return ApiaryDocument(JsonValue.Parse(res), "", context)
       else
         return failwith "Only GET supported" }
 

@@ -25,7 +25,7 @@ let generateSetupScript dir proj =
     let refs = 
         fsProjXml.Document.Descendants(getElemName "Reference")
         |> Seq.choose (fun elem -> getElemValue "HintPath" elem |?? getAttrValue "Include" elem)
-        |> Seq.map (fun ref -> "#r \"" + ref.Replace(@"\", @"\\") + "\"")
+        |> Seq.map (fun ref -> "#r \"" + ref.Replace(@"\", @"\\").Split(',').[0] + "\"")
         |> Seq.toList
 
     let fsFiles = 

@@ -19,10 +19,10 @@ F#の [CSV 型プロバイダー](CsvProvider.html) はF#で作成された
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Data.Csv
+open FSharp.Data
 
 (**
-`FSharp.Data.Csv` 名前空間には `CsvFile` 型が含まれていて、
+`FSharp.Data` 名前空間には `CsvFile` 型が含まれていて、
 この型ではデータの読み取り用に2つのstaticメソッドが公開されています。
 `Parse` メソッドはデータを `string` 型の値として指定できます。
 `Load` メソッドはデータをファイルあるいはWeb上のリソースから読み取ることができます
@@ -35,21 +35,21 @@ open FSharp.Data.Csv
 let msft = CsvFile.Load("http://ichart.finance.yahoo.com/table.csv?s=MSFT").Cache()
 
 // HLOC形式で株価を表示
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%s, %s, %s)" (row.GetColumn "High") (row.GetColumn "Low") (row.GetColumn "Date")
 
 (**
 
 `CsvProvider` とは異なり、 `CsvFile` はパフォーマンスを上げるために
 ストリーミングモードで動作します。
-つまり `Data` は1度だけしか走査できません。
+つまり `Rows` は1度だけしか走査できません。
 複数回走査する必要がある場合には `Cache` メソッドを使用することになります。
 ただしこのメソッドはメモリを多く使用するため、
 巨大なデータセットを処理する場合には使用すべきではありません。
 
 ## CSV の拡張機能を使用する
 
-ここでは `FSharp.Data.Csv.Extensions` 名前空間をオープンすることで
+ここでは `FSharp.Data.CsvExtensions` 名前空間をオープンすることで
 使用できるようになる拡張機能について説明します。
 この名前空間をオープンすると以下のような記述ができるようになります：
 
@@ -73,9 +73,9 @@ for row in msft.Data do
 これらの拡張メソッドを呼び出しています：
 *)
 
-open FSharp.Data.Csv.Extensions
+open FSharp.Data.CsvExtensions
 
-for row in msft.Data do
+for row in msft.Rows do
   printfn "HLOC: (%f, %M, %O)" (row.["High"].AsFloat()) (row?Low.AsDecimal()) (row?Date.AsDateTime())
 
 (**

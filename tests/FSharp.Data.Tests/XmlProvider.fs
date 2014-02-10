@@ -218,6 +218,9 @@ let ``Global inference with empty elements doesn't crash``() =
 
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
 
+// Acronyms are renamed correctly; see https://github.com/fsharp/FSharp.Data/issues/309
+let _ = XmlProvider<"<root><TVSeries /></root>">.GetSample().TvSeries
+
 type ChoiceFeed = XmlProvider<"<s><a /><b /></s>", SampleIsList=true>
 
 let ``Infers type for sample list with different root elements`` () =
@@ -241,10 +244,22 @@ let ``Infers type and reads mixed RSS/Atom feed document`` () =
   atomFeed.Feed.IsSome |> shouldEqual true
   atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
 
+let ``Optional elements should work at runtime when missing`` () =
+    let samples = XmlProvider<"""
+<items>
+    <item>
+        <title>A</title>
+        <description>B</description>
+    </item>
+    <item>
+        <title>C</title>
+    </item>
+    <item>
+        <title>D</title>
+        <description></description>
+    </item>
+</items>""", SampleIsList=true>.GetSamples()
 
-
-
-
-  
-
-
+    samples.[0].Description |> should equal (Some "B")
+    samples.[1].Description |> should equal None
+    samples.[2].Description |> should equal None

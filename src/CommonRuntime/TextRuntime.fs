@@ -12,34 +12,34 @@ type TextRuntime =
 
   /// Returns CultureInfo matching the specified culture string
   /// (or InvariantCulture if the argument is null or empty)
-  static member GetCulture(culture) =
-    if String.IsNullOrEmpty culture then CultureInfo.InvariantCulture 
-    else CultureInfo culture
+  static member GetCulture(cultureStr) =
+    if String.IsNullOrEmpty cultureStr then CultureInfo.InvariantCulture 
+    else CultureInfo cultureStr
 
   // --------------------------------------------------------------------------------------
   // string option -> type
 
   static member ConvertString(text:string option) = text
 
-  static member ConvertInteger(culture, text) = 
-    text |> Option.bind (fun text -> text |> TextConversions.AsInteger (TextRuntime.GetCulture culture))
+  static member ConvertInteger(cultureStr, text) = 
+    text |> Option.bind (TextConversions.AsInteger (TextRuntime.GetCulture cultureStr))
   
-  static member ConvertInteger64(culture, text) = 
-    text |> Option.bind (fun text -> text |> TextConversions.AsInteger64 (TextRuntime.GetCulture culture))
+  static member ConvertInteger64(cultureStr, text) = 
+    text |> Option.bind (TextConversions.AsInteger64 (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertDecimal(culture, text) =
-    text |> Option.bind (fun text -> text |> TextConversions.AsDecimal (TextRuntime.GetCulture culture))
+  static member ConvertDecimal(cultureStr, text) =
+    text |> Option.bind (TextConversions.AsDecimal (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertFloat(culture, missingValues:string, text) = 
-    text |> Option.bind (fun text -> text |> TextConversions.AsFloat (missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)) 
+  static member ConvertFloat(cultureStr, missingValues:string, text) = 
+    text |> Option.bind (TextConversions.AsFloat (missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)) 
                                                                      (*useNoneForMissingValues*)true
-                                                                     (TextRuntime.GetCulture culture))
+                                                                     (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertBoolean(culture, text) = 
-    text |> Option.bind (fun text -> text |> TextConversions.AsBoolean (TextRuntime.GetCulture culture))
+  static member ConvertBoolean(cultureStr, text) = 
+    text |> Option.bind (TextConversions.AsBoolean (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertDateTime(culture, text) = 
-    text |> Option.bind (fun text -> text |> TextConversions.AsDateTime (TextRuntime.GetCulture culture))
+  static member ConvertDateTime(cultureStr, text) = 
+    text |> Option.bind (TextConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
 
   static member ConvertGuid(text) = 
     text |> Option.bind TextConversions.AsGuid
@@ -49,40 +49,41 @@ type TextRuntime =
 
   static member ConvertStringBack(value) = defaultArg value ""
 
-  static member ConvertIntegerBack(culture, value:int option) = 
+  static member ConvertIntegerBack(cultureStr, value:int option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture culture)
+    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  static member ConvertInteger64Back(culture, value:int64 option) = 
+  static member ConvertInteger64Back(cultureStr, value:int64 option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture culture)
+    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  static member ConvertDecimalBack(culture, value:decimal option) = 
+  static member ConvertDecimalBack(cultureStr, value:decimal option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture culture)
+    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  static member ConvertFloatBack(culture, missingValues:string, value:float option) = 
+  static member ConvertFloatBack(cultureStr, missingValues:string, value:float option) = 
     match value with
     | Some value ->
         if Double.IsNaN value then
           let missingValues = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
-          if missingValues.Length = 0 then (TextRuntime.GetCulture culture).NumberFormat.NaNSymbol else missingValues.[0]
+          if missingValues.Length = 0 then (TextRuntime.GetCulture cultureStr).NumberFormat.NaNSymbol else missingValues.[0]
         else
-          value.ToString(TextRuntime.GetCulture culture)
+          value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  static member ConvertBooleanBack(culture, value:bool option, use0and1) = 
+  // cultureStr is ignored for now, but might not be in the future, so we're keeping in in the API
+  static member ConvertBooleanBack(_cultureStr:string, value:bool option, use0and1) =     
     match value with
     | Some value when use0and1 -> if value then "1" else "0"
     | Some value -> if value then "true" else "false"
     | None -> ""
 
-  static member ConvertDateTimeBack(culture, value:DateTime option) = 
+  static member ConvertDateTimeBack(cultureStr, value:DateTime option) = 
     match value with
-    | Some value -> value.ToString(TextRuntime.GetCulture culture)
+    | Some value -> value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
 
   static member ConvertGuidBack(value:Guid option) = 
