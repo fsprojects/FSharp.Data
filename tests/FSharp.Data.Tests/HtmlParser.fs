@@ -13,7 +13,6 @@ open FSharp.Data.Experimental
 open FsUnit
 open System.Xml
 open System.Xml.Linq
-open FSharp.Net
 open System.Text
 open System.IO
 open FSharp.Data.Runtime
@@ -22,8 +21,8 @@ open FSharp.Data.Runtime
 let simpleHtml = """<html>
                     <body>
                         <table title="table">
-                            <tr><th>Column 1</th></tr>
-                            <tr><td>1</td></tr>
+                            <tr><th>Column 1</th><th>Column 2</th></tr>
+                            <tr><td>1</td><td>yes</td></tr>
                         </table>
                     </body>
                 </html>"""
