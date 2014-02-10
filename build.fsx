@@ -116,14 +116,24 @@ Target "BuildTests" <| fun () ->
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
+Target "RunTests" <| ignore
 
-Target "RunTests" <| fun () ->
-    !! "tests/*/bin/Release/FSharp.Data.Tests*.dll"
-    |> NUnit (fun p ->
-        { p with
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
+let runTestTask name =
+    let taskName = sprintf "RunTest_%s" name
+    Target taskName <| fun () ->
+        !! (sprintf "tests/*/bin/Release/%s.dll" name)
+        |> NUnit (fun p ->
+            { p with
+                DisableShadowCopy = true
+                TimeOut = TimeSpan.FromMinutes 20.
+                Framework = "4.0"
+                Domain = "Multiple"
+                OutputFile = "TestResults.xml" })
+    taskName ==> "RunTests" |> ignore
+
+["FSharp.Data.Tests";"FSharp.Data.Tests.DesignTime";
+ "FSharp.Data.Tests.Documentation";"FSharp.Data.Tests.Experimental.DesignTime"]
+|> List.iter runTestTask
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
