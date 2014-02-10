@@ -13,7 +13,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime
-open FSharp.Net
+open FSharp.Data
 open System.Collections.Generic
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -59,22 +59,29 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
       let getInferedRowType culture (table:HtmlTable) = 
           let inferedTypeToProperty name optional (typ:InferedType) = 
                 match typ with
-                | InferedType.Primitive(typ, unitType) -> PrimitiveInferedProperty.Create(name, typ, optional)                              
+                | InferedType.Primitive(typ, _) -> PrimitiveInferedProperty.Create(name, typ, optional)                              
                 | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, optional) 
 
-          let inferRowType' culture (headers:string list) values = 
+          let inferRowType' culture (headers:string[]) values = 
+              let getName headers index = 
+                if Array.isEmpty headers && index >= headers.Length && (String.IsNullOrEmpty(headers.[index]))
+                then "Column_" + (string index) 
+                else headers.[index]
               let inferProperty index value =
                   {
-                      Name = (if List.isEmpty headers && index >= headers.Length then "Column_" + (string index) else headers.[index])
+                      Name = (getName headers index)
                       Optional = false
                       Type = (StructuralInference.inferPrimitiveType culture value None)
                   }
-              StructuralTypes.InferedType.Record(None, values |> List.mapi inferProperty)
+              StructuralTypes.InferedType.Record(None, values |> Array.mapi inferProperty |> Seq.toList)
                
           let inferedType =
-              table.Rows
-              |> Seq.map (inferRowType' culture table.Headers)
-              |> Seq.reduce (StructuralInference.subtypeInfered true)
+              if table.Rows.Length > 0 
+              then
+                    table.Rows
+                    |> Seq.map (inferRowType' culture table.Headers)
+                    |> Seq.reduce (StructuralInference.subtypeInfered true)
+              else StructuralTypes.InferedType.Record(None, table.Headers |> Seq.map (fun r -> { Name = r; Optional = false; Type = StructuralTypes.InferedType.Primitive(typeof<string>, None) }) |> Seq.toList)
 
           match inferedType with
           | StructuralTypes.InferedType.Record(_, props) -> 
@@ -83,6 +90,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
       let providedTableTypes = 
           dom
+          |> List.filter (fun table -> table.Headers.Length > 0)
           |> List.map (fun table ->
                 let _, props = getInferedRowType cultureInfo table
                 let fields = props |> List.mapi (fun index field ->
@@ -93,8 +101,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index)) } )
                 // The erased row type will be a tuple of all the field types (without the units of measure)
                 let rowErasedType = 
-                  FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
-                  |> replacer.ToRuntime
+                    FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
+                    |> replacer.ToRuntime
                 
                 let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
                 
@@ -124,7 +132,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 m.InvokeCode <- (fun (Singleton text) -> 
                                     let stringArrayToRowVar = Var("rowConveter", rowConverter.Type)
                                     let body = 
-                                        tableErasedWithRowErasedType?Create () (Expr.Var stringArrayToRowVar, table.Name, table.Headers, text)
+                                        tableErasedWithRowErasedType?Create () (Expr.Var stringArrayToRowVar, table.Name, text)
                                     Expr.Let(stringArrayToRowVar, rowConverter, body)
                                 )
                 tableType.AddMember(m)

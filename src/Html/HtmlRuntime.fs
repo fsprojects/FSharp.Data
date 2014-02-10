@@ -13,8 +13,8 @@ open FSharp.Data.Runtime
 
 type HtmlTable = {
     Name : string
-    Headers : string list
-    Rows : string list list   
+    Headers : string []
+    Rows : string [] []   
 }
 
 module Html = 
@@ -146,15 +146,15 @@ module Html =
                 |> Seq.collect (getElementsNamed ["tr"])
                 |> Seq.map (getElementsNamed ["td"; "th"] >> List.map getValue)
                 |> Seq.filter (fun x -> (not <| List.isEmpty x) && (x <> headers) && (x.Length = headers.Length))
-                |> Seq.toList
+                |> Seq.toArray
                 
     
             match table with
-            | HtmlElement("table", _, content) as table ->
+            | HtmlElement("table", _, content) ->
                 {
                    Name = tableName
-                   Headers = headers
-                   Rows = (parseData skipRows content)
+                   Headers = headers |> Seq.toArray
+                   Rows = (parseData skipRows content |> Array.map Seq.toArray)
                 }
             | _ -> failwithf "expected table element"
     
@@ -174,20 +174,19 @@ module Html =
                 |> List.mapi (parseTable)
                // |> List.filter (fun x -> x.Rows.Length > 0)
 
-type HtmlTable<'rowType>internal(name, header, values) =
+type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowType[]) =
     member x.Name with get() = name
     member x.Headers with get() = header
     member x.Data with get() = values
 
-    static member Create(rowConverter:Func<string[],'rowType>, id, headers, src:string) =
+    static member Create(rowConverter:Func<string[],'rowType>, id:string, src:string) =
        let tables = 
             Html.Table.parse src 
-            |> Seq.pick (fun table ->
-                if table.Name = id 
-                then Some table
-                else None)
+            |> Seq.pick (fun table -> if table.Name = id then Some table else None)
+       let convertRow r = rowConverter.Invoke(r)
        let data =  
             tables.Rows
-            |> Seq.toArray
-            |> Array.map (fun r -> rowConverter.Invoke(r |> Seq.toArray))
-       new HtmlTable<'rowType>(id, headers, data) 
+            |> Array.map (convertRow)
+       let result = 
+            new HtmlTable<_>(tables.Name, tables.Headers, data) 
+       result
