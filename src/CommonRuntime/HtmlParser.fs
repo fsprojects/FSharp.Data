@@ -142,10 +142,15 @@ module HtmlParser =
     
             member x.EmitTag(isEnd) =
                 let name = (!x.CurrentTag).ToString()
+                let isVoid (name:string) = 
+                    match name.Trim().ToLower() with
+                    | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
+                    | "source" | "track" | "wbr" -> true
+                    | _ -> false
                 let result = 
                     if isEnd
                     then TagEnd(name)
-                    else Tag(false, name, x.GetAttributes()) 
+                    else Tag((isVoid name), name, x.GetAttributes()) 
                 x.CurrentTag := CharList.Empty
                 x.InsertionMode :=
                     match isEnd, name with
@@ -265,6 +270,7 @@ module HtmlParser =
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
+            | '>' -> selfClosingStartTag state
             | TextParser.EndOfFile _ -> data state
             | _ -> attributeName state
         and attributeName state =
@@ -287,7 +293,7 @@ module HtmlParser =
         and attributeValueUnquoted state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
-            | '>' -> state.EmitTag(false)
+            | '>' -> state.Pop(); state.EmitTag(false)
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueSingleQuoted state = 
             match state.Peek() with
