@@ -54,7 +54,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
       let missingValues = String.Join(",", TextConversions.DefaultMissingValues)
       let generatedType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
       let tableContainer = ProvidedTypeDefinition("Tables", Some typeof<obj>)
-      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse (sample)) "HTML" this cfg resolutionFolder
+      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse sample) "HTML" this cfg resolutionFolder
 
       let getInferedRowType culture (table:HtmlTable) = 
           let inferedTypeToProperty name optional (typ:InferedType) = 

@@ -222,7 +222,8 @@ module HtmlParser =
             | _ -> state.ConsTag(); scriptEndTagName state;
         and charRef state = 
             match state.Peek() with
-            | ';' | '<' -> state.Pop(); state.Emit()
+            | ';' -> state.Cons(); state.Emit()
+            | '<' -> state.Pop(); state.Emit()
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
