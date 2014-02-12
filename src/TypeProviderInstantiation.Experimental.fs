@@ -22,7 +22,7 @@ type TypeProviderInstantiation =
         match x with
         | Apiary x -> ["Apiary"
                        x.ApiName
-                       x.SpecialNames]
+                       x.SpecialNames.Replace(',', ';')]
         |> String.concat ","
 
     static member Parse (line:string) =

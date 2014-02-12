@@ -282,7 +282,7 @@ class ApiaryProvider+BufoA : FDR.InternalApiaryContext
 
 
 class ApiaryProvider+DobsoniaAndersoni : FDR.InternalApiaryContext
-    member AsyncDidyoumean: taxonName:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+NameDobsoniaAndersoniDidyoumean async
+    member AsyncDidyoumean: query:string * string list -> headers:string * string list -> ApiaryProvider+NameDobsoniaAndersoniDidyoumean async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
@@ -290,24 +290,22 @@ class ApiaryProvider+DobsoniaAndersoni : FDR.InternalApiaryContext
                              let apiCtx = this
                              (apiCtx :> ApiaryOperations),
                              { Method = "GET"
-                               Path = "/bionames-api/name/{TaxonName}/didyoumean"
-                               Arguments = [| ("{TaxonName}",
-                                               taxonName) |]
+                               Path = "/bionames-api/name/Dobsonia andersoni/didyoumean"
+                               Arguments = [| |]
                                Headers = headers
                                Query = query }
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member Didyoumean: taxonName:string -> query:string * string list -> headers:string * string list -> ApiaryProvider+NameDobsoniaAndersoniDidyoumean
+    member Didyoumean: query:string * string list -> headers:string * string list -> ApiaryProvider+NameDobsoniaAndersoniDidyoumean
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
         let headers, query = patternInput
         let apiCtx = this
         (apiCtx :> ApiaryOperations),
         { Method = "GET"
-          Path = "/bionames-api/name/{TaxonName}/didyoumean"
-          Arguments = [| ("{TaxonName}",
-                          taxonName) |]
+          Path = "/bionames-api/name/Dobsonia andersoni/didyoumean"
+          Arguments = [| |]
           Headers = headers
           Query = query }
     let apiCtx, args = patternInput
