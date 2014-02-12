@@ -160,6 +160,7 @@
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
     <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlProvider.fs" />
     <None Include="Script1.fsx" />
     <None Include="packages.config" />
     <None Include="app.config" />

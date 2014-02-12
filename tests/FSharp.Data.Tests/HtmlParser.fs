@@ -55,47 +55,6 @@ let ``Can handle unclosed tags correctly``() =
             ])
         ])
     result |> should equal expected
-    
-
-[<Literal>]
-let simpleHtml = """<html>
-                    <body>
-                        <table title="table">
-                            <tr><th>Date</th><th>Column 1</th><th>Column 2</th><th>Column 3</th></tr>
-                            <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td></tr>
-                            <tr><td>01/02/2013 12:00</td><td>2</td><td>no</td><td>2.5</td></tr>
-                            <tr><td>01/03/2013 12:00</td><td>3</td><td>true</td><td>3.456</td></tr>
-                        </table>
-                    </body>
-                </html>"""
-
-type SimpleHtml = HtmlProvider<simpleHtml>
-
-[<Test>]
-let ``SimpleHtml infers date type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].Date |> should equal (System.DateTime(2013, 01, 01, 12, 00, 00))
-
-[<Test>]
-let ``SimpleHtml infers int type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 1`` |> should equal 1
-
-[<Test>]
-let ``SimpleHtml infers bool type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 2`` |> should equal true
-
-[<Test>]
-let ``SimpleHtml infers decimal type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 3`` |> should equal 2M
-
-[<Test>]
-let ``Can create type for simple table``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 1`` |> should equal 1
-
 
 [<Test>]
 let ``Can parse tables from a simple html``() = 

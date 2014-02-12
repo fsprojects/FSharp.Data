@@ -172,7 +172,6 @@ module Html =
                     ]
                 List.collect tables' element 
                 |> List.mapi (parseTable)
-               // |> List.filter (fun x -> x.Rows.Length > 0)
 
 type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowType[]) =
     member x.Name with get() = name
