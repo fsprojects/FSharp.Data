@@ -37,14 +37,14 @@ let private fsharp30AssembliesPath2 =
     ++ "FSharp" 
     ++ ".NETFramework" 
     ++ "v4.0"
-    ++ "v4.3.0.0"
+    ++ "4.3.0.0"
 
 let private fsharp31AssembliesPath = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ ".NETFramework" 
     ++ "v4.0"
-    ++ "v4.3.1.0"
+    ++ "4.3.1.0"
 
 let private portable47AssembliesPath = 
     referenceAssembliesPath
