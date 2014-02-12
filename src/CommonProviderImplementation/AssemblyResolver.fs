@@ -25,19 +25,26 @@ let private fsharp31Portable7AssembliesPath =
     ++ ".NETCore" 
     ++ "3.3.1.0" 
 
-let private fsharp30AssembliesPath = 
+let private fsharp30AssembliesPath1 = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ "3.0" 
     ++ "Runtime" 
     ++ "v4.0"
 
+let private fsharp30AssembliesPath2 = 
+    referenceAssembliesPath
+    ++ "FSharp" 
+    ++ ".NETFramework" 
+    ++ "v4.0"
+    ++ "4.3.0.0"
+
 let private fsharp31AssembliesPath = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ ".NETFramework" 
     ++ "v4.0"
-    ++ "v4.3.1.0"
+    ++ "4.3.1.0"
 
 let private portable47AssembliesPath = 
     referenceAssembliesPath
@@ -58,26 +65,36 @@ let private designTimeAssemblies =
     |> Seq.distinctBy fst 
     |> Map.ofSeq
 
+let private safeFileExists path = 
+    try File.Exists path with _ -> false
+
+let private nullToOption x = match x with null -> None | _ -> Some x
+
 let private getAssembly (asmName:AssemblyName) reflectionOnly = 
-    let folder = 
+    let folders = 
         let version = 
             if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
             then "" else asmName.Version.ToString()
         match asmName.Name, version with
-        | "FSharp.Core", "4.3.0.0" -> fsharp30AssembliesPath
-        | "FSharp.Core", "4.3.1.0" -> fsharp31AssembliesPath
-        | "FSharp.Core", "2.3.5.0" -> fsharp30Portable47AssembliesPath
-        | "FSharp.Core", "3.3.1.0" -> fsharp31Portable7AssembliesPath
-        | _, "2.0.5.0" -> portable47AssembliesPath
-        | _, _ -> null
-    if folder = null then 
+        | "FSharp.Core", "4.3.0.0" -> [fsharp30AssembliesPath1; fsharp30AssembliesPath2]
+        | "FSharp.Core", "4.3.1.0" -> [fsharp31AssembliesPath]
+        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath]
+        | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
+        | _, "2.0.5.0" -> [portable47AssembliesPath]
+        | _, _ -> []
+    let search1 = 
+        folders |> List.tryPick (fun folder -> 
+          try
+            let assemblyPath = folder ++ (asmName.Name + ".dll")
+            if safeFileExists assemblyPath then
+                if reflectionOnly then nullToOption (Assembly.ReflectionOnlyLoadFrom assemblyPath)
+                else nullToOption (Assembly.LoadFrom assemblyPath)
+            else None 
+          with _ -> None)
+    match search1 with 
+    | Some asm -> asm
+    | None -> 
         if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
-        else null
-    else
-        let assemblyPath = folder ++ (asmName.Name + ".dll")
-        if File.Exists assemblyPath then
-            if reflectionOnly then Assembly.ReflectionOnlyLoadFrom assemblyPath
-            else Assembly.LoadFrom assemblyPath 
         else null
 
 let mutable private initialized = false    
