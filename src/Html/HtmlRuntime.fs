@@ -10,7 +10,6 @@ open System.Text
 open FSharp.Data.Runtime
 #endif
 
-
 type HtmlTable = {
     Name : string
     Headers : string []
