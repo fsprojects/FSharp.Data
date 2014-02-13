@@ -58,8 +58,9 @@ let ``Can create type for simple table``() =
 
 
 type MarketDepth = HtmlProvider<"data/marketdepth.htm">
+
 [<Test>]
-let ``Can infer type from file``() =
+let ``Can infer tables out of the market depth file``() =
     let table = MarketDepth.Tables.Table_2.Load("data/marketdepth.htm")
     table.Data.[0].``Settlement Day`` |> should equal (System.DateTime(2014, 1, 4, 0, 0,0))
     table.Data.[0].Period |> should equal 1
