@@ -7,9 +7,9 @@ open System.Reflection
 open System.Text
 open FSharp.Data
 open FSharp.Data.Runtime
+
 #if INTERACTIVE 
 open FSharp.Data.Runtime
-open FSharp.Net
 #endif
 
 type HtmlAttribute = | HtmlAttribute of string * string

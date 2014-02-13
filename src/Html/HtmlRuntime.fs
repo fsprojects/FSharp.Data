@@ -13,7 +13,7 @@ open FSharp.Data.Runtime
 type HtmlTable = {
     Name : string
     Headers : string []
-    Rows : string [] []   
+    Rows :  string [] []  
 }
 
 module Html = 

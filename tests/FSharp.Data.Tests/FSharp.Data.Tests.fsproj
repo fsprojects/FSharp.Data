@@ -98,6 +98,7 @@
     <None Include="Data\MarketDepth.htm" />
     <None Include="Data\SimpleHtmlTablesWithTr.html" />
     <None Include="Data\SimpleHtmlTablesWithThead.html" />
+    <None Include="Data\list_of_counties_wikipedia.html" />
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
