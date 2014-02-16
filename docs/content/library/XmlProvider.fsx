@@ -89,13 +89,13 @@ contains multiple `<value>` nodes (note that if we leave out the parameter to th
 
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
-Test.GetSample().GetValues()
+Test.GetSample().Values
 |> Seq.iter (printfn "%d")
 
 (**
-The type provider generates a method `GetValue` that returns an array with the
+The type provider generates a property `Values` that returns an array with the
 values - as the `<value>` nodes do not contain any attributes or children, they
-are turned into `int` values and so the `GetValues()` method returns just `int[]`!
+are turned into `int` values and so the `Values` property returns just `int[]`!
 
 ## Processing philosophers
 
@@ -131,15 +131,15 @@ type Authors = XmlProvider<"../data/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
-for author in topic.GetAuthors() do
+for author in topic.Authors do
   printf " - %s" author.Name 
   author.Born |> Option.iter (printf " (%d)")
   printfn ""
 
 (**
 The value `topic` has a property `Topic` (of type `string`) which returns the value
-of the attribute with the same name. It also has a method `GetAuthors()` that returns
-a collection with all the authors. The `Born` property is missing for some authors,
+of the attribute with the same name. It also has a property `Authors` that returns
+an array with all the authors. The `Born` property is missing for some authors,
 so it becomes `option<int>` and we need to print it using `Option.iter`.
 
 The `died` attribute was not present in the sample used for the inference, so we
@@ -182,9 +182,9 @@ that takes `Html.Div` and acts as follows:
 
 /// Prints the content of a <div> element
 let rec printDiv (div:Html.Div) =
-  div.GetSpans() |> Seq.iter (printfn "%s")
-  div.GetDivs() |> Seq.iter printDiv
-  if div.GetSpans().Length = 0 && div.GetDivs().Length = 0 then
+  div.Spans |> Seq.iter (printfn "%s")
+  div.Divs |> Seq.iter printDiv
+  if div.Spans.Length = 0 && div.Divs.Length = 0 then
       div.Value |> Option.iter (printfn "%s")
 
 // Print the root <div> element with all children  
@@ -225,7 +225,7 @@ offers. The code looks like this:
 printfn "%s" blog.Channel.Title
 
 // Get all item nodes and print title with link
-for item in blog.Channel.GetItems() do
+for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
 
 (**

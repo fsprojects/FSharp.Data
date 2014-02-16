@@ -1170,7 +1170,7 @@ class ApiaryProvider+Doc : FDR.IJsonDocument
 
 
 class ApiaryProvider+NumbersOrString : FDR.IJsonDocument
-    member GetNumbers: () -> int[]
+    member Numbers: int[] with get
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string with get

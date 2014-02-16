@@ -55,7 +55,7 @@ let ``Type of attribute with empty value is string`` =
 let ``Xml with namespaces``() = 
   let feed = XmlProvider<"Data/search.atom.xml">.GetSample()
   feed.Title |> should equal "Windows8 - Twitter Search"
-  feed.GetEntries().[0].Metadata.ResultType |> should equal "recent"
+  feed.Entries.[0].Metadata.ResultType |> should equal "recent"
 
 type Config = FSharp.Data.XmlProvider<"""
   <test>
@@ -69,7 +69,7 @@ type Config = FSharp.Data.XmlProvider<"""
 let ``Can read config with heterogeneous attribute types``() =
   let config = Config.GetSample()
   let opts = 
-    [ for opt in config.GetOptions() -> 
+    [ for opt in config.Options -> 
         let set = opt.Node.Set in set.Boolean, set.Number, set.String ]
   opts |> should equal [ (None, None, Some "wales.css");
                          (Some true, None, Some "true"); 
@@ -85,7 +85,7 @@ let ``Can get author name in inlined xml``() =
     author.Surname |> should equal "Wittgenstein"
 
 type philosophyType = XmlProvider<"Data/Philosophy.xml">
-let authors = philosophyType.GetSample().GetAuthors()
+let authors = philosophyType.GetSample().Authors
 
 [<Test>]
 let ``Can get author names in philosophy.xml``() = 
@@ -104,7 +104,7 @@ let ``Can get the optional author birthday in philosophy.xml``() =
 
 [<Test>]
 let ``Can get Descartes books in philosophy.xml``() = 
-    let books = authors.[0].GetBooks()
+    let books = authors.[0].Books
     books.[0].Title |> should equal "Tractatus Logico-Philosophicus"
     books.[1].Title |> should equal "Philosophical Investigations"
 
@@ -117,7 +117,7 @@ let topicDocument = XmlProvider<"""<topics><topic><title>My Topic Title</title><
 
 [<Test>]
 let ``Can get the title of the topics``() = 
-    let topics = topicDocument.GetTopics()
+    let topics = topicDocument.Topics
     topics.[0].Title |> should equal "My Topic Title"
     topics.[1].Title |> should equal "Another Topic Title"
 

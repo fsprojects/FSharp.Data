@@ -24,16 +24,16 @@ class XmlProvider
 
 
 class XmlProvider+Div : FDR.XmlElement
-    member GetDivs: () -> XmlProvider+Div[]
+    member Divs: XmlProvider+Div[] with get
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
-
-    member GetSpans: () -> string[]
-    XmlRuntime.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> 
-                                                           let value = XmlRuntime.TryGetValue(t)
-                                                           TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
     member Id: string option with get
     TextRuntime.ConvertString(XmlRuntime.TryGetAttribute(this, "id"))
+
+    member Spans: string[] with get
+    XmlRuntime.ConvertArray(this, "span", new Func<_,_>(fun (t:XmlElement) -> 
+                                                           let value = XmlRuntime.TryGetValue(t)
+                                                           TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
     member Value: string option with get
     TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
