@@ -80,11 +80,11 @@ let total = nums |> Seq.sum
 type Mixed = JsonProvider<""" [1, 2, "hello", "world"] """>
 let mixed = Mixed.Parse(""" [4, 5, "hello", "world" ] """)
 
-mixed.GetNumbers() |> Seq.sum
-mixed.GetStrings() |> String.concat ", "
+mixed.Numbers |> Seq.sum
+mixed.Strings |> String.concat ", "
 
 (**
-このように、 `Mixed` 型には `GetNumbers()` と `GetStrings()` という、
+このように、 `Mixed` 型には `Numbers` と `Strings` という、
 それぞれコレクション内の `int` か `string` の値しか返さないメソッドが
 定義されていることがわかります。
 つまり型セーフな状態でアクセスできるものの、
@@ -189,7 +189,7 @@ let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicato
 なお型プロバイダーは1つのレコードと1つの配列だけが含まれているものとして
 型を推測していることに注意してください(以前の例では
 複数の数値と複数の文字列が配列中にありました)。
-この場合は( `GetArray()` や `GetRecord()` のような)メソッドは生成されず、
+この場合はメソッドは生成されず、
 単に `Record` や `Array` というプロパティが生成されます。
 したがって以下のようにすればデータセットを表示できます：
 *)

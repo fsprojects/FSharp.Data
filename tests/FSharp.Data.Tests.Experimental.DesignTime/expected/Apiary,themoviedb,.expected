@@ -507,7 +507,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies async
+    member AsyncNowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
@@ -522,7 +522,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+MoviePopular async
+    member AsyncPopular: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
@@ -537,7 +537,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies async
+    member AsyncTopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
@@ -552,7 +552,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies async
+    member AsyncUpcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
@@ -610,7 +610,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
     let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
-    member NowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies
+    member NowPlaying: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
         let headers, query = patternInput
@@ -624,7 +624,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
     let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
-    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+MoviePopular
+    member Popular: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
         let headers, query = patternInput
@@ -638,7 +638,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
     let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
-    member TopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies
+    member TopRated: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
         let headers, query = patternInput
@@ -652,7 +652,7 @@ class ApiaryProvider+Movie2 : FDR.InternalApiaryContext
     let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
-    member Upcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieSimilarMovies
+    member Upcoming: query:string * string list -> headers:string * string list -> ApiaryProvider+MovieUpcoming
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("Accept:application/json", headers, query)
         let headers, query = patternInput
@@ -2236,12 +2236,12 @@ class ApiaryProvider+MovieLatest : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
-class ApiaryProvider+MoviePopular : FDR.IJsonDocument
+class ApiaryProvider+MovieSimilarMovies : FDR.IJsonDocument
     member Page: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "page")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Results: ApiaryProvider+Result5[] with get
+    member Results: ApiaryProvider+Result2[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "results"), new Func<_,_>(id)))
 
     member TotalPages: int with get
@@ -2253,12 +2253,12 @@ class ApiaryProvider+MoviePopular : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
-class ApiaryProvider+MovieSimilarMovies : FDR.IJsonDocument
+class ApiaryProvider+MovieUpcoming : FDR.IJsonDocument
     member Page: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "page")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Results: ApiaryProvider+Result2[] with get
+    member Results: ApiaryProvider+Result5[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "results"), new Func<_,_>(id)))
 
     member TotalPages: int with get
@@ -3074,7 +3074,7 @@ class ApiaryProvider+GenreIdMovies : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "page")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Results: ApiaryProvider+Result2[] with get
+    member Results: ApiaryProvider+Result5[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "results"), new Func<_,_>(id)))
 
     member TotalPages: int with get
@@ -3535,6 +3535,10 @@ class ApiaryProvider+Result14 : FDR.IJsonDocument
 
 
 class ApiaryProvider+Result2 : FDR.IJsonDocument
+    member Adult: bool with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "adult")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+
     member BackdropPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "backdrop_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -3546,6 +3550,10 @@ class ApiaryProvider+Result2 : FDR.IJsonDocument
     member OriginalTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "original_title")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Popularity: decimal with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "popularity")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
 
     member PosterPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
@@ -3569,10 +3577,6 @@ class ApiaryProvider+Result2 : FDR.IJsonDocument
 
 
 class ApiaryProvider+Result5 : FDR.IJsonDocument
-    member Adult: bool with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "adult")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
-
     member BackdropPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "backdrop_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -3584,10 +3588,6 @@ class ApiaryProvider+Result5 : FDR.IJsonDocument
     member OriginalTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "original_title")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
-
-    member Popularity: decimal with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "popularity")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertDecimal("", value.JsonOpt), value.JsonOpt)
 
     member PosterPath: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
@@ -3771,7 +3771,7 @@ class ApiaryProvider+TvCredits : FDR.IJsonDocument
     member Cast: ApiaryProvider+Cast5[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "cast"), new Func<_,_>(id)))
 
-    member Crew: ApiaryProvider+Crew[] with get
+    member Crew: ApiaryProvider+Crew4[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "crew"), new Func<_,_>(id)))
 
     member Id: int with get
@@ -3884,6 +3884,10 @@ class ApiaryProvider+Cast : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "character")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -3910,6 +3914,10 @@ class ApiaryProvider+Cast2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "character")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -3921,7 +3929,7 @@ class ApiaryProvider+Cast2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member ReleaseDate: ApiaryProvider+StringOrDateTime with get
+    member ReleaseDate: ApiaryProvider+DateTimeChoice with get
     JsonRuntime.GetPropertyPacked(this, "release_date")
 
     member Title: ApiaryProvider+IntOrString with get
@@ -3969,8 +3977,9 @@ class ApiaryProvider+Cast4 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "character")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member CreditId: string option with get
-    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "credit_id"))
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member EpisodeCount: int option with get
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "episode_count"))
@@ -3999,7 +4008,7 @@ class ApiaryProvider+Cast4 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member ReleaseDate: ApiaryProvider+StringOrDateTime option with get
+    member ReleaseDate: ApiaryProvider+DateTimeChoice option with get
     JsonRuntime.TryGetPropertyPacked(this, "release_date")
 
     member Title: ApiaryProvider+IntOrString option with get
@@ -4090,6 +4099,10 @@ class ApiaryProvider+Country : FDR.IJsonDocument
 
 
 class ApiaryProvider+Crew : FDR.IJsonDocument
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
     member Department: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "department")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -4116,6 +4129,10 @@ class ApiaryProvider+Crew2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "adult")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
     member Department: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "department")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -4136,7 +4153,7 @@ class ApiaryProvider+Crew2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member ReleaseDate: ApiaryProvider+StringOrDateTime with get
+    member ReleaseDate: ApiaryProvider+DateTimeChoice with get
     JsonRuntime.GetPropertyPacked(this, "release_date")
 
     member Title: string with get
@@ -4148,6 +4165,10 @@ class ApiaryProvider+Crew3 : FDR.IJsonDocument
     member Adult: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "adult")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+
+    member CreditId: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "credit_id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Department: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "department")
@@ -4173,11 +4194,33 @@ class ApiaryProvider+Crew3 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "poster_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member ReleaseDate: ApiaryProvider+StringOrDateTime with get
+    member ReleaseDate: ApiaryProvider+DateTimeChoice with get
     JsonRuntime.GetPropertyPacked(this, "release_date")
 
     member Title: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "title")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+
+class ApiaryProvider+Crew4 : FDR.IJsonDocument
+    member Department: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "department")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Id: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member Job: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "job")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member Name: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+    member ProfilePath: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "profile_path")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
@@ -4692,14 +4735,6 @@ class ApiaryProvider+Item2 : FDR.IJsonDocument
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "value"))
 
 
-class ApiaryProvider+StringOrDateTime : FDR.IJsonDocument
-    member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
-
-    member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
-
-
 class ApiaryProvider+TvSeasonSeasonExternalIds : FDR.IJsonDocument
     member FreebaseId: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "freebase_id")
@@ -4906,7 +4941,7 @@ class ApiaryProvider+TvSeasonSeasonEpisodeEpisodeCredits : FDR.IJsonDocument
     member Cast: ApiaryProvider+Cast5[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "cast"), new Func<_,_>(id)))
 
-    member Crew: ApiaryProvider+Crew[] with get
+    member Crew: ApiaryProvider+Crew4[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "crew"), new Func<_,_>(id)))
 
     member GuestStars: ApiaryProvider+Cast5[] with get

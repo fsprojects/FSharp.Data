@@ -65,11 +65,11 @@ to get values that match one of the types:
 type Mixed = JsonProvider<""" [1, 2, "hello", "world"] """>
 let mixed = Mixed.Parse(""" [4, 5, "hello", "world" ] """)
 
-mixed.GetNumbers() |> Seq.sum
-mixed.GetStrings() |> String.concat ", "
+mixed.Numbers |> Seq.sum
+mixed.Strings |> String.concat ", "
 
 (**
-As you can see, the `Mixed` type has methods `GetNumbers()` and `GetStrings()` that 
+As you can see, the `Mixed` type has property `Numbers` and `Strings` that 
 return only `int` and `string` values from the collection. This means that we get a nice
 type-safe access to the values, but not in the original order (if order matters, then
 you can use the `mixed.JsonValue` property to get the underlying `JsonValue` and 
@@ -156,10 +156,7 @@ let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicato
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
 that can be used to get the record and the array, respectively. Note that the 
-provider infers that there is only one record and one array (unlike in the previous 
-case when we had multiple numbers and multiple strings in an array). In that
-case it does not generate methods (like `GetArray()` and `GetRecord()`) but it
-generates simple properties `Record` and `Array`. We can print the data set as follows:
+provider infers that there is only one record and one array. We can print the data set as follows:
 *)
 
 // Print general information
