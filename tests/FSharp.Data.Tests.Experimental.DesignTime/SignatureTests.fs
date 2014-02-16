@@ -18,9 +18,9 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 type TypeProviderInstantiation with
 
-    member x.Dump resolutionFolder runtimeAssembly platform signatureOnly ignoreOutput =
+    member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly platform
+            x.GenerateType resolutionFolder runtimeAssembly
             |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
         output.Replace("FSharp.Data.Runtime.", "FDR.")
               .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
@@ -52,7 +52,7 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false
+        let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
         File.WriteAllText(getExpectedPath testCase, output)
 
 let normalize (str:string) =
@@ -65,7 +65,7 @@ let normalize (str:string) =
 [<Platform "Net">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalize
-    let output = testCase.Dump resolutionFolder runtimeAssembly Platform.Full (*signatureOnly*)false (*ignoreOutput*)false |> normalize 
+    let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize 
     if output <> expected then
         printfn "Obtained Signature:\n%s" output
     output |> should equal expected
@@ -74,10 +74,10 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<TestCaseSource "testCases">]
 [<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portable47RuntimeAssembly Platform.Portable47 (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 [<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portable7RuntimeAssembly Platform.Portable7 (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore

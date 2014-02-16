@@ -15,7 +15,7 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
   inherit TypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Apiary.ApiaryProvider'
-  let asm, replacer = AssemblyResolver.init cfg
+  let asm, _, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let apiaryProvTy = ProvidedTypeDefinition(asm, ns, "ApiaryProvider", Some(typeof<obj>))
 

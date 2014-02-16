@@ -16,7 +16,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.XmlProvider'
-  let asm, replacer = AssemblyResolver.init cfg
+  let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", Some typeof<obj>)
 
@@ -53,7 +53,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     generateConstructors "XML" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 
-                         this cfg replacer resolutionFolder false
+                         version this cfg replacer resolutionFolder false
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
