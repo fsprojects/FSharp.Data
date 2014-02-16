@@ -21,7 +21,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, replacer = AssemblyResolver.init cfg
+  let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some typeof<obj>)
 
@@ -88,7 +88,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
     generateConstructors "CSV" sample (*sampleIsList*)false 
                          parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
-                         this cfg replacer resolutionFolder true
+                         version this cfg replacer resolutionFolder true
 
   let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 

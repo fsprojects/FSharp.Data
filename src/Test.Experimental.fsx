@@ -18,22 +18,24 @@ let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.Experimental.dll"
 
-let platform = Full
+type Platform = Net40 | Portable7 | Portable47
+
+let platform = Portable47
 
 let runtimeAssembly = 
     match platform with
-    | Full -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
-    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
+    | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
     | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
+    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
 
 let signatureOnly = false
 let ignoreOutput = false
 
-let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly platform
+let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
 let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
 Apiary { ApiName = "bionames"
-         SpecialNames = "Rhogeessa=TaxonName,Apomys=TaxonName,Philautus acutirostris=TaxonName,Philautus acutirostris=TaxonName,Dobsonia andersoni=TaxonName" }
+         SpecialNames = "Rhogeessa=TaxonName,Apomys=TaxonName,Philautus acutirostris=TaxonName" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 let testCases = 

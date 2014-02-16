@@ -15,6 +15,19 @@ You can see the version history [here](RELEASE_NOTES.md).
   * Windows: Run *build.cmd* [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
   * Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
 
+## Supported platforms
+
+- VS2012 compiling to FSharp.Core 4.3.0.0
+- VS2012 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
+- VS2013 compiling to FSharp.Core 4.3.0.0
+- VS2013 compiling to FSharp.Core 4.3.1.0
+- VS2013 compiling to FSharp.Core 2.3.5.0  (PCL profile 47)
+- VS2013 compiling to FSharp.Core 2.3.6.0  (PCL profile 47)
+- VS2013 compiling to FSharp.Core 3.3.1.0  (PCL profile 7)
+- Mono F# 3.0 with FSharp.Core 4.3.0.0
+- Mono F# 3.1 with FSharp.Core 4.3.0.0
+- Mono F# 3.1 with FSharp.Core 4.3.1.0
+
 ## Documentation 
 
 One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 

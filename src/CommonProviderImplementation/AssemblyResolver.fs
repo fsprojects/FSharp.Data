@@ -99,6 +99,16 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
 
 let mutable private initialized = false    
 
+[<RequireQualifiedAccess>]
+type FSharpDataRuntimeVersion =
+    | Net40
+    | Portable7 //net45+win8
+    | Portable47 //net45+wp8+win8
+    member x.SupportsLocalFileSystem = 
+        match x with
+        | Net40 -> true
+        | _ -> false
+
 let init (cfg : TypeProviderConfig) = 
 
     if not initialized then
@@ -112,6 +122,19 @@ let init (cfg : TypeProviderConfig) =
     let runtimeAssembly = 
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
         else Assembly.LoadFrom cfg.RuntimeAssembly
+
+    let runtimeAssemblyVersion = runtimeAssembly.GetName().Version
+    let designtimeAssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version
+
+    if designtimeAssemblyVersion <> new Version(runtimeAssemblyVersion.Major, runtimeAssemblyVersion.Minor, runtimeAssemblyVersion.Build, 0) then
+        failwith <| "Unexpected version of FSharp.Data.dll: " + runtimeAssemblyVersion.ToString()
+
+    let runtimeVersion =
+        match runtimeAssemblyVersion.Revision with
+        | 0 -> FSharpDataRuntimeVersion.Net40
+        | 7 -> FSharpDataRuntimeVersion.Portable7
+        | 47 -> FSharpDataRuntimeVersion.Portable47
+        | _ -> failwith <| "Unexpected version of FSharp.Data.dll: " + runtimeAssemblyVersion.ToString()
 
     let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
@@ -128,4 +151,4 @@ let init (cfg : TypeProviderConfig) =
                 else None))
         |> Seq.toList
     
-    runtimeAssembly, AssemblyReplacer.create (runtimeAssemblyPair::referencedAssembliesPairs)
+    runtimeAssembly, runtimeVersion, AssemblyReplacer.create (runtimeAssemblyPair::referencedAssembliesPairs)

@@ -46,7 +46,7 @@ module List =
 /// Find the handles in the Freebase type provider runtime DLL. 
 type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
-    let runtimeAssembly, replacer = AssemblyResolver.init config
+    let runtimeAssembly, _, replacer = AssemblyResolver.init config
 
     member val FreebaseDataContextType =     typeof<FreebaseDataContext>     |> replacer.ToRuntime
     member val IFreebaseDataContextType =    typeof<IFreebaseDataContext>    |> replacer.ToRuntime
