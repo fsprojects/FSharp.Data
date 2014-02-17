@@ -254,6 +254,13 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             throw()
         value
 
+    member x.ParseMultiple() = 
+        seq {
+            while i <> s.Length do
+                yield parseValue()
+                skipWhitespace() 
+        }
+
 type JsonValue with
 
   /// Parses the specified JSON string
@@ -293,3 +300,7 @@ type JsonValue with
   // for apiary only
   static member internal ParseSample(text) =
     JsonParser(text, None, true).Parse()
+
+  // for jsonprovider only
+  static member internal ParseMultiple(text, ?cultureInfo) =
+    JsonParser(text, cultureInfo, false).ParseMultiple()

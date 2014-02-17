@@ -33,8 +33,10 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let parseSingle _ value = XDocument.Parse(value).Root
-    let parseList _ value = XDocument.Parse(value).Root.Elements()
-    
+    let parseList _ value = 
+        XmlElement.CreateList(new StringReader(value))
+        |> Seq.map (fun doc -> doc.XElement)
+
     let getSpecFromSamples samples = 
       let inferedType = 
         samples

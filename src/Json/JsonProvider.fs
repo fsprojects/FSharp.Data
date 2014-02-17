@@ -35,7 +35,9 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
-    let parseList _ value = JsonValue.Parse(value, cultureInfo).AsArray() :> seq<_>
+    let parseList _ value = 
+        JsonDocument.CreateList(new StringReader(value), cultureStr)
+        |> Seq.map (fun doc -> doc.JsonValue)
     
     let getSpecFromSamples samples = 
 

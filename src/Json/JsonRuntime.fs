@@ -67,10 +67,15 @@ type JsonDocument =
       JsonValue.Parse(text, cultureInfo).AsArray()
       |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
     with _ ->
-      text.Split('\n', '\r')
-      |> Array.filter (not << String.IsNullOrWhiteSpace)
-      |> Array.mapi (fun i text -> let value = JsonValue.Parse(text, cultureInfo)
-                                   JsonDocument.Create(value, "[" + (string i) + "]"))
+      try
+        text.Split('\n', '\r')
+        |> Array.filter (not << String.IsNullOrWhiteSpace)
+        |> Array.mapi (fun i text -> let value = JsonValue.Parse(text, cultureInfo)
+                                     JsonDocument.Create(value, "[" + (string i) + "]"))
+      with _ ->
+       JsonValue.ParseMultiple(text, cultureInfo)
+       |> Seq.toArray
+       |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
 
 /// [omit]
 type JsonValueOptionAndPath = 
