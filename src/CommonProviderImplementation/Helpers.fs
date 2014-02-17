@@ -191,12 +191,7 @@ module ProviderHelpers =
 
     let parse extension (value:string) = 
       if sampleIsList then
-        try
-          parseList extension value
-        with _  ->
-          value.Split('\n', '\r')
-          |> Seq.filter (not << String.IsNullOrWhiteSpace)
-          |> Seq.map (parseSingle extension)
+        parseList extension value
       else
         parseSingle extension value |> Seq.singleton
 
