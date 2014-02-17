@@ -167,6 +167,32 @@ let topBooksWithNameContaining (s:string) =
  
 topBooksWithNameContaining "1984" |> Seq.toList
 
+(**
+
+### Units of Measure
+
+Units of measure are supported. For example, the `Atomic mass` property of chemical elements
+is automatically converted to SI units and it is exposed in Kilograms. This is statically
+tracked in the F# type system using units of measure. 
+
+Here is an example from data about cyclones and hurricanes:
+*)
+
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
+let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
+
+// The type here is float<metre/second>, since the Freebase project uses normalized SI units
+//let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
+
+(**
+We can convert this figure into 185 km/h like this:
+*)
+
+//let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
+
+
 
 (**
 
