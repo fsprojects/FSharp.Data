@@ -184,7 +184,7 @@ open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
 
 // The type here is float<metre/second>, since the Freebase project uses normalized SI units
-//let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
+let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
 
 (**
 We can convert this figure into 185 km/h like this:
