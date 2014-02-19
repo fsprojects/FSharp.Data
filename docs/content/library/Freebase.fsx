@@ -185,7 +185,7 @@ let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
 We can convert this figure into 185 km/h like this:
 *)
 
-//let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
+let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
 
 
 
