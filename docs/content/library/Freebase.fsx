@@ -24,12 +24,7 @@ initializes a connection to Freebase using the `GetDataContext` method:
 #r "../../../bin/FSharp.Data.dll"
 open FSharp.Data
 
-[<Literal>]
-let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
-
-
-type FreebaseDataTest = FreebaseDataProvider<Key=apiKey>
-let data = FreebaseDataTest.GetDataContext()
+let data = FreebaseData.GetDataContext()
 
 (**
 

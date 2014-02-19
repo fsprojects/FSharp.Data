@@ -1,8 +1,10 @@
 language: objective-c
 
 env:
+  global:
+    - FREEBASE_API_KEY=AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
   matrix:
-    - MONO_VERSION="3.2.6"
+    - MONO_VERSION=3.2.6
 
 install:
   - wget "http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
