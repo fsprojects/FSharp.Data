@@ -385,3 +385,10 @@ let ``Can parse nested arrays``() =
     row.Length |> should equal 1
     let cell = row.[0]
     cell.Data.IsSampleData |> should equal true
+
+[<Test>]
+let ``Can parse optional arrays``() =
+    let j = JsonProvider<"Data/contacts.json">.GetSample()
+    j.Ab.Persons.[0].Contacts.[0].Emails |> should equal None
+    j.Ab.Persons.[0].Contacts.[1].Emails.Value.Length |> should equal 3
+

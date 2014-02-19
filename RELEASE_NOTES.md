@@ -138,7 +138,7 @@
 #### 2.0.0-alpha6 - February 4 2014
 * JsonValue.Post() allows to post the JSON to the specified uri using HTTP.
 
-#### 2.0.0-alpha7 - Unreleased
+#### 2.0.0-alpha7 - February 19 2014
 * Improved name generation algorithm to cope better with acronymns.
 * Fixed wrong singularization of words ending with 'uses'.
 * Fixed handling of repeated one letter names.
@@ -148,3 +148,4 @@
 * Improved naming of generated types.
 * Fixed 'SampleIsList' to work with xml and json spanning multiple lines.
 * Fixed handling of nested arrays in JsonProvider.
+* Fixed handling of optional arrays in JsonProvider.
