@@ -1270,6 +1270,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
 
 
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
+    member Air disaster: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Air disaster Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/01x3j7r")
+
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
 
@@ -1341,6 +1344,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
 
 
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100 : FDR.Freebase.FreebaseIndividuals
+    member Air disaster: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Air disaster Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/01x3j7r")
+
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
 
