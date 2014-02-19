@@ -1,16 +1,14 @@
-﻿// --------------------------------------------------------------------------------------
-// Tests for a utility that generates nice PascalCase and camelCase names for members
-// --------------------------------------------------------------------------------------
-module FSharp.Data.Tests.DesignTime.InferenceTests
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.DesignTime.InferenceTests
 #endif
 
 open FsUnit
 open System
+open System.Globalization
 open System.IO
 open NUnit.Framework
 open FSharp.Data
@@ -365,3 +363,9 @@ let ``Doesn't infer 12-002 as a date``() =
     |> Map.ofSeq |> InferedType.Collection
   let actual = JsonInference.inferType culture true "" source
   actual |> shouldEqual expected
+
+[<Test>]
+let ``Doesn't infer ad3mar as a date``() =
+  StructuralInference.inferPrimitiveType CultureInfo.InvariantCulture "ad3mar" None
+  |> shouldEqual <|
+  InferedType.Primitive(typeof<string>, None)

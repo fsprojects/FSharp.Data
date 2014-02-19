@@ -225,7 +225,7 @@ module private Helpers =
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
-let inferPrimitiveType cultureInfo (value : string) unit =
+let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
@@ -250,6 +250,10 @@ let inferPrimitiveType cultureInfo (value : string) unit =
       // Prevent stuff like 12-002 being considered a date
       elif date.Year < 1000 && numberOfNumberGroups value <> 3 then
          InferedType.Primitive(typeof<string>, unit)
+      // Prevent stuff like ad3mar being considered a date
+      elif cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                                 value.IndexOf(cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era), StringComparison.OrdinalIgnoreCase) >= 0) then
+        InferedType.Primitive(typeof<string>, unit)
       else
         InferedType.Primitive(typeof<DateTime>, unit)
 
