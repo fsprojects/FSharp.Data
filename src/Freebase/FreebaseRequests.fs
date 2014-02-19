@@ -176,6 +176,10 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
     member __.UseLocalCache with get() = useLocalCache and set v = useLocalCache <- v
     member __.ServiceUrl with get() = serviceUrl and set v = serviceUrl  <- v
     member __.SnapshotDate = snapshotDate
+    member __.ApiKey = 
+        match apiKey with
+        | k when isStringNone(k) -> None
+        | x -> Some x
         
     member __.Query<'T>(query:string, fromJson) : 'T =
         sendingQuery.Trigger query

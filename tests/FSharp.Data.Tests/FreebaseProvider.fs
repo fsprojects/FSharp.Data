@@ -22,6 +22,25 @@ let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
 //alow tests to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
+//Safe set the key environment variable to value (or delete it if value = "") only for this context
+let environmentVariable key value = 
+    let old = Environment.GetEnvironmentVariable(key)
+    Environment.SetEnvironmentVariable(key, value)
+    { new IDisposable with
+          member x.Dispose() = Environment.SetEnvironmentVariable(key, old) }
+
+[<Test>]
+let ``Should not use api key if FREEBASE_API_KEY environment variable not set``() =
+    use v = environmentVariable "FREEBASE_API_KEY" ""
+    let data = FreebaseData.GetDataContext()
+    data.DataContext.ApiKey |> should equal None
+
+[<Test>]
+let ``Should use api key from FREEBASE_API_KEY environment variable``() =
+    use v = environmentVariable "FREEBASE_API_KEY" "KEY1234"
+    let data = FreebaseData.GetDataContext()
+    data.DataContext.ApiKey |> should equal (Some "KEY1234")
+
 let data = FreebaseDataProvider<apiKey>.GetDataContext()
 
 [<Test>]
