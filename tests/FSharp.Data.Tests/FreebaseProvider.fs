@@ -212,6 +212,19 @@ let ``Check IndividualsAZ good for large collections``() =
     // I couldn't resist....
     bible.Characters.Any(fun x -> x.Name = "Bart Simpson") |> should equal false
 
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
+[<Test>]
+let ``can access meteo``() =
+    let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
+
+    // The type here is float<metre/second>, since the Freebase project uses normalized SI units
+    let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
+
+    printfn "top %A" topWind
+
+
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
 
