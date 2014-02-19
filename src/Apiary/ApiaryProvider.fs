@@ -22,15 +22,6 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
   let buildTypes (typeName:string) (args:obj[]) =
 
     let apiName = args.[0] :?> string
-    let specialNames = args.[1] :?> string
-    let specialNames = 
-      if String.IsNullOrEmpty specialNames
-      then Map.empty
-      else
-        specialNames.Split(',')
-        |> Array.map (fun x -> x.Split('='))
-        |> Array.map (fun x -> x.[0].Trim(), x.[1].Trim())
-        |> Map.ofArray
 
     // Generate the required type with empty constructor
     let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some(replacer.ToRuntime typeof<ApiaryContext>))
@@ -39,7 +30,7 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
         let root = replacer.ToDesignTime root in replacer.ToRuntime <@@ new ApiaryContext(%%root) @@>)
     |> tpType.AddMember
 
-    let ctx = ApiaryGenerationContext.Create(apiName, tpType, replacer, specialNames)
+    let ctx = ApiaryGenerationContext.Create(apiName, tpType, replacer, Map.empty)
 
     // Get the schema of API operations from Apiary & generate schema
     let names = 
@@ -51,8 +42,7 @@ type public ApiaryProvider(cfg:TypeProviderConfig) as this =
     tpType
 
   // Add static parameter that specifies the API we want to get (compile-time) 
-  let parameters = [ ProvidedStaticParameter("ApiName", typeof<string>)
-                     ProvidedStaticParameter("SpecialNames", typeof<string>, "") ]
+  let parameters = [ ProvidedStaticParameter("ApiName", typeof<string>) ]
 
   let helpText = 
     """<summary>Apiary Provider</summary>

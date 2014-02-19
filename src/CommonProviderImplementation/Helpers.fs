@@ -255,10 +255,10 @@ module ProviderHelpers =
 
         if sampleIsList then
         
-          // the [,] case needs more work, and it's a weird scenario anyway, so we won't support it
+          // the [][] case needs more work, and it's a weird scenario anyway, so we won't support it
           if not resultType.IsArray then
         
-            let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
+            let resultTypeArray = resultType.MakeArrayType()
             let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
             
             // Generate static GetSamples method

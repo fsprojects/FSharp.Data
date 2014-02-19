@@ -197,7 +197,7 @@ module JsonTypeBuilder =
     | InferedType.Top | InferedType.Null | InferedType.Heterogeneous EmptyMap | InferedType.Collection EmptyMap -> 
 
         // Return the underlying JsonDocument without change
-        { ConvertedType = ctx.Representation
+        { ConvertedType = ctx.IJsonDocumentType
           Converter = None
           ConversionCallingType = JsonDocument }
 

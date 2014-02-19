@@ -118,6 +118,9 @@
     <Content Include="Data/projects.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/Contacts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/Dates.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

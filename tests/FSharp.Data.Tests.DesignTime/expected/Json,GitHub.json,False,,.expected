@@ -24,14 +24,14 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    member Assignee: FDR.JsonDocument with get
+    member Assignee: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "assignee")
 
     member Body: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "body")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member ClosedAt: FDR.JsonDocument with get
+    member ClosedAt: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "closed_at")
 
     member Comments: int with get
@@ -65,7 +65,7 @@ class JsonProvider+Root : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "labels_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Milestone: FDR.JsonDocument with get
+    member Milestone: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "milestone")
 
     member Number: int with get

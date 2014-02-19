@@ -1,0 +1,66 @@
+class JsonProvider
+    static member AsyncGetSample: () -> JsonProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "contacts.json"), f)
+
+    static member AsyncLoad: uri:string -> JsonProvider+Root async
+    let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
+
+    static member GetSample: () -> JsonProvider+Root
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "contacts.json")), "")
+
+    static member Load: stream:System.IO.Stream -> JsonProvider+Root
+    JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
+
+    static member Load: reader:System.IO.TextReader -> JsonProvider+Root
+    JsonDocument.Create(reader, "")
+
+    static member Load: uri:string -> JsonProvider+Root
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+
+    static member Parse: text:string -> JsonProvider+Root
+    JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
+
+
+class JsonProvider+Root : FDR.IJsonDocument
+    member Ab: JsonProvider+Ab with get
+    JsonRuntime.GetPropertyPacked(this, "ab")
+
+
+class JsonProvider+Ab : FDR.IJsonDocument
+    member Persons: JsonProvider+Person[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "persons"), new Func<_,_>(id)))
+
+
+class JsonProvider+Person : FDR.IJsonDocument
+    member Contacts: JsonProvider+Contact[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "contacts"), new Func<_,_>(id)))
+
+    member Emails: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "emails"), new Func<_,_>(id)))
+
+    member Phones: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "phones"), new Func<_,_>(id)))
+
+
+class JsonProvider+Contact : FDR.IJsonDocument
+    member EmailCapability: JsonProvider+IntChoice option with get
+    JsonRuntime.TryGetPropertyPacked(this, "emailCapability")
+
+    member EmailImEnabled: bool[] option with get
+    JsonRuntime.ConvertOptionalProperty(this, "emailIMEnabled", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))))
+
+    member Emails: FDR.IJsonDocument[] option with get
+    JsonRuntime.ConvertOptionalProperty(this, "emails", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+
+    member Phones: FDR.IJsonDocument[] option with get
+    JsonRuntime.ConvertOptionalProperty(this, "phones", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+
+
+class JsonProvider+IntChoice : FDR.IJsonDocument
+    member Number: int with get
+    let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Number")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", Some value.JsonValue), Some value.JsonValue)
+
+
