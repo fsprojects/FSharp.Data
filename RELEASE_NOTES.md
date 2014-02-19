@@ -147,4 +147,5 @@
 * Tolerate invalid json and missing data in apiary specifications.
 * Added 'SpecialNames' parameter to ApiaryProvider to allow taking concrete examples in the apiary specification and turning them to api parameters.
 * Improved naming of generated types.
-* Fixed 'SampleIsList' to work with xml and json spanning multiple lines
+* Fixed 'SampleIsList' to work with xml and json spanning multiple lines.
+* Fixed handling of nested arrays in JsonProvider.
