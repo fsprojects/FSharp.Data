@@ -176,6 +176,12 @@ Here is an example from data about cyclones and hurricanes:
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
+data.DataContext.SendingQuery.Add (fun e -> 
+  printfn "query: %A" e.QueryText)
+
+data.DataContext.SendingRequest.Add (fun e -> 
+  printfn "request: %A" e.RequestUri)
+
 let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
 
 // The type here is float<metre/second>, since the Freebase project uses normalized SI units
