@@ -16,9 +16,6 @@ open FSharp.Data
 open FSharp.Data.FreebaseOperators
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-[<Literal>]
-let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
-
 //alow tests to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
@@ -41,7 +38,7 @@ let ``Should use api key from FREEBASE_API_KEY environment variable``() =
     let data = FreebaseData.GetDataContext()
     data.DataContext.ApiKey |> should equal (Some "KEY1234")
 
-let data = FreebaseDataProvider<apiKey>.GetDataContext()
+let data = FreebaseData.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
