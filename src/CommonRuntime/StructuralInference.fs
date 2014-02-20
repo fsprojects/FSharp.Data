@@ -251,7 +251,8 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
       elif date.Year < 1000 && numberOfNumberGroups value <> 3 then
          InferedType.Primitive(typeof<string>, unit)
       // Prevent stuff like ad3mar being considered a date
-      elif date.Year = DateTime.Now.Year && numberOfNumberGroups value < 2 && value.IndexOf("ad", StringComparison.OrdinalIgnoreCase) >= 0 then
+      elif cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                                 value.IndexOf(cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era), StringComparison.OrdinalIgnoreCase) >= 0) then
         InferedType.Primitive(typeof<string>, unit)
       else
         InferedType.Primitive(typeof<DateTime>, unit)
