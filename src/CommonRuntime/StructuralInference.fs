@@ -236,7 +236,12 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
     let runningOnMono = Type.GetType("Mono.Runtime") <> null
     if runningOnMono then
       let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
-      abbreviatedEraNames.[era - 1] //era are 1 based
+      let eraIndex =
+        match era with
+        | 0 -> (abbreviatedEraNames |> Array.length) // 0 mean current, last of array
+        | x when x > 0 && x <= abbreviatedEraNames.Length -> era
+        | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
+      abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
     else
       cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 
