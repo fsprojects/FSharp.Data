@@ -235,8 +235,8 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
   let getAbbreviatedEraName era =
     let runningOnMono = Type.GetType("Mono.Runtime") <> null
     if runningOnMono then
-      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
-      abbreviatedEraNames.[era]
+      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
+      abbreviatedEraNames.[era - 1] //era are 1 based
     else
       cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 
