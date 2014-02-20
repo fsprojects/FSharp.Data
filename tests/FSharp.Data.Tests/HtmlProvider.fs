@@ -9,7 +9,7 @@ module FSharp.Data.Tests.HtmlProvider
 #endif
 
 open NUnit.Framework
-open FSharp.Data.Experimental
+open FSharp.Data
 open FsUnit
 open System.Xml
 open System.Xml.Linq
@@ -30,7 +30,7 @@ let simpleHtml = """<html>
                     </body>
                 </html>"""
 
-type SimpleHtml = HtmlProvider<simpleHtml>
+type SimpleHtml = HtmlTableProvider<simpleHtml>
 
 [<Test>]
 let ``SimpleHtml infers date type correctly ``() = 
@@ -63,7 +63,7 @@ let ``Can create type for simple table``() =
     html.Data.[0].``Column 1`` |> should equal 1
 
 
-type MarketDepth = HtmlProvider<"data/marketdepth.htm">
+type MarketDepth = HtmlTableProvider<"data/marketdepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =

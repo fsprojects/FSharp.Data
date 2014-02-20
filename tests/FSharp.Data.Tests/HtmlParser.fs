@@ -9,7 +9,7 @@ module FSharp.Data.Tests.HtmlParser
 #endif
 
 open NUnit.Framework
-open FSharp.Data.Experimental
+open FSharp.Data
 open FsUnit
 open System.Xml
 open System.Xml.Linq

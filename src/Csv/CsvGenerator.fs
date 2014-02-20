@@ -10,12 +10,6 @@ open FSharp.Data.Runtime
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
-type private FieldInfo = 
-  { TypeForTuple : Type
-    Property : ProvidedProperty
-    Convert: Expr -> Expr
-    ConvertBack: Expr -> Expr }
-
 module internal CsvTypeBuilder =
 
   let generateTypes asm ns typeName (missingValues, cultureStr) replacer inferredFields =

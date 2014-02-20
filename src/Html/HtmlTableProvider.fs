@@ -17,12 +17,6 @@ open FSharp.Data
 open System.Collections.Generic
 open FSharp.Data.Runtime.StructuralTypes
 
-type private FieldInfo = 
-  { TypeForTuple : Type
-    Property : ProvidedProperty
-    Convert: Expr -> Expr
-    ConvertBack: Expr -> Expr } 
-
 module Helpers = 
 
     type Cache private () =
@@ -39,13 +33,13 @@ module Helpers =
                 temp   
     
 [<TypeProvider>]
-type public HtmlProvider(cfg:TypeProviderConfig) as this =
+type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.Experimental.HtmlProvider'
   let asm, replacer = AssemblyResolver.init cfg
-  let ns = "FSharp.Data.Experimental"
-  let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", Some typeof<obj>)
+  let ns = "FSharp.Data"
+  let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlTableProvider", Some typeof<obj>)
   
   
   let buildTypes (typeName:string,sample,culture,resolutionFolder) =
