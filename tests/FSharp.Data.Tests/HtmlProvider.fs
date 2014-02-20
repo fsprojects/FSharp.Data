@@ -21,10 +21,11 @@ open FSharp.Data.Runtime
 let simpleHtml = """<html>
                     <body>
                         <table title="table">
-                            <tr><th>Date</th><th>Column 1</th><th>Column 2</th><th>Column 3</th></tr>
-                            <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td></tr>
-                            <tr><td>01/02/2013 12:00</td><td>2</td><td>no</td><td>2.5</td></tr>
-                            <tr><td>01/03/2013 12:00</td><td>3</td><td>true</td><td>3.456</td></tr>
+                            <tr><th>Date</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Column 4</th></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td><td>2</td></tr>
+                            <tr><td>01/02/2013 12:00</td><td>2</td><td>no</td><td>2.5</td><td>2</td></tr>
+                            <tr><td>01/03/2013 12:00</td><td>3</td><td>true</td><td>3.456</td><td>2.3</td></tr>
+                            <tr><td>01/04/2013 12:00</td><td>4</td><td>true</td><td>2.4</td><td>&nbsp;</td></tr>
                         </table>
                     </body>
                 </html>"""
@@ -52,6 +53,11 @@ let ``SimpleHtml infers decimal type correctly ``() =
     html.Data.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
+let ``SimpleHtml infers float as fail through type correctly ``() = 
+    let html = SimpleHtml.Tables.table.Load(simpleHtml)
+    html.Data.[0].``Column 4`` |> should equal 2
+
+[<Test>]
 let ``Can create type for simple table``() = 
     let html = SimpleHtml.Tables.table.Load(simpleHtml)
     html.Data.[0].``Column 1`` |> should equal 1
@@ -61,6 +67,6 @@ type MarketDepth = HtmlProvider<"data/marketdepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
-    let table = MarketDepth.Tables.Table_2.Load("data/marketdepth.htm")
-    table.Data.[0].``Settlement Day`` |> should equal (System.DateTime(2014, 1, 4, 0, 0,0))
+    let table = MarketDepth.Tables.Table_2.Load("file://data/marketdepth.htm")
+    table.Data.[0].``Settlement Day`` |> should equal (System.DateTime(2014, 1, 14, 0, 0,0))
     table.Data.[0].Period |> should equal 1

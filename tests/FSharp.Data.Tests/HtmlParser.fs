@@ -189,7 +189,8 @@ let ``Extracts data and headers with thead and tbody``() =
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
-    (tables.[0].Rows.[0]) |> should equal ["January"; "$100"]
+    (tables.[0].Rows.[0]) |> should equal ["Sum"; "$180"]
+    (tables.[0].Rows.[1]) |> should equal ["January"; "$100"]
 
 [<Test>]
 let ``Extracts tables in malformed html``() = 

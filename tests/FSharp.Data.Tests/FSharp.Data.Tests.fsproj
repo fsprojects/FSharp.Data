@@ -87,10 +87,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\IrelandStations.xml" />
-    <None Include="Data\MarketDepth.htm" />
-    <None Include="Data\SimpleHtmlTablesWithTr.html" />
-    <None Include="Data\SimpleHtmlTablesWithThead.html" />
-    <None Include="Data\list_of_counties_wikipedia.html" />
+    <None Include="Data\MarketDepth.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithTr.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithThead.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\list_of_counties_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
