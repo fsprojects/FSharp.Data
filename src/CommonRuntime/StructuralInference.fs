@@ -233,12 +233,12 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
   let asGuid _ value = TextConversions.AsGuid value
 
   let getAbbreviatedEraName era =
-#if MONO 
-    let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
-    abbreviatedEraNames.[era]
-#else
-    cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
-#endif
+    let runningOnMono = Type.GetType("Mono.Runtime") <> null
+    if runningOnMono then
+      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
+      abbreviatedEraNames.[era]
+    else
+      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 
   match value with
   | "0" -> InferedType.Primitive(typeof<Bit0>, unit)
