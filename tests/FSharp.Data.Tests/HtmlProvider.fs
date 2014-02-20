@@ -64,10 +64,3 @@ let ``Can infer tables out of the market depth file``() =
     let table = MarketDepth.Tables.Table_2.Load("data/marketdepth.htm")
     table.Data.[0].``Settlement Day`` |> should equal (System.DateTime(2014, 1, 4, 0, 0,0))
     table.Data.[0].Period |> should equal 1
-
-type Counties = HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States">
-
-[<Test>]
-let ``Can get counties``() = 
-    let result = Counties.Tables.Table_0.Load("http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States")
-    result.Data.[0].
