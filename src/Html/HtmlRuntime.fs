@@ -151,7 +151,7 @@ module Html =
                     for (colindex, cell) in cells.[rowindex] do
                         let rowSpan, colSpan = (max 1 (getAttributeAs Int32.Parse "rowspan" cell)) - 1,(max 1 (getAttributeAs Int32.Parse "colspan" cell)) - 1
                         let data =
-                            let getContents contents = String.Join(" ", List.map getValue contents).Trim().Replace("&nbsp;", "")
+                            let getContents contents = String.Join(" ", List.map getValue contents).Trim()
                             match cell with
                             | HtmlElement("td",_,contents) -> Cell (false, getContents contents)
                             | HtmlElement("th",_,contents) -> Cell (true, getContents contents)
@@ -191,7 +191,7 @@ module Html =
             let rows = data.GetLength(0)
             let columns = data.GetLength(1)
             let widths = Array.zeroCreate columns 
-            data |> Array2D.iteri (fun r c cell ->
+            data |> Array2D.iteri (fun _ c cell ->
               widths.[c] <- max (widths.[c]) (cell.Length))
             for r in 0 .. rows - 1 do
               for c in 0 .. columns - 1 do
@@ -205,13 +205,12 @@ type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowTy
     member x.Data with get() = values
 
     static member Create(rowConverter:Func<string[],'rowType>, id:string, src:string) =
-       let tables = 
-            Html.Table.parse src
-            |> Seq.pick (fun table -> if table.Name = id then Some table else None)
+       let tables = Html.Table.parse src
+       let table = tables |> Seq.pick (fun table -> if table.Name = id then Some table else None)
        let convertRow r = rowConverter.Invoke(r)
        let data =  
-            tables.Rows
+            table.Rows
             |> Array.map (convertRow)
        let result = 
-            new HtmlTable<_>(tables.Name, tables.Headers, data) 
+            new HtmlTable<_>(table.Name, table.Headers, data) 
        result
