@@ -10,6 +10,19 @@ open System.Text
 open FSharp.Data.Runtime
 #endif
 
+type HtmlTableCell = 
+    | Cell of bool * string
+    | Empty
+    member x.IsHeader =
+        match x with
+        | Empty -> true
+        | Cell(h, _) -> h
+    member x.Data = 
+        match x with
+        | Empty -> ""
+        | Cell(_, d) -> d
+
+
 type HtmlTable = {
     Name : string
     Headers : string []
@@ -28,6 +41,11 @@ module Html =
         match x with
         | HtmlElement(_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
         | _ -> None
+
+    let getAttributeAs parseF name (e:HtmlElement) = 
+        match tryGetAttribute name e with
+        | Some(HtmlAttribute(_, colspan)) -> parseF(colspan)
+        | None -> 0
 
     let children (x:HtmlElement) =
         match x with
@@ -65,6 +83,15 @@ module Html =
         | HtmlText(text) | HtmlCharRef(text) -> text.Trim()
         | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
 
+    let tryGetBody (HtmlDocument(_, es)) = 
+        es
+        |> List.tryPick (fun e ->
+            match getElementsNamed ["body"] e with
+            | [] -> None
+            | h::_ -> Some(h)
+        )
+            
+
     let write (writer:TextWriter) (element:HtmlElement) =
         let createXmlWriter(baseWriter:TextWriter) =
             let s = new System.Xml.XmlWriterSettings(Indent = false,
@@ -96,7 +123,7 @@ module Html =
 
     module Table =
 
-        let private tryGetName (element:HtmlElement) = 
+        let private getName defaultName (element:HtmlElement) = 
             let tryGetName' choices =
                 choices
                 |> List.tryPick (fun (attrName) -> 
@@ -104,73 +131,73 @@ module Html =
                     | Some(HtmlAttribute(_,value)) -> Some <| value
                     | None -> None
                 )
-            tryGetName' [ "id"; "name"; "title"; "summary"]
-
-        let private (|THead|_|) (table:HtmlElement) =
-            match getElementsNamed ["thead"] table with
-            | [] -> None
-            | h :: _ -> Some(THead(h |> getElementsNamed ["th"; "td"] |> List.map getValue))
-
-        let private (|ThInFirstRow|_|) (table:HtmlElement) = 
-            match getElementsNamed ["tr"] table with
-            | [] -> None
-            | h :: _ when hasChild ["th"] h-> Some(ThInFirstRow(h |> getElementsNamed ["th"] |> List.map getValue))
-            | _ -> None
-
-        let private parseTable index (table:HtmlElement) =
-            let (skipRows, headers) = 
-                match table with
-                | THead headers -> 0, headers
-                | ThInFirstRow headers -> 1, headers
-                | table -> 
-                    match table |> getElementsNamed ["tr"] with
-                    | [] -> 0,[]
-                    | h :: _ -> 1, h |> getElementsNamed ["td"; "th"] |> List.map getValue
-
-            let tableName = 
-                match tryGetName table with
-                | None -> 
-                    match getElementsNamed ["caption"] table with
-                    | [] -> "Table_" + (string index)
+            match tryGetName' [ "id"; "name"; "title"; "summary"] with
+            | Some(name) -> name
+            | None ->
+                    match getElementsNamed ["caption"] element with
+                    | [] -> defaultName
                     | h :: _ -> (getValue h)
-                | Some(name) -> name
+
                     
-            let parseData skipRows (tableBody:seq<HtmlElement>) = 
-                tableBody
-                |> Seq.skip skipRows
-                |> Seq.filter (fun e ->
-                                let name = (name e)
-                                name <> "thead" && name <> "tfoot"
-                              )
-                |> Seq.collect (getElementsNamed ["tr"])
-                |> Seq.map (getElementsNamed ["td"; "th"] >> List.map getValue)
-                |> Seq.filter (fun x -> (not <| List.isEmpty x) && (x <> headers) && (x.Length = headers.Length))
-                |> Seq.toArray
-                
-    
-            match table with
-            | HtmlElement("table", _, content) ->
+        let parseTable index (table:HtmlElement) = 
+            let rows = getElementsNamed ["tr"] table |> List.mapi (fun i r -> i,r)
+            if rows.Length <= 1 
+            then None
+            else
+                let cells = rows |> List.map (snd >> getElementsNamed ["td"; "th"] >> List.mapi (fun i e -> (i,e)))
+                let width = (cells |> List.maxBy (fun x -> x.Length)).Length
+                let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
+                for (rowindex, _) in rows do
+                    for (colindex, cell) in cells.[rowindex] do
+                        let rowSpan, colSpan = (max 1 (getAttributeAs Int32.Parse "rowspan" cell)) - 1,(max 1 (getAttributeAs Int32.Parse "colspan" cell)) - 1
+                        let data =
+                            let getContents contents = String.Join(" ", List.map getValue contents).Trim().Replace("&nbsp;", "")
+                            match cell with
+                            | HtmlElement("td",_,contents) -> Cell (false, getContents contents)
+                            | HtmlElement("th",_,contents) -> Cell (true, getContents contents)
+                            | _ -> Empty
+                        let col_i = ref colindex
+                        while res.[rowindex].[!col_i] <> Empty do incr(col_i)
+                        for j in [!col_i..(!col_i + colSpan)] do
+                            for i in [rowindex..(rowindex + rowSpan)] do
+                                res.[i].[j] <- data
+
+                let headers = 
+                    if res.[0] |> Array.forall (fun r -> r.IsHeader) 
+                    then res.[0] |> Array.map (fun x -> x.Data)
+                    else res.[0] |> Array.map (fun x -> x.Data) //Humm!! need better semantics around detecting headers
+                    
                 {
-                   Name = tableName
-                   Headers = headers |> Seq.toArray
-                   Rows = (parseData skipRows content |> Array.map Seq.toArray)
-                }
-            | _ -> failwithf "expected table element"
+                    Name = (getName ("Table_" + (string index)) table)
+                    Headers = headers
+                    Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data))
+                } |> Some
+    
+        let getTables (HtmlDocument(_, doc)) =
+            List.collect (getElementsNamed ["table"]) doc
+            |> List.mapi parseTable
     
         let parse (str:string) = 
             match HtmlParser.parse str with
             | None -> List.empty
-            | Some(HtmlDocument(_, element)) ->
-                let rec tables' (element:HtmlElement) =
-                    [
-                        if (name element) = "table"
-                        then yield element
-                        else 
-                            for child in (children element) do
-                                yield! tables' child
-                    ]
-                List.collect tables' element 
-                |> List.mapi (parseTable)
+            | Some(doc) ->
+                getTables doc
+                |> List.choose id
+
+        let formatTable (data:HtmlTable) =
+            let sb = StringBuilder()
+            use wr = new StringWriter(sb)  
+            let data = array2D ((data.Headers |> List.ofArray) :: (data.Rows |> Array.map (List.ofArray) |> List.ofArray))    
+            let rows = data.GetLength(0)
+            let columns = data.GetLength(1)
+            let widths = Array.zeroCreate columns 
+            data |> Array2D.iteri (fun r c cell ->
+              widths.[c] <- max (widths.[c]) (cell.Length))
+            for r in 0 .. rows - 1 do
+              for c in 0 .. columns - 1 do
+                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
+              wr.WriteLine()
+            sb.ToString()
 
 type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowType[]) =
     member x.Name with get() = name
@@ -179,7 +206,7 @@ type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowTy
 
     static member Create(rowConverter:Func<string[],'rowType>, id:string, src:string) =
        let tables = 
-            Html.Table.parse src 
+            Html.Table.parse src
             |> Seq.pick (fun table -> if table.Name = id then Some table else None)
        let convertRow r = rowConverter.Invoke(r)
        let data =  
