@@ -149,3 +149,6 @@
 * Fixed 'SampleIsList' to work with xml and json spanning multiple lines.
 * Fixed handling of nested arrays in JsonProvider.
 * Fixed handling of optional arrays in JsonProvider.
+
+#### 2.0.0-alpha8 - Unreleased
+* Mono fixes.
