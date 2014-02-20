@@ -232,6 +232,14 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
 
   let asGuid _ value = TextConversions.AsGuid value
 
+  let getAbbreviatedEraName era =
+#if MONO 
+    let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
+    abbreviatedEraNames.[era]
+#else
+    cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+#endif
+
   match value with
   | "0" -> InferedType.Primitive(typeof<Bit0>, unit)
   | "1" -> InferedType.Primitive(typeof<Bit1>, unit)
@@ -252,7 +260,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
          InferedType.Primitive(typeof<string>, unit)
       // Prevent stuff like ad3mar being considered a date
       elif cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                                                 value.IndexOf(cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era), StringComparison.OrdinalIgnoreCase) >= 0) then
+                                                                 value.IndexOf(getAbbreviatedEraName era, StringComparison.OrdinalIgnoreCase) >= 0) then
         InferedType.Primitive(typeof<string>, unit)
       else
         InferedType.Primitive(typeof<DateTime>, unit)
