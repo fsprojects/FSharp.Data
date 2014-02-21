@@ -16,6 +16,7 @@ open System.Reflection
 type private UriInfo = { Path : string; Query : string }
 
 let private uriInfo (uri : Uri) (source : string) = 
+
     let fragPos = source.IndexOf("#")
     let queryPos = source.IndexOf("?")
     let start = source.IndexOf(uri.Host) + uri.Host.Length
@@ -40,6 +41,7 @@ let private privateInstanceFlags = BindingFlags.NonPublic ||| BindingFlags.Insta
 let private publicInstanceFlags = BindingFlags.Public ||| BindingFlags.Instance
 
 let private purifierDotNet = lazy(
+
     let uriType = typeof<Uri>
     let flagsField = uriType.GetField("m_Flags", privateInstanceFlags)
     let stringField = uriType.GetField("m_String", privateInstanceFlags)
@@ -54,16 +56,15 @@ let private purifierDotNet = lazy(
     let moreInfoQuery = moreInfoType.GetField("Query", publicInstanceFlags)
     let moreInfoPath = moreInfoType.GetField("Path", publicInstanceFlags)
 
-    //Code inspired by Rasmus Faber's solution in this post: http://stackoverflow.com/questions/781205/getting-a-url-with-an-url-encoded-slash
-    (fun (uri : Uri) ->
+    // Code inspired by Rasmus Faber's solution in this post: http://stackoverflow.com/questions/781205/getting-a-url-with-an-url-encoded-slash
+    fun (uri : Uri) ->
+
         uri.PathAndQuery |> ignore // need to access PathAndQuery
-        uri.AbsoluteUri |> ignore //need to access this as well the MoreInfo prop is initialized.
+        uri.AbsoluteUri |> ignore // need to access this as well the MoreInfo prop is initialized.
 
         let flags = 
-            flagsField.GetValue(uri) 
-            |> unbox 
-            |> uint64 
-            |> (&&&) (~~~ 0x30UL) // Flags.PathNotCanonical|Flags.QueryNotCanonical
+            flagsField.GetValue(uri) :?> uint64
+            &&& (~~~ 0x30UL) // Flags.PathNotCanonical|Flags.QueryNotCanonical
 
         flagsField.SetValue(uri, flags)
         let info = infoField.GetValue(uri)
@@ -75,9 +76,10 @@ let private purifierDotNet = lazy(
         moreInfoPath.SetValue(moreInfo, uriInfo.Path)
         moreInfoQuery.SetValue(moreInfo, uriInfo.Query)
 
-        uri))
+        uri)
 
 let private purifierMono = lazy(
+
     let uriType = typeof<Uri>
 
     let sourceField = uriType.GetField("source", privateInstanceFlags)
@@ -86,7 +88,8 @@ let private purifierMono = lazy(
     let cachedToStringField = uriType.GetField("cachedToString", privateInstanceFlags)
     let cachedAbsoluteUriField = uriType.GetField("cachedAbsoluteUri",privateInstanceFlags)
 
-    (fun (uri : Uri) ->
+    fun (uri : Uri) ->
+    
         let source = string (sourceField.GetValue(uri))
         cachedToStringField.SetValue(uri, source)
         cachedAbsoluteUriField.SetValue(uri, source)
@@ -94,32 +97,29 @@ let private purifierMono = lazy(
         pathField.SetValue(uri, uriInfo.Path)
         queryField.SetValue(uri, uriInfo.Query)
 
-        uri))
+        uri)
 
-let private isMono =
-    let uriType = typeof<Uri>
-    (uriType.GetField("m_Flags", privateInstanceFlags) = null)
+let private isMono = typeof<Uri>.GetField("m_Flags", privateInstanceFlags) = null
 
 let private hasBrokenDotNetUri =
     if isMono then false
     else
-        let uriType = typeof<Uri>
-        //ShouldUseLegacyV2Quirks was introduced in .net 4.5
-        //Eventhough 4.5 is an inplace update of 4.0 this call will return 
-        //a different value if an application specifically targets 4.0 or 4.5+
-        let legacyV2Quirks = uriType.GetProperty("ShouldUseLegacyV2Quirks", BindingFlags.Static ||| BindingFlags.NonPublic)
+        // ShouldUseLegacyV2Quirks was introduced in .net 4.5
+        // Eventhough 4.5 is an inplace update of 4.0 this call will return 
+        // a different value if an application specifically targets 4.0 or 4.5+
+        let legacyV2Quirks = typeof<Uri>.GetProperty("ShouldUseLegacyV2Quirks", BindingFlags.Static ||| BindingFlags.NonPublic)
         match legacyV2Quirks with
         | null -> true //neither 4.0 or 4.5
         | _ ->
             let isBrokenUri = unbox (legacyV2Quirks.GetValue(null, null))
             if not isBrokenUri then false //application targets 4.5
             else
-                //4.0 uses legacyV2quirks on the UriParser but you can set
-                //  <uri>
-                //    <schemeSettings>
-                //      <add name="http" genericUriParserOptions="DontUnescapePathDotsAndSlashes" />
-                //          </schemeSettings>
-                //  </uri>
+                // 4.0 uses legacyV2quirks on the UriParser but you can set
+                // <uri>
+                //   <schemeSettings>
+                //     <add name="http" genericUriParserOptions="DontUnescapePathDotsAndSlashes" />
+                //   </schemeSettings>
+                // </uri>
                 //
                 //  this will fix AbsoluteUri but not ToString()
                 //  i.e new Uri("http://google.com/%2F").AbsoluteUri
@@ -132,9 +132,9 @@ let private hasBrokenDotNetUri =
                 let uri = new Uri("http://google.com/%2F")
                 uri.ToString().EndsWith("%2F", StringComparison.InvariantCulture)
 
-let enableUriSlashes : (Uri -> Uri) =
+let enableUriSlashes =
     if isMono then purifierMono.Force()
-    else if hasBrokenDotNetUri then purifierDotNet.Force()
-    else (fun x -> x)
+    elif hasBrokenDotNetUri then purifierDotNet.Force()
+    else id
 
 #endif
