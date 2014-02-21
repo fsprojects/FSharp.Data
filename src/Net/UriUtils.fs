@@ -1,5 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------
 // Fixes the way slashs are encoded in System.Uri across Mono and .NET.
+// Ported from https://github.com/glennblock/PUrify
 // --------------------------------------------------------------------------------------
 module internal FSharp.Data.UriUtils
 
@@ -35,8 +36,8 @@ let private uriInfo (uri : Uri) (source : string) =
     
     { Path = path; Query = query }
 
-
 let private privateInstanceFlags = BindingFlags.NonPublic ||| BindingFlags.Instance
+let private publicInstanceFlags = BindingFlags.Public ||| BindingFlags.Instance
 
 let private purifierDotNet = lazy(
     let uriType = typeof<Uri>
@@ -45,13 +46,13 @@ let private purifierDotNet = lazy(
     let infoField = uriType.GetField("m_Info", privateInstanceFlags)
 
     let infoFieldType = infoField.FieldType
-    let infoStringField = infoFieldType.GetField("String", privateInstanceFlags)
-    let moreInfoField = infoFieldType.GetField("MoreInfo", privateInstanceFlags)
+    let infoStringField = infoFieldType.GetField("String", publicInstanceFlags)
+    let moreInfoField = infoFieldType.GetField("MoreInfo", publicInstanceFlags)
 
     let moreInfoType = moreInfoField.FieldType
-    let moreInfoAbsoluteUri = moreInfoType.GetField("AbsoluteUri", privateInstanceFlags)
-    let moreInfoQuery = moreInfoType.GetField("Query", privateInstanceFlags)
-    let moreInfoPath = moreInfoType.GetField("Path", privateInstanceFlags)
+    let moreInfoAbsoluteUri = moreInfoType.GetField("AbsoluteUri", publicInstanceFlags)
+    let moreInfoQuery = moreInfoType.GetField("Query", publicInstanceFlags)
+    let moreInfoPath = moreInfoType.GetField("Path", publicInstanceFlags)
 
     //Code inspired by Rasmus Faber's solution in this post: http://stackoverflow.com/questions/781205/getting-a-url-with-an-url-encoded-slash
     (fun (uri : Uri) ->
