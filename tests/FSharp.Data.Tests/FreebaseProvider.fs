@@ -16,13 +16,29 @@ open FSharp.Data
 open FSharp.Data.FreebaseOperators
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
-[<Literal>]
-let apiKey = "AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY"
-
 //alow tests to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-let data = FreebaseDataProvider<apiKey>.GetDataContext()
+//Safe set the key environment variable to value (or delete it if value = "") only for this context
+let environmentVariable key value = 
+    let old = Environment.GetEnvironmentVariable(key)
+    Environment.SetEnvironmentVariable(key, value)
+    { new IDisposable with
+          member x.Dispose() = Environment.SetEnvironmentVariable(key, old) }
+
+[<Test>]
+let ``Should not use api key if FREEBASE_API_KEY environment variable not set``() =
+    use v = environmentVariable "FREEBASE_API_KEY" ""
+    let data = FreebaseData.GetDataContext()
+    data.DataContext.ApiKey |> should equal None
+
+[<Test>]
+let ``Should use api key from FREEBASE_API_KEY environment variable``() =
+    use v = environmentVariable "FREEBASE_API_KEY" "KEY1234"
+    let data = FreebaseData.GetDataContext()
+    data.DataContext.ApiKey |> should equal (Some "KEY1234")
+
+let data = FreebaseData.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
@@ -192,6 +208,19 @@ let ``Check IndividualsAZ good for large collections``() =
     bible.Characters.Any(fun x -> x.Name = "Jesus") |> should equal true
     // I couldn't resist....
     bible.Characters.Any(fun x -> x.Name = "Bart Simpson") |> should equal false
+
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
+
+[<Test>]
+let ``can access meteo``() =
+    let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
+
+    // The type here is float<metre/second>, since the Freebase project uses normalized SI units
+    let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
+
+    printfn "top %A" topWind
+
 
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
