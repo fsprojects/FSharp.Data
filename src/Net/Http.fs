@@ -9,6 +9,8 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
+open FSharp.Data.Runtime
+open UriUtils
 
 [<RequireQualifiedAccess>]
 /// The body to send in an HTTP request
@@ -34,32 +36,6 @@ type HttpResponse =
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 type Http private() = 
-
-#if FX_NO_URI_WORKAROUND
-#else
-  /// Are we currently running on Mono?
-  /// (Mono does not have the issue with encoding slashes in URLs, so we do not need workaround)
-  static let runningOnMono = Type.GetType("Mono.Runtime") <> null
-#endif
-
-  /// Returns a clone of a System.Uri object that allows URL encoded slashes.
-  /// (This is an ugly hack using Reflection, but it is the best way to do this
-  /// in a type provider. See [this StackOverflow answer][1].
-  ///
-  ///  [1]: http://stackoverflow.com/questions/781205/getting-a-url-with-an-url-encoded-slash
-  ///
-  static let enableUriSlashes (uri:Uri) =
-#if FX_NO_URI_WORKAROUND
-#else
-    if runningOnMono then uri else
-    let uri = Uri(uri.OriginalString)
-    uri.PathAndQuery |> ignore
-    let flagsFieldInfo = typeof<Uri>.GetField("m_Flags", BindingFlags.Instance ||| BindingFlags.NonPublic)
-    let flags = flagsFieldInfo.GetValue(uri) :?> uint64
-    let flags = flags &&& (~~~0x30UL)
-    flagsFieldInfo.SetValue(uri, flags)
-#endif
-    uri
 
   /// consumes a stream asynchronously until the end
   /// and returns a memory stream with the full content
