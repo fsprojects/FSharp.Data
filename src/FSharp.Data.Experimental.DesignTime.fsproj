@@ -41,6 +41,7 @@
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CommonRuntime\UriUtils.fs" />
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
