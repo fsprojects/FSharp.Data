@@ -155,6 +155,7 @@
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
+    <Compile Include="UriUtils.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
