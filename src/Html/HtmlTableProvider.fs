@@ -37,7 +37,7 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.Experimental.HtmlProvider'
-  let asm, replacer = AssemblyResolver.init cfg
+  let asm, _,replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlTableProvider", Some typeof<obj>)
   
@@ -48,7 +48,7 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
       let missingValues = String.Join(",", TextConversions.DefaultMissingValues)
       let generatedType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
       let tableContainer = ProvidedTypeDefinition("Tables", Some typeof<obj>)
-      let (dom, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse sample) "HTML" this cfg resolutionFolder
+      let (dom, _, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse sample) "HTML" this cfg resolutionFolder
 
       let getInferedRowType culture (table:HtmlTable) = 
           let inferedTypeToProperty name optional (typ:InferedType) = 
