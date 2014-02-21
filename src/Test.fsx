@@ -18,18 +18,20 @@ let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 
+type Platform = Net40 | Portable7 | Portable47
+
 let platform = Portable47
 
 let runtimeAssembly = 
     match platform with
-    | Full -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
-    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
+    | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
     | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
+    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
 
 let signatureOnly = false
 let ignoreOutput = false
 
-let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly platform
+let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
 let prettyPrint (t:ProvidedTypes.ProvidedTypeDefinition) = 
     if t.Name.StartsWith "FreebaseDataProvider" 
     then Debug.prettyPrint signatureOnly ignoreOutput 5 10 t

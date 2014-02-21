@@ -848,6 +848,9 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
     override this.GetCustomAttributes(_inherit)                                                    = [| |]
     override this.GetCustomAttributes(_attributeType, _inherit)                                    = [| |]
     override this.IsDefined(_attributeType, _inherit)                                              = false
+    // FSharp.Data addition: this was added to support arrays of arrays
+    override this.MakeArrayType() = ProvidedSymbolType(SymbolKind.SDArray, [this]) :> Type
+    override this.MakeArrayType arg = ProvidedSymbolType(SymbolKind.Array arg, [this]) :> Type
 
 type ProvidedSymbolMethod(genericMethodDefinition: MethodInfo, parameters: Type list) =
     inherit System.Reflection.MethodInfo()

@@ -24,7 +24,7 @@ class XmlProvider
 
 
 class XmlProvider+Authors : FDR.XmlElement
-    member GetAuthors: () -> XmlProvider+Author[]
+    member Authors: XmlProvider+Author[] with get
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
     member Topic: string with get

@@ -46,9 +46,9 @@ type XmlElement =
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
     with _ ->
-      text.Split('\n', '\r')
-      |> Array.filter (not << String.IsNullOrWhiteSpace)
-      |> Array.map (fun text -> { XElement = XDocument.Parse(text).Root })
+      XDocument.Parse("<root>" + text + "</root>").Root.Elements()
+      |> Seq.map (fun value -> { XElement = value })
+      |> Seq.toArray
 
 /// [omit]
 /// Static helper methods called from the generated code

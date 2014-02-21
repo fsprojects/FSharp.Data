@@ -104,13 +104,13 @@ printfn "%s (full=%b)" info.Name.Value info.Name.Full
 
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
 
-Test.GetSample().GetValues()
+Test.GetSample().Values
 |> Seq.iter (printfn "%d")
 
 (**
-型パラメータは複数の値を配列として返すような `GetValue` メソッドを生成します。
+型パラメータは複数の値を配列として返すような `Values` メソッドを生成します。
 `<value>` ノードは任意個の属性や子ノードを持つわけではないため、
-それぞれ `int` 値となり、 `GetValues()` メソッドも単に `int[]` を返すようになります！
+それぞれ `int` 値となり、 `Values` メソッドも単に `int[]` を返すようになります！
 
 ## 哲学者たちをもてなす
 
@@ -149,7 +149,7 @@ type Authors = XmlProvider<"../../data/Writers.xml">
 let topic = Authors.Parse(authors)
 
 printfn "%s" topic.Topic
-for author in topic.GetAuthors() do
+for author in topic.Authors do
   printf " - %s" author.Name 
   author.Born |> Option.iter (printf " (%d)")
   printfn ""
@@ -157,7 +157,7 @@ for author in topic.GetAuthors() do
 (**
 値 `topic` には( `string` 型の) `Topic` プロパティがあります。
 このプロパティは同名の属性の値を返します。
-また、すべての著者名をコレクションとして返すような `GetAuthors()` メソッドもあります。
+また、すべての著者名をコレクションとして返すような `Authors` メソッドもあります。
 `Born` プロパティはいくつかの著者では指定されていないため、
 `option<int>` 型として定義されています。
 そのため、 `Option.iter` を使用して表示する必要があります。
@@ -206,9 +206,9 @@ let html = Html.GetSample()
 
 /// <div> 要素のコンテンツを表示します
 let rec printDiv (div:Html.Div) =
-  div.GetSpans() |> Seq.iter (printfn "%s")
-  div.GetDivs() |> Seq.iter printDiv
-  if div.GetSpans().Length = 0 && div.GetDivs().Length = 0 then
+  div.Spans |> Seq.iter (printfn "%s")
+  div.Divs |> Seq.iter printDiv
+  if div.Spans.Length = 0 && div.Divs.Length = 0 then
       div.Value |> Option.iter (printfn "%s")
 
 // すべての子要素と共にルートの <div> 要素を表示します
@@ -251,7 +251,7 @@ let blog = Rss.GetSample()
 printfn "%s" blog.Channel.Title
 
 // すべてのitemノードを取得して、それぞれのタイトルとリンクを表示します
-for item in blog.Channel.GetItems() do
+for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
 
 (**

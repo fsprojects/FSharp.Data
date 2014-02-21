@@ -169,16 +169,15 @@ module JsonTypeBuilder =
         | InferedMultiplicity.OptionalSingle ->
             ProvidedProperty(makeUnique propName, 
                              typedefof<option<_>>.MakeGenericType [| output.ConvertedType |], 
-                             GetterCode = codeGenerator multiplicity output tag.Code) :> MemberInfo
+                             GetterCode = codeGenerator multiplicity output tag.Code)
         | InferedMultiplicity.Single ->
             ProvidedProperty(makeUnique propName, 
                              output.ConvertedType, 
-                             GetterCode = codeGenerator multiplicity output tag.Code) :> _
+                             GetterCode = codeGenerator multiplicity output tag.Code)
         | InferedMultiplicity.Multiple ->
-            ProvidedMethod(makeUnique ("Get" + NameUtils.pluralize tag.NiceName), 
-                           [], 
-                           output.ConvertedType.MakeArrayType(), 
-                           InvokeCode = codeGenerator multiplicity output tag.Code) :> _ ]
+            ProvidedProperty(makeUnique (NameUtils.pluralize tag.NiceName),
+                             output.ConvertedType.MakeArrayType(), 
+                             GetterCode = codeGenerator multiplicity output tag.Code)]
     objectTy
 
   /// Recursively walks over inferred type information and 
@@ -198,7 +197,7 @@ module JsonTypeBuilder =
     | InferedType.Top | InferedType.Null | InferedType.Heterogeneous EmptyMap | InferedType.Collection EmptyMap -> 
 
         // Return the underlying JsonDocument without change
-        { ConvertedType = ctx.Representation
+        { ConvertedType = ctx.IJsonDocumentType
           Converter = None
           ConversionCallingType = JsonDocument }
 

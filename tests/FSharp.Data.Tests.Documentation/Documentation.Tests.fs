@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.3.7-beta/lib/net40"
+#I "../../packages/FSharp.Formatting.2.3.10-beta/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service.0.0.12-alpha/lib/net40/FSharp.Compiler.Service.dll"
+#r "../../packages/FSharp.Compiler.Service.0.0.20/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
@@ -62,7 +62,7 @@ let docFiles =
   seq { for sub in [ "library"; "tutorials"; "experimental"
                      "ja/library"; "ja/tutorials"; "ja/experimental" ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
-            if not (isMono && (file.Contains "Provider" || file.Contains "Freebase")) then
+            if not (isMono && (file.Contains "ApiaryProvider" || file.Contains "Freebase")) then
               yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE

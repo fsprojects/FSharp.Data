@@ -15,15 +15,6 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 
-type Platform =
-    | Full
-    | Portable47
-    | Portable7
-    member x.RuntimeAssemblyVersion =
-        match x with
-        | Full | Portable7 -> Version(4, 0, 0, 0)
-        | Portable47 -> Version(2, 0, 5, 0)
-
 module Debug = 
 
     /// Converts a sequence of strings to a single string separated with the delimiters
@@ -31,7 +22,7 @@ module Debug =
 
     /// Simulates a real instance of TypeProviderConfig and then creates an instance of the last
     /// type provider added to a namespace by the type provider constructor
-    let generate (resolutionFolder: string) (runtimeAssembly: string) (platform:Platform) typeProviderForNamespacesConstructor args =
+    let generate (resolutionFolder: string) (runtimeAssembly: string) typeProviderForNamespacesConstructor args =
 
         let cfg = new TypeProviderConfig(fun _ -> false)
         let (?<-) cfg prop value =
@@ -39,7 +30,6 @@ module Debug =
         cfg?ResolutionFolder <- resolutionFolder
         cfg?RuntimeAssembly <- runtimeAssembly
         cfg?ReferencedAssemblies <- Array.zeroCreate<string> 0
-        cfg?SystemRuntimeAssemblyVersion <- platform.RuntimeAssemblyVersion
 
         let typeProviderForNamespaces = typeProviderForNamespacesConstructor cfg :> TypeProviderForNamespaces
 

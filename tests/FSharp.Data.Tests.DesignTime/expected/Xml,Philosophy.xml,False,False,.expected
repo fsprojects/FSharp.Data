@@ -24,7 +24,7 @@ class XmlProvider
 
 
 class XmlProvider+Authors : FDR.XmlElement
-    member GetAuthors: () -> XmlProvider+Author[]
+    member Authors: XmlProvider+Author[] with get
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
 
@@ -32,7 +32,7 @@ class XmlProvider+Author : FDR.XmlElement
     member Birth: int option with get
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "birth"))
 
-    member GetBooks: () -> XmlProvider+Book[]
+    member Books: XmlProvider+Book[] with get
     XmlRuntime.ConvertArray(this, "book", new Func<_,_>(id)))
 
     member Manuscript: XmlProvider+Manuscript option with get

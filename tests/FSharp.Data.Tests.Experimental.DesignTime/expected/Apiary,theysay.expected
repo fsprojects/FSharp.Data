@@ -47,7 +47,7 @@ class ApiaryProvider : FDR.ApiaryContext
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncFeedback: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument async
+    member AsyncFeedback: query:string * string list -> headers:string * string list -> FDR.IJsonDocument async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
@@ -209,7 +209,7 @@ class ApiaryProvider : FDR.ApiaryContext
                              let apiCtx, args = patternInput
                              apiCtx.InvokeOperation(args), new Func<_,_>(id)))
 
-    member Feedback: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument
+    member Feedback: query:string * string list -> headers:string * string list -> FDR.IJsonDocument
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
         let headers, query = patternInput

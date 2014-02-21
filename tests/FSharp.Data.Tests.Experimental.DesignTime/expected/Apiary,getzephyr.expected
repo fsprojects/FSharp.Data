@@ -2,7 +2,7 @@ class ApiaryProvider : FDR.ApiaryContext
     new : rootUrl:string -> ApiaryProvider
     (new ApiaryContext(rootUrl))
 
-    member AsyncAttachment: entityId:string -> entityType:string -> query:string * string list -> headers:string * string list -> FDR.ApiaryDocument async
+    member AsyncAttachment: entityId:string -> entityType:string -> query:string * string list -> headers:string * string list -> FDR.IJsonDocument async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("Content-Type:multipart/form-data", headers, query)
@@ -98,7 +98,7 @@ class ApiaryProvider : FDR.ApiaryContext
     member Attachment: ApiaryProvider+Attachment with get
     (this :> InternalApiaryContext)
 
-    member Attachment: entityId:string -> entityType:string -> query:string * string list -> headers:string * string list -> FDR.ApiaryDocument
+    member Attachment: entityId:string -> entityType:string -> query:string * string list -> headers:string * string list -> FDR.IJsonDocument
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("Content-Type:multipart/form-data", headers, query)
         let headers, query = patternInput
@@ -1278,7 +1278,7 @@ class ApiaryProvider+Execution2 : FDR.IJsonDocument
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member AsyncRefreshRemoteLinks: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument async
+    member AsyncRefreshRemoteLinks: query:string * string list -> headers:string * string list -> FDR.IJsonDocument async
     let f = new Func<_,_>(id))
     TextRuntime.AsyncMap(let patternInput = 
                              let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
@@ -1428,7 +1428,7 @@ class ApiaryProvider+Execution2 : FDR.IJsonDocument
     let apiCtx, args = patternInput
     apiCtx.InvokeOperation(args)
 
-    member RefreshRemoteLinks: query:string * string list -> headers:string * string list -> FDR.ApiaryDocument
+    member RefreshRemoteLinks: query:string * string list -> headers:string * string list -> FDR.IJsonDocument
     let patternInput = 
         let patternInput = ApiaryRuntime.ProcessParameters("", headers, query)
         let headers, query = patternInput
@@ -1755,7 +1755,7 @@ class ApiaryProvider+StepResult2 : FDR.IJsonDocument
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member Defects: FDR.ApiaryDocument with get
+    member Defects: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "defects")
 
     member Defects: query:string * string list -> headers:string * string list -> ApiaryProvider+StepResultDefects
@@ -1905,7 +1905,7 @@ class ApiaryProvider+ZqlExecuteSearch : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "currentIndex")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member ExecutionIds: FDR.ApiaryDocument with get
+    member ExecutionIds: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "executionIds")
 
     member ExecutionStatuses: ApiaryProvider+ExecutionStatus[] with get
@@ -3211,7 +3211,7 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilterSearch : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "isFavorite")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member LinksNew: FDR.ApiaryDocument with get
+    member LinksNew: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "linksNew")
 
     member MaxResultAllowed: int with get

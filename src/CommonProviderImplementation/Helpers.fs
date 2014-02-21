@@ -124,7 +124,7 @@ module ProviderHelpers =
       match tryGetUri sampleOrSampleUri with
       | None -> 
 
-          try parseFunc "" sampleOrSampleUri, false
+          try parseFunc "" sampleOrSampleUri, false, false
           with e -> failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
 
       | Some uri ->
@@ -143,24 +143,24 @@ module ProviderHelpers =
 
           try
             
-            let sample = 
+            let sample, isWeb = 
               if isWeb uri then
                   match webUrisCache.TryRetrieve uri.OriginalString with
-                  | Some value -> value
+                  | Some value -> value, true
                   | None ->
                       let value = readText()
                       webUrisCache.Set(uri.OriginalString, value)
-                      value
-              else readText()
+                      value, true
+              else readText(), false
                 
-            parseFunc (Path.GetExtension uri.OriginalString) sample, true
+            parseFunc (Path.GetExtension uri.OriginalString) sample, true, isWeb
 
           with e ->
 
             if not uri.IsAbsoluteUri then
               // even if it's a valid uri, it could be sample text
               try 
-                parseFunc "" sampleOrSampleUri, false
+                parseFunc "" sampleOrSampleUri, false, false
               with _ -> 
                 // if not, return the first exception
                 failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
@@ -189,7 +189,7 @@ module ProviderHelpers =
   /// * replacer -> the assemblyReplacer
   /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
   /// * generateDefaultConstructor -> if true, generates a default constructor that is equivalent to .GetSample(). Only supported when GeneratedType = RepresentationType
-  let generateConstructors formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples
+  let generateConstructors formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion)
                            (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder generateDefaultConstructor =
 
     let isRunningInFSI = cfg.IsHostedExecution
@@ -197,17 +197,12 @@ module ProviderHelpers =
 
     let parse extension (value:string) = 
       if sampleIsList then
-        try
-          parseList extension value
-        with _  ->
-          value.Split('\n', '\r')
-          |> Seq.filter (not << String.IsNullOrWhiteSpace)
-          |> Seq.map (parseSingle extension)
+        parseList extension value
       else
         parseSingle extension value |> Seq.singleton
 
     // Infer the schema from a specified uri or inline text
-    let typedSamples, sampleIsUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder
+    let typedSamples, sampleIsUri, sampleIsWebUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder
 
     let spec = getSpecFromSamples typedSamples
 
@@ -262,14 +257,14 @@ module ProviderHelpers =
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m :> _
       
-      if sampleOrSampleUri <> "" then
+      if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri) then
 
         if sampleIsList then
         
-          // the [,] case needs more work, and it's a weird scenario anyway, so we won't support it
+          // the [][] case needs more work, and it's a weird scenario anyway, so we won't support it
           if not resultType.IsArray then
         
-            let resultTypeArray = if resultType.IsArray then resultType.GetElementType().MakeArrayType(2) else resultType.MakeArrayType()
+            let resultTypeArray = resultType.MakeArrayType()
             let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
             
             // Generate static GetSamples method

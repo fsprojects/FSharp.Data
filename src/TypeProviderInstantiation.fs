@@ -56,7 +56,7 @@ type TypeProviderInstantiation =
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs    
 
-    member x.GenerateType resolutionFolder runtimeAssembly platform =
+    member x.GenerateType resolutionFolder runtimeAssembly =
         let f, args =
             match x with
             | Csv x -> 
@@ -103,7 +103,7 @@ type TypeProviderInstantiation =
                    box x.LocalCache
                    box x.AllowLocalQueryEvaluation 
                    box x.UseRefinedTypes |]
-        Debug.generate resolutionFolder runtimeAssembly platform f args
+        Debug.generate resolutionFolder runtimeAssembly f args
 
     override x.ToString() =
         match x with

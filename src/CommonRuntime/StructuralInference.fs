@@ -225,12 +225,29 @@ module private Helpers =
 
 /// Infers the type of a simple string value (this is either
 /// the value inside a node or value of an attribute)
-let inferPrimitiveType cultureInfo (value : string) unit =
+let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
 
   let asGuid _ value = TextConversions.AsGuid value
+
+  let getAbbreviatedEraName era =
+#if FX_NET_CORE_REFLECTION
+    cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+#else
+    let runningOnMono = Type.GetType("Mono.Runtime") <> null
+    if runningOnMono then
+      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
+      let eraIndex =
+        match era with
+        | 0 -> (abbreviatedEraNames |> Array.length) // 0 mean current, last of array
+        | x when x > 0 && x <= abbreviatedEraNames.Length -> era
+        | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
+      abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
+    else
+      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+#endif
 
   match value with
   | "0" -> InferedType.Primitive(typeof<Bit0>, unit)
@@ -250,6 +267,10 @@ let inferPrimitiveType cultureInfo (value : string) unit =
       // Prevent stuff like 12-002 being considered a date
       elif date.Year < 1000 && numberOfNumberGroups value <> 3 then
          InferedType.Primitive(typeof<string>, unit)
+      // Prevent stuff like ad3mar being considered a date
+      elif cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                                 value.IndexOf(getAbbreviatedEraName era, StringComparison.OrdinalIgnoreCase) >= 0) then
+        InferedType.Primitive(typeof<string>, unit)
       else
         InferedType.Primitive(typeof<DateTime>, unit)
 

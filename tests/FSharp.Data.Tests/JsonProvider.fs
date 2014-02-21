@@ -350,8 +350,8 @@ let ``Parsing of values wrapped in quotes should work on heterogenous values``()
 [<Test>]
 let ``Parsing of values wrapped in quotes should work on arrays``() =
     let objs = JsonProvider<"""["01/02/2000", "02/02/2001", "3", 4]""">.GetSample()
-    objs.GetDateTimes() |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
-    objs.GetNumbers() |> should equal [| 3; 4 |]
+    objs.DateTimes |> should equal [| DateTime(2000,01,02); DateTime(2001,02,02) |]
+    objs.Numbers |> should equal [| 3; 4 |]
 
 [<Literal>]
 let jsonSample = """[{"Facts": [{"Description": "sdfsdfsdfsdfs",
@@ -373,3 +373,22 @@ let ``Test error messages``() =
         with e ->
             e.Message
     errorMessage |> should equal """Property 'Value' not found at '[0]/Facts[0]': {"Name":"foo"}"""
+
+type JsonWithNestedArray = JsonProvider<"""{"columns" : [ "d" ], "data" : [ [ { "data" : { "EffectiveDate" : "2013-10-04T16:28:27.1370000+00:00","Id" : "2a6f4dcf-90f8-4286-92de-78b2a687c9d7","IsSampleData" : true } } ] ]}""">
+
+[<Test>]
+let ``Can parse nested arrays``() =
+    let j = JsonWithNestedArray.GetSample()
+    let matrix : JsonWithNestedArray.Datum[][] = j.Data
+    matrix.Length |> should equal 1
+    let row = matrix.[0]
+    row.Length |> should equal 1
+    let cell = row.[0]
+    cell.Data.IsSampleData |> should equal true
+
+[<Test>]
+let ``Can parse optional arrays``() =
+    let j = JsonProvider<"Data/contacts.json">.GetSample()
+    j.Ab.Persons.[0].Contacts.[0].Emails |> should equal None
+    j.Ab.Persons.[0].Contacts.[1].Emails.Value.Length |> should equal 3
+

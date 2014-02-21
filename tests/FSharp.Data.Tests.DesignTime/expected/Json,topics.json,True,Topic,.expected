@@ -123,23 +123,23 @@ class JsonProvider+Category : FDR.IJsonDocument
 
 
 class JsonProvider+Course : FDR.IJsonDocument
-    member AceCloseDate: FDR.JsonDocument with get
+    member AceCloseDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "ace_close_date")
 
-    member AceOpenDate: FDR.JsonDocument with get
+    member AceOpenDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "ace_open_date")
 
-    member AceSemesterHours: FDR.JsonDocument with get
+    member AceSemesterHours: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "ace_semester_hours")
 
-    member AceTrackPriceDisplay: FDR.JsonDocument with get
+    member AceTrackPriceDisplay: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "ace_track_price_display")
 
     member Active: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "active")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member AuthReviewCompletionDate: FDR.JsonDocument option with get
+    member AuthReviewCompletionDate: FDR.IJsonDocument option with get
     JsonRuntime.TryGetPropertyPacked(this, "auth_review_completion_date")
 
     member CertificateDescription: string with get
@@ -176,7 +176,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "eligible_for_signature_track")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member EndDate: FDR.JsonDocument with get
+    member EndDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "end_date")
 
     member GradesReleaseDate: JsonProvider+DateTimeChoice with get
@@ -208,7 +208,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "notified_subscribers")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member ProctoredExamCompletionDate: FDR.JsonDocument with get
+    member ProctoredExamCompletionDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "proctored_exam_completion_date")
 
     member Record: JsonProvider+Record with get
@@ -218,7 +218,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track_certificate_combined_signature")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member SignatureTrackCertificateDesignId: FDR.JsonDocument with get
+    member SignatureTrackCertificateDesignId: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "signature_track_certificate_design_id")
 
     member SignatureTrackCertificateSignatureBlurb: string with get
@@ -266,7 +266,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "status")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member Textbooks: FDR.JsonDocument with get
+    member Textbooks: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "textbooks")
 
     member TopicId: int with get
@@ -353,7 +353,7 @@ class JsonProvider+University : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "logo")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member MailingListId: FDR.JsonDocument with get
+    member MailingListId: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "mailing_list_id")
 
     member Name: string with get
@@ -404,7 +404,7 @@ class JsonProvider+University : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "website_youtube")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Wordmark: FDR.JsonDocument with get
+    member Wordmark: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPacked(this, "wordmark")
 
 

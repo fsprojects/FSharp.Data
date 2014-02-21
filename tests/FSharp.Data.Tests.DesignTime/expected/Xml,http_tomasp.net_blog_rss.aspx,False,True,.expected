@@ -44,7 +44,7 @@ class XmlProvider+Channel : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member GetItems: () -> XmlProvider+Item[]
+    member Items: XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
     member Link: string with get
@@ -60,28 +60,28 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
-    member GetCreators: () -> XmlProvider+Creator[]
+    member Creators: XmlProvider+Creator[] with get
     XmlRuntime.ConvertArray(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(id)))
 
-    member GetDescriptions: () -> string[]
+    member Descriptions: string[] with get
     XmlRuntime.ConvertArray(this, "description", new Func<_,_>(fun (t:XmlElement) -> 
                                                                   let value = XmlRuntime.TryGetValue(t)
                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
-    member GetLinks: () -> string[]
+    member Links: string[] with get
     XmlRuntime.ConvertArray(this, "link", new Func<_,_>(fun (t:XmlElement) -> 
                                                            let value = XmlRuntime.TryGetValue(t)
                                                            TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
-    member GetPubDates: () -> System.DateTime[]
+    member PubDates: System.DateTime[] with get
     XmlRuntime.ConvertArray(this, "pubDate", new Func<_,_>(fun (t:XmlElement) -> 
                                                               let value = XmlRuntime.TryGetValue(t)
                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)))
 
-    member GetSummaries: () -> XmlProvider+Summary[]
+    member Summaries: XmlProvider+Summary[] with get
     XmlRuntime.ConvertArray(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(id)))
 
-    member GetTitles: () -> string[]
+    member Titles: string[] with get
     XmlRuntime.ConvertArray(this, "title", new Func<_,_>(fun (t:XmlElement) -> 
                                                             let value = XmlRuntime.TryGetValue(t)
                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
