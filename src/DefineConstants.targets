@@ -11,6 +11,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>

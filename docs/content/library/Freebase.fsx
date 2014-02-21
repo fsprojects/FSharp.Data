@@ -176,12 +176,6 @@ Here is an example from data about cyclones and hurricanes:
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
-data.DataContext.SendingQuery.Add (fun e -> 
-  printfn "query: %A" e.QueryText)
-
-data.DataContext.SendingRequest.Add (fun e -> 
-  printfn "request: %A" e.RequestUri)
-
 let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
 
 // The type here is float<metre/second>, since the Freebase project uses normalized SI units
@@ -192,8 +186,6 @@ We can convert this figure into 185 km/h like this:
 *)
 
 let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
-
-
 
 (**
 
@@ -263,7 +255,7 @@ Listing the first 100,000 reveals the Bible but is very, very slow:
  This provides a stable but more efficient way of address that specific book:
 *)
 
-data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
+data.``Arts and Entertainment``.Books.Books.IndividualsAZ.T.``The Bible``
 
 (**
 ### Debugging MQL queries
