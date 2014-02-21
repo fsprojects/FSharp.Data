@@ -1,7 +1,13 @@
 ﻿// --------------------------------------------------------------------------------------
 // Fixes the way slashs are encoded in System.Uri across Mono and .NET.
 // --------------------------------------------------------------------------------------
-module FSharp.Data.Runtime.UriUtils
+module internal FSharp.Data.UriUtils
+
+#if FX_NO_URI_WORKAROUND
+
+let enableUriSlashes = id
+
+#else
 
 open System
 open System.Reflection
@@ -126,11 +132,8 @@ let private hasBrokenDotNetUri =
                 uri.ToString().EndsWith("%2F", StringComparison.InvariantCulture)
 
 let enableUriSlashes : (Uri -> Uri) =
-#if FX_NO_URI_WORKAROUND
-    (fun x -> x)
-#else
     if isMono then purifierMono.Force()
     else if hasBrokenDotNetUri then purifierDotNet.Force()
     else (fun x -> x)
-#endif
 
+#endif

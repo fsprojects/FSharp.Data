@@ -9,8 +9,6 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
-open FSharp.Data.Runtime
-open UriUtils
 
 [<RequireQualifiedAccess>]
 /// The body to send in an HTTP request
@@ -155,7 +153,9 @@ type Http private() =
 #else
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer, ?certificate) = async {
 #endif
-    let uri = Uri(Http.AppendQueryToUrl(url, defaultArg query [])) |> enableUriSlashes
+    let uri = 
+        Uri(Http.AppendQueryToUrl(url, defaultArg query []))
+        |> UriUtils.enableUriSlashes
 
     // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let req = WebRequest.Create(uri) :?> HttpWebRequest
