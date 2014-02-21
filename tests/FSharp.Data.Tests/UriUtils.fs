@@ -13,9 +13,9 @@ module FSharp.Data.Tests.UriUtility
 open FsUnit
 open NUnit.Framework
 open System
-open FSharp.Data.Runtime.UriUtils
+open FSharp.Data
 
-let uri = new Uri("http://www.myapi.com/%2F?Foo=Bar%2F#frag") |> encodeUriSlashes
+let uri = new Uri("http://www.myapi.com/%2F?Foo=Bar%2F#frag") |> UriUtils.encodeUriSlashes
 
 [<Test>]
 let ``ToString contains escaped slashes`` () =

@@ -56,14 +56,11 @@ let processFile file =
 // ------------------------------------------------------------------------------------
 // Core API documentation
 
-let isMono = Type.GetType("Mono.Runtime") <> null
-
 let docFiles = 
   seq { for sub in [ "library"; "tutorials"; "experimental"
                      "ja/library"; "ja/tutorials"; "ja/experimental" ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
-            if not (isMono && (file.Contains "ApiaryProvider" || file.Contains "Freebase")) then
-              yield sub + "/" + Path.GetFileName(file) }
+            yield sub + "/" + Path.GetFileName(file) }
 
 #if INTERACTIVE
 for file in docFiles do 

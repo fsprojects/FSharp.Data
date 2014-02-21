@@ -59,7 +59,6 @@ let normalize (str:string) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = getExpectedPath testCase |> File.ReadAllText |> normalize
     let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize 
