@@ -73,6 +73,50 @@ be parsed as dates) while other columns are inferred as `decimal` or `float`.
 *)
 
 (**
+
+### Parsing Nuget package stats
+
+This small sample shows how the HTML type provider can be used to scrape data from a website. In this case we analyze the download counts of the FSharp.Data package on nuget.
+
+*)
+
+// helper function to analyze version numbers from nuget
+let getMinorVersion (v:string) =
+  try
+      let parts' = v.Replace("(this version)","").Split([|' '|],System.StringSplitOptions.RemoveEmptyEntries)
+      let parts = parts' |> Seq.last |> fun x -> x.Split([|'.'|])
+      parts.[0] + "." + parts.[1]
+  with 
+  | exn -> v
+
+// Load the FSharp.Charting library
+#load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
+open System
+open FSharp.Charting
+
+// Configure the type provider
+type NugetStats = HtmlTableProvider<"https://www.nuget.org/packages/FSharp.Data">
+
+// load the live package stats for FAKE
+let rawStats = NugetStats.Tables.Table_0.Load("https://www.nuget.org/packages/FSharp.Data")
+
+// group by minor version and calculate download count
+let stats = 
+    rawStats.Data 
+    |> Seq.groupBy (fun r -> getMinorVersion r.Version)
+    |> Seq.map (fun (k,xs) -> k,xs |> Seq.sumBy (fun x -> x.Downloads))
+
+// Visualize the package stats
+Chart.Bar stats
+
+(**
+
+The output looks like:
+
+![alt text](images/downloads.png "Nuget package stats for FSharp.Data")
+
+*)
+(**
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
