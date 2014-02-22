@@ -7,6 +7,7 @@ namespace FSharp.Data
 open System
 open System.Globalization
 open System.IO
+open System.Security
 open System.Net
 open System.Text
 open System.Reflection
@@ -509,9 +510,40 @@ type Http private() =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
+    
+        let toSecureString str =
+            let securedStr = new SecureString()
+            String.iter securedStr.AppendChar str
+            securedStr
+  
+        let removeAuthorizationPart(uri:Uri) =
+            new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.PathAndQuery)
+
+        let removeQueryPart(uri:Uri) =
+            new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.AbsolutePath)
+
+        let createCredentialCache(authUri, username:string, password:SecureString) =             
+            // The given credentials will be added to the cache with both HTTP Basic Authentication and Digest methods
+            // and the the software stacks will negotiate the appropriate authorization method.
+            let cc = new CredentialCache()
+            cc.Add(authUri, "BASIC", new NetworkCredential(username, password))
+            cc.Add(authUri, "DIGEST", new NetworkCredential(username, password))
+            cc
+            
+        let createRequestWithCredentials(uri:Uri, credentials:CredentialCache) = 
+            // PreAuthenticate is set in order to reduce the number of authorization headers sent when making several requests to the same URI.
+            let client = WebRequest.Create(uri) :?> HttpWebRequest
+            client.Credentials <- credentials
+            client.PreAuthenticate <- true
+            client
 
         // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
-        let req = WebRequest.Create(uri) :?> HttpWebRequest
+        let createRequest(uri:Uri) = 
+            match uri.UserInfo.Split([|':'|]) with
+            | [|username; password|] -> createRequestWithCredentials(uri |> removeQueryPart, createCredentialCache(uri |> removeAuthorizationPart |> removeQueryPart, username, password |> toSecureString))
+            | _ ->  WebRequest.Create(uri) :?> HttpWebRequest
+    
+        let req = createRequest uri
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
 #else
