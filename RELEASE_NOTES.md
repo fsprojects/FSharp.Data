@@ -152,3 +152,4 @@
 
 #### 2.0.0-alpha8 - Unreleased
 * Mono fixes.
+* Allow to set the freebase api key globally by using the environment variable FREEBASE_API_KEY
