@@ -80,8 +80,15 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
     let mutable serviceUrl = serviceUrl
     let getCache() = if useLocalCache then localCache else noLocalCache
     let freebaseV0 = match serviceUrl with | "http://freebaseread.com/api" -> true | _ -> false
+#if FX_NO_ENVIRONMENT_VARIABLES
+#else
+    let apiKey =
+      match Environment.GetEnvironmentVariable("FREEBASE_API_KEY") with
+      | x when not <| String.IsNullOrWhiteSpace x  && isStringNone apiKey -> x
+      | _ -> apiKey
+#endif
 
-        /// Create a query url from the given query string.
+    /// Create a query url from the given query string.
     let createQueryUrl(query:string,cursor:string option) : string =
         let query = query.Replace("'","\"")
         if freebaseV0 then  // old freebase API
@@ -176,6 +183,10 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
     member __.UseLocalCache with get() = useLocalCache and set v = useLocalCache <- v
     member __.ServiceUrl with get() = serviceUrl and set v = serviceUrl  <- v
     member __.SnapshotDate = snapshotDate
+    member __.ApiKey = 
+        match apiKey with
+        | k when isStringNone(k) -> None
+        | x -> Some x
         
     member __.Query<'T>(query:string, fromJson) : 'T =
         sendingQuery.Trigger query

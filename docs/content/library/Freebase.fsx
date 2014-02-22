@@ -187,7 +187,6 @@ We can convert this figure into 185 km/h like this:
 
 let distanceTravelledByWindInAnHour : float = topWind * 3600.0<second> / 1000.0<meter>
 
-
 (**
 
 ## Advanced provider features
@@ -256,7 +255,7 @@ Listing the first 100,000 reveals the Bible but is very, very slow:
  This provides a stable but more efficient way of address that specific book:
 *)
 
-data.``Arts and Entertainment``.Books.Books.IndividualsAZ .T.``The Bible``
+data.``Arts and Entertainment``.Books.Books.IndividualsAZ.T.``The Bible``
 
 (**
 ### Debugging MQL queries
