@@ -911,13 +911,6 @@ type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useU
     member __.DataContext = settings
     /// Create a data context
     static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) =
-#if FX_NO_ENVIRONMENT_VARIABLES
-#else
-        let apiKey =
-            match Environment.GetEnvironmentVariable("FREEBASE_API_KEY") with
-            | x when not <| String.IsNullOrWhiteSpace x  && FreebaseRequests.isStringNone apiKey -> x
-            | _ -> apiKey
-#endif
         FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
     /// Get the object which represents the Freebase domain with the given object id.
     interface IFreebaseDataContext with member __.GetDomainCategoryById(domainCategoryId) = FreebaseDomainCategory(fbDataConn, domainCategoryId)

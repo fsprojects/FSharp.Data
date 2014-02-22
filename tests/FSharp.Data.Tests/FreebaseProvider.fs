@@ -1,5 +1,4 @@
-﻿
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
@@ -213,14 +212,10 @@ open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 open Microsoft.FSharp.Data.UnitSystems.SI.UnitSymbols
 
 [<Test>]
-let ``can access meteo``() =
+let ``Can access meteorology with units of measure``() =
     let cyclones = data.``Science and Technology``.Meteorology.``Tropical Cyclones``
-
-    // The type here is float<metre/second>, since the Freebase project uses normalized SI units
     let topWind = cyclones.Individuals10.``Hurricane Sandy``.``Highest winds``
-
-    printfn "top %A" topWind
-
+    abs(topWind - 51.3893<metre/second>) < 1e-14<metre/second> |> should equal true
 
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
 open FSharp.Data.Runtime.Freebase.FreebaseSchema
