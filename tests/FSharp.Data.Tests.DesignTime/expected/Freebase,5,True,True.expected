@@ -1889,9 +1889,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member R101: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+R101 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/01rnwx")
 
-    member R4D-3 05078: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+R4D-3 05078 Item with get
-    this.GetIndividualById("/aviation/aircraft", "/m/027ty2y")
-
     member Rare Bear: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Rare Bear Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0gp28q")
 
