@@ -44,7 +44,7 @@ Json { Sample = "optionals.json"
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
-Xml { Sample = "HtmlBody.xml"
+Xml { Sample = "http://tomasp.net/blog/rss.aspx"
       SampleIsList = false
       Global = true
       Culture = "" 

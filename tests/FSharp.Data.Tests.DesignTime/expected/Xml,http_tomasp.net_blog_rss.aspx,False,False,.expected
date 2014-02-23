@@ -54,8 +54,10 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
-    member Creator: XmlProvider+Creator option with get
-    XmlRuntime.ConvertOptional(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(id)))
+    member Creator: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                                  let value = XmlRuntime.TryGetValue(t)
+                                                                                                                  TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
     member Description: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
@@ -69,31 +71,13 @@ class XmlProvider+Item : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "pubDate"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
-    member Summary: XmlProvider+Summary option with get
-    XmlRuntime.ConvertOptional(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(id)))
+    member Summary: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://tomasp.net/rss/extensions}summary", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
     member Title: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
-
-
-class XmlProvider+Creator : FDR.XmlElement
-    member Dc: string with get
-    let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}dc")
-    TextRuntime.GetNonOptionalValue("Attribute dc", TextRuntime.ConvertString(value), value)
-
-    member Value: string with get
-    let value = XmlRuntime.TryGetValue(this)
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
-
-
-class XmlProvider+Summary : FDR.XmlElement
-    member Eex: string with get
-    let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/2000/xmlns/}eex")
-    TextRuntime.GetNonOptionalValue("Attribute eex", TextRuntime.ConvertString(value), value)
-
-    member Value: string with get
-    let value = XmlRuntime.TryGetValue(this)
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 

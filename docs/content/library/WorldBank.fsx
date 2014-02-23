@@ -90,13 +90,19 @@ let wb = WorldBank.GetDataContext()
 
 // Create a list of countries to process
 let countries = 
- [| wb.Countries.``Arab World``; wb.Countries.``European Union``
-    wb.Countries.Australia; wb.Countries.Brazil
-    wb.Countries.Canada; wb.Countries.Chile
+ [| wb.Countries.``Arab World``
+    wb.Countries.``European Union``
+    wb.Countries.Australia
+    wb.Countries.Brazil
+    wb.Countries.Canada
+    wb.Countries.Chile
     wb.Countries.``Czech Republic``
-    wb.Countries.Denmark; wb.Countries.France
-    wb.Countries.Greece; wb.Countries.``Low income``
-    wb.Countries.``High income``; wb.Countries.``United Kingdom``
+    wb.Countries.Denmark
+    wb.Countries.France
+    wb.Countries.Greece
+    wb.Countries.``Low income``
+    wb.Countries.``High income``
+    wb.Countries.``United Kingdom``
     wb.Countries.``United States`` |]
 
 (**

@@ -167,6 +167,7 @@
       <Link>FsUnit.fs</Link>
     </Compile>
     <Compile Include="HttpUtils.fs" />
+    <Compile Include="UriUtils.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue.fs" />
@@ -176,7 +177,7 @@
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
-    <Compile Include="UriUtils.fs" />
+    <Compile Include="WorldBankProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
