@@ -199,27 +199,43 @@ module Implementation =
 type Indicator internal (connection:ServiceConnection, countryOrRegionCode:string, indicatorCode:string) = 
     let data = connection.GetData(countryOrRegionCode, indicatorCode) |> Seq.cache
     let dataDict = lazy (dict data)
+    
     /// Get the code for the country or region of the indicator
     member x.Code = countryOrRegionCode
+    
     /// Get the code for the indicator
     member x.IndicatorCode = indicatorCode
+    
     /// Get the name of the indicator
     member x.Name = connection.IndicatorsIndexed.[indicatorCode].Name
+    
     /// Get the source of the indicator
     member x.Source = connection.IndicatorsIndexed.[indicatorCode].Source
+    
     /// Get the description of the indicator
     member x.Description = connection.IndicatorsIndexed.[indicatorCode].Description
-    /// Get a value for a year for the indicator
-    member x.Item with get idx = dataDict.Force().[idx]
+    
+    /// Get the indicator value for the given year. If there's no data for that year, NaN is returned
+    member x.Item
+        with get year = 
+            match dataDict.Force().TryGetValue year with
+            | true, value -> value
+            | _ -> Double.NaN
+    
+    /// Get the indicator value for the given year, if present
+    member x.TryGetValueAt year = 
+        match dataDict.Force().TryGetValue year with
+        | true, value -> Some value
+        | _ -> None
+    
     /// Get the years for which the indicator has values
     member x.Years = dataDict.Force().Keys
+    
     /// Get the values for the indicator (without years)
     member x.Values = dataDict.Force().Values
+
     interface seq<int * float> with member x.GetEnumerator() = data.GetEnumerator()
     interface IEnumerable with member x.GetEnumerator() = (data.GetEnumerator() :> _)
-    member x.GetValueAtOrZero(time:int) = 
-        x |> Seq.tryPick (fun (x,y) -> if time = x then Some y else None)
-          |> function None -> 0.0 | Some x -> x
 
 [<DebuggerDisplay("{Name}")>]
 [<StructuredFormatDisplay("{Name}")>]
