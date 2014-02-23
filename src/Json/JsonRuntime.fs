@@ -84,7 +84,7 @@ type JsonRuntime =
   // json option -> type
 
   static member ConvertString(cultureStr, json) = 
-    json |> Option.bind (JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr))
+    json |> Option.bind (JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)true (TextRuntime.GetCulture cultureStr))
   
   static member ConvertInteger(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsInteger (TextRuntime.GetCulture cultureStr))
@@ -130,16 +130,13 @@ type JsonRuntime =
   static member ConvertArray<'T>(doc:IJsonDocument, mapping:Func<IJsonDocument,'T>) = 
     match doc.JsonValue with     
     | JsonValue.Array elements ->
-        elements 
+        elements
+        |> Array.filter (function JsonValue.Null -> false 
+                                | JsonValue.String s when s |> TextConversions.AsString |> Option.isNone -> false
+                                | _ -> true)
         |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
     | JsonValue.Null -> [| |]
     | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(SaveOptions.DisableFormatting)
-
-  /// Get json property and wrap in json document
-  static member GetPropertyPacked(doc:IJsonDocument, name) =
-    match JsonRuntime.TryGetPropertyPacked(doc, name) with
-    | Some doc -> doc
-    | None -> failwithf "Property '%s' not found at '%s': %s" name doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
 
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
@@ -151,10 +148,22 @@ type JsonRuntime =
     { JsonOpt = JsonRuntime.TryGetPropertyUnpacked(doc, name)
       Path = doc.Path + "/" + name }
 
-  /// Get optional json property wrap in json document
+  /// Get optional json property wrapped in json document
   static member TryGetPropertyPacked(doc:IJsonDocument, name) =
     JsonRuntime.TryGetPropertyUnpacked(doc, name)
     |> Option.map (fun value -> doc.CreateNew(value, "/" + name))
+
+  /// Get json property and wrap in json document
+  static member GetPropertyPacked(doc:IJsonDocument, name) =
+    match JsonRuntime.TryGetPropertyPacked(doc, name) with
+    | Some doc -> doc
+    | None -> failwithf "Property '%s' not found at '%s': %s" name doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
+
+  /// Get json property and wrap in json document, and return null if not found
+  static member GetPropertyPackedOrNull(doc:IJsonDocument, name) =
+    match JsonRuntime.TryGetPropertyPacked(doc, name) with
+    | Some doc -> doc
+    | None -> doc.CreateNew(JsonValue.Null, "/" + name)
 
   /// Get optional json property and convert to a specified type
   static member ConvertOptionalProperty<'T>(doc:IJsonDocument, name, mapping:Func<IJsonDocument,'T>) =
@@ -171,7 +180,7 @@ type JsonRuntime =
         JsonConversions.AsBoolean (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.String -> 
-        JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr)
+        JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)true (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.DateTime -> 
         JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)

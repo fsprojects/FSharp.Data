@@ -39,7 +39,7 @@ module ActivePatterns =
   let (|Singleton|) = function [l] -> l | _ -> failwith "Parameter mismatch"
 
   /// Takes a map and succeeds if it is empty
-  let (|EmptyMap|_|) (map:Map<_,_>) = if map.IsEmpty then Some() else None
+  let (|EmptyMap|_|) result (map:Map<_,_>) = if map.IsEmpty then Some result else None
 
   /// Takes a map and succeeds if it contains exactly one value
   let (|SingletonMap|_|) (map:Map<_,_>) = 

@@ -40,8 +40,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let getSpecFromSamples samples = 
       let inferedType = 
         samples
-        |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowNulls*)true globalInference sampleXml)
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
+        |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowEmptyValues*)false globalInference sampleXml)
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
 
       let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, replacer)  
       let resTy, resTypConv = XmlTypeBuilder.generateXmlType ctx inferedType

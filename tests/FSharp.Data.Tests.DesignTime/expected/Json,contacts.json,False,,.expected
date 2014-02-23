@@ -30,37 +30,31 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Ab : FDR.IJsonDocument
     member Persons: JsonProvider+Person[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "persons"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
 
 
 class JsonProvider+Person : FDR.IJsonDocument
     member Contacts: JsonProvider+Contact[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "contacts"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "contacts"), new Func<_,_>(id)))
 
     member Emails: FDR.IJsonDocument[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "emails"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(id)))
 
     member Phones: FDR.IJsonDocument[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "phones"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
 
 
 class JsonProvider+Contact : FDR.IJsonDocument
-    member EmailCapability: JsonProvider+IntChoice option with get
-    JsonRuntime.TryGetPropertyPacked(this, "emailCapability")
+    member EmailCapability: int[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailCapability"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member EmailImEnabled: bool[] option with get
-    JsonRuntime.ConvertOptionalProperty(this, "emailIMEnabled", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))))
+    member EmailImEnabled: bool[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailIMEnabled"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Emails: FDR.IJsonDocument[] option with get
-    JsonRuntime.ConvertOptionalProperty(this, "emails", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
+    member Emails: string[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Phones: FDR.IJsonDocument[] option with get
-    JsonRuntime.ConvertOptionalProperty(this, "phones", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(id)))))
-
-
-class JsonProvider+IntChoice : FDR.IJsonDocument
-    member Number: int with get
-    let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Number")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", Some value.JsonValue), Some value.JsonValue)
+    member Phones: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
 
 

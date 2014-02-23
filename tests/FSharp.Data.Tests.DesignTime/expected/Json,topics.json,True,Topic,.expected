@@ -18,16 +18,16 @@ class JsonProvider
 
 class JsonProvider+Topic : FDR.IJsonDocument
     member Categories: JsonProvider+Category[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "categories"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "categories"), new Func<_,_>(id)))
 
     member CategoryIds: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "category-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "category-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member CourseIds: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Courses: JsonProvider+Course[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "courses"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "courses"), new Func<_,_>(id)))
 
     member Display: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display")
@@ -37,9 +37,8 @@ class JsonProvider+Topic : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Instructor: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "instructor")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Instructor: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "instructor"))
 
     member Language: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "language")
@@ -57,12 +56,11 @@ class JsonProvider+Topic : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "photo")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member PreviewLink: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "preview_link")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member PreviewLink: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "preview_link"))
 
-    member SelfServiceCourseId: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "self_service_course_id")
+    member SelfServiceCourseId: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "self_service_course_id"))
 
     member ShortDescription: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_description")
@@ -84,34 +82,31 @@ class JsonProvider+Topic : FDR.IJsonDocument
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "subtitle_languages_csv"))
 
     member Universities: JsonProvider+University[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "universities"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "universities"), new Func<_,_>(id)))
 
     member UniversityIds: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "university-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "university-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
-    member UniversityLogo: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "university_logo")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member UniversityLogo: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "university_logo"))
 
-    member Video: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "video")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Video: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "video"))
 
-    member Visibility: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "visibility")
+    member Visibility: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "visibility"))
 
 
 class JsonProvider+Category : FDR.IJsonDocument
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member MailingListId: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "mailing_list_id")
+    member MailingListId: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "mailing_list_id"))
 
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
@@ -124,49 +119,46 @@ class JsonProvider+Category : FDR.IJsonDocument
 
 class JsonProvider+Course : FDR.IJsonDocument
     member AceCloseDate: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "ace_close_date")
+    JsonRuntime.GetPropertyPackedOrNull(this, "ace_close_date")
 
     member AceOpenDate: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "ace_open_date")
+    JsonRuntime.GetPropertyPackedOrNull(this, "ace_open_date")
 
     member AceSemesterHours: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "ace_semester_hours")
+    JsonRuntime.GetPropertyPackedOrNull(this, "ace_semester_hours")
 
     member AceTrackPriceDisplay: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "ace_track_price_display")
+    JsonRuntime.GetPropertyPackedOrNull(this, "ace_track_price_display")
 
     member Active: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "active")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member AuthReviewCompletionDate: FDR.IJsonDocument option with get
-    JsonRuntime.TryGetPropertyPacked(this, "auth_review_completion_date")
+    member AuthReviewCompletionDate: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "auth_review_completion_date")
 
-    member CertificateDescription: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "certificate_description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member CertificateDescription: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "certificate_description"))
 
     member CertificatesReady: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "certificates_ready")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member CheggSessionId: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "chegg_session_id")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member CheggSessionId: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "chegg_session_id")
 
-    member CreatorId: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "creator_id")
+    member CreatorId: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "creator_id"))
 
     member Deployed: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "deployed")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member DurationString: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "duration_string")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member DurationString: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "duration_string"))
 
-    member EligibleForAce: JsonProvider+BooleanChoice with get
-    JsonRuntime.GetPropertyPacked(this, "eligible_for_ACE")
+    member EligibleForAce: bool option with get
+    JsonRuntime.ConvertBoolean("", JsonRuntime.TryGetPropertyUnpacked(this, "eligible_for_ACE"))
 
     member EligibleForCertificates: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "eligible_for_certificates")
@@ -177,110 +169,99 @@ class JsonProvider+Course : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member EndDate: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "end_date")
+    JsonRuntime.GetPropertyPackedOrNull(this, "end_date")
 
-    member GradesReleaseDate: JsonProvider+DateTimeChoice with get
-    JsonRuntime.GetPropertyPacked(this, "grades_release_date")
+    member GradesReleaseDate: System.DateTime option with get
+    JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "grades_release_date"))
 
-    member GradingPolicyDistinction: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "grading_policy_distinction")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member GradingPolicyDistinction: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "grading_policy_distinction"))
 
-    member GradingPolicyNormal: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "grading_policy_normal")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member GradingPolicyNormal: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "grading_policy_normal"))
 
-    member HomeLink: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "home_link")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HomeLink: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "home_link"))
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Instructors: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Name: JsonProvider+IntOrString with get
-    JsonRuntime.GetPropertyPacked(this, "name")
+    JsonRuntime.GetPropertyPackedOrNull(this, "name")
 
     member NotifiedSubscribers: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "notified_subscribers")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member ProctoredExamCompletionDate: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "proctored_exam_completion_date")
+    JsonRuntime.GetPropertyPackedOrNull(this, "proctored_exam_completion_date")
 
     member Record: JsonProvider+Record with get
     JsonRuntime.GetPropertyPacked(this, "record")
 
-    member SignatureTrackCertificateCombinedSignature: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track_certificate_combined_signature")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member SignatureTrackCertificateCombinedSignature: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_combined_signature")
 
     member SignatureTrackCertificateDesignId: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_certificate_design_id")
+    JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_design_id")
 
-    member SignatureTrackCertificateSignatureBlurb: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track_certificate_signature_blurb")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member SignatureTrackCertificateSignatureBlurb: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "signature_track_certificate_signature_blurb")
 
-    member SignatureTrackCloseTime: JsonProvider+DateTimeChoice with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_close_time")
+    member SignatureTrackCloseTime: System.DateTime option with get
+    JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_close_time"))
 
-    member SignatureTrackLastChanceTime: JsonProvider+DateTimeChoice with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_last_chance_time")
+    member SignatureTrackLastChanceTime: System.DateTime option with get
+    JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_last_chance_time"))
 
-    member SignatureTrackOpenTime: JsonProvider+DateTimeChoice with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_open_time")
+    member SignatureTrackOpenTime: System.DateTime option with get
+    JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_open_time"))
 
-    member SignatureTrackPrice: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_price")
+    member SignatureTrackPrice: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_price"))
 
     member SignatureTrackRegistrationOpen: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track_registration_open")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member SignatureTrackRegularPrice: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "signature_track_regular_price")
+    member SignatureTrackRegularPrice: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "signature_track_regular_price"))
 
-    member StartDate: JsonProvider+DateTimeChoice with get
-    JsonRuntime.GetPropertyPacked(this, "start_date")
+    member StartDate: System.DateTime option with get
+    JsonRuntime.ConvertDateTime("", JsonRuntime.TryGetPropertyUnpacked(this, "start_date"))
 
     member StartDateString: JsonProvider+StringOrDateTime with get
-    JsonRuntime.GetPropertyPacked(this, "start_date_string")
+    JsonRuntime.GetPropertyPackedOrNull(this, "start_date_string")
 
-    member StartDay: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "start_day")
+    member StartDay: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_day"))
 
-    member StartMonth: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "start_month")
+    member StartMonth: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_month"))
 
-    member StartYear: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "start_year")
+    member StartYear: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "start_year"))
 
-    member StatementDesignId: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "statement_design_id")
+    member StatementDesignId: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "statement_design_id"))
 
     member Status: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "status")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member Textbooks: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "textbooks")
+    member Textbooks: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "textbooks"), new Func<_,_>(id)))
 
     member TopicId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "topic_id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member UniversityLogo: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "university_logo")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
-
-
-class JsonProvider+IntChoice : FDR.IJsonDocument
-    member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    member UniversityLogo: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "university_logo")
 
 
 class JsonProvider+University : FDR.IJsonDocument
@@ -288,73 +269,61 @@ class JsonProvider+University : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "abbr_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member BackgroundColor: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "background_color")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member BackgroundColor: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "background_color")
 
-    member Banner: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "banner")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Banner: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "banner"))
 
     member ChinaMirror: int option with get
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "china_mirror"))
 
-    member ClassLogo: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "class_logo")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member ClassLogo: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "class_logo"))
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
     member Display: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member Favicon: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "favicon")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Favicon: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "favicon"))
 
-    member HomeLink: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "home_link")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HomeLink: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "home_link"))
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member LandingPageBanner: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "landing_page_banner")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member LandingPageBanner: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "landing_page_banner"))
 
-    member Location: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "location")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Location: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location"))
 
-    member LocationCity: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "location_city")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member LocationCity: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_city"))
 
-    member LocationCountry: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "location_country")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member LocationCountry: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_country"))
 
-    member LocationLat: JsonProvider+DecimalChoice with get
-    JsonRuntime.GetPropertyPacked(this, "location_lat")
+    member LocationLat: decimal option with get
+    JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "location_lat"))
 
-    member LocationLng: JsonProvider+DecimalChoice with get
-    JsonRuntime.GetPropertyPacked(this, "location_lng")
+    member LocationLng: decimal option with get
+    JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "location_lng"))
 
-    member LocationState: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "location_state")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member LocationState: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "location_state"))
 
-    member Logo: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "logo")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Logo: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "logo"))
 
     member MailingListId: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "mailing_list_id")
+    JsonRuntime.GetPropertyPackedOrNull(this, "mailing_list_id")
 
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
@@ -364,63 +333,39 @@ class JsonProvider+University : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "partner_type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member PrimaryColor: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "primary_color")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member PrimaryColor: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "primary_color"))
 
-    member RectangularLogoSvg: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "rectangular_logo_svg")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member RectangularLogoSvg: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "rectangular_logo_svg"))
 
     member ShortName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "short_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member SquareLogo: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "square_logo")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member SquareLogo: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo"))
 
-    member SquareLogoSource: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "square_logo_source")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member SquareLogoSource: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo_source"))
 
-    member SquareLogoSvg: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "square_logo_svg")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member SquareLogoSvg: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "square_logo_svg"))
 
-    member Website: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "website")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Website: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website"))
 
-    member WebsiteFacebook: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "website_facebook")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member WebsiteFacebook: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_facebook"))
 
-    member WebsiteTwitter: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "website_twitter")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member WebsiteTwitter: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_twitter"))
 
-    member WebsiteYoutube: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "website_youtube")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member WebsiteYoutube: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "website_youtube"))
 
     member Wordmark: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "wordmark")
-
-
-class JsonProvider+BooleanChoice : FDR.IJsonDocument
-    member Boolean: bool option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
-
-
-class JsonProvider+DateTimeChoice : FDR.IJsonDocument
-    member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
-
-
-class JsonProvider+DecimalChoice : FDR.IJsonDocument
-    member Number: decimal option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.GetPropertyPackedOrNull(this, "wordmark")
 
 
 class JsonProvider+IntOrString : FDR.IJsonDocument
@@ -436,18 +381,18 @@ class JsonProvider+Record : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ace_grade")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member AchievementLevel: JsonProvider+IntChoice with get
-    JsonRuntime.GetPropertyPacked(this, "achievement_level")
+    member AchievementLevel: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "achievement_level"))
 
     member AuthenticatedOverall: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "authenticated_overall")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member GradeDistinction: JsonProvider+DecimalChoice with get
-    JsonRuntime.GetPropertyPacked(this, "grade_distinction")
+    member GradeDistinction: decimal option with get
+    JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "grade_distinction"))
 
-    member GradeNormal: JsonProvider+DecimalChoice with get
-    JsonRuntime.GetPropertyPacked(this, "grade_normal")
+    member GradeNormal: decimal option with get
+    JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "grade_normal"))
 
     member IsEnrolledForProctoredExam: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "is_enrolled_for_proctored_exam")
@@ -457,20 +402,18 @@ class JsonProvider+Record : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "passed_ace")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member ShareForWork: JsonProvider+BooleanChoice with get
-    JsonRuntime.GetPropertyPacked(this, "share_for_work")
+    member ShareForWork: bool option with get
+    JsonRuntime.ConvertBoolean("", JsonRuntime.TryGetPropertyUnpacked(this, "share_for_work"))
 
     member SignatureTrack: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "signature_track")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member VerifyCertId: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "verify_cert_id")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member VerifyCertId: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "verify_cert_id")
 
-    member WithGradeCertId: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "with_grade_cert_id")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member WithGradeCertId: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "with_grade_cert_id")
 
 
 class JsonProvider+StringOrDateTime : FDR.IJsonDocument

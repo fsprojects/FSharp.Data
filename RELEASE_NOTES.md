@@ -153,3 +153,10 @@
 #### 2.0.0-alpha8 - Unreleased
 * Mono fixes.
 * Allow to set the freebase api key globally by using the environment variable FREEBASE_API_KEY
+* Fixed handling of optional records in JsonProvider.
+* Reduced the number of cases where heterogeneous types are used in JsonProvider.
+* Fixed <type> option option being generated on some cases in JsonProvider.
+* Treat "", null and missing values in the same way in JsonProvider.
+* Fixed homogeneous arrays to have the same null skipping behaviour as heterogeneous arrays in JsonProvider.
+* Fixed handling of optional elements in XmlProvider.
+* Fixed CsvProvider generating column names with only a space.

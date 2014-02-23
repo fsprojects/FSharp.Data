@@ -27,9 +27,6 @@ class XmlProvider+Rss : FDR.XmlElement
     member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
-    member Value: string option with get
-    TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
-
     member Version: decimal with get
     let value = XmlRuntime.TryGetAttribute(this, "version")
     TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertDecimal("", value), value)
@@ -55,9 +52,6 @@ class XmlProvider+Channel : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Value: string option with get
-    TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
-
 
 class XmlProvider+Item : FDR.XmlElement
     member Creator: XmlProvider+Creator option with get
@@ -81,9 +75,6 @@ class XmlProvider+Item : FDR.XmlElement
     member Title: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
-
-    member Value: string option with get
-    TextRuntime.ConvertString(XmlRuntime.TryGetValue(this))
 
 
 class XmlProvider+Creator : FDR.XmlElement

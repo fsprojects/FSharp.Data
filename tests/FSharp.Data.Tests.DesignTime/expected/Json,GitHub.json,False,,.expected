@@ -25,14 +25,13 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     member Assignee: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "assignee")
+    JsonRuntime.GetPropertyPackedOrNull(this, "assignee")
 
-    member Body: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "body")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Body: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "body"))
 
     member ClosedAt: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "closed_at")
+    JsonRuntime.GetPropertyPackedOrNull(this, "closed_at")
 
     member Comments: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "comments")
@@ -59,14 +58,14 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Labels: JsonProvider+Label[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "labels"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "labels"), new Func<_,_>(id)))
 
     member LabelsUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "labels_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Milestone: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "milestone")
+    JsonRuntime.GetPropertyPackedOrNull(this, "milestone")
 
     member Number: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "number")
@@ -97,7 +96,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Label : FDR.IJsonDocument
     member Color: JsonProvider+FloatOrString with get
-    JsonRuntime.GetPropertyPacked(this, "color")
+    JsonRuntime.GetPropertyPackedOrNull(this, "color")
 
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
@@ -109,17 +108,14 @@ class JsonProvider+Label : FDR.IJsonDocument
 
 
 class JsonProvider+PullRequest : FDR.IJsonDocument
-    member DiffUrl: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "diff_url")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member DiffUrl: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "diff_url"))
 
-    member HtmlUrl: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "html_url")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HtmlUrl: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "html_url"))
 
-    member PatchUrl: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "patch_url")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member PatchUrl: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "patch_url"))
 
 
 class JsonProvider+User : FDR.IJsonDocument

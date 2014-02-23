@@ -201,7 +201,7 @@ printfn "%d ページ中 %d ページ目を表示中。総レコード数 %d"
 
 // すべてのデータ点を表示
 for record in doc.Array do
-  record.Value.Number |> Option.iter (fun value ->
+  record.Value |> Option.iter (fun value ->
     printfn "%d: %f" record.Date value)
 
 (**

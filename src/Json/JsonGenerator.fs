@@ -41,11 +41,7 @@ type internal JsonGenerationContext =
       Representation = replacer.ToRuntime representation
       TypeCache = Dictionary() }
 
-type internal JsonGenerationInput = 
-    { Optional : bool
-      CanPassAllConversionCallingTypes : bool }
-
-type internal JsonGenerationOutput = 
+type internal JsonGenerationResult = 
     { ConvertedType : Type
       Converter : (Expr -> Expr) option
       ConversionCallingType : JsonConversionCallingType }
@@ -74,27 +70,26 @@ module JsonTypeBuilder =
   let internal getOrCreateType ctx inferedType createType =
     
     // normalize properties of the inferedType which don't affect code generation
-    let rec normalize = function
+    let rec normalize topLevel = function
     | InferedType.Heterogeneous map -> 
         map 
-        |> Map.remove InferedTypeTag.Null 
-        |> Map.map (fun _ inferedType -> normalize inferedType) 
+        |> Map.map (fun _ inferedType -> normalize false inferedType) 
         |> InferedType.Heterogeneous
     | InferedType.Collection map -> 
         map 
-        |> Map.remove InferedTypeTag.Null 
-        |> Map.map (fun _ (multiplicity, inferedType) -> multiplicity, normalize inferedType) 
+        |> Map.map (fun _ (multiplicity, inferedType) -> multiplicity, normalize false inferedType) 
         |> InferedType.Collection
-    | InferedType.Record (_, props) -> 
+    | InferedType.Record (_, props, optional) -> 
         let props = 
           props
-          |> List.map (fun { Name = name; Optional = optional; Type = inferedType } -> { Name = name; Optional = optional; Type = normalize inferedType })
-        InferedType.Record (None, props)
-    | InferedType.Primitive (typ, unit) when typ = typeof<Bit0> || typ = typeof<Bit1> -> InferedType.Primitive (typeof<int>, unit)
-    | InferedType.Primitive (typ, unit) when typ = typeof<Bit> -> InferedType.Primitive (typeof<bool>, unit)
+          |> List.map (fun { Name = name; Type = inferedType } -> { Name = name; Type = normalize false inferedType })
+        // optional only affects the parent, so at top level always set to true regardless of the actual value
+        InferedType.Record (None, props, optional || topLevel)
+    | InferedType.Primitive (typ, unit, optional) when typ = typeof<Bit0> || typ = typeof<Bit1> -> InferedType.Primitive (typeof<int>, unit, optional)
+    | InferedType.Primitive (typ, unit, optional) when typ = typeof<Bit> -> InferedType.Primitive (typeof<bool>, unit, optional)
     | x -> x
 
-    let inferedType = normalize inferedType
+    let inferedType = normalize true inferedType
     let typ = 
       match ctx.TypeCache.TryGetValue inferedType with
       | true, typ -> typ
@@ -113,21 +108,28 @@ module JsonTypeBuilder =
   /// and also by function that generates the actual code.
   let rec internal generateMultipleChoiceType ctx types codeGenerator =
 
-    // Generate GetXyz(s) method for every different case
-    // (but skip all Null nodes - we simply ignore them)
     let types = 
       types
       |> Seq.map (fun (KeyValue(tag, (multiplicity, inferedType))) -> tag, multiplicity, inferedType)
-      |> Seq.filter (fun (tag, _, _) -> tag <> InferedTypeTag.Null)
       |> Seq.sortBy (fun (tag, _, _) -> tag)
       |> Seq.toArray
+
+    if types.Length <= 1 then failwithf "generateMultipleChoiceType: Invalid choice type: %A" types
+    
+    for _, _, inferedType in types do
+        match inferedType with
+        | InferedType.Null | InferedType.Top | InferedType.Heterogeneous _ -> 
+            failwithf "generateMultipleChoiceType: Unsupported type: %A" inferedType
+        | x when x.IsOptional -> 
+            failwithf "generateMultipleChoiceType: Type shouldn't be optional: %A" inferedType
+        | _ -> ()
 
     let getTypeName (tag:InferedTypeTag, multiplicity, inferedType)  =
       match multiplicity with
       | InferedMultiplicity.Multiple -> NameUtils.pluralize tag.NiceName
       | InferedMultiplicity.OptionalSingle | InferedMultiplicity.Single -> 
           match inferedType with
-          | InferedType.Primitive(typ, _) ->
+          | InferedType.Primitive(typ, _, _) ->
               if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then "Int"
               elif typ = typeof<int64> then "Int64"
               elif typ = typeof<decimal> then "Decimal"
@@ -136,12 +138,9 @@ module JsonTypeBuilder =
           | _ -> tag.NiceName
 
     let typeName = 
-        if types.Length = 1
-        then getTypeName types.[0] + "Choice"
-        else
-            types 
-            |> Array.map getTypeName
-            |> String.concat "Or"
+        types 
+        |> Array.map getTypeName
+        |> String.concat "Or"
         |> ctx.UniqueNiceName
 
     // Generate new type for the heterogeneous type
@@ -154,76 +153,85 @@ module JsonTypeBuilder =
 
     objectTy.AddMembers
       [ for tag, multiplicity, inferedType in types ->
-        let input = { CanPassAllConversionCallingTypes = false
-                      Optional = false }
-        let output = generateJsonType ctx input inferedType
-      
-        let propName =
-            match tag with
-            | InferedTypeTag.Record _ -> "Record"
-            | _ -> tag.NiceName
 
-        // If it occurs at most once, then generate property (which may 
-        // be optional). For multiple occurrences, generate method
-        match multiplicity with 
-        | InferedMultiplicity.OptionalSingle ->
-            ProvidedProperty(makeUnique propName, 
-                             typedefof<option<_>>.MakeGenericType [| output.ConvertedType |], 
-                             GetterCode = codeGenerator multiplicity output tag.Code)
-        | InferedMultiplicity.Single ->
-            ProvidedProperty(makeUnique propName, 
-                             output.ConvertedType, 
-                             GetterCode = codeGenerator multiplicity output tag.Code)
-        | InferedMultiplicity.Multiple ->
-            ProvidedProperty(makeUnique (NameUtils.pluralize tag.NiceName),
-                             output.ConvertedType.MakeArrayType(), 
-                             GetterCode = codeGenerator multiplicity output tag.Code)]
+          let result = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
+          
+          let propName =
+              match tag with
+              | InferedTypeTag.Record _ -> "Record"
+              | _ -> tag.NiceName
+          
+          // If it occurs at most once, then generate property (which may 
+          // be optional). For multiple occurrences, generate method
+          match multiplicity with 
+          | InferedMultiplicity.OptionalSingle ->
+              ProvidedProperty(makeUnique propName, 
+                               typedefof<option<_>>.MakeGenericType [| result.ConvertedType |], 
+                               GetterCode = codeGenerator multiplicity result tag.Code)
+          | InferedMultiplicity.Single ->
+              ProvidedProperty(makeUnique propName, 
+                               result.ConvertedType, 
+                               GetterCode = codeGenerator multiplicity result tag.Code)
+          | InferedMultiplicity.Multiple ->
+              ProvidedProperty(makeUnique (NameUtils.pluralize tag.NiceName),
+                               result.ConvertedType.MakeArrayType(), 
+                               GetterCode = codeGenerator multiplicity result tag.Code)
+      ]
+
     objectTy
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  and internal generateJsonType ctx input = function
+  and internal generateJsonType ctx canPassAllConversionCallingTypes optionalityHandledByParent inferedType =
 
-    | InferedType.Primitive(inferedType, _) ->
+    let inferedType = 
+      match inferedType with
+      | InferedType.Collection types ->
+          types 
+          |> Map.remove InferedTypeTag.Null 
+          |> InferedType.Collection 
+      | x -> x
+
+    match inferedType with
+
+    | InferedType.Primitive(inferedType, unit, optional) ->
 
         let typ, conv, conversionCallingType = 
-            PrimitiveInferedProperty.Create("", inferedType, input.Optional)
-            |> convertJsonValue ctx.Replacer "" ctx.CultureStr input.CanPassAllConversionCallingTypes
+            PrimitiveInferedProperty.Create("", inferedType, optional, unit)
+            |> convertJsonValue ctx.Replacer "" ctx.CultureStr canPassAllConversionCallingTypes
 
         { ConvertedType = typ
           Converter = Some (ctx.Replacer.ToDesignTime >> conv)
           ConversionCallingType = conversionCallingType }
 
-    | InferedType.Top | InferedType.Null | InferedType.Heterogeneous EmptyMap | InferedType.Collection EmptyMap -> 
+    | InferedType.Top 
+    | InferedType.Null -> 
 
         // Return the underlying JsonDocument without change
         { ConvertedType = ctx.IJsonDocumentType
           Converter = None
           ConversionCallingType = JsonDocument }
 
-    | InferedType.Collection (SingletonMap(_, (_, typ))) -> 
+    | InferedType.Collection (SingletonMap(_, (_, typ)))
+    | InferedType.Collection (EmptyMap InferedType.Top typ) -> 
 
-        // TODO: handle input.Optional
+        let elementResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false typ
 
-        let elementInput = { CanPassAllConversionCallingTypes = false
-                             Optional = false }
-        let elementOutput = generateJsonType ctx elementInput typ
-
-        // the async version is only used when the top level element returned by Parse/Load is an array
         let conv = fun (jDoc:Expr) -> 
-          ctx.JsonRuntimeType?ConvertArray (elementOutput.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, elementOutput.ConverterFunc ctx)
+          ctx.JsonRuntimeType?ConvertArray (elementResult.ConvertedTypeErased ctx) (ctx.Replacer.ToRuntime jDoc, elementResult.ConverterFunc ctx)
         
-        { ConvertedType = elementOutput.ConvertedType.MakeArrayType()
+        { ConvertedType = elementResult.ConvertedType.MakeArrayType()
           Converter = Some conv
           ConversionCallingType = JsonDocument }
 
-    | InferedType.Record(name, props) as inferedType -> getOrCreateType ctx inferedType <| fun () ->
+    | InferedType.Record(name, props, optional) -> getOrCreateType ctx inferedType <| fun () ->
+        
+        if optional && not optionalityHandledByParent then
+          failwith "generateJsonType: optionality not handled for %A" inferedType
 
         // Generate new type for the record
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (match name with Some name -> name | _ -> "Root"), Some(ctx.IJsonDocumentType), HideObjectMethods = true)
         ctx.TypeProviderType.AddMember(objectTy)
-
-        //TODO: handle input.Optional (#163)
 
         // to nameclash property names
         let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
@@ -232,84 +240,81 @@ module JsonTypeBuilder =
         // Add all record fields as properties
         for prop in props do
   
-          let propInput = { CanPassAllConversionCallingTypes = true
-                            Optional = prop.Optional }
-          let propOutput = generateJsonType ctx propInput prop.Type
+          let propResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)true (*optionalityHandledByParent*)true prop.Type
+          let propName = prop.Name
+          let optionalityHandledByProperty = propResult.ConversionCallingType <> JsonDocument
 
           let getter = fun (Singleton jDoc) -> 
 
-            let propName = prop.Name
-
-            if propOutput.ConversionCallingType <> JsonDocument then
+            if optionalityHandledByProperty then 
 
               let jDoc = ctx.Replacer.ToDesignTime jDoc
-              propOutput.GetConverter ctx <|
-                if propOutput.ConversionCallingType = JsonValueOptionAndPath then
+              propResult.GetConverter ctx <|
+                if propResult.ConversionCallingType = JsonValueOptionAndPath then
                   <@@ JsonRuntime.TryGetPropertyUnpackedWithPath(%%jDoc, propName) @@>
                 else
-                  <@@ JsonRuntime.TryGetPropertyUnpacked(%%jDoc, propName) @@>                
+                  <@@ JsonRuntime.TryGetPropertyUnpacked(%%jDoc, propName) @@>
           
-            elif prop.Optional then
+            elif prop.Type.IsOptional then
               
-              match propOutput.Converter with
+              match propResult.Converter with
               | Some _ ->
-                  ctx.JsonRuntimeType?ConvertOptionalProperty (propOutput.ConvertedTypeErased ctx) (jDoc, propName, propOutput.ConverterFunc ctx) :> Expr
+                  //TODO: not covered in tests
+                  ctx.JsonRuntimeType?ConvertOptionalProperty (propResult.ConvertedTypeErased ctx) (jDoc, propName, propResult.ConverterFunc ctx) :> Expr
 
-              | None -> 
+              | None ->
                   let jDoc = ctx.Replacer.ToDesignTime jDoc
                   ctx.Replacer.ToRuntime <@@ JsonRuntime.TryGetPropertyPacked(%%jDoc, propName) @@>
           
             else
-          
-              let jDoc = ctx.Replacer.ToDesignTime jDoc
-              propOutput.GetConverter ctx <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
 
-          let optionalityAlreadyHandled = propOutput.ConversionCallingType <> JsonDocument          
+              let jDoc = ctx.Replacer.ToDesignTime jDoc
+              propResult.GetConverter ctx <|
+                match prop.Type with
+                | InferedType.Collection _ 
+                | InferedType.Heterogeneous _ 
+                | InferedType.Top 
+                | InferedType.Null -> <@@ JsonRuntime.GetPropertyPackedOrNull(%%jDoc, propName) @@>
+                | _ -> <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
+
           let convertedType = 
-            if prop.Optional && not optionalityAlreadyHandled 
-            then typedefof<option<_>>.MakeGenericType propOutput.ConvertedType
-            else propOutput.ConvertedType
+            if prop.Type.IsOptional && not optionalityHandledByProperty 
+            then typedefof<option<_>>.MakeGenericType propResult.ConvertedType
+            else propResult.ConvertedType
 
           objectTy.AddMember <| ProvidedProperty(makeUnique prop.Name, convertedType, GetterCode = getter)
         
         objectTy
 
-    | InferedType.Collection types as inferedType -> getOrCreateType ctx inferedType <| fun () ->
-
-        //TODO: handle input.Optional
+    | InferedType.Collection types -> getOrCreateType ctx inferedType <| fun () ->
 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item
-        generateMultipleChoiceType ctx types (fun multiplicity output tagCode ->
+        generateMultipleChoiceType ctx types (fun multiplicity result tagCode ->
           match multiplicity with
           | InferedMultiplicity.Single -> fun (Singleton jDoc) -> 
               // Generate method that calls `GetArrayChildByTypeTag`
               let jDoc = ctx.Replacer.ToDesignTime jDoc
               let cultureStr = ctx.CultureStr
-              output.GetConverter ctx <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, cultureStr, tagCode) @@>
+              result.GetConverter ctx <@@ JsonRuntime.GetArrayChildByTypeTag(%%jDoc, cultureStr, tagCode) @@>
           
-          | InferedMultiplicity.Multiple -> 
+          | InferedMultiplicity.Multiple -> fun (Singleton jDoc) -> 
               // Generate method that calls `GetArrayChildrenByTypeTag` 
               // (unlike the previous easy case, this needs to call conversion function
-              // from the runtime similarly to options and arrays) 
-              fun (Singleton jDoc) -> 
-                let cultureStr = ctx.CultureStr
-                ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (output.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, output.ConverterFunc ctx)
+              // from the runtime similarly to options and arrays)
+              let cultureStr = ctx.CultureStr
+              ctx.JsonRuntimeType?GetArrayChildrenByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx)
           
-          | InferedMultiplicity.OptionalSingle -> 
-              // Similar to the previous case, but call `TryGetArrayChildByTypeTag` 
-              fun (Singleton jDoc) -> 
-                let cultureStr = ctx.CultureStr
-                ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (output.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, output.ConverterFunc ctx))
+          | InferedMultiplicity.OptionalSingle -> fun (Singleton jDoc) -> 
+              // Similar to the previous case, but call `TryGetArrayChildByTypeTag`
+              let cultureStr = ctx.CultureStr
+              ctx.JsonRuntimeType?TryGetArrayChildByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx))
 
-    | InferedType.Heterogeneous types as inferedType -> getOrCreateType ctx inferedType <| fun () ->
-
-        //TODO: handle input.Optional
+    | InferedType.Heterogeneous types -> getOrCreateType ctx inferedType <| fun () ->
 
         // Generate a choice type that always calls `TryGetValueByTypeTag`
         let types = types |> Map.map (fun _ v -> InferedMultiplicity.OptionalSingle, v)
-        generateMultipleChoiceType ctx types (fun multiplicity output tagCode ->
+        generateMultipleChoiceType ctx types (fun multiplicity result tagCode -> fun (Singleton jDoc) -> 
           assert (multiplicity = InferedMultiplicity.OptionalSingle)
-          fun (Singleton jDoc) -> 
-            let cultureStr = ctx.CultureStr
-            ctx.JsonRuntimeType?TryGetValueByTypeTag (output.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, output.ConverterFunc ctx))
+          let cultureStr = ctx.CultureStr
+          ctx.JsonRuntimeType?TryGetValueByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx))

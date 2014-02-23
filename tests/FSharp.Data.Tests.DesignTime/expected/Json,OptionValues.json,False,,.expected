@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     member Authors: JsonProvider+Author[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "authors"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
 
 class JsonProvider+Author : FDR.IJsonDocument
