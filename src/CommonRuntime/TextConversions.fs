@@ -38,7 +38,7 @@ module private Helpers =
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions = 
 
-  static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"; "&nbsp;"; "&nbsp";|]
+  static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"|]
 
   /// Turns empty or null string value into None, otherwise returns Some
   static member AsString str =

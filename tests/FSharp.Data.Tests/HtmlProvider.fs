@@ -55,7 +55,7 @@ let ``SimpleHtml infers decimal type correctly ``() =
 [<Test>]
 let ``SimpleHtml infers as optional fail through type correctly ``() = 
     let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 4`` |> should equal (Some 2)
+    html.Data.[0].``Column 4`` |> should equal (Some 2M)
 
 [<Test>]
 let ``Can create type for simple table``() = 

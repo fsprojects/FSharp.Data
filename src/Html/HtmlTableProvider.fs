@@ -71,7 +71,7 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
                 else headers.[index]
               let inferProperty index value =
                   let inferedtype = 
-                        if String.IsNullOrWhiteSpace value then InferedType.Null
+                        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
                         elif Array.exists ((=) <| value.Trim()) TextConversions.DefaultMissingValues 
                         then InferedType.Null 
                            // if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None)
