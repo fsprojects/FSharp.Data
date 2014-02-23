@@ -6,7 +6,6 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data
-open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 

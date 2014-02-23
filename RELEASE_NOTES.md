@@ -162,3 +162,4 @@
 * Fixed namespace declarations generating attributes in XmlProvider.
 * Fixed CsvProvider generating column names with only a space.
 * Return NaN for missing data in WorldBank indicators instead of throwing an exception.
+* Don't throw exceptions in JsonValue.AsArray, JsonValue.Properties, and JsonValue.InnerText.

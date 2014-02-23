@@ -92,7 +92,7 @@ module Implementation =
                         [ for doc in docs do
                             for ind in doc.[1] do
                                 let id = ind?id.AsString()
-                                let name = (ind?name.AsString()).Trim([|'"'|]).Trim()
+                                let name = ind?name.AsString().Trim([|'"'|]).Trim()
                                 let sourceName = ind?source?value.AsString()
                                 if sources = [] || sources |> List.exists (fun source -> String.Compare(source, sourceName, StringComparison.OrdinalIgnoreCase) = 0) then 
                                     let topicIds = Seq.toList <| seq {
@@ -126,9 +126,12 @@ module Implementation =
                         [ for doc in docs do
                             for country in doc.[1] do
                                 let region = country?region?value.AsString()
-                                yield { Id = country?id.AsString()
-                                        Name = country?name.AsString()
-                                        CapitalCity = country?capitalCity.AsString()
+                                let id = country?id.AsString()
+                                let name = country?name.AsString()
+                                let capitalCity = country?capitalCity.AsString()
+                                yield { Id = id
+                                        Name = name
+                                        CapitalCity = capitalCity
                                         Region = region } ] }
 
         let getRegions() = 
@@ -139,12 +142,12 @@ module Implementation =
                                 yield ind?code.AsString(),
                                       ind?name.AsString() ] }
 
-        let getData funcs args key = 
+        let getData funcs args (key:string) = 
             async { let! docs = getDocuments funcs args 1 1
                     return
                         [ for doc in docs do
                             for ind in doc.[1] do
-                                yield ind.GetProperty(key).AsString(),
+                                yield ind.[key].AsString(),
                                       ind?value.AsString() ] }
 
         /// At compile time, download the schema
