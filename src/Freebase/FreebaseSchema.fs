@@ -59,9 +59,9 @@ type FreebaseDomainId =
       DomainHidden: bool
       DomainName:string }
     static member FromJson(fbr:JsonValue) = 
-        { DomainId = FreebaseId(fbr.GetStringValWithKey("/type/object/id"))
-          DomainHidden = (fbr.GetStringValWithKey("/freebase/domain_profile/hidden") = "true")
-          DomainName = fbr.GetStringValWithKey("/type/object/name")  }
+        { DomainId = FreebaseId(fbr.GetString("/type/object/id"))
+          DomainHidden = (fbr.GetString("/freebase/domain_profile/hidden") = "true")
+          DomainName = fbr.GetString("/type/object/name")  }
     override x.ToString() = x.DomainName
 
 type FreebaseProperty = 
@@ -77,15 +77,15 @@ type FreebaseProperty =
       UnitOfMeasureId:FreebaseId
       Unique:string }
     static member FromJson(fbr:JsonValue) = 
-        { PropertyId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
-          MachineId = fbr.GetStringValWithKey("/type/object/mid") 
-          PropertyName = fbr.GetStringValWithKey("/type/object/name") 
-          ExpectedTypeId = FreebaseId(fbr.GetStringValWithKey("/type/property/expected_type")) 
-          //MasterProperty = fbr.GetStringValWithKey("/type/property/master_property") 
-          EnumerationId = FreebaseId(fbr.GetStringValWithKey("/type/property/enumeration"))
-          Delegated = fbr.GetStringValWithKey("/type/property/delegated") 
-          UnitOfMeasureId = FreebaseId(fbr.GetStringValWithKey("/type/property/unit")) 
-          Unique = fbr.GetStringValWithKey("/type/property/unique")  }
+        { PropertyId = FreebaseId(fbr.GetString("/type/object/id")) 
+          MachineId = fbr.GetString("/type/object/mid") 
+          PropertyName = fbr.GetString("/type/object/name") 
+          ExpectedTypeId = FreebaseId(fbr.GetString("/type/property/expected_type")) 
+          //MasterProperty = fbr.GetString("/type/property/master_property") 
+          EnumerationId = FreebaseId(fbr.GetString("/type/property/enumeration"))
+          Delegated = fbr.GetString("/type/property/delegated") 
+          UnitOfMeasureId = FreebaseId(fbr.GetString("/type/property/unit")) 
+          Unique = fbr.GetString("/type/property/unique")  }
     member fp.IsUnique = match fp.Unique with "true" | "True" -> true | _ -> false
     member fp.IsEnum = not(String.IsNullOrEmpty fp.EnumerationId.Id)
     member fp.BasicSystemType =
@@ -104,31 +104,31 @@ type FreebaseProperty =
 type FreebaseArticle = 
     { ArticleId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { ArticleId = FreebaseId(fbr.GetStringValWithKey("/type/object/id"))  }
+        { ArticleId = FreebaseId(fbr.GetString("/type/object/id"))  }
       
 type FreebaseTypeId = 
     { TypeId:FreebaseId
       DomainId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { TypeId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) ;
-          DomainId = FreebaseId(fbr.GetStringValWithKey("/type/type/domain")) ;}
+        { TypeId = FreebaseId(fbr.GetString("/type/object/id")) ;
+          DomainId = FreebaseId(fbr.GetString("/type/type/domain")) ;}
 
 type FreebaseObjectId = 
     { MachineId:FreebaseMachineId
       ObjectName:string }
     static member FromJson(fbr:JsonValue) = 
-        { MachineId = FreebaseMachineId (fbr.GetStringValWithKey("/type/object/mid")) ;
-          ObjectName = fbr.GetStringValWithKey("/type/object/name") ;}
+        { MachineId = FreebaseMachineId (fbr.GetString("/type/object/mid")) ;
+          ObjectName = fbr.GetString("/type/object/name") ;}
 
 type FreebaseTypesSupportedByObject = 
     { TypesSupportedByObject:FreebaseTypeId[] }
     static member FromJson(fbr:JsonValue) = 
-        { TypesSupportedByObject = fbr.GetOptionalArrayValWithKey("/type/object/type") |> Array.map FreebaseTypeId.FromJson }      
+        { TypesSupportedByObject = fbr.GetArray("/type/object/type") |> Array.map FreebaseTypeId.FromJson }      
 
 type FreebaseImageInformation = 
     { ImageId:FreebaseId }
     static member FromJson(fbr:JsonValue) = 
-        { ImageId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) }
+        { ImageId = FreebaseId(fbr.GetString("/type/object/id")) }
     static member GetImages(fb:FreebaseQueries, objectId:FreebaseMachineId) = 
         let query = @"[{'/type/object/id':null,'/type/object/type':'/common/image','!/common/topic/image': [{'/type/object/mid':'" + objectId.MId + "'}]}]" 
         fb.Query<FreebaseImageInformation[]>(query, JsonValue.GetArrayVal FreebaseImageInformation.FromJson)
@@ -143,13 +143,13 @@ type FreebaseType =
       IncludedTypes: FreebaseTypeId[]
       Properties:FreebaseProperty[] }
     static member FromJson(fbr:JsonValue) = 
-        { TypeId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
-          TypeName = fbr.GetStringValWithKey("/type/object/name") 
-          Mediator = fbr.GetStringValWithKey("/freebase/type_hints/mediator") 
-          Deprecated = fbr.GetStringValWithKey("/freebase/type_hints/deprecated")
-          Domain = FreebaseId(fbr.GetStringValWithKey("/type/type/domain"))
-          IncludedTypes = fbr.GetArrayValWithKey("/freebase/type_hints/included_types") |> Array.map FreebaseTypeId.FromJson
-          Properties = fbr.GetOptionalArrayValWithKey("/type/type/properties") |> Array.map FreebaseProperty.FromJson }      
+        { TypeId = FreebaseId(fbr.GetString("/type/object/id")) 
+          TypeName = fbr.GetString("/type/object/name") 
+          Mediator = fbr.GetString("/freebase/type_hints/mediator") 
+          Deprecated = fbr.GetString("/freebase/type_hints/deprecated")
+          Domain = FreebaseId(fbr.GetString("/type/type/domain"))
+          IncludedTypes = fbr.GetArray("/freebase/type_hints/included_types") |> Array.map FreebaseTypeId.FromJson
+          Properties = fbr.GetArray("/type/type/properties") |> Array.map FreebaseProperty.FromJson }      
     override x.ToString() = x.TypeName
 
 type FreebaseDomain = 
@@ -158,25 +158,25 @@ type FreebaseDomain =
       NamespaceKinds:string[]
       Hidden:string    }
     static member FromJson(fbr:JsonValue) = 
-        { DomainId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
-          DomainName = fbr.GetStringValWithKey("/type/object/name") 
-          NamespaceKinds = fbr.GetArrayValWithKey("/type/object/type") |> Array.map (fun j -> j.AsString())
-          Hidden = fbr.GetStringValWithKey("/freebase/domain_profile/hidden") }
+        { DomainId = FreebaseId(fbr.GetString("/type/object/id")) 
+          DomainName = fbr.GetString("/type/object/name") 
+          NamespaceKinds = fbr.GetArray("/type/object/type") |> Array.map (fun j -> j.AsString())
+          Hidden = fbr.GetString("/freebase/domain_profile/hidden") }
     override x.ToString() = x.DomainName
 
 type FreebaseNamespaceKey = 
     { Value:string
       Namespace:FreebaseDomain }
     static member FromJson(fbr:JsonValue) = 
-        { Value = fbr.GetStringValWithKey("value") 
-          Namespace = fbr.GetProperty("namespace") |> FreebaseDomain.FromJson }
+        { Value = fbr.GetString("value") 
+          Namespace = fbr?``namespace`` |> FreebaseDomain.FromJson }
     override x.ToString() = x.Namespace.ToString()
 
 /// The element type returned by GetDomainStructure.
 type FreebaseDomainStructure = 
     { NamespaceKeys:FreebaseNamespaceKey[] }
     static member FromJson(fbr:JsonValue) = 
-        { NamespaceKeys = fbr.GetArrayValWithKey("/type/namespace/keys") |> Array.map FreebaseNamespaceKey.FromJson }
+        { NamespaceKeys = fbr.GetArray("/type/namespace/keys") |> Array.map FreebaseNamespaceKey.FromJson }
 
 /// The element type returned by GetDomainCategories
 type FreebaseDomainCategory = 
@@ -184,20 +184,20 @@ type FreebaseDomainCategory =
       Name:string
       Domains:FreebaseDomainId[] }
     static member FromJson(fbr:JsonValue) = 
-        { DomainCategoryId = FreebaseId(fbr.GetStringValWithKey("/type/object/id")) 
-          Name = fbr.GetStringValWithKey("/type/object/name") 
-          Domains = fbr.GetArrayValWithKey("/freebase/domain_category/domains") |> Array.map FreebaseDomainId.FromJson }
+        { DomainCategoryId = FreebaseId(fbr.GetString("/type/object/id")) 
+          Name = fbr.GetString("/type/object/name") 
+          Domains = fbr.GetArray("/freebase/domain_category/domains") |> Array.map FreebaseDomainId.FromJson }
     override x.ToString() = x.Name
 
 type FreebaseDocumentation = 
     { Articles: FreebaseArticle[] 
       Tip:string  }
     static member FromJson(fbr:JsonValue) = 
-        { Articles = fbr.GetArrayValWithKey("/common/topic/article") |> Array.map FreebaseArticle.FromJson
-          Tip = fbr.GetStringValWithKey("/freebase/documented_object/tip") }
+        { Articles = fbr.GetArray("/common/topic/article") |> Array.map FreebaseArticle.FromJson
+          Tip = fbr.GetString("/freebase/documented_object/tip") }
 
     static member GetDocs (fb: FreebaseQueries, query:string) =
-        let fbDoc = fb.Query<FreebaseDocumentation>(query,FreebaseDocumentation.FromJson)
+        let fbDoc = fb.Query<FreebaseDocumentation>(query, FreebaseDocumentation.FromJson)
         [ match fbDoc.Articles with
           | null -> ()
           | articles ->

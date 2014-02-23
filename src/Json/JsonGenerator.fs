@@ -63,7 +63,6 @@ type internal JsonGenerationResult =
 
 module JsonTypeBuilder = 
   
-  open FSharp.Data.JsonExtensions
   let (?) = QuotationBuilder.(?)
 
   // check if a type was already created for the inferedType before creating a new one
