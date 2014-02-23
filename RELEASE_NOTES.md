@@ -150,7 +150,7 @@
 * Fixed handling of nested arrays in JsonProvider.
 * Fixed handling of optional arrays in JsonProvider.
 
-#### 2.0.0-alpha8 - Unreleased
+#### 2.0.0-beta - February 23 2014
 * Mono fixes.
 * Allow to set the freebase api key globally by using the environment variable FREEBASE_API_KEY
 * Fixed handling of optional records in JsonProvider.
@@ -159,4 +159,5 @@
 * Treat "", null and missing values in the same way in JsonProvider.
 * Fixed homogeneous arrays to have the same null skipping behaviour as heterogeneous arrays in JsonProvider.
 * Fixed handling of optional elements in XmlProvider.
+* Fixed namespace declarations generating attributes in XmlProvider.
 * Fixed CsvProvider generating column names with only a space.

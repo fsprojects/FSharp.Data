@@ -18,8 +18,9 @@ open FSharp.Data.Runtime.StructuralTypes
 /// Generates record fields for all attributes
 let private getAttributes cultureInfo (element:XElement) =
   [ for attr in element.Attributes() do
-      yield { Name = attr.Name.ToString()
-              Type = getInferedTypeFromString cultureInfo attr.Value None } ]
+      if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" then
+        yield { Name = attr.Name.ToString()
+                Type = getInferedTypeFromString cultureInfo attr.Value None } ]
 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
