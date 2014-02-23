@@ -62,10 +62,13 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValues cultureStr canPas
     | TypeWrapper.Option, true ->
         convert <@ (%%value:JsonValue option) @>
     | TypeWrapper.Option, false ->
+        //TODO: not covered in tests
         convert <@ Some (%%value:IJsonDocument).JsonValue @>
     | TypeWrapper.Nullable, true -> 
+        //TODO: not covered in tests
         typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ (%%value:JsonValue option) @>)
     | TypeWrapper.Nullable, false -> 
+        //TODO: not covered in tests
         typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ Some (%%value:IJsonDocument).JsonValue @>)
     |> replacer.ToRuntime
 

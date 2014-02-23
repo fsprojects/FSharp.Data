@@ -23,7 +23,7 @@ type internal XmlGenerationContext =
     // to nameclash type names
     UniqueNiceName : string -> string 
     UnifyGlobally : bool
-    GeneratedResults : IDictionary<string, System.Type * (Expr -> Expr)> }
+    GeneratedResults : IDictionary<string, Type * (Expr -> Expr)> }
   static member Create(cultureStr, tpType, unifyGlobally, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     uniqueNiceName "XElement" |> ignore
@@ -48,15 +48,9 @@ module internal XmlTypeBuilder =
   /// We return a list with all possible primitive types and all possible
   /// children types (both may be empty)
   let (|ContentType|_|) content = 
-    let makeOptional _key (multiplicity, typ) = 
-      let multiplicity = 
-        match multiplicity with
-        | InferedMultiplicity.Single -> InferedMultiplicity.OptionalSingle
-        | _ -> multiplicity
-      multiplicity, typ
     match content with 
     | { Type = (InferedType.Primitive _) as typ } -> Some([typ], Map.empty)
-    | { Type = InferedType.Collection nodes; Optional = optional } -> Some([], if optional then Map.map makeOptional nodes else nodes)
+    | { Type = InferedType.Collection nodes } -> Some([], nodes)
     | { Type = InferedType.Heterogeneous cases } ->
         let collections, others = 
           Map.toList cases |> List.partition (fst >> ((=) InferedTypeTag.Collection))
@@ -88,13 +82,13 @@ module internal XmlTypeBuilder =
   let rec generateXmlType ctx = function
 
     // If we already generated object for this type, return it
-    | InferedType.Record(Some nameWithNs, _) when ctx.GeneratedResults.ContainsKey(nameWithNs) -> 
+    | InferedType.Record(Some nameWithNs, _, false) when ctx.GeneratedResults.ContainsKey(nameWithNs) -> 
         ctx.GeneratedResults.[nameWithNs]
     
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
-    | InferedType.Record(Some _, [{ Name = ""; Optional = opt; Type = InferedType.Primitive(typ, _) }]) ->
-        let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, opt)
+    | InferedType.Record(Some _, [{ Name = ""; Type = InferedType.Primitive(typ, unit, opt) }], false) ->
+        let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, opt, unit)
         typ, fun xml -> let xml = ctx.Replacer.ToDesignTime xml
                         conv <@ XmlRuntime.TryGetValue(%%xml) @>
 
@@ -102,41 +96,43 @@ module internal XmlTypeBuilder =
     // optional properties (this can only happen when using sample list with multiple root
     // elements of different names). Otherwise, heterogeneous types appear only as child nodes
     // of an element (handled similarly below)
-    | HeterogeneousRecords(cases) ->
+    | HeterogeneousRecords cases ->
 
         // Generate new choice type for the element
         let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
-        ctx.TypeProviderType.AddMember(objectTy)
+        ctx.TypeProviderType.AddMember objectTy
 
         // to nameclash property names
         let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
         makeUnique "XElement" |> ignore
 
         // For each case, add property of optional type
-        [ for nameWithNS, case in cases ->
-            let name = XName.Get(nameWithNS).LocalName
-            let childTy, childConv = generateXmlType ctx case
-            let p = ProvidedProperty(makeUnique name, typedefof<option<_>>.MakeGenericType [| childTy |])
-            let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
-            // XmlRuntime.ConvertAsName checks that the name of the current node
-            // has the required name and returns Some/None
-            p.GetterCode <- fun (Singleton xml) -> 
-              let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
-              xmlRuntime?ConvertAsName (childTy) (xml, nameWithNS, convFunc)
-            p :> MemberInfo ]
-        |> objectTy.AddMembers
+        objectTy.AddMembers <|
+          [ for nameWithNS, case in cases ->
+          
+              let childTy, childConv = generateXmlType ctx case
+              let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
+              ProvidedProperty(makeUnique (XName.Get(nameWithNS).LocalName),
+                              typedefof<option<_>>.MakeGenericType [| childTy |],
+                              GetterCode = fun (Singleton xml) ->               
+                // XmlRuntime.ConvertAsName checks that the name of the current node
+                // has the required name and returns Some/None
+                let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
+                xmlRuntime?ConvertAsName (childTy) (xml, nameWithNS, convFunc)) ]
+
         upcast objectTy, ctx.Replacer.ToRuntime
 
     // If the node is more complicated, then we generate a type to represent it properly
-    | InferedType.Record(Some nameWithNS, props) -> 
+    | InferedType.Record(Some nameWithNS, props, false) -> 
 
-        let name = XName.Get(nameWithNS).LocalName
-        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name, Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
-        ctx.TypeProviderType.AddMember(objectTy)
+        let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName (XName.Get(nameWithNS).LocalName),
+                                              Some(ctx.Replacer.ToRuntime typeof<XmlElement>), 
+                                              HideObjectMethods = true)
+        ctx.TypeProviderType.AddMember objectTy
 
         // If we unify types globally, then save type for this record
         if ctx.UnifyGlobally then
-          ctx.GeneratedResults.Add(nameWithNS, (objectTy :> System.Type, ctx.Replacer.ToRuntime))
+          ctx.GeneratedResults.Add(nameWithNS, (objectTy :> Type, ctx.Replacer.ToRuntime))
 
         // Split the properties into attributes and a 
         // special property representing the content
@@ -149,49 +145,51 @@ module internal XmlTypeBuilder =
 
         // Generate properties for all XML attributes
         for attr in attrs do
+
           let nameWithNS = attr.Name
           let name = XName.Get(nameWithNS).LocalName
+
+          let createMemberForAttribute typ unit (optional:bool) =            
+            let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Attribute " + name, typ, optional, unit)
+            objectTy.AddMember <|
+              ProvidedProperty(makeUnique name, typ, GetterCode = fun (Singleton xml) -> 
+                let xml = ctx.Replacer.ToDesignTime xml
+                conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @>)
+
           match attr.Type with 
           | InferedType.Heterogeneous types ->
+
               // If the attribute has multiple possible type (e.g. "bool|int") then we generate
               // a choice type that is erased to 'option<string>' (for simplicity, assuming that
               // the attribute is always optional)
               let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(ctx.Replacer.ToRuntime typeof<option<string>>), HideObjectMethods = true)
-              ctx.TypeProviderType.AddMember(choiceTy)
-              for KeyValue(tag, typ) in types do 
-                match typ with
-                | InferedType.Null -> ()
-                | InferedType.Primitive(primTyp, _) ->
-                    // Conversion function takes 'option<string>' to the required type
-                    let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true)
-                    let p = ProvidedProperty(tag.NiceName, typ)
-                    p.GetterCode <- fun (Singleton attrVal) -> 
-                      let attrVal = ctx.Replacer.ToDesignTime attrVal
-                      conv <@ %%attrVal:string option @>
-                    choiceTy.AddMember(p)   
-                | _ -> failwith "generateXmlType: A choice type of an attribute can only contain primitive types"
+              ctx.TypeProviderType.AddMember choiceTy
 
               // Generate a property for the attribute which has a type 'choiceTy'
-              // (and returns 'string option' value that we get from 'TryGetAttribute'
-              let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Attribute " + name, typeof<string>, attr.Optional)
+              objectTy.AddMember <|
+                ProvidedProperty(makeUnique name, choiceTy, GetterCode = fun (Singleton xml) -> 
+                  let xml = ctx.Replacer.ToDesignTime xml
+                  ctx.Replacer.ToRuntime <@@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @@>)
 
-              let p = ProvidedProperty(makeUnique name, choiceTy)
-              p.GetterCode <- fun (Singleton xml) -> 
-                let xml = ctx.Replacer.ToDesignTime xml
-                ctx.Replacer.ToRuntime <@@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @@>
-              objectTy.AddMember(p)
+              for KeyValue(tag, typ) in types do 
+                
+                if typ.IsOptional then
+                  failwithf "generateXmlType: Type shouldn't be optional: %A" typ        
+                
+                match typ with
+                | InferedType.Primitive(primTyp, unit, false) ->
 
-          | InferedType.Primitive(typ, _) ->
-              let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Attribute " + name, typ, attr.Optional)
-              // Add property with PascalCased name
-              let p = ProvidedProperty(makeUnique name, typ)
-              p.GetterCode <- fun (Singleton xml) -> 
-                let xml = ctx.Replacer.ToDesignTime xml
-                conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @>
-              objectTy.AddMember(p)
+                    let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true, unit)
+                    choiceTy.AddMember <|
+                      ProvidedProperty(tag.NiceName, typ, GetterCode = fun (Singleton attrVal) -> 
+                        attrVal |> ctx.Replacer.ToDesignTime |> Expr.Cast |> conv)
+
+                | _ -> failwithf "generateXmlType: A choice type of an attribute can only contain primitive types, got %A" typ
+
+          | InferedType.Primitive(typ, unit, optional) -> createMemberForAttribute typ unit optional
+          | InferedType.Null -> createMemberForAttribute typeof<string> None false 
 
           | _ -> failwith "generateXmlType: Expected Primitive or Choice type"
-
 
         // Add properties that can be used to access content of the node
         // (either child nodes or primitive values - if the node contains simple values)
@@ -201,29 +199,33 @@ module internal XmlTypeBuilder =
             // For every possible primitive type add '<Tag>Value' property that 
             // returns it converted to the right type (or an option)
             for primitive in primitives do 
+
               match primitive with 
-              | InferedType.Primitive(typ, _) -> 
-                  // If there may be other primitives or nodes, it is optional
-                  let opt = nodes.Count > 0 || primitives.Length > 1
-                  let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, opt)
+              | InferedType.Primitive(typ, unit, optional) -> 
+
+                  // If there may be other primitives or nodes, make it optional
+                  let optional = optional || nodes.Count > 0 || primitives.Length > 1
+                  let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, optional, unit)
                   let name = 
                     makeUnique <| if primitives.Length = 1 then "Value" else
                                   (StructuralInference.typeTag primitive).NiceName + NameUtils.nicePascalName "Value"
-                  let p = ProvidedProperty(name, typ)
-                  p.GetterCode <- fun (Singleton xml) -> 
-                    let xml = ctx.Replacer.ToDesignTime xml
-                    conv <@ XmlRuntime.TryGetValue(%%xml) @>
-                  objectTy.AddMember(p)          
+                  objectTy.AddMember <|
+                    ProvidedProperty(name, typ,GetterCode = fun (Singleton xml) -> 
+                      let xml = ctx.Replacer.ToDesignTime xml
+                      conv <@ XmlRuntime.TryGetValue(%%xml) @>)
+
               | _ -> failwith "generateXmlType: Primitive type expected"
 
             // For every possible child node, generate 'GetXyz()' method (if there
             // is multiple of them) or just a getter property if there is one or none
             [ for node in nodes ->
+
                 match node with
                 | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
                 
                     let name = XName.Get(nameWithNS).LocalName
                     let childTy, childConv = generateXmlType ctx typ 
+
                     match multiplicity with
                     | InferedMultiplicity.Single ->
                         ProvidedProperty(makeUnique name, 
@@ -258,6 +260,7 @@ module internal XmlTypeBuilder =
         | [_] -> failwith "generateXmlType: Children should be collection or heterogeneous"
         | _::_ -> failwith "generateXmlType: Only one child collection expected"
         | [] -> ()
+
         objectTy :> Type, ctx.Replacer.ToRuntime
 
     | _ -> failwith "generateXmlType: Infered type should be record type."

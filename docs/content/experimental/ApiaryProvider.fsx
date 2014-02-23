@@ -101,7 +101,7 @@ printfn "Born: %s" person.PlaceOfBirth
 
 let credits = person.MovieCredits()
 for cast in credits.Cast do
-  printfn "%s (as %s)" cast.Title.String.Value cast.Character
+  printfn "%s (as %s)" cast.Title.String.Value cast.Character.Value
 
 (**
 ## Making asynchronous requests

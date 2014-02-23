@@ -31,11 +31,6 @@ let private numericTypes = [ typeof<Bit0>; typeof<Bit1>; typeof<int>; typeof<int
 /// List of primitive types that can be returned as a result of the inference
 let private primitiveTypes = [typeof<string>; typeof<DateTime>; typeof<Guid>; typeof<bool>; typeof<Bit>] @ numericTypes
 
-/// Checks whether a type can have null as a value
-let private supportsNull = function
-  | InferedType.Primitive(typ, _) -> typ = typeof<string>
-  | _ -> true
-
 /// Checks whether a type supports unit of measure
 let supportsUnitsOfMeasure typ =    
   List.exists ((=) typ) numericTypes
@@ -43,11 +38,11 @@ let supportsUnitsOfMeasure typ =
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)
 let typeTag = function
-  | InferedType.Record(n, _)-> InferedTypeTag.Record n
+  | InferedType.Record(name = n)-> InferedTypeTag.Record n
   | InferedType.Collection _ -> InferedTypeTag.Collection
   | InferedType.Null | InferedType.Top -> InferedTypeTag.Null
   | InferedType.Heterogeneous _ -> InferedTypeTag.Heterogeneous
-  | InferedType.Primitive(typ, _) ->
+  | InferedType.Primitive(typ = typ) ->
       if typ = typeof<Bit> || List.exists ((=) typ) numericTypes then InferedTypeTag.Number
       elif typ = typeof<bool> then InferedTypeTag.Boolean
       elif typ = typeof<string> then InferedTypeTag.String
@@ -94,14 +89,16 @@ let private subtypePrimitives typ1 typ2 =
         else None)
 
 /// Active pattern that calls `subtypePrimitives` on two primitive types
-let private (|SubtypePrimitives|_|) = function
-  | InferedType.Primitive(t1, u1), InferedType.Primitive(t2, u2) -> 
+let private (|SubtypePrimitives|_|) allowEmptyValues = function
+  | InferedType.Primitive(t1, u1, o1), InferedType.Primitive(t2, u2, o2) -> 
       // Re-annotate with the unit, if it is the same one
       match subtypePrimitives t1 t2 with
-      | Some(t) when u1 = u2 -> Some(t, u1)
-      | Some(t) -> Some(t, None)
+      | Some t -> 
+          let unit = if u1 = u2 then u1 else None
+          let optional = (o1 || o2) && not (allowEmptyValues && InferedType.CanHaveEmptyValues t)
+          Some (t, unit, optional)
       | _ -> None
-  | _ -> None    
+  | _ -> None   
 
 /// Find common subtype of two infered types:
 /// 
@@ -117,41 +114,43 @@ let private (|SubtypePrimitives|_|) = function
 /// The contract that should hold about the function is that given two types with the
 /// same `InferedTypeTag`, the result also has the same `InferedTypeTag`. 
 ///
-let rec subtypeInfered allowNulls ot1 ot2 =
+let rec subtypeInfered allowEmptyValues ot1 ot2 =
   match ot1, ot2 with
   // Subtype of matching types or one of equal types
-  | SubtypePrimitives t -> InferedType.Primitive t
-  | InferedType.Record(n1, t1), InferedType.Record(n2, t2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowNulls t1 t2)
-  | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowNulls t1 t2)
-  | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowNulls t1 t2)
-  | InferedType.Null, InferedType.Null -> InferedType.Null
+  | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
+  | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
+  | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
+  | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowEmptyValues t1 t2)
   
-  // Top type can be merged with else
+  // Top type can be merged with anything else
   | t, InferedType.Top | InferedType.Top, t -> t
-  // Null type can be merged with non-value types
-  | t, InferedType.Null | InferedType.Null, t when allowNulls && supportsNull t -> t
+  // Merging with Null type will make a type optional if it's not already
+  | t, InferedType.Null | InferedType.Null, t -> t.EnsuresHandlesMissingValues allowEmptyValues
   // Heterogeneous can be merged with any type
   | InferedType.Heterogeneous h, other 
   | other, InferedType.Heterogeneous h ->
       // Add the other type as another option. We should never add
       // heterogenous type as an option of other heterogeneous type.
       assert (typeTag other <> InferedTypeTag.Heterogeneous)
-      InferedType.Heterogeneous(unionHeterogeneousTypes allowNulls h (Map.ofSeq [typeTag other, other]))
+      InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues h (Map.ofSeq [typeTag other, other]))
     
   // Otherwise the types are incompatible so we build a new heterogeneous type
   | t1, t2 -> 
       let h1, h2 = Map.ofSeq [typeTag t1, t1], Map.ofSeq [typeTag t2, t2]
-      InferedType.Heterogeneous(unionHeterogeneousTypes allowNulls h1 h2)
-
+      InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues h1 h2)
 
 /// Given two heterogeneous types, get a single type that can represent all the
-/// types that the two heterogeneous types can. For every tag, 
-and private unionHeterogeneousTypes allowNulls cases1 cases2 =
+/// types that the two heterogeneous types can.
+/// Heterogeneous types already handle optionality on their own, so we drop
+/// optionality from all its inner types
+and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
   Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
-  |> Seq.map (function
+  |> Seq.map (fun (tag, fst, snd) ->
+      match tag, fst, snd with
       | tag, Some (KeyValue(_, t)), None 
-      | tag, None, Some (KeyValue(_, t)) -> tag, t
-      | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> tag, subtypeInfered allowNulls t1 t2
+      | tag, None, Some (KeyValue(_, t)) -> tag, t.DropOptionality()
+      | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> 
+          tag, (subtypeInfered allowEmptyValues t1 t2).DropOptionality()
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofSeq
 
@@ -159,49 +158,47 @@ and private unionHeterogeneousTypes allowNulls cases1 cases2 =
 /// the multiplicity for each different type tag to generate better types
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
-and private unionCollectionTypes allowNulls cases1 cases2 = 
+and private unionCollectionTypes allowEmptyValues cases1 cases2 = 
   Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
-  |> Seq.map (function
+  |> Seq.map (fun (tag, fst, snd) ->
+      match tag, fst, snd with
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
-          // If one collection contains thing exactly once
+          // If one collection contains something exactly once
           // but the other does not contain it, then it is optional
           tag, ((if m = Single then OptionalSingle else m), t)
       | tag, Some (KeyValue(_, (m1, t1))), Some (KeyValue(_, (m2, t2))) -> 
-          let m = if m1 = Multiple || m2 = Multiple then Multiple else Single
-          tag, (m, subtypeInfered allowNulls t1 t2)
+          tag, (InferedMultiplicity.Combine m1 m2, subtypeInfered allowEmptyValues t1 t2)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofSeq
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
-and unionRecordTypes allowNulls t1 t2 =
+and unionRecordTypes allowEmptyValues t1 t2 =
   Seq.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
   |> Seq.map (fun (name, fst, snd) ->
       match fst, snd with
       // If one is missing, return the other, but optional
-      | Some p, None | None, Some p -> { p with Optional = true }
+      | Some p, None | None, Some p -> { p with Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
       // If both reference the same object, we return one
       // (This is needed to support recursive type structures)
-      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) ->
-          p1
+      | Some p1, Some p2 when Object.ReferenceEquals(p1, p2) -> p1
       // If both are available, we get their subtype
       | Some p1, Some p2 -> 
           { InferedProperty.Name = name
-            Optional = p1.Optional || p2.Optional
-            Type = subtypeInfered allowNulls p1.Type p2.Type }
+            Type = subtypeInfered allowEmptyValues p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
   |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
-let inferCollectionType allowNulls types = 
+let inferCollectionType allowEmptyValues types = 
   types 
   |> Seq.groupBy typeTag
   |> Seq.map (fun (tag, types) ->
       let multiple = if Seq.length types > 1 then Multiple else Single
-      tag, (multiple, Seq.fold (subtypeInfered allowNulls) InferedType.Top types) )
+      tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types) )
   |> Map.ofSeq |> InferedType.Collection
 
 [<AutoOpen>]
@@ -223,9 +220,9 @@ module private Helpers =
     |> Seq.choose (fun (x:Match) -> TextConversions.AsInteger CultureInfo.InvariantCulture x.Value)
     |> Seq.length
 
-/// Infers the type of a simple string value (this is either
-/// the value inside a node or value of an attribute)
-let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
+/// Infers the type of a simple string value
+/// Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<string>
+let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
@@ -249,29 +246,33 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
       cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #endif
 
-  match value with
-  | "0" -> InferedType.Primitive(typeof<Bit0>, unit)
-  | "1" -> InferedType.Primitive(typeof<Bit1>, unit)
-  | Parse TextConversions.AsBoolean _ -> InferedType.Primitive(typeof<bool>, unit)
-  | Parse TextConversions.AsInteger _ -> InferedType.Primitive(typeof<int>, unit)
-  | Parse TextConversions.AsInteger64 _ -> InferedType.Primitive(typeof<int64>, unit)
-  | Parse TextConversions.AsDecimal _ -> InferedType.Primitive(typeof<decimal>, unit)
-  | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> InferedType.Primitive(typeof<float>, unit)
-  | Parse asGuid _ -> InferedType.Primitive(typeof<Guid>, unit)
-  | Parse TextConversions.AsDateTime date ->
-
+  let isFakeDate (date:DateTime) value =
       // If this can be considered a decimal under the invariant culture, 
       // it's a safer bet to consider it a string than a DateTime
-      if TextConversions.AsDecimal CultureInfo.InvariantCulture value |> Option.isSome then
-          InferedType.Primitive(typeof<string>, unit)
+      TextConversions.AsDecimal CultureInfo.InvariantCulture value |> Option.isSome
+      ||
       // Prevent stuff like 12-002 being considered a date
-      elif date.Year < 1000 && numberOfNumberGroups value <> 3 then
-         InferedType.Primitive(typeof<string>, unit)
+      date.Year < 1000 && numberOfNumberGroups value <> 3
+      ||
       // Prevent stuff like ad3mar being considered a date
-      elif cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                                                 value.IndexOf(getAbbreviatedEraName era, StringComparison.OrdinalIgnoreCase) >= 0) then
-        InferedType.Primitive(typeof<string>, unit)
-      else
-        InferedType.Primitive(typeof<DateTime>, unit)
+      cultureInfo.Calendar.Eras |> Array.exists (fun era -> value.IndexOf(cultureInfo.DateTimeFormat.GetEraName(era), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                            value.IndexOf(getAbbreviatedEraName era, StringComparison.OrdinalIgnoreCase) >= 0)
 
-  | _ -> InferedType.Primitive(typeof<string>, unit)
+  match value with
+  | "" -> null
+  | Parse TextConversions.AsInteger 0 -> typeof<Bit0>
+  | Parse TextConversions.AsInteger 1 -> typeof<Bit1>
+  | Parse TextConversions.AsBoolean _ -> typeof<bool>
+  | Parse TextConversions.AsInteger _ -> typeof<int>
+  | Parse TextConversions.AsInteger64 _ -> typeof<int64>
+  | Parse TextConversions.AsDecimal _ -> typeof<decimal>
+  | Parse (TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false) _ -> typeof<float>
+  | Parse asGuid _ -> typeof<Guid>
+  | Parse TextConversions.AsDateTime date when not (isFakeDate date value) -> typeof<DateTime>
+  | _ -> typeof<string>
+
+/// Infers the type of a simple string value
+let getInferedTypeFromString cultureInfo value unit =
+    match inferPrimitiveType cultureInfo value with
+    | null -> InferedType.Null
+    | typ -> InferedType.Primitive(typ, unit, false)

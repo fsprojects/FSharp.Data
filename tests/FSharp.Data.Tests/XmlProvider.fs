@@ -45,11 +45,9 @@ let ``Jim should have a last name of Smith``() =
 let ``Jim should have an age of 24``() = 
     nextPerson.Age |> should equal 24
 
-let testXml = XmlProvider<""" <foo a="" /> """>.GetSample()
-
 [<Test>]
 let ``Type of attribute with empty value is string`` = 
-  testXml.A |> shouldEqual ""
+  XmlProvider<"data/emptyValue.xml">.GetSample().A |> shouldEqual ""
 
 [<Test>]
 let ``Xml with namespaces``() = 
@@ -57,17 +55,9 @@ let ``Xml with namespaces``() =
   feed.Title |> should equal "Windows8 - Twitter Search"
   feed.Entries.[0].Metadata.ResultType |> should equal "recent"
 
-type Config = FSharp.Data.XmlProvider<"""
-  <test>
-    <options><node set="wales.css" /></options>
-    <options><node set="true" /></options>
-    <options><node set="42" /></options>
-    <options><node /></options>
-  </test>""">
-
 [<Test>]
 let ``Can read config with heterogeneous attribute types``() =
-  let config = Config.GetSample()
+  let config = XmlProvider<"data/heterogeneous.xml">.GetSample()
   let opts = 
     [ for opt in config.Options -> 
         let set = opt.Node.Set in set.Boolean, set.Number, set.String ]
@@ -170,13 +160,7 @@ let ``XML elements with same name in different namespaces``() =
 [<Test>]
 let ``Optionality infered correctly for child elements``() =
 
-    let items = XmlProvider<"""
-        <root>
-            <child a="1">
-                <inner />
-            </child>
-            <child b="some"></child>
-        </root>""", SampleIsList=true>.GetSamples()
+    let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
     
     items.Length |> should equal 2
     let child1 = items.[0]
@@ -194,13 +178,7 @@ let ``Optionality infered correctly for child elements``() =
 [<Test>]
 let ``Global inference with empty elements doesn't crash``() =
 
-    let items = XmlProvider<"""
-        <root>
-            <child a="1">
-                <inner />
-            </child>
-            <child b="some"></child>
-        </root>""", SampleIsList=true, Global=true>.GetSamples()
+    let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true, Global=true>.GetSamples()
     
     items.Length |> should equal 2
     let child1 = items.[0]
@@ -213,8 +191,7 @@ let ``Global inference with empty elements doesn't crash``() =
     child2.B |> should equal (Some "some")
 
     child1.Inner |> should notEqual None
-    //not working correctly:
-    //child2.Inner |> should equal None
+    child2.Inner |> should equal None
 
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
 
@@ -244,22 +221,20 @@ let ``Infers type and reads mixed RSS/Atom feed document`` () =
   atomFeed.Feed.IsSome |> shouldEqual true
   atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
 
-let ``Optional elements should work at runtime when missing`` () =
-    let samples = XmlProvider<"""
-<items>
-    <item>
-        <title>A</title>
-        <description>B</description>
-    </item>
-    <item>
-        <title>C</title>
-    </item>
-    <item>
-        <title>D</title>
-        <description></description>
-    </item>
-</items>""", SampleIsList=true>.GetSamples()
-
+let ``Optional value elements should work at runtime when attribute is missing`` () =
+    let samples = XmlProvider<"data/optionals1.xml", SampleIsList=true>.GetSamples()
     samples.[0].Description |> should equal (Some "B")
     samples.[1].Description |> should equal None
     samples.[2].Description |> should equal None
+
+let ``Optional value elements should work at runtime when element is missing`` () =
+    let samples = XmlProvider<"data/optionals2.xml", SampleIsList=true>.GetSamples()
+    samples.[0].Channel.Items.[0].Description |> should equal None
+    samples.[0].Channel.Items.[1].Description |> should equal (Some "A")
+    samples.[1].Channel.Items.[0].Description |> should equal None
+
+let ``Optional value elements should work at runtime when element is missing 2`` () =
+    let samples = XmlProvider<"data/optionals3.xml", SampleIsList=true>.GetSamples()
+    samples.[0].Channel.Items.[0].Title |> should equal (Some "A")
+    samples.[1].Channel.Items.[0].Title |> should equal None
+    samples.[1].Channel.Items.[1].Title |> should equal (Some "B")

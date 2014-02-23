@@ -52,7 +52,7 @@ class JsonProvider+Game : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member Heroes: JsonProvider+Hero[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "heroes"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "heroes"), new Func<_,_>(id)))
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")

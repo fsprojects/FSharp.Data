@@ -198,7 +198,7 @@ class ApiaryProvider+Item : FDR.IJsonDocument
 
 class ApiaryProvider+Q : FDR.IJsonDocument
     member Items: ApiaryProvider+Item[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "items"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "items"), new Func<_,_>(id)))
 
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
@@ -215,7 +215,7 @@ class ApiaryProvider+Q2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Index: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "index"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "index"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member SeqNo: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "seq_no")
@@ -249,8 +249,8 @@ class ApiaryProvider+Root : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "code")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Index: string[] option with get
-    JsonRuntime.ConvertOptionalProperty(this, "index", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))))
+    member Index: string[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "index"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member SeqNo: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "seq_no")

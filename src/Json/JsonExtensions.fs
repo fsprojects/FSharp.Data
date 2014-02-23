@@ -28,7 +28,7 @@ type JsonValue with
   /// Returns the empty string for JsonValue.Null
   member x.AsString(?cultureInfo ) =
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
-    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x with
+    match JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false cultureInfo x with
     | Some s -> s
     | _ -> failwithf "Not a string: %s" <| x.ToString(SaveOptions.DisableFormatting)  
 
