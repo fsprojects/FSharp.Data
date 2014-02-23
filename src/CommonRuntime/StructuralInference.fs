@@ -256,7 +256,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) unit =
   | Parse TextConversions.AsInteger _ -> InferedType.Primitive(typeof<int>, unit)
   | Parse TextConversions.AsInteger64 _ -> InferedType.Primitive(typeof<int64>, unit)
   | Parse TextConversions.AsDecimal _ -> InferedType.Primitive(typeof<decimal>, unit)
-  | Parse (TextConversions.AsFloat TextConversions.DefaultMissingValues (*useNoneForMissingValues*)false) _ -> InferedType.Primitive(typeof<float>, unit)
+  | Parse (TextConversions.AsFloat [||] (*useNoneForMissingValues*)false) _ -> InferedType.Primitive(typeof<float>, unit)
   | Parse asGuid _ -> InferedType.Primitive(typeof<Guid>, unit)
   | Parse TextConversions.AsDateTime date ->
 

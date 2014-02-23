@@ -5,6 +5,8 @@ open System.IO
 open System.Xml
 open System.Reflection
 open System.Text
+open System.Runtime.InteropServices
+open System.ComponentModel
 
 #if INTERACTIVE 
 open FSharp.Data.Runtime
@@ -204,6 +206,8 @@ type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowTy
     member x.Headers with get() = header
     member x.Data with get() = values
 
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, id:string, src:string) =
        let tables = Html.Table.parse src
        let table = tables |> Seq.pick (fun table -> if table.Name = id then Some table else None)

@@ -30,7 +30,7 @@ let simpleHtml = """<html>
                     </body>
                 </html>"""
 
-type SimpleHtml = HtmlTableProvider<simpleHtml>
+type SimpleHtml = HtmlTableProvider<simpleHtml, PreferOptionals=true>
 
 [<Test>]
 let ``SimpleHtml infers date type correctly ``() = 
@@ -53,9 +53,9 @@ let ``SimpleHtml infers decimal type correctly ``() =
     html.Data.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
-let ``SimpleHtml infers float as fail through type correctly ``() = 
+let ``SimpleHtml infers as optional fail through type correctly ``() = 
     let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 4`` |> should equal 2
+    html.Data.[0].``Column 4`` |> should equal (Some 2)
 
 [<Test>]
 let ``Can create type for simple table``() = 

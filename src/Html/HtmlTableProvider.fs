@@ -42,7 +42,7 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
   let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlTableProvider", Some typeof<obj>)
   
   
-  let buildTypes (typeName:string,sample,culture,resolutionFolder) =
+  let buildTypes (typeName:string,sample,preferOptionals,culture,resolutionFolder) =
       
       let cultureInfo = TextRuntime.GetCulture culture
       let missingValues = String.Join(",", TextConversions.DefaultMissingValues)
@@ -51,10 +51,18 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
       let (dom, _, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse sample) "HTML" this cfg resolutionFolder
 
       let getInferedRowType culture (table:HtmlTable) = 
-          let inferedTypeToProperty name optional (typ:InferedType) = 
+          let rec inferedTypeToProperty name optional (typ:InferedType) = 
+                let wrapper = 
+                    if optional
+                    then if preferOptionals then TypeWrapper.Option else TypeWrapper.Nullable
+                    else TypeWrapper.None
                 match typ with
-                | InferedType.Primitive(typ, _) -> PrimitiveInferedProperty.Create(name, typ, optional)                              
-                | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, optional) 
+                | InferedType.Primitive(typ, _) -> PrimitiveInferedProperty.Create(name, typ, wrapper)                      
+                | InferedType.Null -> PrimitiveInferedProperty.Create(name, typeof<float>, wrapper)
+                | InferedType.Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
+                    let kvp = map |> Seq.find (function KeyValue(InferedTypeTag.Null, _) -> false | _ -> true)
+                    inferedTypeToProperty name true kvp.Value
+                | a -> failwithf "Unexpected infered type %A" a
 
           let inferRowType' culture (headers:string[]) values = 
               let getName headers index = 
@@ -62,20 +70,23 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
                 then "Column_" + (string index) 
                 else headers.[index]
               let inferProperty index value =
+                  let inferedtype = 
+                        if String.IsNullOrWhiteSpace value then InferedType.Null
+                        elif Array.exists ((=) <| value.Trim()) TextConversions.DefaultMissingValues 
+                        then InferedType.Null 
+                           // if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None)
+                        else StructuralInference.inferPrimitiveType culture value None
                   {
                       Name = (getName headers index)
                       Optional = false
-                      Type = (StructuralInference.inferPrimitiveType culture value None)
+                      Type = inferedtype
                   }
               StructuralTypes.InferedType.Record(None, values |> Array.mapi inferProperty |> Seq.toList)
                
           let inferedType =
-              if table.Rows.Length > 0 
-              then
-                    table.Rows
-                    |> Seq.map (inferRowType' culture table.Headers)
-                    |> Seq.reduce (StructuralInference.subtypeInfered true)
-              else StructuralTypes.InferedType.Record(None, table.Headers |> Seq.map (fun r -> { Name = r; Optional = false; Type = StructuralTypes.InferedType.Primitive(typeof<string>, None) }) |> Seq.toList)
+              table.Rows
+              |> Seq.map (inferRowType' culture table.Headers)
+              |> Seq.reduce (StructuralInference.subtypeInfered (not preferOptionals))
 
           match inferedType with
           | StructuralTypes.InferedType.Record(_, props) -> 
@@ -139,14 +150,15 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
   let parameters = 
     [ 
         ProvidedStaticParameter("Sample", typeof<string>)
+        ProvidedStaticParameter("PreferOptionals", typeof<bool>, false)
         ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "")
         ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") 
     ] 
 
   do htmlProvTy.DefineStaticParameters(
                 parameters, 
-                (fun typeName [|:? string as sample; :? string as culture; :? string as resolutionFolder |] -> 
-                        Helpers.memoize buildTypes (typeName, sample, culture, resolutionFolder)
+                (fun typeName [|:? string as sample; :? bool as preferOptionals; :? string as culture; :? string as resolutionFolder |] -> 
+                        Helpers.memoize buildTypes (typeName, sample, preferOptionals, culture, resolutionFolder)
                 ))
 
   // Register the main type with F# compiler
