@@ -34,6 +34,9 @@ let sourceDirectory = __SOURCE_DIRECTORY__
 let testCases = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
+#if TEAM_CITY
+    |> Array.filter (fun x -> not (x.StartsWith "Freebase"))
+#endif
     |> Array.map TypeProviderInstantiation.Parse
 
 let expectedDirectory = sourceDirectory ++ "expected" 
@@ -45,7 +48,7 @@ let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
 let portable47RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
-let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
+let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 

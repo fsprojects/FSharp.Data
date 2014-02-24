@@ -26,17 +26,11 @@ module Utilities =
 
     type JsonValue with
 
-        member this.GetStringValWithKey s = 
-            this.GetProperty(s).AsString()
-
-        member this.GetOptionalStringValWithKey(s, ?dflt) = 
+        member this.GetString(s, ?dflt) = 
             let strOption = this.TryGetProperty(s) |> Option.map (fun j -> j.AsString())
             defaultArg strOption (defaultArg dflt "")
 
-        member this.GetArrayValWithKey s = 
-            this.GetProperty(s).AsArray()
-
-        member this.GetOptionalArrayValWithKey s = 
+        member this.GetArray s = 
             let arrayOption = this.TryGetProperty(s) |> Option.map (fun j -> j.AsArray())
             defaultArg arrayOption [| |]
 
@@ -49,10 +43,10 @@ type FreebaseResult<'TResult> =
       Result:'TResult
       Message:string }
     static member FromJson f (fbr:JsonValue) = 
-        { Code = fbr.GetOptionalStringValWithKey "code"
-          Cursor = fbr.GetOptionalStringValWithKey("cursor", "false")
+        { Code = fbr.GetString "code"
+          Cursor = fbr.GetString("cursor", "false")
           Result = f fbr?result
-          Message = fbr.GetOptionalStringValWithKey "message" }
+          Message = fbr.GetString "message" }
 
 type FreebaseWebException(e:WebException, domain, reason, message, extendedHelp) = 
     inherit WebException(
@@ -155,11 +149,11 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                 let freebaseExn =
                     try
                         let json = JsonValue.Parse msg
-                        let error = json.GetProperty("error").GetArrayValWithKey("errors").[0]
-                        let domain = error.GetStringValWithKey("domain")
-                        let reason = error.GetStringValWithKey("reason")
-                        let message  = error.GetStringValWithKey("message")
-                        let extendedHelp = error.GetOptionalStringValWithKey("extendedHelp")
+                        let error = json?error.GetArray("errors").[0]
+                        let domain = error.GetString("domain")
+                        let reason = error.GetString("reason")
+                        let message  = error.GetString("message")
+                        let extendedHelp = error.GetString("extendedHelp")
                         Some <| FreebaseWebException(exn, domain, reason, message, extendedHelp)
                     with _ -> None
                 match freebaseExn with
@@ -170,7 +164,8 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
         let resultText = queryRawText queryUrl
         let fbr = JsonValue.Parse resultText
         let result = FreebaseResult<'T>.FromJson fromJson fbr
-        if freebaseV0 && result.Code <> "/api/status/ok" then raise (InvalidOperationException(sprintf "failed query, error: '%s': \n----\n%s\n----" result.Message queryUrl))
+        if freebaseV0 && result.Code <> "/api/status/ok" then 
+            raise (InvalidOperationException(sprintf "failed query, error: '%s': \n----\n%s\n----" result.Message queryUrl))
         result
             
     // By default we use the freebaseread API, as this supports cross-domain access
@@ -200,7 +195,7 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             let url = if isStringNone apiKey then url else url + "?key=" + apiKey
             url
 
-    member __.QuerySequence<'T>(query:string,fromJson, explicitLimit) : 'T seq =
+    member __.QuerySequence<'T>(query:string, fromJson, explicitLimit) : 'T seq =
         seq { sendingQuery.Trigger query
               let cursor = ref (Some "")
               let complete = ref false
@@ -216,8 +211,8 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
 
     member fb.GetBlurbByArticleId (articleId:string) = 
         let queryUrl = 
-            if freebaseV0 then serviceUrl + "/trans/blurb"+articleId+"?maxlength=1200"
-            else serviceUrl + "/text"+articleId+"?maxlength=1200&format=plain"
+            if freebaseV0 then serviceUrl + "/trans/blurb" + articleId + "?maxlength=1200"
+            else serviceUrl + "/text" + articleId + "?maxlength=1200&format=plain"
         try 
             let resultText = queryRawText queryUrl
             let fbr = JsonValue.Parse resultText

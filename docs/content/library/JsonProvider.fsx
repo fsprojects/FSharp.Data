@@ -174,7 +174,7 @@ printfn "Showing page %d of %d. Total records %d"
 
 // Print all data points
 for record in doc.Array do
-  record.Value.Number |> Option.iter (fun value ->
+  record.Value |> Option.iter (fun value ->
     printfn "%d: %f" record.Date value)
 
 (**

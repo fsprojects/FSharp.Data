@@ -587,7 +587,7 @@ class ApiaryProvider+Clients2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+Clients3 : FDR.IJsonDocument
     member Data: ApiaryProvider+Client[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -663,7 +663,7 @@ class ApiaryProvider+Offers2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+Offers3 : FDR.IJsonDocument
     member Data: ApiaryProvider+Offer[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -804,7 +804,7 @@ class ApiaryProvider+Refunds : FDR.InternalApiaryContext
 
 class ApiaryProvider+Refunds2 : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum2[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -888,7 +888,7 @@ class ApiaryProvider+Subscriptions2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+Subscriptions3 : FDR.IJsonDocument
     member Data: ApiaryProvider+Data9[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -941,7 +941,7 @@ class ApiaryProvider+Transactions2 : FDR.InternalApiaryContext
 
 class ApiaryProvider+Transactions3 : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -958,20 +958,20 @@ class ApiaryProvider+Client : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Email: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "email")
+    JsonRuntime.GetPropertyPackedOrNull(this, "email")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Payment: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "payment")
+    member Payment: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(id)))
 
     member Subscription: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "subscription")
+    JsonRuntime.GetPropertyPackedOrNull(this, "subscription")
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1002,8 +1002,8 @@ class ApiaryProvider+Data : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Invoices: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "invoices")
+    member Invoices: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "invoices"), new Func<_,_>(id)))
 
     member Livemode: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "livemode")
@@ -1017,10 +1017,10 @@ class ApiaryProvider+Data : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member Preauthorization: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "preauthorization")
+    JsonRuntime.GetPropertyPackedOrNull(this, "preauthorization")
 
     member Refunds: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "refunds")
+    JsonRuntime.GetPropertyPackedOrNull(this, "refunds")
 
     member ResponseCode: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "response_code")
@@ -1041,7 +1041,7 @@ class ApiaryProvider+Data3 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Client: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "client")
+    JsonRuntime.GetPropertyPackedOrNull(this, "client")
 
     member Code: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "code")
@@ -1070,17 +1070,17 @@ class ApiaryProvider+Data3 : FDR.IJsonDocument
 
 class ApiaryProvider+Data4 : FDR.IJsonDocument
     member CardHolder: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "card_holder")
+    JsonRuntime.GetPropertyPackedOrNull(this, "card_holder")
 
     member CardType: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "card_type")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Client: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "client")
+    JsonRuntime.GetPropertyPackedOrNull(this, "client")
 
     member Country: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "country")
+    JsonRuntime.GetPropertyPackedOrNull(this, "country")
 
     member CreatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
@@ -1128,11 +1128,11 @@ class ApiaryProvider+Data7 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Payment: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "payment")
+    member Payment: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(id)))
 
     member Subscription: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "subscription")
+    JsonRuntime.GetPropertyPackedOrNull(this, "subscription")
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1145,7 +1145,7 @@ class ApiaryProvider+Data8 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member CanceledAt: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "canceled_at")
+    JsonRuntime.GetPropertyPackedOrNull(this, "canceled_at")
 
     member Client: ApiaryProvider+Client4 with get
     JsonRuntime.GetPropertyPacked(this, "client")
@@ -1173,10 +1173,10 @@ class ApiaryProvider+Data8 : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member TrialEnd: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "trial_end")
+    JsonRuntime.GetPropertyPackedOrNull(this, "trial_end")
 
     member TrialStart: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "trial_start")
+    JsonRuntime.GetPropertyPackedOrNull(this, "trial_start")
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1189,7 +1189,7 @@ class ApiaryProvider+Data9 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member CanceledAt: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "canceled_at")
+    JsonRuntime.GetPropertyPackedOrNull(this, "canceled_at")
 
     member Client: ApiaryProvider+Client5 with get
     JsonRuntime.GetPropertyPacked(this, "client")
@@ -1217,10 +1217,10 @@ class ApiaryProvider+Data9 : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member TrialEnd: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "trial_end")
+    JsonRuntime.GetPropertyPackedOrNull(this, "trial_end")
 
     member TrialStart: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "trial_start")
+    JsonRuntime.GetPropertyPackedOrNull(this, "trial_start")
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1251,8 +1251,8 @@ class ApiaryProvider+Datum : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Invoices: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "invoices")
+    member Invoices: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "invoices"), new Func<_,_>(id)))
 
     member Livemode: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "livemode")
@@ -1266,10 +1266,10 @@ class ApiaryProvider+Datum : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member Preauthorization: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "preauthorization")
+    JsonRuntime.GetPropertyPackedOrNull(this, "preauthorization")
 
     member Refunds: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "refunds")
+    JsonRuntime.GetPropertyPackedOrNull(this, "refunds")
 
     member ResponseCode: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "response_code")
@@ -1294,7 +1294,7 @@ class ApiaryProvider+Datum2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -1359,7 +1359,7 @@ class ApiaryProvider+Offer : FDR.IJsonDocument
 
 class ApiaryProvider+PaymentsList : FDR.IJsonDocument
     member Data: ApiaryProvider+Data4[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member DataCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "data_count")
@@ -1407,23 +1407,21 @@ class ApiaryProvider+Client3 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
-    member Email: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "email")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Email: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "email"))
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Payment: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "payment"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member Subscription: ApiaryProvider+Subscription[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "subscription"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "subscription"), new Func<_,_>(id)))
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1436,20 +1434,20 @@ class ApiaryProvider+Client4 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Email: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "email")
+    JsonRuntime.GetPropertyPackedOrNull(this, "email")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Payment: ApiaryProvider+Payment[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "payment"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(id)))
 
     member Subscription: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "subscription"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "subscription"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1462,20 +1460,20 @@ class ApiaryProvider+Client5 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Email: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "email")
+    JsonRuntime.GetPropertyPackedOrNull(this, "email")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Payment: ApiaryProvider+Payment[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "payment"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(id)))
 
     member Subscription: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "subscription"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "subscription"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1506,8 +1504,8 @@ class ApiaryProvider+Data2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Invoices: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "invoices")
+    member Invoices: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "invoices"), new Func<_,_>(id)))
 
     member Livemode: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "livemode")
@@ -1521,10 +1519,10 @@ class ApiaryProvider+Data2 : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member Preauthorization: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "preauthorization")
+    JsonRuntime.GetPropertyPackedOrNull(this, "preauthorization")
 
     member Refunds: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "refunds")
+    JsonRuntime.GetPropertyPackedOrNull(this, "refunds")
 
     member ResponseCode: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "response_code")
@@ -1549,7 +1547,7 @@ class ApiaryProvider+Data5 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -1585,7 +1583,7 @@ class ApiaryProvider+Data6 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -1613,7 +1611,7 @@ class ApiaryProvider+Data6 : FDR.IJsonDocument
 
 class ApiaryProvider+Payment : FDR.IJsonDocument
     member CardHolder: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "card_holder")
+    JsonRuntime.GetPropertyPackedOrNull(this, "card_holder")
 
     member CardType: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "card_type")
@@ -1624,7 +1622,7 @@ class ApiaryProvider+Payment : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Country: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "country")
+    JsonRuntime.GetPropertyPackedOrNull(this, "country")
 
     member CreatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
@@ -1681,16 +1679,15 @@ class ApiaryProvider+Transaction2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "currency")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Invoices: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "invoices")
+    member Invoices: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "invoices"), new Func<_,_>(id)))
 
     member Livemode: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "livemode")
@@ -1704,10 +1701,10 @@ class ApiaryProvider+Transaction2 : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member Preauthorization: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "preauthorization")
+    JsonRuntime.GetPropertyPackedOrNull(this, "preauthorization")
 
     member Refunds: ApiaryProvider+Refund[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "refunds"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "refunds"), new Func<_,_>(id)))
 
     member ResponseCode: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "response_code")
@@ -1728,20 +1725,20 @@ class ApiaryProvider+Client2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Email: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "email")
+    JsonRuntime.GetPropertyPackedOrNull(this, "email")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Payment: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "payment"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "payment"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member Subscription: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "subscription")
+    JsonRuntime.GetPropertyPackedOrNull(this, "subscription")
 
     member UpdatedAt: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "updated_at")
@@ -1758,7 +1755,7 @@ class ApiaryProvider+Refund : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Description: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "description")
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -1787,7 +1784,7 @@ class ApiaryProvider+Subscription : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
     member CanceledAt: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "canceled_at")
+    JsonRuntime.GetPropertyPackedOrNull(this, "canceled_at")
 
     member Client: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "client")
@@ -1852,8 +1849,8 @@ class ApiaryProvider+Transaction : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Invoices: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "invoices")
+    member Invoices: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "invoices"), new Func<_,_>(id)))
 
     member Livemode: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "livemode")
@@ -1867,10 +1864,10 @@ class ApiaryProvider+Transaction : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "payment")
 
     member Preauthorization: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "preauthorization")
+    JsonRuntime.GetPropertyPackedOrNull(this, "preauthorization")
 
     member Refunds: ApiaryProvider+Refund[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "refunds"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "refunds"), new Func<_,_>(id)))
 
     member ResponseCode: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "response_code")

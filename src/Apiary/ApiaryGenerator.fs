@@ -56,14 +56,11 @@ module internal ApiaryTypeBuilder =
                 yield JsonValue.ParseSample source
             | None -> () ]
 
-    let input = 
-      { Optional = false
-        CanPassAllConversionCallingTypes = false }
-    let output =
-      [ for item in samples -> JsonInference.inferType CultureInfo.InvariantCulture (*allowNulls*)true name item ]
-      |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) InferedType.Top
-      |> JsonTypeBuilder.generateJsonType ctx.JsonContext input
-    output.ConvertedType, output.GetConverter ctx.JsonContext
+    let result =
+      [ for item in samples -> JsonInference.inferType CultureInfo.InvariantCulture (*allowEmptyValues*)false name item ]
+      |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
+      |> JsonTypeBuilder.generateJsonType ctx.JsonContext (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false
+    result.ConvertedType, result.GetConverter ctx.JsonContext
 
   let ensureGeneratedType ctx parentName (entityTy:Type) = 
     match entityTy with

@@ -46,8 +46,8 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
     member Indicator: JsonProvider+Country with get
     JsonRuntime.GetPropertyPacked(this, "indicator")
 
-    member Value: JsonProvider+DecimalChoice with get
-    JsonRuntime.GetPropertyPacked(this, "value")
+    member Value: decimal option with get
+    JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "value"))
 
 
 class JsonProvider+WorldBank2 : FDR.IJsonDocument
@@ -76,10 +76,5 @@ class JsonProvider+Country : FDR.IJsonDocument
     member Value: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "value")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
-
-
-class JsonProvider+DecimalChoice : FDR.IJsonDocument
-    member Number: decimal option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))
 
 

@@ -37,14 +37,14 @@ let prettyPrint (t:ProvidedTypes.ProvidedTypeDefinition) =
     then Debug.prettyPrint signatureOnly ignoreOutput 5 10 t
     else Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
-Json { Sample = "topics.json"
-       SampleIsList = true
+Json { Sample = "optionals.json"
+       SampleIsList = false
        RootName = ""
        Culture = "" 
        ResolutionFolder = "" }
 |> generate |> prettyPrint |> Console.WriteLine
 
-Xml { Sample = "HtmlBody.xml"
+Xml { Sample = "http://tomasp.net/blog/rss.aspx"
       SampleIsList = false
       Global = true
       Culture = "" 

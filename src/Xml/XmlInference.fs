@@ -7,9 +7,10 @@ module ProviderImplementation.XmlInference
 open System
 open System.Xml.Linq
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
 
-// The type of XML element is always a record with a field
+// The type of XML element is always a non-optional record with a field
 // for every attribute. If it has some content, then it also 
 // contains a special field named "" which is either a collection
 // (of other records etc.) or a primitive with the type of the content
@@ -17,14 +18,14 @@ open FSharp.Data.Runtime.StructuralTypes
 /// Generates record fields for all attributes
 let private getAttributes cultureInfo (element:XElement) =
   [ for attr in element.Attributes() do
-      yield { Name = attr.Name.ToString()
-              Optional = false; 
-              Type = StructuralInference.inferPrimitiveType cultureInfo attr.Value None } ]
+      if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" then
+        yield { Name = attr.Name.ToString()
+                Type = getInferedTypeFromString cultureInfo attr.Value None } ]
 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType cultureInfo allowNulls (element:XElement) =
+let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
 
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
@@ -36,17 +37,18 @@ let inferGlobalType cultureInfo allowNulls (element:XElement) =
         let attributes =
           elements
           |> Seq.map (getAttributes cultureInfo)
-          |> Seq.reduce (StructuralInference.unionRecordTypes allowNulls)
+          |> Seq.reduce (unionRecordTypes allowEmptyValues)
 
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
               if not (String.IsNullOrEmpty(e.Value)) then
-                yield StructuralInference.inferPrimitiveType cultureInfo e.Value None ]
-          |> Seq.fold (StructuralInference.subtypeInfered allowNulls) InferedType.Top
-        let body = { Name = ""; Optional = false; Type = bodyType }
+                yield getInferedTypeFromString cultureInfo e.Value None ]
+          |> Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top
+        let body = { Name = ""
+                     Type = bodyType }
 
-        let record = InferedType.Record(Some(name.ToString()), body::attributes)
+        let record = InferedType.Record(Some(name.ToString()), body::attributes, false)
         name.ToString(), (elements, record) )
     |> Map.ofSeq
 
@@ -58,22 +60,24 @@ let inferGlobalType cultureInfo allowNulls (element:XElement) =
     changed <- false
     for KeyValue(_, value) in assignment do
       match value with 
-      | elements, InferedType.Record(Some _name, body::_attributes) -> 
+      | elements, InferedType.Record(Some _name, body::_attributes, false) -> 
           if body.Name <> "" then failwith "inferGlobalType: Assumed body element first"
-          let children = [ for e in elements.Elements() -> assignment.[e.Name.ToString()] |> snd ]
-          let bodyType = 
-            if children = [] then body.Type
-            else StructuralInference.subtypeInfered allowNulls (StructuralInference.inferCollectionType allowNulls children) body.Type
-          changed <- changed || (body.Type <> bodyType)
+          let childrenType = [ for e in elements -> 
+                                 inferCollectionType allowEmptyValues [ for e in e.Elements() -> assignment.[e.Name.ToString()] |> snd ] ]
+                             |> List.fold (subtypeInfered allowEmptyValues) InferedType.Top
+          let bodyType =
+              match childrenType with
+              | InferedType.Collection (EmptyMap () _) -> body.Type
+              | childrenType -> subtypeInfered allowEmptyValues childrenType body.Type
+          changed <- changed || body.Type <> bodyType
           body.Type <- bodyType
-      | _ -> failwith "inferGlobalType: Expected Record type with a name"
+      | _ -> failwith "inferGlobalType: Expected record type with a name"
 
   assignment.[element.Name.ToString()] |> snd
 
-
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
-let rec inferLocalType cultureInfo allowNulls (element:XElement) = 
+let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) = 
   let props = 
     [ // Generate record fields for attributes
       yield! getAttributes cultureInfo element
@@ -81,18 +85,21 @@ let rec inferLocalType cultureInfo allowNulls (element:XElement) =
       // If it has children, add collection content
       let children = element.Elements()
       if Seq.length children > 0 then
-        let collection = StructuralInference.inferCollectionType allowNulls (Seq.map (inferLocalType cultureInfo allowNulls) children)
-        yield { Name = ""; Optional = false; Type = collection } 
+        let collection = inferCollectionType allowEmptyValues (Seq.map (inferLocalType cultureInfo allowEmptyValues) children)
+        yield { Name = ""
+                Type = collection } 
 
       // If it has value, add primtiive content
-      elif not (String.IsNullOrEmpty(element.Value)) then
-        let primitive = StructuralInference.inferPrimitiveType cultureInfo element.Value None
-        yield { Name = ""; Optional = false; Type = primitive } ]  
-  InferedType.Record(Some(element.Name.ToString()), props)
+      elif not (String.IsNullOrEmpty element.Value) then
+        let primitive = getInferedTypeFromString cultureInfo element.Value None
+        yield { Name = ""
+                Type = primitive } ]
+
+  InferedType.Record(Some(element.Name.ToString()), props, false)
 
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType cultureInfo allowNulls globalInference (element:XElement) = 
-  if globalInference then inferGlobalType cultureInfo allowNulls element
-  else inferLocalType cultureInfo allowNulls element
+let inferType cultureInfo allowEmptyValues globalInference (element:XElement) = 
+  if globalInference then inferGlobalType cultureInfo allowEmptyValues element
+  else inferLocalType cultureInfo allowEmptyValues element

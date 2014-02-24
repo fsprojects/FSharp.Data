@@ -433,7 +433,7 @@ class ApiaryProvider+Execution : FDR.InternalApiaryContext
 
 class ApiaryProvider+Issues : FDR.IJsonDocument
     member Sections: ApiaryProvider+Section[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "sections"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "sections"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+License : FDR.IJsonDocument
@@ -989,7 +989,7 @@ class ApiaryProvider+Zql : FDR.InternalApiaryContext
 
 class ApiaryProvider+AttachmentAttachmentsByEntity : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum3[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+Audit : FDR.IJsonDocument
@@ -1067,9 +1067,8 @@ class ApiaryProvider+Cycle2 : FDR.IJsonDocument
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member Build: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "build")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Build: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "build")
 
     member Copy: query:string * string list -> headers:string * string list -> ApiaryProvider+CycleCopy
     let patternInput = 
@@ -1089,9 +1088,8 @@ class ApiaryProvider+Cycle2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Environment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "environment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Environment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "environment")
 
     member Export: query:string * string list -> headers:string * string list -> ApiaryProvider+CycleExport
     let patternInput = 
@@ -1548,12 +1546,11 @@ class ApiaryProvider+ExecutionFilter : FDR.InternalApiaryContext
 
 
 class ApiaryProvider+ExecutionList : FDR.IJsonDocument
-    member CurrentlySelectedExecutionId: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "currentlySelectedExecutionId")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member CurrentlySelectedExecutionId: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "currentlySelectedExecutionId")
 
     member Executions: ApiaryProvider+Execution4[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executions"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executions"), new Func<_,_>(id)))
 
     member IssueId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "issueId")
@@ -1696,7 +1693,7 @@ class ApiaryProvider+PickerFilters : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Options: ApiaryProvider+Option[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "options"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "options"), new Func<_,_>(id)))
 
     member Type: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "type")
@@ -1713,7 +1710,7 @@ class ApiaryProvider+Section : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Issues: ApiaryProvider+Issue[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "issues"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "issues"), new Func<_,_>(id)))
 
     member Label: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "label")
@@ -1755,8 +1752,8 @@ class ApiaryProvider+StepResult2 : FDR.IJsonDocument
                          let apiCtx, args = patternInput
                          apiCtx.AsyncInvokeOperation(args), f)
 
-    member Defects: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "defects")
+    member Defects: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "defects"), new Func<_,_>(id)))
 
     member Defects: query:string * string list -> headers:string * string list -> ApiaryProvider+StepResultDefects
     let patternInput = 
@@ -1785,11 +1782,10 @@ class ApiaryProvider+StepResult2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member ExecutionStatus: ApiaryProvider+ExecutionStatus[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executionStatus"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executionStatus"), new Func<_,_>(id)))
 
-    member HtmlComment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "htmlComment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HtmlComment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "htmlComment")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -1820,7 +1816,7 @@ class ApiaryProvider+StepResult2 : FDR.IJsonDocument
 
 class ApiaryProvider+TestCount : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum4[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member GroupFld: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "groupFld")
@@ -1833,34 +1829,34 @@ class ApiaryProvider+TestCount : FDR.IJsonDocument
 
 class ApiaryProvider+UtilCycleCriteriaInfo : FDR.IJsonDocument
     member Components: ApiaryProvider+Component[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "components"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "components"), new Func<_,_>(id)))
 
     member ExecutionStatuses: ApiaryProvider+13[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executionStatuses"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executionStatuses"), new Func<_,_>(id)))
 
     member IssueStatuses: ApiaryProvider+Component[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "issueStatuses"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "issueStatuses"), new Func<_,_>(id)))
 
     member Labels: ApiaryProvider+Label[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "labels"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "labels"), new Func<_,_>(id)))
 
     member Priorities: ApiaryProvider+Priority[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "priorities"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "priorities"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+UtilProjectList : FDR.IJsonDocument
     member Options: ApiaryProvider+IssueStatusesOptionsList[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "options"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "options"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+UtilVersionBoardList : FDR.IJsonDocument
     member VersionOptions: ApiaryProvider+IssueStatusesOptionsList[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "versionOptions"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "versionOptions"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+ZchartIssueStatuses : FDR.IJsonDocument
     member IssueStatusesOptionsList: ApiaryProvider+IssueStatusesOptionsList[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "IssueStatusesOptionsList"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "IssueStatusesOptionsList"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+ZchartTestsCreated : FDR.IJsonDocument
@@ -1892,12 +1888,12 @@ class ApiaryProvider+ZqlAutoCompleteZqlJson : FDR.IJsonDocument
 
 class ApiaryProvider+ZqlAutocomplete : FDR.IJsonDocument
     member Results: ApiaryProvider+Result[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "results"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "results"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+ZqlClauses : FDR.IJsonDocument
     member Clauses: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "clauses"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "clauses"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class ApiaryProvider+ZqlExecuteSearch : FDR.IJsonDocument
@@ -1905,17 +1901,17 @@ class ApiaryProvider+ZqlExecuteSearch : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "currentIndex")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member ExecutionIds: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "executionIds")
+    member ExecutionIds: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executionIds"), new Func<_,_>(id)))
 
     member ExecutionStatuses: ApiaryProvider+ExecutionStatus[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executionStatuses"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executionStatuses"), new Func<_,_>(id)))
 
     member Executions: ApiaryProvider+Execution5[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executions"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executions"), new Func<_,_>(id)))
 
     member LinksNew: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "linksNew"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "linksNew"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member MaxResultAllowed: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "maxResultAllowed")
@@ -1926,7 +1922,7 @@ class ApiaryProvider+ZqlExecuteSearch : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member StepExecutionStatuses: ApiaryProvider+ExecutionStatus[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "stepExecutionStatuses"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "stepExecutionStatuses"), new Func<_,_>(id)))
 
     member TotalCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "totalCount")
@@ -1942,21 +1938,18 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilterUpdate : FDR.IJsonDocument
 class ApiaryProvider+1 : FDR.IJsonDocument
 
 class ApiaryProvider+12 : FDR.IJsonDocument
-    member Build: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "build")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Build: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "build")
 
     member Description: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member EndDate: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "endDate")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member EndDate: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "endDate")
 
-    member Environment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "environment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Environment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "environment")
 
     member ExecutionSummaries: ApiaryProvider+ExecutionSummaries with get
     JsonRuntime.GetPropertyPacked(this, "executionSummaries")
@@ -1973,13 +1966,11 @@ class ApiaryProvider+12 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "projectId")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member StartDate: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "startDate")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member StartDate: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "startDate")
 
-    member Started: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "started")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Started: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "started")
 
     member TotalExecuted: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "totalExecuted")
@@ -2022,10 +2013,10 @@ class ApiaryProvider+AuditItems : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member NewValue: ApiaryProvider+IntOrString with get
-    JsonRuntime.GetPropertyPacked(this, "newValue")
+    JsonRuntime.GetPropertyPackedOrNull(this, "newValue")
 
-    member OldValue: ApiaryProvider+IntOrString option with get
-    JsonRuntime.TryGetPropertyPacked(this, "oldValue")
+    member OldValue: int option with get
+    JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "oldValue"))
 
 
 class ApiaryProvider+Component : FDR.IJsonDocument
@@ -2067,9 +2058,8 @@ class ApiaryProvider+CycleExport : FDR.IJsonDocument
 
 
 class ApiaryProvider+CycleMove : FDR.IJsonDocument
-    member Existing: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "existing")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Existing: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "existing")
 
     member Invalid: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "invalid")
@@ -2133,9 +2123,8 @@ class ApiaryProvider+Datum4 : FDR.IJsonDocument
 
 
 class ApiaryProvider+Execution3 : FDR.IJsonDocument
-    member Comment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "comment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Comment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "comment")
 
     member Component: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "component")
@@ -2150,7 +2139,7 @@ class ApiaryProvider+Execution3 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Defects: ApiaryProvider+Defect[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "defects"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "defects"), new Func<_,_>(id)))
 
     member ExecutedBy: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executedBy")
@@ -2168,9 +2157,8 @@ class ApiaryProvider+Execution3 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executionStatus")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member HtmlComment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "htmlComment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HtmlComment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "htmlComment")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -2184,9 +2172,8 @@ class ApiaryProvider+Execution3 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "issueKey")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Label: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "label")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Label: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "label")
 
     member ProjectId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "projectId")
@@ -2206,9 +2193,8 @@ class ApiaryProvider+Execution3 : FDR.IJsonDocument
 
 
 class ApiaryProvider+Execution4 : FDR.IJsonDocument
-    member Comment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "comment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Comment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "comment")
 
     member Component: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "component")
@@ -2228,16 +2214,15 @@ class ApiaryProvider+Execution4 : FDR.IJsonDocument
     member ExecutedByDisplay: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "executedByDisplay"))
 
-    member ExecutedOn: ApiaryProvider+StringOrDateTime option with get
-    JsonRuntime.TryGetPropertyPacked(this, "executedOn")
+    member ExecutedOn: ApiaryProvider+StringOrDateTime with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "executedOn")
 
     member ExecutionStatus: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executionStatus")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member HtmlComment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "htmlComment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HtmlComment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "htmlComment")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -2251,9 +2236,8 @@ class ApiaryProvider+Execution4 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "issueKey")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Label: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "label")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Label: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "label")
 
     member ProjectId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "projectId")
@@ -2327,7 +2311,7 @@ class ApiaryProvider+ExecutionAddTestsToCycle : FDR.IJsonDocument
 
 class ApiaryProvider+ExecutionCount : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
     member GroupFld: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "groupFld")
@@ -2357,9 +2341,8 @@ class ApiaryProvider+ExecutionDeleteExecutions : FDR.IJsonDocument
 
 
 class ApiaryProvider+ExecutionExecute : FDR.IJsonDocument
-    member Comment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "comment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Comment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "comment")
 
     member Component: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "component")
@@ -2389,9 +2372,8 @@ class ApiaryProvider+ExecutionExecute : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executionStatus")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member HtmlComment: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "htmlComment")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member HtmlComment: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "htmlComment")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -2405,9 +2387,8 @@ class ApiaryProvider+ExecutionExecute : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "issueKey")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Label: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "label")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Label: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "label")
 
     member ProjectId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "projectId")
@@ -2439,7 +2420,7 @@ class ApiaryProvider+ExecutionQuickExecute : FDR.IJsonDocument
 
 class ApiaryProvider+ExecutionTopDefects : FDR.IJsonDocument
     member Data: ApiaryProvider+Datum2[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "data"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "data"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+ExecutionUpdateWithBulkDefects : FDR.IJsonDocument
@@ -2524,9 +2505,8 @@ class ApiaryProvider+Label : FDR.IJsonDocument
 
 
 class ApiaryProvider+Option : FDR.IJsonDocument
-    member Icon: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "icon")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Icon: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "icon")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -2856,9 +2836,8 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilter : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "creationDate")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member ExecutionCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executionCount")
@@ -3067,7 +3046,7 @@ class ApiaryProvider+Datum : FDR.IJsonDocument
 
 class ApiaryProvider+Datum2 : FDR.IJsonDocument
     member AssociatedTestIds: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "associatedTestIds"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "associatedTestIds"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member DefectId: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "defectId")
@@ -3116,7 +3095,7 @@ class ApiaryProvider+ExecutionIndexStatusToken : FDR.IJsonDocument
 
 class ApiaryProvider+ExecutionSummaries : FDR.IJsonDocument
     member ExecutionSummary: ApiaryProvider+ExecutionSummary[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "executionSummary"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "executionSummary"), new Func<_,_>(id)))
 
 
 class ApiaryProvider+IntOrString : FDR.IJsonDocument
@@ -3161,9 +3140,8 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilterQuickSearch : FDR.IJsonDoc
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "creationDate")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member FilterName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "filterName")
@@ -3191,9 +3169,8 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilterSearch : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "currentIndex")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Description: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "description")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Description: FDR.IJsonDocument with get
+    JsonRuntime.GetPropertyPackedOrNull(this, "description")
 
     member ExecutionCount: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "executionCount")
@@ -3211,8 +3188,8 @@ class ApiaryProvider+ZqlExecutionFilterExecutionFilterSearch : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "isFavorite")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member LinksNew: FDR.IJsonDocument with get
-    JsonRuntime.GetPropertyPacked(this, "linksNew")
+    member LinksNew: FDR.IJsonDocument[] with get
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "linksNew"), new Func<_,_>(id)))
 
     member MaxResultAllowed: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "maxResultAllowed")

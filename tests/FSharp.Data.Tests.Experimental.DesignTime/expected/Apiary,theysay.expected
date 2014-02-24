@@ -402,7 +402,7 @@ class ApiaryProvider+Namedentity : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member NamedEntityTypes: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "namedEntityTypes"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "namedEntityTypes"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member Sentence: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "sentence")
@@ -507,7 +507,7 @@ class ApiaryProvider+Summary : FDR.IJsonDocument
 
 class ApiaryProvider+UsagestatsFrom20130201To20130213 : FDR.IJsonDocument
     member DailyUsage: ApiaryProvider+DailyUsage[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPacked(this, "dailyUsage"), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "dailyUsage"), new Func<_,_>(id)))
 
     member From: System.DateTime with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "from")
@@ -527,9 +527,8 @@ class ApiaryProvider+UsagestatsFrom20130201To20130213 : FDR.IJsonDocument
 
 
 class ApiaryProvider+Chunk : FDR.IJsonDocument
-    member ChunkType: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "chunkType")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member ChunkType: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "chunkType"))
 
     member End: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "end")
@@ -563,9 +562,8 @@ class ApiaryProvider+Dependency : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "predicate")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Relation: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "relation")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Relation: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "relation"))
 
 
 class ApiaryProvider+Dependent : FDR.IJsonDocument

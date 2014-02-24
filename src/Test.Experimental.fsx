@@ -34,8 +34,7 @@ let ignoreOutput = false
 let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
 let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
-Apiary { ApiName = "bionames"
-         SpecialNames = "Rhogeessa=TaxonName,Apomys=TaxonName,Philautus acutirostris=TaxonName" }
+Apiary { ApiName = "moviedb" }
 |> generate |> prettyPrint |> Console.WriteLine
 
 let testCases = 

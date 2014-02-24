@@ -6,8 +6,8 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data
-open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.StructuralTypes
 
 // ----------------------------------------------------------------------------------------------
 
@@ -42,20 +42,18 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let getSpecFromSamples samples = 
 
       let inferedType = 
-        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowNulls*)true (NameUtils.singularize rootName) sampleJson ]
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
+        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowEmptyValues*)false (NameUtils.singularize rootName) sampleJson ]
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
   
       let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
-      let input = { CanPassAllConversionCallingTypes = false
-                    Optional = false }
-      let output = JsonTypeBuilder.generateJsonType ctx input inferedType
+      let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
 
       { GeneratedType = tpType
-        RepresentationType = output.ConvertedType
+        RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          output.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
+          result.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          output.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
+          result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateConstructors "JSON" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 
