@@ -139,7 +139,7 @@ module ProviderHelpers =
         if isValidUrl url then
             match(new Uri(url)).UserInfo.Split([|':'|]) with
             | [|_; _|] -> true
-            | _ ->  false
+            | _ -> false
         else
             false
 
