@@ -269,7 +269,7 @@ module ProviderHelpers =
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m :> _
       
-      if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri || not(hasAuthorizationPart sampleOrSampleUri)) then
+      if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri && not (hasAuthorizationPart sampleOrSampleUri)) then
 
         if sampleIsList then
         
