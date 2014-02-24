@@ -158,8 +158,8 @@ Authorization by username as defined in the [URI scheme](http://en.wikipedia.org
 for HTTP basic access authentication and Digest access authentication. Before making the call the URL is stripped
 from the query part and the userinfo is removed. The password is stored in [SecureString](http://msdn.microsoft.com/en-us/library/system.security.securestring.aspx).
 *)
-type BasicAuth = JsonProvider<"http://user:passwd@httpbin.org/basic-auth/user/passwd">
-let basicAuthAsync = BasicAuth.AsyncLoad("http://user:passwd@httpbin.org/basic-auth/user/passwd")
+type BasicAuth = JsonProvider<"https://user:passwd@httpbin.org/basic-auth/user/passwd">
+let basicAuthAsync = BasicAuth.AsyncLoad("https://user:passwd@httpbin.org/basic-auth/user/passwd")
 
 (**
 The `doc` is an array of heterogeneous types, so the provider generates a type
