@@ -11,7 +11,7 @@ F# Dataにおける複数のターゲットに対する処理方法
  * このページはGitHub上のF# Dataプロジェクトに対して
    pullリクエストを送信することで編集できます。
    そのため、F# Dataで遊んでいる間に何かしら学んだことがあれば、是非それを
-   [こちら](https://github.com/fsharp/FSharp.Data/blob/master/samples/contributing.md)
+   [こちら](https://github.com/fsharp/FSharp.Data/blob/master/docs/content/ja/contributing.md)
    に記録として残してください!
 
  * 機能(あるいはすばらしいアイディア！)に関する議論、

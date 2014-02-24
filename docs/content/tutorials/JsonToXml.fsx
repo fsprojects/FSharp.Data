@@ -12,7 +12,7 @@ If you want to use the JSON to/from XML conversion in your code, you can copy th
 functions often and would like to see them in the F# Data library, please submit
 a [feature request][issues].
 
-  [jsontoxml]: https://github.com/fsharp/FSharp.Data/blob/master/samples/JsonToXml.fsx
+  [jsontoxml]: https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonToXml.fsx
   [issues]: https://github.com/fsharp/FSharp.Data/issues
 
 Initialization

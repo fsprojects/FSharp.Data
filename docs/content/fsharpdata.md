@@ -48,6 +48,9 @@ or demos that use multiple different features together:
    functions that convert between the standard .NET `XElement` and the `JsonValue` from F# Data.
    The tutorial demonstrates pattern matching on `JsonValue`.
 
+ * [Anonymizing JSON](tutorials/JsonAnonymizer.html) - implements a function to anonymize a `JsonValue` from F# Data.
+   The tutorial demonstrates pattern matching on `JsonValue`.
+
 ## Related projects
 
 This library focuses on providing type providers for data access.
