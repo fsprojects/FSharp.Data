@@ -150,7 +150,7 @@
 * Fixed handling of nested arrays in JsonProvider.
 * Fixed handling of optional arrays in JsonProvider.
 
-#### 2.0.0-beta - February 23 2014
+#### 2.0.0-beta - February 24 2014
 * Mono fixes.
 * Allow to set the freebase api key globally by using the environment variable FREEBASE_API_KEY
 * Fixed handling of optional records in JsonProvider.
