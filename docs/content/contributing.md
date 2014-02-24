@@ -9,7 +9,7 @@ as Portable libraries).
 
  * This page can be edited by sending a pull request to F# Data on GitHub, so
    if you learn something when playing with F# Data, please record your
-   [findings here](https://github.com/fsharp/FSharp.Data/blob/master/samples/contributing.md)!
+   [findings here](https://github.com/fsharp/FSharp.Data/blob/master/docs/content/contributing.md)!
 
  * If you want to discuss a feature (a good idea!), or if you want to look at 
    suggestions how you might contribute, check out the

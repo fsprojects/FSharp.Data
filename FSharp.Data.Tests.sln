@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
@@ -56,6 +56,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
 	ProjectSection(SolutionItems) = preProject
 		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
+		docs\content\tutorials\JsonAnonymizer.fsx = docs\content\tutorials\JsonAnonymizer.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimental", "{34171948-6CCE-448B-AA7D-A76FCE32A08E}"
