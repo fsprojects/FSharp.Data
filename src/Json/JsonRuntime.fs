@@ -16,6 +16,8 @@ open FSharp.Data.Runtime.StructuralTypes
 /// [omit]
 type IJsonDocument =
     abstract JsonValue : JsonValue
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
     abstract Path : string
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
