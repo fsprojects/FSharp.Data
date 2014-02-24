@@ -8,6 +8,7 @@ open System.Globalization
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
+/// [omit]
 module Seq = 
     /// Merge two sequences by pairing elements for which
     /// the specified predicate returns the same key
