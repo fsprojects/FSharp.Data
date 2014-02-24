@@ -157,7 +157,7 @@ type Http private() =
     let uri = 
         Uri(Http.AppendQueryToUrl(url, defaultArg query []))
         |> UriUtils.enableUriSlashes
-    
+   
     let toSecureString str =
         let securedStr = new SecureString()
         String.iter securedStr.AppendChar str
@@ -169,12 +169,12 @@ type Http private() =
     let removeQueryPart(uri:Uri) =
         new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.AbsolutePath)
 
-    let createCredentialCache(authUri, username:string, password:SecureString) =             
+    let createCredentialCache(authUri, userName:string, password:SecureString) =             
         // The given credentials will be added to the cache with both HTTP Basic Authentication and Digest methods
         // and the the software stacks will negotiate the appropriate authorization method.
         let cc = new CredentialCache()
-        cc.Add(authUri, "BASIC", new NetworkCredential(username, password))
-        cc.Add(authUri, "DIGEST", new NetworkCredential(username, password))
+        cc.Add(authUri, "BASIC", new NetworkCredential(UserName = userName, SecurePassword = password))
+        cc.Add(authUri, "DIGEST", new NetworkCredential(UserName = userName, SecurePassword = password))
         cc
             
     let createRequestWithCredentials(uri:Uri, credentials:CredentialCache) = 
@@ -187,7 +187,7 @@ type Http private() =
     // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
     let createRequest(uri:Uri) = 
         match uri.UserInfo.Split([|':'|]) with
-        | [|username; password|] -> createRequestWithCredentials(uri |> removeQueryPart, createCredentialCache(uri |> removeAuthorizationPart |> removeQueryPart, username, password |> toSecureString))
+        | [|userName; password|] -> createRequestWithCredentials(uri |> removeQueryPart, createCredentialCache(uri |> removeAuthorizationPart |> removeQueryPart, userName, password |> toSecureString))
         | _ ->  WebRequest.Create(uri) :?> HttpWebRequest
     
     let req = createRequest uri
