@@ -88,7 +88,7 @@ module ProviderHelpers =
       | (true, url) when url.Scheme = Uri.UriSchemeHttp || url.Scheme = Uri.UriSchemeHttps -> Some(url)
       | _ -> None
         
-  let isValidUrl str = 
+  let isValidUrl str =
       match str with
       | Url _ -> true
       | _ -> false
@@ -97,7 +97,7 @@ module ProviderHelpers =
         if isValidUrl url then
             match(new Uri(url)).UserInfo.Split([|':'|]) with
             | [|_; _|] -> true
-            | _ ->  false
+            | _ -> false
         else
             false
 
