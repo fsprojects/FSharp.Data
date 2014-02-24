@@ -58,7 +58,7 @@ for HTTP basic access authentication and Digest access authentication. Before ma
 from the query part and the userinfo is removed. The password is stored in [SecureString](http://msdn.microsoft.com/en-us/library/system.security.securestring.aspx).
 *)
 
-Http.RequestString("http://user:passwd@httpbin.org/basic-auth/user/passwd")
+Http.RequestString("https://user:passwd@httpbin.org/basic-auth/user/passwd")
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
