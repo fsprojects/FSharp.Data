@@ -14,6 +14,8 @@ a [feature request][issues].
   [jsonanonymizer]: https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonAnonymizer.fsx
   [issues]: https://github.com/fsharp/FSharp.Data/issues
 
+*DISCLAIMER*: Don't use this for sensitive data as it's just a sample
+
 *)
 
 #r "../../../bin/FSharp.Data.dll"
@@ -41,23 +43,23 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
         else c
 
     let randomize (str:string) =
-        String(str.ToCharArray() |> Array.map (getRandomChar))
+        String(str.ToCharArray() |> Array.map getRandomChar)
 
     let rec anonymize json =
         match json with
         | JsonValue.String s when valuesToSkip.Contains s -> json
         | JsonValue.String s ->
             let typ = Runtime.StructuralInference.inferPrimitiveType CultureInfo.InvariantCulture s
-            let prefix, s =
-                if s.StartsWith "http://" then "http://", s.Substring("http://".Length)
-                elif s.StartsWith "https://" then "https://", s.Substring("https://".Length)
-                else "", s
-            let s = 
-                if typ = typeof<Guid> then Guid.NewGuid().ToString()
-                elif typ = typeof<Runtime.StructuralTypes.Bit0> || typ = typeof<Runtime.StructuralTypes.Bit1> then s
-                elif typ = typeof<DateTime> then s
-                else randomize s
-            JsonValue.String (prefix + s)
+            if typ = typeof<Guid> then Guid.NewGuid().ToString()
+            elif typ = typeof<Runtime.StructuralTypes.Bit0> || typ = typeof<Runtime.StructuralTypes.Bit1> then s
+            elif typ = typeof<DateTime> then s
+            else 
+                let prefix, s =
+                    if s.StartsWith "http://" then "http://", s.Substring("http://".Length)
+                    elif s.StartsWith "https://" then "https://", s.Substring("https://".Length)
+                    else "", s
+                prefix + randomize s
+            |> JsonValue.String
         | JsonValue.Number d -> 
             let typ = Runtime.StructuralInference.inferPrimitiveType CultureInfo.InvariantCulture (d.ToString())
             if typ = typeof<Runtime.StructuralTypes.Bit0> || typ = typeof<Runtime.StructuralTypes.Bit1>
