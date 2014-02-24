@@ -11,6 +11,8 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation.QuotationBuilder
 
+#nowarn "10001"
+
 let getConversionQuotation missingValues cultureStr typ (value:Expr<JsonValue option>) =
   if typ = typeof<string> then <@@ JsonRuntime.ConvertString(cultureStr, %value) @@>
   elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ JsonRuntime.ConvertInteger(cultureStr, %value) @@>
