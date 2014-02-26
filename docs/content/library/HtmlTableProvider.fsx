@@ -97,7 +97,7 @@ open FSharp.Charting
 // Configure the type provider
 type NugetStats = HtmlTableProvider<"https://www.nuget.org/packages/FSharp.Data">
 
-// load the live package stats for FAKE
+// load the live package stats for FSharp.Data
 let rawStats = NugetStats.Tables.Table_0.Load("https://www.nuget.org/packages/FSharp.Data")
 
 // group by minor version and calculate download count
@@ -113,7 +113,7 @@ Chart.Bar stats
 
 The output looks like:
 
-![alt text](images/downloads.png "Nuget package stats for FSharp.Data")
+![alt text](../images/downloads.png "Nuget package stats for FSharp.Data")
 
 *)
 (**

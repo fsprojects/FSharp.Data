@@ -2,6 +2,14 @@
 // Fixes the way slashs are encoded in System.Uri across Mono and .NET.
 // Ported from https://github.com/glennblock/PUrify
 // --------------------------------------------------------------------------------------
+#if INTERACTIVE
+
+module UriUtils
+
+let enableUriSlashes = id
+
+#else
+
 module internal FSharp.Data.UriUtils
 
 #if FX_NO_URI_WORKAROUND
@@ -137,4 +145,5 @@ let enableUriSlashes =
     elif hasBrokenDotNetUri then purifierDotNet.Force()
     else id
 
+#endif
 #endif

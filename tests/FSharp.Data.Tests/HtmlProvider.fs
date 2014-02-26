@@ -62,7 +62,6 @@ let ``Can create type for simple table``() =
     let html = SimpleHtml.Tables.table.Load(simpleHtml)
     html.Data.[0].``Column 1`` |> should equal 1
 
-
 type MarketDepth = HtmlTableProvider<"data/marketdepth.htm">
 
 [<Test>]

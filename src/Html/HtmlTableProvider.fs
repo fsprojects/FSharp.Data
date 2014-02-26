@@ -4,17 +4,13 @@
 namespace ProviderImplementation
 
 open System
-open System.Text
-open System.IO
+open System.Collections.Generic
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
-open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data.Runtime
-open FSharp.Data
-open System.Collections.Generic
 open FSharp.Data.Runtime.StructuralTypes
 
 module Helpers = 
@@ -36,11 +32,10 @@ module Helpers =
 type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
-  // Generate namespace and type 'FSharp.Data.Experimental.HtmlProvider'
+  // Generate namespace and type 'FSharp.Data.HtmlTableProvider'
   let asm, _,replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlTableProvider", Some typeof<obj>)
-  
+  let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlTableProvider", Some typeof<obj>)  
   
   let buildTypes (typeName:string,sample,preferOptionals,culture,resolutionFolder) =
       
@@ -51,18 +46,16 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
       let (dom, _, _) = ProviderImplementation.ProviderHelpers.parseTextAtDesignTime sample (fun _ sample -> Html.Table.parse sample) "HTML" this cfg resolutionFolder
 
       let getInferedRowType culture (table:HtmlTable) = 
-          let rec inferedTypeToProperty name optional (typ:InferedType) = 
-                let wrapper = 
-                    if optional
-                    then if preferOptionals then TypeWrapper.Option else TypeWrapper.Nullable
-                    else TypeWrapper.None
-                match typ with
-                | InferedType.Primitive(typ, _) -> PrimitiveInferedProperty.Create(name, typ, wrapper)                      
-                | InferedType.Null -> PrimitiveInferedProperty.Create(name, typeof<float>, wrapper)
-                | InferedType.Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
-                    let kvp = map |> Seq.find (function KeyValue(InferedTypeTag.Null, _) -> false | _ -> true)
-                    inferedTypeToProperty name true kvp.Value
-                | a -> failwithf "Unexpected infered type %A" a
+          let rec inferedTypeToProperty name (typ:InferedType) =
+              match typ with
+              | InferedType.Primitive(typ, unit, optional) -> 
+                  let wrapper = 
+                      if optional
+                      then if preferOptionals then TypeWrapper.Option else TypeWrapper.Nullable
+                      else TypeWrapper.None
+                  PrimitiveInferedProperty.Create(name, typ, wrapper, unit)
+              | InferedType.Null -> PrimitiveInferedProperty.Create(name, typeof<float>, false, None)
+              | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, preferOptionals, None)
 
           let inferRowType' culture (headers:string[]) values = 
               let getName headers index = 
@@ -71,17 +64,14 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
                 else headers.[index]
               let inferProperty index value =
                   let inferedtype = 
-                        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
-                        elif Array.exists ((=) <| value.Trim()) TextConversions.DefaultMissingValues 
-                        then InferedType.Null 
-                           // if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None)
-                        else StructuralInference.inferPrimitiveType culture value None
-                  {
-                      Name = (getName headers index)
-                      Optional = false
-                      Type = inferedtype
-                  }
-              StructuralTypes.InferedType.Record(None, values |> Array.mapi inferProperty |> Seq.toList)
+                      if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
+                      elif Array.exists ((=) <| value.Trim()) TextConversions.DefaultMissingValues 
+                      then InferedType.Null 
+                      // if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None)
+                      else StructuralInference.getInferedTypeFromString culture value None
+                  { Name = (getName headers index)
+                    Type = inferedtype }
+              StructuralTypes.InferedType.Record(None, values |> Array.mapi inferProperty |> Seq.toList, false)
                
           let inferedType =
               table.Rows
@@ -89,8 +79,8 @@ type public HtmlTableProvider(cfg:TypeProviderConfig) as this =
               |> Seq.reduce (StructuralInference.subtypeInfered (not preferOptionals))
 
           match inferedType with
-          | StructuralTypes.InferedType.Record(_, props) -> 
-              inferedType, props |> List.map (fun p -> inferedTypeToProperty p.Name p.Optional p.Type)
+          | StructuralTypes.InferedType.Record(_, props, false) -> 
+              inferedType, props |> List.map (fun p -> inferedTypeToProperty p.Name p.Type)
           | _ -> failwith "expected record" 
 
       let providedTableTypes = 

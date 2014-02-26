@@ -68,6 +68,8 @@
     <Compile Include="Freebase\FreebaseSchema.fs" />
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.Portable7.fs" />
     <None Include="packages.config" />

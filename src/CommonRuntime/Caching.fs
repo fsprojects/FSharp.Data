@@ -5,7 +5,6 @@
 module internal FSharp.Data.Runtime.Caching
 
 open System
-open System.Collections.Generic
 
 /// Represents a cache (various implementations are available)
 type ICache<'T> = 
@@ -16,7 +15,7 @@ let createNonCachingCache() =
   { new ICache<'T> with
       member __.Set(_, _) = ()
       member __.TryRetrieve(_) = None }
-     
+
 #if FX_NO_CONCURRENT
 
 open System.Collections.Generic

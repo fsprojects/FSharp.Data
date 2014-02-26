@@ -1,0 +1,50 @@
+class HtmlTableProvider
+
+class HtmlTableProvider+Tables
+
+class HtmlTableProvider+Tables+Table_1 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_1+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_1
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("CptyId", TextRuntime.ConvertInteger("", value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_1", text)
+
+
+class HtmlTableProvider+Tables+myTable : FDR.HtmlTable<HtmlTableProvider+Tables+myTable+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+myTable
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertBoolean("", value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertInteger("", value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertDecimal("", value), value))
+    HtmlTable<_>.Create(rowConveter, "myTable", text)
+
+
+class HtmlTableProvider+Tables+Table_1+Row : System.DateTime * int * decimal
+    member CptyId: int with get
+    (let _,t2,_ = this in t2)
+
+    member Date: System.DateTime with get
+    (let t1,_,_ = this in t1)
+
+    member Value: decimal with get
+    (let _,_,t3 = this in t3)
+
+
+class HtmlTableProvider+Tables+myTable+Row : bool * int * decimal
+    member Column1: bool with get
+    (let t1,_,_ = this in t1)
+
+    member Column3: decimal with get
+    (let _,_,t3 = this in t3)
+
+    member Column6: int with get
+    (let _,t2,_ = this in t2)
+
+

@@ -1,9 +1,10 @@
-﻿#load "Net/Http.fs"
+﻿#load "Net/UriUtils.fs"
+#load "Net/Http.fs"
 #load "CommonRuntime/IO.fs"
 #load "CommonRuntime/TextConversions.fs"
 #load "CommonRuntime/TextRuntime.fs"
-#load "CommonRuntime/HtmlParser.fs"
-#load "html/HtmlRuntime.fs"
+#load "Html/HtmlParser.fs"
+#load "Html/HtmlRuntime.fs"
 
 open System
 open FSharp.Data.Runtime
@@ -15,7 +16,7 @@ type TableCell = {
     Value : string list
 }
 
-let wimbledonFile = """D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\wimbledon_wikipedia.html"""
+let wimbledonFile = __SOURCE_DIRECTORY__ + """\..\tests\FSharp.Data.Tests\Data\wimbledon_wikipedia.html"""
 
 let wimbledon = HtmlParser.parse wimbledonFile |> Option.get
 

@@ -1,14 +1,12 @@
 ﻿namespace FSharp.Data.Runtime
 
 open System
-open System.IO
-open System.Xml
-open System.Reflection
-open System.Text
-open System.Runtime.InteropServices
 open System.ComponentModel
+open System.IO
+open System.Text
+open System.Xml
 
-#if INTERACTIVE 
+#if INTERACTIVE
 open FSharp.Data.Runtime
 #endif
 
@@ -23,7 +21,6 @@ type HtmlTableCell =
         match x with
         | Empty -> ""
         | Cell(_, d) -> d
-
 
 type HtmlTable = {
     Name : string
@@ -201,7 +198,7 @@ module Html =
               wr.WriteLine()
             sb.ToString()
 
-type HtmlTable<'rowType>internal(name: string, header : string[], values: 'rowType[]) =
+type HtmlTable<'rowType> internal (name: string, header : string[], values: 'rowType[]) =
     member x.Name with get() = name
     member x.Headers with get() = header
     member x.Data with get() = values

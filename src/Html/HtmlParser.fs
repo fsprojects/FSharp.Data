@@ -2,15 +2,54 @@
 
 open System
 open System.IO
-open System.Xml
-open System.Reflection
 open System.Text
 open FSharp.Data
-open FSharp.Data.Runtime
 
-#if INTERACTIVE 
+#if INTERACTIVE
 open FSharp.Data.Runtime
 #endif
+
+module private TextParser = 
+
+    let (|NullChar|_|) (c : Char) =
+        if (c |> int) = 0 then Some c else None
+
+    let (|EndOfFile|_|) (c : Char) =
+        let value = c |> int
+        if (value = -1 || value = 65535) then Some c else None
+
+    let (|UpperAtoZ|_|) (c : Char) =
+        if Char.IsUpper(c) then Some c else None
+
+    let (|LowerAtoZ|_|) (c : Char) =
+        if Char.IsLower(c) then Some c else None
+
+    let (|Number|_|) (c : Char) =
+        if Char.IsNumber(c) then Some c else None
+
+    let (|Symbol|_|) (c : Char) =
+        if Char.IsPunctuation(c) then Some c else None
+
+    let (|Whitespace|_|) (c : Char) =
+        if Char.IsWhiteSpace(c) then Some c else None
+
+    let (|LetterDigit|_|) = function
+        | LowerAtoZ c -> Some c
+        | Number c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | _ -> None
+
+    let (|Letter|_|) = function
+        | LowerAtoZ c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | _ -> None
+
+    let (|LetterDigitSymbol|_|) = function
+        | LowerAtoZ c -> Some c
+        | Number c -> Some c
+        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | Symbol c -> Some c
+        | _ -> None
 
 type HtmlAttribute = | HtmlAttribute of string * string
     with
@@ -359,8 +398,13 @@ module HtmlParser =
                             return stream :> Stream
                           }
                 | false -> async {
+#if FX_NO_LOCAL_FILESYSTEM
+                        failwith "Only web locations are supported"
+                        return Unchecked.defaultof<_>
+#else
                         let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
                         return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream 
+#endif
                   }
             use sr = new StreamReader(stream)
             let body = parseStreamReader sr
