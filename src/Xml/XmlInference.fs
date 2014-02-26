@@ -89,7 +89,7 @@ let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) =
         yield { Name = ""
                 Type = collection } 
 
-      // If it has value, add primtiive content
+      // If it has value, add primitive content
       elif not (String.IsNullOrEmpty element.Value) then
         let primitive = getInferedTypeFromString cultureInfo element.Value None
         yield { Name = ""

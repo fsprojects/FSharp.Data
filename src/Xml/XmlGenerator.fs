@@ -50,6 +50,15 @@ module internal XmlTypeBuilder =
   let (|ContentType|_|) content = 
     match content with 
     | { Type = (InferedType.Primitive _) as typ } -> Some([typ], Map.empty)
+    | { Type = InferedType.Collection 
+                (SingletonMap (_, (InferedMultiplicity.Single, 
+                                   InferedType.Record(Some parentNameWithNS,
+                                                      [ { Type = InferedType.Collection (SingletonMap (InferedTypeTag.Record (Some childNameWithNS), 
+                                                                                                       (InferedMultiplicity.Multiple,
+                                                                                                        InferedType.Record(Some childNameWithNS2, fields, false)))) } ], false)))) } 
+      when childNameWithNS = childNameWithNS2 && XName.Get(parentNameWithNS).LocalName = NameUtils.pluralize (XName.Get(childNameWithNS).LocalName) -> 
+        let combinedName = Some (parentNameWithNS + "|" + childNameWithNS)
+        Some([], Map.add (InferedTypeTag.Record combinedName) (InferedMultiplicity.Multiple, InferedType.Record(combinedName, fields, false)) Map.empty)
     | { Type = InferedType.Collection nodes } -> Some([], nodes)
     | { Type = InferedType.Heterogeneous cases } ->
         let collections, others = 
@@ -79,7 +88,9 @@ module internal XmlTypeBuilder =
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  let rec generateXmlType ctx = function
+  let rec generateXmlType ctx inferedType = 
+
+    match inferedType with
 
     // If we already generated object for this type, return it
     | InferedType.Record(Some nameWithNs, _, false) when ctx.GeneratedResults.ContainsKey(nameWithNs) -> 
@@ -223,12 +234,12 @@ module internal XmlTypeBuilder =
                 match node with
                 | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
                 
-                    let name = XName.Get(nameWithNS).LocalName
+                    let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
                     let childTy, childConv = generateXmlType ctx typ 
 
                     match multiplicity with
                     | InferedMultiplicity.Single ->
-                        ProvidedProperty(makeUnique name, 
+                        ProvidedProperty(makeUnique names.[0], 
                                          childTy,
                                          GetterCode = fun (Singleton xml) -> 
                                            let xml = ctx.Replacer.ToDesignTime xml
@@ -239,7 +250,7 @@ module internal XmlTypeBuilder =
                     // return array of XmlElement - it might be for example int[])
                     | InferedMultiplicity.Multiple ->
                         let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
-                        ProvidedProperty(makeUnique (NameUtils.pluralize name), 
+                        ProvidedProperty(makeUnique (NameUtils.pluralize names.[0]), 
                                          childTy.MakeArrayType(),
                                          GetterCode = fun (Singleton xml) -> 
                                            let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
@@ -247,7 +258,7 @@ module internal XmlTypeBuilder =
 
                     | InferedMultiplicity.OptionalSingle ->
                         let convFunc = ReflectionHelpers.makeDelegate childConv (ctx.Replacer.ToRuntime typeof<XmlElement>)
-                        ProvidedProperty(makeUnique name, 
+                        ProvidedProperty(makeUnique names.[0], 
                                          typedefof<option<_>>.MakeGenericType [| childTy |],
                                          GetterCode = fun (Singleton xml) -> 
                                            let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
