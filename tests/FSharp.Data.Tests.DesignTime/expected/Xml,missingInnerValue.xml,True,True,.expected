@@ -35,4 +35,8 @@ class XmlProvider+Child : FDR.XmlElement
 
 
 class XmlProvider+Inner : FDR.XmlElement
+    member C: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "c")
+    TextRuntime.GetNonOptionalValue("Attribute c", TextRuntime.ConvertString(value), value)
+
 
