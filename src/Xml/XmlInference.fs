@@ -42,7 +42,7 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
-              if not (String.IsNullOrEmpty(e.Value)) then
+              if not e.HasElements && not (String.IsNullOrEmpty(e.Value)) then
                 yield getInferedTypeFromString cultureInfo e.Value None ]
           |> Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top
         let body = { Name = ""
