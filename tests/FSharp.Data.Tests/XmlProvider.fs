@@ -200,6 +200,7 @@ let _ = XmlProvider<"<root><TVSeries /></root>">.GetSample().TvSeries
 
 type ChoiceFeed = XmlProvider<"<s><a /><b /></s>", SampleIsList=true>
 
+[<Test>]
 let ``Infers type for sample list with different root elements`` () =
   ChoiceFeed.Parse("<a />").A.IsSome |> should equal true
   ChoiceFeed.Parse("<b />").A.IsSome |> should equal false
@@ -208,6 +209,7 @@ let ``Infers type for sample list with different root elements`` () =
 
 type AnyFeed = XmlProvider<"Data/AnyFeed.xml",SampleIsList=true>
 
+[<Test>]
 let ``Infers type and reads mixed RSS/Atom feed document`` () =
   let feeds = XDocument.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/AnyFeed.xml"))
   let rss = feeds.Root.Element(XName.Get "rss").ToString()
@@ -221,20 +223,29 @@ let ``Infers type and reads mixed RSS/Atom feed document`` () =
   atomFeed.Feed.IsSome |> shouldEqual true
   atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
 
+[<Test>]
 let ``Optional value elements should work at runtime when attribute is missing`` () =
     let samples = XmlProvider<"data/optionals1.xml", SampleIsList=true>.GetSamples()
     samples.[0].Description |> should equal (Some "B")
     samples.[1].Description |> should equal None
     samples.[2].Description |> should equal None
 
+[<Test>]
 let ``Optional value elements should work at runtime when element is missing`` () =
     let samples = XmlProvider<"data/optionals2.xml", SampleIsList=true>.GetSamples()
     samples.[0].Channel.Items.[0].Description |> should equal None
     samples.[0].Channel.Items.[1].Description |> should equal (Some "A")
     samples.[1].Channel.Items.[0].Description |> should equal None
 
+[<Test>]
 let ``Optional value elements should work at runtime when element is missing 2`` () =
     let samples = XmlProvider<"data/optionals3.xml", SampleIsList=true>.GetSamples()
     samples.[0].Channel.Items.[0].Title |> should equal (Some "A")
     samples.[1].Channel.Items.[0].Title |> should equal None
     samples.[1].Channel.Items.[1].Title |> should equal (Some "B")
+
+[<Test>]
+let ``Collections are collapsed into just one element``() =
+    let x = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">.GetSample()
+    x.Persons.[0] |> should equal "John"
+    x.Persons.[1] |> should equal "Doe"
