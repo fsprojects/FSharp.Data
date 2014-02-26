@@ -44,14 +44,14 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
 
       let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, replacer)  
-      let resTy, resTypConv = XmlTypeBuilder.generateXmlType ctx inferedType
+      let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
-        RepresentationType = resTy
+        RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          resTypConv <@@ XmlElement.Create(%reader) @@>
+          result.Converter <@@ XmlElement.Create(%reader) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          resTypConv <@@ XmlElement.CreateList(%reader) @@> }
+          result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
     generateConstructors "XML" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 

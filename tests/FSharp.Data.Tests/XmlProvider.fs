@@ -10,7 +10,6 @@ module FSharp.Data.Tests.XmlProvider
 open NUnit.Framework
 open FSharp.Data
 open FsUnit
-open System.Xml
 open System.Xml.Linq
 
 type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
@@ -173,6 +172,7 @@ let ``Optionality infered correctly for child elements``() =
     child2.B |> should equal (Some "some")
 
     child1.Inner |> should notEqual None
+    child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
 [<Test>]
@@ -191,6 +191,7 @@ let ``Global inference with empty elements doesn't crash``() =
     child2.B |> should equal (Some "some")
 
     child1.Inner |> should notEqual None
+    child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
@@ -211,17 +212,14 @@ type AnyFeed = XmlProvider<"Data/AnyFeed.xml",SampleIsList=true>
 
 [<Test>]
 let ``Infers type and reads mixed RSS/Atom feed document`` () =
-  let feeds = XDocument.Load(System.IO.Path.Combine(__SOURCE_DIRECTORY__, "Data/AnyFeed.xml"))
-  let rss = feeds.Root.Element(XName.Get "rss").ToString()
-  let atom = feeds.Root.Element(XName.Get("feed", "http://www.w3.org/2005/Atom")).ToString()
+  let atomFeed = AnyFeed.GetSamples().[0]
+  atomFeed.Feed.IsSome |> shouldEqual true
+  atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
 
-  let rssFeed = AnyFeed.Parse(rss)
+  let rssFeed = AnyFeed.GetSamples().[1]
   rssFeed.Rss.IsSome |> shouldEqual true
   rssFeed.Rss.Value.Channel.Title |> shouldEqual "W3Schools Home Page"
   
-  let atomFeed = AnyFeed.Parse(atom)
-  atomFeed.Feed.IsSome |> shouldEqual true
-  atomFeed.Feed.Value.Title |> shouldEqual "Example Feed"
 
 [<Test>]
 let ``Optional value elements should work at runtime when attribute is missing`` () =

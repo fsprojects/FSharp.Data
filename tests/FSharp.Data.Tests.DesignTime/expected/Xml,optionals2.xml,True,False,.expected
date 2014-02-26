@@ -38,7 +38,7 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
-    member Description: string option option with get
-    XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(fun (t:XmlElement) -> TextRuntime.ConvertString(XmlRuntime.TryGetValue(t))))
+    member Description: string option with get
+    XmlRuntime.ConvertOptional2(this, "description", new Func<_,_>(fun (t:XmlElement) -> TextRuntime.ConvertString(XmlRuntime.TryGetValue(t))))
 
 

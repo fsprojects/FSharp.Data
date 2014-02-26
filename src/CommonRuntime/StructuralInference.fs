@@ -167,9 +167,18 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
       | tag, None, Some (KeyValue(_, (m, t))) -> 
           // If one collection contains something exactly once
           // but the other does not contain it, then it is optional
-          tag, ((if m = Single then OptionalSingle else m), t)
+          let m = if m = Single then OptionalSingle else m
+          let t = if m <> Single then t.DropOptionality() else t
+          tag, (m, t)
       | tag, Some (KeyValue(_, (m1, t1))), Some (KeyValue(_, (m2, t2))) -> 
-          tag, (InferedMultiplicity.Combine m1 m2, subtypeInfered allowEmptyValues t1 t2)
+          let m = 
+            match m1, m2 with
+            | Multiple, _ | _, Multiple -> Multiple
+            | OptionalSingle, _ | _, OptionalSingle -> OptionalSingle
+            | Single, Single -> Single
+          let t = subtypeInfered allowEmptyValues t1 t2
+          let t = if m <> Single then t.DropOptionality() else t
+          tag, (m, t)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofSeq
 

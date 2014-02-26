@@ -21,11 +21,6 @@ and InferedMultiplicity =
   | Single
   | OptionalSingle
   | Multiple
-  static member Combine m1 m2 =
-    match m1, m2 with
-    | Multiple, _ | _, Multiple -> Multiple
-    | OptionalSingle, _ | _, OptionalSingle -> OptionalSingle
-    | Single, Single -> Single
 
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)

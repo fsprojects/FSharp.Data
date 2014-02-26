@@ -69,9 +69,11 @@ type XmlRuntime =
     let namesWithNS = nameWithNS.Split [| '|' |]
     let mutable current = value.XElement
     for i = 0 to namesWithNS.Length - 2 do
-        current <- current.Element(XName.Get namesWithNS.[i])
+        if current <> null then
+            current <- current.Element(XName.Get namesWithNS.[i])
     let value = current
-    [| for c in value.Elements(XName.Get namesWithNS.[namesWithNS.Length - 1]) -> { XElement = c } |]
+    if value = null then [| |]
+    else [| for c in value.Elements(XName.Get namesWithNS.[namesWithNS.Length - 1]) -> { XElement = c } |]
   
   static member private GetChildOption(value:XmlElement, nameWithNS) =
     match XmlRuntime.GetChildrenArray(value, nameWithNS) with
@@ -92,6 +94,9 @@ type XmlRuntime =
 
   static member ConvertOptional<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) =
     XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
+
+  static member ConvertOptional2<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R option>) =
+    XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.bind f.Invoke
 
   /// Returns Some if the specified XmlElement has the specified name
   /// (otherwise None is returned). This is used when the current element
