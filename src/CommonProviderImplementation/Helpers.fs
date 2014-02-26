@@ -15,6 +15,12 @@ open ProviderImplementation.ProvidedTypes
 
 // ----------------------------------------------------------------------------------------------
 
+type private FieldInfo = 
+  { TypeForTuple : Type
+    Property : ProvidedProperty
+    Convert: Expr -> Expr
+    ConvertBack: Expr -> Expr }
+
 [<AutoOpen>]
 module PrimitiveInferedPropertyExtensions =
   type PrimitiveInferedProperty with

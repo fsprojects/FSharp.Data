@@ -112,6 +112,19 @@
     <Content Include="Data/IrelandStations.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\IrelandStations.xml" />
+    <None Include="Data\MarketDepth.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithTr.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithThead.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\list_of_counties_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -178,6 +191,9 @@
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
     <Compile Include="WorldBankProvider.fs" />
+    <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlProvider.fs" />
+    <None Include="Script1.fsx" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>
@@ -187,6 +203,9 @@
     </Reference>
     <Reference Include="FSharp.Data">
       <HintPath>..\..\bin\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.Experimental">
+      <HintPath>..\..\bin\FSharp.Data.Experimental.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="nunit.framework">
