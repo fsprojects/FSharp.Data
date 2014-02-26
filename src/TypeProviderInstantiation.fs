@@ -34,6 +34,12 @@ type JsonProviderArgs =
       Culture : string
       ResolutionFolder : string }
 
+type HtmlTableProviderArgs = 
+    { Sample : string
+      PreferOptionals : bool
+      Culture : string
+      ResolutionFolder : string }
+
 type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
@@ -53,6 +59,7 @@ type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
+    | Html of HtmlTableProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs    
 
@@ -86,6 +93,12 @@ type TypeProviderInstantiation =
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
+                   box x.Culture
+                   box x.ResolutionFolder|] 
+            | Html x -> 
+                (fun cfg -> new HtmlTableProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.PreferOptionals
                    box x.Culture
                    box x.ResolutionFolder|] 
             | WorldBank x ->
@@ -128,6 +141,11 @@ type TypeProviderInstantiation =
              x.SampleIsList.ToString()
              x.RootName
              x.Culture]
+        | Html x -> 
+            ["Html"
+             x.Sample
+             x.PreferOptionals.ToString()
+             x.Culture]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -167,6 +185,11 @@ type TypeProviderInstantiation =
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 
+                   ResolutionFolder = ""}
+        | "Html" ->
+            Html { Sample = args.[1]
+                   PreferOptionals = args.[2] |> bool.Parse
+                   Culture = args.[3] 
                    ResolutionFolder = ""}
         | "WorldBank" ->
             WorldBank { Sources = args.[1]

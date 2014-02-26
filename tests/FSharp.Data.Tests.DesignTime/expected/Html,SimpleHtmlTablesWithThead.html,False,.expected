@@ -1,0 +1,22 @@
+class HtmlTableProvider
+
+class HtmlTableProvider+Tables
+
+class HtmlTableProvider+Tables+Table_0 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_0+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_0
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Savings", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_0", text)
+
+
+class HtmlTableProvider+Tables+Table_0+Row : string * string
+    member Month: string with get
+    (let t1,_ = this in t1)
+
+    member Savings: string with get
+    (let _,t2 = this in t2)
+
+

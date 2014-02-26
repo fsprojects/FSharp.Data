@@ -14,7 +14,7 @@ type ICache<'T> =
 let createNonCachingCache() = 
   { new ICache<'T> with
       member __.Set(_, _) = ()
-      member __.TryRetrieve(_) = None }   
+      member __.TryRetrieve(_) = None }
 
 #if FX_NO_CONCURRENT
 

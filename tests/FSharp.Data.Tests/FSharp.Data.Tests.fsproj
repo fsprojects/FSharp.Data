@@ -112,6 +112,24 @@
     <Content Include="Data/IrelandStations.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\MarketDepth.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithTr.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\SimpleHtmlTablesWithThead.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\list_of_counties_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\w3c_html_tables.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\wimbledon_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Data/OptionValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -178,6 +196,8 @@
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
     <Compile Include="WorldBankProvider.fs" />
+    <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>

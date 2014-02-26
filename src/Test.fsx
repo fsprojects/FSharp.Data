@@ -37,6 +37,12 @@ let prettyPrint (t:ProvidedTypes.ProvidedTypeDefinition) =
     then Debug.prettyPrint signatureOnly ignoreOutput 5 10 t
     else Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
 
+Html { Sample = "list_of_counties_wikipedia.html"
+       PreferOptionals = false
+       Culture = "" 
+       ResolutionFolder = "" }
+|> generate |> prettyPrint |> Console.WriteLine
+
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""

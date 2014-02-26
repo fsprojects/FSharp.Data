@@ -13,7 +13,7 @@ let website = "/FSharp.Data"
 let info =
   [ "project-name", "F# Data"
     "project-author", "Tomas Petricek; Gustavo Guerra"
-    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks."
+    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."
     "project-github", "http://github.com/fsharp/FSharp.Data"
     "project-nuget", "https://nuget.org/packages/FSharp.Data" ]
 

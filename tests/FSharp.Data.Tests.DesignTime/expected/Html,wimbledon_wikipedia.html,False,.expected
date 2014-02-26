@@ -1,0 +1,147 @@
+class HtmlTableProvider
+
+class HtmlTableProvider+Tables
+
+class 2013 Wimbledon Championship prize money (singles) [ 65 ] : FDR.HtmlTable<2013 Wimbledon Championship prize money (singles) [ 65 ]+Row>
+    static member Load: text:string -> 2013 Wimbledon Championship prize money (singles) [ 65 ]
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Result", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Prize money", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("Increase from 2012", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "2013 Wimbledon Championship prize money (singles) [ 65 ]", text)
+
+
+class HtmlTableProvider+Tables+Table_0 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_0+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_0
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_0", text)
+
+
+class HtmlTableProvider+Tables+Table_2 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_2+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_2
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("ATP", TextRuntime.ConvertInteger("", value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("WTA", TextRuntime.ConvertInteger("", value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_2", text)
+
+
+class HtmlTableProvider+Tables+Table_3 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_3+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_3
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Event", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Champion", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("Runner-up", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[3])
+                                       TextRuntime.GetNonOptionalValue("Score", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_3", text)
+
+
+class HtmlTableProvider+Tables+Table_4 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_4+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_4
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("Record", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Era", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[2])
+                                       TextRuntime.GetNonOptionalValue("Player(s)", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[3])
+                                       TextRuntime.GetNonOptionalValue("Count", TextRuntime.ConvertString(value), value),
+                                       let value = TextConversions.AsString(row.[4])
+                                       TextRuntime.GetNonOptionalValue("Winning years", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_4", text)
+
+
+class HtmlTableProvider+Tables+Table_5 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_5+Row>
+    static member Load: text:string -> HtmlTableProvider+Tables+Table_5
+    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
+                                       let value = TextConversions.AsString(row.[0])
+                                       TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                       let value = TextConversions.AsString(row.[1])
+                                       TextRuntime.GetNonOptionalValue("Tennis portal", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConveter, "Table_5", text)
+
+
+class 2013 Wimbledon Championship prize money (singles) [ 65 ]+Row : string * string * string
+    member Increase from 2012: string with get
+    (let _,_,t3 = this in t3)
+
+    member Prize money: string with get
+    (let _,t2,_ = this in t2)
+
+    member Result: string with get
+    (let t1,_,_ = this in t1)
+
+
+class HtmlTableProvider+Tables+Table_0+Row : string * string
+    member The Championships, Wimbledon: string with get
+    (let t1,_ = this in t1)
+
+    member The Championships, Wimbledon: string with get
+    (let _,t2 = this in t2)
+
+
+class HtmlTableProvider+Tables+Table_2+Row : string * int * int
+    member : string with get
+    (let t1,_,_ = this in t1)
+
+    member ATP: int with get
+    (let _,t2,_ = this in t2)
+
+    member WTA: int with get
+    (let _,_,t3 = this in t3)
+
+
+class HtmlTableProvider+Tables+Table_3+Row : string * string * string * string
+    member Champion: string with get
+    (let _,t2,_,_ = this in t2)
+
+    member Event: string with get
+    (let t1,_,_,_ = this in t1)
+
+    member Runner-up: string with get
+    (let _,_,t3,_ = this in t3)
+
+    member Score: string with get
+    (let _,_,_,t4 = this in t4)
+
+
+class HtmlTableProvider+Tables+Table_4+Row : string * string * string * string * string
+    member Count: string with get
+    (let _,_,_,t4,_ = this in t4)
+
+    member Era: string with get
+    (let _,t2,_,_,_ = this in t2)
+
+    member Player(s): string with get
+    (let _,_,t3,_,_ = this in t3)
+
+    member Record: string with get
+    (let t1,_,_,_,_ = this in t1)
+
+    member Winning years: string with get
+    (let _,_,_,_,t5 = this in t5)
+
+
+class HtmlTableProvider+Tables+Table_5+Row : float * string
+    member : float with get
+    (let t1,_ = this in t1)
+
+    member Tennis portal: string with get
+    (let _,t2 = this in t2)
+
+

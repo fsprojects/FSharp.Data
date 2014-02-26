@@ -40,7 +40,7 @@ platform. Type providers consist of two components:
 
  * **Runtime** is the part of the type provider that is actually used when the
    compiled F# code that uses the provider runs. This assembly also has the
-   non type-provider components of FSharp.Data: the JSON and CSV parsers, and
+   non type-provider components of FSharp.Data: the CSV, HTML and JSON parsers, and
    the HTTP utilities.
 
  * **Design time** is the part that is used when editing F# code that uses type
@@ -75,9 +75,9 @@ The _design time_ components are in the following projects:
 
 ### Type provider structure
 
-Several of the F# Data type providers have similar structure - the CSV, JSON and XML
+Several of the F# Data type providers have similar structure - the CSV, JSON, XML and HTML
 providers all infer the types from structure of a sample input. In addition, they all
-have a runtime component (CSV parser, JSON parser or wrapper for `XDocument` type in .NET).
+have a runtime component (CSV parser, HTML parser, JSON parser, and wrapper for `XDocument` type in .NET).
 
 So, how is a typical type provider implemented? First of all, there are some shared 
 files - in `Common` and `Library` subdirectories of the projects. These contain common

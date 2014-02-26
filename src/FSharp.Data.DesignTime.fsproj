@@ -85,8 +85,12 @@
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseProvider.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
+    <Compile Include="Html\HtmlTableProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
+    <None Include="Test.HtmlRuntime.fsx" />
     <None Include="Test.fsx" />
   </ItemGroup>
   <ItemGroup>

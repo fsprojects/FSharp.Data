@@ -10,7 +10,7 @@ open FSharp.Data.Runtime
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
-type private FieldInfo = 
+type internal FieldInfo = 
   { TypeForTuple : Type
     Property : ProvidedProperty
     Convert: Expr -> Expr
