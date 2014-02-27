@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82
 		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
 		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
 		docs\content\library\Freebase.fsx = docs\content\library\Freebase.fsx
+		docs\content\library\HtmlParser.fsx = docs\content\library\HtmlParser.fsx
+		docs\content\library\HtmlTableProvider.fsx = docs\content\library\HtmlTableProvider.fsx
 		docs\content\library\Http.fsx = docs\content\library\Http.fsx
 		docs\content\library\JsonProvider.fsx = docs\content\library\JsonProvider.fsx
 		docs\content\library\JsonValue.fsx = docs\content\library\JsonValue.fsx
@@ -55,8 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
 		docs\content\tutorials\JsonAnonymizer.fsx = docs\content\tutorials\JsonAnonymizer.fsx
+		docs\content\tutorials\JsonToXml.fsx = docs\content\tutorials\JsonToXml.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimental", "{34171948-6CCE-448B-AA7D-A76FCE32A08E}"
