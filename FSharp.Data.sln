@@ -19,10 +19,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime", "s
 		{6EBFDE55-9687-40A9-8C1A-6E204ECB117F} = {6EBFDE55-9687-40A9-8C1A-6E204ECB117F}
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental.DesignTime", "src\FSharp.Data.Experimental.DesignTime.fsproj", "{3DB6653E-5E17-4C81-A0EF-83810B47C350}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Experimental", "src\FSharp.Data.Experimental.fsproj", "{736F3762-88F1-4A5C-A494-E3443DA9BD8F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,14 +33,6 @@ Global
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B85F245B-3FB9-4253-8251-16F98F05B6EC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DB6653E-5E17-4C81-A0EF-83810B47C350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DB6653E-5E17-4C81-A0EF-83810B47C350}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DB6653E-5E17-4C81-A0EF-83810B47C350}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DB6653E-5E17-4C81-A0EF-83810B47C350}.Release|Any CPU.Build.0 = Release|Any CPU
-		{736F3762-88F1-4A5C-A494-E3443DA9BD8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{736F3762-88F1-4A5C-A494-E3443DA9BD8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{736F3762-88F1-4A5C-A494-E3443DA9BD8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{736F3762-88F1-4A5C-A494-E3443DA9BD8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

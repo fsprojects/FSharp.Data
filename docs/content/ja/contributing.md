@@ -80,9 +80,6 @@ F# Dataにおける複数のターゲットに対する処理方法
  * **FSharp.Data** - デスクトップ.NET 4.0 バージョン
  * **FSharp.Data.Portable** - F# ポータブルライブラリバージョン
    (デスクトップの.NET 4.0、Windows Phone 8、 Windows 8を対象とする)
- * **FSharp.Data.Silverlight** - Silverlight 5 バージョン
- * **FSharp.Data.Experimental** - 試験的機能向けのデスクトップ.NET 4.0 バージョン
- * **FSharp.Data.Experimental.Portable** - 試験的機能向けのF#
    ポータブルライブラリバージョン
 
 ポータブルライブラリをSilverlight上で使用することは可能ですが、
@@ -96,9 +93,7 @@ XmlProviderもSilverlight上では機能しません。
 
  * **FSharp.Data.DesignTime** - デスクトップエディタ用のメインバージョン
  * **FSharp.Data.DesignTime.Silverlight** - Try F#用のメインバージョン
- * **FSharp.Data.Experimental.DesignTime** - デスクトップエディタ用の試験的バージョン
- * **FSharp.Data.Experimental.DesignTime.Silverlight** - Try F#用の試験的バージョン
-
+ 
 Silverlight 5のプロジェクトをコンパイルするためには、
 [Silverlight 5.0 開発者用ランタイム](http://go.microsoft.com/fwlink/?LinkId=229324)
 をインストールしておく必要があります。
@@ -141,7 +136,7 @@ JSONプロバイダのような型プロバイダの場合、1つのフォルダ
  * `JsonProvider.fs` - 型プロバイダのstaticプロパティを定義したり、
    公開される型を登録する処理を行うようなエントリポイントです。
 
-WorldBank、Freebase、Apiaryの型プロバイダの場合は異なります。
+WorldBank、Freebaseの型プロバイダの場合は異なります。
 これらには推論が必要ありませんが、やはり **実行時** と **デザイン時**
 コンポーネントの区別があります。
 したがってこれらの型プロバイダの場合、少なくとも2つのファイル

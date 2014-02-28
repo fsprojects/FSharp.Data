@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "FSharp.Data.dll"(*; "FSharp.Data.Experimental.dll"*) ]
+let referenceBinaries = [ "FSharp.Data.dll" ]
 // Web site location for the generated documentation
 let repo = "https://github.com/fsharp/FSharp.Data/tree/master/"
 let website = "/FSharp.Data"
