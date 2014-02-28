@@ -140,14 +140,13 @@ type Http private() =
       StatusCode = statusCode }
 
   /// Appends the query parameters to the url, taking care of proper escaping
-  static member internal AppendQueryToUrl(url:string, query, ?valuesArePlaceholders) =
+  static member internal AppendQueryToUrl(url:string, query) =
     match query with
     | [] -> url
     | query ->
-        let valuesArePlaceholders = defaultArg valuesArePlaceholders false
         url
         + if url.Contains "?" then "&" else "?"
-        + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + if valuesArePlaceholders then v else Uri.EscapeUriString v ]
+        + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + Uri.EscapeUriString v ]
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
   static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?meth, ?body, ?cookies, ?cookieContainer) = async {

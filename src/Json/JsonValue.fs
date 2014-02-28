@@ -298,10 +298,10 @@ type JsonValue with
       body=RequestBody.Text(x.ToString(SaveOptions.DisableFormatting)),
       headers=["Content-Type","application/json"])
 
-  // for apiary only
-  static member internal ParseSample(text) =
-    JsonParser(text, None, true).Parse()
+  /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
+  static member ParseSample(text, ?cultureInfo) =
+    JsonParser(text, cultureInfo, true).Parse()
 
-  // for jsonprovider only
-  static member internal ParseMultiple(text, ?cultureInfo) =
+  /// Parses the specified string into multiple JSON values
+  static member ParseMultiple(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()

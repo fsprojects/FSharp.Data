@@ -18,7 +18,7 @@ open ProviderImplementation.ProvidedTypes
 #nowarn "10001"
 
 /// Context that is used to generate the JSON types.
-type internal JsonGenerationContext =
+type JsonGenerationContext =
   { CultureStr : string
     TypeProviderType : ProvidedTypeDefinition
     Replacer : AssemblyReplacer 
@@ -32,7 +32,7 @@ type internal JsonGenerationContext =
   static member Create(cultureStr, tpType, replacer) =
     let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
     JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName)
-  static member internal Create(cultureStr, tpType, representation, replacer, uniqueNiceName) =
+  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer 
@@ -42,7 +42,7 @@ type internal JsonGenerationContext =
       Representation = replacer.ToRuntime representation
       TypeCache = Dictionary() }
 
-type internal JsonGenerationResult = 
+type JsonGenerationResult = 
     { ConvertedType : Type
       Converter : (Expr -> Expr) option
       ConversionCallingType : JsonConversionCallingType }
@@ -182,7 +182,7 @@ module JsonTypeBuilder =
 
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
-  and internal generateJsonType ctx canPassAllConversionCallingTypes optionalityHandledByParent inferedType =
+  and generateJsonType ctx canPassAllConversionCallingTypes optionalityHandledByParent inferedType =
 
     let inferedType = 
       match inferedType with

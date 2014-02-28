@@ -57,8 +57,7 @@ let processFile file =
 // Core API documentation
 
 let docFiles = 
-  seq { for sub in [ "library"; "tutorials"; "experimental"
-                     "ja/library"; "ja/tutorials"; "ja/experimental" ] do
+  seq { for sub in [ "library"; "tutorials"; "ja/library"; "ja/tutorials"; ] do
           for file in Directory.EnumerateFiles(Path.Combine(sources, sub), "*.fsx") do
             yield sub + "/" + Path.GetFileName(file) }
 
