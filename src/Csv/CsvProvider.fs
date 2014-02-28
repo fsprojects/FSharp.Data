@@ -12,6 +12,7 @@ open ProviderImplementation.ProviderHelpers
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.CsvInference
+open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
 
 // --------------------------------------------------------------------------------------

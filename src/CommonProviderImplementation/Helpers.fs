@@ -11,6 +11,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 
 // ----------------------------------------------------------------------------------------------

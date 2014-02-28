@@ -4,6 +4,7 @@ module FSharp.Data.Runtime.NameUtils
 open System
 open System.Globalization
 open System.Collections.Generic
+open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 // Active patterns & operators for parsing strings

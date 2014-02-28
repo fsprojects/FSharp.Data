@@ -1,14 +1,14 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+ArrayOrWorldBank async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WorldBank.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+ArrayOrWorldBank async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
 
     static member GetSample: () -> JsonProvider+ArrayOrWorldBank
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" "WorldBank.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WorldBank.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+ArrayOrWorldBank
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -17,7 +17,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+ArrayOrWorldBank
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+ArrayOrWorldBank
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")

@@ -2,7 +2,7 @@
 // Fixes the way slashs are encoded in System.Uri across Mono and .NET.
 // Ported from https://github.com/glennblock/PUrify
 // --------------------------------------------------------------------------------------
-module internal FSharp.Data.UriUtils
+module internal FSharp.Data.Runtime.UriUtils
 
 #if FX_NO_URI_WORKAROUND
 

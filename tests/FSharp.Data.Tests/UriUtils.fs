@@ -13,7 +13,7 @@ module FSharp.Data.Tests.UriUtility
 open FsUnit
 open NUnit.Framework
 open System
-open FSharp.Data
+open FSharp.Data.Runtime
 
 let uri = new Uri("http://www.myapi.com/%2F?Foo=Bar%2F#frag") |> UriUtils.enableUriSlashes
 
