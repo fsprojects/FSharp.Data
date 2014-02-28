@@ -6,6 +6,7 @@ module ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
+open ProviderImplementation
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes

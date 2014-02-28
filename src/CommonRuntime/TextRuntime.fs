@@ -2,6 +2,7 @@
 
 open System
 open System.Globalization
+open FSharp.Data.Runtime
 
 /// [omit]
 /// Static helper methods called from the generated code

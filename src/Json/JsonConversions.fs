@@ -6,6 +6,7 @@ namespace FSharp.Data.Runtime
 
 open System
 open FSharp.Data
+open FSharp.Data.Runtime
 
 /// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
 type JsonConversions =

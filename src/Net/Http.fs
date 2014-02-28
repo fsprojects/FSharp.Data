@@ -9,6 +9,7 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
+open FSharp.Data.Runtime
 
 [<RequireQualifiedAccess>]
 /// The body to send in an HTTP request

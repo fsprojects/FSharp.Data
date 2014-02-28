@@ -1,5 +1,8 @@
 ﻿namespace ProviderImplementation
 
+open System
+open System.IO
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 
 type ApiaryProviderArgs = 
@@ -21,6 +24,21 @@ type TypeProviderInstantiation =
         | Apiary x -> ["Apiary"
                        x.ApiName]
         |> String.concat ","
+
+    member x.ExpectedPath outputFolder = 
+        Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
+
+    member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
+        let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
+        let output = 
+            x.GenerateType resolutionFolder runtimeAssembly
+            |> match x with
+               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+            |> replace "FSharp.Data.Runtime." "FDR."
+            |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+        if outputFolder <> "" then
+            File.WriteAllText(x.ExpectedPath outputFolder, output)
+        output
 
     static member Parse (line:string) =
         let args = line.Split [|','|]

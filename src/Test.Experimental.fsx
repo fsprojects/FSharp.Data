@@ -3,7 +3,7 @@
 SetupTesting.generateSetupScript __SOURCE_DIRECTORY__ "FSharp.Data.Experimental.DesignTime"
 #load "__setup__FSharp.Data.Experimental.DesignTime__.fsx"
 #else
-module Test
+module internal Test
 #endif
 
 open System
@@ -16,26 +16,25 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
+let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests.Experimental.DesignTime" ++ "expected"
 let assemblyName = "FSharp.Data.Experimental.dll"
 
 type Platform = Net40 | Portable7 | Portable47
 
-let platform = Portable47
+let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
+    let runtimeAssembly = 
+        match platform with
+        | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
+        | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
+        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
+    inst.Dump resolutionFolder (if saveToFileSystem then outputFolder else "") runtimeAssembly signatureOnly ignoreOutput
+    |> Console.WriteLine
 
-let runtimeAssembly = 
-    match platform with
-    | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
-    | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
-    | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
+let dumpNet40 = dump false false Net40
+let dumpPortable47 = dump false false Portable47
 
-let signatureOnly = false
-let ignoreOutput = false
-
-let generate (inst:TypeProviderInstantiation) = inst.GenerateType resolutionFolder runtimeAssembly
-let prettyPrint t = Debug.prettyPrint signatureOnly ignoreOutput 10 100 t
-
-Apiary { ApiName = "moviedb" }
-|> generate |> prettyPrint |> Console.WriteLine
+Apiary { ApiName = "themoviedb" }
+|> dumpPortable47 false
 
 let testCases = 
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests.Experimental.DesignTime" ++ "SignatureTestCases.config"
@@ -43,7 +42,4 @@ let testCases =
     |> Array.map TypeProviderInstantiation.Parse
 
 for testCase in testCases do
-    testCase 
-    |> generate 
-    |> prettyPrint
-    |> Console.WriteLine
+    dumpNet40 true testCase
