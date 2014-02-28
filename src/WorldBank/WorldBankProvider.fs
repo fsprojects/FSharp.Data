@@ -9,6 +9,7 @@ open System.Net
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Runtime.Caching
 open FSharp.Data.Runtime.WorldBank

@@ -2,6 +2,7 @@
 
 open System
 open System.Globalization
+open FSharp.Data.Runtime
 
 #if INTERACTIVE
 open FSharp.Data.Runtime

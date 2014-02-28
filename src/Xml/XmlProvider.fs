@@ -3,6 +3,7 @@
 open System.IO
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data.Runtime

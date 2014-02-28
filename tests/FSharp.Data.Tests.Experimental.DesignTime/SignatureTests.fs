@@ -16,15 +16,6 @@ open ProviderImplementation
 //alow tests that access the network to work when you're behind a proxy
 WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
-type TypeProviderInstantiation with
-
-    member x.Dump resolutionFolder runtimeAssembly signatureOnly ignoreOutput =
-        let output = 
-            x.GenerateType resolutionFolder runtimeAssembly
-            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
-        output.Replace("FSharp.Data.Runtime.", "FDR.")
-              .Replace(__SOURCE_DIRECTORY__, "<SOURCE_DIRECTORY>")
-
 let (++) a b = Path.Combine(a, b)
 
 let sourceDirectory = __SOURCE_DIRECTORY__
@@ -36,9 +27,6 @@ let testCases =
 
 let expectedDirectory = sourceDirectory ++ "expected" 
 
-let getExpectedPath testCase = 
-    expectedDirectory ++ (testCase.ToString().Replace("://", "_").Replace("/", "_") + ".expected")
-
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.Experimental.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
@@ -49,19 +37,17 @@ let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
     for testCase in testCases do
-        let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
-        File.WriteAllText(getExpectedPath testCase, output)
+        testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
+        |> ignore
 
 let normalize (str:string) =
-  str.Replace("\r\n", "\n")
-     .Replace("\r", "\n")
-     .Replace(" \"<SOURCE_DIRECTORY>/../FSharp.Data.Tests/Data", " @\"<SOURCE_DIRECTORY>\..\FSharp.Data.Tests\Data")
+  str.Replace("\r\n", "\n").Replace("\r", "\n")
 
 [<Test>]
 [<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
-    let expected = getExpectedPath testCase |> File.ReadAllText |> normalize
-    let output = testCase.Dump resolutionFolder runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize 
+    let expected = testCase.ExpectedPath expectedDirectory |> File.ReadAllText |> normalize
+    let output = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" output
     output |> should equal expected
@@ -70,10 +56,10 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 [<TestCaseSource "testCases">]
 [<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder "" portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
 [<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+    testCase.Dump resolutionFolder "" portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore

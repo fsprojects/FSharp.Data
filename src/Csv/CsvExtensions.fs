@@ -4,6 +4,7 @@ module FSharp.Data.CsvExtensions
 
 open System
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
   
 type String with

@@ -8,6 +8,7 @@ open System
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 

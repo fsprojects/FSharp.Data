@@ -1,6 +1,8 @@
 ﻿namespace ProviderImplementation
 
 open System
+open System.IO
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.Freebase.FreebaseRequests
@@ -61,7 +63,7 @@ type TypeProviderInstantiation =
     | Json of JsonProviderArgs
     | Html of HtmlTableProviderArgs
     | WorldBank of WorldBankProviderArgs
-    | Freebase of FreebaseProviderArgs    
+    | Freebase of FreebaseProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly =
         let f, args =
@@ -156,6 +158,22 @@ type TypeProviderInstantiation =
              x.UseUnitsOfMeasure.ToString()
              x.Pluralize.ToString()]
         |> String.concat ","
+
+    member x.ExpectedPath outputFolder = 
+        Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
+
+    member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
+        let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
+        let output = 
+            x.GenerateType resolutionFolder runtimeAssembly
+            |> match x with
+               | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
+               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+            |> replace "FSharp.Data.Runtime." "FDR."
+            |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+        if outputFolder <> "" then
+            File.WriteAllText(x.ExpectedPath outputFolder, output)
+        output
 
     static member Parse (line:string) =
         let args = line.Split [|','|]
