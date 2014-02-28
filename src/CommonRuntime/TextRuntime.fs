@@ -4,10 +4,6 @@ open System
 open System.Globalization
 open FSharp.Data.Runtime
 
-#if INTERACTIVE
-open FSharp.Data.Runtime
-#endif
-
 /// [omit]
 /// Static helper methods called from the generated code
 type TextRuntime = 

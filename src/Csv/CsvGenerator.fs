@@ -11,7 +11,7 @@ open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
-type internal FieldInfo = 
+type private FieldInfo = 
   { TypeForTuple : Type
     Property : ProvidedProperty
     Convert: Expr -> Expr

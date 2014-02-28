@@ -37,7 +37,7 @@ Html { Sample = "list_of_counties_wikipedia.html"
        PreferOptionals = false
        Culture = "" 
        ResolutionFolder = "" }
-|> generate |> prettyPrint |> Console.WriteLine
+|> dumpPortable47 false
 
 Json { Sample = "optionals.json"
        SampleIsList = false
