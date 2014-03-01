@@ -232,8 +232,23 @@ module private Helpers =
               return Unchecked.defaultof<_>
     }
 
+    let rec checkForRepeatedHeaders visitedHeaders remainingHeaders =
+        match remainingHeaders with
+        | [] -> ()
+        | header::remainingHeaders ->
+            for visitedHeader in visitedHeaders do
+                match header, visitedHeader with
+                | HttpRequestHeader.Custom(Name = name1), HttpRequestHeader.Custom(Name = name2) ->
+                    if name1 = name2 then
+                        failwithf "Repeated headers: %A %A" visitedHeader header
+                | _ ->
+                    if header.GetType() = visitedHeader.GetType() then
+                        failwithf "Repeated headers: %A %A" visitedHeader header
+            checkForRepeatedHeaders (header::visitedHeaders) remainingHeaders
+
     let setHeaders headers (req:HttpWebRequest) =
         let hasContentType = ref false
+        headers |> Option.iter (checkForRepeatedHeaders [])
         headers |> Option.iter (List.iter (fun header ->
             match header with
             | Accept value -> req.Accept <- value

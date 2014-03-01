@@ -26,3 +26,17 @@ let ``Throw exceptions on http error`` () =
         with e -> 
             e.Message
     exn |> should contain """{"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}"""
+
+[<Test>]
+let ``If the same header is added multiple times, throws an exception`` () =
+    (fun () -> Http.RequestString("http://www.google.com", headers = [ UserAgent "ua1"; UserAgent "ua2" ]) |> ignore)
+    |> should throw typeof<Exception>
+
+[<Test>]
+let ``If a custom header with the same name is added multiple times, an exception is thrown`` () =
+    (fun () -> Http.RequestString("http://www.google.com", headers = [ Custom(Name="c1", Value="v1"); Custom(Name="c1", Value="v2") ]) |> ignore)
+    |> should throw typeof<Exception>
+
+[<Test>]
+let ``Two custom header with different names don't throw an exception`` () =
+    Http.RequestString("http://www.google.com", headers = [ Custom(Name="c1", Value="v1"); Custom(Name="c2", Value="v2") ]) |> ignore
