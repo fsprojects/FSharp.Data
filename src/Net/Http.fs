@@ -6,9 +6,11 @@ namespace FSharp.Data
 
 open System
 open System.IO
+open System.Security
 open System.Net
 open System.Text
 open System.Reflection
+open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 
 [<RequireQualifiedAccess>]
@@ -157,9 +159,34 @@ type Http private() =
         Uri(Http.AppendQueryToUrl(url, defaultArg query []))
         |> UriUtils.enableUriSlashes
 
-    // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
-    let req = WebRequest.Create(uri) :?> HttpWebRequest
+    registerAllAuthenticationModules()
 
+    // TODO: Doing this like here isn't ideal. Instead, it seems like an approach where the user/programmer defines which credentials should be added
+    // to the cache should be preferred. It could be in that case the type provider interface should expose a method to add directly credentials
+    // either implementing ICredential or inheriting from NetworkCredential.
+    let createCredentialCache(authUri, userName:string, password:SecureString) =             
+        // The given credentials will be added to the cache with both HTTP Basic Authentication and Digest methods
+        // and the the software stacks will negotiate the appropriate authorization method.
+        let cc = new CredentialCache()
+        cc.Add(authUri, BasicAuthType, new NetworkCredential(UserName = userName, SecurePassword = password))
+        cc.Add(authUri, "DIGEST", new NetworkCredential(UserName = userName, SecurePassword = password))
+        cc
+            
+    let createRequestWithCredentials(uri:Uri, credentials:CredentialCache) = 
+        // PreAuthenticate is set in order to reduce the number of authorization headers sent when making several requests to the same URI.
+        let client = WebRequest.Create(uri) :?> HttpWebRequest
+        client.Credentials <- credentials
+        client.PreAuthenticate <- true
+        client
+
+    // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
+    let createRequest(uri:Uri) = 
+        match uri.UserInfo.Split([|':'|]) with
+        | [|userName; password|] -> createRequestWithCredentials(uri |> removeQueryPart, createCredentialCache(uri |> removeAuthorizationPart |> removeQueryPart, userName, password |> toSecureString))
+        | _ ->  WebRequest.Create(uri) :?> HttpWebRequest
+    
+    let req = createRequest uri
+    
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
 #else
     certificate |> Option.map req.ClientCertificates.Add |> ignore

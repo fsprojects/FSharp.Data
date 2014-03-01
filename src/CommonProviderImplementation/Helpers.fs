@@ -84,6 +84,24 @@ module ProviderHelpers =
   open FSharp.Data.Runtime.Caching
   open FSharp.Data.Runtime.IO
 
+  let(|Url|_|) str =
+      match Uri.TryCreate(str, UriKind.Absolute) with
+      | (true, url) when url.Scheme = Uri.UriSchemeHttp || url.Scheme = Uri.UriSchemeHttps -> Some(url)
+      | _ -> None
+        
+  let isValidUrl str =
+      match str with
+      | Url _ -> true
+      | _ -> false
+
+  let hasAuthorizationPart url =
+        if isValidUrl url then
+            match(new Uri(url)).UserInfo.Split([|':'|]) with
+            | [|_; _|] -> true
+            | _ -> false
+        else
+            false
+
   let asyncMap (replacer:AssemblyReplacer) (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
       let (?) = ProviderImplementation.QuotationBuilder.(?)
       let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
@@ -252,7 +270,7 @@ module ProviderHelpers =
       m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
       yield m :> _
       
-      if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri) then
+      if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri && not (hasAuthorizationPart sampleOrSampleUri)) then
 
         if sampleIsList then
         
