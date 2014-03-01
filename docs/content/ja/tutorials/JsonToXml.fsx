@@ -14,7 +14,7 @@ JSONとXML間の変換を自身のコードで使いたい場合には
 この機能を頻繁に利用することがあり、F# Dataライブラリの機能としてほしい場合には
 是非 [機能リクエスト][issues] を投稿してください。
 
-  [jsontoxml]: https://github.com/fsharp/FSharp.Data/blob/master/samples/JsonToXml.fsx
+  [jsontoxml]: https://github.com/fsharp/FSharp.Data/blob/master/docs/content/ja/tutorials/JsonToXml.fsx
   [issues]: https://github.com/fsharp/FSharp.Data/issues
 
 初期化

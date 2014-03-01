@@ -4,6 +4,5 @@
     <assembly path="FSharp.Data.Tests\bin\Debug\FSharp.Data.Tests.dll" />
     <assembly path="FSharp.Data.Tests.DesignTime\bin\Debug\FSharp.Data.Tests.DesignTime.dll" />
     <assembly path="FSharp.Data.Tests.Documentation\bin\Debug\FSharp.Data.Tests.Documentation.dll" />
-    <assembly path="FSharp.Data.Tests.Experimental.DesignTime\bin\Debug\FSharp.Data.Tests.Experimental.DesignTime.dll" />
   </Config>
 </NUnitProject>

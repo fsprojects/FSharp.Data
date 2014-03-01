@@ -6,6 +6,7 @@ module ProviderImplementation.XmlInference
 
 open System
 open System.Xml.Linq
+open ProviderImplementation
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
@@ -42,7 +43,7 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
-              if not (String.IsNullOrEmpty(e.Value)) then
+              if not e.HasElements && not (String.IsNullOrEmpty(e.Value)) then
                 yield getInferedTypeFromString cultureInfo e.Value None ]
           |> Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top
         let body = { Name = ""
@@ -89,7 +90,7 @@ let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) =
         yield { Name = ""
                 Type = collection } 
 
-      // If it has value, add primtiive content
+      // If it has value, add primitive content
       elif not (String.IsNullOrEmpty element.Value) then
         let primitive = getInferedTypeFromString cultureInfo element.Value None
         yield { Name = ""

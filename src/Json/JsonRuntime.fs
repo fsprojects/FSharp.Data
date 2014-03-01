@@ -9,6 +9,7 @@ open System.Globalization
 open System.IO
 open FSharp.Data
 open FSharp.Data.JsonExtensions
+open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
 #nowarn "10001"
@@ -16,6 +17,8 @@ open FSharp.Data.Runtime.StructuralTypes
 /// [omit]
 type IJsonDocument =
     abstract JsonValue : JsonValue
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
     abstract Path : string
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]

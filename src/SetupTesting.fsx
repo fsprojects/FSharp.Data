@@ -25,13 +25,16 @@ let generateSetupScript dir proj =
     let refs = 
         fsProjXml.Document.Descendants(getElemName "Reference")
         |> Seq.choose (fun elem -> getElemValue "HintPath" elem |?? getAttrValue "Include" elem)
-        |> Seq.map (fun ref -> "#r \"" + ref.Replace(@"\", @"\\").Split(',').[0] + "\"")
+        |> Seq.map (fun ref -> ref.Replace(@"\", @"\\").Split(',').[0])
+        |> Seq.filter (fun ref -> ref <> "mscorlib" && ref <> "FSharp.Core")
+        |> Seq.map (fun ref -> "#r \"" + ref + "\"")
         |> Seq.toList
 
     let fsFiles = 
         fsProjXml.Document.Descendants(getElemName "Compile")
         |> Seq.choose (fun elem -> getAttrValue "Include" elem)
-        |> Seq.map (fun fsFile -> "#load \"" + fsFile + "\"")
+        |> Seq.filter (Path.GetExtension >> ((<>) ".fsi"))
+        |> Seq.map (fun path -> "#load \"" + path + "\"")
         |> Seq.toList
     
     let tempFile = Path.Combine(dir, "__setup__" + proj + "__.fsx")

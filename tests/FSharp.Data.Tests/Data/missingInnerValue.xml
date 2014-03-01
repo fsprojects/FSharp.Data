@@ -1,6 +1,6 @@
         <root>
             <child a="1">
-                <inner />
+                <inner c="foo" />
             </child>
             <child b="some"></child>
         </root>
