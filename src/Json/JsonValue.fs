@@ -295,8 +295,8 @@ type JsonValue with
   member x.Post(uri:string) =  
     Http.Request(
       uri,
-      body=RequestBody.Text(x.ToString(SaveOptions.DisableFormatting)),
-      headers=["Content-Type","application/json"])
+      body = HttpRequestBody.Text(x.ToString(SaveOptions.DisableFormatting)),
+      headers = [HttpRequestHeader.ContentType HttpContentTypes.Json])
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =

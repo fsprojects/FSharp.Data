@@ -94,7 +94,7 @@ let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit
 let internal asyncOpenStream (_invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) = async {
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
-    let! stream = Http.InnerRequest(uri.OriginalString, fun _ _ _ _ _ _ stream -> stream)
+    let! stream = Http.InnerRequest(uri.OriginalString, fun _ _ _ _ _ _ _ stream -> stream)
     return stream :> Stream
   else
 #if FX_NO_LOCAL_FILESYSTEM

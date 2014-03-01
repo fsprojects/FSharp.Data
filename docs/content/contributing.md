@@ -61,7 +61,8 @@ using `#if`.
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
- * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.0, Silverlight 5.0, Windows Phone 8 and Windows 8)
+ * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)
+ * **FSharp.Data.Portable7** - F# portable library version (Profile 7 targetting desktop .NET 4.5 and Windows 8)
  
 The _design time_ components are in the following project:
 

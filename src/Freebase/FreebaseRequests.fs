@@ -128,9 +128,9 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                 //printfn "post, shortUrl = '%s'" shortUrl
                 //printfn "post, content = '%s'" content
                 Http.RequestString(shortUrl,
-                                   headers = [ "X-HTTP-Method-Override", "GET"
-                                               "content-type", "application/x-www-form-urlencoded" ],
-                                   body = RequestBody.Text content)
+                                   headers = [ HttpRequestHeader.XHTTPMethodOverride HttpMethod.Get
+                                               HttpRequestHeader.ContentType HttpContentTypes.FormValues ],
+                                   body = HttpRequestBody.Text content)
             else
                 Http.RequestString(url)
           try
