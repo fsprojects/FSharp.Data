@@ -11,6 +11,7 @@ open System.Security
 open System.Net
 open System.Text
 open System.Reflection
+open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
@@ -511,17 +512,11 @@ type Http private() =
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
     
-        let toSecureString str =
-            let securedStr = new SecureString()
-            String.iter securedStr.AppendChar str
-            securedStr
-  
-        let removeAuthorizationPart(uri:Uri) =
-            new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.PathAndQuery)
+        registerAllAuthenticationModules()
 
-        let removeQueryPart(uri:Uri) =
-            new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.AbsolutePath)
-
+        // TODO: Doing this like here isn't ideal. Instead, it seems like an approach where the user/programmer defines which credentials should be added
+        // to the cache should be preferred. It could be in that case the type provider interface should expose a method to add directly credentials
+        // either implementing ICredential or inheriting from NetworkCredential.
         let createCredentialCache(authUri, userName:string, password:SecureString) =             
             // The given credentials will be added to the cache with both HTTP Basic Authentication and Digest methods
             // and the the software stacks will negotiate the appropriate authorization method.
