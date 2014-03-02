@@ -2,7 +2,6 @@
   <Settings activeconfig="Default" />
   <Config name="Default" binpathtype="Auto">
     <assembly path="FSharp.Data.Tests\bin\Debug\FSharp.Data.Tests.dll" />
-    <assembly path="FSharp.Data.Tests.DesignTime\bin\Debug\FSharp.Data.Tests.DesignTime.dll" />
-    <assembly path="FSharp.Data.Tests.Documentation\bin\Debug\FSharp.Data.Tests.Documentation.dll" />
+    <assembly path="FSharp.Data.DesignTime.Tests\bin\Debug\FSharp.Data.DesignTime.Tests.dll" />
   </Config>
 </NUnitProject>

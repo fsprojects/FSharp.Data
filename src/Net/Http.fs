@@ -562,7 +562,7 @@ type Http private() =
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
 
-            use! resp = getResponse req dontThrowOnHttpError
+            let! resp = getResponse req dontThrowOnHttpError
 
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
