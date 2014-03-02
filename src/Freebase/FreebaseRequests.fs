@@ -134,7 +134,12 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
             else
                 Http.RequestString url
           try
-            let resultText = getResultText()
+            let resultText = 
+                try
+                    getResultText()
+                with _ ->
+                    //try a second time
+                    getResultText()
             getCache().Set(url, resultText)
             resultText
           with 
