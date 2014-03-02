@@ -22,8 +22,8 @@ type JsonValue with
     | JsonValue.Object properties -> 
         match Map.tryFind propertyName properties with 
         | Some res -> res
-        | None -> failwithf "Didn't find property '%s' in %s" propertyName <| x.ToString(SaveOptions.DisableFormatting)
-    | _ -> failwithf "Not an object: %s" <| x.ToString(SaveOptions.DisableFormatting)
+        | None -> failwithf "Didn't find property '%s' in %s" propertyName <| x.ToString(JsonSaveOptions.DisableFormatting)
+    | _ -> failwithf "Not an object: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Try to get a property of a JSON value.
   /// Returns None if the value is not an object or if the property is not present.
@@ -55,28 +55,28 @@ type JsonValue with
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false cultureInfo x with
     | Some s -> s
-    | _ -> failwithf "Not a string: %s" <| x.ToString(SaveOptions.DisableFormatting)  
+    | _ -> failwithf "Not a string: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
 
   /// Get a number as an integer (assuming that the value fits in integer)
   member x.AsInteger(?cultureInfo) = 
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsInteger cultureInfo x with
     | Some i -> i
-    | _ -> failwithf "Not an int: %s" <| x.ToString(SaveOptions.DisableFormatting)  
+    | _ -> failwithf "Not an int: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
 
   /// Get a number as a 64-bit integer (assuming that the value fits in 64-bit integer)
   member x.AsInteger64(?cultureInfo) = 
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsInteger64 cultureInfo x with
     | Some i -> i
-    | _ -> failwithf "Not an int64: %s" <| x.ToString(SaveOptions.DisableFormatting)  
+    | _ -> failwithf "Not an int64: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
 
   /// Get a number as a decimal (assuming that the value fits in decimal)
   member x.AsDecimal(?cultureInfo ) = 
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsDecimal cultureInfo x with
     | Some d -> d
-    | _ -> failwithf "Not a decimal: %s" <| x.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Not a decimal: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get a number as a float (assuming that the value is convertible to a float)
   member x.AsFloat(?cultureInfo, ?missingValues) = 
@@ -84,14 +84,14 @@ type JsonValue with
     let missingValues = defaultArg missingValues TextConversions.DefaultMissingValues
     match JsonConversions.AsFloat missingValues (*useNoneForMissingValues*)false cultureInfo x with
     | Some f -> f
-    | _ -> failwithf "Not a float: %s" <| x.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Not a float: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get the boolean value of an element (assuming that the value is a boolean)
   member x.AsBoolean(?cultureInfo) =
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsBoolean cultureInfo x with
     | Some b -> b
-    | _ -> failwithf "Not a boolean: %s" <| x.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Not a boolean: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get the datetime value of an element (assuming that the value is a string
   /// containing well-formed ISO date or MSFT JSON date)
@@ -99,13 +99,13 @@ type JsonValue with
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
     match JsonConversions.AsDateTime cultureInfo x with
     | Some d -> d
-    | _ -> failwithf "Not a datetime: %s" <| x.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Not a datetime: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get the guid value of an element (assuming that the value is a guid)
   member x.AsGuid() =
     match JsonConversions.AsGuid x with
     | Some g -> g
-    | _ -> failwithf "Not a guid: %s" <| x.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Not a guid: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get inner text of an element
   member x.InnerText = 
