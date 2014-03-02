@@ -41,7 +41,7 @@ let generateAllExpected() =
         |> ignore
 
 let normalize (str:string) =
-  str.Replace("\r\n", "\n").Replace("\r", "\n")
+  str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
 [<Test>]
 [<TestCaseSource "testCases">]
