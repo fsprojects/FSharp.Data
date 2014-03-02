@@ -168,4 +168,5 @@
 * Fixed handling of optional elements in XmlProvider.
 
 #### 2.0.0-beta3 - Unreleased
-* Remove ApiaryProvider
+* Remove ApiaryProvider.
+* Improve error reporting in the Freebase provider.
