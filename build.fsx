@@ -117,7 +117,7 @@ let runTestTask name =
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
 
-["FSharp.Data.Tests";"FSharp.Data.Tests.DesignTime"]
+["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
 
 // --------------------------------------------------------------------------------------
