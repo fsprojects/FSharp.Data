@@ -21,8 +21,6 @@ let nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
 
 [<TestFixtureSetUp>]
 let fixtureSetup() =
-    // disable caching in HttpWebRequest/Response in case it interferes with the tests
-    HttpWebRequest.DefaultCachePolicy <- HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore)
     nancyHost.Start()
 
 [<TestFixtureTearDown>]
