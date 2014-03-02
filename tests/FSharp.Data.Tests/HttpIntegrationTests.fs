@@ -33,22 +33,6 @@ let fixtureTearDown() =
 let setUp() =
     MockServer.recordedRequest := null
 
-[<Test>]
-// This needs to be run first, as the keep-alive is only set on the first call.  They seem to be run alphabetically.
-let ``_connection keep-alive header is set automatically on the first request, but not subsequent ones`` () =
-
-    Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
-    if runningOnMono then
-        MockServer.recordedRequest.Value.Headers.Connection |> should equal "keep-alive"
-    else
-        MockServer.recordedRequest.Value.Headers.Connection |> should equal "Keep-Alive"
-
-    MockServer.recordedRequest := null
-    Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
-    MockServer.recordedRequest.Value |> should notEqual null
-    MockServer.recordedRequest.Value.Headers.Connection |> should equal ""
-
 [<Test>] 
 let ``should set everything correctly in the HTTP request`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
@@ -167,7 +151,6 @@ let ``accept-encoding header is set automatically when decompression scheme is s
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "gzip"
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "deflate"
 
-
 [<Test>]
 let ``all of the response headers are available`` () =
     let response = Http.Request "http://localhost:1235/TestServer/AllHeaders" 
@@ -202,7 +185,10 @@ let ``all of the response headers are available`` () =
         response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
     response.Headers.[StrictTransportSecurity] |> should equal "max-age=16070400; includeSubDomains"
     response.Headers.[ResponseTrailer] |> should equal "Max-Forwards"
-    response.Headers.[TransferEncoding] |> should equal "chunked"
+    if runningOnMono then
+        response.Headers.[TransferEncoding] |> should equal "chunked,chunked"
+    else
+        response.Headers.[TransferEncoding] |> should equal "chunked"
     response.Headers.[Vary] |> should equal "*"
     response.Headers.[ResponseVia] |> should equal "1.0 fred, 1.1 example.com (Apache/1.1)"
     response.Headers.[ResponseWarning] |> should equal "199 Miscellaneous warning"
@@ -233,10 +219,3 @@ let ``if a response character encoding is NOT specified, and character encoding 
 let ``if a response character encoding is NOT specified, and the character encoding specified in the response's content-type header is invalid, an exception is thrown`` () =
     (fun() -> Http.Request "http://localhost:1235/TestServer/MoonLanguageInvalidEncoding"  |> ignore) 
     |> should throw typeof<ArgumentException>
-
-[<Test>]
-let ``cookies are not kept during an automatic redirect`` () =
-    let response = Http.Request "http://localhost:1235/TestServer/CookieRedirect"
-    response.StatusCode |> should equal 200
-    response.ResponseUrl |> should equal "http://localhost:1235/TestServer/NoCookies"
-    response.Cookies.ContainsKey "cookie1" |> should equal false
