@@ -75,7 +75,8 @@ let ``all details of the response should be available`` () =
 let ``when called on a non-existant page returns 404`` () =
     Http.Request("http://localhost:1235/TestServer/NoPage", dontThrowOnHttpError=true).StatusCode |> should equal 404
 
-[<Test>] 
+[<Test>]
+[<Platform("Net")>]
 let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ Accept "application/xml,text/html;q=0.3"
@@ -117,10 +118,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.Connection |> should equal "conn1"
     MockServer.recordedRequest.Value.Headers.["Content-MD5"] |> should equal ["Q2hlY2sgSW50ZWdyaXR5IQ=="]
     MockServer.recordedRequest.Value.Headers.ContentType |> should equal "application/json"
-#if MONO
-#else
     MockServer.recordedRequest.Value.Headers.Date.Value |> should equal (DateTime(1999, 12, 31, 11, 59, 59))
-#endif
     MockServer.recordedRequest.Value.Headers.["Expect"] |> should equal ["100"]
     MockServer.recordedRequest.Value.Headers.["From"] |> should equal ["user@example.com"]
     MockServer.recordedRequest.Value.Headers.IfMatch |> should equal ["737060cd8c284d8af7ad3082f209582d"]
