@@ -244,6 +244,7 @@ Target "All" DoNothing
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
-"Start" =?> ("BuildVersion", isAppVeyorBuild) =?> ("All", isAppVeyorBuild) =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
+"Start" =?> ("BuildVersion", isAppVeyorBuild) ==> "Clean"
+"Start" =?> ("All", isAppVeyorBuild) =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
 
 RunTargetOrDefault "Help"
