@@ -223,8 +223,8 @@ static parameters, including the API key:
 [<Literal>]
 let FreebaseApiKey = "<enter your freebase-enabled google API key here>"
 
-type FreebaseDataWithKey = FreebaseDataProvider<Key=FreebaseApiKey>
-let dataWithKey = FreebaseDataWithKey.GetDataContext()
+//type FreebaseDataWithKey = FreebaseDataProvider<Key=FreebaseApiKey>
+//let dataWithKey = FreebaseDataWithKey.GetDataContext()
 
 (** In alternative, you can also set the `FREEBASE_API_KEY` environment variable, which will be used if you don't specify the Key parameter. *)
 
