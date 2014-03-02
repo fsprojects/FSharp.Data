@@ -285,7 +285,7 @@ module private Helpers =
             match header with
             | Accept value -> req.Accept <- value
             | AcceptCharset value -> req.Headers.[HeaderEnum.AcceptCharset] <- value
-            | AcceptDatetime value -> req.Headers.["Accept-Datetime"] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | AcceptDatetime value -> req.Headers.["Accept-Datetime"] <- value.ToString("R", CultureInfo.InvariantCulture)
             | AcceptEncoding value -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
             | AcceptLanguage value -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
             | Allow value -> req.Headers.[HeaderEnum.Allow] <- value
@@ -305,16 +305,16 @@ module private Helpers =
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | Date value -> req.Headers.[HeaderEnum.Date] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | Date value -> req.Headers.[HeaderEnum.Date] <- value.ToString("R", CultureInfo.InvariantCulture)
 #else
-            | Date value -> req.Date <- value.ToUniversalTime()
+            | Date value -> req.Date <- value
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
             | Expect value -> req.Headers.[HeaderEnum.Expect] <- value.ToString(CultureInfo.InvariantCulture)
 #else
             | Expect value -> req.Expect <- value.ToString()
 #endif
-            | Expires value -> req.Headers.[HeaderEnum.Expires] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | Expires value -> req.Headers.[HeaderEnum.Expires] <- value.ToString("R", CultureInfo.InvariantCulture)
             | From value -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
             | Host value -> req.Headers.[HeaderEnum.Host] <- value
@@ -323,15 +323,15 @@ module private Helpers =
 #endif       
             | IfMatch value -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | IfModifiedSince value -> req.Headers.[HeaderEnum.IfModifiedSince] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | IfModifiedSince value -> req.Headers.[HeaderEnum.IfModifiedSince] <- value.ToString("R", CultureInfo.InvariantCulture)
 #else
-            | IfModifiedSince value -> req.IfModifiedSince <- value.ToUniversalTime()
+            | IfModifiedSince value -> req.IfModifiedSince <- value
 #endif
             | IfNoneMatch value -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
             | IfRange value -> req.Headers.[HeaderEnum.IfRange] <- value
-            | IfUnmodifiedSince value -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | IfUnmodifiedSince value -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value.ToString("R", CultureInfo.InvariantCulture)
             | KeepAlive value -> req.Headers.[HeaderEnum.KeepAlive] <- value
-            | LastModified value -> req.Headers.[HeaderEnum.LastModified] <- value.ToUniversalTime().ToString("R", CultureInfo.InvariantCulture)
+            | LastModified value -> req.Headers.[HeaderEnum.LastModified] <- value.ToString("R", CultureInfo.InvariantCulture)
             | MaxForwards value -> req.Headers.[HeaderEnum.MaxForwards] <- value.ToString()
             | Origin value -> req.Headers.["Origin"] <- value
             | Pragma value -> req.Headers.[HeaderEnum.Pragma] <- value
