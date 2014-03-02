@@ -84,7 +84,7 @@ You can also opt out of the exception by specifying the `dontThrowOnHttpError` p
 Http.RequestString("http://api.themoviedb.org/3/search/movie", dontThrowOnHttpError = true)
 // returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
 
-(** In this case, you want to look at the HTTP status code so you don't confuse an error message for an actual response.
+(** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
 headers, the returned cookies, and the response url (which might be different to 
 the url you passed when there are redirects), you can use the `Request` method instead of the `RequestString` method:

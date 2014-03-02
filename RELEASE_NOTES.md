@@ -170,7 +170,8 @@
 #### 2.0.0-beta3 - Unreleased
 * Remove ApiaryProvider.
 * Improve error reporting in the Freebase provider.
-* Add stronger typing to Http parameters.
+* Add stronger typing to Http.Request parameters.
 * Respect character set header in HTTP responses.
 * Allow to don't throw on HTTP errors.
 * Allow to customize the HTTP request by passing a function.
+* Added RequestStream and AsyncRequestStream methods to Http to allow accessing the response stream directly.

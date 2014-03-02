@@ -40,3 +40,8 @@ let ``If a custom header with the same name is added multiple times, an exceptio
 [<Test>]
 let ``Two custom header with different names don't throw an exception`` () =
     Http.RequestString("http://www.google.com", headers = [ Custom(Name="c1", Value="v1"); Custom(Name="c2", Value="v2") ]) |> ignore
+
+[<Test>]
+let ``A request with an invalid url throws an exception`` () =
+    (fun() -> Http.Request "www.google.com" |> ignore) |> should throw typeof<UriFormatException>
+

@@ -131,10 +131,18 @@ type HttpResponseBody =
 /// The response returned by an HTTP request
 type HttpResponse =
   { Body : HttpResponseBody
-    Headers : Map<HttpResponseHeader,string> 
+    StatusCode: int
     ResponseUrl : string
-    Cookies : Map<string,string>
-    StatusCode: int }
+    Headers : Map<HttpResponseHeader,string>
+    Cookies : Map<string,string> }
+
+/// The response returned by an HTTP request with direct access to the response stream
+type HttpResponseWithStream =
+  { ResponseStream : Stream
+    StatusCode: int
+    ResponseUrl : string
+    Headers : Map<HttpResponseHeader,string>
+    Cookies : Map<string,string> }
 
 [<AbstractClass>]
 /// Constants for common HTTP content types
@@ -305,8 +313,8 @@ module private Helpers =
             | Expect value -> req.Headers.[HeaderEnum.Expect] <- value.ToString(CultureInfo.InvariantCulture)
 #else
             | Expect value -> req.Expect <- value.ToString()
-            | Expires value -> req.Headers.[HeaderEnum.Expires] <- value.ToString("R", CultureInfo.InvariantCulture)
 #endif
+            | Expires value -> req.Headers.[HeaderEnum.Expires] <- value.ToString("R", CultureInfo.InvariantCulture)
             | From value -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
             | Host value -> req.Headers.[HeaderEnum.Host] <- value
@@ -400,22 +408,24 @@ module private Helpers =
         | "X-Version" -> XVersion
         | _ -> NonStandard headerName
 
-    let getResponse (req:HttpWebRequest) dontThrowOnHttpError = async {
+    let getResponse (req:HttpWebRequest) dontThrowOnHttpError =
         if defaultArg dontThrowOnHttpError false then
-            try
-                return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-            with
-                | :? WebException as exn -> 
-                    if exn.Response <> null then 
-                       return exn.Response
-                    else 
-                        reraisePreserveStackTrace exn
-                        return Unchecked.defaultof<_>
-        else
-            return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
-        }
+            async {
+                try
+                    return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
+                with
+                    | :? WebException as exn -> 
+                        if exn.Response <> null then 
+                           return exn.Response
+                        else 
+                            reraisePreserveStackTrace exn
+                            return Unchecked.defaultof<_>
+            }
+        else 
+            Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
-    let toHttpResponse forceText responseUrl statusCode (contentType:string) (_contentEncoding:string) characterSet cookies headers (memoryStream:MemoryStream) =
+    let toHttpResponse forceText responseUrl statusCode contentType (_contentEncoding:string)
+                       characterSet responseEncodingOverride cookies headers stream = async {
 
         let isText (mimeType:string) =
             let isText (mimeType:string) =
@@ -430,6 +440,9 @@ module private Helpers =
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
+        use stream = stream
+        let! memoryStream = asyncRead stream
+
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         let memoryStream = 
             if _contentEncoding = "gzip" then
@@ -441,20 +454,23 @@ module private Helpers =
 #endif
 
         let respBody = 
-            if forceText || (isText contentType) then
+            if forceText || isText contentType then
                 use sr = 
-                    match characterSet with
-                    | "" -> new StreamReader(memoryStream)
-                    | characterSet -> new StreamReader(memoryStream, Encoding.GetEncoding(characterSet))
+                    match (defaultArg responseEncodingOverride ""), characterSet with
+                    | "", "" -> new StreamReader(memoryStream)
+                    | "", characterSet -> new StreamReader(memoryStream, Encoding.GetEncoding(characterSet))
+                    | responseEncodingOverride, _ -> new StreamReader(memoryStream, Encoding.GetEncoding(responseEncodingOverride))
+
                 sr.ReadToEnd() |> Text
             else
                 memoryStream.ToArray() |> Binary
 
-        { Body = respBody
-          Headers = headers
-          ResponseUrl = responseUrl
-          Cookies = cookies
-          StatusCode = statusCode }
+        return { Body = respBody
+                 StatusCode = statusCode
+                 ResponseUrl = responseUrl
+                 Headers = headers
+                 Cookies = cookies }
+    }
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
@@ -471,11 +487,11 @@ type Http private() =
             + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + Uri.EscapeUriString v ]
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                        ?dontThrowOnHttpError, ?customizeHttpRequest) = async {
+    static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
+                                       ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) =
 #else
-    static member internal InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                        ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) = async {
+    static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
+                                       ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
 #endif
 
         let uri = 
@@ -503,7 +519,7 @@ type Http private() =
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
     #endif
 
-        // set cookies    
+        // set cookies
         let cookieContainer = defaultArg cookieContainer (new CookieContainer())
 
         match cookies with
@@ -516,36 +532,45 @@ type Http private() =
             if cookies.IsSome then
                 failwith "Cookies not supported by this platform"
 
-        match body with
-        | Some body ->
+        let body = body |> Option.map (fun body ->
+
             let defaultContentType, bytes =
-              match body with
-              | TextRequest text -> HttpContentTypes.Text, Encoding.UTF8.GetBytes(text)
-              | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
-              | FormValues values -> 
-                  let bytes = 
-                      [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
-                      |> String.concat "&"
-                      |> Encoding.UTF8.GetBytes
-                  HttpContentTypes.FormValues, bytes
+                match body with
+                | TextRequest text -> HttpContentTypes.Text, Encoding.UTF8.GetBytes(text)
+                | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
+                | FormValues values -> 
+                    let bytes = 
+                        [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
+                        |> String.concat "&"
+                        |> Encoding.UTF8.GetBytes
+                    HttpContentTypes.FormValues, bytes
+
             // Set default content type if it is not specified by the user
             if not hasContentType then req.ContentType <- defaultContentType
-            do! writeBody req bytes
-        | None -> ()
 
-        let req = 
-            match customizeHttpRequest with
-            | Some customizeHttpRequest -> customizeHttpRequest req
-            | None -> req
+            bytes)
 
         // Send the request and get the response
-        return! augmentWebExceptionsWithDetails <| fun () -> async {
+        augmentWebExceptionsWithDetails <| fun () -> async {
+   
+            match body with
+            | Some body -> do! writeBody req body
+            | None -> ()
+
+            let req = 
+                match customizeHttpRequest with
+                | Some customizeHttpRequest -> customizeHttpRequest req
+                | None -> req
+
             use! resp = getResponse req dontThrowOnHttpError
+
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
+
             let headers = 
                 [ for header in resp.Headers.AllKeys do 
                     yield parseResponseHeader header, resp.Headers.[header] ]
                 |> Map.ofList
+
             let statusCode, characterSet = 
                 match resp with
                 | :? HttpWebResponse as resp -> 
@@ -555,11 +580,13 @@ type Http private() =
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
-            use networkStream = resp.GetResponseStream()
-            let! memoryStream = asyncRead networkStream
+
             let contentEncoding = defaultArg (Map.tryFind ResponseContentEncoding headers) ""
-            return toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet cookies headers memoryStream }
-    }
+
+            let stream = resp.GetResponseStream()
+
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+        }
 
     /// Download an HTTP web resource from the specified URL asynchronously
     /// (allows specifying query string parameters and HTTP headers including
@@ -567,13 +594,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = 
+    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
+                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate) = 
+    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -582,13 +609,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = async {
+    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
-                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
+                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate)  = async {
+    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate)  = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         return
             match response.Body with
@@ -602,13 +629,43 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = 
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+    static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) =
+        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+            return { ResponseStream = stream
+                     StatusCode = statusCode
+                     ResponseUrl = responseUrl
+                     Headers = headers
+                     Cookies = cookies }
+        }
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate) = 
-        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+    static member AsyncRequestStream(url,?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
+        // responseEncodingOverride is never set for this overload
+        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+            return { ResponseStream = stream
+                     StatusCode = statusCode
+                     ResponseUrl = responseUrl
+                     Headers = headers
+                     Cookies = cookies }
+        }
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+#endif
+
+    /// Download an HTTP web resource from the specified URL synchronously
+    /// (allows specifying query string parameters and HTTP headers including
+    /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
+    /// The body for POST request can be specified either as text or as a list of parameters
+    /// that will be encoded, and the method will automatically be set if not specified
+#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
+    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
+        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+#else
+    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
+        Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         |> Async.RunSynchronously
 
@@ -618,12 +675,28 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = 
+    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+#else                              
+    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
+        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+#endif
+        |> Async.RunSynchronously
+
+    /// Download an HTTP web resource from the specified URL synchronously
+    /// (allows specifying query string parameters and HTTP headers including
+    /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
+    /// The body for POST request can be specified either as text or as a list of parameters
+    /// that will be encoded, and the method will automatically be set if not specified
+#if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
+    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = 
+        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
 #else                              
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate) = 
-        Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate) = 
+        Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         |> Async.RunSynchronously

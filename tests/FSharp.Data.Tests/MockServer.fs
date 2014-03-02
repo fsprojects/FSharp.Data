@@ -49,7 +49,7 @@ type FakeServer() as self =
                 response.StatusCode <- HttpStatusCode.ImATeapot
                 response.AddCookie("cookie1", "chocolate chip") |> ignore
                 response.AddCookie("cookie2", "smarties") |> ignore
-                response.Headers.Add("Content-Encoding", "gzip")
+                response.Headers.Add("Content-Encoding", "xpto")
                 response.Headers.Add("X-New-Fangled-Header", "some value")
                 response :> obj
 
@@ -81,7 +81,7 @@ type FakeServer() as self =
                 response.Headers.Add("Allow", "GET, HEAD")
                 response.Headers.Add("Cache-Control", "max-age=3600")
                 response.Headers.Add("Connection", "close")
-                response.Headers.Add("Content-Encoding", "gzip")
+                response.Headers.Add("Content-Encoding", "blah")
                 response.Headers.Add("Content-Language", "EN-gb")
                 response.Headers.Add("Content-Location", "/index.htm")
                 response.Headers.Add("Content-MD5", "Q2hlY2sgSW50ZWdyaXR5IQ==")
@@ -113,7 +113,7 @@ type FakeServer() as self =
             fun _ -> 
                 let response = "body" |> Nancy.Response.op_Implicit
                 response.AddCookie("cookie1", "baboon") |> ignore
-                response.Headers.Add("Location", "http://localhost:1234/TestServer/NoCookies")
+                response.Headers.Add("Location", "http://localhost:1235/TestServer/NoCookies")
                 response.StatusCode <- HttpStatusCode.TemporaryRedirect
                 response :> obj
 
