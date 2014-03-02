@@ -133,7 +133,7 @@ let private hasBrokenDotNetUri =
                 uri.ToString().EndsWith("%2F", StringComparison.InvariantCulture)
 
 let enableUriSlashes =
-    if isMono then purifierMono.Force()
+    if isMono then id //purifierMono.Force()
     elif hasBrokenDotNetUri then purifierDotNet.Force()
     else id
 
