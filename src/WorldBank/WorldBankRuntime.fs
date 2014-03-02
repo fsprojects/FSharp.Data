@@ -10,6 +10,7 @@ open System.Diagnostics
 open System.Globalization
 open System.Net
 open FSharp.Data
+open FSharp.Data.Http
 open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
 

@@ -18,6 +18,7 @@ open System.IO
 open System.Net 
 open System.Collections.Generic
 open FSharp.Data
+open FSharp.Data.Http
 open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
 
