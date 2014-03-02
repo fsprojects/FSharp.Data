@@ -17,7 +17,7 @@ let (?) (parameters:obj) param =
  
 let config = HostConfiguration()
 config.UrlReservations.CreateAutomatically <- true
-let nancyHost = NancyHost(config, Uri("http://localhost:1235/TestServer/"))
+use nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
