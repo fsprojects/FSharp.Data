@@ -237,11 +237,14 @@ Target "Help" <| fun () ->
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
 
+Target "Start" DoNothing
 Target "All" DoNothing
 
-"Clean" =?> ("BuildVersion", isAppVeyorBuild) ==> "AssemblyInfo" ==> "Build" =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
+"Start" ==> "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
+"Start" =?> ("BuildVersion", isAppVeyorBuild) ==> "AssemblyInfo"
+"Start" =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
 
 RunTargetOrDefault "Help"
