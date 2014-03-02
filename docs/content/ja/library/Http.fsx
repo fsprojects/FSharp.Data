@@ -85,9 +85,9 @@ HTTP POSTデータを含んだPOSTリクエストを作成したい場合は、
 オプション引数 `body` に追加データを指定するだけです。
 この引数は3つのケースを持った判別共用体 `HttpRequestBody` 型です：
 
-* `HttpRequestBody.Text` はリクエストの本体で文字列を送信するために使用します
-* `HttpRequestBody.Binary` はリクエストにバイナリデータを含めて送信する場合に使用します
-* `HttpRequestBody.FormValues` は特定のフォームの値を名前と値のペアとして
+* `TextRequest` はリクエストの本体で文字列を送信するために使用します
+* `BinaryUpload` はリクエストにバイナリデータを含めて送信する場合に使用します
+* `FormValues` は特定のフォームの値を名前と値のペアとして
   送信するために使用します
 
 bodyを指定した場合、引数 `httpMethod` には自動的に `Post` が設定されるようになるため、
@@ -111,7 +111,7 @@ Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 Http.RequestString
   ( "http://httpbin.org/post", 
     headers = [ ContentType HttpContentTypes.Json ],
-    body = HttpRequestBody.Text """ {"test": 42} """)
+    body = TextRequest """ {"test": 42} """)
 
 (**
 ## リクエスト間でクッキーを管理する

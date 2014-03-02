@@ -106,9 +106,9 @@ If you want to create a POST request with HTTP POST data, you can specify the
 additional data in the `body` optional parameter. This parameter is of type `HttpRequestBody`, which
 is a discriminated union with three cases:
 
-* `HttpRequestBody.Text` for sending a string in the request body.
-* `HttpRequestBody.Binary` for sending binary content in the request.
-* `HttpRequestBody.FormValues` for sending a set of name-value pairs correspondent to form values.
+* `TextRequest` for sending a string in the request body.
+* `BinaryUpload` for sending binary content in the request.
+* `FormValues` for sending a set of name-value pairs correspondent to form values.
 
 If you specify a body, you do not need to set the `httpMethod` parameter, it will be set to `Post` automatically.
 
@@ -127,7 +127,7 @@ this behaviour by adding `content-type` to the list of headers using the optiona
 Http.RequestString
   ( "http://httpbin.org/post", 
     headers = [ ContentType HttpContentTypes.Json ],
-    body = HttpRequestBody.Text """ {"test": 42} """)
+    body = TextRequest """ {"test": 42} """)
 
 (**
 ## Maintaing cookies across requests
