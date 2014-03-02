@@ -2,7 +2,7 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data
+namespace FSharp.Data.Http
 
 open System
 open System.Globalization

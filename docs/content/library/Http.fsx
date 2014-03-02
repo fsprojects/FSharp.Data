@@ -21,7 +21,7 @@ or add reference to a project. The type is located in `FSharp.Net` namespace:
 *)
 
 #r "../../../bin/FSharp.Data.dll"
-open FSharp.Data
+open FSharp.Data.Http
 
 (**
 ## Sending simple requests

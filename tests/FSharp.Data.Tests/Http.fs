@@ -9,7 +9,7 @@ module FSharp.Data.Tests.Http
 open FsUnit
 open NUnit.Framework
 open System
-open FSharp.Data
+open FSharp.Data.Http
 
 [<Test>]
 let ``Don't throw exceptions on http error`` () = 

@@ -14,12 +14,14 @@ open System.IO
 open System.Text
 open System.Globalization
 open FSharp.Data
+open FSharp.Data.Http
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
-type SaveOptions = 
+[<RequireQualifiedAccess>]
+type JsonSaveOptions = 
   /// Format (indent) the JsonValue
   | None = 0
   /// Print the JsonValue in one line in a compact way
@@ -38,13 +40,13 @@ type JsonValue =
   | Boolean of bool
   | Null
 
-  override x.ToString() = x.ToString(SaveOptions.None)
+  override x.ToString() = x.ToString(JsonSaveOptions.None)
 
   member x.ToString saveOptions = 
 
     let rec serialize (sb:StringBuilder) indentation json =
       let newLine plus =
-        if saveOptions = SaveOptions.None then
+        if saveOptions = JsonSaveOptions.None then
           sb.AppendLine() |> ignore
           System.String(' ', indentation + plus) |> sb.Append |> ignore
       match json with
@@ -64,7 +66,7 @@ type JsonValue =
           for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             newLine 2
-            if saveOptions = SaveOptions.None then
+            if saveOptions = JsonSaveOptions.None then
               sb.AppendFormat("\"{0}\": ", k) |> ignore
             else
               sb.AppendFormat("\"{0}\":", k) |> ignore
@@ -295,7 +297,7 @@ type JsonValue with
   member x.Post(uri:string) =  
     Http.Request(
       uri,
-      body = TextRequest (x.ToString(SaveOptions.DisableFormatting)),
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
       headers = [ContentType HttpContentTypes.Json])
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}

@@ -9,7 +9,7 @@ open NUnit.Framework
 open FsUnit
 open Nancy
 open Nancy.Hosting.Self
-open FSharp.Data
+open FSharp.Data.Http
 
 // ? operator to get values from a Nancy DynamicDictionary
 let (?) (parameters:obj) param =

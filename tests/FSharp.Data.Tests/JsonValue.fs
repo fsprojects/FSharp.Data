@@ -177,7 +177,7 @@ let ``Can parse array of numbers``() =
 let ``Quotes in strings are property escaped``() = 
     let jsonStr = "{\"short_description\":\"This a string with \\\"quotes\\\"\"}"
     let j = JsonValue.Parse jsonStr
-    j.ToString(SaveOptions.DisableFormatting) |> should equal jsonStr
+    j.ToString(JsonSaveOptions.DisableFormatting) |> should equal jsonStr
 
 [<Test>]
 let ``Can parse simple array``() = 
@@ -197,27 +197,27 @@ let ``Can parse nested array``() =
 
 [<Test>]
 let ``Can serialize empty document``() = 
-    (JsonValue.Object Map.empty).ToString(SaveOptions.DisableFormatting) 
+    (JsonValue.Object Map.empty).ToString(JsonSaveOptions.DisableFormatting) 
     |> should equal "{}"
 
 [<Test>] 
 let ``Can serialize document with single property``() =
     ( [ "firstName", JsonValue.String "John" ]
-        |> Map.ofSeq |> JsonValue.Object ).ToString(SaveOptions.DisableFormatting)
+        |> Map.ofSeq |> JsonValue.Object ).ToString(JsonSaveOptions.DisableFormatting)
     |> should equal "{\"firstName\":\"John\"}"
 
 [<Test>] 
 let ``Can serialize document with booleans``() =
     ( [ "aa", JsonValue.Boolean true
         "bb", JsonValue.Boolean false ]
-        |> Map.ofSeq |> JsonValue.Object ).ToString(SaveOptions.DisableFormatting)
+        |> Map.ofSeq |> JsonValue.Object ).ToString(JsonSaveOptions.DisableFormatting)
     |> should equal "{\"aa\":true,\"bb\":false}"
 
 [<Test>]
 let ``Can serialize document with array, null and number``() =
     let text = "{\"items\":[{\"id\":\"Open\"},null,{\"id\":25}]}"
     let json = JsonValue.Parse text
-    json.ToString(SaveOptions.DisableFormatting) |> should equal text
+    json.ToString(JsonSaveOptions.DisableFormatting) |> should equal text
 
 let normalize (str:string) =
   str.Replace("\r\n", "\n")
