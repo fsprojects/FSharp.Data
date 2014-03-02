@@ -17,7 +17,7 @@ let (?) (parameters:obj) param =
  
 let config = HostConfiguration()
 config.UrlReservations.CreateAutomatically <- true
-use nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
+let nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
@@ -80,7 +80,10 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
                  headers = [ Accept "application/xml,text/html;q=0.3"
                              AcceptCharset "utf-8, utf-16;q=0.5" 
+#if MONO
+#else
                              AcceptDatetime (DateTime(2007,5,31,20,35,0))
+#endif
                              AcceptLanguage "en-GB, en-US;q=0.1"
                              Authorization  "QWxhZGRpbjpvcGVuIHNlc2FtZQ==" 
                              Connection "conn1"
@@ -110,7 +113,10 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("text/html", 0.3m)
     MockServer.recordedRequest.Value.Headers.AcceptCharset |> should contain ("utf-8", 1m)
     MockServer.recordedRequest.Value.Headers.AcceptCharset |> should contain ("utf-16", 0.5m)
+#if MONO
+#else
     MockServer.recordedRequest.Value.Headers.["Accept-Datetime"] |> should equal ["Thu, 31 May 2007 20:35:00 GMT"]
+#endif
     MockServer.recordedRequest.Value.Headers.AcceptLanguage |> should contain ("en-GB", 1m)
     MockServer.recordedRequest.Value.Headers.AcceptLanguage |> should contain ("en-US", 0.1m)
     MockServer.recordedRequest.Value.Headers.Authorization |> should equal "QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
