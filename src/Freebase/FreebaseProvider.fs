@@ -513,7 +513,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                         yield p ]
                 with e -> 
                     match e with
-                    //| :? FreebaseWebException as e when e.Domain = "usageLimits" && e.Reason = "keyInvalid" -> failwith "Invalid API Key"
+                    | :? FreebaseWebException as e when e.Domain = "usageLimits" && e.Reason = "keyInvalid" -> failwithf "Invalid API Key: %A" fb.ApiKey
                     | _ -> reraise()
 
         theServiceTypesClass.AddMembers [theServiceType; theDomainObjectsClass ]
