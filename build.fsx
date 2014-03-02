@@ -35,11 +35,20 @@ let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
 
 let gitHome = "https://github.com/fsharp"
 let gitName = "FSharp.Data"
+let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
 // Read release notes & version info from RELEASE_NOTES.md
 let release = 
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
+let isAppVeyorBuild = environVar "APPVEYOR" <> null
+let nugetVersion = 
+    if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
+    else release.NugetVersion
+
+Target "BuildVersion" (fun _ ->
+    Shell.Exec("appveyor", sprintf "UpdateBuild -Version \"%s\"" nugetVersion) |> ignore
+)
 
 // --------------------------------------------------------------------------------------
 // Generate assembly info files with the right version & up-to-date information
@@ -139,7 +148,7 @@ Target "SourceLink" <| fun () ->
         let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
         repo.VerifyChecksums files
         proj.VerifyPdbChecksums files
-        proj.CreateSrcSrv "https://raw.github.com/fsharp/FSharp.Data/{0}/%var2%" repo.Revision (repo.Paths files)
+        proj.CreateSrcSrv (sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName) repo.Revision (repo.Paths files)
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
@@ -161,7 +170,7 @@ Target "NuGet" <| fun () ->
             Project = project
             Summary = summary
             Description = description
-            Version = release.NugetVersion
+            Version = nugetVersion
             ReleaseNotes = releaseNotes
             Tags = tags
             OutputPath = "bin"
@@ -227,15 +236,10 @@ Target "Help" <| fun () ->
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
-#if MONO
-#else
-    printfn "  * SourceLink (requires autocrlf=false)"
-#endif
-    printfn ""
 
 Target "All" DoNothing
 
-"Clean" ==> "AssemblyInfo" ==> "Build"
+"Clean" =?> ("BuildVersion", isAppVeyorBuild) ==> "AssemblyInfo" ==> "Build" =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"

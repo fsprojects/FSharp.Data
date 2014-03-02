@@ -1,0 +1,5 @@
+build_script:
+  - cmd: build.cmd nuget
+test: off
+artifacts:
+  - path: bin\*.nupkg
