@@ -307,7 +307,7 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_DATE
             | Date value -> req.Headers.[HeaderEnum.Date] <- value.ToString("R", CultureInfo.InvariantCulture)
 #else
-            | Date value -> req.Date <- value
+            | Date value -> req.Date <- value.ToUniversalTime()
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
             | Expect value -> req.Headers.[HeaderEnum.Expect] <- value.ToString(CultureInfo.InvariantCulture)
@@ -325,7 +325,7 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
             | IfModifiedSince value -> req.Headers.[HeaderEnum.IfModifiedSince] <- value.ToString("R", CultureInfo.InvariantCulture)
 #else
-            | IfModifiedSince value -> req.IfModifiedSince <- value
+            | IfModifiedSince value -> req.IfModifiedSince <- value.ToUniversalTime()
 #endif
             | IfNoneMatch value -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
             | IfRange value -> req.Headers.[HeaderEnum.IfRange] <- value
