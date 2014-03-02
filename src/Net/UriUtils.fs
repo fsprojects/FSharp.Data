@@ -48,9 +48,9 @@ let private uriInfo (uri : Uri) (source : string) =
         elif fragPos > -1 then uri.AbsoluteUri.Substring(uri.AbsoluteUri.IndexOf("#"))
         else ""
     
-    { Path = path; 
-      Query = query;
-      OriginalHostAndPath = originalHostAndPath;
+    { Path = path
+      Query = query
+      OriginalHostAndPath = originalHostAndPath
       EncodedQueryAndFragments = encodedQueryAndFragments }
 
 let private privateInstanceFlags = BindingFlags.NonPublic ||| BindingFlags.Instance

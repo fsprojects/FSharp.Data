@@ -55,7 +55,7 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
 省略した場合には自動的にGETになります：
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], meth="GET")
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod=Get)
 
 (** 
 同じように、省略可能な引数 `headers` を使うと追加のヘッダを指定できます。
@@ -76,21 +76,21 @@ Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
     query   = [ "api_key", apiKey
                 "query", "batman" ],
-    headers = [ "accept", "application/json" ])
+    headers = [ Accept HttpContentTypes.Json ])
 
 (**
 ## リクエストデータの送信
 
 HTTP POSTデータを含んだPOSTリクエストを作成したい場合は、
 オプション引数 `body` に追加データを指定するだけです。
-この引数は3つのケースを持った判別共用体 `RequestBody` 型です：
+この引数は3つのケースを持った判別共用体 `HttpRequestBody` 型です：
 
-* `RequestBody.Text` はリクエストの本体で文字列を送信するために使用します
-* `RequestBody.FormValues` は特定のフォームの値を名前と値のペアとして
+* `TextRequest` はリクエストの本体で文字列を送信するために使用します
+* `BinaryUpload` はリクエストにバイナリデータを含めて送信する場合に使用します
+* `FormValues` は特定のフォームの値を名前と値のペアとして
   送信するために使用します
-* `RequestBody.Binary` はリクエストにバイナリデータを含めて送信する場合に使用します
 
-bodyを指定した場合、引数 `meth` には自動的に `POST` が設定されるようになるため、
+bodyを指定した場合、引数 `httpMethod` には自動的に `Post` が設定されるようになるため、
 明示的に指定する必要はありません。
 
 以下ではリクエストの詳細を返すサービス
@@ -98,10 +98,10 @@ bodyを指定した場合、引数 `meth` には自動的に `POST` が設定さ
 を使っています：
 *)
 
-Http.RequestString("http://httpbin.org/post", body = RequestBody.FormValues ["test", "foo"])
+Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 
 (**
-デフォルトでは `Content-Type` ヘッダには `RequestBody` に指定した値に応じて
+デフォルトでは `Content-Type` ヘッダには `HttpRequestBody` に指定した値に応じて
 `text/plain` `application-x-www-form-urlencoded` `application-octet-stream`
 のいずれかが設定されます。
 ただしオプション引数 `headers` を使ってヘッダのリストに `content-type` を
@@ -110,8 +110,8 @@ Http.RequestString("http://httpbin.org/post", body = RequestBody.FormValues ["te
 
 Http.RequestString
   ( "http://httpbin.org/post", 
-    headers = ["content-type", "application/json"],
-    body = RequestBody.Text """ {"test": 42} """)
+    headers = [ ContentType HttpContentTypes.Json ],
+    body = TextRequest """ {"test": 42} """)
 
 (**
 ## リクエスト間でクッキーを管理する
@@ -177,14 +177,14 @@ response.StatusCode
 
 `RequestString` メソッドでは常に `string` としてレスポンスが返されます。
 しかし `Request` メソッドの場合にはレスポンスの `content-type` ヘッダに応じて
-`ResponseBody.Text` または `ResponseBody.Binary` が返されます：
+`HttpResponseBody.Text` または `HttpResponseBody.Binary` が返されます：
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| ResponseBody.Text text -> 
+| HttpResponseBody.Text text -> 
     printfn "Got text content: %s" text
-| ResponseBody.Binary bytes -> 
+| HttpResponseBody.Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**

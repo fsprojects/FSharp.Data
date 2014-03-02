@@ -224,9 +224,10 @@ open FSharp.Data.Runtime.Freebase.FreebaseSchema
 let ``Wrong key gives relevant message``() =
     let fb = new FreebaseQueries("invalidKey", "https://www.googleapis.com/freebase/v1", "FreebaseSchema", "none", false)
     let fbSchema = new FreebaseSchemaConnection(fb)
-    let mutable exn = ""
-    try
-        fbSchema.GetDomainStructure() |> ignore
-    with :? FreebaseWebException as e -> 
-        exn <- e.Message
+    let exn =
+        try
+            fbSchema.GetDomainStructure() |> ignore
+            ""
+        with :? FreebaseWebException as e -> 
+            e.Message
     exn |> should contain "Reason='keyInvalid'"
