@@ -13,11 +13,9 @@ let enableUriSlashes = id
 open System
 open System.Reflection
 
-type private UriInfo = 
-    { Path : string; 
-      Query : string;
-      OriginalHostAndPath : string;
-      EncodedQueryAndFragments : string }
+type private UriInfo =
+    { Path : string
+      Query : string }
 
 let private uriInfo (uri : Uri) (source : string) = 
 
@@ -38,20 +36,9 @@ let private uriInfo (uri : Uri) (source : string) =
         if fragPos > -1 then source.Substring(queryPos, fragPos - queryPos)
         else if queryPos > -1 then source.Substring(queryPos)
         else ""
-
-    let originalHostAndPath =
-        if pathEnd > -1 then source.Substring(0, pathEnd)
-        else source
-
-    let encodedQueryAndFragments =
-        if queryPos > -1 then uri.AbsoluteUri.Substring(uri.AbsoluteUri.IndexOf("?"))
-        elif fragPos > -1 then uri.AbsoluteUri.Substring(uri.AbsoluteUri.IndexOf("#"))
-        else ""
     
     { Path = path
-      Query = query
-      OriginalHostAndPath = originalHostAndPath
-      EncodedQueryAndFragments = encodedQueryAndFragments }
+      Query = query }
 
 let private privateInstanceFlags = BindingFlags.NonPublic ||| BindingFlags.Instance
 let private publicInstanceFlags = BindingFlags.Public ||| BindingFlags.Instance
@@ -107,13 +94,11 @@ let private purifierMono = lazy(
     fun (uri : Uri) ->
     
         let source = string (sourceField.GetValue(uri))
-        let query = uri.Query
-        let uriInfo = uriInfo uri source
-
         cachedToStringField.SetValue(uri, source)
-        cachedAbsoluteUriField.SetValue(uri, uriInfo.OriginalHostAndPath + uriInfo.EncodedQueryAndFragments)
+        cachedAbsoluteUriField.SetValue(uri, source)
+        let uriInfo = uriInfo uri source
         pathField.SetValue(uri, uriInfo.Path)
-        queryField.SetValue(uri, query)
+        queryField.SetValue(uri, uriInfo.Query)
 
         uri)
 
@@ -151,7 +136,7 @@ let private hasBrokenDotNetUri =
                 uri.ToString().EndsWith("%2F", StringComparison.InvariantCulture)
 
 let enableUriSlashes =
-    if isMono then id//purifierMono.Force()
+    if isMono then id //purifierMono.Force()
     elif hasBrokenDotNetUri then purifierDotNet.Force()
     else id
 
