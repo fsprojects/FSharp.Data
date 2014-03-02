@@ -98,7 +98,7 @@ type FakeServer() as self =
                 response.Headers.Add("Proxy-Authenticate", "Basic")
                 response.Headers.Add("Refresh", "5; url=http://www.w3.org/pub/WWW/People.html")
                 response.Headers.Add("Retry-After", "120")
-                //response.Headers.Add("Server", "") // will be 'Microsoft-HTTPAPI/2.0'
+                //response.Headers.Add("Server", "") // will be 'Microsoft-HTTPAPI/2.0' or 'Mono-HTTPAPI/1.0'
                 response.Headers.Add("Strict-Transport-Security", "max-age=16070400; includeSubDomains")
                 response.Headers.Add("Trailer", "Max-Forwards")
                 response.Headers.Add("Transfer-Encoding", "chunked")

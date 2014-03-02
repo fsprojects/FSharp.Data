@@ -17,7 +17,9 @@ let (?) (parameters:obj) param =
  
 let config = HostConfiguration()
 config.UrlReservations.CreateAutomatically <- true
-let nancyHost = new NancyHost(config, Uri("http://localhost:1235/TestServer/"))
+let nancyHost = NancyHost(config, Uri("http://localhost:1235/TestServer/"))
+
+let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
 [<TestFixtureSetUp>]
 let fixtureSetup() =
@@ -37,7 +39,10 @@ let ``_connection keep-alive header is set automatically on the first request, b
 
     Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
     MockServer.recordedRequest.Value |> should notEqual null
-    MockServer.recordedRequest.Value.Headers.Connection |> should equal "Keep-Alive"
+    if runningOnMono then
+        MockServer.recordedRequest.Value.Headers.Connection |> should equal "keep-alive"
+    else
+        MockServer.recordedRequest.Value.Headers.Connection |> should equal "Keep-Alive"
 
     MockServer.recordedRequest := null
     Http.Request "http://localhost:1235/TestServer/RecordRequest" |> ignore
@@ -128,11 +133,11 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.Connection |> should equal "conn1"
     MockServer.recordedRequest.Value.Headers.["Content-MD5"] |> should equal ["Q2hlY2sgSW50ZWdyaXR5IQ=="]
     MockServer.recordedRequest.Value.Headers.ContentType |> should equal "application/json"
-    MockServer.recordedRequest.Value.Headers.Date.Value |> should equal (new DateTime(1999, 12, 31, 11, 59, 59))
+    MockServer.recordedRequest.Value.Headers.Date.Value |> should equal (DateTime(1999, 12, 31, 11, 59, 59))
     MockServer.recordedRequest.Value.Headers.["Expect"] |> should equal ["100"]
     MockServer.recordedRequest.Value.Headers.["From"] |> should equal ["user@example.com"]
     MockServer.recordedRequest.Value.Headers.IfMatch |> should equal ["737060cd8c284d8af7ad3082f209582d"]
-    MockServer.recordedRequest.Value.Headers.IfModifiedSince |> should equal (new DateTime(2000, 12, 31, 11, 59, 59))
+    MockServer.recordedRequest.Value.Headers.IfModifiedSince |> should equal (DateTime(2000, 12, 31, 11, 59, 59))
     MockServer.recordedRequest.Value.Headers.IfNoneMatch |> should equal ["737060cd8c284d8af7ad3082f209582d"]
     MockServer.recordedRequest.Value.Headers.IfRange |> should equal "737060cd8c284d8af7ad3082f209582d"
     MockServer.recordedRequest.Value.Headers.MaxForwards |> should equal 5
@@ -191,7 +196,10 @@ let ``all of the response headers are available`` () =
     response.Headers.[ProxyAuthenticate] |> should equal "Basic"
     response.Headers.[Refresh] |> should equal "5; url=http://www.w3.org/pub/WWW/People.html"
     response.Headers.[RetryAfter] |> should equal "120"
-    response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
+    if runningOnMono then
+        response.Headers.[Server] |> should equal "Mono-HTTPAPI/1.0"
+    else
+        response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
     response.Headers.[StrictTransportSecurity] |> should equal "max-age=16070400; includeSubDomains"
     response.Headers.[ResponseTrailer] |> should equal "Max-Forwards"
     response.Headers.[TransferEncoding] |> should equal "chunked"
@@ -230,4 +238,5 @@ let ``if a response character encoding is NOT specified, and the character encod
 let ``cookies are not kept during an automatic redirect`` () =
     let response = Http.Request "http://localhost:1235/TestServer/CookieRedirect"
     response.StatusCode |> should equal 200
+    response.ResponseUrl |> should equal "http://localhost:1235/TestServer/NoCookies"
     response.Cookies.ContainsKey "cookie1" |> should equal false
