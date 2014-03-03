@@ -11,6 +11,12 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONNECTION</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_DATE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_EXPECT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_IFMODIFIEDSINCE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_RANGE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">

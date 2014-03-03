@@ -184,8 +184,11 @@
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
-    <Compile Include="HttpUtils.fs" />
     <Compile Include="UriUtils.fs" />
+    <Compile Include="HttpUtils.fs" />
+    <Compile Include="Http.fs" />
+    <Compile Include="MockServer.fs" />
+    <Compile Include="HttpIntegrationTests.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue.fs" />
@@ -209,6 +212,12 @@
       <HintPath>..\..\bin\FSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="Nancy">
+      <HintPath>..\..\packages\Nancy.0.20.0\lib\net40\Nancy.dll</HintPath>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Self">
+      <HintPath>..\..\packages\Nancy.Hosting.Self.0.20.0\lib\net40\Nancy.Hosting.Self.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>

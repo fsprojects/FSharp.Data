@@ -18,6 +18,7 @@ open System.IO
 open System.Net 
 open System.Collections.Generic
 open FSharp.Data
+open FSharp.Data.Http
 open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime.Caching
 
@@ -128,13 +129,18 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                 //printfn "post, shortUrl = '%s'" shortUrl
                 //printfn "post, content = '%s'" content
                 Http.RequestString(shortUrl,
-                                   headers = [ "X-HTTP-Method-Override", "GET"
-                                               "content-type", "application/x-www-form-urlencoded" ],
-                                   body = RequestBody.Text content)
+                                   headers = [ XHTTPMethodOverride HttpMethod.Get
+                                               ContentType HttpContentTypes.FormValues ],
+                                   body = TextRequest content)
             else
-                Http.RequestString(url)
+                Http.RequestString url
           try
-            let resultText = getResultText()
+            let resultText = 
+                try
+                    getResultText()
+                with _ ->
+                    //try a second time
+                    getResultText()
             getCache().Set(url, resultText)
             resultText
           with 

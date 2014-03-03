@@ -13,7 +13,9 @@ let enableUriSlashes = id
 open System
 open System.Reflection
 
-type private UriInfo = { Path : string; Query : string }
+type private UriInfo =
+    { Path : string
+      Query : string }
 
 let private uriInfo (uri : Uri) (source : string) = 
 
@@ -35,7 +37,8 @@ let private uriInfo (uri : Uri) (source : string) =
         else if queryPos > -1 then source.Substring(queryPos)
         else ""
     
-    { Path = path; Query = query }
+    { Path = path
+      Query = query }
 
 let private privateInstanceFlags = BindingFlags.NonPublic ||| BindingFlags.Instance
 let private publicInstanceFlags = BindingFlags.Public ||| BindingFlags.Instance
@@ -133,7 +136,7 @@ let private hasBrokenDotNetUri =
                 uri.ToString().EndsWith("%2F", StringComparison.InvariantCulture)
 
 let enableUriSlashes =
-    if isMono then purifierMono.Force()
+    if isMono then id //purifierMono.Force()
     elif hasBrokenDotNetUri then purifierDotNet.Force()
     else id
 

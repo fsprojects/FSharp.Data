@@ -16,7 +16,7 @@ WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredenti
 
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
-let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests.DesignTime" ++ "expected"
+let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
 let assemblyName = "FSharp.Data.dll"
 
 type Platform = Net40 | Portable7 | Portable47
@@ -69,7 +69,7 @@ Csv { Sample = "AirQuality.csv"
 |> dumpPortable47 false
 
 let testCases = 
-    __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests.DesignTime" ++ "SignatureTestCases.config"
+    __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 

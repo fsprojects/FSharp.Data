@@ -225,8 +225,8 @@ F# Data ライブラリには `FreebaseDataProvider` という型があり、
 [<Literal>]
 let FreebaseApiKey = "<freebaseを有効にするgoogle API キーをここに入力>"
 
-type FreebaseDataWithKey = FreebaseDataProvider<Key=FreebaseApiKey>
-let dataWithKey = FreebaseDataWithKey.GetDataContext()
+//type FreebaseDataWithKey = FreebaseDataProvider<Key=FreebaseApiKey>
+//let dataWithKey = FreebaseDataWithKey.GetDataContext()
 
 (**
 ### MQLクエリのデバッグ

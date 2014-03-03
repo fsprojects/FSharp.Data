@@ -32,11 +32,6 @@ documentation. The documentation is automatically generated from `*.fsx` files i
    to pages that document individual type providers (CSV, XML, JSON, WorldBank and Freebase) 
    as well as for other public types available in `FSharp.Data.dll`.
 
- * [F# Data Experimental](experimental.html) is a documentation for 
-   experimental extensions to F# Data. The library contains providers
-   that do not match high quality standards yet. Currently, it includes a provider
-   for REST APIs documented using [apiary.io](http://apiary.io).
- 
 Contributing
 ------------
 

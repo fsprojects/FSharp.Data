@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
 		docs\content\contributing.md = docs\content\contributing.md
-		docs\content\experimental.md = docs\content\experimental.md
 		docs\content\fsharpdata.md = docs\content\fsharpdata.md
 		docs\content\index.md = docs\content\index.md
 	EndProjectSection
@@ -26,14 +25,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\generate.ja.fsx = docs\tools\generate.ja.fsx
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "reference", "reference", "{37609C0E-CFDC-4BFA-8C0D-E659127F37C1}"
-	ProjectSection(SolutionItems) = preProject
-		docs\tools\reference\members.cshtml = docs\tools\reference\members.cshtml
-		docs\tools\reference\module.cshtml = docs\tools\reference\module.cshtml
-		docs\tools\reference\namespaces.cshtml = docs\tools\reference\namespaces.cshtml
-		docs\tools\reference\type.cshtml = docs\tools\reference\type.cshtml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
@@ -74,14 +65,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{CA5C64CE-E68C-4320-A00A-E67CA883B9D2}"
 	ProjectSection(SolutionItems) = preProject
 		docs\content\ja\contributing.md = docs\content\ja\contributing.md
-		docs\content\ja\experimental.md = docs\content\ja\experimental.md
 		docs\content\ja\fsharpdata.md = docs\content\ja\fsharpdata.md
 		docs\content\ja\index.md = docs\content\ja\index.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experimental", "experimental", "{8121F368-9A9F-4AF8-8F48-4034AABFC811}"
-	ProjectSection(SolutionItems) = preProject
-		docs\content\ja\experimental\ApiaryProvider.fsx = docs\content\ja\experimental\ApiaryProvider.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{DF513D7E-D692-49DD-8501-8A8150C1334E}"
@@ -103,11 +88,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tutorials", "tutorials", "{
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\FSharp.Data.Tests\FSharp.Data.Tests.fsproj", "{5EF9FF95-1C75-458A-983A-168E43945913}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.DesignTime", "tests\FSharp.Data.Tests.DesignTime\FSharp.Data.Tests.DesignTime.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Documentation", "tests\FSharp.Data.Tests.Documentation\FSharp.Data.Tests.Documentation.fsproj", "{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests.Experimental.DesignTime", "tests\FSharp.Data.Tests.Experimental.DesignTime\FSharp.Data.Tests.Experimental.DesignTime.fsproj", "{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime.Tests", "tests\FSharp.Data.DesignTime.Tests\FSharp.Data.DesignTime.Tests.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,26 +122,6 @@ Global
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|ARM.ActiveCfg = Release|Any CPU
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|x64.ActiveCfg = Release|Any CPU
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|x86.ActiveCfg = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|ARM.ActiveCfg = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|x64.ActiveCfg = Release|Any CPU
-		{79F004B4-093B-49C8-B7BF-7B3EF7CC829E}.Release|x86.ActiveCfg = Release|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Release|ARM.ActiveCfg = Release|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Release|x64.ActiveCfg = Release|Any CPU
-		{D88C5D12-A7BD-4BED-A4CE-127D825EB9C7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -169,10 +130,8 @@ Global
 		{78CB4667-C0B2-487E-8D48-84FFD8DBF9AA} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
 		{5F82EB06-4E8B-4733-A0C7-F210925DDD04} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
 		{D90D3EC4-8C1E-48B1-988A-95217B2BBDB8} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
-		{34171948-6CCE-448B-AA7D-A76FCE32A08E} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
 		{CA5C64CE-E68C-4320-A00A-E67CA883B9D2} = {7E48C05A-8C42-4871-A618-180BEEF696AA}
 		{27BD4F2C-3450-4DC8-91F2-9C069C69585C} = {839C977B-55D4-4EFC-8B81-290357C836D3}
-		{8121F368-9A9F-4AF8-8F48-4034AABFC811} = {CA5C64CE-E68C-4320-A00A-E67CA883B9D2}
 		{DF513D7E-D692-49DD-8501-8A8150C1334E} = {CA5C64CE-E68C-4320-A00A-E67CA883B9D2}
 		{236424CD-0DE6-42E3-AE36-F3FFAC8DDDCA} = {CA5C64CE-E68C-4320-A00A-E67CA883B9D2}
 	EndGlobalSection

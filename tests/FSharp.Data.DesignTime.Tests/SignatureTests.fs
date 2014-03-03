@@ -3,7 +3,7 @@
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else
-module FSharp.Data.Tests.DesignTime.SignatureTests
+module FSharp.Data.DesignTime.Tests.SignatureTests
 #endif
 
 open System
@@ -41,7 +41,7 @@ let generateAllExpected() =
         |> ignore
 
 let normalize (str:string) =
-  str.Replace("\r\n", "\n").Replace("\r", "\n")
+  str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
 [<Test>]
 [<TestCaseSource "testCases">]

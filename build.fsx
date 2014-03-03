@@ -33,15 +33,6 @@ let description = """
   data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data typeprovider WorldBank Freebase CSV HTML JSON XML HTTP"
 
-// Information for the project containing experimental providers
-let projectExperimental = "FSharp.Data.Experimental"
-let summaryExperimental = summary + " (experimental extensions)"
-let descriptionExperimental = description + """"
-  This package (FSharp.Data.Experimental.dll) adds additional type providers that are work
-  in progress and do not match high quality standards yet. Currently, it includes a type 
-  provider for Apiary.io."""
-let tagsExperimental = tags + " Apiary"
-
 let gitHome = "https://github.com/fsharp"
 let gitName = "FSharp.Data"
 
@@ -61,10 +52,6 @@ Target "AssemblyInfo" <| fun () ->
             |> replace ".Portable47" ""
             |> replace ".Portable7" ""
             |> replace "AssemblyInfo" "FSharp.Data"
-        let project, summary = 
-            if file.Contains "Experimental" 
-            then projectExperimental, summaryExperimental 
-            else project, summary
         let versionSuffix =
             if file.Contains ".Portable47" then ".47"
             elif file.Contains ".Portable7" then ".7"
@@ -89,8 +76,7 @@ Target "CleanDocs" <| fun () ->
 let internetCacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
 
 Target "CleanInternetCaches" <| fun () ->
-    CleanDirs [internetCacheFolder @@ "ApiarySchema"
-               internetCacheFolder @@ "DesignTimeURIs"
+    CleanDirs [internetCacheFolder @@ "DesignTimeURIs"
                internetCacheFolder @@ "FreebaseSchema"
                internetCacheFolder @@ "FreebaseRuntime"
                internetCacheFolder @@ "WorldBankSchema"
@@ -131,8 +117,7 @@ let runTestTask name =
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
 
-["FSharp.Data.Tests";"FSharp.Data.Tests.DesignTime";
- "FSharp.Data.Tests.Documentation";"FSharp.Data.Tests.Experimental.DesignTime"]
+["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
 
 // --------------------------------------------------------------------------------------
@@ -168,9 +153,6 @@ Target "SourceLink" <| fun () ->
 // Build a NuGet package
 
 Target "NuGet" <| fun () ->
-    // Format the description to fit on a single line (remove \r\n and double-spaces)
-    let description = description
-    let descriptionExperimental = descriptionExperimental.Replace("\r", "").Replace("\n", "").Replace("  ", " ")
     // Format the release notes
     let releaseNotes = release.Notes |> String.concat "\n"
     NuGet (fun p -> 
@@ -187,20 +169,6 @@ Target "NuGet" <| fun () ->
             Publish = hasBuildParam "nugetkey"
             Dependencies = [] })
         "nuget/FSharp.Data.nuspec"
-    NuGet (fun p -> 
-        { p with   
-            Authors = authors
-            Project = projectExperimental
-            Summary = summaryExperimental
-            Description = descriptionExperimental
-            Version = release.NugetVersion
-            ReleaseNotes = releaseNotes
-            Tags = tagsExperimental
-            OutputPath = "bin"
-            AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        "nuget/FSharp.Data.Experimental.nuspec"
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation

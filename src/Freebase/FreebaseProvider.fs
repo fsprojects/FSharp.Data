@@ -108,7 +108,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                         yield nsk.Namespace ]
                 |> Seq.distinctBy (fun nsp -> (nsp.DomainId.Id, nsp.DomainName))
 
-        let domainCategories = lazy  fbSchema.GetDomainCategories()  
+        let domainCategories = lazy fbSchema.GetDomainCategories()  
 
         let domainTypes = 
            lazy 
@@ -128,9 +128,9 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                                       if not (hashSet.Contains ty.TypeId) then
                                           yield ty ] :> seq<_>) ]
 
-        let getDomains() =  domains.Force()
-        let getDomainCategories() =  domainCategories.Force()
-        let getTypesOfDomain(domainId) =  domainTypes.Force().[domainId].Force()
+        let getDomains() = domains.Force()
+        let getDomainCategories() = domainCategories.Force()
+        let getTypesOfDomain(domainId) = domainTypes.Force().[domainId].Force()
 
         let theServiceTypesClass = ProvidedTypeDefinition("ServiceTypes",baseType=Some typeof<obj>,HideObjectMethods=true)
         theServiceTypesClass.AddXmlDoc (xmlDoc "Contains the types defined in the web data store")
@@ -485,41 +485,31 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
 
         /// Populate the root type (FreebaseData) with properties, one for each Freebase domain. Also include the DomainObjects 
         /// and DataTypes classes.
-        do theServiceType.AddMembersDelayed (fun () -> 
+        do theServiceType.AddMembers <|
             let domainCategories = getDomainCategories()
-            try
-                [ for domainCategory in domainCategories do
-                    if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
-                      if not (domainCategory.DomainCategoryId.Id.StartsWith("/user/")) &&
-                         not (domainCategory.Domains |> Array.forall (fun c -> c.DomainId.Id.StartsWith("/user/"))) then
-                        let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
-                        let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
-                        t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                        t.AddMembersDelayed(fun () -> 
-                            [ for domainInfo in domainCategory.Domains do
-                                if not domainInfo.DomainHidden then 
-                                  let domainName = domainInfo.DomainName
-                                  let domainTypeName = typeNameForDomainObjects domainName
-                                  let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
-                                  let propertyName = tidyName domainName
-                                  let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
-                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
-                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
-                                  yield pi]) 
-                        theDomainObjectsClass.AddMember t
-                        let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
-                                                 GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
-                        p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                        yield p ]
-                with e -> 
-                    let errorMessage = e.Message
-                    let propertyName = 
-                        match e with
-                        | :? FreebaseWebException as e when e.Domain = "usageLimits" && e.Reason = "keyInvalid" -> "Invalid API Key"
-                        | _ -> "Error"
-                    let errorProp = ProvidedProperty(propertyName, typeof<string>, GetterCode = (fun _ -> <@@ failwith errorMessage @@>))
-                    errorProp.AddXmlDoc errorMessage
-                    [errorProp] )
+            [ for domainCategory in domainCategories do
+                if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
+                  if not (domainCategory.DomainCategoryId.Id.StartsWith("/user/")) &&
+                     not (domainCategory.Domains |> Array.forall (fun c -> c.DomainId.Id.StartsWith("/user/"))) then
+                    let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
+                    let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
+                    t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                    t.AddMembersDelayed(fun () -> 
+                        [ for domainInfo in domainCategory.Domains do
+                            if not domainInfo.DomainHidden then 
+                              let domainName = domainInfo.DomainName
+                              let domainTypeName = typeNameForDomainObjects domainName
+                              let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
+                              let propertyName = tidyName domainName
+                              let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
+                                                        GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
+                              pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
+                              yield pi]) 
+                    theDomainObjectsClass.AddMember t
+                    let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
+                                             GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
+                    p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                    yield p ]            
 
         theServiceTypesClass.AddMembers [theServiceType; theDomainObjectsClass ]
 
@@ -530,6 +520,7 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
             [ yield ProvidedMethod ("GetDataContext", [], theServiceType, IsStaticMethod=true,
                                     InvokeCode = (fun _args -> Expr.Call(createDataContext, [  Expr.Value apiKey; Expr.Value serviceUrl; Expr.Value useUnits; Expr.Value snapshotDate; Expr.Value useLocalCache; Expr.Value allowQueryEvaluateOnClientSide  ])))
             ])
+
         theRootType
 
     let defaultNumIndividuals = 1000
