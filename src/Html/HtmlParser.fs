@@ -4,10 +4,8 @@ open System
 open System.IO
 open System.Text
 open FSharp.Data
-
-#if INTERACTIVE
+open FSharp.Data.Http
 open FSharp.Data.Runtime
-#endif
 
 module private TextParser = 
 
@@ -394,8 +392,8 @@ module HtmlParser =
             let! stream = 
                 match IO.isWeb uri with
                 | true -> async { 
-                            let! stream =  Http.InnerRequest(uri.OriginalString, fun _ _ _ _ _ _ stream -> stream) 
-                            return stream :> Stream
+                            let! response =  Http.AsyncRequestStream uri.OriginalString
+                            return response.ResponseStream
                           }
                 | false -> async {
 #if FX_NO_LOCAL_FILESYSTEM

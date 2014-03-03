@@ -5,10 +5,7 @@ open System.ComponentModel
 open System.IO
 open System.Text
 open System.Xml
-
-#if INTERACTIVE
 open FSharp.Data.Runtime
-#endif
 
 type HtmlTableCell = 
     | Cell of bool * string
