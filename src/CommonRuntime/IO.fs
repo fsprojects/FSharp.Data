@@ -102,9 +102,8 @@ let internal asyncOpenStream (_invalidate:((unit->unit)*(IDisposable->unit)) opt
 #if FX_NO_LOCAL_FILESYSTEM
     failwith "Only web locations are supported"
 #else
-    // Open the file, even if it is already opened by another application
-    // unlike in the web case, we don't consume the whole file into memory first
-    let file = File.Open(uri.OriginalString, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream
+    let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
+    let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream
     _invalidate |> Option.iter (watchForChanges uri)
     async.Return file
 #endif
