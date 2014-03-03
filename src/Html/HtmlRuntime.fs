@@ -175,9 +175,6 @@ module Html =
             |> List.mapi parseTable
     
         let parse str = 
-            //TODO: remove this line
-            HtmlParser.parse (new StringReader(str)) |> ignore
-
             str
             |> HtmlDocument.Parse
             |> getTables
