@@ -5,6 +5,7 @@ open System.ComponentModel
 open System.IO
 open System.Text
 open System.Xml
+open FSharp.Data
 open FSharp.Data.Runtime
 
 type HtmlTableCell = 
@@ -173,12 +174,14 @@ module Html =
             List.collect (getElementsNamed ["table"]) doc
             |> List.mapi parseTable
     
-        let parse (str:string) = 
-            match HtmlParser.parse str with
-            | None -> List.empty
-            | Some(doc) ->
-                getTables doc
-                |> List.choose id
+        let parse str = 
+            //TODO: remove this line
+            HtmlParser.parse (new StringReader(str)) |> ignore
+
+            str
+            |> HtmlDocument.Parse
+            |> getTables
+            |> List.choose id
 
         let formatTable (data:HtmlTable) =
             let sb = StringBuilder()

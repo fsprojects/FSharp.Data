@@ -17,7 +17,6 @@ open FSharp.Data
 open FSharp.Data.Http
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
-open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
@@ -283,7 +282,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = asyncReadTextAtRuntime false "" "" uri
+    let! reader = IO.asyncReadTextAtRuntime false "" "" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }

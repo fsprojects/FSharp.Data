@@ -7,6 +7,7 @@
 #load "Html/HtmlRuntime.fs"
 
 open System
+open FSharp.Data
 open FSharp.Data.Runtime
 
 type TableCell = {
@@ -18,7 +19,7 @@ type TableCell = {
 
 let wimbledonFile = __SOURCE_DIRECTORY__ + """\..\tests\FSharp.Data.Tests\Data\wimbledon_wikipedia.html"""
 
-let wimbledon = HtmlParser.parse wimbledonFile |> Option.get
+let wimbledon = HtmlDocument.Parse wimbledonFile
 
 let getTables (HtmlDocument(_, es)) =
     List.collect (Html.getElementsNamed ["table"]) es
@@ -43,4 +44,3 @@ let getHeadersAndData (row:HtmlElement) =
 let parse tables = 
     getTables tables
     |> List.map (getRows >> List.map getHeadersAndData)
-

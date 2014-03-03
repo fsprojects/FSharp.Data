@@ -1,4 +1,4 @@
-﻿namespace FSharp.Data.Runtime
+﻿namespace FSharp.Data
 
 open System
 open System.IO
@@ -9,81 +9,87 @@ open FSharp.Data.Runtime
 
 module private TextParser = 
 
-    let (|NullChar|_|) (c : Char) =
+    let toPattern f c = if f c then Some c else None
+
+    let (|Parse|_|) func value = func value
+
+    let (|NullChar|_|) (c : char) =
         if (c |> int) = 0 then Some c else None
 
-    let (|EndOfFile|_|) (c : Char) =
+    let (|EndOfFile|_|) (c : char) =
         let value = c |> int
         if (value = -1 || value = 65535) then Some c else None
 
-    let (|UpperAtoZ|_|) (c : Char) =
-        if Char.IsUpper(c) then Some c else None
+    let (|UpperAtoZ|_|) = toPattern Char.IsUpper
 
-    let (|LowerAtoZ|_|) (c : Char) =
-        if Char.IsLower(c) then Some c else None
+    let (|LowerAtoZ|_|) = toPattern Char.IsLower
 
-    let (|Number|_|) (c : Char) =
-        if Char.IsNumber(c) then Some c else None
+    let (|Number|_|) = toPattern Char.IsNumber
 
-    let (|Symbol|_|) (c : Char) =
-        if Char.IsPunctuation(c) then Some c else None
+    let (|Symbol|_|) = toPattern Char.IsPunctuation
 
-    let (|Whitespace|_|) (c : Char) =
-        if Char.IsWhiteSpace(c) then Some c else None
+    let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
 
     let (|LetterDigit|_|) = function
         | LowerAtoZ c -> Some c
         | Number c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | UpperAtoZ c -> Some (Char.ToLower c)
         | _ -> None
 
     let (|Letter|_|) = function
         | LowerAtoZ c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | UpperAtoZ c -> Some (Char.ToLower c)
         | _ -> None
 
     let (|LetterDigitSymbol|_|) = function
         | LowerAtoZ c -> Some c
         | Number c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower(c))
+        | UpperAtoZ c -> Some (Char.ToLower c)
         | Symbol c -> Some c
         | _ -> None
 
-type HtmlAttribute = | HtmlAttribute of string * string
+type HtmlAttribute = HtmlAttribute of name:string * value:string
     with
-        member x.Name = 
+        member x.Name =
             match x with
-            | HtmlAttribute(name,_) -> name
-        member x.Value = 
+            | HtmlAttribute(name = name) -> name
+        member x.Value =
             match x with
-            | HtmlAttribute(_,value) -> value
-
-type HtmlToken =
-    | DocType of string
-    | Tag of bool * string * HtmlAttribute list
-    | TagEnd of string
-    | Text of string
-    | CharRef of string
-    | Script of string
-    | Style of string
-    | Comment of string
-    | EOF
+            | HtmlAttribute(value = value) -> value
 
 type HtmlElement =
-    | HtmlElement of string * HtmlAttribute list * HtmlElement list
+    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
     | HtmlCharRef of string
     | HtmlText of string
     | HtmlScript of string
     | HtmlStyle of string
     | HtmlComment of string
 
-type HtmlDocument = | HtmlDocument of string * HtmlElement list
+type HtmlDocument = HtmlDocument of docType:string * elements:HtmlElement list
+    with
+        member x.DocType = 
+            match x with
+            | HtmlDocument(docType = docType) -> docType
+        member x.Elements = 
+            match x with
+            | HtmlDocument(elements = elements) -> elements
 
-module HtmlParser =
+module private HtmlParser =
 
     module private Helpers = 
-        
-        type System.IO.StreamReader with
+
+        type HtmlToken =
+            | DocType of string
+            | Tag of bool * string * HtmlAttribute list
+            | TagEnd of string
+            | Text of string
+            | CharRef of string
+            | Script of string
+            | Style of string
+            | Comment of string
+            | EOF
+
+        type TextReader with
        
             static member NullChar = Convert.ToChar(0x0)
             member x.PeekChar() = x.Peek() |> char
@@ -126,10 +132,10 @@ module HtmlParser =
             CurrentTag : CharList ref
             Content : CharList ref
             InsertionMode : InsertionMode ref
-            Reader : StreamReader
+            Reader : TextReader
         }
         with
-            static member Create(reader:StreamReader) = {
+            static member Create (reader:TextReader) = {
                 Attributes = ref []
                 CurrentTag = ref CharList.Empty
                 Content = ref CharList.Empty
@@ -219,8 +225,8 @@ module HtmlParser =
     open Helpers
     
     //Tokenises a stream into a sequence of HTML tokens. 
-    let private tokenise (sr : #StreamReader) =
-        let state = HtmlState.Create(sr)
+    let private tokenise reader =
+        let state = HtmlState.Create reader
         let rec data (state:HtmlState) =
             match state.Reader.PeekChar() with
             | '<' when (!state.Content).Length > 0 -> state.Emit()
@@ -351,11 +357,11 @@ module HtmlParser =
             | _ -> attributeName state
         
         [
-           while state.Reader.EndOfStream |> not do
+           while state.Reader.Peek() <> -1 do
                yield data state
         ]
     
-    let parseStreamReader sr =
+    let parse reader =
         let rec parse' docType elements tokens =
             match tokens with
             | DocType(dt) :: rest -> parse' dt elements rest
@@ -378,41 +384,32 @@ module HtmlParser =
             | Style(cont) :: rest -> parse' docType (HtmlStyle(cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
-        let docType, _, elements = tokenise sr |> parse' "" []
+        let docType, _, elements = tokenise reader |> parse' "" []
         HtmlDocument(docType, elements)
 
-    let parseString (enc:Encoding) (str:string) = 
-        use ms = new MemoryStream(enc.GetBytes(str))
-        use sr = new StreamReader(ms)
-        parseStreamReader sr
+type HtmlDocument with
 
-    let parseAsync (sampleOrUri:string) = async { 
-        match Uri.TryCreate(sampleOrUri, UriKind.Absolute) with
-        | true, uri ->
-            let! stream = 
-                match IO.isWeb uri with
-                | true -> async { 
-                            let! response =  Http.AsyncRequestStream uri.OriginalString
-                            return response.ResponseStream
-                          }
-                | false -> async {
-#if FX_NO_LOCAL_FILESYSTEM
-                        failwith "Only web locations are supported"
-                        return Unchecked.defaultof<_>
-#else
-                        let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
-                        return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream 
-#endif
-                  }
-            use sr = new StreamReader(stream)
-            let body = parseStreamReader sr
-            return Some(body) 
-        | false, _ ->
-            try
-                return Some <| parseString Encoding.UTF8 sampleOrUri
-            with _ -> 
-                return None 
-        }
+  /// Parses the specified HTML string
+  static member Parse(text) = 
+    use reader = new StringReader(text)
+    HtmlParser.parse reader
 
-    let parse sampleOrUri = 
-        parseAsync sampleOrUri |> Async.RunSynchronously
+  /// Loads HTML from the specified stream
+  static member Load(stream:Stream) = 
+    use reader = new StreamReader(stream)
+    HtmlParser.parse reader
+
+  /// Loads HTML from the specified reader
+  static member Load(reader:TextReader) = 
+    HtmlParser.parse reader
+
+  /// Loads HTML from the specified uri asynchronously
+  static member AsyncLoad(uri:string) = async {
+    let! reader = IO.asyncReadTextAtRuntime false "" "" uri
+    return HtmlParser.parse reader
+  }
+
+  /// Loads HTML from the specified uri
+  static member Load(uri:string) =
+    HtmlDocument.AsyncLoad(uri)
+    |> Async.RunSynchronously
