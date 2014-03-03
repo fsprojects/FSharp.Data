@@ -123,11 +123,11 @@ type JsonRuntime =
         else "a " + name
     match opt, originalValue with 
     | Some value, _ -> value
-    | None, Some ((JsonValue.Array _ | JsonValue.Object _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(SaveOptions.DisableFormatting)
+    | None, Some ((JsonValue.Array _ | JsonValue.Object _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
     | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
     | None, _ when typeof<'T> = typeof<float> -> Double.NaN |> unbox
     | None, None -> failwithf "'%s' is missing" path
-    | None, Some x -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(SaveOptions.DisableFormatting)
+    | None, Some x -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Converts JSON array to array of target types
   static member ConvertArray<'T>(doc:IJsonDocument, mapping:Func<IJsonDocument,'T>) = 
@@ -139,7 +139,7 @@ type JsonRuntime =
                                 | _ -> true)
         |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
     | JsonValue.Null -> [| |]
-    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(SaveOptions.DisableFormatting)
+    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get optional json property
   static member TryGetPropertyUnpacked(doc:IJsonDocument, name) =
@@ -160,7 +160,7 @@ type JsonRuntime =
   static member GetPropertyPacked(doc:IJsonDocument, name) =
     match JsonRuntime.TryGetPropertyPacked(doc, name) with
     | Some doc -> doc
-    | None -> failwithf "Property '%s' not found at '%s': %s" name doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
+    | None -> failwithf "Property '%s' not found at '%s': %s" name doc.Path <| doc.JsonValue.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Get json property and wrap in json document, and return null if not found
   static member GetPropertyPackedOrNull(doc:IJsonDocument, name) =
@@ -207,20 +207,20 @@ type JsonRuntime =
         |> Array.filter (JsonRuntime.Matches cultureStr (InferedTypeTag.ParseCode tagCode))
         |> Array.mapi (fun i value -> doc.CreateNew(value, "[" + (string i) + "]") |> mapping.Invoke)
     | JsonValue.Null -> [| |]
-    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(SaveOptions.DisableFormatting)
+    | x -> failwithf "Expecting an array at '%s', got %s" doc.Path <| x.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Returns single or no value from an array matching the specified tag
   static member TryGetArrayChildByTypeTag<'T>(doc, cultureStr, tagCode, mapping:Func<IJsonDocument,'T>) = 
     match JsonRuntime.GetArrayChildrenByTypeTag(doc, cultureStr, tagCode, mapping) with
     | [| child |] -> Some child
     | [| |] -> None
-    | _ -> failwithf "Expecting an array with single or no elements at '%s', got %s" doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Expecting an array with single or no elements at '%s', got %s" doc.Path <| doc.JsonValue.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Returns a single array children that matches the specified tag
   static member GetArrayChildByTypeTag(doc, cultureStr, tagCode) = 
     match JsonRuntime.GetArrayChildrenByTypeTag(doc, cultureStr, tagCode, Func<_,_>(id)) with
     | [| child |] -> child
-    | _ -> failwithf "Expecting an array with single element at '%s', got %s" doc.Path <| doc.JsonValue.ToString(SaveOptions.DisableFormatting)
+    | _ -> failwithf "Expecting an array with single element at '%s', got %s" doc.Path <| doc.JsonValue.ToString(JsonSaveOptions.DisableFormatting)
 
   /// Returns a single or no value by tag type
   static member TryGetValueByTypeTag<'T>(doc:IJsonDocument, cultureStr, tagCode, mapping:Func<IJsonDocument,'T>) = 
