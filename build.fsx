@@ -41,12 +41,13 @@ let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 let release = 
     File.ReadLines "RELEASE_NOTES.md" 
     |> ReleaseNotesHelper.parseReleaseNotes
+
 let isAppVeyorBuild = environVar "APPVEYOR" <> null
 let nugetVersion = 
     if isAppVeyorBuild then sprintf "%s-a%s" release.NugetVersion (DateTime.UtcNow.ToString "yyMMddHHmm")
     else release.NugetVersion
 
-Target "BuildVersion" (fun _ ->
+Target "AppVeyorBuildVersion" (fun _ ->
     Shell.Exec("appveyor", sprintf "UpdateBuild -Version \"%s\"" nugetVersion) |> ignore
 )
 
@@ -236,15 +237,17 @@ Target "Help" <| fun () ->
     printfn ""
     printfn "  Other targets:"
     printfn "  * CleanInternetCaches"
+#if MONO
+#else
+    printfn "  * SourceLink (requires autocrlf=input)"
+#endif
+    printfn ""
 
-Target "Start" DoNothing
 Target "All" DoNothing
 
-"Start" ==> "Clean" ==> "AssemblyInfo" ==> "Build"
+"Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
 "RunTests" ==> "All"
-"Start" =?> ("BuildVersion", isAppVeyorBuild) ==> "Clean"
-"Start" =?> ("All", isAppVeyorBuild) =?> ("SourceLink", isAppVeyorBuild) ==> "NuGet"
 
 RunTargetOrDefault "Help"

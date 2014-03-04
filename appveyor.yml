@@ -1,8 +1,11 @@
 build_script:
-  - cmd: build.cmd %fakeargs%
+  - cmd: build.cmd CleanInternetCaches
+  - cmd: build.cmd AppVeyorBuildVersion
+  - cmd: build.cmd All
+  - cmd: build.cmd SourceLink
+  - cmd: build.cmd NuGet
 test: off
 artifacts:
   - path: bin\*.nupkg
 environment:
-  fakeargs: nuget
   FREEBASE_API_KEY: AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
