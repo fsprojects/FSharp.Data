@@ -12,8 +12,11 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 - Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
 
-  * Windows: Run *build.cmd* [![Windows build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
-  * Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
+  * Windows: Run *build.cmd* 
+    * [![TeamCity build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
+    * [![AppVeyor build status](https://ci-beta.appveyor.com/api/projects/status/72r4hc3m1jpkvm2u)](https://ci-beta.appveyor.com/project/ovatsus/fsharp-data-855)
+  * Mono: Run *build.sh*
+    * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
 
 ## Supported platforms
 

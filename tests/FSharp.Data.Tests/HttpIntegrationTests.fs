@@ -9,7 +9,8 @@ open NUnit.Framework
 open FsUnit
 open Nancy
 open Nancy.Hosting.Self
-open FSharp.Data.Http
+open FSharp.Data
+open FSharp.Data.HttpRequestHeaders
 
 // ? operator to get values from a Nancy DynamicDictionary
 let (?) (parameters:obj) param =
@@ -51,7 +52,7 @@ let ``should set everything correctly in the HTTP request`` ()=
 [<Test>]
 let ``should return the http status code for all response types`` () =
     Http.Request("http://localhost:1235/TestServer/GoodStatusCode").StatusCode |> should equal 200
-    Http.Request("http://localhost:1235/TestServer/BadStatusCode", dontThrowOnHttpError=true).StatusCode |> should equal 401
+    Http.Request("http://localhost:1235/TestServer/BadStatusCode", silentHttpErrors=true).StatusCode |> should equal 401
 
 [<Test>]
 let ``should return the entity body as a string`` () =
@@ -63,17 +64,17 @@ let ``should return an empty string when there is no body`` () =
 
 [<Test>]
 let ``all details of the response should be available`` () =
-    let response = Http.Request("http://localhost:1235/TestServer/AllTheThings", dontThrowOnHttpError=true)
+    let response = Http.Request("http://localhost:1235/TestServer/AllTheThings", silentHttpErrors=true)
     response.StatusCode |> should equal 418
     response.Body |> should equal (Text "Some JSON or whatever")
 //    response.Cookies.["cookie1"] |> should equal "chocolate+chip" // cookies get encoded
 //    response.Cookies.["cookie2"] |> should equal "smarties"
-    response.Headers.[ResponseContentEncoding] |> should equal "xpto"
-    response.Headers.[NonStandard "X-New-Fangled-Header"] |> should equal "some value"
+    response.Headers.[HttpResponseHeaders.ContentEncoding] |> should equal "xpto"
+    response.Headers.["X-New-Fangled-Header"] |> should equal "some value"
 
 [<Test>]
 let ``when called on a non-existant page returns 404`` () =
-    Http.Request("http://localhost:1235/TestServer/NoPage", dontThrowOnHttpError=true).StatusCode |> should equal 404
+    Http.Request("http://localhost:1235/TestServer/NoPage", silentHttpErrors=true).StatusCode |> should equal 404
 
 [<Test>]
 [<Platform("Net")>]
@@ -88,7 +89,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
                              ContentMD5 "Q2hlY2sgSW50ZWdyaXR5IQ=="
                              ContentType "application/json"
                              Date (DateTime(1999, 12, 31, 11, 59, 59))
-                             Expect 100
+                             Expect "100"
                              From "user@example.com"
                              IfMatch "737060cd8c284d8af7ad3082f209582d"
                              IfModifiedSince (DateTime(2000, 12, 31, 11, 59, 59))
@@ -104,7 +105,7 @@ let ``all of the manually-set request headers get sent to the server`` ()=
                              UserAgent "(X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/21.0"
                              Via "1.0 fred, 1.1 example.com (Apache/1.1)"
                              Warning "199 Miscellaneous warning"
-                             Custom("X-Greeting", "Happy Birthday") ]) |> ignore
+                             "X-Greeting", "Happy Birthday" ]) |> ignore
 
     MockServer.recordedRequest.Value |> should notEqual null
     MockServer.recordedRequest.Value.Headers.Accept |> should contain ("application/xml", 1m)
@@ -152,31 +153,33 @@ let ``accept-encoding header is set automatically when decompression scheme is s
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "gzip"
     MockServer.recordedRequest.Value.Headers.AcceptEncoding |> should contain "deflate"
 
+open FSharp.Data.HttpResponseHeaders
+
 [<Test>]
 let ``all of the response headers are available`` () =
     let response = Http.Request "http://localhost:1235/TestServer/AllHeaders" 
     response.Headers.[AccessControlAllowOrigin] |> should equal "*"
     response.Headers.[AcceptRanges] |> should equal "bytes"
     response.Headers.[Age] |> should equal "12"
-    response.Headers.[ResponseAllow] |> should equal "GET, HEAD"
-    response.Headers.[ResponseCacheControl] |> should equal "max-age=3600"
+    response.Headers.[Allow] |> should equal "GET, HEAD"
+    response.Headers.[CacheControl] |> should equal "max-age=3600"
     //response.Headers.[Connection] |> should equal "close" // don't seem to get connection header from nancy
-    response.Headers.[ResponseContentEncoding] |> should equal "blah"
-    response.Headers.[ResponseContentLanguage] |> should equal "EN-gb"
-    response.Headers.[ResponseContentLocation] |> should equal "/index.htm"
-    response.Headers.[ResponseContentMD5] |> should equal "Q2hlY2sgSW50ZWdyaXR5IQ=="
-    response.Headers.[ResponseContentDisposition] |> should equal "attachment; filename=\"fname.ext\""
-    response.Headers.[ResponseContentRange] |> should equal "bytes 21010-47021/47022"
-    response.Headers.[ResponseContentType] |> should equal "text/html; charset=utf-8"
-    let (parsedOK,_) = DateTime.TryParse(response.Headers.[ResponseDate])
+    response.Headers.[ContentEncoding] |> should equal "blah"
+    response.Headers.[ContentLanguage] |> should equal "EN-gb"
+    response.Headers.[ContentLocation] |> should equal "/index.htm"
+    response.Headers.[ContentMD5] |> should equal "Q2hlY2sgSW50ZWdyaXR5IQ=="
+    response.Headers.[ContentDisposition] |> should equal "attachment; filename=\"fname.ext\""
+    response.Headers.[ContentRange] |> should equal "bytes 21010-47021/47022"
+    response.Headers.[ContentType] |> should equal "text/html; charset=utf-8"
+    let (parsedOK,_) = DateTime.TryParse(response.Headers.[Date])
     parsedOK |> should equal true
     response.Headers.[ETag] |> should equal "737060cd8c284d8af7ad3082f209582d"
-    response.Headers.[ResponseExpires] |> should equal "Thu, 01 Dec 1994 16:00:00 GMT"
-    response.Headers.[ResponseLastModified] |> should equal "Tue, 15 Nov 1994 12:45:26 +0000"
+    response.Headers.[Expires] |> should equal "Thu, 01 Dec 1994 16:00:00 GMT"
+    response.Headers.[LastModified] |> should equal "Tue, 15 Nov 1994 12:45:26 +0000"
     response.Headers.[Link] |> should equal "</feed>; rel=\"alternate\""
     response.Headers.[Location] |> should equal "http://www.w3.org/pub/WWW/People.html"
     response.Headers.[P3P] |> should equal "CP=\"your_compact_policy\""
-    response.Headers.[ResponsePragma] |> should equal "no-cache"
+    response.Headers.[Pragma] |> should equal "no-cache"
     response.Headers.[ProxyAuthenticate] |> should equal "Basic"
     response.Headers.[Refresh] |> should equal "5; url=http://www.w3.org/pub/WWW/People.html"
     response.Headers.[RetryAfter] |> should equal "120"
@@ -185,16 +188,16 @@ let ``all of the response headers are available`` () =
     else
         response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
     response.Headers.[StrictTransportSecurity] |> should equal "max-age=16070400; includeSubDomains"
-    response.Headers.[ResponseTrailer] |> should equal "Max-Forwards"
+    response.Headers.[Trailer] |> should equal "Max-Forwards"
     if runningOnMono then
         response.Headers.[TransferEncoding] |> should equal "chunked,chunked"
     else
         response.Headers.[TransferEncoding] |> should equal "chunked"
     response.Headers.[Vary] |> should equal "*"
-    response.Headers.[ResponseVia] |> should equal "1.0 fred, 1.1 example.com (Apache/1.1)"
-    response.Headers.[ResponseWarning] |> should equal "199 Miscellaneous warning"
+    response.Headers.[Via] |> should equal "1.0 fred, 1.1 example.com (Apache/1.1)"
+    response.Headers.[Warning] |> should equal "199 Miscellaneous warning"
     response.Headers.[WWWAuthenticate] |> should equal "Basic"
-    response.Headers.[NonStandard("X-New-Fangled-Header")] |> should equal "some value"
+    response.Headers.["X-New-Fangled-Header"] |> should equal "some value"
 
 [<Test>]
 let ``if a response character encoding is specified, that encoding is used regardless of what the response content-type specifies`` () =

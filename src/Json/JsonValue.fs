@@ -14,7 +14,6 @@ open System.IO
 open System.Text
 open System.Globalization
 open FSharp.Data
-open FSharp.Data.Http
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.HttpUtils
 
@@ -297,7 +296,7 @@ type JsonValue with
     Http.Request(
       uri,
       body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = [ContentType HttpContentTypes.Json])
+      headers = [HttpRequestHeaders.ContentType HttpContentTypes.Json])
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =

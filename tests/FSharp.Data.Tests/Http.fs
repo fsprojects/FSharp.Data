@@ -9,13 +9,14 @@ module FSharp.Data.Tests.Http
 open FsUnit
 open NUnit.Framework
 open System
-open FSharp.Data.Http
+open FSharp.Data
+open FSharp.Data.HttpRequestHeaders
 
 [<Test>]
 let ``Don't throw exceptions on http error`` () = 
-    let response = Http.Request("http://api.themoviedb.org/3/search/movie", dontThrowOnHttpError = true)
+    let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
     response.StatusCode |> should equal 401
-    response.Body |> should equal (HttpResponseBody.Text """{"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}""")
+    response.Body |> should equal (Text """{"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}""")
 
 [<Test>]
 let ``Throw exceptions on http error`` () = 
@@ -34,12 +35,12 @@ let ``If the same header is added multiple times, throws an exception`` () =
 
 [<Test>]
 let ``If a custom header with the same name is added multiple times, an exception is thrown`` () =
-    (fun () -> Http.RequestString("http://www.google.com", headers = [ Custom(Name="c1", Value="v1"); Custom(Name="c1", Value="v2") ]) |> ignore)
+    (fun () -> Http.RequestString("http://www.google.com", headers = [ "c1", "v1"; "c1", "v2" ]) |> ignore)
     |> should throw typeof<Exception>
 
 [<Test>]
 let ``Two custom header with different names don't throw an exception`` () =
-    Http.RequestString("http://www.google.com", headers = [ Custom(Name="c1", Value="v1"); Custom(Name="c2", Value="v2") ]) |> ignore
+    Http.RequestString("http://www.google.com", headers = [ "c1", "v1"; "c2", "v2" ]) |> ignore
 
 [<Test>]
 let ``A request with an invalid url throws an exception`` () =

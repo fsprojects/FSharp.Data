@@ -25,7 +25,7 @@ F# Dataライブラリにはオーバーロードを持った4つのメソッド
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Data.Http
+open FSharp.Data
 
 (**
 ## 単純なリクエストの送信
@@ -55,7 +55,7 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
 省略した場合には自動的にGETになります：
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod=Get)
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="Get")
 
 (** 
 同じように、省略可能な引数 `headers` を使うと追加のヘッダを指定できます。
@@ -73,10 +73,54 @@ let apiKey = "<登録してキーを取得してください>"
 
 // HTTP Webリクエストを実行
 Http.RequestString
+  ( "http://api.themoviedb.org/3/search/movie", httpMethod = "GET",
+    query   = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ "Accept", "application/json" ])
+
+(**
+このライブラリでは(先の例のように)単純かつチェックのない文字列ベースのAPIがサポートされていますが、
+スペルミスを防ぐことができるよう、あらかじめ定義されたヘッダ名を使うこともできます。
+名前付きヘッダは `HttpRequestHeaders` (および `HttpResponseHeaders`) モジュールで定義されているため、
+`HttpRequestHeaders.Accept` のようにフルネームを指定するか、
+以下の例のようにモジュールをオープンしておいてから `Accept` のような短い名前で指定することになります。
+同様に、 `HttpContentTypes` 列挙体には既知のコンテンツタイプ名が定義されています：
+*)
+open FSharp.Data.HttpRequestHeaders
+
+// HTTP Webリクエストを実行
+Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey
-                "query", "batman" ],
+    query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
+
+(** ## 特別な情報の取得
+
+先のコードスニペットでは、正しいAPIキーを指定しなかった場合には(401)認証エラーが返され、
+例外が発生することに注意してください。
+ただし `WebRequest` を直接使用した場合とは異なり、例外メッセージには返されたコンテンツの情報も含まれるため、
+サーバーが特別な情報を返すような場合であってもF# Interactiveで簡単にデバッグできます。
+
+また `silentHttpErrors` 引数を設定することによって例外を無効化することもできます:
+*)
+
+Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+// {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"} が返される
+
+(** この場合にはHTTPステータスコードを確認すればよいため、実際にレスポンスとして返されたデータと
+エラーメッセージとを混同することもないでしょう。
+ステータスコードやレスポンスヘッダー、返されたクッキー、レスポンスURL
+(リダイレクトされた場合にはリクエストを投げたURLとは別の値が返されることがあります)など、
+レスポンスの詳細を確認したい場合には `RequestString` の代わりに `Request` メソッドを使用します:
+
+*)
+
+let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+
+// レスポンスの詳細を確認する
+response.Headers
+response.Cookies
+response.ResponseUrl
+response.StatusCode
 
 (**
 ## リクエストデータの送信
@@ -94,7 +138,7 @@ bodyを指定した場合、引数 `httpMethod` には自動的に `Post` が設
 明示的に指定する必要はありません。
 
 以下ではリクエストの詳細を返すサービス
-[httpbin.org](http://httpbin.org) 
+[httpbin.org](http://httpbin.org)
 を使っています：
 *)
 
@@ -102,7 +146,7 @@ Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 
 (**
 デフォルトでは `Content-Type` ヘッダには `HttpRequestBody` に指定した値に応じて
-`text/plain` `application-x-www-form-urlencoded` `application-octet-stream`
+`text/plain` `application/x-www-form-urlencoded` `application/octet-stream`
 のいずれかが設定されます。
 ただしオプション引数 `headers` を使ってヘッダのリストに `content-type` を
 追加することでこの動作を変更できます：
@@ -156,22 +200,6 @@ let docInFSharp =
 docInFSharp.Contains "<a>F#</a>"
 
 (**
-## 特別な情報を取得する
-
-ステータスコードやレスポンスヘッダ、
-戻されたクッキーやレスポンスURL(リダイレクトされた場合にはリクエストしたURLと
-異なるURLが返されることがあります)など、
-*)
-
-let response = Http.Request(msdnUrl "system.web.httprequest")
-
-// レスポンスに関する情報を表示
-response.Headers
-response.Cookies
-response.ResponseUrl
-response.StatusCode
-
-(**
 ## バイナリデータの送信
 
 
@@ -182,9 +210,9 @@ response.StatusCode
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| HttpResponseBody.Text text -> 
+| Text text -> 
     printfn "Got text content: %s" text
-| HttpResponseBody.Binary bytes -> 
+| Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**

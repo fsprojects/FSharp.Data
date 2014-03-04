@@ -2,7 +2,7 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
-namespace FSharp.Data.Http
+namespace FSharp.Data
 
 open System
 open System.Globalization
@@ -13,110 +13,195 @@ open System.Reflection
 open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
-type HttpMethod =
-    | Options 
-    | Get 
-    | Head 
-    | Post 
-    | Put 
-    | Delete 
-    | Trace 
-    | Connect
-    override x.ToString() =
-        (sprintf "%A" x).ToUpperInvariant()
+module HttpMethod =
+    /// Request information about the communication options available on the request/response chain identified by the URI
+    let Options = "OPTIONS"
+    /// Retrieve whatever information (in the form of an entity) is identified by the URI
+    let Get = "GET"
+    /// Identical to GET except that the server MUST NOT return a message-body in the response
+    let Head = "HEAD"
+    /// Requests that the server accepts the entity enclosed in the request as a 
+    /// new subordinate of the resource identified by the Request-URI in the Request-Line
+    let Post = "POST"
+    /// Requests that the enclosed entity be stored under the supplied Request-URI
+    let Put = "PUT"
+    /// Requests that the origin server deletes the resource identified by the Request-URI
+    let Delete = "DELETE"
+    /// Used to invoke a remote, application-layer loop- back of the request message
+    let Trace = "TRACE"
+    /// Reserved for use with a proxy that can dynamically switch to being a tunnel 
+    let Connect = "CONNECT"
 
 /// Header to send in an HTTP request
-type HttpRequestHeader =
-    | Accept of string
-    | AcceptCharset of string
-    | AcceptDatetime of DateTime
-    | AcceptEncoding of string
-    | AcceptLanguage of string
-    | Allow of string
-    | Authorization of string
-    | CacheControl of string
-    | Connection of string
-    | ContentEncoding of string
-    | ContentLanguage of string
-    | ContentLocation of string
-    | ContentMD5 of string
-    | ContentRange of string
-    | ContentType of string
-    | Date of DateTime
-    | Expect of int
-    | Expires of DateTime
-    | From of string
-    | Host of string
-    | IfMatch of string
-    | IfModifiedSince of DateTime
-    | IfNoneMatch of string
-    | IfRange of string
-    | IfUnmodifiedSince of DateTime
-    | KeepAlive of string
-    | LastModified of DateTime
-    | MaxForwards of int
-    | Origin of string
-    | Pragma of string
-    | ProxyAuthorization of string
-    | Range of Start:int64 * Finish:int64
-    | Referer of string
-    | TE of string
-    | Trailer of string
-    | Translate of string
-    | Upgrade of string
-    | UserAgent of string
-    | Via of string
-    | Warning of string
-    | XHTTPMethodOverride of HttpMethod
-    | Custom of Name:string * Value:string
+module HttpRequestHeaders =
+    /// Content-Types that are acceptable for the response
+    let Accept (contentType:string) = "Accept", contentType
+    /// Character sets that are acceptable
+    let AcceptCharset (characterSets:string) = "Accept-Charset", characterSets
+    /// Acceptable version in time 
+    let AcceptDatetime (dateTime:DateTime) = "Accept-Datetime", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    /// List of acceptable encodings. See HTTP compression.
+    let AcceptEncoding (encoding:string) = "Accept-Encoding", encoding
+    /// List of acceptable human languages for response 
+    let AcceptLanguage (language:string) = "Accept-Language", language
+    /// The Allow header, which specifies the set of HTTP methods supported.
+    let Allow (methods:string) = "Allow", methods
+    /// Authentication credentials for HTTP authentication
+    let Authorization (credentials:string) = "Authorization", credentials
+    /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain 
+    let CacheControl (control:string) = "Cache-Control", control
+    /// What type of connection the user-agent would prefer 
+    let Connection (connection:string) = "Connection", connection
+    /// The type of encoding used on the data
+    let ContentEncoding (encoding:string) = "Content-Encoding", encoding
+    /// The language the content is in
+    let ContentLanguage (language:string) = "Content-Language", language
+    /// An alternate location for the returned data
+    let ContentLocation (location:string) = "Content-Location", location
+    /// A Base64-encoded binary MD5 sum of the content of the request body
+    let ContentMD5 (md5sum:string) = "Content-MD5", md5sum
+    /// Where in a full body message this partial message belongs
+    let ContentRange (range:string) = "Content-Range", range
+    /// The MIME type of the body of the request (used with POST and PUT requests)
+    let ContentType (contentType:string) = "Content-Type", contentType
+    /// The date and time that the message was sent
+    let Date (date:DateTime) = "Date", date.ToString("R", CultureInfo.InvariantCulture)
+    /// Indicates that particular server behaviors are required by the client
+    let Expect (behaviors:string) = "Expect", behaviors
+    /// Gives the date/time after which the response is considered stale
+    let Expires (dateTime:DateTime) = "Expires", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    /// The email address of the user making the request 
+    let From (email:string) = "From", email
+    /// The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening. 
+    /// The port number may be omitted if the port is the standard port for the service requested.
+    let Host (host:string) = "Host", host
+    /// Only perform the action if the client supplied entity matches the same entity on the server. 
+    /// This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent 
+    let IfMatch (entity:string) = "If-Match", entity
+    /// Allows a 304 Not Modified to be returned if content is unchanged 
+    let IfModifiedSince (dateTime:DateTime) = "If-Modified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    /// Allows a 304 Not Modified to be returned if content is unchanged
+    let IfNoneMatch (etag:string) = "If-None-Match", etag
+    /// If the entity is unchanged, send me the part(s) that I am missing; otherwise, send me the entire new entity
+    let IfRange (range:string) = "If-Range", range
+    /// Only send the response if the entity has not been modified since a specific time
+    let IfUnmodifiedSince (dateTime:DateTime) = "If-Unmodified-Since", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    /// Specifies a parameter used into order to maintain a persistent connection
+    let KeepAlive (keepAlive:string) = "Keep-Alive", keepAlive
+    /// Specifies the date and time at which the accompanying body data was last modified
+    let LastModified (dateTime:DateTime) = "Last-Modified", dateTime.ToString("R", CultureInfo.InvariantCulture)
+    /// Limit the number of times the message can be forwarded through proxies or gateways
+    let MaxForwards (count:int) = "Max-Forwards", count.ToString()
+    /// Initiates a request for cross-origin resource sharing (asks server for an 'Access-Control-Allow-Origin' response header)
+    let Origin (origin:string) = "Origin", origin
+    /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
+    let Pragma (pragma:string) = "Pragma", pragma
+    /// Authorization credentials for connecting to a proxy. 
+    let ProxyAuthorization (credentials:string) = "Proxy-Authorization", credentials
+    /// Request only part of an entity. Bytes are numbered from 0
+    let Range (start:int64, finish:int64) = "Range", sprintf "bytes=%d-%d" start finish
+    /// This is the address of the previous web page from which a link to the currently requested page was followed. (The word "referrer" is misspelled in the RFC as well as in most implementations.) 
+    let Referer (referer:string) = "Referer", referer
+    /// The transfer encodings the user agent is willing to accept: the same values as for the response header 
+    /// Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to 
+    /// notify the server it expects to receive additional headers (the trailers) after the last, zero-sized, chunk.
+    let TE (te:string) = "TE", te
+    /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding
+    let Trailer (trailer:string) = "Trailer", trailer
+    /// Microsoft extension to the HTTP specification used in conjunction with WebDAV functionality.
+    let Translate (translate:string) = "Translate", translate 
+    /// Specifies additional communications protocols that the client supports.
+    let Upgrade (upgrade:string) = "Upgrade", upgrade
+    /// The user agent string of the user agent
+    let UserAgent (userAgent:string) = "User-Agent", userAgent
+    /// Informs the server of proxies through which the request was sent
+    let Via (server:string) = "Via", server
+    /// A general warning about possible problems with the entity body
+    let Warning (message:string) = "Warning", message
+    /// Override HTTP method. 
+    let XHTTPMethodOverride (httpMethod:string) = "X-HTTP-Method-Override", httpMethod
 
-/// Header present in an HTTP response
-type HttpResponseHeader =
-    | AccessControlAllowOrigin 
-    | AcceptRanges 
-    | Age 
-    | ResponseAllow 
-    | ResponseCacheControl 
-    | ResponseConnection 
-    | ResponseContentEncoding 
-    | ResponseContentLanguage 
-    | ResponseContentLength
-    | ResponseContentLocation 
-    | ResponseContentMD5 
-    | ResponseContentDisposition 
-    | ResponseContentRange 
-    | ResponseContentType 
-    | ResponseDate 
-    | ETag 
-    | ResponseExpires 
-    | ResponseLastModified 
-    | Link 
-    | Location 
-    | P3P 
-    | ResponsePragma 
-    | ProxyAuthenticate 
-    | Refresh 
-    | RetryAfter 
-    | Server 
-    | SetCookie
-    | Status
-    | StrictTransportSecurity 
-    | ResponseTrailer 
-    | TransferEncoding 
-    | Vary 
-    | ResponseVia 
-    | ResponseWarning 
-    | WWWAuthenticate
-    | XAspNetMvcVersion
-    | XAspNetVersion
-    | XContentTypeOptions
-    | XInstance
-    | XPoweredBy
-    | XRuntime
-    | XUACompatible
-    | XVersion
-    | NonStandard of string
-     
+/// Header received in an HTTP response
+module HttpResponseHeaders =
+    /// Specifying which web sites can participate in cross-origin resource sharing
+    let [<Literal>] AccessControlAllowOrigin = "Access-Control-Allow-Origin"
+    /// What partial content range types this server supports
+    let [<Literal>] AcceptRanges = "Accept-Ranges"
+    /// The age the object has been in a proxy cache in seconds
+    let [<Literal>] Age = "Age"
+    /// Valid actions for a specified resource. To be used for a 405 Method not allowed
+    let [<Literal>] Allow = "Allow"
+    /// Tells all caching mechanisms from server to client whether they may cache this object. It is measured in seconds
+    let [<Literal>] CacheControl = "Cache-Control"
+    /// Options that are desired for the connection
+    let [<Literal>] Connection = "Connection"
+    /// The type of encoding used on the data. See HTTP compression.
+    let [<Literal>] ContentEncoding = "Content-Encoding"
+    /// The language the content is in
+    let [<Literal>] ContentLanguage = "Content-Language"
+    /// The length of the response body in octets (8-bit bytes)
+    let [<Literal>] ContentLength = "Content-Length"
+    /// An alternate location for the returned data
+    let [<Literal>] ContentLocation = "Content-Location"
+    /// A Base64-encoded binary MD5 sum of the content of the response
+    let [<Literal>] ContentMD5 = "Content-MD5"
+    /// An opportunity to raise a "File Download" dialogue box for a known MIME type with binary format or suggest a filename for dynamic content. Quotes are necessary with special characters.
+    let [<Literal>] ContentDisposition = "Content-Disposition"
+    /// Where in a full body message this partial message belongs
+    let [<Literal>] ContentRange = "Content-Range"
+    /// The MIME type of this content
+    let [<Literal>] ContentType = "Content-Type"
+    /// The date and time that the message was sent (in "HTTP-date" format as defined by RFC 2616)
+    let [<Literal>] Date = "Date"
+    /// An identifier for a specific version of a resource, often a message digest
+    let [<Literal>] ETag = "ETag"
+    /// Gives the date/time after which the response is considered stale
+    let [<Literal>] Expires = "Expires"
+    /// The last modified date for the requested object 
+    let [<Literal>] LastModified = "Last-Modified"
+    /// Used to express a typed relationship with another resource, where the relation type is defined by RFC 5988
+    let [<Literal>] Link = "Link"
+    /// Used in redirection, or when a new resource has been created.
+    let [<Literal>] Location = "Location"
+    /// This header is supposed to set P3P policy
+    let [<Literal>] P3P = "P3P"
+    /// Implementation-specific headers that may have various effects anywhere along the request-response chain.
+    let [<Literal>] Pragma = "Pragma"
+    /// Request authentication to access the proxy.
+    let [<Literal>] ProxyAuthenticate = "Proxy-Authenticate"
+    /// Used in redirection, or when a new resource has been created. This refresh redirects after 5 seconds.
+    let [<Literal>] Refresh = "Refresh"
+    /// If an entity is temporarily unavailable, this instructs the client to try again later. Value could be a specified period of time (in seconds) or a HTTP-date.[28]
+    let [<Literal>] RetryAfter = "Retry-After"
+    /// A name for the server
+    let [<Literal>] Server = "Server"
+    /// An HTTP cookie
+    let [<Literal>] SetCookie = "Set-Cookie"
+    /// The HTTP status of the response
+    let [<Literal>] Status = "Status"
+    /// A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains.
+    let [<Literal>] StrictTransportSecurity = "Strict-Transport-Security"
+    /// The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding.
+    let [<Literal>] Trailer = "Trailer"
+    /// The form of encoding used to safely transfer the entity to the user. Currently defined methods are: chunked, compress, deflate, gzip, identity.
+    let [<Literal>] TransferEncoding = "Transfer-Encoding"
+    /// Tells downstream proxies how to match future request headers to decide whether the cached response can be used rather than requesting a fresh one from the origin server.
+    let [<Literal>] Vary = "Vary"
+    /// Informs the client of proxies through which the response was sent. 
+    let [<Literal>] Via = "Via"
+    /// A general warning about possible problems with the entity body.
+    let [<Literal>] Warning = "Warning"
+    /// Indicates the authentication scheme that should be used to access the requested entity.
+    let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
+    let [<Literal>] XAspNetMvcVersion = "X-AspNetMvc-Version"
+    let [<Literal>] XAspNetVersion = "X-AspNet-Version"
+    let [<Literal>] XContentTypeOptions = "X-Content-Type-Options"
+    let [<Literal>] XInstance = "X-Instance"
+    let [<Literal>] XPoweredBy = "X-Powered-By"
+    let [<Literal>] XRuntime = "X-Runtime"
+    let [<Literal>] XUACompatible = "X-UA-Compatible"
+    let [<Literal>] XVersion = "X-Version"
+
 /// The body to send in an HTTP request
 type HttpRequestBody =
     | TextRequest of string
@@ -133,7 +218,7 @@ type HttpResponse =
   { Body : HttpResponseBody
     StatusCode: int
     ResponseUrl : string
-    Headers : Map<HttpResponseHeader,string>
+    Headers : Map<string,string>
     Cookies : Map<string,string> }
 
 /// The response returned by an HTTP request with direct access to the response stream
@@ -141,57 +226,41 @@ type HttpResponseWithStream =
   { ResponseStream : Stream
     StatusCode: int
     ResponseUrl : string
-    Headers : Map<HttpResponseHeader,string>
+    Headers : Map<string,string>
     Cookies : Map<string,string> }
 
-[<AbstractClass>]
 /// Constants for common HTTP content types
-type HttpContentTypes private() =
-
+module HttpContentTypes =
     /// plain/text
-    static member Text = "plain/text"
-
+    let [<Literal>] Text = "plain/text"
     /// application/octet-stream
-    static member Binary = "application/octet-stream"
-
+    let [<Literal>] Binary = "application/octet-stream"
     /// application/octet-stream
-    static member Zip = "application/zip"
-
+    let [<Literal>] Zip = "application/zip"
     /// application/octet-stream
-    static member GZip = "application/gzip"
-
+    let [<Literal>] GZip = "application/gzip"
     /// application/x-www-form-urlencoded
-    static member FormValues = "application/x-www-form-urlencoded"
-
+    let [<Literal>] FormValues = "application/x-www-form-urlencoded"
     /// application/json
-    static member Json = "application/json"
-
+    let [<Literal>] Json = "application/json"
     /// application/javascript
-    static member JavaScript = "application/javascript"
-
+    let [<Literal>] JavaScript = "application/javascript"
     /// application/xml
-    static member Xml = "application/xml"
-
+    let [<Literal>] Xml = "application/xml"
     /// application/rss+xml
-    static member Rss = "application/rss+xml"
-
+    let [<Literal>] Rss = "application/rss+xml"
     /// application/atom+xml
-    static member Atom = "application/atom+xml"
-
+    let [<Literal>] Atom = "application/atom+xml"
     /// application/rdf+xml
-    static member Rdf = "application/rdf+xml"
-
+    let [<Literal>] Rdf = "application/rdf+xml"
     /// text/html
-    static member Html = "text/html"
-
+    let [<Literal>] Html = "text/html"
     /// application/xhtml+xml
-    static member XHtml = "application/xhtml+xml"
-    
+    let [<Literal>] XHtml = "application/xhtml+xml"
     /// application/soap+xml
-    static member Soap = "application/soap+xml"
-
+    let [<Literal>] Soap = "application/soap+xml"
     /// text/csv
-    static member Csv = "text/csv"
+    let [<Literal>] Csv = "text/csv"
 
 type private HeaderEnum = System.Net.HttpRequestHeader
 
@@ -269,147 +338,98 @@ module private Helpers =
         | [] -> ()
         | header::remainingHeaders ->
             for visitedHeader in visitedHeaders do
-                match header, visitedHeader with
-                | Custom(Name = name1), Custom(Name = name2) ->
-                    if name1 = name2 then
-                        failwithf "Repeated headers: %A %A" visitedHeader header
-                | _ ->
-                    if header.GetType() = visitedHeader.GetType() then
-                        failwithf "Repeated headers: %A %A" visitedHeader header
+                let name1, name2 = fst header, fst visitedHeader 
+                if name1 = name2 then failwithf "Repeated headers: %A %A" visitedHeader header
             checkForRepeatedHeaders (header::visitedHeaders) remainingHeaders
 
     let setHeaders headers (req:HttpWebRequest) =
         let hasContentType = ref false
         headers |> Option.iter (checkForRepeatedHeaders [])
-        headers |> Option.iter (List.iter (fun header ->
+        headers |> Option.iter (List.iter (fun (header, value) ->
             match header with
-            | Accept value -> req.Accept <- value
-            | AcceptCharset value -> req.Headers.[HeaderEnum.AcceptCharset] <- value
-            | AcceptDatetime value -> req.Headers.["Accept-Datetime"] <- value.ToString("R", CultureInfo.InvariantCulture)
-            | AcceptEncoding value -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
-            | AcceptLanguage value -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
-            | Allow value -> req.Headers.[HeaderEnum.Allow] <- value
-            | Authorization value -> req.Headers.[HeaderEnum.Authorization] <- value
-            | CacheControl value -> req.Headers.[HeaderEnum.CacheControl] <- value
+            | "Accept" -> req.Accept <- value
+            | "Accept-Charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
+            | "Accept-Datetime" -> req.Headers.["Accept-Datetime"] <- value
+            | "Accept-Encoding" -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
+            | "Accept-Language" -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
+            | "Allow" -> req.Headers.[HeaderEnum.Allow] <- value
+            | "Authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
+            | "Cache-Control" -> req.Headers.[HeaderEnum.CacheControl] <- value
 #if FX_NO_WEBREQUEST_CONNECTION
-            | Connection value -> req.Headers.[HeaderEnum.Connection] <- value
+            | "Connection" -> req.Headers.[HeaderEnum.Connection] <- value
 #else
-            | Connection value -> req.Connection <- value
+            | "Connection" -> req.Connection <- value
 #endif
-            | ContentEncoding value -> req.Headers.[HeaderEnum.ContentEncoding] <- value
-            | ContentLanguage value -> req.Headers.[HeaderEnum.ContentLanguage] <- value
-            | ContentLocation value -> req.Headers.[HeaderEnum.ContentLocation] <- value
-            | ContentMD5 value -> req.Headers.[HeaderEnum.ContentMd5] <- value
-            | ContentRange value -> req.Headers.[HeaderEnum.ContentRange] <- value
-            | ContentType value ->
+            | "Content-Encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
+            | "Content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
+            | "Content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
+            | "Content-MD5" -> req.Headers.[HeaderEnum.ContentMd5] <- value
+            | "Content-Range" -> req.Headers.[HeaderEnum.ContentRange] <- value
+            | "Content-Type" ->
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | Date value -> req.Headers.[HeaderEnum.Date] <- value.ToString("R", CultureInfo.InvariantCulture)
+            | "Date" -> req.Headers.[HeaderEnum.Date] <- value
 #else
-            | Date value -> req.Date <- value
+            | "Date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
-            | Expect value -> req.Headers.[HeaderEnum.Expect] <- value.ToString(CultureInfo.InvariantCulture)
+            | "Expect" -> req.Headers.[HeaderEnum.Expect] <- value
 #else
-            | Expect value -> req.Expect <- value.ToString()
+            | "Expect" -> req.Expect <- value
 #endif
-            | Expires value -> req.Headers.[HeaderEnum.Expires] <- value.ToString("R", CultureInfo.InvariantCulture)
-            | From value -> req.Headers.[HeaderEnum.From] <- value
+            | "Expires" -> req.Headers.[HeaderEnum.Expires] <- value
+            | "From" -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
-            | Host value -> req.Headers.[HeaderEnum.Host] <- value
+            | "Host" -> req.Headers.[HeaderEnum.Host] <- value
 #else
-            | Host value -> req.Host <- value
+            | "Host" -> req.Host <- value
 #endif       
-            | IfMatch value -> req.Headers.[HeaderEnum.IfMatch] <- value
+            | "If-Match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | IfModifiedSince value -> req.Headers.[HeaderEnum.IfModifiedSince] <- value.ToString("R", CultureInfo.InvariantCulture)
+            | "IfModifiedSince" -> req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
-            | IfModifiedSince value -> req.IfModifiedSince <- value
+            | "If-Modified-Since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
-            | IfNoneMatch value -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
-            | IfRange value -> req.Headers.[HeaderEnum.IfRange] <- value
-            | IfUnmodifiedSince value -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value.ToString("R", CultureInfo.InvariantCulture)
-            | KeepAlive value -> req.Headers.[HeaderEnum.KeepAlive] <- value
-            | LastModified value -> req.Headers.[HeaderEnum.LastModified] <- value.ToString("R", CultureInfo.InvariantCulture)
-            | MaxForwards value -> req.Headers.[HeaderEnum.MaxForwards] <- value.ToString()
-            | Origin value -> req.Headers.["Origin"] <- value
-            | Pragma value -> req.Headers.[HeaderEnum.Pragma] <- value
+            | "If-None-Match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
+            | "If-Range" -> req.Headers.[HeaderEnum.IfRange] <- value
+            | "If-Unmodified-Since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
+            | "Keep-Alive" -> req.Headers.[HeaderEnum.KeepAlive] <- value
+            | "Last-Modified" -> req.Headers.[HeaderEnum.LastModified] <- value
+            | "Max-Forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
+            | "Origin" -> req.Headers.["Origin"] <- value
+            | "Pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
 #if FX_NO_WEBREQUEST_RANGE
-            | Range(start, finish) -> req.Headers.[HeaderEnum.Range] <- sprintf "bytes=%d-%d" start finish
+            | "Range(start, finish)" -> req.Headers.[HeaderEnum.Range] <- value
 #else
-            | Range(start, finish) -> req.AddRange(start, finish)
+            | "Range" -> 
+                if not (value.StartsWith("bytes=")) then failwith "Invalid value for the Range header"
+                let bytes = value.Substring("bytes=".Length).Split('-')
+                if bytes.Length <> 2 then failwith "Invalid value for the Range header"
+                req.AddRange(int64 bytes.[0], int64 bytes.[1])
 #endif
-            | ProxyAuthorization value -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
+            | "Proxy-Authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | Referer value -> req.Headers.[HeaderEnum.Referer] <- value
+            | "Referer" -> req.Headers.[HeaderEnum.Referer] <- value
 #else
-            | Referer value -> req.Referer <- value
+            | "Referer" -> req.Referer <- value
 #endif            
-            | TE value -> req.Headers.[HeaderEnum.Te] <- value
-            | Trailer value -> req.Headers.[HeaderEnum.Trailer] <- value
-            | Translate value -> req.Headers.[HeaderEnum.Translate] <- value
-            | Upgrade value -> req.Headers.[HeaderEnum.Upgrade] <- value
+            | "TE" -> req.Headers.[HeaderEnum.Te] <- value
+            | "Trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
+            | "Translate" -> req.Headers.[HeaderEnum.Translate] <- value
+            | "Upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | UserAgent value -> req.Headers.[HeaderEnum.UserAgent] <- value
+            | "User-Agent" -> req.Headers.[HeaderEnum.UserAgent] <- value
 #else
-            | UserAgent value -> req.UserAgent <- value
+            | "User-Agent" -> req.UserAgent <- value
 #endif
-            | Via value -> req.Headers.[HeaderEnum.Via] <- value
-            | XHTTPMethodOverride value -> req.Headers.["X-HTTP-Method-Override"] <- value.ToString()
-            | Warning value -> req.Headers.[HeaderEnum.Warning] <- value
-            | Custom(name, value) -> req.Headers.[name] <- value))
+            | "Via" -> req.Headers.[HeaderEnum.Via] <- value
+            | "Warning" -> req.Headers.[HeaderEnum.Warning] <- value
+            | name -> req.Headers.[name] <- value))
         hasContentType.Value
 
-    let parseResponseHeader headerName =
-        match headerName with
-        | "Access-Control-Allow-Origin" -> AccessControlAllowOrigin
-        | "Accept-Ranges" -> AcceptRanges
-        | "Age" -> Age
-        | "Allow" -> ResponseAllow
-        | "Cache-Control" -> ResponseCacheControl
-        | "Connection" -> ResponseConnection
-        | "Content-Encoding" -> ResponseContentEncoding
-        | "Content-Language" -> ResponseContentLanguage
-        | "Content-Length" -> ResponseContentLength
-        | "Content-Location" -> ResponseContentLocation
-        | "Content-MD5" -> ResponseContentMD5
-        | "Content-Disposition" -> ResponseContentDisposition
-        | "Content-Range" -> ResponseContentRange
-        | "Content-Type" -> ResponseContentType
-        | "Date" -> ResponseDate
-        | "ETag" -> ETag
-        | "Expires" -> ResponseExpires
-        | "Last-Modified" -> ResponseLastModified
-        | "Link" -> Link
-        | "Location" -> Location
-        | "P3P" -> P3P
-        | "Pragma" -> ResponsePragma
-        | "Proxy-Authenticate" -> ProxyAuthenticate
-        | "Refresh" -> Refresh
-        | "Retry-After" -> RetryAfter
-        | "Server" -> Server
-        | "Set-Cookie" -> SetCookie
-        | "Status" -> Status
-        | "Strict-Transport-Security" -> StrictTransportSecurity
-        | "Trailer" -> ResponseTrailer
-        | "Transfer-Encoding" -> TransferEncoding
-        | "Vary" -> Vary
-        | "Via" -> ResponseVia
-        | "Warning" -> ResponseWarning
-        | "WWW-Authenticate" -> WWWAuthenticate
-        | "X-AspNetMvc-Version" -> XAspNetMvcVersion
-        | "X-AspNet-Version" -> XAspNetVersion
-        | "X-Content-Type-Options" -> XContentTypeOptions
-        | "X-Instance" -> XInstance
-        | "X-Powered-By" -> XPoweredBy
-        | "X-Runtime" -> XRuntime
-        | "X-UA-Compatible" -> XUACompatible
-        | "X-Version" -> XVersion
-        | _ -> NonStandard headerName
-
-    let getResponse (req:HttpWebRequest) dontThrowOnHttpError =
-        if defaultArg dontThrowOnHttpError false then
+    let getResponse (req:HttpWebRequest) silentHttpErrors =
+        if defaultArg silentHttpErrors false then
             async {
                 try
                     return! Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
@@ -488,10 +508,10 @@ type Http private() =
 
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
     static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                       ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) =
+                                       ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) =
 #else
     static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                       ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
+                                       ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
 #endif
 
         let uri = 
@@ -562,13 +582,13 @@ type Http private() =
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
 
-            let! resp = getResponse req dontThrowOnHttpError
+            let! resp = getResponse req silentHttpErrors
 
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
             let headers = 
                 [ for header in resp.Headers.AllKeys do 
-                    yield parseResponseHeader header, resp.Headers.[header] ]
+                    yield header, resp.Headers.[header] ]
                 |> Map.ofList
 
             let statusCode, characterSet = 
@@ -581,7 +601,7 @@ type Http private() =
 #endif
                 | _ -> 0, ""
 
-            let contentEncoding = defaultArg (Map.tryFind ResponseContentEncoding headers) ""
+            let contentEncoding = defaultArg (Map.tryFind "Content-Encoding" headers) ""
 
             let stream = resp.GetResponseStream()
 
@@ -594,13 +614,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
+    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -609,13 +629,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = async {
+    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
-                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate)  = async {
+    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate)  = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         return
             match response.Body with
@@ -629,7 +649,7 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) =
+    static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
         let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             return { ResponseStream = stream
                      StatusCode = statusCode
@@ -638,9 +658,9 @@ type Http private() =
                      Cookies = cookies }
         }
         Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member AsyncRequestStream(url,?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
+    static member AsyncRequestStream(url,?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest, ?certificate:Security.Cryptography.X509Certificates.X509Certificate) =
         // responseEncodingOverride is never set for this overload
         let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             return { ResponseStream = stream
@@ -650,7 +670,7 @@ type Http private() =
                      Cookies = cookies }
         }
         Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                          ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
 
     /// Download an HTTP web resource from the specified URL synchronously
@@ -659,13 +679,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
         Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
+    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
         Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                          ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                          ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         |> Async.RunSynchronously
 
@@ -675,13 +695,13 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
+                                ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 #else                              
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
+    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest, ?certificate) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                                ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         |> Async.RunSynchronously
 
@@ -691,12 +711,12 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
 #if FX_NO_WEBREQUEST_CLIENTCERTIFICATES
-    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest) = 
+    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) = 
         Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest)
+                                ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
 #else                              
-    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?dontThrowOnHttpError, ?customizeHttpRequest, ?certificate) = 
+    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest, ?certificate) = 
         Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
-                                ?dontThrowOnHttpError=dontThrowOnHttpError, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
+                                ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest, ?certificate=certificate)
 #endif
         |> Async.RunSynchronously
