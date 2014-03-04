@@ -16,7 +16,7 @@ open FSharp.Data.HttpRequestHeaders
 let ``Don't throw exceptions on http error`` () = 
     let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
     response.StatusCode |> should equal 401
-    response.Body |> should equal (HttpResponseBody.Text """{"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}""")
+    response.Body |> should equal (Text """{"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}""")
 
 [<Test>]
 let ``Throw exceptions on http error`` () = 

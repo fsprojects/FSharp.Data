@@ -25,7 +25,7 @@ F# Dataライブラリにはオーバーロードを持った4つのメソッド
 *)
 
 #r "../../../../bin/FSharp.Data.dll"
-open FSharp.Data.Http
+open FSharp.Data
 
 (**
 ## 単純なリクエストの送信
@@ -55,7 +55,7 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
 省略した場合には自動的にGETになります：
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod=Get)
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="Get")
 
 (** 
 同じように、省略可能な引数 `headers` を使うと追加のヘッダを指定できます。
@@ -73,10 +73,52 @@ let apiKey = "<登録してキーを取得してください>"
 
 // HTTP Webリクエストを実行
 Http.RequestString
+  ( "http://api.themoviedb.org/3/search/movie", httpMethod = "GET",
+    query   = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ "Accept", "application/json" ])
+
+(**
+The library supports simple and unchecked string based API (used in the previous example),
+but you can also use pre-defined header names to avoid spelling mistakes. The named headers
+are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
+use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
+`Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
+well known content types:
+*)
+open FSharp.Data.HttpRequestHeaders
+
+// Run the HTTP web request
+Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey
-                "query", "batman" ],
+    query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
+
+(** ## Getting extra information
+
+Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
+and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
+the response content, so it's easier to debug in F# interactive when the server returns extra info.
+
+You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
+*)
+
+Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+
+(** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
+If you want to see more information about the response, including the status code, the response 
+headers, the returned cookies, and the response url (which might be different to 
+the url you passed when there are redirects), you can use the `Request` method instead of the `RequestString` method:
+
+*)
+
+let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+
+// Examine information about the response
+response.Headers
+response.Cookies
+response.ResponseUrl
+response.StatusCode
 
 (**
 ## リクエストデータの送信
@@ -94,7 +136,7 @@ bodyを指定した場合、引数 `httpMethod` には自動的に `Post` が設
 明示的に指定する必要はありません。
 
 以下ではリクエストの詳細を返すサービス
-[httpbin.org](http://httpbin.org) 
+[httpbin.org](http://httpbin.org)
 を使っています：
 *)
 
@@ -102,7 +144,7 @@ Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 
 (**
 デフォルトでは `Content-Type` ヘッダには `HttpRequestBody` に指定した値に応じて
-`text/plain` `application-x-www-form-urlencoded` `application-octet-stream`
+`text/plain` `application/x-www-form-urlencoded` `application/octet-stream`
 のいずれかが設定されます。
 ただしオプション引数 `headers` を使ってヘッダのリストに `content-type` を
 追加することでこの動作を変更できます：
@@ -156,22 +198,6 @@ let docInFSharp =
 docInFSharp.Contains "<a>F#</a>"
 
 (**
-## 特別な情報を取得する
-
-ステータスコードやレスポンスヘッダ、
-戻されたクッキーやレスポンスURL(リダイレクトされた場合にはリクエストしたURLと
-異なるURLが返されることがあります)など、
-*)
-
-let response = Http.Request(msdnUrl "system.web.httprequest")
-
-// レスポンスに関する情報を表示
-response.Headers
-response.Cookies
-response.ResponseUrl
-response.StatusCode
-
-(**
 ## バイナリデータの送信
 
 
@@ -182,9 +208,9 @@ response.StatusCode
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| HttpResponseBody.Text text -> 
+| Text text -> 
     printfn "Got text content: %s" text
-| HttpResponseBody.Binary bytes -> 
+| Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**

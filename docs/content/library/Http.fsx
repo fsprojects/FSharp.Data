@@ -194,9 +194,9 @@ The `RequestString` method will always return the response as a `string`, but if
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| HttpResponseBody.Text text -> 
+| Text text -> 
     printfn "Got text content: %s" text
-| HttpResponseBody.Binary bytes -> 
+| Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**
