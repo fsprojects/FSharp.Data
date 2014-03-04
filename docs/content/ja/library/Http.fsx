@@ -78,43 +78,45 @@ Http.RequestString
     headers = [ "Accept", "application/json" ])
 
 (**
-The library supports simple and unchecked string based API (used in the previous example),
-but you can also use pre-defined header names to avoid spelling mistakes. The named headers
-are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
-use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
-`Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
-well known content types:
+このライブラリでは(先の例のように)単純かつチェックのない文字列ベースのAPIがサポートされていますが、
+スペルミスを防ぐことができるよう、あらかじめ定義されたヘッダ名を使うこともできます。
+名前付きヘッダは `HttpRequestHeaders` (および `HttpResponseHeaders`) モジュールで定義されているため、
+`HttpRequestHeaders.Accept` のようにフルネームを指定するか、
+以下の例のようにモジュールをオープンしておいてから `Accept` のような短い名前で指定することになります。
+同様に、 `HttpContentTypes` 列挙体には既知のコンテンツタイプ名が定義されています：
 *)
 open FSharp.Data.HttpRequestHeaders
 
-// Run the HTTP web request
+// HTTP Webリクエストを実行
 Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
 
-(** ## Getting extra information
+(** ## 特別な情報の取得
 
-Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
-and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
-the response content, so it's easier to debug in F# interactive when the server returns extra info.
+先のコードスニペットでは、正しいAPIキーを指定しなかった場合には(401)認証エラーが返され、
+例外が発生することに注意してください。
+ただし `WebRequest` を直接使用した場合とは異なり、例外メッセージには返されたコンテンツの情報も含まれるため、
+サーバーが特別な情報を返すような場合であってもF# Interactiveで簡単にデバッグできます。
 
-You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
+また `silentHttpErrors` 引数を設定することによって例外を無効化することもできます:
 *)
 
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
-// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+// {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"} が返される
 
-(** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
-If you want to see more information about the response, including the status code, the response 
-headers, the returned cookies, and the response url (which might be different to 
-the url you passed when there are redirects), you can use the `Request` method instead of the `RequestString` method:
+(** この場合にはHTTPステータスコードを確認すればよいため、実際にレスポンスとして返されたデータと
+エラーメッセージとを混同することもないでしょう。
+ステータスコードやレスポンスヘッダー、返されたクッキー、レスポンスURL
+(リダイレクトされた場合にはリクエストを投げたURLとは別の値が返されることがあります)など、
+レスポンスの詳細を確認したい場合には `RequestString` の代わりに `Request` メソッドを使用します:
 
 *)
 
 let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
 
-// Examine information about the response
+// レスポンスの詳細を確認する
 response.Headers
 response.Cookies
 response.ResponseUrl
