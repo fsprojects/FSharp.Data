@@ -25,7 +25,7 @@ let testCases =
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
-let testsCasesForUSA =
+let testCasesForUSA =
     testCases
     |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
 
