@@ -14,7 +14,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
   * Windows: Run *build.cmd* 
     * [![TeamCity build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
-      [![AppVeyor build status](https://ci-beta.appveyor.com/api/projects/status/aqhq2llex286buaj)](https://ci-beta.appveyor.com/project/ovatsus/fsharp-data)
+    * [![AppVeyor build status](https://ci-beta.appveyor.com/api/projects/status/aqhq2llex286buaj)](https://ci-beta.appveyor.com/project/ovatsus/fsharp-data)
   * Mono: Run *build.sh*
     * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
 
