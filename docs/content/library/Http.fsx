@@ -21,7 +21,7 @@ or add reference to a project. The type is located in `FSharp.Net` namespace:
 *)
 
 #r "../../../bin/FSharp.Data.dll"
-open FSharp.Data.Http
+open FSharp.Data
 
 (**
 ## Sending simple requests
@@ -50,7 +50,7 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod=Get)
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="GET")
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -67,9 +67,24 @@ let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
 Http.RequestString
+  ( "http://api.themoviedb.org/3/search/movie", httpMethod = "GET",
+    query   = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ "Accept", "application/json" ])
+
+(**
+The library supports simple and unchecked string based API (used in the previous example),
+but you can also use pre-defined header names to avoid spelling mistakes. The named headers
+are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
+use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
+`Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
+well known content types:
+*)
+open FSharp.Data.HttpRequestHeaders
+
+// Run the HTTP web request
+Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey
-                "query", "batman" ],
+    query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
 
 (** ## Getting extra information
@@ -78,10 +93,10 @@ Note that in the previous snippet, if you don't specify a valid API key, you'll 
 and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
 the response content, so it's easier to debug in F# interactive when the server returns extra info.
 
-You can also opt out of the exception by specifying the `dontThrowOnHttpError` parameter:
+You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
 *)
 
-Http.RequestString("http://api.themoviedb.org/3/search/movie", dontThrowOnHttpError = true)
+Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
 // returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
@@ -91,7 +106,7 @@ the url you passed when there are redirects), you can use the `Request` method i
 
 *)
 
-let response = Http.Request("http://api.themoviedb.org/3/search/movie", dontThrowOnHttpError = true)
+let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
 
 // Examine information about the response
 response.Headers
