@@ -1,0 +1,8 @@
+build_script:
+  - cmd: build.cmd %fakeargs%
+test: off
+artifacts:
+  - path: bin\*.nupkg
+environment:
+  fakeargs: nuget
+  FREEBASE_API_KEY: AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
