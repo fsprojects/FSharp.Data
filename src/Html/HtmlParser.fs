@@ -4,7 +4,6 @@ open System
 open System.IO
 open System.Text
 open FSharp.Data
-open FSharp.Data.Http
 open FSharp.Data.Runtime
 
 module private TextParser = 
