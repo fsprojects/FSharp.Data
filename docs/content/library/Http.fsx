@@ -50,7 +50,7 @@ can pass them using the optional parameter `query`. The following example also e
 specifies the GET method, but it will be set automatically for you if you omit it:
 *)
 
-Http.RequestString("http://httpbin.org/get", query=["test", "foo"], meth="GET")
+Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="GET")
 
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
@@ -67,40 +67,82 @@ let apiKey = "<please register to get a key>"
 
 // Run the HTTP web request
 Http.RequestString
+  ( "http://api.themoviedb.org/3/search/movie", httpMethod = "GET",
+    query   = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ "Accept", "application/json" ])
+
+(**
+The library supports simple and unchecked string based API (used in the previous example),
+but you can also use pre-defined header names to avoid spelling mistakes. The named headers
+are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
+use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
+`Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
+well known content types:
+*)
+open FSharp.Data.HttpRequestHeaders
+
+// Run the HTTP web request
+Http.RequestString
   ( "http://api.themoviedb.org/3/search/movie",
-    query   = [ "api_key", apiKey
-                "query", "batman" ],
-    headers = [ "accept", "application/json" ])
+    query   = [ "api_key", apiKey; "query", "batman" ],
+    headers = [ Accept HttpContentTypes.Json ])
+
+(** ## Getting extra information
+
+Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
+and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
+the response content, so it's easier to debug in F# interactive when the server returns extra info.
+
+You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
+*)
+
+Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+
+(** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
+If you want to see more information about the response, including the status code, the response 
+headers, the returned cookies, and the response url (which might be different to 
+the url you passed when there are redirects), you can use the `Request` method instead of the `RequestString` method:
+
+*)
+
+let response = Http.Request("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
+
+// Examine information about the response
+response.Headers
+response.Cookies
+response.ResponseUrl
+response.StatusCode
 
 (**
 ## Sending request data
 
 If you want to create a POST request with HTTP POST data, you can specify the
-additional data in the `body` optional parameter. This parameter is of type `RequestBody`, which
+additional data in the `body` optional parameter. This parameter is of type `HttpRequestBody`, which
 is a discriminated union with three cases:
 
-* `RequestBody.Text` for sending a string in the request body
-* `RequestBody.FormValues` for sending a set of name-value pairs correspondent to form values
-* `RequestBody.Binary` for sending binary content in the request
+* `TextRequest` for sending a string in the request body.
+* `BinaryUpload` for sending binary content in the request.
+* `FormValues` for sending a set of name-value pairs correspondent to form values.
 
-If you specify a body, you do not need to set the `meth` parameter, it will be set to `POST` automatically.
+If you specify a body, you do not need to set the `httpMethod` parameter, it will be set to `Post` automatically.
 
 The following example uses the [httpbin.org](http://httpbin.org) service which 
 returns the request details:
 *)
 
-Http.RequestString("http://httpbin.org/post", body = RequestBody.FormValues ["test", "foo"])
+Http.RequestString("http://httpbin.org/post", body = FormValues ["test", "foo"])
 
 (**
 By default, the `Content-Type` header is set to `text/plain`, `application/x-www-form-urlencoded`,
-or `application/octet-stream`, depending on which kind of `RequestBody` you specify, but you can change
+or `application/octet-stream`, depending on which kind of `HttpRequestBody` you specify, but you can change
 this behaviour by adding `content-type` to the list of headers using the optional argument `headers`:
 *)
 
 Http.RequestString
   ( "http://httpbin.org/post", 
-    headers = ["content-type", "application/json"],
-    body = RequestBody.Text """ {"test": 42} """)
+    headers = [ ContentType HttpContentTypes.Json ],
+    body = TextRequest """ {"test": 42} """)
 
 (**
 ## Maintaing cookies across requests
@@ -143,34 +185,18 @@ let docInFSharp =
 docInFSharp.Contains "<a>F#</a>"
 
 (**
-## Getting extra information
-
-If you want to see more information about the response, including the status code, the response 
-headers, the returned cookies, and the response url (which might be different to 
-the url you passed when there are redirects), you can use the `Request` method:
-*)
-
-let response = Http.Request(msdnUrl "system.web.httprequest")
-
-// Examine information about the response
-response.Headers
-response.Cookies
-response.ResponseUrl
-response.StatusCode
-
-(**
 ## Requesting binary data
 
 The `RequestString` method will always return the response as a `string`, but if you use the 
-`Request` method, it will return a `ResponseBody.Text` or a 
-`ResponseBody.Binary` depending on the response `content-type` header:
+`Request` method, it will return a `HttpResponseBody.Text` or a 
+`HttpResponseBody.Binary` depending on the response `content-type` header:
 *)
 
 let logoUrl = "https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png"
 match Http.Request(logoUrl).Body with
-| ResponseBody.Text text -> 
+| Text text -> 
     printfn "Got text content: %s" text
-| ResponseBody.Binary bytes -> 
+| Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**

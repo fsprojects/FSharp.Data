@@ -11,7 +11,6 @@ open System.Collections.Generic
 /// A property of a record has a name and type and may be optional
 type InferedProperty =
   { Name : string
-    Optional : bool
     mutable Type : InferedType }
   override x.ToString() = sprintf "%A" x
 
@@ -21,7 +20,7 @@ type InferedProperty =
 and InferedMultiplicity = 
   | Single
   | OptionalSingle
-  | Multiple 
+  | Multiple
 
 /// For heterogeneous types, this represents the tag that defines the form
 /// (that is either primitive type, collection, named record etc.)
@@ -55,12 +54,41 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
-  | Primitive of System.Type * (*unit*)option<System.Type>
-  | Record of string option * InferedProperty list
+  | Primitive of typ:System.Type * unit:option<System.Type> * optional:bool
+  | Record of name:string option * fields:InferedProperty list * optional:bool
   | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
   | Heterogeneous of Map<InferedTypeTag, InferedType>
   | Null
   | Top
+
+  member x.IsOptional =
+    match x with
+    | Primitive(optional = true) | Record(optional = true) -> true
+    | _ -> false
+
+  static member CanHaveEmptyValues typ = 
+    typ = typeof<string> || typ = typeof<float>
+
+  /// When allowEmptyValues is true, we allow "" and double.NaN, otherwise
+  /// we make the type optional and use None instead.
+  /// It's currently only true in CsvProvider when PreferOptionals is set to false
+  member x.EnsuresHandlesMissingValues allowEmptyValues =
+    match x with
+    | Null | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) -> x
+    | Primitive(typ, _, false) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x    
+    | Primitive(typ, unit, false) -> Primitive(typ, unit, true)
+    | Record(name, props, false) -> Record(name, props, true)
+    | Collection map ->
+         map 
+         |> Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ)
+         |> Collection
+    | Top -> failwith "EnsuresHandlesMissingValues: unexpected InferedType.Top"
+
+  member x.DropOptionality() =
+    match x with
+    | Primitive(typ, unit, true) -> Primitive(typ, unit, false)
+    | Record(name, props, true) -> Record(name, props, false)
+    | _ -> x
 
   // We need to implement custom equality that returns 'true' when 
   // values reference the same object (to support recursive types)
@@ -70,8 +98,8 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
     if y :? InferedType then 
       match x, y :?> InferedType with
       | a, b when Object.ReferenceEquals(a, b) -> true
-      | Primitive(t1, ot1), Primitive(t2, ot2) -> t1 = t2 && ot1 = ot2
-      | Record(s1, pl1), Record(s2, pl2) -> s1 = s2 && pl1 = pl2
+      | Primitive(t1, ot1, b1), Primitive(t2, ot2, b2) -> t1 = t2 && ot1 = ot2 && b1 = b2
+      | Record(s1, pl1, b1), Record(s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
       | Collection(m1), Collection(m2) -> m1 = m2
       | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
       | Null, Null | Top, Top -> true
@@ -141,7 +169,7 @@ type PrimitiveInferedProperty =
     RuntimeType : Type
     UnitOfMeasure : Type option
     TypeWrapper : TypeWrapper }
-  static member Create(name, typ, ?typWrapper, ?unit) =
+  static member Create(name, typ, typWrapper, unit) =
     let runtimeTyp = 
       if typ = typeof<Bit> then typeof<bool>
       elif typ = typeof<Bit0> || typ = typeof<Bit1> then typeof<int>
@@ -150,9 +178,9 @@ type PrimitiveInferedProperty =
       InferedType = typ
       RuntimeType = runtimeTyp
       UnitOfMeasure = unit
-      TypeWrapper = defaultArg typWrapper TypeWrapper.None }
-  static member Create(name, typ, optional) =
-    PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), ?unit=None)
+      TypeWrapper = typWrapper }
+  static member Create(name, typ, optional, unit) =
+    PrimitiveInferedProperty.Create(name, typ, (if optional then TypeWrapper.Option else TypeWrapper.None), unit)
 
 and     
     [<RequireQualifiedAccess>] 

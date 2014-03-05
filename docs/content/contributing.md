@@ -9,7 +9,7 @@ as Portable libraries).
 
  * This page can be edited by sending a pull request to F# Data on GitHub, so
    if you learn something when playing with F# Data, please record your
-   [findings here](https://github.com/fsharp/FSharp.Data/blob/master/samples/contributing.md)!
+   [findings here](https://github.com/fsharp/FSharp.Data/blob/master/docs/content/contributing.md)!
 
  * If you want to discuss a feature (a good idea!), or if you want to look at 
    suggestions how you might contribute, check out the
@@ -22,9 +22,7 @@ The root directory contains a number of Visual Studio solutions (`*.sln`) files
 that group the projects in the main logical groups:
 
  * **FSharp.Data.sln** contains the main projects that implement the F# Data
-   functionality (such as runtime and design-time type provider libraries). If you want
-   to contribute code that is not quite ready yet, but looks interesting, then please
-   add it to the experimental projects.
+   functionality (such as runtime and design-time type provider libraries).
 
  * **FSharp.Data.ExtraPlatforms.sln** contains the equivalent projects of `FSharp.Data.sln` 
    but targeting additional platforms such as Portable Class Libraries.
@@ -58,21 +56,18 @@ So, there are 2 versions of _runtime_ components and 1 version of _design time_
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
-using `#if`. There are also 2 versions of _runtime_ components and 1 version of _design time_ components
-for the experimental projects.
+using `#if`.
 
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
- * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.0, Silverlight 5.0, Windows Phone 8 and Windows 8)
- * **FSharp.Data.Experimental** - the desktop .NET 4.0 version of the experimental features
- * **FSharp.Data.Experimental.Portable** - F# portable library version of the experimental features (Profile 47 targetting desktop .NET 4.0, Silverlight 5.0, Windows Phone 8 and Windows 8)
-
-The _design time_ components are in the following projects:
+ * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)
+ * **FSharp.Data.Portable7** - F# portable library version (Profile 7 targetting desktop .NET 4.5 and Windows 8)
+ 
+The _design time_ components are in the following project:
 
  * **FSharp.Data.DesignTime**
- * **FSharp.Data.Experimental.DesignTime**
-
+ 
 ### Type provider structure
 
 Several of the F# Data type providers have similar structure - the CSV, JSON and XML
@@ -104,7 +99,7 @@ of files, typically like this:
  * `JsonProvider.fs` - entry point that defines static properties of the type provider,
    registers the provided types etc.
 
-The WorldBank, Freebase and Apiary providers are different. They do not need inference, but 
+The WorldBank and Freebase providers are different. They do not need inference, but 
 they still distinguish between _runtime_ and _design-time_ components, so you'll find at least
 two files (and possibly some additional helpers).
 

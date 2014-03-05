@@ -391,13 +391,13 @@ type ProvidedAssembly =
 type TypeProviderForNamespaces =
 
     /// Initializes a type provider to provide the types in the given namespace.
-    internal new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
+    new : namespaceName:string * types: ProvidedTypeDefinition list -> TypeProviderForNamespaces
 
     /// Initializes a type provider 
-    internal new : unit -> TypeProviderForNamespaces
+    new : unit -> TypeProviderForNamespaces
 
     /// Add a namespace of provided types.
-    member internal AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
+    member AddNamespace : namespaceName:string * types: ProvidedTypeDefinition list -> unit
 
     /// FSharp.Data addition: this method is used by Debug.fs
     /// Get all namespace with their provided types.

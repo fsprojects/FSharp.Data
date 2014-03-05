@@ -2,7 +2,7 @@
 // Implements caching using in-memory and local file system 
 // --------------------------------------------------------------------------------------
 
-module internal FSharp.Data.Runtime.Caching
+module FSharp.Data.Runtime.Caching
 
 open System
 open System.Collections.Generic
@@ -12,6 +12,7 @@ type ICache<'T> =
   abstract TryRetrieve : string -> 'T option
   abstract Set : string * 'T -> unit
 
+/// Creates a fake cache
 let createNonCachingCache() = 
   { new ICache<'T> with
       member __.Set(_, _) = ()

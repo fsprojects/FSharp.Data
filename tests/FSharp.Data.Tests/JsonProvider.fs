@@ -10,6 +10,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
+open FSharp.Data.Runtime
 
 type NumericFields = JsonProvider<""" [ {"a":12.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
 type DecimalFields = JsonProvider<""" [ {"a":9999999999999999999999999999999999.3}, {"a":1.23, "b":1999.0} ] """, SampleIsList=true>
@@ -47,8 +48,114 @@ let ``Reading a required float that is not a valid float returns NaN`` () =
 [<Test>]
 let ``Optional int correctly infered`` () = 
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
-  let i = prov.[0].A.Number
+  let i = prov.[0].A
   i |> should equal (Some 123)
+
+[<Test>]
+let ``Optional strings correctly handled when missing or null``() = 
+  let withoutText, withText =
+    JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
+    |> Seq.map (fun tweet -> tweet.Text)
+    |> Seq.toList
+    |> List.partition ((=) None)
+  withoutText.Length |> should equal 5
+  withText.Length |> should equal 17
+
+[<Test>]
+let ``Optional records correctly handled when missing``() = 
+  let tweets = JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
+  tweets.[0].Place |> should equal None
+  tweets.[13].Place |> should notEqual None
+  tweets.[13].Place.Value.Id |> should equal "741e21eeea82f00a"
+
+[<Test>]
+let ``Optional records correctly handled when null``() = 
+  let json = JsonProvider<"""[{"milestone":null},{"milestone":{"url":"https://api.github.com/repos/twitter/bootstrap/milestones/19","labels_url":"https://api.github.com/repos/twitter/bootstrap/milestones/19/labels","id":230651}}]""">.GetSamples()
+  json.[0].Milestone.IsNone |> should equal true
+  json.[0].Milestone.IsSome |> should equal false
+
+[<Test>]
+let ``Optional collections correctly handled when null``() = 
+  let withCoords, withoutCoords =         
+    JsonProvider<"Data/TwitterStream.json", SampleIsList=true>.GetSamples()
+    |> Seq.map (fun tweet -> tweet.Coordinates)
+    |> Seq.toList
+    |> List.partition (Option.isSome)
+  withCoords.Length |> should equal 1
+  withoutCoords.Length |> should equal 95
+
+[<Test>]
+let ``Optional collections correctly handled when missing``() = 
+  let withoutMedia, withMedia = 
+    JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
+    |> Seq.choose (fun tweet -> tweet.RetweetedStatus)
+    |> Seq.map (fun retweetedStatus -> retweetedStatus.Entities.Media)
+    |> Seq.toList
+    |> List.partition ((=) [| |])
+  withMedia.Length |> should equal 1
+  withoutMedia.Length |> should equal 9
+
+[<Test>]
+let ``Allways null properties correctly handled both when present and missing``() = 
+  let contributors = 
+    JsonProvider<"Data/TwitterSample.json", SampleIsList=true>.GetSamples()
+    |> Seq.map (fun tweet -> tweet.Contributors : IJsonDocument)
+  for c in contributors do
+    c.JsonValue |> should equal JsonValue.Null
+
+[<Test>]
+let ``Nulls, Missing, and "" should make the type optional``() =
+    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"}]""">.GetSamples()
+    j.[0].A |> should equal None
+    j.[0].B |> should equal None
+    j.[0].C |> should equal None
+    j.[1].A |> should equal (Some 2)
+    j.[1].B |> should equal (Some 3.4m)
+    j.[1].C |> should equal (Some true)
+
+[<Test>]
+let ``Heterogeneous types with Nulls, Missing, and "" should return None on all choices``() =
+    let j = JsonProvider<"""[{"a":"","b":null},{"a":2,"b":"3.4","c":"true"},{"a":false,"b":"2002/10/10","c":"2"},{"a":[],"b":[1],"c":{"z":1}}]""">.GetSamples()
+    j.[0].A.Boolean  |> should equal None
+    j.[0].A.Number   |> should equal None
+    j.[0].A.Array    |> should equal None
+    j.[0].B.DateTime |> should equal None
+    j.[0].B.Number   |> should equal None
+    j.[0].B.Array    |> should equal None
+    j.[0].C.Boolean  |> should equal None
+    j.[0].C.Number   |> should equal None
+    j.[0].C.Record   |> should equal None
+    
+    j.[1].A.Boolean  |> should equal None
+    j.[1].A.Number   |> should equal (Some 2)
+    j.[1].A.Array    |> should equal None
+    j.[1].B.DateTime |> should equal (Some (DateTime(2014,3,4)))
+    j.[1].B.Number   |> should equal (Some 3.4m)
+    j.[1].B.Array    |> should equal None
+    j.[1].C.Boolean  |> should equal (Some true)
+    j.[1].C.Number   |> should equal None
+    j.[1].C.Record   |> should equal None
+
+    j.[2].A.Boolean  |> should equal (Some false)
+    j.[2].A.Number   |> should equal None
+    j.[2].A.Array    |> should equal None
+    j.[2].B.DateTime |> should equal (Some (DateTime(2002,10,10)))
+    j.[2].B.Number   |> should equal None
+    j.[2].B.Array    |> should equal None
+    j.[2].C.Boolean  |> should equal None
+    j.[2].C.Number   |> should equal (Some 2)
+    j.[2].C.Record   |> should equal None
+
+    j.[3].A.Boolean  |> should equal None
+    j.[3].A.Number   |> should equal None
+    j.[3].A.Array    |> should equal (Some (Array.zeroCreate<IJsonDocument> 0))
+    j.[3].B.DateTime |> should equal None
+    j.[3].B.Number   |> should equal None
+    j.[3].B.Array    |> should equal (Some [|1|])
+    j.[3].C.Boolean  |> should equal None
+    j.[3].C.Number   |> should equal None
+    j.[3].C.Record   |> should notEqual None
+    j.[3].C.Record.Value.Z |> should equal 1
 
 [<Test>]
 let ``SampleIsList for json correctly handled``() = 
@@ -57,7 +164,7 @@ let ``SampleIsList for json correctly handled``() =
         match tweet.Text with
         | Some _ -> 0
         | None -> 1)
-    |> should equal 2
+    |> should equal 5
 
 [<Test>]
 let ``Null values correctly handled``() = 
@@ -160,13 +267,9 @@ let ``Can parse simple arrays``() =
     items.[1].Id
     |> should equal "Pause"
 
-type OptionalValuesInJSON = JsonProvider<"Data/OptionValues.json">
-
-let optionalValuesInJSON = OptionalValuesInJSON.GetSample()
-
 [<Test>]
 let ``Can parse optional values in arrays``() = 
-    let authors = optionalValuesInJSON.Authors
+    let authors = JsonProvider<"Data/OptionValues.json">.GetSample().Authors
     authors.[0].Name
     |> should equal "Steffen"
 
@@ -357,11 +460,11 @@ let ``Parsing of values wrapped in quotes should work on arrays``() =
 let jsonSample = """[{"Facts": [{"Description": "sdfsdfsdfsdfs",
                             "Name": "sdfsdf",
                             "Unit": "kg",
-                            "Value": "89.00"}],
+                            "Value": {"a":89.00}}],
                 "Name" : "sdfsdf"},
                 {"Facts": [{"Description": "sdfsdfsdfsdfs",
                             "Name": "ddd",
-                            "Value": "sdfsdfs"}]}]"""
+                            "Value": {"b":100}}]}]"""
 
 [<Test>]
 let ``Test error messages``() =    
@@ -389,6 +492,6 @@ let ``Can parse nested arrays``() =
 [<Test>]
 let ``Can parse optional arrays``() =
     let j = JsonProvider<"Data/contacts.json">.GetSample()
-    j.Ab.Persons.[0].Contacts.[0].Emails |> should equal None
-    j.Ab.Persons.[0].Contacts.[1].Emails.Value.Length |> should equal 3
+    j.Ab.Persons.[0].Contacts.[0].Emails |> should equal [| |]
+    j.Ab.Persons.[0].Contacts.[1].Emails.Length |> should equal 1
 

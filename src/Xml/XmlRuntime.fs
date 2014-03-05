@@ -65,8 +65,15 @@ type XmlRuntime =
   // Operations that obtain children - depending on the inference, we may
   // want to get an array, option (if it may or may not be there) or 
   // just the value (if we think it is always there)
-  static member private GetChildrenArray(value:XmlElement, nameWithNS) =
-    [| for c in value.XElement.Elements(XName.Get(nameWithNS)) -> { XElement = c } |]
+  static member private GetChildrenArray(value:XmlElement, nameWithNS:string) =
+    let namesWithNS = nameWithNS.Split [| '|' |]
+    let mutable current = value.XElement
+    for i = 0 to namesWithNS.Length - 2 do
+        if current <> null then
+            current <- current.Element(XName.Get namesWithNS.[i])
+    let value = current
+    if value = null then [| |]
+    else [| for c in value.Elements(XName.Get namesWithNS.[namesWithNS.Length - 1]) -> { XElement = c } |]
   
   static member private GetChildOption(value:XmlElement, nameWithNS) =
     match XmlRuntime.GetChildrenArray(value, nameWithNS) with
@@ -87,6 +94,9 @@ type XmlRuntime =
 
   static member ConvertOptional<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) =
     XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.map f.Invoke
+
+  static member ConvertOptional2<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R option>) =
+    XmlRuntime.GetChildOption(xml, nameWithNS) |> Option.bind f.Invoke
 
   /// Returns Some if the specified XmlElement has the specified name
   /// (otherwise None is returned). This is used when the current element

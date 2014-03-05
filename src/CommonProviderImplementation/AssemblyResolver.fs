@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
+open ProviderImplementation
 
 let private (++) a b = Path.Combine(a,b)
 
@@ -128,10 +129,10 @@ let init (cfg : TypeProviderConfig) =
         else Assembly.LoadFrom cfg.RuntimeAssembly
 
     let runtimeAssemblyVersion = runtimeAssembly.GetName().Version
-    let designtimeAssemblyVersion = Assembly.GetExecutingAssembly().GetName().Version
+    let designtimeAssemblyName = Assembly.GetExecutingAssembly().GetName()
 
-    if designtimeAssemblyVersion <> new Version(runtimeAssemblyVersion.Major, runtimeAssemblyVersion.Minor, runtimeAssemblyVersion.Build, 0) then
-        failwith <| "Unexpected version of FSharp.Data.dll: " + runtimeAssemblyVersion.ToString()
+    if designtimeAssemblyName.Name <> "FSI-ASSEMBLY" && designtimeAssemblyName.Version <> new Version(runtimeAssemblyVersion.Major, runtimeAssemblyVersion.Minor, runtimeAssemblyVersion.Build, 0) then
+        failwithf "Unexpected version of FSharp.Data.dll:%O [Looking for %O]" runtimeAssemblyVersion designtimeAssemblyName.Version
 
     let runtimeVersion =
         match runtimeAssemblyVersion.Revision with

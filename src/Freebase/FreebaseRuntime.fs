@@ -910,7 +910,8 @@ type public FreebaseDataContext internal (apiKey:string, serviceUrl:string, useU
     let settings = FreebaseDataContextSettings (fbQueries,fbDataConn)
     member __.DataContext = settings
     /// Create a data context
-    static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) = FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
+    static member _Create(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide) =
+        FreebaseDataContext(apiKey, serviceUrl, useUnits, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide)
     /// Get the object which represents the Freebase domain with the given object id.
     interface IFreebaseDataContext with member __.GetDomainCategoryById(domainCategoryId) = FreebaseDomainCategory(fbDataConn, domainCategoryId)
 
@@ -927,6 +928,7 @@ and FreebaseDataContextSettings internal (fbQueries,fbDataConn) =
     member __.Limit with get() = fbDataConn.Limit and set v = fbDataConn.Limit <- v
     member __.LocalCacheLocation = fbQueries.LocalCacheLocation
     member __.UseLocalCache with get() = fbQueries.UseLocalCache and set v = fbQueries.UseLocalCache <- v
+    member __.ApiKey = fbQueries.ApiKey
 
 #if NO_FSHARP_CORE_TYPE_PROVIDER_ASSEMBLY_ATTRIBUTE
 // Attach the TypeProviderAssemblyAttribute to the runtime assembly

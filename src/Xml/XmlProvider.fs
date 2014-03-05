@@ -3,6 +3,7 @@
 open System.IO
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
+open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data.Runtime
@@ -40,18 +41,18 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
     let getSpecFromSamples samples = 
       let inferedType = 
         samples
-        |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowNulls*)true globalInference sampleXml)
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top
+        |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowEmptyValues*)false globalInference sampleXml)
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
 
       let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, replacer)  
-      let resTy, resTypConv = XmlTypeBuilder.generateXmlType ctx inferedType
+      let result = XmlTypeBuilder.generateXmlType ctx inferedType
 
       { GeneratedType = tpType
-        RepresentationType = resTy
+        RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          resTypConv <@@ XmlElement.Create(%reader) @@>
+          result.Converter <@@ XmlElement.Create(%reader) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          resTypConv <@@ XmlElement.CreateList(%reader) @@> }
+          result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
     generateConstructors "XML" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 

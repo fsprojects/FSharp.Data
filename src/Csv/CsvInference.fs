@@ -124,11 +124,10 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
 
   match typ, unit with
   | Some (typ, typWrapper), unit ->
-      let prop = PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
-      if isOverrideByName then 
-        SchemaParseResult.FullByName(prop, originalName) 
-      else 
-      SchemaParseResult.Full prop
+      let prop = PrimitiveInferedProperty.Create(name, typ, typWrapper, unit)
+      if isOverrideByName
+      then  SchemaParseResult.FullByName(prop, originalName) 
+      else SchemaParseResult.Full prop
   | None, None when isOverrideByName -> SchemaParseResult.Rename(name, originalName)
   | None, None -> SchemaParseResult.Name str
   | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
@@ -146,7 +145,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
     match csv.Headers with
     | Some headers ->
         headers |> Array.mapi (fun i header -> 
-          if String.IsNullOrEmpty header then 
+          if String.IsNullOrWhiteSpace header then 
             "Column" + (i+1).ToString()
           else
             header)
@@ -244,23 +243,22 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
                 match schema.[index] with
                 | Some _ -> InferedType.Null // this will be ignored, so just return anything
                 | None ->
-                    // If there's only whitespace between commas, treat it as a missing value
+                    // If there's only whitespace between commas, treat it as a missing value and not as a string
                     if String.IsNullOrWhiteSpace value then InferedType.Null
                     // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
                     elif Array.exists ((=) <| value.Trim()) missingValues then 
-                        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit)
-                    else inferPrimitiveType cultureInfo value unit
+                        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit, false)
+                    else getInferedTypeFromString cultureInfo value unit
               { Name = name
-                Optional = false
                 Type = typ } ]
-        InferedType.Record(None, fields) ]
+        InferedType.Record(None, fields, false) ]
 
   let inferedType = 
     if schema |> Seq.forall Option.isSome then
         // all the columns types are already set, so all the rows will be the same
         types |> Seq.head
     else
-        List.reduce (StructuralInference.subtypeInfered (not preferOptionals)) types
+        List.reduce (StructuralInference.subtypeInfered ((*allowEmptyValues*)not preferOptionals)) types
   
   inferedType, schema
 
@@ -268,47 +266,27 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
 /// numerical-friendly, so we do a few simple adjustments.
 /// When preferOptionals is false:
 ///  
-///  - Fields of type 'int + null' are generated as Nullable<int>
-///  - Fields of type 'int64 + null' are generated as Nullable<int64>
-///  - Fields of type 'float + null' are just floats (and null becomes NaN)
-///  - Fields of type 'decimal + null' are generated as floats too
-///  - Fields of type 'T + null' for any other non-nullable T (bool/date/guid) become option<T>
+///  - Optional fields of type 'int' are generated as Nullable<int>
+///  - Optional fields of type 'int64' are generated as Nullable<int64>
+///  - Optional fields of type 'float' are just floats (and null becomes NaN)
+///  - Optional fields of type 'decimal' are generated as floats too
+///  - Optional fields of any other non-nullable T (bool/date/guid) become option<T>
 ///  - All other types are simply strings.
 ///
 /// When preferOptionals is true:
 ///  
-///  - All fields of type 'T + null' for any type become option<T>, incude strings
+///  - All optional fields of type 'T' for any type become option<T>, including strings and floats
 
 let internal getFields preferOptionals inferedType schema = 
 
-  /// Matches heterogeneous types that consist of 'null + T' and return the T type
-  /// (used below to transform 'float + null => float' and 'int + null => int?')
-  let inline (|TypeOrNull|_|) typ = 
-    match typ with 
-    | InferedType.Heterogeneous(map) when map.Count = 2 && map |> Map.containsKey InferedTypeTag.Null ->
-        let kvp = map |> Seq.find (function KeyValue(InferedTypeTag.Null, _) -> false | _ -> true)
-        Some kvp.Value
-    | _ -> None
-
-  /// Can be used to assign value to a variable in a pattern
-  /// (e.g. match input with Let 42 (num, input) -> ...)
-  let inline (|Let|) arg inp = (arg, inp)
-
   match inferedType with 
-  | InferedType.Record(_, fields) -> fields |> List.mapi (fun index field ->
+  | InferedType.Record(None, fields, false) -> fields |> List.mapi (fun index field ->
     
-      // The inference engine assigns some value to all fields
-      // so we should never get an optional field
-      if field.Optional then 
-        failwithf "Column %s is not present in all rows used for inference" field.Name
-      
       match Array.get schema index with
       | Some prop -> prop
       | None ->
           match field.Type with
-          // Match either Primitive or Heterogeneous with Null and Primitive
-          | Let true (optional, TypeOrNull(InferedType.Primitive(typ, unit)))
-          | Let false (optional, InferedType.Primitive(typ, unit)) -> 
+          | InferedType.Primitive(typ, unit, optional) -> 
               
               // Transform the types as described above
               let typ, typWrapper = 
@@ -330,10 +308,10 @@ let internal getFields preferOptionals inferedType schema =
                       typ, None, field.Name.Split('\n').[0]
                 | _ -> typ, None, field.Name.Split('\n').[0] 
           
-              PrimitiveInferedProperty.Create(name, typ, typWrapper, ?unit=unit)
+              PrimitiveInferedProperty.Create(name, typ, typWrapper, unit)
           
           | _ -> 
-              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>, preferOptionals) )
+              PrimitiveInferedProperty.Create(field.Name.Split('\n').[0], typeof<string>, preferOptionals, None) )
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType
 

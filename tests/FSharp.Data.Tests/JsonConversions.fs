@@ -1,9 +1,9 @@
-﻿module FSharp.Data.Tests.JsonExtensions
-
-#if INTERACTIVE
+﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
+#else
+module FSharp.Data.Tests.JsonConversions
 #endif
 
 open System.Globalization
@@ -11,7 +11,6 @@ open NUnit.Framework
 open FsUnit
 open FSharp.Data
 open FSharp.Data.Runtime
-open FSharp.Data.JsonExtensions
 
 [<Test>]
 let ``Boolean conversions``() = 

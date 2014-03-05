@@ -9,7 +9,10 @@ open Microsoft.FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
+open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
+
+#nowarn "10001"
 
 let getConversionQuotation missingValues cultureStr typ (value:Expr<JsonValue option>) =
   if typ = typeof<string> then <@@ JsonRuntime.ConvertString(cultureStr, %value) @@>
@@ -62,10 +65,13 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValues cultureStr canPas
     | TypeWrapper.Option, true ->
         convert <@ (%%value:JsonValue option) @>
     | TypeWrapper.Option, false ->
+        //TODO: not covered in tests
         convert <@ Some (%%value:IJsonDocument).JsonValue @>
     | TypeWrapper.Nullable, true -> 
+        //TODO: not covered in tests
         typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ (%%value:JsonValue option) @>)
     | TypeWrapper.Nullable, false -> 
+        //TODO: not covered in tests
         typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert <@ Some (%%value:IJsonDocument).JsonValue @>)
     |> replacer.ToRuntime
 
