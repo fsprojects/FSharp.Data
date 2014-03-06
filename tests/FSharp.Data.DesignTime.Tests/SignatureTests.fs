@@ -25,6 +25,10 @@ let testCases =
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
+let testsCasesForUSA =
+    testCases
+    |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
+
 let expectedDirectory = sourceDirectory ++ "expected" 
 
 let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
@@ -44,7 +48,11 @@ let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
 [<Test>]
+#if TEAM_CITY
+[<TestCaseSource "testCasesForUSA">]
+#else
 [<TestCaseSource "testCases">]
+#endif
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = testCase.ExpectedPath expectedDirectory |> File.ReadAllText |> normalize
     let output = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize

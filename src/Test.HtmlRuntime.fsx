@@ -4,6 +4,7 @@
 #load "CommonRuntime/TextConversions.fs"
 #load "CommonRuntime/TextRuntime.fs"
 #load "Html/HtmlParser.fs"
+#load "Html/HtmlOperations.fs"
 #load "Html/HtmlRuntime.fs"
 
 open System

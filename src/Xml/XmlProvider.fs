@@ -56,7 +56,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
     generateConstructors "XML" sample sampleIsList
                          parseSingle parseList getSpecFromSamples 
-                         version this cfg replacer resolutionFolder false
+                         version this cfg replacer resolutionFolder (*generateDefaultConstructor*)false
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

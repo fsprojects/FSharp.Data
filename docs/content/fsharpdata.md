@@ -15,7 +15,7 @@ For more information see:
  * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
  * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
  * [CSV Type Provider](library/CsvProvider.html) - discusses the `CsvProvider<..>` type
- * [HTML Table Type Provider](library/HtmlTableProvider.html) - discusses the `HtmlTableProvider<...>` type
+ * [HTML Type Provider](library/HtmlProvider.html) - discusses the `HtmlProvider<...>` type
 
 The library also implements a type provider for accessing data from 
 [the WorldBank](http://data.worldbank.org/) and [Freebase graph database](http://www.freebase.com/).

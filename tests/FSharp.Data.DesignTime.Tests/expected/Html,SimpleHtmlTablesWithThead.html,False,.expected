@@ -1,18 +1,47 @@
-class HtmlTableProvider
+class HtmlProvider : FDR.TypedHtmlDocument
+    new : () -> HtmlProvider
+    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "SimpleHtmlTablesWithThead.html")))
 
-class HtmlTableProvider+Tables
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "SimpleHtmlTablesWithThead.html"), f)
 
-class HtmlTableProvider+Tables+Table_0 : FDR.HtmlTable<HtmlTableProvider+Tables+Table_0+Row>
-    static member Load: text:string -> HtmlTableProvider+Tables+Table_0
-    let rowConveter = new Func<_,_>(fun (row:string[]) -> 
-                                       let value = TextConversions.AsString(row.[0])
-                                       TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertString(value), value),
-                                       let value = TextConversions.AsString(row.[1])
-                                       TextRuntime.GetNonOptionalValue("Savings", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConveter, "Table_0", text)
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "SimpleHtmlTablesWithThead.html")))
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    TypedHtmlDocument.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    TypedHtmlDocument.Create(reader)
+
+    static member Load: uri:string -> HtmlProvider
+    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    TypedHtmlDocument.Create(((new StringReader(text)) :> TextReader))
+
+    member Tables: HtmlProvider+TableContainer with get
+    this
 
 
-class HtmlTableProvider+Tables+Table_0+Row : string * string
+class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
+    member Table0: HtmlProvider+Table0 with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Savings", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Table_0")
+
+
+class HtmlProvider+Table0 : FDR.HtmlTable<HtmlProvider+Table0+Row>
+
+class HtmlProvider+Table0+Row : string * string
     member Month: string with get
     (let t1,_ = this in t1)
 

@@ -1,12 +1,11 @@
 (** 
-# F# Data: Html Table Type Provider
+# F# Data: Html Type Provider
 
-This article demonstrates how to use the Html Table type provider to read Html Tables files
+This article demonstrates how to use the Html type provider to read Html tables files
 in a statically typed way. 
 
-The Html table type provider takes a sample Html document as input and generates a type based on the data
-present on the columns of that sample. The column names are obtained from the first
-(header) row.
+The Html type provider takes a sample Html document as input and generates a type based on the data
+present on the columns of that sample. The column names are obtained from the first (header) row.
 
 ## Introducing the provider
 
@@ -36,33 +35,32 @@ Usually with HTML files headers are demarked by using the <th> tag, however in t
 first row is headers. (This behaviour is likely to get smarer in later releases). But it highlights a general problem about HTML's strictness. 
 *)
 
-type MarketDepth = HtmlTableProvider<"../data/MarketDepth.htm">
+type MarketDepth = HtmlProvider<"../data/MarketDepth.htm">
 
 (**
-The generated type provides a type type space of tables that it has managed to parse out of the given HTML Document.
-Each types name is derived from either the id, title, name, summary or caption attributes/tags provided. If non of these 
-entities exist then the table will simply be named `Table_xx` where xx is the position in the HTML doc if all of the tables where flatterned out into a list.
-Each table type provides a single static method for loading data. The `Load` method allows reading the data from
-a file or from a web resource. We could also have used a web url instead of a local file in the sample parameter of the type provider.
+The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
+Each types name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
+entities exist then the table will simply be named `Table_xx` where xx is the position in the HTML doc if all of the tables were flatterned out into a list.
+The `Load` method allows reading the data from a file or from a web resource. We could also have used a web url instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
 *)
  
 // Download the latest market depth information
-let mrktDepth = MarketDepth.Tables.Table_2.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet")
+let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table2
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
-let firstRow = mrktDepth.Data |> Seq.head
+let firstRow = mrktDepth.Rows |> Seq.head
 let settlementDate = firstRow.``Settlement Day``
 let acceptedBid = firstRow.``Accepted Bid Vol``
 let acceptedOffer = firstRow.``Accepted Offer Vol``
 
 // Print the bid / offer volumes for each row
-for row in mrktDepth.Data do
+for row in mrktDepth.Rows do
   printfn "Bid/Offer: (%A, %A, %A)" row.``Settlement Day`` row.``Bid Volume`` row.``Offer Volume``
 
 (**
-The generated type has a property `Data` that returns the data from the HTML file as a
+The generated type has a property `Rows` that returns the data from the HTML file as a
 collection of rows. We iterate over the rows using a `for` loop. As you can see the
 (generated) type for rows has properties such as `Settlement Day`, `Bid Volume` and `Offer Volume` that correspond
 to the columns in the selected HTML table file.
@@ -80,10 +78,12 @@ This small sample shows how the HTML type provider can be used to scrape data fr
 
 *)
 
+open System
+
 // helper function to analyze version numbers from nuget
 let getMinorVersion (v:string) =
   try
-      let parts' = v.Replace("(this version)","").Split([|' '|],System.StringSplitOptions.RemoveEmptyEntries)
+      let parts' = v.Replace("(this version)","").Split([|' '|], StringSplitOptions.RemoveEmptyEntries)
       let parts = parts' |> Seq.last |> fun x -> x.Split([|'.'|])
       parts.[0] + "." + parts.[1]
   with 
@@ -91,18 +91,17 @@ let getMinorVersion (v:string) =
 
 // Load the FSharp.Charting library
 #load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
-open System
 open FSharp.Charting
 
 // Configure the type provider
-type NugetStats = HtmlTableProvider<"https://www.nuget.org/packages/FSharp.Data">
+type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats.Tables.Table_0.Load("https://www.nuget.org/packages/FSharp.Data")
+let rawStats = NugetStats().Tables.Table0
 
 // group by minor version and calculate download count
 let stats = 
-    rawStats.Data 
+    rawStats.Rows
     |> Seq.groupBy (fun r -> getMinorVersion r.Version)
     |> Seq.map (fun (k,xs) -> k,xs |> Seq.sumBy (fun x -> x.Downloads))
 

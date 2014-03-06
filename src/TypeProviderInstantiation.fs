@@ -36,9 +36,10 @@ type JsonProviderArgs =
       Culture : string
       ResolutionFolder : string }
 
-type HtmlTableProviderArgs = 
+type HtmlProviderArgs = 
     { Sample : string
       PreferOptionals : bool
+      MissingValues : string
       Culture : string
       ResolutionFolder : string }
 
@@ -61,7 +62,7 @@ type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
-    | Html of HtmlTableProviderArgs
+    | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs
 
@@ -98,9 +99,10 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.ResolutionFolder|] 
             | Html x -> 
-                (fun cfg -> new HtmlTableProvider(cfg) :> TypeProviderForNamespaces),
+                (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.PreferOptionals
+                   box x.MissingValues
                    box x.Culture
                    box x.ResolutionFolder|] 
             | WorldBank x ->
@@ -207,6 +209,7 @@ type TypeProviderInstantiation =
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
+                   MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
                    Culture = args.[3] 
                    ResolutionFolder = ""}
         | "WorldBank" ->
