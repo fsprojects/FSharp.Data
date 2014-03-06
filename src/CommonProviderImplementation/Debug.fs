@@ -479,16 +479,13 @@ module Debug =
         let currentDepth = ref 0
 
         while pending.Count <> 0 && !currentDepth <= maxDepth do
-
             let pendingForThisDepth = new List<_>(pending)
             pending.Clear()
             let pendingForThisDepth = 
                 pendingForThisDepth
                 |> Seq.sortBy (fun m -> m.Name)
                 |> Seq.truncate maxWidth
-
             for t in pendingForThisDepth do
-                
                 match t with
                 | t when FSharpType.IsRecord t-> "record "
                 | t when FSharpType.IsModule t -> "module "
@@ -498,28 +495,15 @@ module Debug =
                 | t when t.IsClass -> "class "
                 | _ -> ""
                 |> print
-                
                 print (toString true t)
-                
                 if t.BaseType <> typeof<obj> then
                     print " : "
                     print (toString true t.BaseType)
-                
                 println()
-                
-                let count = pending.Count
-
                 t.GetMembers() 
                 |> Seq.sortBy (fun m -> m.Name)
                 |> Seq.iter printMember
-                
                 println()
-            
-                if count = pending.Count then
-                    t.GetMembers()
-                    |> Seq.choose (function :? ProvidedTypeDefinition as t -> Some t | _ -> None)
-                    |> Seq.iter add
-
             currentDepth := !currentDepth + 1
     
         sb.ToString()
