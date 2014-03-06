@@ -99,7 +99,8 @@ let runningOnMono = Type.GetType("Mono.Runtime") <> null
 let runningOnTeamCity = buildServer = TeamCity
 
 Target "Build" <| fun () ->
-    (if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
+    //(if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
+    !! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
