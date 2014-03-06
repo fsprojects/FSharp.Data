@@ -4,7 +4,7 @@ env:
   global:
     - FREEBASE_API_KEY=AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
     - MONO_VERSION=3.2.7
-    - FSHARP_VERSION=3.1.1.1
+    - FSHARP_VERSION=3.1.1.5
 
 install:
   - wget "http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
