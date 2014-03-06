@@ -6,6 +6,36 @@ open System.Text
 open FSharp.Data
 open FSharp.Data.Runtime
 
+// --------------------------------------------------------------------------------------
+
+type HtmlAttribute = 
+    | HtmlAttribute of name:string * value:string    
+    member x.Name =
+        match x with
+        | HtmlAttribute(name = name) -> name
+    member x.Value =
+        match x with
+        | HtmlAttribute(value = value) -> value
+
+type HtmlElement =
+    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
+    | HtmlCharRef of string
+    | HtmlText of string
+    | HtmlScript of string
+    | HtmlStyle of string
+    | HtmlComment of string
+
+type HtmlDocument = 
+    | HtmlDocument of docType:string * elements:HtmlElement list
+    member x.DocType = 
+        match x with
+        | HtmlDocument(docType = docType) -> docType
+    member x.Elements = 
+        match x with
+        | HtmlDocument(elements = elements) -> elements
+
+// --------------------------------------------------------------------------------------
+
 module private TextParser = 
 
     let toPattern f c = if f c then Some c else None
@@ -47,183 +77,148 @@ module private TextParser =
         | Symbol c -> Some c
         | _ -> None
 
-type HtmlAttribute = HtmlAttribute of name:string * value:string
-    with
-        member x.Name =
-            match x with
-            | HtmlAttribute(name = name) -> name
-        member x.Value =
-            match x with
-            | HtmlAttribute(value = value) -> value
-
-type HtmlElement =
-    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
-    | HtmlCharRef of string
-    | HtmlText of string
-    | HtmlScript of string
-    | HtmlStyle of string
-    | HtmlComment of string
-
-type HtmlDocument = HtmlDocument of docType:string * elements:HtmlElement list
-    with
-        member x.DocType = 
-            match x with
-            | HtmlDocument(docType = docType) -> docType
-        member x.Elements = 
-            match x with
-            | HtmlDocument(elements = elements) -> elements
+// --------------------------------------------------------------------------------------
 
 module private HtmlParser =
+    
+    type HtmlToken =
+        | DocType of string
+        | Tag of bool * string * HtmlAttribute list
+        | TagEnd of string
+        | Text of string
+        | CharRef of string
+        | Script of string
+        | Style of string
+        | Comment of string
+        | EOF
 
-    module private Helpers = 
-
-        type HtmlToken =
-            | DocType of string
-            | Tag of bool * string * HtmlAttribute list
-            | TagEnd of string
-            | Text of string
-            | CharRef of string
-            | Script of string
-            | Style of string
-            | Comment of string
-            | EOF
-
-        type TextReader with
+    type TextReader with
        
-            static member NullChar = Convert.ToChar(0x0)
-            member x.PeekChar() = x.Peek() |> char
-            member x.ReadChar() = x.Read() |> char
-            member x.ReadNChar(n) = 
-                let buffer = Array.zeroCreate n
-                x.ReadBlock(buffer, 0, n) |> ignore
-                String(buffer)
+        static member NullChar = Convert.ToChar(0x0)
+        member x.PeekChar() = x.Peek() |> char
+        member x.ReadChar() = x.Read() |> char
+        member x.ReadNChar(n) = 
+            let buffer = Array.zeroCreate n
+            x.ReadBlock(buffer, 0, n) |> ignore
+            String(buffer)
     
-        type CharList = {
-            Contents : char list ref
-        }
-        with
-            static member Empty = { Contents = ref [] }
-            override x.ToString() = String(!x.Contents |> List.rev |> Seq.toArray)
-            member x.Cons(c) = 
-                x.Contents := c :: !x.Contents
-            member x.Length = x.Contents.Value.Length
-            member x.Clear() = x.Contents := []
+    type CharList = 
+        { Contents : char list ref }
+        static member Empty = { Contents = ref [] }
+        override x.ToString() = String(!x.Contents |> List.rev |> Seq.toArray)
+        member x.Cons(c) = x.Contents := c :: !x.Contents
+        member x.Length = x.Contents.Value.Length
+        member x.Clear() = x.Contents := []
 
-        type InsertionMode = 
-            | ScriptMode
-            | StyleMode
-            | DefaultMode
-            | CharRefMode
-            | CommentMode
-            | DocTypeMode
-            with
-                override x.ToString() =
-                    match x with
-                    | ScriptMode -> "script"
-                    | StyleMode -> "style"
-                    | DefaultMode -> "default"
-                    | CharRefMode -> "charref"
-                    | CommentMode -> "comment"
-                    | DocTypeMode -> "doctype"
+    type InsertionMode = 
+        | ScriptMode
+        | StyleMode
+        | DefaultMode
+        | CharRefMode
+        | CommentMode
+        | DocTypeMode
+        override x.ToString() =
+            match x with
+            | ScriptMode -> "script"
+            | StyleMode -> "style"
+            | DefaultMode -> "default"
+            | CharRefMode -> "charref"
+            | CommentMode -> "comment"
+            | DocTypeMode -> "doctype"
     
-        type HtmlState = {
-            Attributes : (CharList * CharList) list ref
-            CurrentTag : CharList ref
-            Content : CharList ref
-            InsertionMode : InsertionMode ref
-            Reader : TextReader
-        }
-        with
-            static member Create (reader:TextReader) = {
-                Attributes = ref []
-                CurrentTag = ref CharList.Empty
-                Content = ref CharList.Empty
-                InsertionMode = ref DefaultMode
-                Reader = reader
-            }
+    type HtmlState = 
+        { Attributes : (CharList * CharList) list ref
+          CurrentTag : CharList ref
+          Content : CharList ref
+          InsertionMode : InsertionMode ref
+          Reader : TextReader }
+        static member Create (reader:TextReader) = 
+            { Attributes = ref []
+              CurrentTag = ref CharList.Empty
+              Content = ref CharList.Empty
+              InsertionMode = ref DefaultMode
+              Reader = reader }
 
-            member x.Pop() = x.Reader.Read() |> ignore
-            member x.Peek() = x.Reader.PeekChar()
+        member x.Pop() = x.Reader.Read() |> ignore
+        member x.Peek() = x.Reader.PeekChar()
     
-            member x.NewAttribute() = x.Attributes := (CharList.Empty, CharList.Empty) :: (!x.Attributes)
+        member x.NewAttribute() = x.Attributes := (CharList.Empty, CharList.Empty) :: (!x.Attributes)
     
-            member x.ConsAttrName() =
-                match !x.Attributes with
-                | [] -> x.NewAttribute(); x.ConsAttrName()
-                | (h,_) :: _ -> h.Cons(x.Reader.ReadChar())
+        member x.ConsAttrName() =
+            match !x.Attributes with
+            | [] -> x.NewAttribute(); x.ConsAttrName()
+            | (h,_) :: _ -> h.Cons(x.Reader.ReadChar())
     
-            member x.CurrentTagName() = 
-                match (!(!x.CurrentTag).Contents) with
-                | [] ->  String.Empty
-                | h :: _ -> h.ToString()
+        member x.CurrentTagName() = 
+            match (!(!x.CurrentTag).Contents) with
+            | [] ->  String.Empty
+            | h :: _ -> h.ToString()
     
-            member x.CurrentAttrName() = 
-                match !x.Attributes with
-                | [] ->  String.Empty
-                | (h,_) :: _ -> h.ToString() 
+        member x.CurrentAttrName() = 
+            match !x.Attributes with
+            | [] ->  String.Empty
+            | (h,_) :: _ -> h.ToString() 
     
-            member x.ConsAttrValue() =
-                match !x.Attributes with
-                | [] -> x.NewAttribute(); x.ConsAttrValue()
-                | (_,h) :: _ -> h.Cons(x.Reader.ReadChar())
+        member x.ConsAttrValue() =
+            match !x.Attributes with
+            | [] -> x.NewAttribute(); x.ConsAttrValue()
+            | (_,h) :: _ -> h.Cons(x.Reader.ReadChar())
     
-            member x.GetAttributes() = 
-                !x.Attributes |> List.choose (fun (key,value) -> 
-                                                if key.Length > 0
-                                                then Some <| HtmlAttribute(key.ToString(), value.ToString())
-                                                else None
-                                              )
+        member x.GetAttributes() = 
+            !x.Attributes |> List.choose (fun (key,value) -> 
+                                            if key.Length > 0
+                                            then Some <| HtmlAttribute(key.ToString(), value.ToString())
+                                            else None
+                                            )
     
-            member x.EmitSelfClosingTag() = 
-                let name = (!x.CurrentTag).ToString()
-                let result = Tag(true, name, x.GetAttributes()) 
-                x.CurrentTag := CharList.Empty
-                x.InsertionMode := DefaultMode
-                x.Attributes := []
-                result 
+        member x.EmitSelfClosingTag() = 
+            let name = (!x.CurrentTag).ToString()
+            let result = Tag(true, name, x.GetAttributes()) 
+            x.CurrentTag := CharList.Empty
+            x.InsertionMode := DefaultMode
+            x.Attributes := []
+            result 
     
-            member x.EmitTag(isEnd) =
-                let name = (!x.CurrentTag).ToString()
-                let isVoid (name:string) = 
-                    match name.Trim().ToLower() with
-                    | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
-                    | "source" | "track" | "wbr" -> true
-                    | _ -> false
-                let result = 
-                    if isEnd
-                    then TagEnd(name)
-                    else Tag((isVoid name), name, x.GetAttributes()) 
-                x.CurrentTag := CharList.Empty
-                x.InsertionMode :=
-                    match isEnd, name with
-                    | false, "script" -> ScriptMode
-                    | false, "style" -> StyleMode
-                    | _, _ -> DefaultMode
-                x.Attributes := []
-                result
+        member x.EmitTag(isEnd) =
+            let name = (!x.CurrentTag).ToString()
+            let isVoid (name:string) = 
+                match name.Trim().ToLower() with
+                | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
+                | "source" | "track" | "wbr" -> true
+                | _ -> false
+            let result = 
+                if isEnd
+                then TagEnd(name)
+                else Tag((isVoid name), name, x.GetAttributes()) 
+            x.CurrentTag := CharList.Empty
+            x.InsertionMode :=
+                match isEnd, name with
+                | false, "script" -> ScriptMode
+                | false, "style" -> StyleMode
+                | _, _ -> DefaultMode
+            x.Attributes := []
+            result
     
-            member x.Emit() = 
-                let result : HtmlToken = 
-                    match !x.InsertionMode with
-                    | DefaultMode -> Text
-                    | ScriptMode -> Script
-                    | StyleMode -> Style
-                    | CharRefMode -> CharRef
-                    | CommentMode -> Comment
-                    | DocTypeMode -> DocType
-                    <| ((!x.Content).ToString())
-                x.Content := CharList.Empty
-                x.InsertionMode := DefaultMode
-                result
+        member x.Emit() = 
+            let result : HtmlToken = 
+                match !x.InsertionMode with
+                | DefaultMode -> Text
+                | ScriptMode -> Script
+                | StyleMode -> Style
+                | CharRefMode -> CharRef
+                | CommentMode -> Comment
+                | DocTypeMode -> DocType
+                <| ((!x.Content).ToString())
+            x.Content := CharList.Empty
+            x.InsertionMode := DefaultMode
+            result
     
-            member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
-            member x.ConsTag() = (!x.CurrentTag).Cons(x.Reader.ReadChar())
-            member x.ClearContent() = 
-                (!x.Content).Clear()
-    
-    open Helpers
-    
-    //Tokenises a stream into a sequence of HTML tokens. 
+        member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
+        member x.ConsTag() = (!x.CurrentTag).Cons(x.Reader.ReadChar())
+        member x.ClearContent() = 
+            (!x.Content).Clear()
+
+    // Tokenises a stream into a sequence of HTML tokens. 
     let private tokenise reader =
         let state = HtmlState.Create reader
         let rec data (state:HtmlState) =
@@ -385,6 +380,8 @@ module private HtmlParser =
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []
         HtmlDocument(docType, elements)
+
+// --------------------------------------------------------------------------------------
 
 type HtmlDocument with
 

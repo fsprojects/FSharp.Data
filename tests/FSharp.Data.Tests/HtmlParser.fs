@@ -66,7 +66,7 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -83,7 +83,7 @@ let ``Can parse tables from a simple html table with no defined headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -100,7 +100,7 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html |> Seq.toList
+    let tables = HtmlRuntime.parseTables html |> Seq.toList
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -115,7 +115,7 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html |> Seq.toList
+    let tables = HtmlRuntime.parseTables html |> Seq.toList
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -130,7 +130,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_id"
@@ -145,7 +145,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_name"
@@ -160,7 +160,7 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
     tables.Length |> should equal 1
 
 [<Test>]
@@ -185,7 +185,7 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
@@ -203,7 +203,7 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = Html.Table.parse html
+    let tables = HtmlRuntime.parseTables html
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Table_0"

@@ -35,6 +35,7 @@ let dumpPortable47 = dump false false Portable47
 
 Html { Sample = "list_of_counties_wikipedia.html"
        PreferOptionals = false
+       MissingValues = "NaN,NA,#N/A,:"
        Culture = "" 
        ResolutionFolder = "" }
 |> dumpPortable47 false
