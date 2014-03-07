@@ -25,7 +25,7 @@ let testCases =
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
-let testsCasesForUSA =
+let testCasesForUSA =
     testCases
     |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
 
@@ -62,12 +62,10 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder "" portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder "" portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore

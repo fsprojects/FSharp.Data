@@ -193,14 +193,6 @@ module HttpResponseHeaders =
     let [<Literal>] Warning = "Warning"
     /// Indicates the authentication scheme that should be used to access the requested entity.
     let [<Literal>] WWWAuthenticate = "WWW-Authenticate"
-    let [<Literal>] XAspNetMvcVersion = "X-AspNetMvc-Version"
-    let [<Literal>] XAspNetVersion = "X-AspNet-Version"
-    let [<Literal>] XContentTypeOptions = "X-Content-Type-Options"
-    let [<Literal>] XInstance = "X-Instance"
-    let [<Literal>] XPoweredBy = "X-Powered-By"
-    let [<Literal>] XRuntime = "X-Runtime"
-    let [<Literal>] XUACompatible = "X-UA-Compatible"
-    let [<Literal>] XVersion = "X-Version"
 
 /// The body to send in an HTTP request
 type HttpRequestBody =

@@ -22,14 +22,18 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 - VS2012 compiling to FSharp.Core 4.3.0.0
 - VS2012 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
+- Mono F# 3.0 compiling to FSharp.Core 4.3.0.0
+- Mono F# 3.0 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - VS2013 compiling to FSharp.Core 4.3.0.0
 - VS2013 compiling to FSharp.Core 4.3.1.0
-- VS2013 compiling to FSharp.Core 2.3.5.0  (PCL profile 47)
-- VS2013 compiling to FSharp.Core 2.3.6.0  (PCL profile 47)
-- VS2013 compiling to FSharp.Core 3.3.1.0  (PCL profile 7)
-- Mono F# 3.0 with FSharp.Core 4.3.0.0
-- Mono F# 3.1 with FSharp.Core 4.3.0.0
-- Mono F# 3.1 with FSharp.Core 4.3.1.0
+- VS2013 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
+- VS2013 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
+- VS2013 compiling to FSharp.Core 3.3.1.0 (PCL profile 7)
+- Mono F# 3.1 compiling to FSharp.Core 4.3.0.0
+- Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
+- Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
+- Mono F# 3.1 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
+- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7)
 
 ## Documentation 
 
