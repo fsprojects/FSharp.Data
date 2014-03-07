@@ -117,8 +117,7 @@ let init (cfg : TypeProviderConfig) =
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
-    let runningOnMono = Type.GetType("Mono.Runtime") <> null
-    let useReflectionOnly = not runningOnMono
+    let useReflectionOnly = true
 
     let runtimeAssembly = 
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
