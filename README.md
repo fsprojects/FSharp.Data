@@ -31,7 +31,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 - Mono F# 3.1 compiling to FSharp.Core 4.3.0.0
 - Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
 
-## Not currently working or not tests, but we want to support:
+## Not currently working or not tested, but we want to support:
 
 - Mono F# 3.0 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
