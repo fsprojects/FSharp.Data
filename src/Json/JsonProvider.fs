@@ -43,7 +43,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let getSpecFromSamples samples = 
 
       let inferedType = 
-        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowEmptyValues*)false (NameUtils.singularize rootName) sampleJson ]
+        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (NameUtils.singularize rootName) sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
   
       let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
@@ -56,9 +56,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
-    generateConstructors "JSON" sample sampleIsList
-                         parseSingle parseList getSpecFromSamples 
-                         version this cfg replacer resolutionFolder false
+    generateConstructors "JSON" sample sampleIsList parseSingle parseList
+                         getSpecFromSamples version this cfg replacer resolutionFolder
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

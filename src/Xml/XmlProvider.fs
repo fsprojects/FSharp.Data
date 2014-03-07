@@ -54,9 +54,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    generateConstructors "XML" sample sampleIsList
-                         parseSingle parseList getSpecFromSamples 
-                         version this cfg replacer resolutionFolder false
+    generateConstructors "XML" sample sampleIsList parseSingle parseList
+                         getSpecFromSamples version this cfg replacer resolutionFolder
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
