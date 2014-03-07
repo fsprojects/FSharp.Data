@@ -182,22 +182,22 @@ let ``tvrage_id is not unique in mql query``() =
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
 
 [<Test>]
 let ``Check Individuals10 works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
 
 [<Test>]
 let ``Check Individuals100 works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
 
 [<Test>]
 let ``Check IndividualsAZ works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
 
 [<Test>]
 let ``Check IndividualsAZ good for large collections``() =
