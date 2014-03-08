@@ -68,9 +68,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       use sampleCsv : CsvFile = Seq.exactlyOne samples
       let separators = sampleCsv.Separators
   
-      let inferredFields = 
+      let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
         sampleCsv.InferColumnTypes(inferRows, missingValuesList, cultureInfo, schema,
                                    assumeMissingValues, preferOptionals, ProvidedMeasureBuilder.Default.SI)
+
+      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
       let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
         inferredFields 

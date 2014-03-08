@@ -61,23 +61,64 @@ type internal UriResolver =
         Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
 #endif
 
-let log _str =
 #if FX_NO_LOCAL_FILESYSTEM
 #else
 
-//    let stackTrace = 
-//        Environment.StackTrace.Split '\n'
-//        |> Seq.skip 3
-//        |> Seq.truncate 5
-//        |> Seq.map (fun s -> s.TrimEnd())
-//        |> Seq.toList
+#if false
 
-//    //File.AppendAllLines(__SOURCE_DIRECTORY__ + "/log.txt", _str::stackTrace)
-//    File.AppendAllLines(__SOURCE_DIRECTORY__ + "/log.txt", [_str])
+let private logLock = obj()
+
+let private appendToLogMultiple logFile lines = lock logLock <| fun () ->
+    let path = __SOURCE_DIRECTORY__ + "/../../" + logFile
+    use stream = File.Open(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)
+    use writer = new StreamWriter(stream)
+    for (line:string) in lines do
+        writer.WriteLine(line.Replace("\r", null).Replace("\n","\\n"))
+    writer.Flush()
+
+let private appendToLog logFile line = 
+    appendToLogMultiple logFile [line]
+
+let internal log str =
+    "[" + DateTime.Now.TimeOfDay.ToString() + "] " + str
+    |> appendToLog "log.txt"
+
+let internal logWithStackTrace (str:string) =
+    let stackTrace = 
+        Environment.StackTrace.Split '\n'
+        |> Seq.skip 3
+        |> Seq.truncate 5
+        |> Seq.map (fun s -> s.TrimEnd())
+        |> Seq.toList
+    str::stackTrace |> appendToLogMultiple "log.txt"
+
+open System.Diagnostics
+  
+let internal logTime category (instance:string) =
+
+    log (sprintf "Started %s %s" category instance)
+
+    let s = Stopwatch()
+    s.Start()
+
+    { new IDisposable with
+        member __.Dispose() =
+            s.Stop()
+            log (sprintf "Ended %s %s" category instance)
+            let instance = instance.Replace("\r", null).Replace("\n","\\n")
+            sprintf "%s|%s|%d" category instance s.ElapsedMilliseconds
+            |> appendToLog "log.csv" }
+
+#else
+
+let internal dummyDisposable = { new IDisposable with member __.Dispose() = () }
+let inline internal log _ = ()
+let inline internal logWithStackTrace _ = ()
+let inline internal logTime _ _ = dummyDisposable
 
 #endif
-    ()
-  
+#endif
+
 type internal IDisposableTypeProvider =
     abstract Invalidate : unit -> unit
     abstract AddDisposeAction : (unit -> unit) -> unit

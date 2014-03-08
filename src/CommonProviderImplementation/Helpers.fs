@@ -122,6 +122,8 @@ module ProviderHelpers =
   let parseTextAtDesignTime sampleOrSampleUri parseFunc formatName
                             (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) resolutionFolder =
   
+      using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
+
       let tryGetUri str =
           match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
           | false, _ -> None
@@ -132,7 +134,7 @@ module ProviderHelpers =
       match tryGetUri sampleOrSampleUri with
       | None -> 
 
-          try parseFunc "" sampleOrSampleUri, false, false
+          try lazy (parseFunc "" sampleOrSampleUri), false, false
           with e -> failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
 
       | Some uri ->
@@ -161,14 +163,14 @@ module ProviderHelpers =
                       value, true
               else readText(), false
                 
-            parseFunc (Path.GetExtension uri.OriginalString) sample, true, isWeb
+            lazy (parseFunc (Path.GetExtension uri.OriginalString) sample), true, isWeb
 
           with e ->
 
             if not uri.IsAbsoluteUri then
               // even if it's a valid uri, it could be sample text
               try 
-                parseFunc "" sampleOrSampleUri, false, false
+                lazy (parseFunc "" sampleOrSampleUri), false, false
               with _ -> 
                 // if not, return the first exception
                 failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
@@ -202,7 +204,7 @@ module ProviderHelpers =
     let isRunningInFSI = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
 
-    let parse extension (value:string) = 
+    let parse extension (value:string) = using (logTime "Parsing" sampleOrSampleUri) <| fun _ ->
       if sampleIsList then
         parseList extension value
       else
@@ -211,10 +213,12 @@ module ProviderHelpers =
     // Infer the schema from a specified uri or inline text
     let typedSamples, sampleIsUri, sampleIsWebUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder
 
-    let spec = getSpecFromSamples typedSamples
+    let spec = getSpecFromSamples typedSamples.Value
 
     let resultType = spec.RepresentationType
     let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
+
+    using (logTime "TypeGeneration" sampleOrSampleUri) <| fun _ ->
 
     [ // Generate static Parse method
       let args = [ ProvidedParameter("text", typeof<string>) ]

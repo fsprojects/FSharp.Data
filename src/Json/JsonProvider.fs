@@ -42,10 +42,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     
     let getSpecFromSamples samples = 
 
-      let inferedType = 
+      let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
         [ for sampleJson in samples -> JsonInference.inferType cultureInfo (NameUtils.singularize rootName) sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
   
+      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+
       let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
       let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
 
