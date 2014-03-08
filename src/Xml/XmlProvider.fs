@@ -39,10 +39,13 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         |> Seq.map (fun doc -> doc.XElement)
 
     let getSpecFromSamples samples = 
-      let inferedType = 
+
+      let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
         samples
         |> Seq.map (fun sampleXml -> XmlInference.inferType cultureInfo (*allowEmptyValues*)false globalInference sampleXml)
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
+
+      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
       let ctx = XmlGenerationContext.Create(cultureStr, tpType, globalInference, replacer)  
       let result = XmlTypeBuilder.generateXmlType ctx inferedType
@@ -54,8 +57,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
-    generateConstructors "XML" sample sampleIsList parseSingle parseList
-                         getSpecFromSamples version this cfg replacer resolutionFolder
+    generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
+                 version this cfg replacer resolutionFolder typeName
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
