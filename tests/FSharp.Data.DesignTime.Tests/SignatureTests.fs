@@ -67,5 +67,6 @@ let ``Generating expressions works in portable profile 47 `` (testCase:TypeProvi
 
 [<Test>]
 [<TestCaseSource "testCases">]
+[<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder "" portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore

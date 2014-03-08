@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\generate.ja.fsx = docs\tools\generate.ja.fsx
+		performanceAnalysis.fsx = performanceAnalysis.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
