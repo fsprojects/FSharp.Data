@@ -9,6 +9,8 @@ open System.IO
 open System.Xml.Linq
 open System.Globalization
 
+#nowarn "10001"
+
 /// [omit]
 /// Underlying representation of the generated XML types
 [<StructuredFormatDisplay("{_Print}")>]
@@ -45,7 +47,7 @@ type XmlElement =
       XDocument.Parse(text).Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
-    with _ ->
+    with _ when text.TrimStart().StartsWith "<" ->
       XDocument.Parse("<root>" + text + "</root>").Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
@@ -104,3 +106,18 @@ type XmlRuntime =
   static member ConvertAsName<'R>(xml:XmlElement, nameWithNS, f:Func<XmlElement,'R>) = 
     if xml.XElement.Name = XName.Get(nameWithNS) then Some(f.Invoke xml)
     else None
+
+  // Returns the contents of the element as a JsonValue
+  static member GetJsonValue(xml, cultureStr) = 
+    match XmlRuntime.TryGetValue(xml) with
+    | Some jsonStr -> JsonDocument.Create(new StringReader(jsonStr), cultureStr)
+    | None -> failwithf "XML mismatch: Element doesn't contain value: %A" xml
+
+  // Tried to return the contents of the element as a JsonValue
+  static member TryGetJsonValue(xml, cultureStr) = 
+    match XmlRuntime.TryGetValue(xml) with
+    | Some jsonStr -> 
+        try
+            JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
+        with _ -> None
+    | None -> None

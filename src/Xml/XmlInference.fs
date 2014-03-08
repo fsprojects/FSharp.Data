@@ -7,6 +7,7 @@ module ProviderImplementation.XmlInference
 open System
 open System.Xml.Linq
 open ProviderImplementation
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
@@ -22,6 +23,20 @@ let private getAttributes cultureInfo (element:XElement) =
       if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" then
         yield { Name = attr.Name.ToString()
                 Type = getInferedTypeFromString cultureInfo attr.Value None } ]
+
+let getInferedTypeFromValue cultureInfo (element:XElement) =
+    let value = element.Value
+    let typ = getInferedTypeFromString cultureInfo value None
+    match typ with
+    | InferedType.Primitive(t, _, optional) when t = typeof<string> && value.TrimStart().StartsWith "{" ->
+        try        
+            match JsonValue.Parse value with
+            | JsonValue.Object _ as json -> 
+                let jsonType = json |> JsonInference.inferType cultureInfo element.Name.LocalName
+                InferedType.Json(jsonType, optional)
+            | _ -> typ
+        with _ -> typ
+    | _ -> typ
 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
@@ -44,7 +59,7 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
         let bodyType = 
           [ for e in elements do
               if not e.HasElements && not (String.IsNullOrEmpty(e.Value)) then
-                yield getInferedTypeFromString cultureInfo e.Value None ]
+                yield getInferedTypeFromValue cultureInfo e ]
           |> Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top
         let body = { Name = ""
                      Type = bodyType }
@@ -92,7 +107,7 @@ let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) =
 
       // If it has value, add primitive content
       elif not (String.IsNullOrEmpty element.Value) then
-        let primitive = getInferedTypeFromString cultureInfo element.Value None
+        let primitive = getInferedTypeFromValue cultureInfo element
         yield { Name = ""
                 Type = primitive } ]
 
