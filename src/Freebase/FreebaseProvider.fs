@@ -65,7 +65,7 @@ type internal DomainId = KnownDomain of FreebaseId | UnknownDomain
 /// This is the Freebase type provider.    
 [<TypeProvider>]
 type public FreebaseTypeProvider(config : TypeProviderConfig) as this = 
-    inherit TypeProviderForNamespaces()
+    inherit DisposableTypeProviderForNamespaces()
 
     let fbRuntimeInfo = FreebaseRuntimeInfo(config)
 

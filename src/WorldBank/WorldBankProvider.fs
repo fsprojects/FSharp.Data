@@ -18,7 +18,7 @@ open FSharp.Data.Runtime.WorldBank
 
 [<TypeProvider>]
 type public WorldBankProvider(cfg:TypeProviderConfig) as this = 
-    inherit TypeProviderForNamespaces()
+    inherit DisposableTypeProviderForNamespaces()
 
     let asm, _, replacer = AssemblyResolver.init cfg
     let ns = "FSharp.Data" 

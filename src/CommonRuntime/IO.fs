@@ -61,37 +61,104 @@ type internal UriResolver =
         Uri(Path.Combine(root, uri.OriginalString), UriKind.Absolute), false
 #endif
 
+let log _str =
+#if FX_NO_LOCAL_FILESYSTEM
+#else
+
+//    let stackTrace = 
+//        Environment.StackTrace.Split '\n'
+//        |> Seq.skip 3
+//        |> Seq.truncate 5
+//        |> Seq.map (fun s -> s.TrimEnd())
+//        |> Seq.toList
+
+//    //File.AppendAllLines(__SOURCE_DIRECTORY__ + "/log.txt", _str::stackTrace)
+//    File.AppendAllLines(__SOURCE_DIRECTORY__ + "/log.txt", [_str])
+
+#endif
+    ()
+  
+type internal IDisposableTypeProvider =
+    abstract Invalidate : unit -> unit
+    abstract AddDisposeAction : (unit -> unit) -> unit
+    abstract Id : int
 
 #if FX_NO_LOCAL_FILESYSTEM
 #else
-// sets up a filesystem watcher that calls the invalidate function whenever the file changes
-// adds the filesystem watcher to the list of objects to dispose by the type provider
-let private watchForChanges (uri:Uri) (invalidate, addDisposer:IDisposable->unit) =
+
+type private Watcher(uri:Uri) =
+
+    let typeProviders = ResizeArray<IDisposableTypeProvider>()
+
     let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
     let lastWrite = ref (getLastWrite())
-
+    
     let watcher = 
         let path = Path.GetDirectoryName uri.OriginalString
         let name = Path.GetFileName uri.OriginalString
         new FileSystemWatcher(Filter = name, Path = path, EnableRaisingEvents = true)
 
-    let invalidate _ =
+    let checkForChanges _ =
         let curr = getLastWrite()
-
+    
         if !lastWrite <> curr then
+            log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
-            invalidate()
+            for tp in typeProviders do
+                tp.Invalidate()
 
-    watcher.Changed.Add invalidate
-    watcher.Renamed.Add invalidate
-    watcher.Deleted.Add invalidate
-    addDisposer watcher
+    do
+        watcher.Changed.Add checkForChanges
+        watcher.Renamed.Add checkForChanges
+        watcher.Deleted.Add checkForChanges
+
+    member __.Add = typeProviders.Add
+    member __.Remove (tp:IDisposableTypeProvider) = 
+        log (sprintf "Removing [%d] from watcher %s" tp.Id uri.OriginalString) 
+        typeProviders.Remove tp |> ignore
+        if typeProviders.Count = 0 then
+            log ("Disposing watcher " + uri.OriginalString) 
+            watcher.Dispose()
+            true
+        else
+            false 
+
+open System.Collections.Generic
+
+let private watchers = Dictionary()
+
+// sets up a filesystem watcher that calls the invalidate function whenever the file changes
+// adds the filesystem watcher to the list of objects to dispose by the type provider
+let private watchForChanges (uri:Uri) (tp:IDisposableTypeProvider) =
+
+    let watcher = 
+
+        match watchers.TryGetValue uri.OriginalString with
+        | true, watcher ->
+
+            log (sprintf "Reusing watcher %s for [%d]" uri.OriginalString tp.Id)
+            watcher
+
+        | false, _ ->
+                   
+            log (sprintf "Setting up watcher %s for [%d]" uri.OriginalString tp.Id)
+            let watcher = Watcher uri
+            watchers.Add(uri.OriginalString, watcher)
+            watcher
+
+    watcher.Add tp
+    
+    tp.AddDisposeAction <| fun () -> 
+
+        if watcher.Remove tp then
+            watchers.Remove uri.OriginalString |> ignore
+            
 #endif
-
+    
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncOpenStream (_invalidate:((unit->unit)*(IDisposable->unit)) option) (uriResolver:UriResolver) (uri:Uri) =
+let internal asyncOpenStream (_tp:IDisposableTypeProvider option) (uriResolver:UriResolver) (uri:Uri) =
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
@@ -104,7 +171,7 @@ let internal asyncOpenStream (_invalidate:((unit->unit)*(IDisposable->unit)) opt
 #else
     let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
     let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream
-    _invalidate |> Option.iter (watchForChanges uri)
+    _tp |> Option.iter (watchForChanges uri)
     async.Return file
 #endif
 

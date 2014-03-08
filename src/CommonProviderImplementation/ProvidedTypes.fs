@@ -960,13 +960,17 @@ module GlobalProvidedAssemblyElementsTable =
 
 type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType  : Type option) as this =
     inherit Type()
+
+    do match container with
+       | TypeContainer.Namespace _ -> FSharp.Data.Runtime.IO.log (sprintf "Creating ProvidedTypeDefinition %s [%d]" className (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode this))
+       | _ -> ()
+
     // state
     let mutable attributes   = 
         TypeAttributes.Public ||| 
         TypeAttributes.Class ||| 
         TypeAttributes.Sealed |||
         enum (int32 TypeProviderTypeAttributes.IsErased)
-
 
     let mutable baseType   =  lazy baseType
     let mutable membersKnown   = ResizeArray<MemberInfo>()

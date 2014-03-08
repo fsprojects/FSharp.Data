@@ -9,6 +9,8 @@ open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
+open FSharp.Data.Runtime
+open FSharp.Data.Runtime.IO
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
@@ -61,26 +63,37 @@ module ReflectionHelpers =
 
 // ----------------------------------------------------------------------------------------------
 
-type DisposableTypeProviderForNamespaces() =
+type DisposableTypeProviderForNamespaces() as x =
   inherit TypeProviderForNamespaces()
 
-  let mutable childDisposables = ResizeArray<IDisposable>()
+  let mutable disposeActions = ResizeArray()
 
-  member __.AddChild = childDisposables.Add
+  static let idCount = ref 0
+
+  let id = !idCount
+
+  do incr idCount 
+
+  do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
 
   interface IDisposable with 
-    member __.Dispose() = 
-      let disposables = childDisposables.ToArray()
-      childDisposables.Clear()
-      for disposable in disposables do 
-        try disposable.Dispose() with _ -> ()
+    member x.Dispose() = 
+      log (sprintf "Disposing TypeProviderForNamespaces %O [%d]" x id)
+      let actions = disposeActions.ToArray()
+      disposeActions.Clear()
+      for action in actions do 
+        action()
+
+  interface IDisposableTypeProvider with
+    member x.Invalidate() = ``base``.Invalidate()
+    member x.AddDisposeAction action = disposeActions.Add action
+    member x.Id = id
 
 // ----------------------------------------------------------------------------------------------
 
 module ProviderHelpers =
 
   open System.IO
-  open FSharp.Data.Runtime
   open FSharp.Data.Runtime.Caching
   open FSharp.Data.Runtime.IO
 
@@ -131,7 +144,7 @@ module ProviderHelpers =
           
           let readText() = 
             Async.RunSynchronously <| async {
-                use! stream = asyncOpenStream (Some (tp.Invalidate, tp.AddChild)) resolver uri
+                use! stream = asyncOpenStream (Some (upcast tp)) resolver uri
                 use reader = new StreamReader(stream)
                 return reader.ReadToEnd()
             } 
