@@ -34,19 +34,21 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
       
             let tables : HtmlTable list = Seq.exactlyOne samples
 
-            let htmlType = 
+            let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
                 tables 
                 |> List.filter (fun table -> table.Headers.Length > 0)
                 |> List.map (fun table -> table.Name, HtmlInference.inferColumns preferOptionals missingValuesList cultureInfo table)
                 |> HtmlGenerator.generateTypes asm ns typeName (missingValues, cultureStr) replacer
+
+            using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
               CreateFromTextReader = fun reader ->  replacer.ToRuntime <@@ TypedHtmlDocument.Create(%reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateConstructors "HTML" sample (*sampleIsList*)false (fun _ -> HtmlRuntime.parseTables) (fun _ _ -> failwith "Not Applicable")
-                             getSpecFromSamples version this cfg replacer resolutionFolder
+        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlRuntime.parseTables) (fun _ _ -> failwith "Not Applicable")
+                     getSpecFromSamples version this cfg replacer resolutionFolder typeName
 
     let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
 
