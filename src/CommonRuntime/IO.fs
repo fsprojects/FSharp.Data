@@ -64,7 +64,7 @@ type internal UriResolver =
 #if FX_NO_LOCAL_FILESYSTEM
 #else
 
-#if false
+#if LOGGING_ENABLED
 
 let private logLock = obj()
 
@@ -145,6 +145,7 @@ type private Watcher(uri:Uri) =
         if !lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
+            let typeProviders = Seq.toArray typeProviders
             for tp, typeName in typeProviders do
                 tp.Invalidate typeName
 

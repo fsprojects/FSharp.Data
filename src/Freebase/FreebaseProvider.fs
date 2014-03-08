@@ -46,7 +46,7 @@ module List =
 /// Find the handles in the Freebase type provider runtime DLL. 
 type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
-    let runtimeAssembly, _, replacer = AssemblyResolver.init config
+    let asm, version, replacer = AssemblyResolver.init config
 
     member val FreebaseDataContextType =     typeof<FreebaseDataContext>     |> replacer.ToRuntime
     member val IFreebaseDataContextType =    typeof<IFreebaseDataContext>    |> replacer.ToRuntime
@@ -58,7 +58,8 @@ type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
     member val FreebaseDomainCategoryType =  typeof<RFreebaseDomainCategory> |> replacer.ToRuntime
     member val IFreebaseDomainCategoryType = typeof<IFreebaseDomainCategory> |> replacer.ToRuntime
 
-    member this.RuntimeAssembly = runtimeAssembly
+    member this.RuntimeAssembly = asm
+    member this.RuntimeVersion = version
 
 type internal DomainId = KnownDomain of FreebaseId | UnknownDomain
 
@@ -72,6 +73,8 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     /// Root namespace of Freebase types
     let rootNamespace = "FSharp.Data"
     let createTypes(apiKey, serviceUrl, rootTypeName, numIndividuals, useUnits, usePluralize, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide, useRefinedTypesForItems) = 
+
+        ProviderHelpers.getOrCreateProvidedType this rootTypeName fbRuntimeInfo.RuntimeVersion FreebaseRequests.cacheDuration <| fun () ->
 
         let fb = new FreebaseQueries(apiKey, serviceUrl, "FreebaseSchema", snapshotDate, useLocalCache)
         let fbSchema = new FreebaseSchemaConnection(fb)

@@ -65,11 +65,13 @@ type FreebaseWebException(e:WebException, domain, reason, message, extendedHelp)
 
 let isStringNone s = String.IsNullOrEmpty s || s = "none"        
 
+let cacheDuration = TimeSpan.FromDays 30.0
+
 type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, snapshotDate:string, useLocalCache) = 
     let snapshotDate = if isStringNone snapshotDate then None else Some snapshotDate
     let sendingRequest = Event<Uri>()
     let sendingQuery = Event<string>()
-    let localCache, localCacheLocation = createInternetFileCache localCacheName (TimeSpan.FromDays 30.0)
+    let localCache, localCacheLocation = createInternetFileCache localCacheName cacheDuration
     let noLocalCache = createNonCachingCache()
     let mutable useLocalCache = useLocalCache
     let mutable serviceUrl = serviceUrl

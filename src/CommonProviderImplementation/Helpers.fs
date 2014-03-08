@@ -210,13 +210,9 @@ module ProviderHelpers =
     
     // Caches the generated types by name for up to 30 minutes, the same duration of web caches
     // If there's a file invalidation, this cache is also invalidated
-    let private getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion) f =
+    let internal getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion) cacheDuration f =
       
         let key = fullTypeName, runtimeVersion
-
-        tp.AddDisposeAction fullTypeName <| fun () -> 
-            log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
-            providedTypesCache.Remove key |> ignore
 
         match providedTypesCache.TryGetValue key with
         | true, (providedType, time) when DateTime.Now - time < cacheDuration -> 
@@ -226,6 +222,9 @@ module ProviderHelpers =
             let providedType = f()
             log (sprintf "Creating cache for %s [%d]" fullTypeName tp.Id)
             providedTypesCache.[key] <- (providedType, DateTime.Now)
+            tp.AddDisposeAction fullTypeName <| fun () -> 
+                log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
+                providedTypesCache.Remove key |> ignore
             providedType
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
@@ -251,7 +250,7 @@ module ProviderHelpers =
             else
                 parseSingle extension value |> Seq.singleton
         
-        getOrCreateProvidedType tp fullTypeName runtimeVersion <| fun () ->
+        getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let typedSamples, sampleIsUri, sampleIsWebUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder fullTypeName
