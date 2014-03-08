@@ -173,7 +173,7 @@ module ProviderHelpers =
       // the constructor from a text reader to an array of the representation
       CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
 
-  /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s)
+  /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
   /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
   /// * sampleIsList - true if the sample consists of several samples put together
   /// * parseSingle - receives the file/url extension (or ""  if not applicable) and the text value 
@@ -183,9 +183,8 @@ module ProviderHelpers =
   /// * cfg -> the type provider config
   /// * replacer -> the assemblyReplacer
   /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
-  /// * generateDefaultConstructor -> if true, generates a default constructor that is equivalent to .GetSample(). Only supported when GeneratedType = RepresentationType
   let generateConstructors formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion)
-                           (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder generateDefaultConstructor =
+                           (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder =
 
     let isRunningInFSI = cfg.IsHostedExecution
     let defaultResolutionFolder = cfg.ResolutionFolder
@@ -201,10 +200,6 @@ module ProviderHelpers =
 
     let spec = getSpecFromSamples typedSamples
 
-    if generateDefaultConstructor then        
-      assert (not sampleIsList)
-      assert (spec.GeneratedType :> Type = spec.RepresentationType)
-    
     let resultType = spec.RepresentationType
     let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
 
@@ -291,9 +286,9 @@ module ProviderHelpers =
         
           // Generate static GetSample method
           yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
-          
-          // Generate default constructor
-          if generateDefaultConstructor then
+                    
+          if not sampleIsList && spec.GeneratedType :> Type = spec.RepresentationType then
+            // Generate default constructor
             yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
         
           if sampleIsUri then

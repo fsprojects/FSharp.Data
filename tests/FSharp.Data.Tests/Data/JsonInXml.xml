@@ -1,0 +1,84 @@
+<PropertyBag>
+      <BlahDataArray>
+        <BlahData>
+          <BlahDataSomethingFoo><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo"
+        }
+}
+]]></BlahDataSomethingFoo>
+          <BlahDataSomethingFoo><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"
+        }
+}
+]]></BlahDataSomethingFoo>
+<BlahDataSomethingFoo2><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"            
+        }
+}
+]]></BlahDataSomethingFoo2>
+<BlahDataSomethingFoo3 size="5"><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"
+        }
+}
+]]></BlahDataSomethingFoo3>
+<BlahDataSomethingFoo4><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"            
+        }
+}
+]]></BlahDataSomethingFoo4>
+        </BlahData>
+      </BlahDataArray>
+</PropertyBag>
+<PropertyBag>
+      <BlahDataArray>
+        <BlahData>
+          <BlahDataSomethingFoo><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"
+        }
+}
+]]></BlahDataSomethingFoo>
+          <BlahDataSomethingFoo><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"
+        }
+}
+]]></BlahDataSomethingFoo>
+<BlahDataSomethingFoo2>2</BlahDataSomethingFoo2>
+<BlahDataSomethingFoo3 size="5"><![CDATA[{
+    "Something.Schema" : "Something.Bar",
+    "results" :
+        {
+            "Something.Schema" : "xpto.Foo",
+            "Query" : "fsharp"
+        }
+}
+]]></BlahDataSomethingFoo3>
+        </BlahData>
+      </BlahDataArray>
+</PropertyBag>

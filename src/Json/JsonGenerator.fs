@@ -29,10 +29,11 @@ type JsonGenerationContext =
     // the type that is used to represent documents (JsonDocument or ApiaryDocument)
     Representation : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition> }
-  static member Create(cultureStr, tpType, replacer) =
-    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName)
-  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName) =
+  static member Create(cultureStr, tpType, replacer, ?uniqueNiceName, ?typeCache) =
+    let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
+    let typeCache = defaultArg typeCache (Dictionary())
+    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName, typeCache)
+  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName, typeCache) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer 
@@ -40,7 +41,7 @@ type JsonGenerationContext =
       IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
       Representation = replacer.ToRuntime representation
-      TypeCache = Dictionary() }
+      TypeCache = typeCache }
 
 type JsonGenerationResult = 
     { ConvertedType : Type
@@ -318,3 +319,5 @@ module JsonTypeBuilder =
           assert (multiplicity = InferedMultiplicity.OptionalSingle)
           let cultureStr = ctx.CultureStr
           ctx.JsonRuntimeType?TryGetValueByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx))
+
+    | InferedType.Json _ -> failwith "Json type not supported"

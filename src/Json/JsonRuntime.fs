@@ -65,14 +65,11 @@ type JsonDocument =
   static member CreateList(reader:TextReader, cultureStr) = 
     use reader = reader
     let text = reader.ReadToEnd()
-    let cultureInfo = TextRuntime.GetCulture cultureStr
-    try
-      JsonValue.Parse(text, cultureInfo).AsArray()
-      |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
-    with _ ->
-      JsonValue.ParseMultiple(text, cultureInfo)
-      |> Seq.toArray
-      |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
+    let cultureInfo = TextRuntime.GetCulture cultureStr    
+    match JsonValue.ParseMultiple(text, cultureInfo) |> Seq.toArray with
+    | [| JsonValue.Array array |] -> array
+    | array -> array
+    |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
 
 /// [omit]
 type JsonValueOptionAndPath = 
@@ -194,6 +191,8 @@ type JsonRuntime =
         function JsonValue.Array _ -> true | _ -> false
     | InferedTypeTag.Record _ -> 
         function JsonValue.Object _ -> true | _ -> false
+    | InferedTypeTag.Json -> 
+        failwith "Json type not supported"
     | InferedTypeTag.Null -> 
         failwith "Null type not supported"
     | InferedTypeTag.Heterogeneous -> 

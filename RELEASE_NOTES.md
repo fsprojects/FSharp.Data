@@ -175,3 +175,6 @@
 * Allow to don't throw on HTTP errors.
 * Allow to customize the HTTP request by passing a function.
 * Added RequestStream and AsyncRequestStream methods to Http to allow accessing the response stream directly.
+
+#### 2.0.0-rc - Unreleased
+* Detect Json values inside Xml documents, and generate appropriate types, instead of considering a raw string.
