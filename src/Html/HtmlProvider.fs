@@ -45,9 +45,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReader = fun reader ->  replacer.ToRuntime <@@ TypedHtmlDocument.Create(%reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateConstructors "HTML" sample (*sampleIsList*)false 
-                             (fun _ -> HtmlRuntime.parseTables) (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
-                             version this cfg replacer resolutionFolder (*generateDefaultConstructor*)true
+        generateConstructors "HTML" sample (*sampleIsList*)false (fun _ -> HtmlRuntime.parseTables) (fun _ _ -> failwith "Not Applicable")
+                             getSpecFromSamples version this cfg replacer resolutionFolder
 
     let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
 

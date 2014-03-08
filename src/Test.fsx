@@ -47,9 +47,9 @@ Json { Sample = "optionals.json"
        ResolutionFolder = "" }
 |> dumpPortable47 false
 
-Xml { Sample = "http://tomasp.net/blog/rss.aspx"
-      SampleIsList = false
-      Global = true
+Xml { Sample = "JsonInXml.xml"
+      SampleIsList = true
+      Global = false
       Culture = "" 
       ResolutionFolder = "" }
 |> dumpPortable47 false

@@ -247,3 +247,36 @@ let ``Collections are collapsed into just one element``() =
     let x = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">.GetSample()
     x.Persons.[0] |> should equal "John"
     x.Persons.[1] |> should equal "Doe"
+
+[<Test>]
+let ``Json inside Xml``() =
+    let x = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>.GetSamples()
+
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[0].Results.Query |> should equal None
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[0].Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[1].SomethingSchema |> should equal "Something.Bar"
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[1].Results.Query |> should equal (Some "fsharp")
+    x.[0].BlahDataArray.BlahDataSomethingFoos.[1].Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[0].BlahDataArray.BlahDataSomethingFoo2.Number |> should equal None
+    x.[0].BlahDataArray.BlahDataSomethingFoo2.Json.Value.SomethingSchema |> should equal "Something.Bar"
+    x.[0].BlahDataArray.BlahDataSomethingFoo2.Json.Value.Results.Query |> should equal "fsharp"
+    x.[0].BlahDataArray.BlahDataSomethingFoo2.Json.Value.Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[0].BlahDataArray.BlahDataSomethingFoo3.Size |> should equal 5
+    x.[0].BlahDataArray.BlahDataSomethingFoo3.Value.SomethingSchema |> should equal "Something.Bar"
+    x.[0].BlahDataArray.BlahDataSomethingFoo3.Value.Results.Query |> should equal "fsharp"
+    x.[0].BlahDataArray.BlahDataSomethingFoo3.Value.Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[0].BlahDataArray.BlahDataSomethingFoo4.IsSome |> should equal true
+    x.[0].BlahDataArray.BlahDataSomethingFoo4.Value.SomethingSchema |> should equal "Something.Bar"
+    x.[0].BlahDataArray.BlahDataSomethingFoo4.Value.Results.Query |> should equal "fsharp"
+    x.[0].BlahDataArray.BlahDataSomethingFoo4.Value.Results.SomethingSchema |> should equal "xpto.Foo"
+
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[0].Results.Query |> should equal (Some "fsharp")
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[0].Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[1].SomethingSchema |> should equal "Something.Bar"
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[1].Results.Query |> should equal (Some "fsharp")
+    x.[1].BlahDataArray.BlahDataSomethingFoos.[1].Results.SomethingSchema |> should equal "xpto.Foo"
+    x.[1].BlahDataArray.BlahDataSomethingFoo2.Number |> should equal (Some 2)
+    x.[1].BlahDataArray.BlahDataSomethingFoo3.Size |> should equal 5
+    x.[1].BlahDataArray.BlahDataSomethingFoo4.IsSome |> should equal false

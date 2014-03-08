@@ -87,9 +87,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-    generateConstructors "CSV" sample (*sampleIsList*)false 
-                         parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
-                         version this cfg replacer resolutionFolder (*generateDefaultConstructor*)true
+    generateConstructors "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
+                         getSpecFromSamples version this cfg replacer resolutionFolder
 
   let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
 

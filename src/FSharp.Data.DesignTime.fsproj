@@ -48,10 +48,10 @@
     <Compile Include="CommonRuntime\HttpUtils.fs" />
     <Compile Include="CommonRuntime\TextConversions.fs" />
     <Compile Include="CommonRuntime\TextRuntime.fs" />
-    <Compile Include="CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="CommonRuntime\StructuralInference.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />
     <Compile Include="CommonRuntime\NameUtils.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
