@@ -33,7 +33,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 - Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
 - Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - Mono F# 3.1 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
-- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7)
+- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7) - __currently not working correctly__
 
 ## Documentation 
 
