@@ -58,8 +58,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
-    generateConstructors "JSON" sample sampleIsList parseSingle parseList
-                         getSpecFromSamples version this cfg replacer resolutionFolder
+    generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
+                 version this cfg replacer resolutionFolder typeName
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

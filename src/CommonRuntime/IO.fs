@@ -120,8 +120,8 @@ let inline internal logTime _ _ = dummyDisposable
 #endif
 
 type internal IDisposableTypeProvider =
-    abstract Invalidate : unit -> unit
-    abstract AddDisposeAction : (unit -> unit) -> unit
+    abstract Invalidate : string -> unit
+    abstract AddDisposeAction : string -> (unit -> unit) -> unit
     abstract Id : int
 
 #if FX_NO_LOCAL_FILESYSTEM
@@ -129,7 +129,7 @@ type internal IDisposableTypeProvider =
 
 type private Watcher(uri:Uri) =
 
-    let typeProviders = ResizeArray<IDisposableTypeProvider>()
+    let typeProviders = ResizeArray<IDisposableTypeProvider*string>()
 
     let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
     let lastWrite = ref (getLastWrite())
@@ -145,8 +145,8 @@ type private Watcher(uri:Uri) =
         if !lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
-            for tp in typeProviders do
-                tp.Invalidate()
+            for tp, typeName in typeProviders do
+                tp.Invalidate typeName
 
     do
         watcher.Changed.Add checkForChanges
@@ -154,9 +154,9 @@ type private Watcher(uri:Uri) =
         watcher.Deleted.Add checkForChanges
 
     member __.Add = typeProviders.Add
-    member __.Remove (tp:IDisposableTypeProvider) = 
-        log (sprintf "Removing [%d] from watcher %s" tp.Id uri.OriginalString) 
-        typeProviders.Remove tp |> ignore
+    member __.Remove (tp:IDisposableTypeProvider) typeName = 
+        log (sprintf "Removing %s [%d] from watcher %s" typeName tp.Id uri.OriginalString) 
+        typeProviders.Remove (tp, typeName) |> ignore
         if typeProviders.Count = 0 then
             log ("Disposing watcher " + uri.OriginalString) 
             watcher.Dispose()
@@ -170,28 +170,28 @@ let private watchers = Dictionary()
 
 // sets up a filesystem watcher that calls the invalidate function whenever the file changes
 // adds the filesystem watcher to the list of objects to dispose by the type provider
-let private watchForChanges (uri:Uri) (tp:IDisposableTypeProvider) =
+let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) as key) =
 
     let watcher = 
 
         match watchers.TryGetValue uri.OriginalString with
         | true, watcher ->
 
-            log (sprintf "Reusing watcher %s for [%d]" uri.OriginalString tp.Id)
+            log (sprintf "Reusing watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
             watcher
 
         | false, _ ->
                    
-            log (sprintf "Setting up watcher %s for [%d]" uri.OriginalString tp.Id)
+            log (sprintf "Setting up watcher %s for %s [%d]" typeName uri.OriginalString tp.Id)
             let watcher = Watcher uri
             watchers.Add(uri.OriginalString, watcher)
             watcher
 
-    watcher.Add tp
+    watcher.Add key
     
-    tp.AddDisposeAction <| fun () -> 
+    tp.AddDisposeAction typeName <| fun () -> 
 
-        if watcher.Remove tp then
+        if watcher.Remove tp typeName then
             watchers.Remove uri.OriginalString |> ignore
             
 #endif
@@ -199,7 +199,7 @@ let private watchForChanges (uri:Uri) (tp:IDisposableTypeProvider) =
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncOpenStream (_tp:IDisposableTypeProvider option) (uriResolver:UriResolver) (uri:Uri) =
+let internal asyncOpenStream (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) (uri:Uri) =
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
