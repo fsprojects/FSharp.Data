@@ -33,7 +33,9 @@ let nicePascalName (s:string) =
     match tryAt s i with 
     | Upper _ -> yield! consume from true (i + 1) 
     | Lower _ -> yield! consume from false (i + 1) 
-    | _ -> yield! restart (i + 1) }
+    | _ ->
+        yield from, i
+        yield! restart (i + 1) }
   // Consume are letters of the same kind (either all lower or all upper)
   and consume from takeUpper i = seq {
     match tryAt s i with
