@@ -179,3 +179,4 @@
 #### 2.0.0-rc - Unreleased
 * Detect Json values inside Xml documents, and generate appropriate types, instead of considering a raw string.
 * Performance improvements.
+* Fixed bugs in naming algorithm.
