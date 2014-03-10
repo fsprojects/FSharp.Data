@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>CsvExtensions - F# Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+          <ul class="nav nav-pills pull-right">
+              <li><a href="http://fsharp.org">fsharp.org</a></li>
+              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>CsvExtensions</h1>
+<div class="xmldoc">
+<p>Unsafe extension methods that can be used to work with CsvRow in a less safe, but shorter way.
+This module also provides the dynamic operator.</p>
+</div>
+
+<!-- Render nested types and modules, if there are any -->
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '37', 37)" onmouseover="showTip(event, '37', 37)">
+            ( ? ) csvRow columnName
+          </code>
+          <div class="tip" id="37">
+            <strong>Signature:</strong> csvRow:CsvRow -&gt; columnName:string -&gt; string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Get column of a CsvRow</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L55-55" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
+            AsBoolean(?cultureInfo)
+          </code>
+          <div class="tip" id="117">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option) -&gt; bool<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L37-37" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '119', 119)" onmouseover="showTip(event, '119', 119)">
+            AsDateTime(?cultureInfo)
+          </code>
+          <div class="tip" id="119">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option) -&gt; DateTime<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L43-43" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '120', 120)" onmouseover="showTip(event, '120', 120)">
+            AsDecimal(?cultureInfo)
+          </code>
+          <div class="tip" id="120">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option) -&gt; decimal<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L24-24" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '121', 121)" onmouseover="showTip(event, '121', 121)">
+            AsFloat(?cultureInfo, ?missingValues)
+          </code>
+          <div class="tip" id="121">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option * missingValues:string [] option) -&gt; float<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L30-30" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
+            AsGuid()
+          </code>
+          <div class="tip" id="122">
+            <strong>Signature:</strong> unit -&gt; Guid<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L49-49" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '123', 123)" onmouseover="showTip(event, '123', 123)">
+            AsInteger(?cultureInfo)
+          </code>
+          <div class="tip" id="123">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option) -&gt; int<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L12-12" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '124', 124)" onmouseover="showTip(event, '124', 124)">
+            AsInteger64(?cultureInfo)
+          </code>
+          <div class="tip" id="124">
+            <strong>Signature:</strong> (cultureInfo:CultureInfo option) -&gt; int64<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L18-18" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# Data</li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="divider"></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+            <li class="divider"></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">Tutorials</li>
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
+
+            <li class="nav-header">Reference</li>
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

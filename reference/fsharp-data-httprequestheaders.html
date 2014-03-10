@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>HttpRequestHeaders - F# Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+          <ul class="nav nav-pills pull-right">
+              <li><a href="http://fsharp.org">fsharp.org</a></li>
+              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+
+
+
+<h1>HttpRequestHeaders</h1>
+<div class="xmldoc">
+<p>Header to send in an HTTP request</p>
+</div>
+
+<!-- Render nested types and modules, if there are any -->
+
+  <h3>Functions and values</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Function or value</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
+            Accept contentType
+          </code>
+          <div class="tip" id="38">
+            <strong>Signature:</strong> contentType:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Content-Types that are acceptable for the response</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L38-38" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+            AcceptCharset characterSets
+          </code>
+          <div class="tip" id="42">
+            <strong>Signature:</strong> characterSets:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Character sets that are acceptable</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L40-40" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
+            AcceptDatetime dateTime
+          </code>
+          <div class="tip" id="43">
+            <strong>Signature:</strong> dateTime:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Acceptable version in time</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L42-42" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
+            AcceptEncoding encoding
+          </code>
+          <div class="tip" id="44">
+            <strong>Signature:</strong> encoding:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>List of acceptable encodings. See HTTP compression.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L44-44" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '45', 45)" onmouseover="showTip(event, '45', 45)">
+            AcceptLanguage language
+          </code>
+          <div class="tip" id="45">
+            <strong>Signature:</strong> language:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>List of acceptable human languages for response</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L46-46" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '46', 46)" onmouseover="showTip(event, '46', 46)">
+            Allow methods
+          </code>
+          <div class="tip" id="46">
+            <strong>Signature:</strong> methods:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The Allow header, which specifies the set of HTTP methods supported.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L48-48" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '47', 47)" onmouseover="showTip(event, '47', 47)">
+            Authorization credentials
+          </code>
+          <div class="tip" id="47">
+            <strong>Signature:</strong> credentials:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Authentication credentials for HTTP authentication</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L50-50" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '48', 48)" onmouseover="showTip(event, '48', 48)">
+            CacheControl control
+          </code>
+          <div class="tip" id="48">
+            <strong>Signature:</strong> control:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L52-52" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '49', 49)" onmouseover="showTip(event, '49', 49)">
+            Connection connection
+          </code>
+          <div class="tip" id="49">
+            <strong>Signature:</strong> connection:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>What type of connection the user-agent would prefer</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L54-54" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '50', 50)" onmouseover="showTip(event, '50', 50)">
+            ContentEncoding encoding
+          </code>
+          <div class="tip" id="50">
+            <strong>Signature:</strong> encoding:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The type of encoding used on the data</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L56-56" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '51', 51)" onmouseover="showTip(event, '51', 51)">
+            ContentLanguage language
+          </code>
+          <div class="tip" id="51">
+            <strong>Signature:</strong> language:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The language the content is in</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L58-58" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '52', 52)" onmouseover="showTip(event, '52', 52)">
+            ContentLocation location
+          </code>
+          <div class="tip" id="52">
+            <strong>Signature:</strong> location:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>An alternate location for the returned data</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L60-60" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '53', 53)" onmouseover="showTip(event, '53', 53)">
+            ContentMD5 md5sum
+          </code>
+          <div class="tip" id="53">
+            <strong>Signature:</strong> md5sum:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>A Base64-encoded binary MD5 sum of the content of the request body</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L62-62" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '54', 54)" onmouseover="showTip(event, '54', 54)">
+            ContentRange range
+          </code>
+          <div class="tip" id="54">
+            <strong>Signature:</strong> range:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Where in a full body message this partial message belongs</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L64-64" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '55', 55)" onmouseover="showTip(event, '55', 55)">
+            ContentType contentType
+          </code>
+          <div class="tip" id="55">
+            <strong>Signature:</strong> contentType:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The MIME type of the body of the request (used with POST and PUT requests)</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L66-66" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '56', 56)" onmouseover="showTip(event, '56', 56)">
+            Date date
+          </code>
+          <div class="tip" id="56">
+            <strong>Signature:</strong> date:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The date and time that the message was sent</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L68-68" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '57', 57)" onmouseover="showTip(event, '57', 57)">
+            Expect behaviors
+          </code>
+          <div class="tip" id="57">
+            <strong>Signature:</strong> behaviors:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Indicates that particular server behaviors are required by the client</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L70-70" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '58', 58)" onmouseover="showTip(event, '58', 58)">
+            Expires dateTime
+          </code>
+          <div class="tip" id="58">
+            <strong>Signature:</strong> dateTime:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Gives the date/time after which the response is considered stale</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L72-72" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '59', 59)" onmouseover="showTip(event, '59', 59)">
+            From email
+          </code>
+          <div class="tip" id="59">
+            <strong>Signature:</strong> email:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The email address of the user making the request</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L74-74" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '60', 60)" onmouseover="showTip(event, '60', 60)">
+            Host host
+          </code>
+          <div class="tip" id="60">
+            <strong>Signature:</strong> host:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The domain name of the server (for virtual hosting), and the TCP port number on which the server is listening. 
+The port number may be omitted if the port is the standard port for the service requested.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L77-77" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '61', 61)" onmouseover="showTip(event, '61', 61)">
+            IfMatch entity
+          </code>
+          <div class="tip" id="61">
+            <strong>Signature:</strong> entity:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Only perform the action if the client supplied entity matches the same entity on the server. 
+This is mainly for methods like PUT to only update a resource if it has not been modified since the user last updated it. If-Match: "737060cd8c284d8af7ad3082f209582d" Permanent</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L80-80" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+            IfModifiedSince dateTime
+          </code>
+          <div class="tip" id="62">
+            <strong>Signature:</strong> dateTime:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Allows a 304 Not Modified to be returned if content is unchanged</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L82-82" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
+            IfNoneMatch etag
+          </code>
+          <div class="tip" id="63">
+            <strong>Signature:</strong> etag:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Allows a 304 Not Modified to be returned if content is unchanged</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L84-84" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
+            IfRange range
+          </code>
+          <div class="tip" id="64">
+            <strong>Signature:</strong> range:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>If the entity is unchanged, send me the part(s) that I am missing; otherwise, send me the entire new entity</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L86-86" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
+            IfUnmodifiedSince dateTime
+          </code>
+          <div class="tip" id="65">
+            <strong>Signature:</strong> dateTime:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Only send the response if the entity has not been modified since a specific time</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L88-88" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
+            KeepAlive keepAlive
+          </code>
+          <div class="tip" id="66">
+            <strong>Signature:</strong> keepAlive:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Specifies a parameter used into order to maintain a persistent connection</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L90-90" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+            LastModified dateTime
+          </code>
+          <div class="tip" id="67">
+            <strong>Signature:</strong> dateTime:DateTime -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Specifies the date and time at which the accompanying body data was last modified</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L92-92" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+            MaxForwards count
+          </code>
+          <div class="tip" id="68">
+            <strong>Signature:</strong> count:int -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Limit the number of times the message can be forwarded through proxies or gateways</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L94-94" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+            Origin origin
+          </code>
+          <div class="tip" id="69">
+            <strong>Signature:</strong> origin:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Initiates a request for cross-origin resource sharing (asks server for an 'Access-Control-Allow-Origin' response header)</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L96-96" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '70', 70)" onmouseover="showTip(event, '70', 70)">
+            Pragma pragma
+          </code>
+          <div class="tip" id="70">
+            <strong>Signature:</strong> pragma:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Implementation-specific headers that may have various effects anywhere along the request-response chain.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L98-98" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '71', 71)" onmouseover="showTip(event, '71', 71)">
+            ProxyAuthorization credentials
+          </code>
+          <div class="tip" id="71">
+            <strong>Signature:</strong> credentials:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Authorization credentials for connecting to a proxy.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L100-100" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '72', 72)" onmouseover="showTip(event, '72', 72)">
+            Range (start, finish)
+          </code>
+          <div class="tip" id="72">
+            <strong>Signature:</strong> (start:int64 * finish:int64) -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Request only part of an entity. Bytes are numbered from 0</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L102-102" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '73', 73)" onmouseover="showTip(event, '73', 73)">
+            Referer referer
+          </code>
+          <div class="tip" id="73">
+            <strong>Signature:</strong> referer:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>This is the address of the previous web page from which a link to the currently requested page was followed. (The word "referrer" is misspelled in the RFC as well as in most implementations.)</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L104-104" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '74', 74)" onmouseover="showTip(event, '74', 74)">
+            TE te
+          </code>
+          <div class="tip" id="74">
+            <strong>Signature:</strong> te:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The transfer encodings the user agent is willing to accept: the same values as for the response header 
+Transfer-Encoding can be used, plus the "trailers" value (related to the "chunked" transfer method) to 
+notify the server it expects to receive additional headers (the trailers) after the last, zero-sized, chunk.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L108-108" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '75', 75)" onmouseover="showTip(event, '75', 75)">
+            Trailer trailer
+          </code>
+          <div class="tip" id="75">
+            <strong>Signature:</strong> trailer:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The Trailer general field value indicates that the given set of header fields is present in the trailer of a message encoded with chunked transfer-coding</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L110-110" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '76', 76)" onmouseover="showTip(event, '76', 76)">
+            Translate translate
+          </code>
+          <div class="tip" id="76">
+            <strong>Signature:</strong> translate:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Microsoft extension to the HTTP specification used in conjunction with WebDAV functionality.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L112-112" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '77', 77)" onmouseover="showTip(event, '77', 77)">
+            Upgrade upgrade
+          </code>
+          <div class="tip" id="77">
+            <strong>Signature:</strong> upgrade:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Specifies additional communications protocols that the client supports.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L114-114" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '78', 78)" onmouseover="showTip(event, '78', 78)">
+            UserAgent userAgent
+          </code>
+          <div class="tip" id="78">
+            <strong>Signature:</strong> userAgent:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>The user agent string of the user agent</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L116-116" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '79', 79)" onmouseover="showTip(event, '79', 79)">
+            Via server
+          </code>
+          <div class="tip" id="79">
+            <strong>Signature:</strong> server:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Informs the server of proxies through which the request was sent</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L118-118" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '80', 80)" onmouseover="showTip(event, '80', 80)">
+            Warning message
+          </code>
+          <div class="tip" id="80">
+            <strong>Signature:</strong> message:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>A general warning about possible problems with the entity body</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L120-120" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '81', 81)" onmouseover="showTip(event, '81', 81)">
+            XHTTPMethodOverride httpMethod
+          </code>
+          <div class="tip" id="81">
+            <strong>Signature:</strong> httpMethod:string -&gt; string * string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+        <p>Override HTTP method.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L122-122" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+        </div>
+        <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">F# Data</li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="divider"></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+            <li class="divider"></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">Tutorials</li>
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
+
+            <li class="nav-header">Reference</li>
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

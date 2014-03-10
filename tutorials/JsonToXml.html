@@ -6,15 +6,15 @@
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks.">
-    <meta name="author" content="Tomas Petricek">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
 
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://fsharp.github.com/FSharp.Data/content/style.css" />
-    <script src="http://fsharp.github.com/FSharp.Data/content/tips.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,17 +23,19 @@
   <body>
     <div class="container">
       <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/fsharp/FSharp.Data">github page</a></li>
-          <li><a href="http://fsharp.github.com/fsharpx/">fsharpx library</a></li>
-        </ul>
-        <h3 class="muted">F# Data Library</h3>
+          <ul class="nav nav-pills pull-right">
+              <li><a href="http://fsharp.org">fsharp.org</a></li>
+              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
-          <h1>F# Data: Converting between JSON and XML</h1>
+          
+<h1>F# Data: Converting between JSON and XML</h1>
 
 <p>This tutorial shows how to implement convert JSON document (represented using
 the <code>JsonValue</code> type discussed in <a href="JsonValue.html">JSON parser article</a>) to an
@@ -42,19 +44,31 @@ This functionality is not directly available in the F# Data library, but it can
 be very easily implemented by recursively walking over the JSON (or XML) document.</p>
 
 <p>If you want to use the JSON to/from XML conversion in your code, you can copy the 
-<a href="https://github.com/fsharp/FSharp.Data/blob/master/samples/JsonToXml.fsx">source from GitHub</a> and just include it in your project. If you use these
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonToXml.fsx">source from GitHub</a> and just include it in your project. If you use these
 functions often and would like to see them in the F# Data library, please submit
 a <a href="https://github.com/fsharp/FSharp.Data/issues">feature request</a>.</p>
 
 <h2>Initialization</h2>
 
 <p>We will be using the LINQ to XML API (available in <code>System.Xml.Linq.dll</code>) and the
-<code>JsonValue</code> which is available in the <code>FSharp.Data.Json</code> namespace:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="prep">#r</span> <span class="s">&quot;</span><span class="s">System</span><span class="s">.</span><span class="s">Xml</span><span class="s">.</span><span class="s">Linq</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
-<span class="l">2: </span><span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
-<span class="l">3: </span><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Linq</span>
-<span class="l">4: </span><span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">Json</span></pre>
+<code>JsonValue</code> which is available in the <code>FSharp.Data</code> namespace:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">System</span><span class="s">.</span><span class="s">Xml</span><span class="s">.</span><span class="s">Linq</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Linq</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Data</span></pre>
+</td>
+</tr>
+</table>
+
 <p>In this script, we create a conversion that returns an easy to process value, but the
 conversion is not reversible (e.g. converting JSON to XML and then back to JSON will
 produce a different value).</p>
@@ -66,22 +80,20 @@ In particular, XML distinguishes between <em>attributes</em> and <em>child eleme
 all XML elements have a name, while JSON arrays or records are anonymous (but records
 have named fields). Consider, for example, the following XML:</p>
 
-<pre><code>&lt;channel version="1.0"&gt;
-  &lt;title text="Sample input" /&gt;
-  &lt;item value="First" /&gt;
-  &lt;item value="Second" /&gt;
-&lt;/channel&gt;
-</code></pre>
+<pre lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">title</span> <span class="o">text</span><span class="k">="Sample input"</span> <span class="k">/&gt;</span>
+  <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="First"</span> <span class="k">/&gt;</span>
+  <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="Second"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">channel</span><span class="k">&gt;</span></pre>
 
 <p>The JSON that we produce will ignore the top-level element name (<code>channel</code>). It produces
 a record that contains a unique field for every attribute and a name of a child element.
 If an element appears multiple times, it is turned into an array:</p>
 
-<pre><code>{ "version": "1.0",
-  "title": { "text": "Sample input" },
-  "items": [ { "value": "First" }, 
-             { "value": "Second" } ]  }
-</code></pre>
+<pre lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
+  <span class="s">"title"</span>: { <span class="s">"text"</span>: <span class="s">"Sample input"</span> },
+  <span class="s">"items"</span>: [ { <span class="s">"value"</span>: <span class="s">"First"</span> }, 
+             { <span class="s">"value"</span>: <span class="s">"Second"</span> } ]  }</pre>
 
 <p>As you can see, the <code>item</code> element has been automatically pluralized to <code>items</code> and the
 array contains two record values that consist of the <code>value</code> attribute.</p>
@@ -91,220 +103,305 @@ array contains two record values that consist of the <code>value</code> attribut
 <code>JsonValue.Array</code>). All attribute values are turned into <code>JsonValue.String</code> - the 
 sample does not imlement more sophisticated conversion that would turn numeric 
 attributes to a corresponding JSON type:</p>
-<pre class="fssnip">
-<span class="l"> 1: </span><span class="c">/// Creates a JSON representation of a XML element</span>
-<span class="l"> 2: </span><span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">fromXml</span> (<span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">xml</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="i">XElement</span>) <span class="o">=</span>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
 <span class="l"> 3: </span>
-<span class="l"> 4: </span>  <span class="c">// Create a collection of key/value pairs for all attributes      </span>
-<span class="l"> 5: </span>  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 10)" onmouseover="showTip(event, 'fs10', 10)" class="i">attrs</span> <span class="o">=</span> 
-<span class="l"> 6: </span>    [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs11', 11)" onmouseover="showTip(event, 'fs11', 11)" class="i">attr</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs8', 12)" onmouseover="showTip(event, 'fs8', 12)" class="i">xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 13)" onmouseover="showTip(event, 'fs12', 13)" class="i">Attributes</span>() <span class="k">-&gt;</span>
-<span class="l"> 7: </span>        (<span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">attr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 16)" onmouseover="showTip(event, 'fs14', 16)" class="i">LocalName</span>, <span onmouseout="hideTip(event, 'fs15', 17)" onmouseover="showTip(event, 'fs15', 17)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 18)" onmouseover="showTip(event, 'fs16', 18)" class="i">String</span> <span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="i">attr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 20)" onmouseover="showTip(event, 'fs17', 20)" class="i">Value</span>) ]
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
 <span class="l"> 8: </span>
-<span class="l"> 9: </span>  <span class="c">// Function that turns a collection of XElement values</span>
-<span class="l">10: </span>  <span class="c">// into an array of JsonValue (using fromXml recursively)</span>
-<span class="l">11: </span>  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 21)" onmouseover="showTip(event, 'fs18', 21)" class="i">createArray</span> <span onmouseout="hideTip(event, 'fs19', 22)" onmouseover="showTip(event, 'fs19', 22)" class="i">xelems</span> <span class="o">=</span>
-<span class="l">12: </span>    [| <span class="k">for</span> <span onmouseout="hideTip(event, 'fs20', 23)" onmouseover="showTip(event, 'fs20', 23)" class="i">xelem</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs19', 24)" onmouseover="showTip(event, 'fs19', 24)" class="i">xelems</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs7', 25)" onmouseover="showTip(event, 'fs7', 25)" class="i">fromXml</span> <span onmouseout="hideTip(event, 'fs20', 26)" onmouseover="showTip(event, 'fs20', 26)" class="i">xelem</span> |]
-<span class="l">13: </span>    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 27)" onmouseover="showTip(event, 'fs15', 27)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 28)" onmouseover="showTip(event, 'fs21', 28)" class="i">Array</span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
 <span class="l">14: </span>
-<span class="l">15: </span>  <span class="c">// Group child elements by their name and then turn all single-</span>
-<span class="l">16: </span>  <span class="c">// element groups into a record (recursively) and all multi-</span>
-<span class="l">17: </span>  <span class="c">// element groups into a JSON array using createArray</span>
-<span class="l">18: </span>  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 29)" onmouseover="showTip(event, 'fs22', 29)" class="i">children</span> <span class="o">=</span>
-<span class="l">19: </span>    <span onmouseout="hideTip(event, 'fs8', 30)" onmouseover="showTip(event, 'fs8', 30)" class="i">xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 31)" onmouseover="showTip(event, 'fs23', 31)" class="i">Elements</span>() 
-<span class="l">20: </span>    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 32)" onmouseover="showTip(event, 'fs24', 32)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 33)" onmouseover="showTip(event, 'fs25', 33)" class="i">groupBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs26', 34)" onmouseover="showTip(event, 'fs26', 34)" class="i">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs26', 35)" onmouseover="showTip(event, 'fs26', 35)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 36)" onmouseover="showTip(event, 'fs27', 36)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 37)" onmouseover="showTip(event, 'fs14', 37)" class="i">LocalName</span>)
-<span class="l">21: </span>    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 39)" onmouseover="showTip(event, 'fs28', 39)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs29', 40)" onmouseover="showTip(event, 'fs29', 40)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs30', 41)" onmouseover="showTip(event, 'fs30', 41)" class="i">childs</span>) <span class="k">-&gt;</span>
-<span class="l">22: </span>        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs24', 42)" onmouseover="showTip(event, 'fs24', 42)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 43)" onmouseover="showTip(event, 'fs31', 43)" class="i">toList</span> <span onmouseout="hideTip(event, 'fs30', 44)" onmouseover="showTip(event, 'fs30', 44)" class="i">childs</span> <span class="k">with</span>
-<span class="l">23: </span>        | [<span onmouseout="hideTip(event, 'fs32', 45)" onmouseover="showTip(event, 'fs32', 45)" class="i">child</span>] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 46)" onmouseover="showTip(event, 'fs29', 46)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs7', 47)" onmouseover="showTip(event, 'fs7', 47)" class="i">fromXml</span> <span onmouseout="hideTip(event, 'fs32', 48)" onmouseover="showTip(event, 'fs32', 48)" class="i">child</span>
-<span class="l">24: </span>        | <span onmouseout="hideTip(event, 'fs33', 49)" onmouseover="showTip(event, 'fs33', 49)" class="i">children</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 50)" onmouseover="showTip(event, 'fs29', 50)" class="i">key</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">s</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs18', 51)" onmouseover="showTip(event, 'fs18', 51)" class="i">createArray</span> <span onmouseout="hideTip(event, 'fs33', 52)" onmouseover="showTip(event, 'fs33', 52)" class="i">children</span> )
-<span class="l">25: </span>        
-<span class="l">26: </span>  <span class="c">// Concatenate elements produced for child elements &amp; attributes</span>
-<span class="l">27: </span>  <span onmouseout="hideTip(event, 'fs24', 53)" onmouseover="showTip(event, 'fs24', 53)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 54)" onmouseover="showTip(event, 'fs34', 54)" class="i">concat</span> [<span onmouseout="hideTip(event, 'fs24', 55)" onmouseover="showTip(event, 'fs24', 55)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 56)" onmouseover="showTip(event, 'fs35', 56)" class="i">ofList</span> <span onmouseout="hideTip(event, 'fs10', 57)" onmouseover="showTip(event, 'fs10', 57)" class="i">attrs</span>; <span onmouseout="hideTip(event, 'fs22', 58)" onmouseover="showTip(event, 'fs22', 58)" class="i">children</span>]
-<span class="l">28: </span>  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs36', 59)" onmouseover="showTip(event, 'fs36', 59)" class="i">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 60)" onmouseover="showTip(event, 'fs37', 60)" class="i">ofSeq</span>
-<span class="l">29: </span>  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs15', 61)" onmouseover="showTip(event, 'fs15', 61)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 62)" onmouseover="showTip(event, 'fs38', 62)" class="i">Object</span></pre>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">/// Creates a JSON representation of a XML element</span>
+<span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">fromXml</span> (<span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">xml</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">XElement</span>) <span class="o">=</span>
+
+  <span class="c">// Create a collection of key/value pairs for all attributes      </span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="i">attrs</span> <span class="o">=</span> 
+    [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs10', 10)" onmouseover="showTip(event, 'fs10', 10)" class="i">attr</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs7', 11)" onmouseover="showTip(event, 'fs7', 11)" class="i">xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">Attributes</span>() <span class="k">-&gt;</span>
+        (<span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">attr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="i">LocalName</span>, <span onmouseout="hideTip(event, 'fs14', 16)" onmouseover="showTip(event, 'fs14', 16)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 17)" onmouseover="showTip(event, 'fs15', 17)" class="i">String</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">attr</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 19)" onmouseover="showTip(event, 'fs16', 19)" class="i">Value</span>) ]
+
+  <span class="c">// Function that turns a collection of XElement values</span>
+  <span class="c">// into an array of JsonValue (using fromXml recursively)</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 20)" onmouseover="showTip(event, 'fs17', 20)" class="i">createArray</span> <span onmouseout="hideTip(event, 'fs18', 21)" onmouseover="showTip(event, 'fs18', 21)" class="i">xelems</span> <span class="o">=</span>
+    [| <span class="k">for</span> <span onmouseout="hideTip(event, 'fs19', 22)" onmouseover="showTip(event, 'fs19', 22)" class="i">xelem</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs18', 23)" onmouseover="showTip(event, 'fs18', 23)" class="i">xelems</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 24)" onmouseover="showTip(event, 'fs6', 24)" class="i">fromXml</span> <span onmouseout="hideTip(event, 'fs19', 25)" onmouseover="showTip(event, 'fs19', 25)" class="i">xelem</span> |]
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs14', 26)" onmouseover="showTip(event, 'fs14', 26)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 27)" onmouseover="showTip(event, 'fs20', 27)" class="i">Array</span>
+
+  <span class="c">// Group child elements by their name and then turn all single-</span>
+  <span class="c">// element groups into a record (recursively) and all multi-</span>
+  <span class="c">// element groups into a JSON array using createArray</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs21', 28)" onmouseover="showTip(event, 'fs21', 28)" class="i">children</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs7', 29)" onmouseover="showTip(event, 'fs7', 29)" class="i">xml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 30)" onmouseover="showTip(event, 'fs22', 30)" class="i">Elements</span>() 
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 31)" onmouseover="showTip(event, 'fs23', 31)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 32)" onmouseover="showTip(event, 'fs24', 32)" class="i">groupBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs25', 33)" onmouseover="showTip(event, 'fs25', 33)" class="i">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs25', 34)" onmouseover="showTip(event, 'fs25', 34)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 35)" onmouseover="showTip(event, 'fs26', 35)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 36)" onmouseover="showTip(event, 'fs13', 36)" class="i">LocalName</span>)
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 38)" onmouseover="showTip(event, 'fs27', 38)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs28', 39)" onmouseover="showTip(event, 'fs28', 39)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs29', 40)" onmouseover="showTip(event, 'fs29', 40)" class="i">childs</span>) <span class="k">-&gt;</span>
+        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 42)" onmouseover="showTip(event, 'fs30', 42)" class="i">toList</span> <span onmouseout="hideTip(event, 'fs29', 43)" onmouseover="showTip(event, 'fs29', 43)" class="i">childs</span> <span class="k">with</span>
+        | [<span onmouseout="hideTip(event, 'fs31', 44)" onmouseover="showTip(event, 'fs31', 44)" class="i">child</span>] <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 45)" onmouseover="showTip(event, 'fs28', 45)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs6', 46)" onmouseover="showTip(event, 'fs6', 46)" class="i">fromXml</span> <span onmouseout="hideTip(event, 'fs31', 47)" onmouseover="showTip(event, 'fs31', 47)" class="i">child</span>
+        | <span onmouseout="hideTip(event, 'fs32', 48)" onmouseover="showTip(event, 'fs32', 48)" class="i">children</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 49)" onmouseover="showTip(event, 'fs28', 49)" class="i">key</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">s</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs17', 50)" onmouseover="showTip(event, 'fs17', 50)" class="i">createArray</span> <span onmouseout="hideTip(event, 'fs32', 51)" onmouseover="showTip(event, 'fs32', 51)" class="i">children</span> )
+        
+  <span class="c">// Concatenate elements produced for child elements &amp; attributes</span>
+  <span onmouseout="hideTip(event, 'fs23', 52)" onmouseover="showTip(event, 'fs23', 52)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 53)" onmouseover="showTip(event, 'fs33', 53)" class="i">concat</span> [<span onmouseout="hideTip(event, 'fs23', 54)" onmouseover="showTip(event, 'fs23', 54)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 55)" onmouseover="showTip(event, 'fs34', 55)" class="i">ofList</span> <span onmouseout="hideTip(event, 'fs9', 56)" onmouseover="showTip(event, 'fs9', 56)" class="i">attrs</span>; <span onmouseout="hideTip(event, 'fs21', 57)" onmouseover="showTip(event, 'fs21', 57)" class="i">children</span>]
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 58)" onmouseover="showTip(event, 'fs35', 58)" class="i">Map</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 59)" onmouseover="showTip(event, 'fs36', 59)" class="i">ofSeq</span>
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs14', 60)" onmouseover="showTip(event, 'fs14', 60)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 61)" onmouseover="showTip(event, 'fs37', 61)" class="i">Object</span></pre>
+</td>
+</tr>
+</table>
+
 <h2>Converting JSON to XML</h2>
 
-<p>When converting JSON value to XML, we fact the same mismatch. Consider the following XML:</p>
+<p>When converting JSON value to XML, we fact the same mismatch. Consider the following JSON value:</p>
 
-<pre><code>{ "title" : "Sample input",
-  "paging" : { "current": 1 },
-  "items" : [ "First", "Second" ] }
-</code></pre>
+<pre lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
+  <span class="s">"paging"</span> : { <span class="s">"current"</span>: 1 },
+  <span class="s">"items"</span> : [ <span class="s">"First"</span>, <span class="s">"Second"</span> ] }</pre>
 
 <p>The top-level record does not have a name, so our conversion produces a list of <code>XObject</code>
 values that can be wrapped into an <code>XElement</code> by the user (who has to specify the root
 name). Record fields that are a primitive value are turned into attributes, while 
 complex values (array or record) become objects:</p>
 
-<pre><code>&lt;root title="Sample input"&gt;
-  &lt;items&gt;
-    &lt;item&gt;First&lt;/item&gt;
-    &lt;item&gt;Second&lt;/item&gt;
-  &lt;/items&gt;
-  &lt;paging current="1" /&gt;
-&lt;/root&gt;
-</code></pre>
+<pre lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">items</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>First<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
+    <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>Second<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
+  <span class="k">&lt;/</span><span class="i">items</span><span class="k">&gt;</span>
+  <span class="k">&lt;</span><span class="i">paging</span> <span class="o">current</span><span class="k">="1"</span> <span class="k">/&gt;</span>
+<span class="k">&lt;/</span><span class="i">root</span><span class="k">&gt;</span></pre>
 
 <p>The conversion function is, again, implemented as a recursive function. This time, we use 
 pattern matching to distinguish between the different possible cases of <code>JsonValue</code>.
 The cases representing a primitive value simply return the value as <code>obj</code>, while array
 and record construct nested element(s) or attribute:</p>
-<pre class="fssnip">
-<span class="l"> 1: </span><span class="c">/// Creates an XML representation of a JSON value (works </span>
-<span class="l"> 2: </span><span class="c">/// only when the top-level value is an object or an array)</span>
-<span class="l"> 3: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 63)" onmouseover="showTip(event, 'fs39', 63)" class="i">toXml</span>(<span onmouseout="hideTip(event, 'fs40', 64)" onmouseover="showTip(event, 'fs40', 64)" class="i">x</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs15', 65)" onmouseover="showTip(event, 'fs15', 65)" class="i">JsonValue</span>) <span class="o">=</span>
-<span class="l"> 4: </span>  <span class="c">// Helper functions for constructing XML </span>
-<span class="l"> 5: </span>  <span class="c">// attributes and XML elements</span>
-<span class="l"> 6: </span>  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs41', 66)" onmouseover="showTip(event, 'fs41', 66)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs42', 67)" onmouseover="showTip(event, 'fs42', 67)" class="i">name</span> <span onmouseout="hideTip(event, 'fs43', 68)" onmouseover="showTip(event, 'fs43', 68)" class="i">value</span> <span class="o">=</span> 
-<span class="l"> 7: </span>    <span onmouseout="hideTip(event, 'fs44', 69)" onmouseover="showTip(event, 'fs44', 69)" class="i">XAttribute</span>(<span onmouseout="hideTip(event, 'fs45', 70)" onmouseover="showTip(event, 'fs45', 70)" class="i">XName</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 71)" onmouseover="showTip(event, 'fs46', 71)" class="i">Get</span> <span onmouseout="hideTip(event, 'fs42', 72)" onmouseover="showTip(event, 'fs42', 72)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs43', 73)" onmouseover="showTip(event, 'fs43', 73)" class="i">value</span>) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs47', 74)" onmouseover="showTip(event, 'fs47', 74)" class="i">XObject</span>
-<span class="l"> 8: </span>  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 75)" onmouseover="showTip(event, 'fs48', 75)" class="i">elem</span> <span onmouseout="hideTip(event, 'fs42', 76)" onmouseover="showTip(event, 'fs42', 76)" class="i">name</span> (<span onmouseout="hideTip(event, 'fs49', 77)" onmouseover="showTip(event, 'fs49', 77)" class="i">value</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs50', 78)" onmouseover="showTip(event, 'fs50', 78)" class="i">obj</span>) <span class="o">=</span> 
-<span class="l"> 9: </span>    <span onmouseout="hideTip(event, 'fs9', 79)" onmouseover="showTip(event, 'fs9', 79)" class="i">XElement</span>(<span onmouseout="hideTip(event, 'fs45', 80)" onmouseover="showTip(event, 'fs45', 80)" class="i">XName</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 81)" onmouseover="showTip(event, 'fs46', 81)" class="i">Get</span> <span onmouseout="hideTip(event, 'fs42', 82)" onmouseover="showTip(event, 'fs42', 82)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs49', 83)" onmouseover="showTip(event, 'fs49', 83)" class="i">value</span>) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs47', 84)" onmouseover="showTip(event, 'fs47', 84)" class="i">XObject</span>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
 <span class="l">10: </span>
-<span class="l">11: </span>  <span class="c">// Inner recursive function that implements the conversion</span>
-<span class="l">12: </span>  <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs51', 85)" onmouseover="showTip(event, 'fs51', 85)" class="i">toXml</span> <span class="o">=</span> <span class="k">function</span>
-<span class="l">13: </span>    <span class="c">// Primitive values are returned as objects</span>
-<span class="l">14: </span>    | <span onmouseout="hideTip(event, 'fs15', 86)" onmouseover="showTip(event, 'fs15', 86)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 87)" onmouseover="showTip(event, 'fs52', 87)" class="i">Null</span> <span class="k">-&gt;</span> <span class="k">null</span>
-<span class="l">15: </span>    | <span onmouseout="hideTip(event, 'fs15', 88)" onmouseover="showTip(event, 'fs15', 88)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 89)" onmouseover="showTip(event, 'fs53', 89)" class="i">Boolean</span> <span onmouseout="hideTip(event, 'fs54', 90)" onmouseover="showTip(event, 'fs54', 90)" class="i">b</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs54', 91)" onmouseover="showTip(event, 'fs54', 91)" class="i">b</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 92)" onmouseover="showTip(event, 'fs50', 92)" class="i">obj</span>
-<span class="l">16: </span>    | <span onmouseout="hideTip(event, 'fs15', 93)" onmouseover="showTip(event, 'fs15', 93)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 94)" onmouseover="showTip(event, 'fs55', 94)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs56', 95)" onmouseover="showTip(event, 'fs56', 95)" class="i">number</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs56', 96)" onmouseover="showTip(event, 'fs56', 96)" class="i">number</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 97)" onmouseover="showTip(event, 'fs50', 97)" class="i">obj</span>
-<span class="l">17: </span>    | <span onmouseout="hideTip(event, 'fs15', 98)" onmouseover="showTip(event, 'fs15', 98)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 99)" onmouseover="showTip(event, 'fs57', 99)" class="i">Float</span> <span onmouseout="hideTip(event, 'fs58', 100)" onmouseover="showTip(event, 'fs58', 100)" class="i">number</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs58', 101)" onmouseover="showTip(event, 'fs58', 101)" class="i">number</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 102)" onmouseover="showTip(event, 'fs50', 102)" class="i">obj</span>
-<span class="l">18: </span>    | <span onmouseout="hideTip(event, 'fs15', 103)" onmouseover="showTip(event, 'fs15', 103)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 104)" onmouseover="showTip(event, 'fs16', 104)" class="i">String</span> <span onmouseout="hideTip(event, 'fs59', 105)" onmouseover="showTip(event, 'fs59', 105)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs59', 106)" onmouseover="showTip(event, 'fs59', 106)" class="i">s</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 107)" onmouseover="showTip(event, 'fs50', 107)" class="i">obj</span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
 <span class="l">19: </span>
-<span class="l">20: </span>    <span class="c">// JSON object becomes a collection of XML</span>
-<span class="l">21: </span>    <span class="c">// attributes (for primitives) or child elements</span>
-<span class="l">22: </span>    | <span onmouseout="hideTip(event, 'fs15', 108)" onmouseover="showTip(event, 'fs15', 108)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 109)" onmouseover="showTip(event, 'fs38', 109)" class="i">Object</span> <span onmouseout="hideTip(event, 'fs60', 110)" onmouseover="showTip(event, 'fs60', 110)" class="i">properties</span> <span class="k">-&gt;</span> 
-<span class="l">23: </span>      <span onmouseout="hideTip(event, 'fs60', 111)" onmouseover="showTip(event, 'fs60', 111)" class="i">properties</span> 
-<span class="l">24: </span>      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 112)" onmouseover="showTip(event, 'fs24', 112)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 113)" onmouseover="showTip(event, 'fs61', 113)" class="i">sortBy</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs62', 114)" onmouseover="showTip(event, 'fs62', 114)" class="i">KeyValue</span>(<span onmouseout="hideTip(event, 'fs29', 115)" onmouseover="showTip(event, 'fs29', 115)" class="i">key</span>, _)) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 116)" onmouseover="showTip(event, 'fs29', 116)" class="i">key</span>)
-<span class="l">25: </span>      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 117)" onmouseover="showTip(event, 'fs24', 117)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 118)" onmouseover="showTip(event, 'fs28', 118)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs62', 119)" onmouseover="showTip(event, 'fs62', 119)" class="i">KeyValue</span>(<span onmouseout="hideTip(event, 'fs29', 120)" onmouseover="showTip(event, 'fs29', 120)" class="i">key</span>,<span onmouseout="hideTip(event, 'fs63', 121)" onmouseover="showTip(event, 'fs63', 121)" class="i">value</span>)) <span class="k">-&gt;</span>
-<span class="l">26: </span>          <span class="k">match</span> <span onmouseout="hideTip(event, 'fs63', 122)" onmouseover="showTip(event, 'fs63', 122)" class="i">value</span> <span class="k">with</span>
-<span class="l">27: </span>          | <span onmouseout="hideTip(event, 'fs15', 123)" onmouseover="showTip(event, 'fs15', 123)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 124)" onmouseover="showTip(event, 'fs16', 124)" class="i">String</span> <span onmouseout="hideTip(event, 'fs59', 125)" onmouseover="showTip(event, 'fs59', 125)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs41', 126)" onmouseover="showTip(event, 'fs41', 126)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs29', 127)" onmouseover="showTip(event, 'fs29', 127)" class="i">key</span> <span onmouseout="hideTip(event, 'fs59', 128)" onmouseover="showTip(event, 'fs59', 128)" class="i">s</span>
-<span class="l">28: </span>          | <span onmouseout="hideTip(event, 'fs15', 129)" onmouseover="showTip(event, 'fs15', 129)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 130)" onmouseover="showTip(event, 'fs53', 130)" class="i">Boolean</span> <span onmouseout="hideTip(event, 'fs54', 131)" onmouseover="showTip(event, 'fs54', 131)" class="i">b</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs41', 132)" onmouseover="showTip(event, 'fs41', 132)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs29', 133)" onmouseover="showTip(event, 'fs29', 133)" class="i">key</span> <span onmouseout="hideTip(event, 'fs54', 134)" onmouseover="showTip(event, 'fs54', 134)" class="i">b</span>
-<span class="l">29: </span>          | <span onmouseout="hideTip(event, 'fs15', 135)" onmouseover="showTip(event, 'fs15', 135)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 136)" onmouseover="showTip(event, 'fs55', 136)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs64', 137)" onmouseover="showTip(event, 'fs64', 137)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs41', 138)" onmouseover="showTip(event, 'fs41', 138)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs29', 139)" onmouseover="showTip(event, 'fs29', 139)" class="i">key</span> <span onmouseout="hideTip(event, 'fs64', 140)" onmouseover="showTip(event, 'fs64', 140)" class="i">n</span>
-<span class="l">30: </span>          | <span onmouseout="hideTip(event, 'fs15', 141)" onmouseover="showTip(event, 'fs15', 141)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 142)" onmouseover="showTip(event, 'fs57', 142)" class="i">Float</span> <span onmouseout="hideTip(event, 'fs65', 143)" onmouseover="showTip(event, 'fs65', 143)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs41', 144)" onmouseover="showTip(event, 'fs41', 144)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs29', 145)" onmouseover="showTip(event, 'fs29', 145)" class="i">key</span> <span onmouseout="hideTip(event, 'fs65', 146)" onmouseover="showTip(event, 'fs65', 146)" class="i">n</span>
-<span class="l">31: </span>          | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs48', 147)" onmouseover="showTip(event, 'fs48', 147)" class="i">elem</span> <span onmouseout="hideTip(event, 'fs29', 148)" onmouseover="showTip(event, 'fs29', 148)" class="i">key</span> (<span onmouseout="hideTip(event, 'fs51', 149)" onmouseover="showTip(event, 'fs51', 149)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs63', 150)" onmouseover="showTip(event, 'fs63', 150)" class="i">value</span>)) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 151)" onmouseover="showTip(event, 'fs50', 151)" class="i">obj</span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+<span class="l">30: </span>
+<span class="l">31: </span>
 <span class="l">32: </span>
-<span class="l">33: </span>    <span class="c">// JSON array is turned into a </span>
-<span class="l">34: </span>    <span class="c">// sequence of &lt;item&gt; elements</span>
-<span class="l">35: </span>    | <span onmouseout="hideTip(event, 'fs15', 152)" onmouseover="showTip(event, 'fs15', 152)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 153)" onmouseover="showTip(event, 'fs21', 153)" class="i">Array</span> <span onmouseout="hideTip(event, 'fs66', 154)" onmouseover="showTip(event, 'fs66', 154)" class="i">elements</span> <span class="k">-&gt;</span> 
-<span class="l">36: </span>        <span onmouseout="hideTip(event, 'fs66', 155)" onmouseover="showTip(event, 'fs66', 155)" class="i">elements</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs24', 156)" onmouseover="showTip(event, 'fs24', 156)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 157)" onmouseover="showTip(event, 'fs28', 157)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs67', 158)" onmouseover="showTip(event, 'fs67', 158)" class="i">item</span> <span class="k">-&gt;</span> 
-<span class="l">37: </span>          <span onmouseout="hideTip(event, 'fs48', 159)" onmouseover="showTip(event, 'fs48', 159)" class="i">elem</span> <span class="s">&quot;</span><span class="s">item</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs51', 160)" onmouseover="showTip(event, 'fs51', 160)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs67', 161)" onmouseover="showTip(event, 'fs67', 161)" class="i">item</span>)) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs50', 162)" onmouseover="showTip(event, 'fs50', 162)" class="i">obj</span>
+<span class="l">33: </span>
+<span class="l">34: </span>
+<span class="l">35: </span>
+<span class="l">36: </span>
+<span class="l">37: </span>
 <span class="l">38: </span>
-<span class="l">39: </span>  <span class="c">// Perform the conversion and cast the result to sequence</span>
-<span class="l">40: </span>  <span class="c">// of objects (may fail for unexpected inputs!)</span>
-<span class="l">41: </span>  (<span onmouseout="hideTip(event, 'fs51', 163)" onmouseover="showTip(event, 'fs51', 163)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs40', 164)" onmouseover="showTip(event, 'fs40', 164)" class="i">x</span>) <span class="o">:?&gt;</span> <span onmouseout="hideTip(event, 'fs47', 165)" onmouseover="showTip(event, 'fs47', 165)" class="i">XObject</span> <span onmouseout="hideTip(event, 'fs68', 166)" onmouseover="showTip(event, 'fs68', 166)" class="i">seq</span></pre>
+<span class="l">39: </span>
+<span class="l">40: </span>
+<span class="l">41: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">/// Creates an XML representation of a JSON value (works </span>
+<span class="c">/// only when the top-level value is an object or an array)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 62)" onmouseover="showTip(event, 'fs38', 62)" class="i">toXml</span>(<span onmouseout="hideTip(event, 'fs39', 63)" onmouseover="showTip(event, 'fs39', 63)" class="i">x</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs14', 64)" onmouseover="showTip(event, 'fs14', 64)" class="i">JsonValue</span>) <span class="o">=</span>
+  <span class="c">// Helper functions for constructing XML </span>
+  <span class="c">// attributes and XML elements</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 65)" onmouseover="showTip(event, 'fs40', 65)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs41', 66)" onmouseover="showTip(event, 'fs41', 66)" class="i">name</span> <span onmouseout="hideTip(event, 'fs42', 67)" onmouseover="showTip(event, 'fs42', 67)" class="i">value</span> <span class="o">=</span> 
+    <span onmouseout="hideTip(event, 'fs43', 68)" onmouseover="showTip(event, 'fs43', 68)" class="i">XAttribute</span>(<span onmouseout="hideTip(event, 'fs44', 69)" onmouseover="showTip(event, 'fs44', 69)" class="i">XName</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 70)" onmouseover="showTip(event, 'fs45', 70)" class="i">Get</span> <span onmouseout="hideTip(event, 'fs41', 71)" onmouseover="showTip(event, 'fs41', 71)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs42', 72)" onmouseover="showTip(event, 'fs42', 72)" class="i">value</span>) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs46', 73)" onmouseover="showTip(event, 'fs46', 73)" class="i">XObject</span>
+  <span class="k">let</span> <span onmouseout="hideTip(event, 'fs47', 74)" onmouseover="showTip(event, 'fs47', 74)" class="i">elem</span> <span onmouseout="hideTip(event, 'fs41', 75)" onmouseover="showTip(event, 'fs41', 75)" class="i">name</span> (<span onmouseout="hideTip(event, 'fs48', 76)" onmouseover="showTip(event, 'fs48', 76)" class="i">value</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs49', 77)" onmouseover="showTip(event, 'fs49', 77)" class="i">obj</span>) <span class="o">=</span> 
+    <span onmouseout="hideTip(event, 'fs8', 78)" onmouseover="showTip(event, 'fs8', 78)" class="i">XElement</span>(<span onmouseout="hideTip(event, 'fs44', 79)" onmouseover="showTip(event, 'fs44', 79)" class="i">XName</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 80)" onmouseover="showTip(event, 'fs45', 80)" class="i">Get</span> <span onmouseout="hideTip(event, 'fs41', 81)" onmouseover="showTip(event, 'fs41', 81)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs48', 82)" onmouseover="showTip(event, 'fs48', 82)" class="i">value</span>) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs46', 83)" onmouseover="showTip(event, 'fs46', 83)" class="i">XObject</span>
+
+  <span class="c">// Inner recursive function that implements the conversion</span>
+  <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs50', 84)" onmouseover="showTip(event, 'fs50', 84)" class="i">toXml</span> <span class="o">=</span> <span class="k">function</span>
+    <span class="c">// Primitive values are returned as objects</span>
+    | <span onmouseout="hideTip(event, 'fs14', 85)" onmouseover="showTip(event, 'fs14', 85)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 86)" onmouseover="showTip(event, 'fs51', 86)" class="i">Null</span> <span class="k">-&gt;</span> <span class="k">null</span>
+    | <span onmouseout="hideTip(event, 'fs14', 87)" onmouseover="showTip(event, 'fs14', 87)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 88)" onmouseover="showTip(event, 'fs52', 88)" class="i">Boolean</span> <span onmouseout="hideTip(event, 'fs53', 89)" onmouseover="showTip(event, 'fs53', 89)" class="i">b</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs53', 90)" onmouseover="showTip(event, 'fs53', 90)" class="i">b</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 91)" onmouseover="showTip(event, 'fs49', 91)" class="i">obj</span>
+    | <span onmouseout="hideTip(event, 'fs14', 92)" onmouseover="showTip(event, 'fs14', 92)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 93)" onmouseover="showTip(event, 'fs54', 93)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs55', 94)" onmouseover="showTip(event, 'fs55', 94)" class="i">number</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs55', 95)" onmouseover="showTip(event, 'fs55', 95)" class="i">number</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 96)" onmouseover="showTip(event, 'fs49', 96)" class="i">obj</span>
+    | <span onmouseout="hideTip(event, 'fs14', 97)" onmouseover="showTip(event, 'fs14', 97)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 98)" onmouseover="showTip(event, 'fs56', 98)" class="i">Float</span> <span onmouseout="hideTip(event, 'fs57', 99)" onmouseover="showTip(event, 'fs57', 99)" class="i">number</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs57', 100)" onmouseover="showTip(event, 'fs57', 100)" class="i">number</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 101)" onmouseover="showTip(event, 'fs49', 101)" class="i">obj</span>
+    | <span onmouseout="hideTip(event, 'fs14', 102)" onmouseover="showTip(event, 'fs14', 102)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 103)" onmouseover="showTip(event, 'fs15', 103)" class="i">String</span> <span onmouseout="hideTip(event, 'fs58', 104)" onmouseover="showTip(event, 'fs58', 104)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs58', 105)" onmouseover="showTip(event, 'fs58', 105)" class="i">s</span> <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 106)" onmouseover="showTip(event, 'fs49', 106)" class="i">obj</span>
+
+    <span class="c">// JSON object becomes a collection of XML</span>
+    <span class="c">// attributes (for primitives) or child elements</span>
+    | <span onmouseout="hideTip(event, 'fs14', 107)" onmouseover="showTip(event, 'fs14', 107)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs37', 108)" onmouseover="showTip(event, 'fs37', 108)" class="i">Object</span> <span onmouseout="hideTip(event, 'fs59', 109)" onmouseover="showTip(event, 'fs59', 109)" class="i">properties</span> <span class="k">-&gt;</span> 
+      <span onmouseout="hideTip(event, 'fs59', 110)" onmouseover="showTip(event, 'fs59', 110)" class="i">properties</span> 
+      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 111)" onmouseover="showTip(event, 'fs23', 111)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 112)" onmouseover="showTip(event, 'fs60', 112)" class="i">sortBy</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs61', 113)" onmouseover="showTip(event, 'fs61', 113)" class="i">KeyValue</span>(<span onmouseout="hideTip(event, 'fs28', 114)" onmouseover="showTip(event, 'fs28', 114)" class="i">key</span>, _)) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 115)" onmouseover="showTip(event, 'fs28', 115)" class="i">key</span>)
+      <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 116)" onmouseover="showTip(event, 'fs23', 116)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 117)" onmouseover="showTip(event, 'fs27', 117)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs61', 118)" onmouseover="showTip(event, 'fs61', 118)" class="i">KeyValue</span>(<span onmouseout="hideTip(event, 'fs28', 119)" onmouseover="showTip(event, 'fs28', 119)" class="i">key</span>,<span onmouseout="hideTip(event, 'fs62', 120)" onmouseover="showTip(event, 'fs62', 120)" class="i">value</span>)) <span class="k">-&gt;</span>
+          <span class="k">match</span> <span onmouseout="hideTip(event, 'fs62', 121)" onmouseover="showTip(event, 'fs62', 121)" class="i">value</span> <span class="k">with</span>
+          | <span onmouseout="hideTip(event, 'fs14', 122)" onmouseover="showTip(event, 'fs14', 122)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 123)" onmouseover="showTip(event, 'fs15', 123)" class="i">String</span> <span onmouseout="hideTip(event, 'fs58', 124)" onmouseover="showTip(event, 'fs58', 124)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs40', 125)" onmouseover="showTip(event, 'fs40', 125)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs28', 126)" onmouseover="showTip(event, 'fs28', 126)" class="i">key</span> <span onmouseout="hideTip(event, 'fs58', 127)" onmouseover="showTip(event, 'fs58', 127)" class="i">s</span>
+          | <span onmouseout="hideTip(event, 'fs14', 128)" onmouseover="showTip(event, 'fs14', 128)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 129)" onmouseover="showTip(event, 'fs52', 129)" class="i">Boolean</span> <span onmouseout="hideTip(event, 'fs53', 130)" onmouseover="showTip(event, 'fs53', 130)" class="i">b</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs40', 131)" onmouseover="showTip(event, 'fs40', 131)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs28', 132)" onmouseover="showTip(event, 'fs28', 132)" class="i">key</span> <span onmouseout="hideTip(event, 'fs53', 133)" onmouseover="showTip(event, 'fs53', 133)" class="i">b</span>
+          | <span onmouseout="hideTip(event, 'fs14', 134)" onmouseover="showTip(event, 'fs14', 134)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 135)" onmouseover="showTip(event, 'fs54', 135)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs63', 136)" onmouseover="showTip(event, 'fs63', 136)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs40', 137)" onmouseover="showTip(event, 'fs40', 137)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs28', 138)" onmouseover="showTip(event, 'fs28', 138)" class="i">key</span> <span onmouseout="hideTip(event, 'fs63', 139)" onmouseover="showTip(event, 'fs63', 139)" class="i">n</span>
+          | <span onmouseout="hideTip(event, 'fs14', 140)" onmouseover="showTip(event, 'fs14', 140)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 141)" onmouseover="showTip(event, 'fs56', 141)" class="i">Float</span> <span onmouseout="hideTip(event, 'fs64', 142)" onmouseover="showTip(event, 'fs64', 142)" class="i">n</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs40', 143)" onmouseover="showTip(event, 'fs40', 143)" class="i">attr</span> <span onmouseout="hideTip(event, 'fs28', 144)" onmouseover="showTip(event, 'fs28', 144)" class="i">key</span> <span onmouseout="hideTip(event, 'fs64', 145)" onmouseover="showTip(event, 'fs64', 145)" class="i">n</span>
+          | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs47', 146)" onmouseover="showTip(event, 'fs47', 146)" class="i">elem</span> <span onmouseout="hideTip(event, 'fs28', 147)" onmouseover="showTip(event, 'fs28', 147)" class="i">key</span> (<span onmouseout="hideTip(event, 'fs50', 148)" onmouseover="showTip(event, 'fs50', 148)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs62', 149)" onmouseover="showTip(event, 'fs62', 149)" class="i">value</span>)) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 150)" onmouseover="showTip(event, 'fs49', 150)" class="i">obj</span>
+
+    <span class="c">// JSON array is turned into a </span>
+    <span class="c">// sequence of &lt;item&gt; elements</span>
+    | <span onmouseout="hideTip(event, 'fs14', 151)" onmouseover="showTip(event, 'fs14', 151)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 152)" onmouseover="showTip(event, 'fs20', 152)" class="i">Array</span> <span onmouseout="hideTip(event, 'fs65', 153)" onmouseover="showTip(event, 'fs65', 153)" class="i">elements</span> <span class="k">-&gt;</span> 
+        <span onmouseout="hideTip(event, 'fs65', 154)" onmouseover="showTip(event, 'fs65', 154)" class="i">elements</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 155)" onmouseover="showTip(event, 'fs23', 155)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 156)" onmouseover="showTip(event, 'fs27', 156)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs66', 157)" onmouseover="showTip(event, 'fs66', 157)" class="i">item</span> <span class="k">-&gt;</span> 
+          <span onmouseout="hideTip(event, 'fs47', 158)" onmouseover="showTip(event, 'fs47', 158)" class="i">elem</span> <span class="s">&quot;</span><span class="s">item</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs50', 159)" onmouseover="showTip(event, 'fs50', 159)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs66', 160)" onmouseover="showTip(event, 'fs66', 160)" class="i">item</span>)) <span class="o">:&gt;</span> <span onmouseout="hideTip(event, 'fs49', 161)" onmouseover="showTip(event, 'fs49', 161)" class="i">obj</span>
+
+  <span class="c">// Perform the conversion and cast the result to sequence</span>
+  <span class="c">// of objects (may fail for unexpected inputs!)</span>
+  (<span onmouseout="hideTip(event, 'fs50', 162)" onmouseover="showTip(event, 'fs50', 162)" class="i">toXml</span> <span onmouseout="hideTip(event, 'fs39', 163)" onmouseover="showTip(event, 'fs39', 163)" class="i">x</span>) <span class="o">:?&gt;</span> <span onmouseout="hideTip(event, 'fs46', 164)" onmouseover="showTip(event, 'fs46', 164)" class="i">XObject</span> <span onmouseout="hideTip(event, 'fs67', 165)" onmouseover="showTip(event, 'fs67', 165)" class="i">seq</span></pre>
+</td>
+</tr>
+</table>
+
 <h2>Related articles</h2>
 
 <ul>
-<li><a href="JsonValue.html">F# Data: JSON Parser and Reader</a> - a tutorial that introduces
+<li><a href="../library/JsonValue.html">F# Data: JSON Parser and Reader</a> - a tutorial that introduces
 <code>JsonValue</code> for working with JSON values dynamically.</li>
-<li><a href="JsonProvider.html">F# Data: JSON Type Provider</a> - discusses F# type provider
+<li><a href="../library/JsonProvider.html">F# Data: JSON Type Provider</a> - discusses F# type provider
 that provides type-safe access to JSON data.</li>
-<li><a href="XmlProvider.html">F# Data: XML Type Provider</a> - discusses the F# type provider
+<li><a href="../library/XmlProvider.html">F# Data: XML Type Provider</a> - discusses the F# type provider
 that provides type-safe access to XML data.</li>
 </ul>
 
-          <div class="tip" id="fs1">namespace System</div>
+<div class="tip" id="fs1">namespace System</div>
 <div class="tip" id="fs2">namespace System.Xml</div>
 <div class="tip" id="fs3">namespace System.Xml.Linq</div>
 <div class="tip" id="fs4">namespace FSharp</div>
 <div class="tip" id="fs5">namespace FSharp.Data</div>
-<div class="tip" id="fs6">namespace FSharp.Data.Json</div>
-<div class="tip" id="fs7">val fromXml : xml:XElement -&gt; JsonValue<br /><br />Full name: JsonToXml.fromXml<br /><em><br /><br />&#160;Creates a JSON representation of a XML element</em></div>
-<div class="tip" id="fs8">val xml : XElement</div>
-<div class="tip" id="fs9">Multiple items<br />type XElement =<br />&#160;&#160;inherit XContainer<br />&#160;&#160;new : name:XName -&gt; XElement + 4 overloads<br />&#160;&#160;member AncestorsAndSelf : unit -&gt; IEnumerable&lt;XElement&gt; + 1 overload<br />&#160;&#160;member Attribute : name:XName -&gt; XAttribute<br />&#160;&#160;member Attributes : unit -&gt; IEnumerable&lt;XAttribute&gt; + 1 overload<br />&#160;&#160;member DescendantNodesAndSelf : unit -&gt; IEnumerable&lt;XNode&gt;<br />&#160;&#160;member DescendantsAndSelf : unit -&gt; IEnumerable&lt;XElement&gt; + 1 overload<br />&#160;&#160;member FirstAttribute : XAttribute<br />&#160;&#160;member GetDefaultNamespace : unit -&gt; XNamespace<br />&#160;&#160;member GetNamespaceOfPrefix : prefix:string -&gt; XNamespace<br />&#160;&#160;member GetPrefixOfNamespace : ns:XNamespace -&gt; string<br />&#160;&#160;...<br /><br />Full name: System.Xml.Linq.XElement<br /><br />--------------------<br />XElement(name: XName) : unit<br />XElement(other: XElement) : unit<br />XElement(other: XStreamingElement) : unit<br />XElement(name: XName, content: obj) : unit<br />XElement(name: XName, params content: obj []) : unit</div>
-<div class="tip" id="fs10">val attrs : (string * JsonValue) list</div>
-<div class="tip" id="fs11">val attr : XAttribute</div>
-<div class="tip" id="fs12">XElement.Attributes() : System.Collections.Generic.IEnumerable&lt;XAttribute&gt;<br />XElement.Attributes(name: XName) : System.Collections.Generic.IEnumerable&lt;XAttribute&gt;</div>
-<div class="tip" id="fs13">property XAttribute.Name: XName</div>
-<div class="tip" id="fs14">property XName.LocalName: string</div>
-<div class="tip" id="fs15">type JsonValue =<br />&#160;&#160;| String of string<br />&#160;&#160;| Number of decimal<br />&#160;&#160;| Float of float<br />&#160;&#160;| Object of Map&lt;string,JsonValue&gt;<br />&#160;&#160;| Array of JsonValue []<br />&#160;&#160;| Boolean of bool<br />&#160;&#160;| Null<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;static member Load : uri:string * ?culture:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : reader:TextReader * ?culture:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : stream:Stream * ?culture:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Parse : text:string * ?culture:CultureInfo -&gt; JsonValue<br /><br />Full name: FSharp.Data.Json.JsonValue</div>
-<div class="tip" id="fs16">union case JsonValue.String: string -&gt; JsonValue</div>
-<div class="tip" id="fs17">property XAttribute.Value: string</div>
-<div class="tip" id="fs18">val createArray : (seq&lt;#XElement&gt; -&gt; JsonValue)</div>
-<div class="tip" id="fs19">val xelems : seq&lt;#XElement&gt;</div>
-<div class="tip" id="fs20">val xelem : #XElement</div>
-<div class="tip" id="fs21">union case JsonValue.Array: JsonValue [] -&gt; JsonValue</div>
-<div class="tip" id="fs22">val children : seq&lt;string * JsonValue&gt;</div>
-<div class="tip" id="fs23">XContainer.Elements() : System.Collections.Generic.IEnumerable&lt;XElement&gt;<br />XContainer.Elements(name: XName) : System.Collections.Generic.IEnumerable&lt;XElement&gt;</div>
-<div class="tip" id="fs24">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
-<div class="tip" id="fs25">val groupBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * seq&lt;&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.groupBy</div>
-<div class="tip" id="fs26">val x : XElement</div>
-<div class="tip" id="fs27">property XElement.Name: XName</div>
-<div class="tip" id="fs28">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
-<div class="tip" id="fs29">val key : string</div>
-<div class="tip" id="fs30">val childs : seq&lt;XElement&gt;</div>
-<div class="tip" id="fs31">val toList : source:seq&lt;&#39;T&gt; -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.Seq.toList</div>
-<div class="tip" id="fs32">val child : XElement</div>
-<div class="tip" id="fs33">val children : XElement list</div>
-<div class="tip" id="fs34">val concat : sources:seq&lt;#seq&lt;&#39;T&gt;&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.concat</div>
-<div class="tip" id="fs35">val ofList : source:&#39;T list -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.ofList</div>
-<div class="tip" id="fs36">Multiple items<br />module Map<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type Map&lt;&#39;Key,&#39;Value (requires comparison)&gt; =<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IComparable<br />&#160;&#160;interface IEnumerable&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface ICollection&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface IDictionary&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member Add : key:&#39;Key * value:&#39;Value -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member ContainsKey : key:&#39;Key -&gt; bool<br />&#160;&#160;override Equals : obj -&gt; bool<br />&#160;&#160;member Remove : key:&#39;Key -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Collections.Map&lt;_,_&gt;<br /><br />--------------------<br />new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;</div>
-<div class="tip" id="fs37">val ofSeq : elements:seq&lt;&#39;Key * &#39;T&gt; -&gt; Map&lt;&#39;Key,&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Map.ofSeq</div>
-<div class="tip" id="fs38">union case JsonValue.Object: Map&lt;string,JsonValue&gt; -&gt; JsonValue</div>
-<div class="tip" id="fs39">val toXml : x:JsonValue -&gt; seq&lt;XObject&gt;<br /><br />Full name: JsonToXml.toXml<br /><em><br /><br />&#160;Creates an XML representation of a JSON value (works <br />&#160;only when the top-level value is an object or an array)</em></div>
-<div class="tip" id="fs40">val x : JsonValue</div>
-<div class="tip" id="fs41">val attr : (string -&gt; &#39;a -&gt; XObject)</div>
-<div class="tip" id="fs42">val name : string</div>
-<div class="tip" id="fs43">val value : &#39;a</div>
-<div class="tip" id="fs44">Multiple items<br />type XAttribute =<br />&#160;&#160;inherit XObject<br />&#160;&#160;new : other:XAttribute -&gt; XAttribute + 1 overload<br />&#160;&#160;member IsNamespaceDeclaration : bool<br />&#160;&#160;member Name : XName<br />&#160;&#160;member NextAttribute : XAttribute<br />&#160;&#160;member NodeType : XmlNodeType<br />&#160;&#160;member PreviousAttribute : XAttribute<br />&#160;&#160;member Remove : unit -&gt; unit<br />&#160;&#160;member SetValue : value:obj -&gt; unit<br />&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;member Value : string with get, set<br />&#160;&#160;...<br /><br />Full name: System.Xml.Linq.XAttribute<br /><br />--------------------<br />XAttribute(other: XAttribute) : unit<br />XAttribute(name: XName, value: obj) : unit</div>
-<div class="tip" id="fs45">type XName =<br />&#160;&#160;member Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;member LocalName : string<br />&#160;&#160;member Namespace : XNamespace<br />&#160;&#160;member NamespaceName : string<br />&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;static member Get : expandedName:string -&gt; XName + 1 overload<br /><br />Full name: System.Xml.Linq.XName</div>
-<div class="tip" id="fs46">XName.Get(expandedName: string) : XName<br />XName.Get(localName: string, namespaceName: string) : XName</div>
-<div class="tip" id="fs47">type XObject =<br />&#160;&#160;member AddAnnotation : annotation:obj -&gt; unit<br />&#160;&#160;member Annotation&lt;&#39;T&gt; : unit -&gt; &#39;T + 1 overload<br />&#160;&#160;member Annotations&lt;&#39;T&gt; : unit -&gt; IEnumerable&lt;&#39;T&gt; + 1 overload<br />&#160;&#160;member BaseUri : string<br />&#160;&#160;member Document : XDocument<br />&#160;&#160;member NodeType : XmlNodeType<br />&#160;&#160;member Parent : XElement<br />&#160;&#160;member RemoveAnnotations&lt;&#39;T&gt; : unit -&gt; unit + 1 overload<br />&#160;&#160;event Changed : EventHandler&lt;XObjectChangeEventArgs&gt;<br />&#160;&#160;event Changing : EventHandler&lt;XObjectChangeEventArgs&gt;<br /><br />Full name: System.Xml.Linq.XObject</div>
-<div class="tip" id="fs48">val elem : (string -&gt; obj -&gt; XObject)</div>
-<div class="tip" id="fs49">val value : obj</div>
-<div class="tip" id="fs50">type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
-<div class="tip" id="fs51">val toXml : (JsonValue -&gt; obj)</div>
-<div class="tip" id="fs52">union case JsonValue.Null: JsonValue</div>
-<div class="tip" id="fs53">union case JsonValue.Boolean: bool -&gt; JsonValue</div>
-<div class="tip" id="fs54">val b : bool</div>
-<div class="tip" id="fs55">union case JsonValue.Number: decimal -&gt; JsonValue</div>
-<div class="tip" id="fs56">val number : decimal</div>
-<div class="tip" id="fs57">union case JsonValue.Float: float -&gt; JsonValue</div>
-<div class="tip" id="fs58">val number : float</div>
-<div class="tip" id="fs59">val s : string</div>
-<div class="tip" id="fs60">val properties : Map&lt;string,JsonValue&gt;</div>
-<div class="tip" id="fs61">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sortBy</div>
-<div class="tip" id="fs62">active recognizer KeyValue: System.Collections.Generic.KeyValuePair&lt;&#39;Key,&#39;Value&gt; -&gt; &#39;Key * &#39;Value<br /><br />Full name: Microsoft.FSharp.Core.Operators.( |KeyValue| )</div>
-<div class="tip" id="fs63">val value : JsonValue</div>
-<div class="tip" id="fs64">val n : decimal</div>
-<div class="tip" id="fs65">val n : float</div>
-<div class="tip" id="fs66">val elements : JsonValue []</div>
-<div class="tip" id="fs67">val item : JsonValue</div>
-<div class="tip" id="fs68">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.Operators.seq<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.seq&lt;_&gt;</div>
+<div class="tip" id="fs6">val fromXml : xml:XElement -&gt; JsonValue<br /><br />Full name: JsonToXml.fromXml<br /><em><br /><br />&#160;Creates a JSON representation of a XML element</em></div>
+<div class="tip" id="fs7">val xml : XElement</div>
+<div class="tip" id="fs8">Multiple items<br />type XElement =<br />&#160;&#160;inherit XContainer<br />&#160;&#160;new : name:XName -&gt; XElement + 4 overloads<br />&#160;&#160;member AncestorsAndSelf : unit -&gt; IEnumerable&lt;XElement&gt; + 1 overload<br />&#160;&#160;member Attribute : name:XName -&gt; XAttribute<br />&#160;&#160;member Attributes : unit -&gt; IEnumerable&lt;XAttribute&gt; + 1 overload<br />&#160;&#160;member DescendantNodesAndSelf : unit -&gt; IEnumerable&lt;XNode&gt;<br />&#160;&#160;member DescendantsAndSelf : unit -&gt; IEnumerable&lt;XElement&gt; + 1 overload<br />&#160;&#160;member FirstAttribute : XAttribute<br />&#160;&#160;member GetDefaultNamespace : unit -&gt; XNamespace<br />&#160;&#160;member GetNamespaceOfPrefix : prefix:string -&gt; XNamespace<br />&#160;&#160;member GetPrefixOfNamespace : ns:XNamespace -&gt; string<br />&#160;&#160;...<br /><br />Full name: System.Xml.Linq.XElement<br /><br />--------------------<br />XElement(name: XName) : unit<br />XElement(other: XElement) : unit<br />XElement(other: XStreamingElement) : unit<br />XElement(name: XName, content: obj) : unit<br />XElement(name: XName, params content: obj []) : unit</div>
+<div class="tip" id="fs9">val attrs : (string * JsonValue) list</div>
+<div class="tip" id="fs10">val attr : XAttribute</div>
+<div class="tip" id="fs11">XElement.Attributes() : System.Collections.Generic.IEnumerable&lt;XAttribute&gt;<br />XElement.Attributes(name: XName) : System.Collections.Generic.IEnumerable&lt;XAttribute&gt;</div>
+<div class="tip" id="fs12">property XAttribute.Name: XName</div>
+<div class="tip" id="fs13">property XName.LocalName: string</div>
+<div class="tip" id="fs14">type JsonValue =<br />&#160;&#160;| String of string<br />&#160;&#160;| Number of decimal<br />&#160;&#160;| Float of float<br />&#160;&#160;| Object of Map&lt;string,JsonValue&gt;<br />&#160;&#160;| Array of JsonValue []<br />&#160;&#160;| Boolean of bool<br />&#160;&#160;| Null<br />&#160;&#160;member Post : uri:string -&gt; HttpResponse<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member ToString : saveOptions:JsonSaveOptions -&gt; string<br />&#160;&#160;static member AsyncLoad : uri:string * ?cultureInfo:CultureInfo -&gt; Async&lt;JsonValue&gt;<br />&#160;&#160;static member Load : uri:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : reader:TextReader * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : stream:Stream * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Parse : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member ParseMultiple : text:string * ?cultureInfo:CultureInfo -&gt; seq&lt;JsonValue&gt;<br />&#160;&#160;static member ParseSample : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br /><br />Full name: FSharp.Data.JsonValue</div>
+<div class="tip" id="fs15">union case JsonValue.String: string -&gt; JsonValue</div>
+<div class="tip" id="fs16">property XAttribute.Value: string</div>
+<div class="tip" id="fs17">val createArray : (seq&lt;#XElement&gt; -&gt; JsonValue)</div>
+<div class="tip" id="fs18">val xelems : seq&lt;#XElement&gt;</div>
+<div class="tip" id="fs19">val xelem : #XElement</div>
+<div class="tip" id="fs20">union case JsonValue.Array: JsonValue [] -&gt; JsonValue</div>
+<div class="tip" id="fs21">val children : seq&lt;string * JsonValue&gt;</div>
+<div class="tip" id="fs22">XContainer.Elements() : System.Collections.Generic.IEnumerable&lt;XElement&gt;<br />XContainer.Elements(name: XName) : System.Collections.Generic.IEnumerable&lt;XElement&gt;</div>
+<div class="tip" id="fs23">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs24">val groupBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;Key * seq&lt;&#39;T&gt;&gt; (requires equality)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.groupBy</div>
+<div class="tip" id="fs25">val x : XElement</div>
+<div class="tip" id="fs26">property XElement.Name: XName</div>
+<div class="tip" id="fs27">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs28">val key : string</div>
+<div class="tip" id="fs29">val childs : seq&lt;XElement&gt;</div>
+<div class="tip" id="fs30">val toList : source:seq&lt;&#39;T&gt; -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.Seq.toList</div>
+<div class="tip" id="fs31">val child : XElement</div>
+<div class="tip" id="fs32">val children : XElement list</div>
+<div class="tip" id="fs33">val concat : sources:seq&lt;#seq&lt;&#39;T&gt;&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.concat</div>
+<div class="tip" id="fs34">val ofList : source:&#39;T list -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.ofList</div>
+<div class="tip" id="fs35">Multiple items<br />module Map<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type Map&lt;&#39;Key,&#39;Value (requires comparison)&gt; =<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IComparable<br />&#160;&#160;interface IEnumerable&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface ICollection&lt;KeyValuePair&lt;&#39;Key,&#39;Value&gt;&gt;<br />&#160;&#160;interface IDictionary&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member Add : key:&#39;Key * value:&#39;Value -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;member ContainsKey : key:&#39;Key -&gt; bool<br />&#160;&#160;override Equals : obj -&gt; bool<br />&#160;&#160;member Remove : key:&#39;Key -&gt; Map&lt;&#39;Key,&#39;Value&gt;<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Collections.Map&lt;_,_&gt;<br /><br />--------------------<br />new : elements:seq&lt;&#39;Key * &#39;Value&gt; -&gt; Map&lt;&#39;Key,&#39;Value&gt;</div>
+<div class="tip" id="fs36">val ofSeq : elements:seq&lt;&#39;Key * &#39;T&gt; -&gt; Map&lt;&#39;Key,&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Map.ofSeq</div>
+<div class="tip" id="fs37">union case JsonValue.Object: Map&lt;string,JsonValue&gt; -&gt; JsonValue</div>
+<div class="tip" id="fs38">val toXml : x:JsonValue -&gt; seq&lt;XObject&gt;<br /><br />Full name: JsonToXml.toXml<br /><em><br /><br />&#160;Creates an XML representation of a JSON value (works <br />&#160;only when the top-level value is an object or an array)</em></div>
+<div class="tip" id="fs39">val x : JsonValue</div>
+<div class="tip" id="fs40">val attr : (string -&gt; &#39;a -&gt; XObject)</div>
+<div class="tip" id="fs41">val name : string</div>
+<div class="tip" id="fs42">val value : &#39;a</div>
+<div class="tip" id="fs43">Multiple items<br />type XAttribute =<br />&#160;&#160;inherit XObject<br />&#160;&#160;new : other:XAttribute -&gt; XAttribute + 1 overload<br />&#160;&#160;member IsNamespaceDeclaration : bool<br />&#160;&#160;member Name : XName<br />&#160;&#160;member NextAttribute : XAttribute<br />&#160;&#160;member NodeType : XmlNodeType<br />&#160;&#160;member PreviousAttribute : XAttribute<br />&#160;&#160;member Remove : unit -&gt; unit<br />&#160;&#160;member SetValue : value:obj -&gt; unit<br />&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;member Value : string with get, set<br />&#160;&#160;...<br /><br />Full name: System.Xml.Linq.XAttribute<br /><br />--------------------<br />XAttribute(other: XAttribute) : unit<br />XAttribute(name: XName, value: obj) : unit</div>
+<div class="tip" id="fs44">type XName =<br />&#160;&#160;member Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;member LocalName : string<br />&#160;&#160;member Namespace : XNamespace<br />&#160;&#160;member NamespaceName : string<br />&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;static member Get : expandedName:string -&gt; XName + 1 overload<br /><br />Full name: System.Xml.Linq.XName</div>
+<div class="tip" id="fs45">XName.Get(expandedName: string) : XName<br />XName.Get(localName: string, namespaceName: string) : XName</div>
+<div class="tip" id="fs46">type XObject =<br />&#160;&#160;member AddAnnotation : annotation:obj -&gt; unit<br />&#160;&#160;member Annotation&lt;&#39;T&gt; : unit -&gt; &#39;T + 1 overload<br />&#160;&#160;member Annotations&lt;&#39;T&gt; : unit -&gt; IEnumerable&lt;&#39;T&gt; + 1 overload<br />&#160;&#160;member BaseUri : string<br />&#160;&#160;member Document : XDocument<br />&#160;&#160;member NodeType : XmlNodeType<br />&#160;&#160;member Parent : XElement<br />&#160;&#160;member RemoveAnnotations&lt;&#39;T&gt; : unit -&gt; unit + 1 overload<br />&#160;&#160;event Changed : EventHandler&lt;XObjectChangeEventArgs&gt;<br />&#160;&#160;event Changing : EventHandler&lt;XObjectChangeEventArgs&gt;<br /><br />Full name: System.Xml.Linq.XObject</div>
+<div class="tip" id="fs47">val elem : (string -&gt; obj -&gt; XObject)</div>
+<div class="tip" id="fs48">val value : obj</div>
+<div class="tip" id="fs49">type obj = System.Object<br /><br />Full name: Microsoft.FSharp.Core.obj</div>
+<div class="tip" id="fs50">val toXml : (JsonValue -&gt; obj)</div>
+<div class="tip" id="fs51">union case JsonValue.Null: JsonValue</div>
+<div class="tip" id="fs52">union case JsonValue.Boolean: bool -&gt; JsonValue</div>
+<div class="tip" id="fs53">val b : bool</div>
+<div class="tip" id="fs54">union case JsonValue.Number: decimal -&gt; JsonValue</div>
+<div class="tip" id="fs55">val number : decimal</div>
+<div class="tip" id="fs56">union case JsonValue.Float: float -&gt; JsonValue</div>
+<div class="tip" id="fs57">val number : float</div>
+<div class="tip" id="fs58">val s : string</div>
+<div class="tip" id="fs59">val properties : Map&lt;string,JsonValue&gt;</div>
+<div class="tip" id="fs60">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sortBy</div>
+<div class="tip" id="fs61">active recognizer KeyValue: System.Collections.Generic.KeyValuePair&lt;&#39;Key,&#39;Value&gt; -&gt; &#39;Key * &#39;Value<br /><br />Full name: Microsoft.FSharp.Core.Operators.( |KeyValue| )</div>
+<div class="tip" id="fs62">val value : JsonValue</div>
+<div class="tip" id="fs63">val n : decimal</div>
+<div class="tip" id="fs64">val n : float</div>
+<div class="tip" id="fs65">val elements : JsonValue []</div>
+<div class="tip" id="fs66">val item : JsonValue</div>
+<div class="tip" id="fs67">Multiple items<br />val seq : sequence:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Core.Operators.seq<br /><br />--------------------<br />type seq&lt;&#39;T&gt; = System.Collections.Generic.IEnumerable&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.seq&lt;_&gt;</div>
 
         </div>
         <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
+            <li class="nav-header">F# Data</li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
             
-            <li class="nav-header">Documentation</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/fsharpdata.html">F# Data Library</a></li>
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="/FSharp.Data">Introduction</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">Tutorials</li>
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
-            <li class="nav-header">Experimental</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental.html">F# Data Experimental</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental/ApiaryProvider.html">Apiary Type Provider</a></li>
-
+            <li class="nav-header">Reference</li>
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
-
         </div>
       </div>
     </div>
-    <a href="https://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
   </body>
   </html>

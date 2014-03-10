@@ -6,15 +6,15 @@
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks.">
-    <meta name="author" content="Tomas Petricek">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
 
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://fsharp.github.com/FSharp.Data/content/style.css" />
-    <script src="http://fsharp.github.com/FSharp.Data/content/tips.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,47 +23,71 @@
   <body>
     <div class="container">
       <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/fsharp/FSharp.Data">github page</a></li>
-          <li><a href="http://fsharp.github.com/fsharpx/">fsharpx library</a></li>
-        </ul>
-        <h3 class="muted">F# Data Library</h3>
+          <ul class="nav nav-pills pull-right">
+              <li><a href="http://fsharp.org">fsharp.org</a></li>
+              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
-          <h1>F# Data: JSON Type Provider</h1>
+          
+<h1>F# Data: JSON Type Provider</h1>
 
 <p>This article demonstrates how to use the JSON type provider to access JSON files
 in a statically typed way. We first look how the structure is inferred and then 
-demonstrate the provider by parsing data returned by the WorldBank and Twitter.</p>
+demonstrate the provider by parsing data from WorldBank and Twitter.</p>
 
 <p>The JSON type provider provides a statically typed access to JSON documents.
-It takes a sample document as an input (or document containing a JSON array of samples).
+It takes a sample document as an input (or a document containing a JSON array of samples).
 The generated type can then be used to read files with the same structure. If the 
-loaded file does not match the structure of the sample, an exception may occur 
+loaded file does not match the structure of the sample, an runtime error may occur 
 (but only when accessing e.g. non-existing element).</p>
 
 <h2>Introducing the provider</h2>
 
 <p>The type provider is located in the <code>FSharp.Data.dll</code> assembly. Assuming the assembly 
-is located in the <code>../../bin</code> directory, we can load it in F# Interactive as follows:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
-<span class="l">2: </span><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span></pre>
-<h3>Inferring type from sample</h3>
+is located in the <code>../../../bin</code> directory, we can load it in F# Interactive as follows:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span></pre>
+</td>
+</tr>
+</table>
+
+<h3>Inferring types from the sample</h3>
 
 <p>The <code>JsonProvider&lt;...&gt;</code> takes one static parameter of type <code>string</code>. The parameter can 
 be <em>either</em> a sample string <em>or</em> a sample file (relatively to the current folder or online 
 accessible via <code>http</code> or <code>https</code>). It is not likely that this could lead to ambiguities.</p>
 
 <p>The following sample passes small JSON string to the provider:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">Simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">4</span><span class="s"> </span><span class="s">}</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
-<span class="l">3: </span><span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Age</span>
-<span class="l">4: </span><span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">Name</span></pre>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">Simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">4</span><span class="s"> </span><span class="s">}</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
+<span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Age</span>
+<span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">Name</span></pre>
+</td>
+</tr>
+</table>
+
 <p>You can see that the generated type has two properties - <code>Age</code> of type <code>int</code> and <code>Name</code> of
 type <code>string</code>. The provider successfully infers the types from the sample and exposes the
 fields as properties (with PascalCase name to follow standard naming conventions).</p>
@@ -73,11 +97,22 @@ fields as properties (with PascalCase name to follow standard naming conventions
 <p>In the previous case, the sample document simply contained an integer and so the provider
 inferred the type <code>int</code>. Sometimes, the types in the sample document (or a list of samples) 
 may not exactly match. For example, a list may mix integers and floats:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">Numbers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 13)" onmouseover="showTip(event, 'fs4', 13)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">3</span><span class="s">,</span><span class="s"> </span><span class="s">3</span><span class="s">.</span><span class="s">14</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="i">nums</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="i">Numbers</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">.</span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">45</span><span class="s">.</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">98</span><span class="s">.</span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">5</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
-<span class="l">3: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="i">total</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">nums</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 19)" onmouseover="showTip(event, 'fs13', 19)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 20)" onmouseover="showTip(event, 'fs14', 20)" class="i">sum</span></pre>
-<p>When the sample is a collection, the type provider finds a type that can be used to store
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">Numbers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 13)" onmouseover="showTip(event, 'fs4', 13)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">3</span><span class="s">,</span><span class="s"> </span><span class="s">3</span><span class="s">.</span><span class="s">14</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="i">nums</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="i">Numbers</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">.</span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">45</span><span class="s">.</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">98</span><span class="s">.</span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">5</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="i">total</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">nums</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 19)" onmouseover="showTip(event, 'fs13', 19)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 20)" onmouseover="showTip(event, 'fs14', 20)" class="i">sum</span></pre>
+</td>
+</tr>
+</table>
+
+<p>When the sample is a collection, the type provider generates a type that can be used to store
 all values in the sample. In this case, the resulting type is <code>decimal</code>, because one
 of the values is not an integer. In general, the provider supports (and prefers them 
 in this order): <code>int</code>, <code>int64</code>, <code>decimal</code> and <code>float</code>.</p>
@@ -85,13 +120,26 @@ in this order): <code>int</code>, <code>int64</code>, <code>decimal</code> and <
 <p>Other primitive types cannot be combined into a single type. For example, if the list contains
 numbers <em>and</em> strings. In this case, the provider generates two methods that can be used
 to get values that match one of the types:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="i">Mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">world</span><span class="s">&quot;</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="i">mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">Mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 25)" onmouseover="showTip(event, 'fs17', 25)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">4</span><span class="s">,</span><span class="s"> </span><span class="s">5</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">world</span><span class="s">&quot;</span><span class="s"> </span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
 <span class="l">3: </span>
-<span class="l">4: </span><span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 27)" onmouseover="showTip(event, 'fs18', 27)" class="i">GetNumbers</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 29)" onmouseover="showTip(event, 'fs14', 29)" class="i">sum</span>
-<span class="l">5: </span><span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 31)" onmouseover="showTip(event, 'fs19', 31)" class="i">GetStrings</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 32)" onmouseover="showTip(event, 'fs20', 32)" class="i">String</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">concat</span> <span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span></pre>
-<p>As you can see, the <code>Mixed</code> type has methods <code>GetNumbers()</code> and <code>GetStrings()</code> that 
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="i">Mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">1</span><span class="s">,</span><span class="s"> </span><span class="s">2</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">world</span><span class="s">&quot;</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="i">mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">Mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 25)" onmouseover="showTip(event, 'fs17', 25)" class="i">Parse</span>(<span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">4</span><span class="s">,</span><span class="s"> </span><span class="s">5</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">hello</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">world</span><span class="s">&quot;</span><span class="s"> </span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span>)
+
+<span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 27)" onmouseover="showTip(event, 'fs18', 27)" class="i">Numbers</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 29)" onmouseover="showTip(event, 'fs14', 29)" class="i">sum</span>
+<span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 31)" onmouseover="showTip(event, 'fs19', 31)" class="i">Strings</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 32)" onmouseover="showTip(event, 'fs20', 32)" class="i">String</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">concat</span> <span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>As you can see, the <code>Mixed</code> type has property <code>Numbers</code> and <code>Strings</code> that 
 return only <code>int</code> and <code>string</code> values from the collection. This means that we get a nice
 type-safe access to the values, but not in the original order (if order matters, then
 you can use the <code>mixed.JsonValue</code> property to get the underlying <code>JsonValue</code> and 
@@ -103,14 +151,28 @@ process it dynamically as described in <a href="JsonValue.html">the documentatio
 following example uses two records - one with <code>name</code> and <code>age</code> and the second with just
 <code>name</code>. If a property is missing, then the provider infers it as optional.</p>
 
-<p>If we want to just use the same text used for the schema at runtime, we can use the <code>GetSample</code> method:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs22', 34)" onmouseover="showTip(event, 'fs22', 34)" class="i">People</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s">,</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s"> </span><span class="s">}</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+<p>If we want to just use the same text used for the schema at runtime, we can use the <code>GetSamples</code> method:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span><span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 36)" onmouseover="showTip(event, 'fs23', 36)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs22', 37)" onmouseover="showTip(event, 'fs22', 37)" class="i">People</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="i">GetSample</span>() <span class="k">do</span> 
-<span class="l">4: </span>  <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">printf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="i">Name</span> 
-<span class="l">5: </span>  <span onmouseout="hideTip(event, 'fs23', 42)" onmouseover="showTip(event, 'fs23', 42)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 43)" onmouseover="showTip(event, 'fs26', 43)" class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 44)" onmouseover="showTip(event, 'fs27', 44)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 45)" onmouseover="showTip(event, 'fs28', 45)" class="i">iter</span> (<span onmouseout="hideTip(event, 'fs25', 46)" onmouseover="showTip(event, 'fs25', 46)" class="i">printf</span> <span class="s">&quot;</span><span class="s">(</span><span class="s">%</span><span class="s">d</span><span class="s">)</span><span class="s">&quot;</span>)
-<span class="l">6: </span>  <span onmouseout="hideTip(event, 'fs29', 47)" onmouseover="showTip(event, 'fs29', 47)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">&quot;</span></pre>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs22', 34)" onmouseover="showTip(event, 'fs22', 34)" class="i">People</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">John</span><span class="s">&quot;</span><span class="s">,</span><span class="s"> </span><span class="s">&quot;</span><span class="s">age</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s">,</span><span class="s"> </span><span class="s">{</span><span class="s"> </span><span class="s">&quot;</span><span class="s">name</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s"> </span><span class="s">}</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 36)" onmouseover="showTip(event, 'fs23', 36)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs22', 37)" onmouseover="showTip(event, 'fs22', 37)" class="i">People</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 38)" onmouseover="showTip(event, 'fs24', 38)" class="i">GetSamples</span>() <span class="k">do</span> 
+  <span onmouseout="hideTip(event, 'fs25', 39)" onmouseover="showTip(event, 'fs25', 39)" class="i">printf</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs23', 40)" onmouseover="showTip(event, 'fs23', 40)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="i">Name</span> 
+  <span onmouseout="hideTip(event, 'fs23', 42)" onmouseover="showTip(event, 'fs23', 42)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 43)" onmouseover="showTip(event, 'fs26', 43)" class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 44)" onmouseover="showTip(event, 'fs27', 44)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 45)" onmouseover="showTip(event, 'fs28', 45)" class="i">iter</span> (<span onmouseout="hideTip(event, 'fs25', 46)" onmouseover="showTip(event, 'fs25', 46)" class="i">printf</span> <span class="s">&quot;</span><span class="s">(</span><span class="s">%</span><span class="s">d</span><span class="s">)</span><span class="s">&quot;</span>)
+  <span onmouseout="hideTip(event, 'fs29', 47)" onmouseover="showTip(event, 'fs29', 47)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
 <p>The inferred type for <code>items</code> is a collection of (anonymous) JSON entities - each entity
 has properties <code>Name</code> and <code>Age</code>. As <code>Age</code> is not available for all records in the sample
 data set, it is inferred as <code>option&lt;int&gt;</code>. The above sample uses <code>Option.iter</code> to print
@@ -120,32 +182,49 @@ the value only when it is available.</p>
 for the <code>Name</code> property and numeric type for <code>Age</code>. However, what if the property of
 a record can have multiple different types? In that case, the type provider behaves
 as follows:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs30', 48)" onmouseover="showTip(event, 'fs30', 48)" class="i">Values</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">{</span><span class="s">&quot;</span><span class="s">value</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s">,</span><span class="s"> </span><span class="s">{</span><span class="s">&quot;</span><span class="s">value</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s"> </span><span class="s">}</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span><span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 50)" onmouseover="showTip(event, 'fs23', 50)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs30', 51)" onmouseover="showTip(event, 'fs30', 51)" class="i">Values</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">GetSample</span>() <span class="k">do</span> 
-<span class="l">4: </span>  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs23', 53)" onmouseover="showTip(event, 'fs23', 53)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 54)" onmouseover="showTip(event, 'fs31', 54)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 55)" onmouseover="showTip(event, 'fs32', 55)" class="i">Number</span>, <span onmouseout="hideTip(event, 'fs23', 56)" onmouseover="showTip(event, 'fs23', 56)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 57)" onmouseover="showTip(event, 'fs31', 57)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 58)" onmouseover="showTip(event, 'fs33', 58)" class="i">String</span> <span class="k">with</span>
-<span class="l">5: </span>  | <span onmouseout="hideTip(event, 'fs34', 59)" onmouseover="showTip(event, 'fs34', 59)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs35', 60)" onmouseover="showTip(event, 'fs35', 60)" class="i">num</span>, _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 61)" onmouseover="showTip(event, 'fs29', 61)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Numeric</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs35', 62)" onmouseover="showTip(event, 'fs35', 62)" class="i">num</span>
-<span class="l">6: </span>  | _, <span onmouseout="hideTip(event, 'fs34', 63)" onmouseover="showTip(event, 'fs34', 63)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs36', 64)" onmouseover="showTip(event, 'fs36', 64)" class="i">str</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 65)" onmouseover="showTip(event, 'fs29', 65)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Text</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs36', 66)" onmouseover="showTip(event, 'fs36', 66)" class="i">str</span>
-<span class="l">7: </span>  | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 67)" onmouseover="showTip(event, 'fs29', 67)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Some</span><span class="s"> </span><span class="s">other</span><span class="s"> </span><span class="s">value</span><span class="s">!</span><span class="s">&quot;</span></pre>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs30', 48)" onmouseover="showTip(event, 'fs30', 48)" class="i">Values</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;</span><span class="s"> </span><span class="s">[</span><span class="s">{</span><span class="s">&quot;</span><span class="s">value</span><span class="s">&quot;</span><span class="s">:</span><span class="s">94</span><span class="s"> </span><span class="s">}</span><span class="s">,</span><span class="s"> </span><span class="s">{</span><span class="s">&quot;</span><span class="s">value</span><span class="s">&quot;</span><span class="s">:</span><span class="s">&quot;</span><span class="s">Tomas</span><span class="s">&quot;</span><span class="s"> </span><span class="s">}</span><span class="s">]</span><span class="s"> </span><span class="s">&quot;&quot;&quot;</span><span class="o">&gt;</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs23', 50)" onmouseover="showTip(event, 'fs23', 50)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs30', 51)" onmouseover="showTip(event, 'fs30', 51)" class="i">Values</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">GetSamples</span>() <span class="k">do</span> 
+  <span class="k">match</span> <span onmouseout="hideTip(event, 'fs23', 53)" onmouseover="showTip(event, 'fs23', 53)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 54)" onmouseover="showTip(event, 'fs31', 54)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 55)" onmouseover="showTip(event, 'fs32', 55)" class="i">Number</span>, <span onmouseout="hideTip(event, 'fs23', 56)" onmouseover="showTip(event, 'fs23', 56)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 57)" onmouseover="showTip(event, 'fs31', 57)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs33', 58)" onmouseover="showTip(event, 'fs33', 58)" class="i">String</span> <span class="k">with</span>
+  | <span onmouseout="hideTip(event, 'fs34', 59)" onmouseover="showTip(event, 'fs34', 59)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs35', 60)" onmouseover="showTip(event, 'fs35', 60)" class="i">num</span>, _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 61)" onmouseover="showTip(event, 'fs29', 61)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Numeric</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs35', 62)" onmouseover="showTip(event, 'fs35', 62)" class="i">num</span>
+  | _, <span onmouseout="hideTip(event, 'fs34', 63)" onmouseover="showTip(event, 'fs34', 63)" class="i">Some</span> <span onmouseout="hideTip(event, 'fs36', 64)" onmouseover="showTip(event, 'fs36', 64)" class="i">str</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 65)" onmouseover="showTip(event, 'fs29', 65)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Text</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs36', 66)" onmouseover="showTip(event, 'fs36', 66)" class="i">str</span>
+  | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs29', 67)" onmouseover="showTip(event, 'fs29', 67)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Some</span><span class="s"> </span><span class="s">other</span><span class="s"> </span><span class="s">value</span><span class="s">!</span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
 <p>Here, the <code>Value</code> property is either a number or a string, The type provider generates
 a type that has an optional property for each possible option, so we can use 
 simple pattern matching on <code>option&lt;int&gt;</code> and <code>option&lt;string&gt;</code> values to distinguish
 between the two options. This is similar to the handling of heterogeneous arrays.</p>
+
+<p>Note that we have a <code>GetSamples</code> method because the sample is a json list. If it was a json
+object, we would have a <code>GetSample</code> method instead.</p>
 
 <h2>Loading WorldBank data</h2>
 
 <p>Let's now use the type provider to process some real data. We use a data set returned by 
 <a href="http://data.worldbank.org">the WorldBank</a>, which has (roughly) the following structure:</p>
 
-<pre><code>[ { "page": 1, "pages": 1, "total": 53 },
-  [ { "indicator": {"value": "Central government debt, total (% of GDP)"},
-      "country": {"id":"CZ","value":"Czech Republic"},
-      "value":null,"decimal":"1","date":"2000"},
-    { "indicator": {"value": "Central government debt, total (% of GDP)"},
-      "country": {"id":"CZ","value":"Czech Republic"},
-      "value":"16.6567773464055","decimal":"1","date":"2010"} ] ]
-</code></pre>
+<pre lang="js">[ { <span class="s">"page"</span>: 1, <span class="s">"pages"</span>: 1, <span class="s">"total"</span>: 53 },
+  [ { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="k">null</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2000"</span>},
+    { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
+      <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
+      <span class="s">"value"</span>:<span class="s">"16.6567773464055"</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2010"</span>} ] ]</pre>
 
 <p>The response to a request contains an array with two items. The first item is a record
 with general information about the response (page, total pages, etc.) and the second item
@@ -154,27 +233,64 @@ some information and the actual <code>value</code>. Note that the <code>value</c
 (for some unknown reason). It is wrapped in quotes, so the provider infers its type as
 <code>string</code> (and we need to convert it manually).</p>
 
-<p>The following sample generates type based on the <a href="../docs/WorldBank.json"><code>docs/WorldBank.json</code></a> 
+<p>The following sample generates type based on the <a href="../data/WorldBank.json"><code>data/WorldBank.json</code></a> 
 file and loads it:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs37', 68)" onmouseover="showTip(event, 'fs37', 68)" class="i">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">docs</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span><span class="o">&gt;</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 70)" onmouseover="showTip(event, 'fs38', 70)" class="i">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 71)" onmouseover="showTip(event, 'fs37', 71)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 72)" onmouseover="showTip(event, 'fs39', 72)" class="i">Load</span>(<span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">docs</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>)</pre>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs37', 68)" onmouseover="showTip(event, 'fs37', 68)" class="i">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 70)" onmouseover="showTip(event, 'fs38', 70)" class="i">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 71)" onmouseover="showTip(event, 'fs37', 71)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 72)" onmouseover="showTip(event, 'fs39', 72)" class="i">Load</span>(<span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>)</pre>
+</td>
+</tr>
+</table>
+
+<p>Note that we can also load the data directly from the web both in the <code>Load</code> method and in
+the type provider sample parameter, and there's an asynchronous <code>AsyncLoad</code> method available too:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 73)" onmouseover="showTip(event, 'fs40', 73)" class="i">docAsync</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 74)" onmouseover="showTip(event, 'fs37', 74)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 75)" onmouseover="showTip(event, 'fs41', 75)" class="i">AsyncLoad</span>(<span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">worldbank</span><span class="s">.</span><span class="s">org</span><span class="s">/</span><span class="s">country</span><span class="s">/</span><span class="s">cz</span><span class="s">/</span><span class="s">indicator</span><span class="s">/</span><span class="s">GC</span><span class="s">.</span><span class="s">DOD</span><span class="s">.</span><span class="s">TOTL</span><span class="s">.</span><span class="s">GD</span><span class="s">.</span><span class="s">ZS</span><span class="s">?</span><span class="s">format</span><span class="s">=</span><span class="s">json</span><span class="s">&quot;</span>)</pre>
+</td>
+</tr>
+</table>
+
 <p>The <code>doc</code> is an array of heterogeneous types, so the provider generates a type
 that can be used to get the record and the array, respectively. Note that the 
-provider infers that there is only one record and one array (unlike in the previous 
-case when we had multiple numbers and multiple strings in an array). In that
-case it does not generate methods (like <code>GetArray()</code> and <code>GetRecord()</code>) but it
-generates simple properties <code>Record</code> and <code>Array</code>. We can print the data set as follows:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="c">// Print general information</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 73)" onmouseover="showTip(event, 'fs40', 73)" class="i">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 75)" onmouseover="showTip(event, 'fs41', 75)" class="i">Record</span>
-<span class="l">3: </span><span onmouseout="hideTip(event, 'fs29', 76)" onmouseover="showTip(event, 'fs29', 76)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Showing</span><span class="s"> </span><span class="s">page</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">.</span><span class="s"> </span><span class="s">Total</span><span class="s"> </span><span class="s">records</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> 
-<span class="l">4: </span>  <span onmouseout="hideTip(event, 'fs40', 77)" onmouseover="showTip(event, 'fs40', 77)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 78)" onmouseover="showTip(event, 'fs42', 78)" class="i">Page</span> <span onmouseout="hideTip(event, 'fs40', 79)" onmouseover="showTip(event, 'fs40', 79)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 80)" onmouseover="showTip(event, 'fs43', 80)" class="i">Pages</span> <span onmouseout="hideTip(event, 'fs40', 81)" onmouseover="showTip(event, 'fs40', 81)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 82)" onmouseover="showTip(event, 'fs44', 82)" class="i">Total</span>
+provider infers that there is only one record and one array. We can print the data set as follows:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
 <span class="l">5: </span>
-<span class="l">6: </span><span class="c">// Print all data points</span>
-<span class="l">7: </span><span class="k">for</span> <span onmouseout="hideTip(event, 'fs45', 83)" onmouseover="showTip(event, 'fs45', 83)" class="i">record</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs38', 84)" onmouseover="showTip(event, 'fs38', 84)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 85)" onmouseover="showTip(event, 'fs46', 85)" class="i">Array</span> <span class="k">do</span>
-<span class="l">8: </span>  <span onmouseout="hideTip(event, 'fs45', 86)" onmouseover="showTip(event, 'fs45', 86)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 87)" onmouseover="showTip(event, 'fs47', 87)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 88)" onmouseover="showTip(event, 'fs48', 88)" class="i">Number</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 89)" onmouseover="showTip(event, 'fs27', 89)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 90)" onmouseover="showTip(event, 'fs28', 90)" class="i">iter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs49', 91)" onmouseover="showTip(event, 'fs49', 91)" class="i">value</span> <span class="k">-&gt;</span>
-<span class="l">9: </span>    <span onmouseout="hideTip(event, 'fs29', 92)" onmouseover="showTip(event, 'fs29', 92)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs45', 93)" onmouseover="showTip(event, 'fs45', 93)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 94)" onmouseover="showTip(event, 'fs50', 94)" class="i">Date</span> <span onmouseout="hideTip(event, 'fs49', 95)" onmouseover="showTip(event, 'fs49', 95)" class="i">value</span>)</pre>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+<span class="l">9: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="c">// Print general information</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs42', 76)" onmouseover="showTip(event, 'fs42', 76)" class="i">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs38', 77)" onmouseover="showTip(event, 'fs38', 77)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 78)" onmouseover="showTip(event, 'fs43', 78)" class="i">Record</span>
+<span onmouseout="hideTip(event, 'fs29', 79)" onmouseover="showTip(event, 'fs29', 79)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Showing</span><span class="s"> </span><span class="s">page</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">.</span><span class="s"> </span><span class="s">Total</span><span class="s"> </span><span class="s">records</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s">&quot;</span> 
+  <span onmouseout="hideTip(event, 'fs42', 80)" onmouseover="showTip(event, 'fs42', 80)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 81)" onmouseover="showTip(event, 'fs44', 81)" class="i">Page</span> <span onmouseout="hideTip(event, 'fs42', 82)" onmouseover="showTip(event, 'fs42', 82)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 83)" onmouseover="showTip(event, 'fs45', 83)" class="i">Pages</span> <span onmouseout="hideTip(event, 'fs42', 84)" onmouseover="showTip(event, 'fs42', 84)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 85)" onmouseover="showTip(event, 'fs46', 85)" class="i">Total</span>
+
+<span class="c">// Print all data points</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs47', 86)" onmouseover="showTip(event, 'fs47', 86)" class="i">record</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs38', 87)" onmouseover="showTip(event, 'fs38', 87)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 88)" onmouseover="showTip(event, 'fs48', 88)" class="i">Array</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs47', 89)" onmouseover="showTip(event, 'fs47', 89)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 90)" onmouseover="showTip(event, 'fs49', 90)" class="i">Value</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs27', 91)" onmouseover="showTip(event, 'fs27', 91)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 92)" onmouseover="showTip(event, 'fs28', 92)" class="i">iter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs50', 93)" onmouseover="showTip(event, 'fs50', 93)" class="i">value</span> <span class="k">-&gt;</span>
+    <span onmouseout="hideTip(event, 'fs29', 94)" onmouseover="showTip(event, 'fs29', 94)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">d</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs47', 95)" onmouseover="showTip(event, 'fs47', 95)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 96)" onmouseover="showTip(event, 'fs51', 96)" class="i">Date</span> <span onmouseout="hideTip(event, 'fs50', 97)" onmouseover="showTip(event, 'fs50', 97)" class="i">value</span>)</pre>
+</td>
+</tr>
+</table>
+
 <p>When printing the data points, some of the values might be missing (in the input, the value
 is <code>null</code> instead of a valid number). This is another example of a heterogeneous type - 
 the type is either <code>Number</code> or some other type (representing <code>null</code> value). This means
@@ -185,16 +301,30 @@ it to print the result only when the data point is available.</p>
 
 <p>In our last example, we look how to parse tweets returned by the <a href="http://dev.twitter.com/">Twitter API</a>.
 Tweets are quite heterogeneous, so we infer the structure from a <em>list</em> of inputs rather than from 
-just a single input. To do that, we use the file <a href="../docs/TwitterStream.json"><code>docs/TwitterStream.json</code></a> 
-(containing a list of tweets) and pass an optional parameter <code>SampleList=true</code> which tells the 
+just a single input. To do that, we use the file <a href="../data/TwitterStream.json"><code>data/TwitterStream.json</code></a> 
+(containing a list of tweets) and pass an optional parameter <code>SampleIsList=true</code> which tells the 
 provider that the sample is actually a <em>list of samples</em>:</p>
-<pre class="fssnip">
-<span class="l">1: </span><span class="k">type</span> <span onmouseout="hideTip(event, 'fs51', 96)" onmouseover="showTip(event, 'fs51', 96)" class="i">Tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 97)" onmouseover="showTip(event, 'fs4', 97)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">docs</span><span class="s">/</span><span class="s">TwitterStream</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>, <span class="i">SampleList</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
-<span class="l">2: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 98)" onmouseover="showTip(event, 'fs52', 98)" class="i">text</span> <span class="o">=</span> <span id="fst53" onmouseout="hideTip(event, 'fs53', 99)" onmouseover="showTip(event, 'fs53', 99, document.getElementById('fst53'))" class="omitted">(omitted)</span>
-<span class="l">3: </span><span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 100)" onmouseover="showTip(event, 'fs54', 100)" class="i">tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs51', 101)" onmouseover="showTip(event, 'fs51', 101)" class="i">Tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 102)" onmouseover="showTip(event, 'fs6', 102)" class="i">Parse</span>(<span onmouseout="hideTip(event, 'fs52', 103)" onmouseover="showTip(event, 'fs52', 103)" class="i">text</span>)
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
 <span class="l">4: </span>
-<span class="l">5: </span><span onmouseout="hideTip(event, 'fs29', 104)" onmouseover="showTip(event, 'fs29', 104)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">retweeted</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">times</span><span class="s">)</span><span class="s">\n</span><span class="s">:</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span>
-<span class="l">6: </span>  <span onmouseout="hideTip(event, 'fs54', 105)" onmouseover="showTip(event, 'fs54', 105)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 106)" onmouseover="showTip(event, 'fs55', 106)" class="i">User</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 107)" onmouseover="showTip(event, 'fs56', 107)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 108)" onmouseover="showTip(event, 'fs57', 108)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs54', 109)" onmouseover="showTip(event, 'fs54', 109)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 110)" onmouseover="showTip(event, 'fs58', 110)" class="i">RetweetCount</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 111)" onmouseover="showTip(event, 'fs59', 111)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs54', 112)" onmouseover="showTip(event, 'fs54', 112)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 113)" onmouseover="showTip(event, 'fs60', 113)" class="i">Text</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 114)" onmouseover="showTip(event, 'fs61', 114)" class="i">Value</span></pre>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs52', 98)" onmouseover="showTip(event, 'fs52', 98)" class="i">Tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">TwitterStream</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>, <span class="i">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 100)" onmouseover="showTip(event, 'fs53', 100)" class="i">text</span> <span class="o">=</span> <span id="fst54" onmouseout="hideTip(event, 'fs54', 101)" onmouseover="showTip(event, 'fs54', 101, document.getElementById('fst54'))" class="omitted">(omitted)</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs55', 102)" onmouseover="showTip(event, 'fs55', 102)" class="i">tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs52', 103)" onmouseover="showTip(event, 'fs52', 103)" class="i">Tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 104)" onmouseover="showTip(event, 'fs6', 104)" class="i">Parse</span>(<span onmouseout="hideTip(event, 'fs53', 105)" onmouseover="showTip(event, 'fs53', 105)" class="i">text</span>)
+
+<span onmouseout="hideTip(event, 'fs29', 106)" onmouseover="showTip(event, 'fs29', 106)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">retweeted</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">times</span><span class="s">)</span><span class="s">\n</span><span class="s">:</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span>
+  <span onmouseout="hideTip(event, 'fs55', 107)" onmouseover="showTip(event, 'fs55', 107)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 108)" onmouseover="showTip(event, 'fs56', 108)" class="i">User</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 109)" onmouseover="showTip(event, 'fs57', 109)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 110)" onmouseover="showTip(event, 'fs58', 110)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs55', 111)" onmouseover="showTip(event, 'fs55', 111)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 112)" onmouseover="showTip(event, 'fs59', 112)" class="i">RetweetCount</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 113)" onmouseover="showTip(event, 'fs60', 113)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs55', 114)" onmouseover="showTip(event, 'fs55', 114)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 115)" onmouseover="showTip(event, 'fs61', 115)" class="i">Text</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 116)" onmouseover="showTip(event, 'fs62', 116)" class="i">Value</span></pre>
+</td>
+</tr>
+</table>
+
 <p>After creating the <code>Tweet</code> type, we parse a single sample tweet and print some details about the
 tweet. As you can see, the <code>tweet.User</code> property has been inferred as optional (meaning that a 
 tweet might not have an author?) so we unsafely get the value using the <code>Value</code> property.
@@ -209,14 +339,14 @@ type providers in the <code>FSharp.Data</code> package.</li>
 working with JSON values dynamically.</li>
 </ul>
 
-          <div class="tip" id="fs1">namespace FSharp</div>
+<div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Simple = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Simple</div>
-<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to &#39;Entity&#39;.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution)&lt;/param&gt;</em></div>
-<div class="tip" id="fs5">val simple : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><br />Full name: JsonProvider.simple</div>
-<div class="tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><em><br /><br />Parses the specified JSON string</em></div>
-<div class="tip" id="fs7">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Age: int</div>
-<div class="tip" id="fs8">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Name: string</div>
+<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
+<div class="tip" id="fs5">val simple : JsonProvider&lt;...&gt;.Root<br /><br />Full name: JsonProvider.simple</div>
+<div class="tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Parses the specified JSON string</em></div>
+<div class="tip" id="fs7">property JsonProvider&lt;...&gt;.Root.Age: int</div>
+<div class="tip" id="fs8">property JsonProvider&lt;...&gt;.Root.Name: string</div>
 <div class="tip" id="fs9">type Numbers = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Numbers</div>
 <div class="tip" id="fs10">val nums : decimal []<br /><br />Full name: JsonProvider.nums</div>
 <div class="tip" id="fs11">JsonProvider&lt;...&gt;.Parse(text: string) : decimal []<br /><em><br /><br />Parses the specified JSON string</em></div>
@@ -224,88 +354,91 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs13">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
 <div class="tip" id="fs14">val sum : source:seq&lt;&#39;T&gt; -&gt; &#39;T (requires member ( + ) and member get_Zero)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sum</div>
 <div class="tip" id="fs15">type Mixed = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Mixed</div>
-<div class="tip" id="fs16">val mixed : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><br />Full name: JsonProvider.mixed</div>
-<div class="tip" id="fs17">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Parses the specified JSON string</em></div>
-<div class="tip" id="fs18">JsonProvider&lt;...&gt;.DomainTypes.Choice.GetNumbers() : int []</div>
-<div class="tip" id="fs19">JsonProvider&lt;...&gt;.DomainTypes.Choice.GetStrings() : string []</div>
+<div class="tip" id="fs16">val mixed : JsonProvider&lt;...&gt;.NumbersOrStrings<br /><br />Full name: JsonProvider.mixed</div>
+<div class="tip" id="fs17">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.NumbersOrStrings<br /><em><br /><br />Parses the specified JSON string</em></div>
+<div class="tip" id="fs18">property JsonProvider&lt;...&gt;.NumbersOrStrings.Numbers: int []</div>
+<div class="tip" id="fs19">property JsonProvider&lt;...&gt;.NumbersOrStrings.Strings: string []</div>
 <div class="tip" id="fs20">module String<br /><br />from Microsoft.FSharp.Core</div>
 <div class="tip" id="fs21">val concat : sep:string -&gt; strings:seq&lt;string&gt; -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.String.concat</div>
 <div class="tip" id="fs22">type People = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.People</div>
-<div class="tip" id="fs23">val item : JsonProvider&lt;...&gt;.DomainTypes.Entity</div>
-<div class="tip" id="fs24">JsonProvider&lt;...&gt;.GetSample() : JsonProvider&lt;...&gt;.DomainTypes.Entity []</div>
+<div class="tip" id="fs23">val item : JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs24">JsonProvider&lt;...&gt;.GetSamples() : JsonProvider&lt;...&gt;.Root []</div>
 <div class="tip" id="fs25">val printf : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printf</div>
-<div class="tip" id="fs26">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Age: Option&lt;int&gt;</div>
+<div class="tip" id="fs26">property JsonProvider&lt;...&gt;.Root.Age: Option&lt;int&gt;</div>
 <div class="tip" id="fs27">module Option<br /><br />from Microsoft.FSharp.Core</div>
 <div class="tip" id="fs28">val iter : action:(&#39;T -&gt; unit) -&gt; option:&#39;T option -&gt; unit<br /><br />Full name: Microsoft.FSharp.Core.Option.iter</div>
 <div class="tip" id="fs29">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
 <div class="tip" id="fs30">type Values = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Values</div>
-<div class="tip" id="fs31">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Value: JsonProvider&lt;...&gt;.DomainTypes.ValueChoice</div>
-<div class="tip" id="fs32">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.Number: Option&lt;int&gt;</div>
-<div class="tip" id="fs33">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.String: Option&lt;string&gt;</div>
-<div class="tip" id="fs34">union case Option.Some: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs31">property JsonProvider&lt;...&gt;.Root.Value: JsonProvider&lt;...&gt;.IntOrString</div>
+<div class="tip" id="fs32">property JsonProvider&lt;...&gt;.IntOrString.Number: Option&lt;int&gt;</div>
+<div class="tip" id="fs33">property JsonProvider&lt;...&gt;.IntOrString.String: Option&lt;string&gt;</div>
+<div class="tip" id="fs34">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
 <div class="tip" id="fs35">val num : int</div>
 <div class="tip" id="fs36">val str : string</div>
 <div class="tip" id="fs37">type WorldBank = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.WorldBank</div>
-<div class="tip" id="fs38">val doc : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><br />Full name: JsonProvider.doc</div>
-<div class="tip" id="fs39">JsonProvider&lt;...&gt;.Load(uri: string) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified uri</em><br />JsonProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified reader</em><br />JsonProvider&lt;...&gt;.Load(stream: System.IO.Stream) : JsonProvider&lt;...&gt;.DomainTypes.Choice<br /><em><br /><br />Loads JSON from the specified stream</em></div>
-<div class="tip" id="fs40">val info : JsonProvider&lt;...&gt;.DomainTypes.Choice2of2<br /><br />Full name: JsonProvider.info</div>
-<div class="tip" id="fs41">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Record: JsonProvider&lt;...&gt;.DomainTypes.Choice2of2</div>
-<div class="tip" id="fs42">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Page: int</div>
-<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Pages: int</div>
-<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.DomainTypes.Choice2of2.Total: int</div>
-<div class="tip" id="fs45">val record : JsonProvider&lt;...&gt;.DomainTypes.Choice1of2</div>
-<div class="tip" id="fs46">property JsonProvider&lt;...&gt;.DomainTypes.Choice.Array: JsonProvider&lt;...&gt;.DomainTypes.Choice1of2 []</div>
-<div class="tip" id="fs47">property JsonProvider&lt;...&gt;.DomainTypes.Choice1of2.Value: JsonProvider&lt;...&gt;.DomainTypes.ValueChoice</div>
-<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.DomainTypes.ValueChoice.Number: Option&lt;decimal&gt;</div>
-<div class="tip" id="fs49">val value : decimal</div>
-<div class="tip" id="fs50">property JsonProvider&lt;...&gt;.DomainTypes.Choice1of2.Date: int</div>
-<div class="tip" id="fs51">type Tweet = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Tweet</div>
-<div class="tip" id="fs52">val text : string<br /><br />Full name: JsonProvider.text</div>
-<div class="tip" id="fs53">&quot;&quot;&quot; {&quot;in_reply_to_status_id_str&quot;:null,&quot;text&quot;:&quot;\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002&quot;,&quot;in_reply_to_user_id_str&quot;:null,&quot;retweet_count&quot;:0,&quot;geo&quot;:null,&quot;source&quot;:&quot;web&quot;,&quot;retweeted&quot;:false,&quot;truncated&quot;:false,&quot;id_str&quot;:&quot;263290764686155776&quot;,&quot;entities&quot;:{&quot;user_mentions&quot;:[],&quot;hashtags&quot;:[],&quot;urls&quot;:[]},&quot;in_reply_to_user_id&quot;:null,&quot;in_reply_to_status_id&quot;:null,&quot;place&quot;:null,&quot;coordinates&quot;:null,&quot;in_reply_to_screen_name&quot;:null,&quot;created_at&quot;:&quot;Tue Oct 30 14:46:24 +0000 2012&quot;,&quot;user&quot;:{&quot;notifications&quot;:null,&quot;contributors_enabled&quot;:false,&quot;time_zone&quot;:&quot;Tokyo&quot;,&quot;profile_background_color&quot;:&quot;FFFFFF&quot;,&quot;location&quot;:&quot;Kodaira Tokyo Japan&quot;,&quot;profile_background_tile&quot;:false,&quot;profile_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;default_profile_image&quot;:false,&quot;follow_request_sent&quot;:null,&quot;profile_sidebar_fill_color&quot;:&quot;17451B&quot;,&quot;description&quot;:&quot;KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a&quot;,&quot;favourites_count&quot;:17,&quot;screen_name&quot;:&quot;Merlin_wand&quot;,&quot;profile_sidebar_border_color&quot;:&quot;000000&quot;,&quot;id_str&quot;:&quot;94788486&quot;,&quot;verified&quot;:false,&quot;lang&quot;:&quot;ja&quot;,&quot;statuses_count&quot;:8641,&quot;profile_use_background_image&quot;:true,&quot;protected&quot;:false,&quot;profile_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;listed_count&quot;:31,&quot;geo_enabled&quot;:true,&quot;created_at&quot;:&quot;Sat Dec 05 13:07:32 +0000 2009&quot;,&quot;profile_text_color&quot;:&quot;000000&quot;,&quot;name&quot;:&quot;Marin&quot;,&quot;profile_background_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;friends_count&quot;:629,&quot;url&quot;:null,&quot;id&quot;:94788486,&quot;is_translator&quot;:false,&quot;default_profile&quot;:false,&quot;following&quot;:null,&quot;profile_background_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;utc_offset&quot;:32400,&quot;profile_link_color&quot;:&quot;ADADAD&quot;,&quot;followers_count&quot;:426},&quot;id&quot;:263290764686155776,&quot;contributors&quot;:null,&quot;favorited&quot;:false} &quot;&quot;&quot;</div>
-<div class="tip" id="fs54">val tweet : JsonProvider&lt;...&gt;.DomainTypes.Entity<br /><br />Full name: JsonProvider.tweet</div>
-<div class="tip" id="fs55">property JsonProvider&lt;...&gt;.DomainTypes.Entity.User: Option&lt;JsonProvider&lt;...&gt;.DomainTypes.User&gt;</div>
-<div class="tip" id="fs56">property Option.Value: JsonProvider&lt;...&gt;.DomainTypes.User</div>
-<div class="tip" id="fs57">property JsonProvider&lt;...&gt;.DomainTypes.User.Name: string</div>
-<div class="tip" id="fs58">property JsonProvider&lt;...&gt;.DomainTypes.Entity.RetweetCount: Option&lt;int&gt;</div>
-<div class="tip" id="fs59">property Option.Value: int</div>
-<div class="tip" id="fs60">property JsonProvider&lt;...&gt;.DomainTypes.Entity.Text: Option&lt;string&gt;</div>
-<div class="tip" id="fs61">property Option.Value: string</div>
+<div class="tip" id="fs38">val doc : JsonProvider&lt;...&gt;.ArrayOrRecord<br /><br />Full name: JsonProvider.doc</div>
+<div class="tip" id="fs39">JsonProvider&lt;...&gt;.Load(uri: string) : JsonProvider&lt;...&gt;.ArrayOrRecord<br /><em><br /><br />Loads JSON from the specified uri</em><br />JsonProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : JsonProvider&lt;...&gt;.ArrayOrRecord<br /><em><br /><br />Loads JSON from the specified reader</em><br />JsonProvider&lt;...&gt;.Load(stream: System.IO.Stream) : JsonProvider&lt;...&gt;.ArrayOrRecord<br /><em><br /><br />Loads JSON from the specified stream</em></div>
+<div class="tip" id="fs40">val docAsync : Async&lt;JsonProvider&lt;...&gt;.ArrayOrRecord&gt;<br /><br />Full name: JsonProvider.docAsync</div>
+<div class="tip" id="fs41">JsonProvider&lt;...&gt;.AsyncLoad(uri: string) : Async&lt;JsonProvider&lt;...&gt;.ArrayOrRecord&gt;<br /><em><br /><br />Loads JSON from the specified uri</em></div>
+<div class="tip" id="fs42">val info : JsonProvider&lt;...&gt;.Root2<br /><br />Full name: JsonProvider.info</div>
+<div class="tip" id="fs43">property JsonProvider&lt;...&gt;.ArrayOrRecord.Record: JsonProvider&lt;...&gt;.Root2</div>
+<div class="tip" id="fs44">property JsonProvider&lt;...&gt;.Root2.Page: int</div>
+<div class="tip" id="fs45">property JsonProvider&lt;...&gt;.Root2.Pages: int</div>
+<div class="tip" id="fs46">property JsonProvider&lt;...&gt;.Root2.Total: int</div>
+<div class="tip" id="fs47">val record : JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs48">property JsonProvider&lt;...&gt;.ArrayOrRecord.Array: JsonProvider&lt;...&gt;.Root []</div>
+<div class="tip" id="fs49">property JsonProvider&lt;...&gt;.Root.Value: Option&lt;decimal&gt;</div>
+<div class="tip" id="fs50">val value : decimal</div>
+<div class="tip" id="fs51">property JsonProvider&lt;...&gt;.Root.Date: int</div>
+<div class="tip" id="fs52">type Tweet = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Tweet</div>
+<div class="tip" id="fs53">val text : string<br /><br />Full name: JsonProvider.text</div>
+<div class="tip" id="fs54">&quot;&quot;&quot; {&quot;in_reply_to_status_id_str&quot;:null,&quot;text&quot;:&quot;\u5927\u91d1\u6255\u3063\u3066\u904a\u3070\u3057\u3066\u3082\u3089\u3046\u3002\u3082\u3046\u3053\u306e\u4e0a\u306a\u3044\u8d05\u6ca2\u3002\u3067\u3082\uff0c\u5b9f\u969b\u306b\u306f\u305d\u306e\u8d05\u6ca2\u306e\u672c\u8cea\u3092\u6e80\u55ab\u3067\u304d\u308b\u4eba\u306f\u9650\u3089\u308c\u3066\u308b\u3002\u305d\u3053\u306b\u76ee\u306b\u898b\u3048\u306a\u3044\u968e\u5c64\u304c\u3042\u308b\u3068\u304a\u3082\u3046\u3002&quot;,&quot;in_reply_to_user_id_str&quot;:null,&quot;retweet_count&quot;:0,&quot;geo&quot;:null,&quot;source&quot;:&quot;web&quot;,&quot;retweeted&quot;:false,&quot;truncated&quot;:false,&quot;id_str&quot;:&quot;263290764686155776&quot;,&quot;entities&quot;:{&quot;user_mentions&quot;:[],&quot;hashtags&quot;:[],&quot;urls&quot;:[]},&quot;in_reply_to_user_id&quot;:null,&quot;in_reply_to_status_id&quot;:null,&quot;place&quot;:null,&quot;coordinates&quot;:null,&quot;in_reply_to_screen_name&quot;:null,&quot;created_at&quot;:&quot;Tue Oct 30 14:46:24 +0000 2012&quot;,&quot;user&quot;:{&quot;notifications&quot;:null,&quot;contributors_enabled&quot;:false,&quot;time_zone&quot;:&quot;Tokyo&quot;,&quot;profile_background_color&quot;:&quot;FFFFFF&quot;,&quot;location&quot;:&quot;Kodaira Tokyo Japan&quot;,&quot;profile_background_tile&quot;:false,&quot;profile_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;default_profile_image&quot;:false,&quot;follow_request_sent&quot;:null,&quot;profile_sidebar_fill_color&quot;:&quot;17451B&quot;,&quot;description&quot;:&quot;KS(Green62)\/WasedaUniv.(Schl Adv Sci\/Eng)\/SynBio\/ChronoBio\/iGEM2010-2012\/Travel\/Airplane\/ \u5bfa\u30fb\u5ead\u3081\u3050\u308a&quot;,&quot;favourites_count&quot;:17,&quot;screen_name&quot;:&quot;Merlin_wand&quot;,&quot;profile_sidebar_border_color&quot;:&quot;000000&quot;,&quot;id_str&quot;:&quot;94788486&quot;,&quot;verified&quot;:false,&quot;lang&quot;:&quot;ja&quot;,&quot;statuses_count&quot;:8641,&quot;profile_use_background_image&quot;:true,&quot;protected&quot;:false,&quot;profile_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_images\/1172376796\/70768_100000537851636_3599485_q_normal.jpg&quot;,&quot;listed_count&quot;:31,&quot;geo_enabled&quot;:true,&quot;created_at&quot;:&quot;Sat Dec 05 13:07:32 +0000 2009&quot;,&quot;profile_text_color&quot;:&quot;000000&quot;,&quot;name&quot;:&quot;Marin&quot;,&quot;profile_background_image_url&quot;:&quot;http:\/\/a0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;friends_count&quot;:629,&quot;url&quot;:null,&quot;id&quot;:94788486,&quot;is_translator&quot;:false,&quot;default_profile&quot;:false,&quot;following&quot;:null,&quot;profile_background_image_url_https&quot;:&quot;https:\/\/si0.twimg.com\/profile_background_images\/612807391\/twitter_free1.br.jpg&quot;,&quot;utc_offset&quot;:32400,&quot;profile_link_color&quot;:&quot;ADADAD&quot;,&quot;followers_count&quot;:426},&quot;id&quot;:263290764686155776,&quot;contributors&quot;:null,&quot;favorited&quot;:false} &quot;&quot;&quot;</div>
+<div class="tip" id="fs55">val tweet : JsonProvider&lt;...&gt;.Root<br /><br />Full name: JsonProvider.tweet</div>
+<div class="tip" id="fs56">property JsonProvider&lt;...&gt;.Root.User: Option&lt;JsonProvider&lt;...&gt;.User&gt;</div>
+<div class="tip" id="fs57">property Option.Value: JsonProvider&lt;...&gt;.User</div>
+<div class="tip" id="fs58">property JsonProvider&lt;...&gt;.User.Name: string</div>
+<div class="tip" id="fs59">property JsonProvider&lt;...&gt;.Root.RetweetCount: Option&lt;int&gt;</div>
+<div class="tip" id="fs60">property Option.Value: int</div>
+<div class="tip" id="fs61">property JsonProvider&lt;...&gt;.Root.Text: Option&lt;string&gt;</div>
+<div class="tip" id="fs62">property Option.Value: string</div>
 
         </div>
         <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
+            <li class="nav-header">F# Data</li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
             
-            <li class="nav-header">Documentation</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/fsharpdata.html">F# Data Library</a></li>
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="/FSharp.Data">Introduction</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">Tutorials</li>
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
-            <li class="nav-header">Experimental</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental.html">F# Data Experimental</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental/ApiaryProvider.html">Apiary Type Provider</a></li>
-
+            <li class="nav-header">Reference</li>
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
-
         </div>
       </div>
     </div>
-    <a href="https://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
   </body>
   </html>

@@ -6,15 +6,15 @@
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks.">
-    <meta name="author" content="Tomas Petricek">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
 
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="http://fsharp.github.com/FSharp.Data/content/style.css" />
-    <script src="http://fsharp.github.com/FSharp.Data/content/tips.js" type="text/javascript"></script>
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -23,28 +23,30 @@
   <body>
     <div class="container">
       <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://github.com/fsharp/FSharp.Data">github page</a></li>
-          <li><a href="http://fsharp.github.com/fsharpx/">fsharpx library</a></li>
-        </ul>
-        <h3 class="muted">F# Data Library</h3>
+          <ul class="nav nav-pills pull-right">
+              <li><a href="http://fsharp.org">fsharp.org</a></li>
+              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
-          <h1>Contributing to F# Data</h1>
+          
+<h1>Contributing to F# Data</h1>
 
 <p>This page should provide you with some basic information if you're thinking about
 contributing to the F# Data package. It gives a brief summary of the library 
 structure, how type providers are written and how the F# Data library handles 
-multi-targeting (to make the providers available for Desktop, Silverlight as well
+multi-targeting (to make the providers available for Desktop as well
 as Portable libraries).</p>
 
 <ul>
 <li><p>This page can be edited by sending a pull request to F# Data on GitHub, so
 if you learn something when playing with F# Data, please record your
-<a href="https://github.com/fsharp/FSharp.Data/blob/master/samples/contributing.md">findings here</a>!</p></li>
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/docs/content/contributing.md">findings here</a>!</p></li>
 <li><p>If you want to discuss a feature (a good idea!), or if you want to look at 
 suggestions how you might contribute, check out the
 <a href="https://github.com/fsharp/FSharp.Data/issues">Issue list</a> on GitHub or send
@@ -57,16 +59,14 @@ an email to the <a href="http://groups.google.com/group/fsharp-opensource">F# Op
 that group the projects in the main logical groups:</p>
 
 <ul>
-<li><p><strong>FSharp.Data.sln</strong> contains the main projects that implement most of the F# Data
-functionality (such as runtime and design-time type provider libraries). If you want
-to contribute code that is not quite ready yet, but looks interesting, then please
-add it to the experimental projects.</p></li>
+<li><p><strong>FSharp.Data.sln</strong> contains the main projects that implement the F# Data
+functionality (such as runtime and design-time type provider libraries).</p></li>
 <li><p><strong>FSharp.Data.Tests.sln</strong> is a library with tests for F# Data and it also contains
 the content of this web site (as <code>*.fsx</code> and <code>*.md</code>) files. Look here if you want
 to edit the documentation!</p></li>
 </ul>
 
-<h2>Projects and multi-targetting</h2>
+<h2>Projects and multi-targeting</h2>
 
 <p>One problem with developing type providers is supporting multiple versions of the .NET 
 platform. Type providers consist of two components:</p>
@@ -83,54 +83,29 @@ CSV provider, this component does the type inference and generates types
 </ul>
 
 <p>To support multiple targets, we need a <em>runtime component</em> for every single target
-(Silverlight, .NET 4.0 and Portable profile). However, we only need one <em>design time</em>
+(.NET 4.0, Portable profile 47 and Portable profile 7). However, we only need one <em>design time</em>
 component, because that is always going to be executed on desktop .NET in Visual Studio
-or MonoDevelop. (Well, the truth is that we actually need another <em>design time</em> version
-for Silverlight to support the <a href="http://tryfsharp.org">tryfsharp.org</a> web site...)</p>
+or Xamarin Studio.</p>
 
-<p>So, there are 4 versions of <em>runtime</em> components and 2 versions of <em>design time</em> 
+<p>So, there are 3 versions of <em>runtime</em> components and 1 version of <em>design time</em> 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
-using <code>#if</code>. There are also 2 versions of <em>runtime</em> components and 2 versions of <em>design time</em> components
-for the experimental projects.</p>
+using <code>#if</code>.</p>
 
 <p>If you open <code>FSharp.Data.sln</code>, you'll see the following projects for <em>runtime components</em>:</p>
 
 <ul>
 <li><strong>FSharp.Data</strong> - the desktop .NET 4.0 version</li>
-<li><strong>FSharp.Data.Portable</strong> - F# portable library version (targetting desktop .NET 4.0, Windows Phone 8 and Windows 8)</li>
-<li><strong>FSharp.Data.Silverlight</strong> - Silverlight 5 version</li>
-<li><strong>FSharp.Data.WindowsPhone7</strong> - Windows Phone 7 version</li>
-<li><strong>FSharp.Data.Experimental</strong> - the desktop .NET 4.0 version of the experimental features</li>
-<li><strong>FSharp.Data.Experimental.Portable</strong> - F# portable library version of the experimental features</li>
+<li><strong>FSharp.Data.Portable47</strong> - F# portable library version (Profile 47 targeting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)</li>
+<li><strong>FSharp.Data.Portable7</strong> - F# portable library version (Profile 7 targeting desktop .NET 4.5 and Windows 8)</li>
 </ul>
 
-<p>Although you could use the portable library in Silverlight, the Freebase provider doesn't work because 
-of problems referencing the correct version of the System.Core assembly which has the LINQ query operators.
-The XmlProvider also doesn't work in Silverlight both when using the portable version or the Silverlight specific version.
-For the experimental project there's no need to have a separate Silverlight build.</p>
-
-<p>The <em>design time</em> components are in the following projects:</p>
+<p>The <em>design time</em> components are in the following project:</p>
 
 <ul>
-<li><strong>FSharp.Data.DesignTime</strong> - the main version for desktop editors</li>
-<li><strong>FSharp.Data.DesignTime.Silverlight</strong> - an experimental version for Try F#</li>
-<li><strong>FSharp.Data.Experimental.DesignTime</strong> - the main version for desktop editors</li>
-<li><strong>FSharp.Data.Experimental.DesignTime.Silverlight</strong> - an experimental version for Try F#</li>
+<li><strong>FSharp.Data.DesignTime</strong></li>
 </ul>
-
-<p>Because the latest available FSharp.Core version for the Windows Phone 7 platform is from F# 2.0,
-this version doesn't support type providers, so it only has the runtime components of FSharp.Data.
-To build it you also need to edit <code>C:\Program Files (x86)\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.targets</code>
-to remove the following lines:</p>
-
-<pre class="fssnip">
-<span class="l">1: </span><span class="o">&lt;</span><span class="i">Error</span>
-<span class="l">2: </span>    <span class="i">Condition</span><span class="o">=</span><span class="s">&quot;</span><span class="s">&#39;</span><span class="s">$</span><span class="s">(</span><span class="s">SilverlightVersion</span><span class="s">)</span><span class="s">&#39;</span><span class="s"> </span><span class="s">!</span><span class="s">=</span><span class="s"> </span><span class="s">&#39;</span><span class="s">&#39;</span><span class="s"> </span><span class="s">and</span><span class="s"> </span><span class="s">&#39;</span><span class="s">$</span><span class="s">(</span><span class="s">SilverlightVersion</span><span class="s">)</span><span class="s">&#39;</span><span class="s"> </span><span class="s">!</span><span class="s">=</span><span class="s"> </span><span class="s">&#39;</span><span class="s">v5</span><span class="s">.</span><span class="s">0</span><span class="s">&#39;</span><span class="s">&quot;</span>
-<span class="l">3: </span>    <span class="i">Text</span><span class="o">=</span><span class="s">&quot;</span><span class="s">In</span><span class="s"> </span><span class="s">this</span><span class="s"> </span><span class="s">version</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Visual</span><span class="s"> </span><span class="s">Studio</span><span class="s">,</span><span class="s"> </span><span class="s">F</span><span class="s">#</span><span class="s"> </span><span class="s">for</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">can</span><span class="s"> </span><span class="s">only</span><span class="s"> </span><span class="s">target</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">v5</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s"> </span><span class="s">Use</span><span class="s"> </span><span class="s">a</span><span class="s"> </span><span class="s">prior</span><span class="s"> </span><span class="s">version</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Visual</span><span class="s"> </span><span class="s">Studio</span><span class="s"> </span><span class="s">to</span><span class="s"> </span><span class="s">target</span><span class="s"> </span><span class="s">previous</span><span class="s"> </span><span class="s">versions</span><span class="s"> </span><span class="s">of</span><span class="s"> </span><span class="s">Silverlight</span><span class="s"> </span><span class="s">with</span><span class="s"> </span><span class="s">F</span><span class="s">#</span><span class="s">.</span><span class="s">&quot;</span>
-<span class="l">4: </span><span class="o">/&gt;</span></pre>
-
 
 <h3>Type provider structure</h3>
 
@@ -162,17 +137,21 @@ calls to the runtime components.</p></li>
 registers the provided types etc.</p></li>
 </ul>
 
-<p>The WorldBank, Freebase and Apiary providers are different. They do not need inference, but 
+<p>The WorldBank and Freebase providers are different. They do not need inference, but 
 they still distinguish between <em>runtime</em> and <em>design-time</em> components, so you'll find at least
 two files (and possibly some additional helpers).</p>
 
 <h2>Source code</h2>
 
+<h3>Debugging</h3>
+
+<p>To debug the type generation, the best way is to change <code>FSharp.Data.DesignTime</code> project to a Console application, rename <code>Test.fsx</code> to <code>Test.fs</code> and hit the Run command in the IDE, setting the breakpoints where you need them. This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio. You'll also see in the console output the complete dump of the generated types and expressions. This is also the process used for the signature tests.</p>
+
 <h3>Assembly replacer</h3>
 
 <p>Generating code in type providers (see e.g. <code>JsonGenerator.fs</code>) is a bit tricky, because 
 the generated code needs to contain references to the appropriate runtime assembly 
-(Silverlight, Desktop or Portable profile). This is particularly tricky When using F# quotations 
+(Desktop or Portable profile). This is particularly tricky When using F# quotations 
 to produce the generated code. If the source code contains <code>&lt;@@ foo.Bar @@&gt;</code>, then the 
 quoation has a direct reference to the type of <code>foo</code> from the current assembly.</p>
 
@@ -202,26 +181,43 @@ to design time we keep them in a dictionary, so that when we convert them back t
 the exact same instance that was provided to us initially.</p>
 
   <p>Another limitation (not only of this method, but in general with type providers) is that we can never use 
-expressions that use F# functions as parameters or return values, we always have to use felegates instead.</p>
+expressions that use F# functions as parameters or return values, we always have to use delegates instead.</p>
 </blockquote>
 
 <p>All standard type providers obtain an instance of <code>AssemblyReplacer</code> when constructed and then pass it
 to the code generator, which can use it to generate appropriate code:</p>
 
-<pre class="fssnip">
-<span class="l"> 1: </span><span class="k">type</span> <span class="i">AssemblyReplacer</span> <span class="o">=</span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
 <span class="l"> 2: </span>
-<span class="l"> 3: </span>  <span class="c">/// Gets the equivalent runtime type</span>
-<span class="l"> 4: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span class="i">Type</span> <span class="k">-&gt;</span> <span class="i">Type</span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
 <span class="l"> 5: </span>
-<span class="l"> 6: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
-<span class="l"> 7: </span>  <span class="c">/// replaced with runtime equivalents</span>
-<span class="l"> 8: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span class="i">Expr</span> <span class="k">-&gt;</span> <span class="i">Expr</span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
 <span class="l"> 9: </span>
-<span class="l">10: </span>  <span class="c">/// Gets an equivalent expression with all the types </span>
-<span class="l">11: </span>  <span class="c">/// replaced with designTime equivalents</span>
-<span class="l">12: </span>  <span class="k">abstract</span> <span class="k">member</span> <span class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span class="i">Expr</span> <span class="k">-&gt;</span> <span class="i">Expr</span></pre>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">AssemblyReplacer</span> <span class="o">=</span>
 
+  <span class="c">/// Gets the equivalent runtime type</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Type</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">Type</span>
+
+  <span class="c">/// Gets an equivalent expression with all the types </span>
+  <span class="c">/// replaced with runtime equivalents</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="i">Expr</span>
+
+  <span class="c">/// Gets an equivalent expression with all the types </span>
+  <span class="c">/// replaced with designTime equivalents</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">Expr</span></pre>
+</td>
+</tr>
+</table>
 
 <h2>Documentation</h2>
 
@@ -231,11 +227,11 @@ to the code generator, which can use it to generate appropriate code:</p>
 embedded Markdown documentation) to a nice HTML documentation.</p>
 
 <ul>
-<li><p>The code for all the documents can be found in the <code>samples</code> directory
-<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">on GitHub</a>. If you
+<li><p>The code for all the documents can be found in the <code>content</code> directory
+<a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/content">on GitHub</a>. If you
 find a bug or add a new feature, make sure you document it!</p></li>
 <li><p>Aside from direct documentation for individual types, there is also a <code>tutorials</code> folder
-(<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples/tutorials">on GitHub</a>) where
+(<a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/content/tutorials">on GitHub</a>) where
 you can add additional samples and tutorials that show some interesting aspects of F# Data.</p></li>
 <li><p>If you want to build the documentation, simply run the <code>build.fsx</code> script
 (<a href="https://github.com/fsharp/FSharp.Data/blob/master/tools/build.fsx">GitHub link</a>) which
@@ -253,47 +249,50 @@ from quite simple, to very complex.</p></li>
 <li><a href="http://msdn.microsoft.com/en-gb/library/hh361034.aspx">Tutorial: Creating a Type Provider (F#)</a></li>
 </ul>
 
-          <div class="tip" id="fs1">namespace System</div>
-<div class="tip" id="fs2">namespace System.Reflection</div>
-<div class="tip" id="fs3">namespace Microsoft</div>
-<div class="tip" id="fs4">namespace Microsoft.FSharp</div>
-<div class="tip" id="fs5">namespace Microsoft.FSharp.Quotations</div>
+<div class="tip" id="fs1">type AssemblyReplacer =<br />&#160;&#160;interface<br />&#160;&#160;&#160;&#160;abstract member ToDesignTime : runtimeExpr:Expr -&gt; Expr<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeType:Type -&gt; Type<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br />&#160;&#160;end<br /><br />Full name: contributing.AssemblyReplacer</div>
+<div class="tip" id="fs2">abstract member AssemblyReplacer.ToRuntime : designTimeType:Type -&gt; Type<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets the equivalent runtime type</em></div>
+<div class="tip" id="fs3">type Type =<br />&#160;&#160;inherit MemberInfo<br />&#160;&#160;member Assembly : Assembly<br />&#160;&#160;member AssemblyQualifiedName : string<br />&#160;&#160;member Attributes : TypeAttributes<br />&#160;&#160;member BaseType : Type<br />&#160;&#160;member ContainsGenericParameters : bool<br />&#160;&#160;member DeclaringMethod : MethodBase<br />&#160;&#160;member DeclaringType : Type<br />&#160;&#160;member Equals : o:obj -&gt; bool + 1 overload<br />&#160;&#160;member FindInterfaces : filter:TypeFilter * filterCriteria:obj -&gt; Type[]<br />&#160;&#160;member FindMembers : memberType:MemberTypes * bindingAttr:BindingFlags * filter:MemberFilter * filterCriteria:obj -&gt; MemberInfo[]<br />&#160;&#160;...<br /><br />Full name: System.Type</div>
+<div class="tip" id="fs4">abstract member AssemblyReplacer.ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with runtime equivalents</em></div>
+<div class="tip" id="fs5">Multiple items<br />type Expr =<br />&#160;&#160;override Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetFreeVars : unit -&gt; seq&lt;Var&gt;<br />&#160;&#160;member Substitute : substitution:(Var -&gt; Expr option) -&gt; Expr<br />&#160;&#160;member ToString : full:bool -&gt; string<br />&#160;&#160;member CustomAttributes : Expr list<br />&#160;&#160;member Type : Type<br />&#160;&#160;static member AddressOf : target:Expr -&gt; Expr<br />&#160;&#160;static member AddressSet : target:Expr * value:Expr -&gt; Expr<br />&#160;&#160;static member Application : functionExpr:Expr * argument:Expr -&gt; Expr<br />&#160;&#160;static member Applications : functionExpr:Expr * arguments:Expr list list -&gt; Expr<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Quotations.Expr<br /><br />--------------------<br />type Expr&lt;&#39;T&gt; =<br />&#160;&#160;inherit Expr<br />&#160;&#160;member Raw : Expr<br /><br />Full name: Microsoft.FSharp.Quotations.Expr&lt;_&gt;</div>
+<div class="tip" id="fs6">abstract member AssemblyReplacer.ToDesignTime : runtimeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToDesignTime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with designTime equivalents</em></div>
 
         </div>
         <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/index.html">Home page</a></li>
+            <li class="nav-header">F# Data</li>
             <li class="divider"></li>
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
-            <li><a href="https://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
             
-            <li class="nav-header">Documentation</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/fsharpdata.html">F# Data Library</a></li>
+            <li class="nav-header">F# Data Library</li>
+            <li><a href="/FSharp.Data">Introduction</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
             <li class="divider"></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">Tutorials</li>
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
-            <li class="nav-header">Experimental</li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental.html">F# Data Experimental</a></li>
-            <li><a href="http://fsharp.github.com/FSharp.Data/experimental/ApiaryProvider.html">Apiary Type Provider</a></li>
-
+            <li class="nav-header">Reference</li>
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
-
         </div>
       </div>
     </div>
-    <a href="https://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
   </body>
   </html>
