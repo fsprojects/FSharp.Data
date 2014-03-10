@@ -1,8 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
-// Utilities for working with network, downloading resources with specified headers etc.
-// --------------------------------------------------------------------------------------
-
-/// [omit]
+﻿/// Helper functions called from the generated code for working with files
 module FSharp.Data.Runtime.IO
 
 open System

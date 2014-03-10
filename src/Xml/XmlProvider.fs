@@ -69,12 +69,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
-    """<summary>Typed representation of a XML file</summary>
-       <param name='Sample'>Location of a XML sample file or a string containing a sample XML document</param>
+    """<summary>Typed representation of a XML file.</summary>
+       <param name='Sample'>Location of a XML sample file or a string containing a sample XML document.</param>
        <param name='SampleIsList'>If true, the children of the root in the sample document represent individual samples for the inference.</param>
-       <param name='Global'>If true, the inference unifies all XML elements with the same name</param>                     
+       <param name='Global'>If true, the inference unifies all XML elements with the same name.</param>                     
        <param name='Culture'>The culture used for parsing numbers and dates.</param>                     
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>"""
 
   do xmlProvTy.AddXmlDoc helpText
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)

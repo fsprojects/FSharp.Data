@@ -117,17 +117,20 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   member __.Rows = rows
   /// The names of the columns
   member __.Headers = headers
+  /// The number of columns
   member __.NumberOfColumns = numberOfColumns
+  /// The character(s) used as column separator(s)
   member __.Separators = separators
+  /// The quotation mark use for surrounding values containing separator chars
   member __.Quote = quote
   
   interface IDisposable with
     member __.Dispose() = 
       if disposer <> null then disposer.Dispose()
 
-  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-  [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
   /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
     let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
