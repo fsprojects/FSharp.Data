@@ -12,7 +12,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.IO
 
 [<StructuredFormatDisplay("{Columns}")>]
-/// Represents a CSV row
+/// Represents a CSV row.
 type CsvRow(parent:CsvFile, columns:string[]) =
 
   /// The columns of the row
@@ -33,7 +33,7 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// to escape the separator chars, the `quote` character will be used (defaults to `"`).
 /// If `hasHeaders` is true (the default), the first line read by `reader` will not be considered part of data.
 /// If `ignoreErrors` is true (the default is false), rows with a different number of columns from the header row
-/// (or the first row if headers are not present) will be ignored
+/// (or the first row if headers are not present) will be ignored.
 and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
   inherit CsvFile<CsvRow>(
     Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),

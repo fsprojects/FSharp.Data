@@ -181,14 +181,16 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     let defaultSources = [ "World Development Indicators"; "Global Financial Development" ]
 
     let worldBankType = createTypesForSources(defaultSources, "WorldBankData", false)
+    do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.freebase.com for terms and conditions.</summary>"
 
     let paramWorldBankType = 
         let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some(typeof<obj>), HideObjectMethods = true)
         
         let defaultSourcesStr = String.Join(";", defaultSources)
-        let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters</summary>
-                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to \"" + defaultSourcesStr + "\". If an empty string is specified, includes all data sources.</param>
-                        <param name='Asynchronous'>Generate asynchronous calls. Defaults to false</param>"
+        let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters. See http://www.freebase.com for terms and conditions.</summary>
+                        <param name='Sources'>The World Bank data sources to include, separated by semicolons. Defaults to `" + defaultSourcesStr + "`.
+                        If an empty string is specified, includes all data sources.</param>
+                        <param name='Asynchronous'>Generate asynchronous calls. Defaults to false.</param>"
         t.AddXmlDoc(helpText)
 
         let parameters =

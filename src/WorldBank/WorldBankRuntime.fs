@@ -17,8 +17,8 @@ open FSharp.Data.Runtime.Caching
 /// [omit]
 module Implementation = 
 
-    let retryCount = 5
-    let parallelIndicatorPageDownloads = 8
+    let private retryCount = 5
+    let private parallelIndicatorPageDownloads = 8
 
     type internal IndicatorRecord = 
         { Id : string

@@ -18,7 +18,7 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Compiler.Service.0.0.20/lib/net40"
+#I "../../packages/FSharp.Compiler.Service.0.0.32/lib/net40"
 #I "../../packages/FSharp.Formatting.2.4.0/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
