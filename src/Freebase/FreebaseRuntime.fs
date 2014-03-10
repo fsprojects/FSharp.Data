@@ -288,6 +288,7 @@ type FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebaseProper
     /// Images associated with this item. 
     member this.GetImages() = FreebaseImageInformation.GetImages(fb.Connection,this.MachineId)
 
+    /// The ID of this item
     member this.Id = 
         match objProps.["/type/object/mid"] with 
         | JsonValue.String s -> s

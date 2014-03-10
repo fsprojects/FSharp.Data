@@ -176,7 +176,8 @@
 * Allow to customize the HTTP request by passing a function.
 * Added RequestStream and AsyncRequestStream methods to Http to allow accessing the response stream directly.
 
-#### 2.0.0-rc - Unreleased
+#### 2.0.0 - March 10 2014
 * Detect Json values inside Xml documents, and generate appropriate types, instead of considering a raw string.
 * Performance improvements.
 * Fixed bugs in naming algorithm.
+* Improved documentation.
