@@ -58,7 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CSharpFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.0\lib\net40\CSharpFormat.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.1\lib\net40\CSharpFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Charting">
@@ -66,7 +66,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.CodeFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.0\lib\net40\FSharp.CodeFormat.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.1\lib\net40\FSharp.CodeFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
@@ -80,15 +80,15 @@
       <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Literate">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.0\lib\net40\FSharp.Literate.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.1\lib\net40\FSharp.Literate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Markdown">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.0\lib\net40\FSharp.Markdown.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.1\lib\net40\FSharp.Markdown.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.MetadataFormat">
-      <HintPath>..\..\packages\FSharp.Formatting.2.4.0\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+      <HintPath>..\..\packages\FSharp.Formatting.2.4.1\lib\net40\FSharp.MetadataFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
