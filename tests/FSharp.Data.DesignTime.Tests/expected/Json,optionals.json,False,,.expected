@@ -70,7 +70,7 @@ class JsonProvider+ArrayOfObject : FDR.IJsonDocument
 
 
 class JsonProvider+HeterogeneousRecord : FDR.IJsonDocument
-    member B: JsonProvider+IntOrBooleanOrArrayOr with get
+    member B: JsonProvider+IntOrBooleanOrArrayOrB with get
     JsonRuntime.GetPropertyPackedOrNull(this, "b")
 
 
@@ -170,8 +170,8 @@ class JsonProvider+IntOrBoolean : FDR.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
 
-class JsonProvider+IntOrBooleanOrArrayOr : FDR.IJsonDocument
-    member Array: JsonProvider+NumbersOrBooleanOr option with get
+class JsonProvider+IntOrBooleanOrArrayOrB : FDR.IJsonDocument
+    member Array: JsonProvider+NumbersOrBooleanOrB option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Array", new Func<_,_>(id)))
 
     member Boolean: bool option with get
@@ -218,7 +218,7 @@ class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
-class JsonProvider+NumbersOrBooleanOr : FDR.IJsonDocument
+class JsonProvider+NumbersOrBooleanOrB : FDR.IJsonDocument
     member Boolean: bool option with get
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
 

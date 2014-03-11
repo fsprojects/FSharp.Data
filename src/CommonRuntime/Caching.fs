@@ -1,7 +1,4 @@
-﻿// --------------------------------------------------------------------------------------
-// Implements caching using in-memory and local file system 
-// --------------------------------------------------------------------------------------
-
+﻿/// Implements caching using in-memory and local file system 
 module FSharp.Data.Runtime.Caching
 
 open System

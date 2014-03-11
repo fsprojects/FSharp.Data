@@ -1,8 +1,8 @@
 # F# Data: Library for Data Access
 
 The F# Data library (`FSharp.Data.dll`) implements everything you need to access data in your F# applications 
-and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and 
-for accessing the WorldBank and Freebase data. It also includes helpers for parsing JSON files and for sending HTTP requests.
+and scripts. It implements F# type providers for working with structured file formats (CSV, HTML, JSON and XML) and 
+for accessing the WorldBank and Freebase data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests.
 
 We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&state=open) issues, or help to improve the [documentation][3].
 
@@ -37,12 +37,9 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Documentation 
 
-One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 
-automatically generated from `*.fsx` files in [the content folder][2]. If you find a typo, please submit a pull request! 
- - [F# Data Library home page][3] with more information about the library, contributions etc.
- - [F# Data Library documentation][4] with links to pages that document individual type providers 
-   (CSV, XML, JSON and WorldBank) as well as for other public types available in FSharp.Data.dll. 
-
+This library is that it comes with comprehensive documentation. The documentation is 
+automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request! 
+ - [F# Data Library home page][3] with more information about the library, contributions, etc.
  - The samples from the documentation are included as part of `FSharp.Data.Tests.sln`, make sure you build the
 solution before trying out the samples to ensure that all needed packages are installed.
 
@@ -59,4 +56,3 @@ The library is available under Apache 2.0. For more information see the [License
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
  [3]: http://fsharp.github.io/FSharp.Data/
- [4]: http://fsharp.github.io/FSharp.Data/fsharpdata.html

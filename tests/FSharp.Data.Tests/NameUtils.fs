@@ -35,6 +35,11 @@ let ``Makes first letter uppercase`` () =
   niceCamelName "abc"  |> should equal "abc"
 
 [<Test>]
+let ``One letter words at the end of names are not removed`` () =
+  nicePascalName "IntOrBooleanOrArrayOrB" |> should equal "IntOrBooleanOrArrayOrB"
+  niceCamelName "IntOrBooleanOrArrayOrB" |> should equal "intOrBooleanOrArrayOrB"
+
+[<Test>]
 let ``Handles acronyms`` () =
   nicePascalName "ABC" |> should equal "Abc"
   niceCamelName "ABC"  |> should equal "abc"
