@@ -209,3 +209,33 @@ let ``Extracts tables in malformed html``() =
     tables.[0].Name |> should equal "Table_0"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+type CharRefs = FSharp.Data.JsonProvider<"data/charrefs-full.json">
+
+open System
+open System.Globalization
+open System.Text.RegularExpressions
+
+let charRefsTestCases =
+    CharRefs.GetSample().Items
+    |> Array.map (fun x -> [|x.Key; x.Characters|])
+    |> Array.filter (fun [|_;c|] -> c <> "")
+
+
+[<Test>]
+[<TestCaseSource "charRefsTestCases">]
+let ``Should substitute char references``(ref:string, result:string) = 
+    let html = sprintf """<html><body>%s</body></html>""" ref
+    let parsed = HtmlDocument.Parse html
+    let expected = 
+        HtmlDocument("", 
+         [
+           HtmlElement("html", [] ,
+            [
+               HtmlElement("body", [],
+                [
+                   HtmlText(result)
+                ])
+            ])
+        ])
+    parsed |> should equal expected
