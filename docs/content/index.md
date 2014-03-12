@@ -26,7 +26,7 @@ use the library for commercial purposes, fork it, and modify it as you wish.
 
 * The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
 
-* In addition to the official releases, you can also get NuGet packages from the [Continuous Integration package source](https://ci-beta.appveyor.com/nuget/fsharp-data-i828d85hnrfo).
+* In addition to the official releases, you can also get NuGet packages from the [Continuous Integration package source](https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782).
 
 * Alternatively, you can download the [source as a ZIP file][source] or download the [compiled binaries][compiled] as a ZIP. <br /> Please note that on windows when downloading a zip file with `dll` files the files will be blocked, and you have to manually unblock them in the file properties.
 
