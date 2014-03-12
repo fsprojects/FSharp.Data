@@ -1,4 +1,5 @@
-﻿namespace FSharp.Data
+﻿#nowarn "10001"
+namespace FSharp.Data
 
 open System
 open System.IO
@@ -80,7 +81,7 @@ module private TextParser =
 // --------------------------------------------------------------------------------------
 
 module private HtmlParser =
-    
+
     type HtmlToken =
         | DocType of string
         | Tag of bool * string * HtmlAttribute list
@@ -199,16 +200,20 @@ module private HtmlParser =
             x.Attributes := []
             result
     
-        member x.Emit() = 
+        member x.Emit() =
+            let substituteCharRef ref =
+                match HtmlCharRefs.substitute ref with
+                | Some(r) -> r
+                | None -> ref
+                 
             let result : HtmlToken = 
                 match !x.InsertionMode with
-                | DefaultMode -> Text
-                | ScriptMode -> Script
-                | StyleMode -> Style
-                | CharRefMode -> CharRef
-                | CommentMode -> Comment
-                | DocTypeMode -> DocType
-                <| ((!x.Content).ToString())
+                | DefaultMode -> Text((!x.Content).ToString())
+                | ScriptMode -> Script((!x.Content).ToString())
+                | StyleMode -> Style((!x.Content).ToString())
+                | CharRefMode -> Text((!x.Content).ToString().Trim() |> substituteCharRef)
+                | CommentMode -> Comment((!x.Content).ToString())
+                | DocTypeMode -> DocType((!x.Content).ToString())
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
             result
@@ -226,6 +231,7 @@ module private HtmlParser =
             | '<' when (!state.Content).Length > 0 -> state.Emit()
             | '<' -> state.Pop(); tagOpen state
             | TextParser.EndOfFile _ -> EOF
+            | '&' when (!state.Content).Length > 0 -> state.Emit()
             | '&' -> 
                 state.InsertionMode := CharRefMode
                 charRef state
@@ -260,7 +266,7 @@ module private HtmlParser =
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
-            | '<' -> state.Pop(); state.Emit()
+            | '<' -> state.Emit()
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
@@ -367,11 +373,10 @@ module private HtmlParser =
                 let e = HtmlElement(name.ToLower(), attributes, content)
                 parse' dt (e :: elements) tokens
             | TagEnd(_) :: rest -> docType, rest, (elements |> List.rev)
-            | Text(cont) :: rest -> 
-                let text = cont.Trim()
-                if String.IsNullOrEmpty(text) || String.IsNullOrWhiteSpace(text)
-                then parse' docType (elements) rest
-                else parse' docType (HtmlText(text) :: elements) rest
+            | Text(cont) :: rest ->
+                if cont <> " " && (String.IsNullOrEmpty(cont) || String.IsNullOrWhiteSpace(cont))
+                then parse' docType elements rest
+                else parse' docType (HtmlText(cont) :: elements) rest
             | Script(cont) :: rest -> parse' docType (HtmlScript(cont.Trim()) :: elements) rest
             | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
             | CharRef(cont) :: rest -> parse' docType (HtmlCharRef(cont.Trim()) :: elements) rest

@@ -209,3 +209,31 @@ let ``Extracts tables in malformed html``() =
     tables.[0].Name |> should equal "Table_0"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
+
+let charRefsTestCases =
+    CharRefs.GetSample().Items
+    |> Array.map (fun x -> [|x.Key; x.Characters|])
+    |> Array.filter (fun [|_;c|] -> c <> "")
+
+///When using `data\charrefs-full.json` there seems to be some encoding problems
+///and equality issues on these characters however this gives a resonable 
+///cross-section of the named char refs in the HTML standard. 
+[<Test>]
+[<TestCaseSource "charRefsTestCases">]
+let ``Should substitute char references``(ref:string, result:string) = 
+    let html = sprintf """<html><body>%s</body></html>""" ref
+    let parsed = HtmlDocument.Parse html
+    let expected = 
+        HtmlDocument("", 
+         [
+           HtmlElement("html", [] ,
+            [
+               HtmlElement("body", [],
+                [
+                   HtmlText(result)
+                ])
+            ])
+        ])
+    parsed |> should equal expected
