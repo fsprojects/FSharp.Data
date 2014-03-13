@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Net
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
@@ -118,6 +119,7 @@ let init (cfg : TypeProviderConfig) =
 
     if not initialized then
         initialized <- true
+        WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     
