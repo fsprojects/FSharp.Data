@@ -42,31 +42,31 @@ module HtmlRuntime =
         let tryGetName' choices =
             choices
             |> List.tryPick (fun (attrName) -> 
-                match tryGetAttribute attrName element with
+                match element.TryGetAttribute attrName with
                 | Some(HtmlAttribute(_,value)) -> Some <| value
                 | None -> None
             )
         match tryGetName' [ "id"; "name"; "title"; "summary"] with
         | Some(name) -> name
         | None ->
-                match getElementsNamed ["caption"] element with
+                match element.Elements ["caption"] with
                 | [] -> defaultName
-                | h :: _ -> (getValue h)
+                | h :: _ -> h.InnerText
 
                     
     let private parseTable index (table:HtmlElement) = 
-        let rows = getElementsNamed ["tr"] table |> List.mapi (fun i r -> i,r)
+        let rows = table.Elements ["tr"] |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
         then None
         else
-            let cells = rows |> List.map (snd >> getElementsNamed ["td"; "th"] >> List.mapi (fun i e -> (i,e)))
+            let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> (i,e)))
             let width = (cells |> List.maxBy (fun x -> x.Length)).Length
             let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
             for (rowindex, _) in rows do
                 for (colindex, cell) in cells.[rowindex] do
-                    let rowSpan, colSpan = (max 1 (getAttributeAs Int32.Parse "rowspan" cell)) - 1,(max 1 (getAttributeAs Int32.Parse "colspan" cell)) - 1
+                    let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue (0,Int32.TryParse,"colspan"))) - 1
                     let data =
-                        let getContents contents = String.Join(" ", List.map getValue contents).Trim()
+                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlElement) -> x.InnerText)).Trim()
                         match cell with
                         | HtmlElement("td",_,contents) -> Cell (false, getContents contents)
                         | HtmlElement("th",_,contents) -> Cell (true, getContents contents)
@@ -88,8 +88,8 @@ module HtmlRuntime =
                 Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data))
             } |> Some
     
-    let private getTables (HtmlDocument(_, doc)) =
-        let tableElements = List.collect (getElementsNamed ["table"]) doc
+    let private getTables (doc:HtmlDocument) =
+        let tableElements = doc.Elements |> List.collect (fun e -> e.Elements ["table"])
         tableElements |> List.mapi parseTable
 
     let parseTables (str:string) =

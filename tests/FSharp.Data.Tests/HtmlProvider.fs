@@ -62,6 +62,6 @@ type MarketDepth = HtmlProvider<"data/marketdepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
-    let table = MarketDepth().Tables.Table2
+    let table = MarketDepth().Tables.Table3
     table.Rows.[0].``Settlement Day`` |> should equal (DateTime(2014, 1, 14, 0, 0,0))
     table.Rows.[0].Period |> should equal 1
