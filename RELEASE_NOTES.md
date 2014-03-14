@@ -181,3 +181,6 @@
 * Performance improvements.
 * Fixed bugs in naming algorithm.
 * Improved documentation.
+
+#### 2.0.1 - March 14 2014
+* Fix Freebase provider not working under network proxies.
