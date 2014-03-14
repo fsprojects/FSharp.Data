@@ -183,4 +183,4 @@
 * Improved documentation.
 
 #### 2.0.1 - March 14 2014
-* Fix Freebase provider not working under network proxies.
+* Fixed Freebase provider throwing exceptions in the absense of network connectivity even when not used.
