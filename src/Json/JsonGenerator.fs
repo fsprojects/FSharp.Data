@@ -298,34 +298,20 @@ module JsonTypeBuilder =
 
               let name = makeUnique prop.Name
               ProvidedProperty(name, convertedType, GetterCode = getter),
-              ProvidedParameter(name, propResult.ConvertedType) ]
+              ProvidedParameter(prop.Name, propResult.ConvertedType) ]
 
         let properties, parameters = List.unzip members
         objectTy.AddMembers properties
 
-        let ctor = ProvidedConstructor parameters
-        ctor.InvokeCode <- fun args -> 
-            let rtJsonDocType = ctx.Replacer.ToRuntime(typeof<JsonDocument>)
-            let rtJsonValType = ctx.Replacer.ToRuntime(typeof<JsonValue>)
-            let jdocCreate    = rtJsonDocType.GetMethods(BindingFlags.Static ||| BindingFlags.Public) |> Array.find(fun mi -> mi.Name = "Create" )
-            let objectCreate  = rtJsonValType.GetMethods(BindingFlags.Static ||| BindingFlags.Public) |> Array.find(fun mi -> mi.Name = "NewObject" )
-            let convert = rtJsonDocType.GetMethods(BindingFlags.Static ||| BindingFlags.Public)
-                          |> Array.find(fun mi -> mi.Name = "toJsonValue")
-            let arr = Expr.NewArray(typedefof<string * JsonValue>.MakeGenericType([|typeof<string>; rtJsonValType|]), 
-                        args |> List.mapi (fun i a -> Expr.NewTuple([Expr.Value parameters.[i].Name; 
-                                                                     Expr.Call(convert,[Expr.Coerce(a,typeof<obj>)])])))
-            let mapCreate = 
-                Expr.Call(
-                    System.AppDomain.CurrentDomain.GetAssemblies()
-                    |> Array.find( fun a -> a.FullName.StartsWith "FSharp.Core")
-                    |> fun a -> 
-                        let a = ctx.Replacer.ToRuntime(a.GetType("Microsoft.FSharp.Collections.MapModule"))
-                        let m = a.GetMethod("OfArray")
-                        m.MakeGenericMethod([|typeof<string>;rtJsonValType|])
-                    ,[arr])
-
-            // this is effectively : JsonDocument.Create(JsonValue.Object(Map.ofArray([|paramName * JsonValue; paramName * JsonValue; ... |])))
-            ctx.Replacer.ToRuntime(Expr.Call(jdocCreate,[Expr.Call(objectCreate,[mapCreate]);Expr.Coerce(Expr.Value "",typeof<string>)]))
+        let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
+            let properties = 
+                Expr.NewArray(typeof<string * obj>, 
+                              args 
+                              |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value parameters.[i].Name
+                                                                       Expr.Coerce(a, typeof<obj>) ]))
+            let cultureStr = ctx.CultureStr
+            <@@ JsonRuntime.CreateObject(%%properties, cultureStr) @@>
+            |> ctx.Replacer.ToRuntime)
 
         objectTy.AddMember ctor
 
