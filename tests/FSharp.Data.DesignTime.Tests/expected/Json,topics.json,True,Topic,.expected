@@ -17,6 +17,54 @@ class JsonProvider
 
 
 class JsonProvider+Topic : FDR.IJsonDocument
+    new : categories:JsonProvider+Category[] -> category-ids:string[] -> course-ids:int[] -> courses:JsonProvider+Course[] -> display:bool -> id:int -> instructor:string option -> language:string -> large_icon:string -> name:string -> photo:string -> preview_link:string option -> self_service_course_id:int option -> short_description:string -> short_name:string -> small_icon:string -> small_icon_hover:string -> universities:JsonProvider+University[] -> university-ids:string[] -> university_logo:string option -> video:string option -> visibility:int option -> subtitle_languages_csv:string option -> JsonProvider+Topic
+    JsonRuntime.CreateObject([| ("categories",
+                                 (categories :> obj))
+                                ("category-ids",
+                                 (category-ids :> obj))
+                                ("course-ids",
+                                 (course-ids :> obj))
+                                ("courses",
+                                 (courses :> obj))
+                                ("display",
+                                 (display :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("instructor",
+                                 (instructor :> obj))
+                                ("language",
+                                 (language :> obj))
+                                ("large_icon",
+                                 (large_icon :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("photo",
+                                 (photo :> obj))
+                                ("preview_link",
+                                 (preview_link :> obj))
+                                ("self_service_course_id",
+                                 (self_service_course_id :> obj))
+                                ("short_description",
+                                 (short_description :> obj))
+                                ("short_name",
+                                 (short_name :> obj))
+                                ("small_icon",
+                                 (small_icon :> obj))
+                                ("small_icon_hover",
+                                 (small_icon_hover :> obj))
+                                ("universities",
+                                 (universities :> obj))
+                                ("university-ids",
+                                 (university-ids :> obj))
+                                ("university_logo",
+                                 (university_logo :> obj))
+                                ("video",
+                                 (video :> obj))
+                                ("visibility",
+                                 (visibility :> obj))
+                                ("subtitle_languages_csv",
+                                 (subtitle_languages_csv :> obj)) |], "")
+
     member Categories: JsonProvider+Category[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "categories"), new Func<_,_>(id)))
 
@@ -98,6 +146,18 @@ class JsonProvider+Topic : FDR.IJsonDocument
 
 
 class JsonProvider+Category : FDR.IJsonDocument
+    new : description:string option -> id:int -> mailing_list_id:int option -> name:string -> short_name:string -> JsonProvider+Category
+    JsonRuntime.CreateObject([| ("description",
+                                 (description :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("mailing_list_id",
+                                 (mailing_list_id :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("short_name",
+                                 (short_name :> obj)) |], "")
+
     member Description: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
 
@@ -118,6 +178,98 @@ class JsonProvider+Category : FDR.IJsonDocument
 
 
 class JsonProvider+Course : FDR.IJsonDocument
+    new : ace_close_date:FDR.IJsonDocument -> ace_open_date:FDR.IJsonDocument -> ace_semester_hours:FDR.IJsonDocument -> ace_track_price_display:FDR.IJsonDocument -> active:bool -> auth_review_completion_date:FDR.IJsonDocument -> certificate_description:string option -> certificates_ready:bool -> chegg_session_id:FDR.IJsonDocument -> creator_id:int option -> deployed:bool -> duration_string:string option -> eligible_for_ACE:bool option -> eligible_for_certificates:bool -> eligible_for_signature_track:bool -> end_date:FDR.IJsonDocument -> grades_release_date:System.DateTime option -> grading_policy_distinction:string option -> grading_policy_normal:string option -> home_link:string option -> id:int -> instructors:int[] -> name:JsonProvider+IntOrString -> notified_subscribers:bool -> proctored_exam_completion_date:FDR.IJsonDocument -> record:JsonProvider+Record -> signature_track_certificate_combined_signature:FDR.IJsonDocument -> signature_track_certificate_design_id:FDR.IJsonDocument -> signature_track_certificate_signature_blurb:FDR.IJsonDocument -> signature_track_close_time:System.DateTime option -> signature_track_last_chance_time:System.DateTime option -> signature_track_open_time:System.DateTime option -> signature_track_price:int option -> signature_track_registration_open:bool -> signature_track_regular_price:int option -> start_date:System.DateTime option -> start_date_string:JsonProvider+StringOrDateTime -> start_day:int option -> start_month:int option -> start_year:int option -> statement_design_id:int option -> status:bool -> textbooks:FDR.IJsonDocument[] -> topic_id:int -> university_logo:FDR.IJsonDocument -> JsonProvider+Course
+    JsonRuntime.CreateObject([| ("ace_close_date",
+                                 (ace_close_date :> obj))
+                                ("ace_open_date",
+                                 (ace_open_date :> obj))
+                                ("ace_semester_hours",
+                                 (ace_semester_hours :> obj))
+                                ("ace_track_price_display",
+                                 (ace_track_price_display :> obj))
+                                ("active",
+                                 (active :> obj))
+                                ("auth_review_completion_date",
+                                 (auth_review_completion_date :> obj))
+                                ("certificate_description",
+                                 (certificate_description :> obj))
+                                ("certificates_ready",
+                                 (certificates_ready :> obj))
+                                ("chegg_session_id",
+                                 (chegg_session_id :> obj))
+                                ("creator_id",
+                                 (creator_id :> obj))
+                                ("deployed",
+                                 (deployed :> obj))
+                                ("duration_string",
+                                 (duration_string :> obj))
+                                ("eligible_for_ACE",
+                                 (eligible_for_ACE :> obj))
+                                ("eligible_for_certificates",
+                                 (eligible_for_certificates :> obj))
+                                ("eligible_for_signature_track",
+                                 (eligible_for_signature_track :> obj))
+                                ("end_date",
+                                 (end_date :> obj))
+                                ("grades_release_date",
+                                 (grades_release_date :> obj))
+                                ("grading_policy_distinction",
+                                 (grading_policy_distinction :> obj))
+                                ("grading_policy_normal",
+                                 (grading_policy_normal :> obj))
+                                ("home_link",
+                                 (home_link :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("instructors",
+                                 (instructors :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("notified_subscribers",
+                                 (notified_subscribers :> obj))
+                                ("proctored_exam_completion_date",
+                                 (proctored_exam_completion_date :> obj))
+                                ("record",
+                                 (record :> obj))
+                                ("signature_track_certificate_combined_signature",
+                                 (signature_track_certificate_combined_signature :> obj))
+                                ("signature_track_certificate_design_id",
+                                 (signature_track_certificate_design_id :> obj))
+                                ("signature_track_certificate_signature_blurb",
+                                 (signature_track_certificate_signature_blurb :> obj))
+                                ("signature_track_close_time",
+                                 (signature_track_close_time :> obj))
+                                ("signature_track_last_chance_time",
+                                 (signature_track_last_chance_time :> obj))
+                                ("signature_track_open_time",
+                                 (signature_track_open_time :> obj))
+                                ("signature_track_price",
+                                 (signature_track_price :> obj))
+                                ("signature_track_registration_open",
+                                 (signature_track_registration_open :> obj))
+                                ("signature_track_regular_price",
+                                 (signature_track_regular_price :> obj))
+                                ("start_date",
+                                 (start_date :> obj))
+                                ("start_date_string",
+                                 (start_date_string :> obj))
+                                ("start_day",
+                                 (start_day :> obj))
+                                ("start_month",
+                                 (start_month :> obj))
+                                ("start_year",
+                                 (start_year :> obj))
+                                ("statement_design_id",
+                                 (statement_design_id :> obj))
+                                ("status",
+                                 (status :> obj))
+                                ("textbooks",
+                                 (textbooks :> obj))
+                                ("topic_id",
+                                 (topic_id :> obj))
+                                ("university_logo",
+                                 (university_logo :> obj)) |], "")
+
     member AceCloseDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_close_date")
 
@@ -265,6 +417,72 @@ class JsonProvider+Course : FDR.IJsonDocument
 
 
 class JsonProvider+University : FDR.IJsonDocument
+    new : abbr_name:string -> background_color:FDR.IJsonDocument -> banner:string option -> china_mirror:int option -> class_logo:string option -> description:string option -> display:bool -> favicon:string option -> home_link:string option -> id:int -> landing_page_banner:string option -> location:string option -> location_city:string option -> location_country:string option -> location_lat:decimal option -> location_lng:decimal option -> location_state:string option -> logo:string option -> mailing_list_id:FDR.IJsonDocument -> name:string -> partner_type:int -> primary_color:string option -> rectangular_logo_svg:string option -> short_name:string -> square_logo:string option -> square_logo_source:string option -> square_logo_svg:string option -> website:string option -> website_facebook:string option -> website_twitter:string option -> website_youtube:string option -> wordmark:FDR.IJsonDocument -> JsonProvider+University
+    JsonRuntime.CreateObject([| ("abbr_name",
+                                 (abbr_name :> obj))
+                                ("background_color",
+                                 (background_color :> obj))
+                                ("banner",
+                                 (banner :> obj))
+                                ("china_mirror",
+                                 (china_mirror :> obj))
+                                ("class_logo",
+                                 (class_logo :> obj))
+                                ("description",
+                                 (description :> obj))
+                                ("display",
+                                 (display :> obj))
+                                ("favicon",
+                                 (favicon :> obj))
+                                ("home_link",
+                                 (home_link :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("landing_page_banner",
+                                 (landing_page_banner :> obj))
+                                ("location",
+                                 (location :> obj))
+                                ("location_city",
+                                 (location_city :> obj))
+                                ("location_country",
+                                 (location_country :> obj))
+                                ("location_lat",
+                                 (location_lat :> obj))
+                                ("location_lng",
+                                 (location_lng :> obj))
+                                ("location_state",
+                                 (location_state :> obj))
+                                ("logo",
+                                 (logo :> obj))
+                                ("mailing_list_id",
+                                 (mailing_list_id :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("partner_type",
+                                 (partner_type :> obj))
+                                ("primary_color",
+                                 (primary_color :> obj))
+                                ("rectangular_logo_svg",
+                                 (rectangular_logo_svg :> obj))
+                                ("short_name",
+                                 (short_name :> obj))
+                                ("square_logo",
+                                 (square_logo :> obj))
+                                ("square_logo_source",
+                                 (square_logo_source :> obj))
+                                ("square_logo_svg",
+                                 (square_logo_svg :> obj))
+                                ("website",
+                                 (website :> obj))
+                                ("website_facebook",
+                                 (website_facebook :> obj))
+                                ("website_twitter",
+                                 (website_twitter :> obj))
+                                ("website_youtube",
+                                 (website_youtube :> obj))
+                                ("wordmark",
+                                 (wordmark :> obj)) |], "")
+
     member AbbrName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "abbr_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -369,14 +587,41 @@ class JsonProvider+University : FDR.IJsonDocument
 
 
 class JsonProvider+IntOrString : FDR.IJsonDocument
-    member Number: int option with get
+    new : Number:int -> String:string -> JsonProvider+IntOrString
+    null
+
+    member Number2: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member String: string option with get
+    member String2: string option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+Record : FDR.IJsonDocument
+    new : ace_grade:int -> achievement_level:int option -> authenticated_overall:bool -> grade_distinction:decimal option -> grade_normal:decimal option -> is_enrolled_for_proctored_exam:bool -> passed_ace:bool -> share_for_work:bool option -> signature_track:bool -> verify_cert_id:FDR.IJsonDocument -> with_grade_cert_id:FDR.IJsonDocument -> JsonProvider+Record
+    JsonRuntime.CreateObject([| ("ace_grade",
+                                 (ace_grade :> obj))
+                                ("achievement_level",
+                                 (achievement_level :> obj))
+                                ("authenticated_overall",
+                                 (authenticated_overall :> obj))
+                                ("grade_distinction",
+                                 (grade_distinction :> obj))
+                                ("grade_normal",
+                                 (grade_normal :> obj))
+                                ("is_enrolled_for_proctored_exam",
+                                 (is_enrolled_for_proctored_exam :> obj))
+                                ("passed_ace",
+                                 (passed_ace :> obj))
+                                ("share_for_work",
+                                 (share_for_work :> obj))
+                                ("signature_track",
+                                 (signature_track :> obj))
+                                ("verify_cert_id",
+                                 (verify_cert_id :> obj))
+                                ("with_grade_cert_id",
+                                 (with_grade_cert_id :> obj)) |], "")
+
     member AceGrade: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ace_grade")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -417,10 +662,13 @@ class JsonProvider+Record : FDR.IJsonDocument
 
 
 class JsonProvider+StringOrDateTime : FDR.IJsonDocument
-    member DateTime: System.DateTime option with get
+    new : String:string -> DateTime:System.DateTime -> JsonProvider+StringOrDateTime
+    null
+
+    member DateTime2: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
 
-    member String: string option with get
+    member String2: string option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 

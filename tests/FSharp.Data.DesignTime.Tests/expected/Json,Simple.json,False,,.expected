@@ -24,6 +24,16 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : age:int -> firstName:string -> isCool:bool -> lastName:string -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("age",
+                                 (age :> obj))
+                                ("firstName",
+                                 (firstName :> obj))
+                                ("isCool",
+                                 (isCool :> obj))
+                                ("lastName",
+                                 (lastName :> obj)) |], "")
+
     member Age: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "age")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)

@@ -24,11 +24,19 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : items:JsonProvider+Item[] -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("items",
+                                 (items :> obj)) |], "")
+
     member Items: JsonProvider+Item[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "items"), new Func<_,_>(id)))
 
 
 class JsonProvider+Item : FDR.IJsonDocument
+    new : id:string -> JsonProvider+Item
+    JsonRuntime.CreateObject([| ("id",
+                                 (id :> obj)) |], "")
+
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)

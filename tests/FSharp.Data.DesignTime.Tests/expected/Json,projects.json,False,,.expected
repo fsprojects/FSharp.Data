@@ -24,11 +24,21 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("ordercontainer",
+                                 (ordercontainer :> obj)) |], "")
+
     member Ordercontainer: JsonProvider+Ordercontainer with get
     JsonRuntime.GetPropertyPacked(this, "ordercontainer")
 
 
 class JsonProvider+Ordercontainer : FDR.IJsonDocument
+    new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
+    JsonRuntime.CreateObject([| ("backgrounds",
+                                 (backgrounds :> obj))
+                                ("project",
+                                 (project :> obj)) |], "")
+
     member Backgrounds: JsonProvider+Backgrounds with get
     JsonRuntime.GetPropertyPacked(this, "backgrounds")
 
@@ -37,16 +47,28 @@ class JsonProvider+Ordercontainer : FDR.IJsonDocument
 
 
 class JsonProvider+Background : FDR.IJsonDocument
+    new : title:JsonProvider+Title -> JsonProvider+Background
+    JsonRuntime.CreateObject([| ("title",
+                                 (title :> obj)) |], "")
+
     member Title: JsonProvider+Title with get
     JsonRuntime.GetPropertyPacked(this, "title")
 
 
 class JsonProvider+Backgrounds : FDR.IJsonDocument
+    new : background:JsonProvider+Background -> JsonProvider+Backgrounds
+    JsonRuntime.CreateObject([| ("background",
+                                 (background :> obj)) |], "")
+
     member Background: JsonProvider+Background with get
     JsonRuntime.GetPropertyPacked(this, "background")
 
 
 class JsonProvider+Title : FDR.IJsonDocument
+    new : text:string -> JsonProvider+Title
+    JsonRuntime.CreateObject([| ("text",
+                                 (text :> obj)) |], "")
+
     member Text: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)

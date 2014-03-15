@@ -24,11 +24,21 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : authors:JsonProvider+Author[] -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("authors",
+                                 (authors :> obj)) |], "")
+
     member Authors: JsonProvider+Author[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
 
 class JsonProvider+Author : FDR.IJsonDocument
+    new : age:int option -> name:string -> JsonProvider+Author
+    JsonRuntime.CreateObject([| ("age",
+                                 (age :> obj))
+                                ("name",
+                                 (name :> obj)) |], "")
+
     member Age: int option with get
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "age"))
 

@@ -43,6 +43,12 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
 
 
 class XmlProvider+BlahDataSomethingFoo : FDR.IJsonDocument
+    new : Something.Schema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
+    JsonRuntime.CreateObject([| ("Something.Schema",
+                                 (Something.Schema :> obj))
+                                ("results",
+                                 (results :> obj)) |], "")
+
     member Results: XmlProvider+Results with get
     JsonRuntime.GetPropertyPacked(this, "results")
 
@@ -60,6 +66,12 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
 
 
 class XmlProvider+BlahDataSomethingFoo3 : FDR.IJsonDocument
+    new : Something.Schema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
+    JsonRuntime.CreateObject([| ("Something.Schema",
+                                 (Something.Schema :> obj))
+                                ("results",
+                                 (results :> obj)) |], "")
+
     member Results: XmlProvider+Results2 with get
     JsonRuntime.GetPropertyPacked(this, "results")
 
@@ -78,6 +90,12 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.XmlElement
 
 
 class XmlProvider+Results : FDR.IJsonDocument
+    new : Something.Schema:string -> Query:string option -> XmlProvider+Results
+    JsonRuntime.CreateObject([| ("Something.Schema",
+                                 (Something.Schema :> obj))
+                                ("Query",
+                                 (Query :> obj)) |], "")
+
     member Query: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "Query"))
 
@@ -87,6 +105,12 @@ class XmlProvider+Results : FDR.IJsonDocument
 
 
 class XmlProvider+Results2 : FDR.IJsonDocument
+    new : Query:string -> Something.Schema:string -> XmlProvider+Results2
+    JsonRuntime.CreateObject([| ("Query",
+                                 (Query :> obj))
+                                ("Something.Schema",
+                                 (Something.Schema :> obj)) |], "")
+
     member Query: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Query")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)

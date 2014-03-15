@@ -24,6 +24,16 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : address:JsonProvider+Address -> age:int -> firstName:string -> lastName:string -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("address",
+                                 (address :> obj))
+                                ("age",
+                                 (age :> obj))
+                                ("firstName",
+                                 (firstName :> obj))
+                                ("lastName",
+                                 (lastName :> obj)) |], "")
+
     member Address: JsonProvider+Address with get
     JsonRuntime.GetPropertyPacked(this, "address")
 
@@ -41,6 +51,16 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Address : FDR.IJsonDocument
+    new : city:string -> postalCode:int -> state:string -> streetAddress:string -> JsonProvider+Address
+    JsonRuntime.CreateObject([| ("city",
+                                 (city :> obj))
+                                ("postalCode",
+                                 (postalCode :> obj))
+                                ("state",
+                                 (state :> obj))
+                                ("streetAddress",
+                                 (streetAddress :> obj)) |], "")
+
     member City: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "city")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
