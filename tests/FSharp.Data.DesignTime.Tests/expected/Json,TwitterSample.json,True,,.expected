@@ -660,13 +660,13 @@ class JsonProvider+Hashtag : FDR.IJsonDocument
 
 
 class JsonProvider+IntOrString : FDR.IJsonDocument
-    new : Number:int -> String:string -> JsonProvider+IntOrString
+    new : Number:int option -> String:string option -> JsonProvider+IntOrString
     null
 
-    member Number2: int option with get
+    member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member String2: string option with get
+    member String: string option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 

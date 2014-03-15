@@ -162,28 +162,17 @@ module JsonTypeBuilder =
               | InferedTypeTag.Record _ -> "Record"
               | _ -> tag.NiceName
           
-          // If it occurs at most once, then generate property (which may 
-          // be optional). For multiple occurrences, generate method
-          match multiplicity with 
-          | InferedMultiplicity.OptionalSingle ->
-              let name = makeUnique propName
-              ProvidedProperty(makeUnique propName, 
-                               typedefof<option<_>>.MakeGenericType [| result.ConvertedType |], 
-                               GetterCode = codeGenerator multiplicity result tag.Code),
-              ProvidedParameter(name, result.ConvertedType, false, true)
-          | InferedMultiplicity.Single ->
-              let name = makeUnique propName
-              ProvidedProperty(name, 
-                               result.ConvertedType, 
-                               GetterCode = codeGenerator multiplicity result tag.Code),
-              ProvidedParameter(name, result.ConvertedType)
-          | InferedMultiplicity.Multiple ->
-              let name = makeUnique (NameUtils.pluralize tag.NiceName)
-              ProvidedProperty(name,
-                               result.ConvertedType.MakeArrayType(), 
-                               GetterCode = codeGenerator multiplicity result tag.Code),
-              ProvidedParameter(name,result.ConvertedType.MakeArrayType())
-      ]
+          let name, typ = 
+            match multiplicity with 
+            | InferedMultiplicity.OptionalSingle ->
+                makeUnique propName, typedefof<option<_>>.MakeGenericType [| result.ConvertedType |]
+            | InferedMultiplicity.Single ->
+                makeUnique propName, result.ConvertedType
+            | InferedMultiplicity.Multiple ->
+                makeUnique (NameUtils.pluralize tag.NiceName), result.ConvertedType.MakeArrayType()
+
+          ProvidedProperty(name, typ, GetterCode = codeGenerator multiplicity result tag.Code),
+          ProvidedParameter(name, typ) ]
 
     let properties, parameters = List.unzip members
     objectTy.AddMembers properties
