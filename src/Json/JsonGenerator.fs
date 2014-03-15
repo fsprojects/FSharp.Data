@@ -29,10 +29,11 @@ type JsonGenerationContext =
     // the type that is used to represent documents (JsonDocument or ApiaryDocument)
     Representation : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition> }
-  static member Create(cultureStr, tpType, replacer) =
-    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName)
-  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName) =
+  static member Create(cultureStr, tpType, replacer, ?uniqueNiceName, ?typeCache) =
+    let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
+    let typeCache = defaultArg typeCache (Dictionary())
+    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName, typeCache)
+  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName, typeCache) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer 
@@ -40,7 +41,7 @@ type JsonGenerationContext =
       IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
       Representation = replacer.ToRuntime representation
-      TypeCache = Dictionary() }
+      TypeCache = typeCache }
 
 type JsonGenerationResult = 
     { ConvertedType : Type
@@ -149,7 +150,7 @@ module JsonTypeBuilder =
 
     // to nameclash property names
     let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    makeUnique "JsonValue" |> ignore    
+    makeUnique "JsonValue" |> ignore
 
     let members =
       [ for tag, multiplicity, inferedType in types ->
@@ -165,32 +166,31 @@ module JsonTypeBuilder =
           // be optional). For multiple occurrences, generate method
           match multiplicity with 
           | InferedMultiplicity.OptionalSingle ->
-              let unique = makeUnique propName
-              ProvidedProperty(unique,typedefof<option<_>>.MakeGenericType [| result.ConvertedType |],GetterCode = codeGenerator multiplicity result tag.Code),
-              ProvidedParameter(unique,result.ConvertedType,false,true)
+              let name = makeUnique propName
+              ProvidedProperty(makeUnique propName, 
+                               typedefof<option<_>>.MakeGenericType [| result.ConvertedType |], 
+                               GetterCode = codeGenerator multiplicity result tag.Code),
+              ProvidedParameter(name, result.ConvertedType, false, true)
           | InferedMultiplicity.Single ->
-              let unique = makeUnique propName
-              ProvidedProperty(unique, 
+              let name = makeUnique propName
+              ProvidedProperty(name, 
                                result.ConvertedType, 
                                GetterCode = codeGenerator multiplicity result tag.Code),
-              ProvidedParameter(unique,result.ConvertedType)
+              ProvidedParameter(name, result.ConvertedType)
           | InferedMultiplicity.Multiple ->
               let name = makeUnique (NameUtils.pluralize tag.NiceName)
               ProvidedProperty(name,
                                result.ConvertedType.MakeArrayType(), 
                                GetterCode = codeGenerator multiplicity result tag.Code),
               ProvidedParameter(name,result.ConvertedType.MakeArrayType())
-
       ]
 
-    let (properties,parameters) = List.unzip members
+    let properties, parameters = List.unzip members
     objectTy.AddMembers properties
 
-    let ctor = ProvidedConstructor parameters
-    ctor.InvokeCode <- fun args ->
-        <@@ () @@> 
-
+    let ctor = ProvidedConstructor(parameters, InvokeCode = fun _ -> <@@ () @@>)
     objectTy.AddMember ctor
+
     objectTy
 
   /// Recursively walks over inferred type information and 
@@ -298,8 +298,8 @@ module JsonTypeBuilder =
 
               let name = makeUnique prop.Name
               ProvidedProperty(name, convertedType, GetterCode = getter),
-              ProvidedParameter(prop.Name,propResult.ConvertedType)
-               ]
+              ProvidedParameter(name, propResult.ConvertedType) ]
+
         let properties, parameters = List.unzip members
         objectTy.AddMembers properties
 
@@ -363,3 +363,5 @@ module JsonTypeBuilder =
           assert (multiplicity = InferedMultiplicity.OptionalSingle)
           let cultureStr = ctx.CultureStr
           ctx.JsonRuntimeType?TryGetValueByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx))
+
+    | InferedType.Json _ -> failwith "Json type not supported"

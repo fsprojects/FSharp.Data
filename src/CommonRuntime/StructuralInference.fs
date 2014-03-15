@@ -50,6 +50,7 @@ let typeTag = function
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
       else failwith "typeTag: Unknown primitive type"
+  | InferedType.Json _ -> InferedTypeTag.Json
 
 /// Find common subtype of two primitive types or `Bottom` if there is no such type.
 /// The numeric types are ordered as below, other types are not related in any way.
@@ -120,6 +121,7 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
   // Subtype of matching types or one of equal types
   | SubtypePrimitives allowEmptyValues t -> InferedType.Primitive t
   | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
+  | InferedType.Json(t1, o1), InferedType.Json(t2, o2) -> InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
   | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowEmptyValues t1 t2)
   

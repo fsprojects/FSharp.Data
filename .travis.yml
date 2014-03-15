@@ -19,3 +19,7 @@ install:
 script: 
   - ./build.sh CleanInternetCaches && ./build.sh All
 
+branches:
+  except:
+    - gh-pages
+    - release

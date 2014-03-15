@@ -68,9 +68,11 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       use sampleCsv : CsvFile = Seq.exactlyOne samples
       let separators = sampleCsv.Separators
   
-      let inferredFields = 
+      let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
         sampleCsv.InferColumnTypes(inferRows, missingValuesList, cultureInfo, schema,
                                    assumeMissingValues, preferOptionals, ProvidedMeasureBuilder.Default.SI)
+
+      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
       let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
         inferredFields 
@@ -87,9 +89,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-    generateConstructors "CSV" sample (*sampleIsList*)false 
-                         parse (fun _ _ -> failwith "Not Applicable") getSpecFromSamples
-                         version this cfg replacer resolutionFolder true
+    generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
+                 getSpecFromSamples version this cfg replacer resolutionFolder typeName
 
   let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 
@@ -109,20 +110,21 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
-    """<summary>Typed representation of a CSV file</summary>
-       <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document</param>
-       <param name='Separators'>Column delimiter(s). Defaults to ","</param>
-       <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture</param>
-       <param name='InferRows'>Number of rows to use for inference. Defaults to 1000. If this is zero, all rows are used</param>
-       <param name='Schema'>Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'</param>
-       <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line</param>
-       <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered</param>
-       <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false</param>
-       <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values. Defaults to false</param>
-       <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to "</param>
-       <param name='MissingValues'>The set of strings recogized as missing values. Defaults to """ + "\"" + defaultMissingValues + "\"" + """</param>
-       <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets</param>
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
+    """<summary>Typed representation of a CSV file.</summary>
+       <param name='Sample'>Location of a CSV sample file or a string containing a sample CSV document.</param>
+       <param name='Separators'>Column delimiter(s). Defaults to `,`.</param>
+       <param name='Culture'>The culture used for parsing numbers and dates. Defaults to the invariant culture.</param>
+       <param name='InferRows'>Number of rows to use for inference. Defaults to `1000`. If this is zero, all rows are used.</param>
+       <param name='Schema'>Optional column types, in a comma separated list. Valid types are `int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`, `guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option` and `string option`.
+       You can also specify a unit and the name of the column like this: `Name (type&lt;unit&gt;)`, or you can override only the name. If you don't want to specify all the columns, you can reference the columns by name like this: `ColumnName=type`.</param>
+       <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line.</param>
+       <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.</param>
+       <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</param>
+       <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `""` for missing values. Defaults to false.</param>
+       <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to `"`.</param>
+       <param name='MissingValues'>The set of strings recogized as missing values. Defaults to `""" + defaultMissingValues + """`.</param>
+       <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.</param>
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>"""
 
   do csvProvTy.AddXmlDoc helpText
   do csvProvTy.DefineStaticParameters(parameters, buildTypes)

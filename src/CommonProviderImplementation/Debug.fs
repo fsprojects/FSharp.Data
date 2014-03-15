@@ -214,7 +214,13 @@ module Debug =
                         printExpr false true args.Tail.Head
                         print "]"
                     elif mi.DeclaringType.IsGenericType && mi.DeclaringType.GetGenericTypeDefinition().Name = typeof<int option>.GetGenericTypeDefinition().Name then
-                        if args.IsEmpty then print "None"
+                        if args.IsEmpty then 
+                            match instance with
+                            | None -> print "None"
+                            | Some instance -> 
+                                printExpr false true instance
+                                print "."
+                                print <| mi.Name.Substring("get_".Length)
                         else 
                           print "Some "
                           printExpr false true args.Head

@@ -2,14 +2,19 @@
 
 open System
 open System.IO
+open System.Net
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
 
+let runningOnMono = Type.GetType("Mono.Runtime") <> null
+
 let private (++) a b = Path.Combine(a,b)
 
 let private referenceAssembliesPath = 
-    Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
+    if runningOnMono
+    then "/Library/Frameworks/Mono.framework/Versions/CurrentVersion/lib/mono/"
+    else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
     ++ "Reference Assemblies" 
     ++ "Microsoft" 
 
@@ -114,6 +119,7 @@ let init (cfg : TypeProviderConfig) =
 
     if not initialized then
         initialized <- true
+        WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
     

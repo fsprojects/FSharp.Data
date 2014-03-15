@@ -4,8 +4,7 @@ open System
 open System.Globalization
 open FSharp.Data.Runtime
 
-/// [omit]
-/// Static helper methods called from the generated code
+/// Static helper methods called from the generated code for working with text
 type TextRuntime = 
 
   /// Returns CultureInfo matching the specified culture string

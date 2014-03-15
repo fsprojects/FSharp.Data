@@ -205,8 +205,8 @@ module AssemblyReplacer =
 
   let private replaceUnionCase asmMappings typeCache (uci : UnionCaseInfo) exprs =
     replaceLazy asmMappings (lazy (Expr.NewUnionCase (uci, exprs)), getAssemblies uci.DeclaringType) (fun toAsm ->
-      let t = getType toAsm uci.DeclaringType asmMappings typeCache                
-      let constructorMethod = t.GetMethod("New"+uci.Name)
+      let t = getType toAsm uci.DeclaringType asmMappings typeCache
+      let constructorMethod = t.GetMethod(uci.Name)
       let constructorMethod =
         if constructorMethod = null then 
           // property FSharpOption<T>.get_None()

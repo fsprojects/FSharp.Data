@@ -13,8 +13,8 @@ You can see the version history [here](RELEASE_NOTES.md).
 - Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
+    * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
     * [![TeamCity build status](http://teamcity.codebetter.com/app/rest/builds/buildType:\(id:bt1184\)/statusIcon)](http://teamcity.codebetter.com/viewType.html?buildTypeId=bt1184)
-    * [![AppVeyor build status](https://ci-beta.appveyor.com/api/projects/status/72r4hc3m1jpkvm2u)](https://ci-beta.appveyor.com/project/ovatsus/fsharp-data-855)
   * Mono: Run *build.sh*
     * [![Travis build status](https://travis-ci.org/fsharp/FSharp.Data.png)](https://travis-ci.org/fsharp/FSharp.Data)
 
@@ -22,30 +22,24 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 - VS2012 compiling to FSharp.Core 4.3.0.0
 - VS2012 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
+- Mono F# 3.0 compiling to FSharp.Core 4.3.0.0
+- Mono F# 3.0 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - VS2013 compiling to FSharp.Core 4.3.0.0
 - VS2013 compiling to FSharp.Core 4.3.1.0
 - VS2013 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - VS2013 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
 - VS2013 compiling to FSharp.Core 3.3.1.0 (PCL profile 7)
-- Mono F# 3.0 compiling to FSharp.Core 4.3.0.0
 - Mono F# 3.1 compiling to FSharp.Core 4.3.0.0
 - Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
-
-## Not currently working or not tested, but we want to support:
-
-- Mono F# 3.0 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - Mono F# 3.1 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
-- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7)
+- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7) - __currently not working correctly__
 
 ## Documentation 
 
-One of the key benefits of this library is that it comes with a comprehensive documentation. The documentation is 
-automatically generated from `*.fsx` files in [the content folder][2]. If you find a typo, please submit a pull request! 
- - [F# Data Library home page][3] with more information about the library, contributions etc.
- - [F# Data Library documentation][4] with links to pages that document individual type providers 
-   (CSV, XML, JSON and WorldBank) as well as for other public types available in FSharp.Data.dll. 
-
+This library is that it comes with comprehensive documentation. The documentation is 
+automatically generated from `*.fsx` files in [the content folder][2] and from the comments in the code. If you find a typo, please submit a pull request! 
+ - [F# Data Library home page][3] with more information about the library, contributions, etc.
  - The samples from the documentation are included as part of `FSharp.Data.Tests.sln`, make sure you build the
 solution before trying out the samples to ensure that all needed packages are installed.
 
@@ -62,4 +56,3 @@ The library is available under Apache 2.0. For more information see the [License
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
  [3]: http://fsharp.github.io/FSharp.Data/
- [4]: http://fsharp.github.io/FSharp.Data/fsharpdata.html

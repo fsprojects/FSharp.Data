@@ -42,10 +42,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     
     let getSpecFromSamples samples = 
 
-      let inferedType = 
-        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (*allowEmptyValues*)false (NameUtils.singularize rootName) sampleJson ]
+      let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
+        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (NameUtils.singularize rootName) sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
   
+      using (IO.logTime "TypeGeneration" sample) <| fun _ ->
+
       let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
       let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
 
@@ -56,9 +58,8 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun reader -> 
           result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
-    generateConstructors "JSON" sample sampleIsList
-                         parseSingle parseList getSpecFromSamples 
-                         version this cfg replacer resolutionFolder false
+    generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
+                 version this cfg replacer resolutionFolder typeName
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
@@ -69,12 +70,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
   let helpText = 
-    """<summary>Typed representation of a JSON document</summary>
-       <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document</param>
+    """<summary>Typed representation of a JSON document.</summary>
+       <param name='Sample'>Location of a JSON sample file or a string containing a sample JSON document.</param>
        <param name='SampleIsList'>If true, sample should be a list of individual samples for the inference.</param>
-       <param name='RootName'>The name to be used to the root type. Defaults to 'Root'.</param>
+       <param name='RootName'>The name to be used to the root type. Defaults to `Root`.</param>
        <param name='Culture'>The culture used for parsing numbers and dates.</param>
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>"""
 
   do jsonProvTy.AddXmlDoc helpText
   do jsonProvTy.DefineStaticParameters(parameters, buildTypes)

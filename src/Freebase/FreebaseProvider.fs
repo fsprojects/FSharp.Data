@@ -46,7 +46,7 @@ module List =
 /// Find the handles in the Freebase type provider runtime DLL. 
 type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
 
-    let runtimeAssembly, _, replacer = AssemblyResolver.init config
+    let asm, version, replacer = AssemblyResolver.init config
 
     member val FreebaseDataContextType =     typeof<FreebaseDataContext>     |> replacer.ToRuntime
     member val IFreebaseDataContextType =    typeof<IFreebaseDataContext>    |> replacer.ToRuntime
@@ -58,20 +58,23 @@ type internal FreebaseRuntimeInfo (config : TypeProviderConfig) =
     member val FreebaseDomainCategoryType =  typeof<RFreebaseDomainCategory> |> replacer.ToRuntime
     member val IFreebaseDomainCategoryType = typeof<IFreebaseDomainCategory> |> replacer.ToRuntime
 
-    member this.RuntimeAssembly = runtimeAssembly
+    member this.RuntimeAssembly = asm
+    member this.RuntimeVersion = version
 
 type internal DomainId = KnownDomain of FreebaseId | UnknownDomain
 
 /// This is the Freebase type provider.    
 [<TypeProvider>]
 type public FreebaseTypeProvider(config : TypeProviderConfig) as this = 
-    inherit TypeProviderForNamespaces()
+    inherit DisposableTypeProviderForNamespaces()
 
     let fbRuntimeInfo = FreebaseRuntimeInfo(config)
 
     /// Root namespace of Freebase types
     let rootNamespace = "FSharp.Data"
     let createTypes(apiKey, serviceUrl, rootTypeName, numIndividuals, useUnits, usePluralize, snapshotDate, useLocalCache, allowQueryEvaluateOnClientSide, useRefinedTypesForItems) = 
+
+        ProviderHelpers.getOrCreateProvidedType this rootTypeName fbRuntimeInfo.RuntimeVersion FreebaseRequests.cacheDuration <| fun () ->
 
         let fb = new FreebaseQueries(apiKey, serviceUrl, "FreebaseSchema", snapshotDate, useLocalCache)
         let fbSchema = new FreebaseSchemaConnection(fb)
@@ -485,36 +488,46 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
 
         /// Populate the root type (FreebaseData) with properties, one for each Freebase domain. Also include the DomainObjects 
         /// and DataTypes classes.
-        do theServiceType.AddMembers <|
+        do theServiceType.AddMembersDelayed (fun () -> 
             let domainCategories = getDomainCategories()
-            [ for domainCategory in domainCategories do
-                if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
-                  if not (domainCategory.DomainCategoryId.Id.StartsWith("/user/")) &&
-                     not (domainCategory.Domains |> Array.forall (fun c -> c.DomainId.Id.StartsWith("/user/"))) then
-                    let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
-                    let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
-                    t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                    t.AddMembersDelayed(fun () -> 
-                        [ for domainInfo in domainCategory.Domains do
-                            if not domainInfo.DomainHidden then 
-                              let domainName = domainInfo.DomainName
-                              let domainTypeName = typeNameForDomainObjects domainName
-                              let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
-                              let propertyName = tidyName domainName
-                              let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
-                                                        GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
-                              pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
-                              yield pi]) 
-                    theDomainObjectsClass.AddMember t
-                    let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
-                                             GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
-                    p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
-                    yield p ]            
+            try
+                [ for domainCategory in domainCategories do
+                    if domainCategory.Domains |> Array.exists (fun c -> not c.DomainHidden) then 
+                      if not (domainCategory.DomainCategoryId.Id.StartsWith("/user/")) &&
+                         not (domainCategory.Domains |> Array.forall (fun c -> c.DomainId.Id.StartsWith("/user/"))) then
+                        let domainCategoryName = domainCategory.Name.Replace("&amp;", "and")
+                        let t = ProvidedTypeDefinition(domainCategoryName,baseType=Some fbRuntimeInfo.FreebaseDomainCategoryType,HideObjectMethods=true)
+                        t.AddXmlDoc (xmlDoc (sprintf "Represents the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                        t.AddMembersDelayed(fun () -> 
+                            [ for domainInfo in domainCategory.Domains do
+                                if not domainInfo.DomainHidden then 
+                                  let domainName = domainInfo.DomainName
+                                  let domainTypeName = typeNameForDomainObjects domainName
+                                  let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
+                                  let propertyName = tidyName domainName
+                                  let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
+                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
+                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
+                                  yield pi]) 
+                        theDomainObjectsClass.AddMember t
+                        let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
+                                                 GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
+                        p.AddXmlDocDelayed (fun () -> xmlDoc (sprintf "Contains the objects of the domain category '%s' defined in the web data store organized by type" domainCategory.Name))
+                        yield p ]
+                with e -> 
+                    let errorMessage = e.Message
+                    let propertyName = 
+                        match e with
+                        | :? FreebaseWebException as e when e.Domain = "usageLimits" && e.Reason = "keyInvalid" -> "Invalid API Key"
+                        | _ -> "Error"
+                    let errorProp = ProvidedProperty(propertyName, typeof<string>, GetterCode = (fun _ -> <@@ failwith errorMessage @@>))
+                    errorProp.AddXmlDoc errorMessage
+                    [errorProp] )
 
         theServiceTypesClass.AddMembers [theServiceType; theDomainObjectsClass ]
 
         let theRootType = ProvidedTypeDefinition(fbRuntimeInfo.RuntimeAssembly,rootNamespace,rootTypeName,baseType=Some typeof<obj>, HideObjectMethods=true)
-        theRootType.AddXmlDoc "Contains data and types drawn from the web data store. See www.freebase.com for terms and conditions."
+        theRootType.AddXmlDoc "<summary>Typed representation of Freebase data. See http://www.freebase.com for terms and conditions.</summary>"
         theRootType.AddMembers [ theServiceTypesClass  ]
         theRootType.AddMembersDelayed (fun () -> 
             [ yield ProvidedMethod ("GetDataContext", [], theServiceType, IsStaticMethod=true,
@@ -544,16 +557,16 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
     let allowQueryEvaluateOnClientSideParam   = ProvidedStaticParameter("AllowLocalQueryEvaluation",      typeof<bool>, defaultAllowQueryEvaluateOnClientSide)
     let useRefinedTypesForItemsParam = ProvidedStaticParameter("UseRefinedTypes",      typeof<bool>, defaultUseRefinedTypesForItems)
 
-    let helpText = "<summary>Typed representation of Freebase data with additional configuration parameters</summary>
-                    <param name='Key'>The API key for the MQL metadata service (default: " + defaultApiKey + ")</param>
-                    <param name='ServiceUrl'>The service URL for the MQL metadata service (default: " + defaultServiceUrl + ")</param>
-                    <param name='NumIndividuals'>The maximum number of sample individuals for each Freebase type (default: " + string defaultNumIndividuals + ")</param>
-                    <param name='UseUnitsOfMeasure'>Use the unit-of-measure annotations from the data source metadata (default: " + sprintf "%b" defaultUseUnits + ")</param>
-                    <param name='Pluralize'>Use adhoc rules to pluralize the names of types when forming names of collections (default: " + sprintf "%b" defaultPluralize + ")</param>
-                    <param name='SnapshotDate'>Use a snapshot of the web data store at the given date and/or time in ISO8601 format, e.g., 2012-01-18, 2012-09-15T21:11:32. A value of 'now' indicates the compile time of the code. (default: no snapshot)</param>
-                    <param name='LocalCache'>Use a persistent local cache for schema requests. Also provides the default for whether a persistent local cache is used at runtime. A per-session cache is always used for schema data but it will not persist if this is set to 'false'. (default: true)</param>
-                    <param name='AllowLocalQueryEvaluation'>Allow local evalution of some parts of a query. If false, then an exception will be raised if a query can't be evaluated fully on the server. If true, data sets may be implicitly brought to the client for processing. (default: " + (sprintf "%b" defaultAllowQueryEvaluateOnClientSide) + ")</param>
-                    <param name='UseRefinedTypes'>Use refined types for individual entities. (default: " + (sprintf "%b" defaultUseRefinedTypesForItems) + ")</param>"
+    let helpText = "<summary>Typed representation of Freebase data with additional configuration parameters. See http://www.freebase.com for terms and conditions.</summary>
+                    <param name='Key'>The API key for the MQL metadata service.</param>
+                    <param name='ServiceUrl'>The service URL for the MQL metadata service (default: `" + defaultServiceUrl + "`).</param>
+                    <param name='NumIndividuals'>The maximum number of sample individuals for each Freebase type (default: `" + string defaultNumIndividuals + "`).</param>
+                    <param name='UseUnitsOfMeasure'>Use the unit-of-measure annotations from the data source metadata (default: " + sprintf "%b" defaultUseUnits + ").</param>
+                    <param name='Pluralize'>Use adhoc rules to pluralize the names of types when forming names of collections (default: " + sprintf "%b" defaultPluralize + ").</param>
+                    <param name='SnapshotDate'>Use a snapshot of the web data store at the given date and/or time in ISO8601 format, e.g., 2012-01-18, 2012-09-15T21:11:32. A value of `now` indicates the compile time of the code. (default: no snapshot).</param>
+                    <param name='LocalCache'>Use a persistent local cache for schema requests. Also provides the default for whether a persistent local cache is used at runtime. A per-session cache is always used for schema data but it will not persist if this is set to false (default: true).</param>
+                    <param name='AllowLocalQueryEvaluation'>Allow local evalution of some parts of a query. If false, then an exception will be raised if a query can't be evaluated fully on the server. If true, data sets may be implicitly brought to the client for processing (default: " + (sprintf "%b" defaultAllowQueryEvaluateOnClientSide) + ").</param>
+                    <param name='UseRefinedTypes'>Use refined types for individual entities (default: " + (sprintf "%b" defaultUseRefinedTypesForItems) + ").</param>"
     do paramFreebaseType.AddXmlDoc(helpText)
     do paramFreebaseType.DefineStaticParameters([apiKeyParam;serviceUrlParam;numIndividualsParam;useUnitsParam;pluralizeParam;snapshotDateParam;localCacheParam;allowQueryEvaluateOnClientSideParam;useRefinedTypesForItemsParam], fun typeName providerArgs -> 
           let apiKey = (providerArgs.[0] :?> string)

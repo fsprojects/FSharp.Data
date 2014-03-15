@@ -4,7 +4,7 @@ Contributing to F# Data
 This page should provide you with some basic information if you're thinking about
 contributing to the F# Data package. It gives a brief summary of the library 
 structure, how type providers are written and how the F# Data library handles 
-multi-targeting (to make the providers available for Desktop, Silverlight as well
+multi-targeting (to make the providers available for Desktop as well
 as Portable libraries).
 
  * This page can be edited by sending a pull request to F# Data on GitHub, so
@@ -24,14 +24,11 @@ that group the projects in the main logical groups:
  * **FSharp.Data.sln** contains the main projects that implement the F# Data
    functionality (such as runtime and design-time type provider libraries).
 
- * **FSharp.Data.ExtraPlatforms.sln** contains the equivalent projects of `FSharp.Data.sln` 
-   but targeting additional platforms such as Portable Class Libraries.
-
  * **FSharp.Data.Tests.sln** is a library with tests for F# Data and it also contains
    the content of this web site (as `*.fsx` and `*.md`) files. Look here if you want
    to edit the documentation!
 
-## Projects and multi-targetting
+## Projects and multi-targeting
 
 One problem with developing type providers is supporting multiple versions of the .NET 
 platform. Type providers consist of two components:
@@ -47,12 +44,11 @@ platform. Type providers consist of two components:
    (that are mapped to runtime components by the compiler).
 
 To support multiple targets, we need a _runtime component_ for every single target
-(Silverlight, .NET 4.0 and Portable profile). However, we only need one _design time_
+(.NET 4.0, Portable profile 47 and Portable profile 7). However, we only need one _design time_
 component, because that is always going to be executed on desktop .NET in Visual Studio
-or MonoDevelop. (Well, the truth is that we actually need another _design time_ version
-for Silverlight to support the [tryfsharp.org](http://tryfsharp.org) web site...)
+or Xamarin Studio.
 
-So, there are 2 versions of _runtime_ components and 1 version of _design time_ 
+So, there are 3 versions of _runtime_ components and 1 version of _design time_ 
 components. At the moment, this is done by having separate project file for each
 component, but they share the same files - the project just defines some symbols that
 are then used to include/exclude parts that are not available on certain platforms
@@ -61,8 +57,8 @@ using `#if`.
 If you open `FSharp.Data.sln`, you'll see the following projects for _runtime components_:
 
  * **FSharp.Data** - the desktop .NET 4.0 version
- * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targetting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)
- * **FSharp.Data.Portable7** - F# portable library version (Profile 7 targetting desktop .NET 4.5 and Windows 8)
+ * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targeting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)
+ * **FSharp.Data.Portable7** - F# portable library version (Profile 7 targeting desktop .NET 4.5 and Windows 8)
  
 The _design time_ components are in the following project:
 
@@ -105,11 +101,15 @@ two files (and possibly some additional helpers).
 
 ## Source code
 
+### Debugging
+
+To debug the type generation, the best way is to change `FSharp.Data.DesignTime` project to a Console application, rename `Test.fsx` to `Test.fs` and hit the Run command in the IDE, setting the breakpoints where you need them. This will invoke all the type providers manually without locking the files in Visual Studio / Xamarin Studio. You'll also see in the console output the complete dump of the generated types and expressions. This is also the process used for the signature tests.
+
 ### Assembly replacer
 
 Generating code in type providers (see e.g. `JsonGenerator.fs`) is a bit tricky, because 
 the generated code needs to contain references to the appropriate runtime assembly 
-(Silverlight, Desktop or Portable profile). This is particularly tricky When using F# quotations 
+(Desktop or Portable profile). This is particularly tricky When using F# quotations 
 to produce the generated code. If the source code contains `<@@ foo.Bar @@>`, then the 
 quoation has a direct reference to the type of `foo` from the current assembly.
 
@@ -168,12 +168,12 @@ The documentation for the F# Data library is automatically generated using the
 `*.md` (Markdown with embedded code snippets) and `*.fsx` files (F# script file with 
 embedded Markdown documentation) to a nice HTML documentation.
 
- * The code for all the documents can be found in the `samples` directory
-   [on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/samples). If you 
+ * The code for all the documents can be found in the `content` directory
+   [on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/docs/content). If you 
    find a bug or add a new feature, make sure you document it!
 
  * Aside from direct documentation for individual types, there is also a `tutorials` folder
-   ([on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/samples/tutorials)) where
+   ([on GitHub](https://github.com/fsharp/FSharp.Data/tree/master/docs/content/tutorials)) where
    you can add additional samples and tutorials that show some interesting aspects of F# Data.
 
  * If you want to build the documentation, simply run the `build.fsx` script
