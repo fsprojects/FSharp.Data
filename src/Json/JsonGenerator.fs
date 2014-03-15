@@ -149,9 +149,9 @@ module JsonTypeBuilder =
 
     // to nameclash property names
     let makeUnique = NameUtils.uniqueGenerator NameUtils.nicePascalName
-    makeUnique "JsonValue" |> ignore
+    makeUnique "JsonValue" |> ignore    
 
-    objectTy.AddMembers
+    let members =
       [ for tag, multiplicity, inferedType in types ->
 
           let result = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
@@ -165,19 +165,32 @@ module JsonTypeBuilder =
           // be optional). For multiple occurrences, generate method
           match multiplicity with 
           | InferedMultiplicity.OptionalSingle ->
-              ProvidedProperty(makeUnique propName, 
-                               typedefof<option<_>>.MakeGenericType [| result.ConvertedType |], 
-                               GetterCode = codeGenerator multiplicity result tag.Code)
+              let unique = makeUnique propName
+              ProvidedProperty(unique,typedefof<option<_>>.MakeGenericType [| result.ConvertedType |],GetterCode = codeGenerator multiplicity result tag.Code),
+              ProvidedParameter(unique,result.ConvertedType,false,true)
           | InferedMultiplicity.Single ->
-              ProvidedProperty(makeUnique propName, 
+              let unique = makeUnique propName
+              ProvidedProperty(unique, 
                                result.ConvertedType, 
-                               GetterCode = codeGenerator multiplicity result tag.Code)
+                               GetterCode = codeGenerator multiplicity result tag.Code),
+              ProvidedParameter(unique,result.ConvertedType)
           | InferedMultiplicity.Multiple ->
-              ProvidedProperty(makeUnique (NameUtils.pluralize tag.NiceName),
+              let name = makeUnique (NameUtils.pluralize tag.NiceName)
+              ProvidedProperty(name,
                                result.ConvertedType.MakeArrayType(), 
-                               GetterCode = codeGenerator multiplicity result tag.Code)
+                               GetterCode = codeGenerator multiplicity result tag.Code),
+              ProvidedParameter(name,result.ConvertedType.MakeArrayType())
+
       ]
 
+    let (properties,parameters) = List.unzip members
+    objectTy.AddMembers properties
+
+    let ctor = ProvidedConstructor parameters
+    ctor.InvokeCode <- fun args ->
+        <@@ () @@> 
+
+    objectTy.AddMember ctor
     objectTy
 
   /// Recursively walks over inferred type information and 
@@ -238,52 +251,84 @@ module JsonTypeBuilder =
         makeUnique "JsonValue" |> ignore
 
         // Add all record fields as properties
-        for prop in props do
+        let members = 
+            [for prop in props ->
   
-          let propResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)true (*optionalityHandledByParent*)true prop.Type
-          let propName = prop.Name
-          let optionalityHandledByProperty = propResult.ConversionCallingType <> JsonDocument
+              let propResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)true (*optionalityHandledByParent*)true prop.Type
+              let propName = prop.Name
+              let optionalityHandledByProperty = propResult.ConversionCallingType <> JsonDocument
 
-          let getter = fun (Singleton jDoc) -> 
+              let getter = fun (Singleton jDoc) -> 
 
-            if optionalityHandledByProperty then 
+                if optionalityHandledByProperty then 
 
-              let jDoc = ctx.Replacer.ToDesignTime jDoc
-              propResult.GetConverter ctx <|
-                if propResult.ConversionCallingType = JsonValueOptionAndPath then
-                  <@@ JsonRuntime.TryGetPropertyUnpackedWithPath(%%jDoc, propName) @@>
-                else
-                  <@@ JsonRuntime.TryGetPropertyUnpacked(%%jDoc, propName) @@>
-          
-            elif prop.Type.IsOptional then
-              
-              match propResult.Converter with
-              | Some _ ->
-                  //TODO: not covered in tests
-                  ctx.JsonRuntimeType?ConvertOptionalProperty (propResult.ConvertedTypeErased ctx) (jDoc, propName, propResult.ConverterFunc ctx) :> Expr
-
-              | None ->
                   let jDoc = ctx.Replacer.ToDesignTime jDoc
-                  ctx.Replacer.ToRuntime <@@ JsonRuntime.TryGetPropertyPacked(%%jDoc, propName) @@>
+                  propResult.GetConverter ctx <|
+                    if propResult.ConversionCallingType = JsonValueOptionAndPath then
+                      <@@ JsonRuntime.TryGetPropertyUnpackedWithPath(%%jDoc, propName) @@>
+                    else
+                      <@@ JsonRuntime.TryGetPropertyUnpacked(%%jDoc, propName) @@>
           
-            else
+                elif prop.Type.IsOptional then
+              
+                  match propResult.Converter with
+                  | Some _ ->
+                      //TODO: not covered in tests
+                      ctx.JsonRuntimeType?ConvertOptionalProperty (propResult.ConvertedTypeErased ctx) (jDoc, propName, propResult.ConverterFunc ctx) :> Expr
 
-              let jDoc = ctx.Replacer.ToDesignTime jDoc
-              propResult.GetConverter ctx <|
-                match prop.Type with
-                | InferedType.Collection _ 
-                | InferedType.Heterogeneous _ 
-                | InferedType.Top 
-                | InferedType.Null -> <@@ JsonRuntime.GetPropertyPackedOrNull(%%jDoc, propName) @@>
-                | _ -> <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
+                  | None ->
+                      let jDoc = ctx.Replacer.ToDesignTime jDoc
+                      ctx.Replacer.ToRuntime <@@ JsonRuntime.TryGetPropertyPacked(%%jDoc, propName) @@>
+          
+                else
 
-          let convertedType = 
-            if prop.Type.IsOptional && not optionalityHandledByProperty 
-            then typedefof<option<_>>.MakeGenericType propResult.ConvertedType
-            else propResult.ConvertedType
+                  let jDoc = ctx.Replacer.ToDesignTime jDoc
+                  propResult.GetConverter ctx <|
+                    match prop.Type with
+                    | InferedType.Collection _ 
+                    | InferedType.Heterogeneous _ 
+                    | InferedType.Top 
+                    | InferedType.Null -> <@@ JsonRuntime.GetPropertyPackedOrNull(%%jDoc, propName) @@>
+                    | _ -> <@@ JsonRuntime.GetPropertyPacked(%%jDoc, propName) @@>
 
-          objectTy.AddMember <| ProvidedProperty(makeUnique prop.Name, convertedType, GetterCode = getter)
-        
+              let convertedType = 
+                if prop.Type.IsOptional && not optionalityHandledByProperty 
+                then typedefof<option<_>>.MakeGenericType propResult.ConvertedType
+                else propResult.ConvertedType
+
+              let name = makeUnique prop.Name
+              ProvidedProperty(name, convertedType, GetterCode = getter),
+              ProvidedParameter(prop.Name,propResult.ConvertedType)
+               ]
+        let properties, parameters = List.unzip members
+        objectTy.AddMembers properties
+
+        let ctor = ProvidedConstructor parameters
+        ctor.InvokeCode <- fun args -> 
+            let rtJsonDocType = ctx.Replacer.ToRuntime(typeof<JsonDocument>)
+            let rtJsonValType = ctx.Replacer.ToRuntime(typeof<JsonValue>)
+            let jdocCreate    = rtJsonDocType.GetMethods(BindingFlags.Static ||| BindingFlags.Public) |> Array.find(fun mi -> mi.Name = "Create" )
+            let objectCreate  = rtJsonValType.GetMethods(BindingFlags.Static ||| BindingFlags.Public) |> Array.find(fun mi -> mi.Name = "NewObject" )
+            let convert = rtJsonDocType.GetMethods(BindingFlags.Static ||| BindingFlags.Public)
+                          |> Array.find(fun mi -> mi.Name = "toJsonValue")
+            let arr = Expr.NewArray(typedefof<string * JsonValue>.MakeGenericType([|typeof<string>; rtJsonValType|]), 
+                        args |> List.mapi (fun i a -> Expr.NewTuple([Expr.Value parameters.[i].Name; 
+                                                                     Expr.Call(convert,[Expr.Coerce(a,typeof<obj>)])])))
+            let mapCreate = 
+                Expr.Call(
+                    System.AppDomain.CurrentDomain.GetAssemblies()
+                    |> Array.find( fun a -> a.FullName.StartsWith "FSharp.Core")
+                    |> fun a -> 
+                        let a = ctx.Replacer.ToRuntime(a.GetType("Microsoft.FSharp.Collections.MapModule"))
+                        let m = a.GetMethod("OfArray")
+                        m.MakeGenericMethod([|typeof<string>;rtJsonValType|])
+                    ,[arr])
+
+            // this is effectively : JsonDocument.Create(JsonValue.Object(Map.ofArray([|paramName * JsonValue; paramName * JsonValue; ... |])))
+            ctx.Replacer.ToRuntime(Expr.Call(jdocCreate,[Expr.Call(objectCreate,[mapCreate]);Expr.Coerce(Expr.Value "",typeof<string>)]))
+
+        objectTy.AddMember ctor
+
         objectTy
 
     | InferedType.Collection types -> getOrCreateType ctx inferedType <| fun () ->

@@ -22,7 +22,7 @@ type IJsonDocument =
     abstract Path : string
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-    abstract CreateNew : value:JsonValue * pathIncrement:string -> IJsonDocument
+    abstract CreateNew : value:JsonValue * pathIncrement:string -> IJsonDocument    
 
 /// [omit]
 /// Underlying representation of the generated JSON types
@@ -37,6 +37,28 @@ type JsonDocument =
     member x.Path = x.Path
     member x.CreateNew(value, pathIncrement) = 
         JsonDocument.Create(value, x.Path + pathIncrement)
+
+  static member public toJsonValue (value:obj) = // todo: this function should sit in helper class
+    let f g = function None -> JsonValue.Null | Some v -> g v
+    if value = null then JsonValue.Null else
+    match value with
+    | :? string            as v -> JsonValue.String(v) 
+    | :? option<string>    as v -> f JsonValue.String v
+    | :? DateTime          as v -> JsonValue.String(v.ToString())  // todo: culture?
+    | :? option<DateTime>  as v -> f (fun (dt:DateTime) -> dt.ToString() |> JsonValue.String) v
+    | :? int               as v -> JsonValue.Number(decimal v)
+    | :? option<int>       as v -> f (decimal >> JsonValue.Number ) v
+    | :? int64             as v -> JsonValue.Number(decimal v)
+    | :? option<int64>     as v -> f (decimal >> JsonValue.Number ) v
+    | :? float             as v -> JsonValue.Number(decimal v)
+    | :? option<float>     as v -> f (decimal >> JsonValue.Number ) v
+    | :? decimal           as v -> JsonValue.Number(v)
+    | :? option<decimal>   as v -> f JsonValue.Number v
+    | :? bool              as v -> JsonValue.Boolean(v)
+    | :? option<bool>      as v -> f JsonValue.Boolean v
+    | :? (IJsonDocument[]) as v -> JsonValue.Array([|for i in v -> i.JsonValue|])
+    | :? option<IJsonDocument[]> as v -> f (fun (v:IJsonDocument[]) -> [|for i in v -> i.JsonValue|] |> JsonValue.Array ) v
+    | _ -> failwith "unsupported type encountered"
 
   member x.JsonValue = x.Json
 
@@ -85,6 +107,7 @@ type JsonRuntime =
 
   // --------------------------------------------------------------------------------------
   // json option -> type
+
 
   static member ConvertString(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)true (TextRuntime.GetCulture cultureStr))
