@@ -43,46 +43,60 @@ type JsonValue =
   member x.ToString saveOptions = 
 
     let rec serialize (sb:StringBuilder) indentation json =
+      let append (str:string) = 
+        sb.Append str 
+        |> ignore
+      let appendFormat (format:string) (str:string) = 
+        sb.AppendFormat(format, str) 
+        |> ignore
       let newLine plus =
         if saveOptions = JsonSaveOptions.None then
           sb.AppendLine() |> ignore
-          System.String(' ', indentation + plus) |> sb.Append |> ignore
+          System.String(' ', indentation + plus) |> append
       match json with
-      | Null -> sb.Append "null"
-      | Boolean b -> sb.Append(if b then "true" else "false")
-      | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
-      | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
+      | Null -> append "null"
+      | Boolean b -> append (if b then "true" else "false")
+      | Number number -> append <| number.ToString(CultureInfo.InvariantCulture)
+      | Float number -> append <| number.ToString(CultureInfo.InvariantCulture)
       | String s -> 
-          sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
+          append "\""
+          append <| JavaScriptStringEncode s
+          append "\""
       | Object properties -> 
           let isNotFirst = ref false
-          sb.Append "{"  |> ignore
+          append "{"
           let getOrder = function
             | JsonValue.Array _ -> 2
             | JsonValue.Object _ -> 1
             | _ -> 0
           for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
-            if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
+            if !isNotFirst 
+            then append "," 
+            else isNotFirst := true
             newLine 2
             if saveOptions = JsonSaveOptions.None then
-              sb.AppendFormat("\"{0}\": ", k) |> ignore
+              appendFormat "\"{0}\": " k
             else
-              sb.AppendFormat("\"{0}\":", k) |> ignore
-            serialize sb (indentation + 2) v |> ignore
+              appendFormat "\"{0}\":" k
+            serialize sb (indentation + 2) v
           newLine 0
-          sb.Append "}"
+          append "}"
       | Array elements -> 
           let isNotFirst = ref false
-          sb.Append "[" |> ignore
+          append "["
           for element in elements do
-            if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
+            if !isNotFirst 
+            then append ","
+            else isNotFirst := true
             newLine 2
-            serialize sb (indentation + 2) element |> ignore
+            serialize sb (indentation + 2) element
           if elements.Length > 0 then 
             newLine 0
-          sb.Append "]"
+          append "]"
 
-    (serialize (new StringBuilder()) 0 x).ToString()
+    let sb = StringBuilder()
+    serialize sb 0 x
+    sb.ToString()
 
 // --------------------------------------------------------------------------------------
 // JSON parser

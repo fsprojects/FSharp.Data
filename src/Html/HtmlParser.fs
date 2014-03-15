@@ -20,11 +20,60 @@ type HtmlAttribute =
 
 type HtmlElement =
     | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
-    | HtmlCharRef of string
     | HtmlText of string
     | HtmlScript of string
     | HtmlStyle of string
     | HtmlComment of string
+    
+    override x.ToString() =
+
+        let rec serialize (sb:StringBuilder) indentation html =
+            let append (str:string) = sb.Append str |> ignore
+            let newLine plus =
+                sb.AppendLine() |> ignore
+                System.String(' ', indentation + plus) |> append
+            match html with
+            | HtmlElement(name, attributes, elements) ->
+                append "<"
+                append name
+                for attr in attributes do
+                    append " "
+                    append attr.Name
+                    append "='"
+                    append attr.Value
+                    append "'"
+                if elements.IsEmpty
+                then append "/>"
+                else
+                    append ">"
+                    newLine 2
+                    for element in elements do
+                        serialize sb (indentation + 2) element
+                    newLine 0
+                    append "</"
+                    append name
+                    append ">"
+            | HtmlText str -> append str
+            | HtmlScript str -> 
+                append "<script>"
+                newLine 0
+                append str
+                newLine 0
+                append "</script>"
+            | HtmlStyle str -> 
+                append "<style>"
+                newLine 0
+                append str
+                newLine 0
+                append "</style>"
+            | HtmlComment str -> 
+                append "<!-- "
+                append str
+                append " -->"
+        
+        let sb = StringBuilder()
+        serialize sb 0 x
+        sb.ToString()
 
 type HtmlDocument = 
     | HtmlDocument of docType:string * elements:HtmlElement list
@@ -87,7 +136,6 @@ module private HtmlParser =
         | Tag of bool * string * HtmlAttribute list
         | TagEnd of string
         | Text of string
-        | CharRef of string
         | Script of string
         | Style of string
         | Comment of string
@@ -207,13 +255,14 @@ module private HtmlParser =
                 | None -> ref
                  
             let result : HtmlToken = 
+                let content = (!x.Content).ToString()
                 match !x.InsertionMode with
-                | DefaultMode -> Text((!x.Content).ToString())
-                | ScriptMode -> Script((!x.Content).ToString())
-                | StyleMode -> Style((!x.Content).ToString())
-                | CharRefMode -> Text((!x.Content).ToString().Trim() |> substituteCharRef)
-                | CommentMode -> Comment((!x.Content).ToString())
-                | DocTypeMode -> DocType((!x.Content).ToString())
+                | DefaultMode -> Text content
+                | ScriptMode -> Script content
+                | StyleMode -> Style content
+                | CharRefMode -> Text (substituteCharRef (content.Trim()))
+                | CommentMode -> Comment content
+                | DocTypeMode -> DocType content
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
             result
@@ -364,7 +413,7 @@ module private HtmlParser =
     let parse reader =
         let rec parse' docType elements tokens =
             match tokens with
-            | DocType(dt) :: rest -> parse' dt elements rest
+            | DocType dt :: rest -> parse' dt elements rest
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
@@ -372,14 +421,13 @@ module private HtmlParser =
                 let dt, tokens, content = parse' docType [] rest
                 let e = HtmlElement(name.ToLower(), attributes, content)
                 parse' dt (e :: elements) tokens
-            | TagEnd(_) :: rest -> docType, rest, (elements |> List.rev)
-            | Text(cont) :: rest ->
-                if cont <> " " && (String.IsNullOrEmpty(cont) || String.IsNullOrWhiteSpace(cont))
+            | TagEnd _ :: rest -> docType, rest, (elements |> List.rev)
+            | Text cont :: rest ->
+                if cont <> " " && (String.IsNullOrWhiteSpace cont)
                 then parse' docType elements rest
-                else parse' docType (HtmlText(cont) :: elements) rest
+                else parse' docType (HtmlText(cont.Trim()) :: elements) rest
             | Script(cont) :: rest -> parse' docType (HtmlScript(cont.Trim()) :: elements) rest
             | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
-            | CharRef(cont) :: rest -> parse' docType (HtmlCharRef(cont.Trim()) :: elements) rest
             | Style(cont) :: rest -> parse' docType (HtmlStyle(cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)

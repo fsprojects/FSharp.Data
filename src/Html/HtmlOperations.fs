@@ -14,13 +14,8 @@ let name (x:HtmlElement) =
 
 let tryGetAttribute (name : string) (x : HtmlElement) =
     match x with
-    | HtmlElement(_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
+    | HtmlElement(_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
     | _ -> None
-
-let getAttributeAs parseF name (e:HtmlElement) = 
-    match tryGetAttribute name e with
-    | Some(HtmlAttribute(_, colspan)) -> parseF(colspan)
-    | None -> 0
 
 let children (x:HtmlElement) =
     match x with
@@ -53,9 +48,9 @@ let rec getValue = function
     | HtmlElement(_,_, content) ->
         String.Join(" ", seq { for e in content do
                                     match e with
-                                    | HtmlText(text) -> yield text.Trim()
+                                    | HtmlText text -> yield text
                                     | elem -> yield getValue elem })
-    | HtmlText(text) | HtmlCharRef(text) -> text.Trim()
+    | HtmlText text -> text
     | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
 
 let tryGetBody (HtmlDocument(_, es)) = 
@@ -76,7 +71,6 @@ let write (writer:TextWriter) (element:HtmlElement) =
         
     let rec writeElement (writer:XmlWriter) = function
         | HtmlText(c) -> writer.WriteValue(c)
-        | HtmlCharRef(c) -> writer.WriteValue(c)
         | HtmlComment(c) -> writer.WriteComment(c)
         | HtmlScript(c) -> writer.WriteCData(c)
         | HtmlStyle(c) -> writer.WriteCData(c)

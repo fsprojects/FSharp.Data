@@ -1988,6 +1988,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Up An' Atom: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Up An' Atom Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0fr9c5")
 
+    member VA-185: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+VA-185 Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0_s4p63")
+
     member VC-137C SAM 26000: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+VC-137C SAM 26000 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/02rwg9x")
 

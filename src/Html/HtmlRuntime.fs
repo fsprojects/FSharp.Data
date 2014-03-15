@@ -2,6 +2,7 @@
 
 open System
 open System.ComponentModel
+open System.Globalization
 open System.IO
 open System.Text
 open System.Xml
@@ -33,7 +34,7 @@ type HtmlTable =
 
 // --------------------------------------------------------------------------------------
 
-/// [omit]
+/// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
 
     open Html
@@ -53,23 +54,27 @@ module HtmlRuntime =
                 | [] -> defaultName
                 | h :: _ -> (getValue h)
 
-                    
+    let private tryGetIntAttribute name x = 
+        defaultArg (tryGetAttribute name x 
+                    |> Option.map (function HtmlAttribute(_, value) -> value)
+                    |> Option.bind (TextConversions.AsInteger CultureInfo.InvariantCulture)) 0
+
     let private parseTable index (table:HtmlElement) = 
-        let rows = getElementsNamed ["tr"] table |> List.mapi (fun i r -> i,r)
+        let rows = getElementsNamed ["tr"] table |> List.mapi (fun i r -> i, r)
         if rows.Length <= 1 
         then None
         else
-            let cells = rows |> List.map (snd >> getElementsNamed ["td"; "th"] >> List.mapi (fun i e -> (i,e)))
+            let cells = rows |> List.map (snd >> getElementsNamed ["td"; "th"] >> List.mapi (fun i e -> i, e))
             let width = (cells |> List.maxBy (fun x -> x.Length)).Length
             let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
-            for (rowindex, _) in rows do
-                for (colindex, cell) in cells.[rowindex] do
-                    let rowSpan, colSpan = (max 1 (getAttributeAs Int32.Parse "rowspan" cell)) - 1,(max 1 (getAttributeAs Int32.Parse "colspan" cell)) - 1
+            for rowindex, _ in rows do
+                for colindex, cell in cells.[rowindex] do
+                    let rowSpan, colSpan = (max 1 (tryGetIntAttribute "rowspan" cell)) - 1, (max 1 (tryGetIntAttribute "colspan" cell)) - 1
                     let data =
                         let getContents contents = String.Join(" ", List.map getValue contents).Trim()
                         match cell with
-                        | HtmlElement("td",_,contents) -> Cell (false, getContents contents)
-                        | HtmlElement("th",_,contents) -> Cell (true, getContents contents)
+                        | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
+                        | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
                         | _ -> Empty
                     let col_i = ref colindex
                     while res.[rowindex].[!col_i] <> Empty do incr(col_i)
@@ -82,26 +87,14 @@ module HtmlRuntime =
                 then res.[0] |> Array.map (fun x -> x.Data)
                 else res.[0] |> Array.map (fun x -> x.Data) //Humm!! need better semantics around detecting headers
                     
-            {
-                Name = (getName ("Table_" + (string index)) table)
-                Headers = headers
-                Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data))
-            } |> Some
+            { Name = (getName ("Table_" + (string index)) table)
+              Headers = headers
+              Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
     
-    let private getTables (HtmlDocument(_, doc)) =
-        let tableElements = List.collect (getElementsNamed ["table"]) doc
-        tableElements |> List.mapi parseTable
-
-    let parseTables (str:string) =
-        str
-        |> HtmlDocument.Parse
-        |> getTables
-        |> List.choose id
-    
-    let loadTables (reader:TextReader) =
-        reader
-        |> HtmlDocument.Load
-        |> getTables
+    let getTables (HtmlDocument(_, doc)) =
+        doc
+        |> List.collect (getElementsNamed ["table"]) 
+        |> List.mapi parseTable 
         |> List.choose id
 
     let formatTable (data:HtmlTable) =
@@ -127,7 +120,8 @@ type TypedHtmlDocument internal (tables:Map<string,HtmlTable>) =
     static member Create(reader:TextReader) =
         let tables = 
             reader 
-            |> HtmlRuntime.loadTables
+            |> HtmlDocument.Load
+            |> HtmlRuntime.getTables
             |> List.map (fun table -> table.Name, table) 
             |> Map.ofList
         TypedHtmlDocument tables
