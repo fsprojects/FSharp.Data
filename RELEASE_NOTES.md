@@ -181,3 +181,6 @@
 * Performance improvements.
 * Fixed bugs in naming algorithm.
 * Improved documentation.
+
+#### 2.0.1 - March 14 2014
+* Fixed Freebase provider throwing exceptions in the absense of network connectivity even when not used.
