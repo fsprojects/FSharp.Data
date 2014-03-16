@@ -184,3 +184,7 @@
 
 #### 2.0.1 - March 14 2014
 * Fixed Freebase provider throwing exceptions in the absense of network connectivity even when not used.
+
+#### 2.0.2 - March 16 2014
+* Always send User-Agent and Accept headers when making requests in the type providers.
+* Added support for creating typed JSON objects in JsonProvider.

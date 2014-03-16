@@ -231,7 +231,7 @@ type JsonRuntime =
     then Some (mapping.Invoke doc)
     else None
 
-  static member ToJsonValue (cultureInfo:CultureInfo) (value:obj) = 
+  static member private ToJsonValue (cultureInfo:CultureInfo) (value:obj) = 
     let f g = function None -> JsonValue.Null | Some v -> g v
     if value = null then 
         JsonValue.Null
@@ -261,11 +261,13 @@ type JsonRuntime =
         | :? option<JsonValue>       as v -> f id v
         | _ -> failwithf "Can't create JsonValue from %A" value
 
+  // Creates a scalar JsonValue and wraps it in a json document
   static member CreateObject(value:obj, cultureStr) = 
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = JsonRuntime.ToJsonValue cultureInfo value
     JsonDocument.Create(json, "")
 
+  // Creates a JsonValue.Object and wraps it in a json document
   static member CreateObject(properties, cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = 
@@ -275,6 +277,7 @@ type JsonRuntime =
       |> JsonValue.Object
     JsonDocument.Create(json, "")
 
+  // Creates a scalar JsonValue.Array and wraps it in a json document
   static member CreateArray(elements:obj[], cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = 

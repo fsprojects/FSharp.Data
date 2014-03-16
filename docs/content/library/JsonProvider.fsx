@@ -178,7 +178,7 @@ it to print the result only when the data point is available.
 
 ## Parsing Twitter stream
 
-In our last example, we look how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
+We now look on how to parse tweets returned by the [Twitter API](http://dev.twitter.com/).
 Tweets are quite heterogeneous, so we infer the structure from a _list_ of inputs rather than from 
 just a single input. To do that, we use the file [`data/TwitterStream.json`](../data/TwitterStream.json) 
 (containing a list of tweets) and pass an optional parameter `SampleIsList=true` which tells the 
@@ -199,6 +199,62 @@ tweet. As you can see, the `tweet.User` property has been inferred as optional (
 tweet might not have an author?) so we unsafely get the value using the `Value` property.
 The `RetweetCount` and `Text` properties may be also missing, so we also access them unsafely.
 
+## Getting and creating GitHub issues
+
+In this example we will now also create JSON in addition to consuming it.
+Let's start by listing the 5 most recently updated open issues in the FSharp.Data repo.
+
+*)
+
+type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+
+let topRecentlyUpdatedIssues = 
+    GitHub.GetSamples()
+    |> Seq.filter (fun issue -> issue.State = "open")
+    |> Seq.sortBy (fun issue -> System.DateTime.Now - issue.UpdatedAt)
+    |> Seq.truncate 5
+
+for issue in topRecentlyUpdatedIssues do
+    printfn "#%d %s" issue.Number issue.Title
+
+(**
+
+And now let's create a new issue. We look into the documentation at http://developer.github.com/v3/issues/#create-an-issue and we see that
+we need to post a JSON value similar to this:
+
+*)
+
+[<Literal>]
+let issueSample = """
+{
+  "title": "Found a bug",
+  "body": "I'm having a problem with this.",
+  "assignee": "octocat",
+  "milestone": 1,
+  "labels": [
+    "Label1",
+    "Label2"
+  ]
+}
+"""
+
+(** 
+
+This JSON is different from what we got for each issue in the previous API call, so we'll define a new type based on this sample,
+create an instance, and send a POST request:
+
+*)
+
+type GitHubIssue = JsonProvider<issueSample, RootName="issue">
+
+let newIssue = GitHubIssue.Issue(assignee = "fsharp", 
+                                 body = "This is a test issue created in F# Data documentation", 
+                                 labels = [| |], 
+                                 milestone = 0, 
+                                 title = "Test issue")
+newIssue.JsonValue.Post "https://api.github.com/repos/fsharp/FSharp.Data/issues"
+
+(**
 ## Related articles
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
