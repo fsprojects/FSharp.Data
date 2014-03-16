@@ -1,14 +1,14 @@
 class JsonProvider
     static member AsyncGetSamples: () -> JsonProvider+Root[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "GitHub.json"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "GitHub.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri), f)
 
     static member GetSamples: () -> JsonProvider+Root[]
-    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "GitHub.json")), ""), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "GitHub.json")), ""), new Func<_,_>(id)))
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StreamReader(stream)) :> TextReader), ""), new Func<_,_>(id)))
@@ -17,13 +17,53 @@ class JsonProvider
     JsonRuntime.ConvertArray(JsonDocument.Create(reader, ""), new Func<_,_>(id)))
 
     static member Load: uri:string -> JsonProvider+Root[]
-    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)), ""), new Func<_,_>(id)))
+    JsonRuntime.ConvertArray(JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri)), ""), new Func<_,_>(id)))
 
     static member Parse: text:string -> JsonProvider+Root[]
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : assignee:JsonValue -> body:string option -> closedAt:JsonValue -> comments:int -> commentsUrl:string -> createdAt:System.DateTime -> eventsUrl:string -> htmlUrl:string -> id:int -> labels:JsonProvider+Label[] -> labelsUrl:string -> milestone:JsonValue -> number:int -> pullRequest:JsonProvider+PullRequest -> state:string -> title:string -> updatedAt:System.DateTime -> url:string -> user:JsonProvider+User -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("assignee",
+                                 (assignee :> obj))
+                                ("body",
+                                 (body :> obj))
+                                ("closed_at",
+                                 (closedAt :> obj))
+                                ("comments",
+                                 (comments :> obj))
+                                ("comments_url",
+                                 (commentsUrl :> obj))
+                                ("created_at",
+                                 (createdAt :> obj))
+                                ("events_url",
+                                 (eventsUrl :> obj))
+                                ("html_url",
+                                 (htmlUrl :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("labels",
+                                 (labels :> obj))
+                                ("labels_url",
+                                 (labelsUrl :> obj))
+                                ("milestone",
+                                 (milestone :> obj))
+                                ("number",
+                                 (number :> obj))
+                                ("pull_request",
+                                 (pullRequest :> obj))
+                                ("state",
+                                 (state :> obj))
+                                ("title",
+                                 (title :> obj))
+                                ("updated_at",
+                                 (updatedAt :> obj))
+                                ("url",
+                                 (url :> obj))
+                                ("user",
+                                 (user :> obj)) |], "")
+
     member Assignee: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "assignee")
 
@@ -95,6 +135,14 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Label : FDR.IJsonDocument
+    new : color:JsonProvider+FloatOrString -> name:string -> url:string -> JsonProvider+Label
+    JsonRuntime.CreateObject([| ("color",
+                                 (color :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("url",
+                                 (url :> obj)) |], "")
+
     member Color: JsonProvider+FloatOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "color")
 
@@ -108,6 +156,14 @@ class JsonProvider+Label : FDR.IJsonDocument
 
 
 class JsonProvider+PullRequest : FDR.IJsonDocument
+    new : diffUrl:string option -> htmlUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
+    JsonRuntime.CreateObject([| ("diff_url",
+                                 (diffUrl :> obj))
+                                ("html_url",
+                                 (htmlUrl :> obj))
+                                ("patch_url",
+                                 (patchUrl :> obj)) |], "")
+
     member DiffUrl: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "diff_url"))
 
@@ -119,6 +175,40 @@ class JsonProvider+PullRequest : FDR.IJsonDocument
 
 
 class JsonProvider+User : FDR.IJsonDocument
+    new : avatarUrl:string -> eventsUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> gravatarId:System.Guid -> htmlUrl:string -> id:int -> login:string -> organizationsUrl:string -> receivedEventsUrl:string -> reposUrl:string -> starredUrl:string -> subscriptionsUrl:string -> type:string -> url:string -> JsonProvider+User
+    JsonRuntime.CreateObject([| ("avatar_url",
+                                 (avatarUrl :> obj))
+                                ("events_url",
+                                 (eventsUrl :> obj))
+                                ("followers_url",
+                                 (followersUrl :> obj))
+                                ("following_url",
+                                 (followingUrl :> obj))
+                                ("gists_url",
+                                 (gistsUrl :> obj))
+                                ("gravatar_id",
+                                 (gravatarId :> obj))
+                                ("html_url",
+                                 (htmlUrl :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("login",
+                                 (login :> obj))
+                                ("organizations_url",
+                                 (organizationsUrl :> obj))
+                                ("received_events_url",
+                                 (receivedEventsUrl :> obj))
+                                ("repos_url",
+                                 (reposUrl :> obj))
+                                ("starred_url",
+                                 (starredUrl :> obj))
+                                ("subscriptions_url",
+                                 (subscriptionsUrl :> obj))
+                                ("type",
+                                 (type :> obj))
+                                ("url",
+                                 (url :> obj)) |], "")
+
     member AvatarUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "avatar_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -185,6 +275,15 @@ class JsonProvider+User : FDR.IJsonDocument
 
 
 class JsonProvider+FloatOrString : FDR.IJsonDocument
+    new : number:float -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject((number :> obj), "")
+
+    new : string:string -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject((string :> obj), "")
+
+    new : () -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject(null, "")
+
     member Number: float option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertFloat("", "", Some t.JsonValue), Some t.JsonValue)))
 

@@ -30,7 +30,7 @@ let rec inferType cultureInfo parentName json =
   | JsonValue.Number _ -> InferedType.Primitive(typeof<decimal>, None, false)
   | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false)
   // More interesting types 
-  | JsonValue.Array ar -> StructuralInference.inferCollectionType (*allowEmptyValues*)false  (Seq.map (inferType cultureInfo (NameUtils.singularize parentName)) ar)
+  | JsonValue.Array ar -> StructuralInference.inferCollectionType (*allowEmptyValues*)false (Seq.map (inferType cultureInfo (NameUtils.singularize parentName)) ar)
   | JsonValue.Object o ->
       let name = 
         if String.IsNullOrEmpty parentName 

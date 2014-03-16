@@ -1,14 +1,14 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WikiData.json"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "WikiData.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri), f)
 
     static member GetSample: () -> JsonProvider+Root
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WikiData.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "WikiData.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -17,13 +17,23 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
 class JsonProvider+Root : FDR.IJsonDocument
+    new : address:JsonProvider+Address -> age:int -> firstName:string -> lastName:string -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("address",
+                                 (address :> obj))
+                                ("age",
+                                 (age :> obj))
+                                ("firstName",
+                                 (firstName :> obj))
+                                ("lastName",
+                                 (lastName :> obj)) |], "")
+
     member Address: JsonProvider+Address with get
     JsonRuntime.GetPropertyPacked(this, "address")
 
@@ -41,6 +51,16 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Address : FDR.IJsonDocument
+    new : city:string -> postalCode:int -> state:string -> streetAddress:string -> JsonProvider+Address
+    JsonRuntime.CreateObject([| ("city",
+                                 (city :> obj))
+                                ("postalCode",
+                                 (postalCode :> obj))
+                                ("state",
+                                 (state :> obj))
+                                ("streetAddress",
+                                 (streetAddress :> obj)) |], "")
+
     member City: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "city")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)

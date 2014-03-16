@@ -1,37 +1,53 @@
 class JsonProvider
-    static member AsyncGetSample: () -> JsonProvider+ArrayOrWorldBank async
+    static member AsyncGetSample: () -> JsonProvider+WorldBank async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WorldBank.json"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "WorldBank.json"), f)
 
-    static member AsyncLoad: uri:string -> JsonProvider+ArrayOrWorldBank async
+    static member AsyncLoad: uri:string -> JsonProvider+WorldBank async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri), f)
 
-    static member GetSample: () -> JsonProvider+ArrayOrWorldBank
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "WorldBank.json")), "")
+    static member GetSample: () -> JsonProvider+WorldBank
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "WorldBank.json")), "")
 
-    static member Load: stream:System.IO.Stream -> JsonProvider+ArrayOrWorldBank
+    static member Load: stream:System.IO.Stream -> JsonProvider+WorldBank
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
 
-    static member Load: reader:System.IO.TextReader -> JsonProvider+ArrayOrWorldBank
+    static member Load: reader:System.IO.TextReader -> JsonProvider+WorldBank
     JsonDocument.Create(reader, "")
 
-    static member Load: uri:string -> JsonProvider+ArrayOrWorldBank
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)), "")
+    static member Load: uri:string -> JsonProvider+WorldBank
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri)), "")
 
-    static member Parse: text:string -> JsonProvider+ArrayOrWorldBank
+    static member Parse: text:string -> JsonProvider+WorldBank
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-class JsonProvider+ArrayOrWorldBank : FDR.IJsonDocument
-    member Array: JsonProvider+WorldBank[] with get
+class JsonProvider+WorldBank : FDR.IJsonDocument
+    new : array:JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
+    JsonRuntime.CreateArray([| (array :> obj)
+                               (record :> obj) |], "")
+
+    member Array: JsonProvider+Record[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "", "Array"), new Func<_,_>(id)))
 
-    member Record: JsonProvider+WorldBank2 with get
-    JsonRuntime.GetArrayChildByTypeTag(this, "", "Record@WorldBank")
+    member Record: JsonProvider+Record2 with get
+    JsonRuntime.GetArrayChildByTypeTag(this, "", "Record")
 
 
-class JsonProvider+WorldBank : FDR.IJsonDocument
+class JsonProvider+Record : FDR.IJsonDocument
+    new : country:JsonProvider+Country -> date:int -> decimal:int -> indicator:JsonProvider+Country -> value:decimal option -> JsonProvider+Record
+    JsonRuntime.CreateObject([| ("country",
+                                 (country :> obj))
+                                ("date",
+                                 (date :> obj))
+                                ("decimal",
+                                 (decimal :> obj))
+                                ("indicator",
+                                 (indicator :> obj))
+                                ("value",
+                                 (value :> obj)) |], "")
+
     member Country: JsonProvider+Country with get
     JsonRuntime.GetPropertyPacked(this, "country")
 
@@ -50,7 +66,17 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "value"))
 
 
-class JsonProvider+WorldBank2 : FDR.IJsonDocument
+class JsonProvider+Record2 : FDR.IJsonDocument
+    new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
+    JsonRuntime.CreateObject([| ("page",
+                                 (page :> obj))
+                                ("pages",
+                                 (pages :> obj))
+                                ("per_page",
+                                 (perPage :> obj))
+                                ("total",
+                                 (total :> obj)) |], "")
+
     member Page: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "page")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -69,6 +95,12 @@ class JsonProvider+WorldBank2 : FDR.IJsonDocument
 
 
 class JsonProvider+Country : FDR.IJsonDocument
+    new : id:string -> value:string -> JsonProvider+Country
+    JsonRuntime.CreateObject([| ("id",
+                                 (id :> obj))
+                                ("value",
+                                 (value :> obj)) |], "")
+
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)

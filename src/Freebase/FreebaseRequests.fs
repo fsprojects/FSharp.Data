@@ -132,10 +132,13 @@ type FreebaseQueries(apiKey: string, serviceUrl:string, localCacheName: string, 
                 //printfn "post, content = '%s'" content
                 Http.RequestString(shortUrl,
                                    headers = [ XHTTPMethodOverride HttpMethod.Get
-                                               ContentType HttpContentTypes.FormValues ],
+                                               ContentType HttpContentTypes.FormValues
+                                               UserAgent "F# Data Freebase Type Provider"
+                                               HttpRequestHeaders.Accept HttpContentTypes.Json ],
                                    body = TextRequest content)
             else
-                Http.RequestString url
+                Http.RequestString(url, headers = [ UserAgent "F# Data Freebase Type Provider" 
+                                                    HttpRequestHeaders.Accept HttpContentTypes.Json ])
           try
             let resultText = 
                 try
