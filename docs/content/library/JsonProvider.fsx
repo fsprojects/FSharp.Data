@@ -257,8 +257,6 @@ newIssue.JsonValue.Post "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 (**
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
  * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
 

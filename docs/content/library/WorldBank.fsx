@@ -125,8 +125,6 @@ and then creates a single composed chart using `Chart.Combine`.
 
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) - The Data Science
    tutorial on Try F# uses the WorldBank type provider in numerous examples.
 *)
