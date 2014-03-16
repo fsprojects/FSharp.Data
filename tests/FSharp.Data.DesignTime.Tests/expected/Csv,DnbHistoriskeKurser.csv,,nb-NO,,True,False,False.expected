@@ -35,7 +35,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, false)
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "DnbHistoriskeKurser.csv")), ",", '"', true, false, false)
 
     static member AsyncGetSample: () -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -75,7 +75,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
                                                                         TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |])
                              CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "DnbHistoriskeKurser.csv"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "DnbHistoriskeKurser.csv"), f)
 
     static member AsyncLoad: uri:string -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -115,7 +115,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
                                                                         TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |])
                              CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" uri), f)
 
     static member GetSample: () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -153,7 +153,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "DnbHistoriskeKurser.csv")), ",", '"', true, false, false)
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "DnbHistoriskeKurser.csv")), ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -267,7 +267,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,t9,_,_ = row in t9)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,t10,_ = row in t10)))
                                                TextRuntime.ConvertStringBack(TextRuntime.GetOptionalValue((let _,_,_,_,_,_,_,_,_,_,t11 = row in t11))) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" uri)), ",", '"', true, false, false)
+    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" uri)), ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 

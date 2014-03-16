@@ -282,7 +282,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = asyncReadTextAtRuntime false "" "" uri
+    let! reader = asyncReadTextAtRuntime false "" "" "JSON" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
@@ -293,11 +293,17 @@ type JsonValue with
     |> Async.RunSynchronously
 
   /// Posts the JSON to the specified uri
-  member x.Post(uri:string) =  
+  member x.Post(uri:string, ?headers) =  
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
     Http.Request(
       uri,
       body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = [HttpRequestHeaders.ContentType HttpContentTypes.Json])
+      headers = headers)
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =
