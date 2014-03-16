@@ -495,6 +495,10 @@ let ``Can parse optional arrays``() =
     j.Ab.Persons.[0].Contacts.[0].Emails |> should equal [| |]
     j.Ab.Persons.[0].Contacts.[1].Emails.Length |> should equal 1
 
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
 type GitHub = JsonProvider<"Data/github.json", RootName="Issue">
 
 [<Test>]
@@ -506,7 +510,7 @@ let ``Can construct complex objects``() =
     let label2 = GitHub.Label(GitHub.FloatOrString("string"), "name", "url")
     let json = GitHub.Issue(JsonValue.Null, None, JsonValue.Null, 0, "comments_url", DateTime(2013,03,15), "events_url", "html_url", 1,
                             [| label1; label2 |], "labels_url", JsonValue.String "milestone", 2, pullRequest, "state", "title", DateTime(2013,03,16), "url", user)
-    json.JsonValue.ToString() |> should equal """{
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """{
   "assignee": null,
   "body": null,
   "closed_at": null,
@@ -558,5 +562,29 @@ let ``Can construct complex objects``() =
       "url": "url"
     }
   ]
-}"""
+}""")
 
+type HeterogeneousArray = JsonProvider<"""[8, 9, false, { "a": 3 }]""">
+
+[<Test>]
+let ``Can construct heterogeneous array``() =
+    let json = HeterogeneousArray.Root([| 8; 9 |], false, HeterogeneousArray.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  8,
+  9,
+  false,
+  {
+    "a": 3
+  }
+]""")
+
+type HeterogeneousArrayWithOptionals = JsonProvider<"""[ [{ "a": 3 }], [8, 9, false, { "a": 3 }] ]""", SampleIsList=true>
+
+[<Test>]
+let ``Can construct heterogeneous arrays with optionals``() =
+    let json = HeterogeneousArrayWithOptionals.Root([| |], None, HeterogeneousArrayWithOptionals.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  {
+    "a": 3
+  }
+]""")

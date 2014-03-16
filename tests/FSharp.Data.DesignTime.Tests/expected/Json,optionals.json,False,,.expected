@@ -111,20 +111,11 @@ class JsonProvider+HeterogeneousRecord : FDR.IJsonDocument
 
 
 class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.IJsonDocument
-    new : number:int -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateObject((number :> obj), "")
-
-    new : boolean:bool -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateObject((boolean :> obj), "")
-
-    new : arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateObject((arrays :> obj), "")
-
-    new : record:JsonProvider+HeterogeneousArray -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateObject((record :> obj), "")
-
-    new : () -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
-    JsonRuntime.CreateObject(null, "")
+    new : number:int -> boolean:bool -> arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+HeterogeneousArray -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
+    JsonRuntime.CreateArray([| (number :> obj)
+                               (boolean :> obj)
+                               (arrays :> obj)
+                               (record :> obj) |], "")
 
     member Arrays: JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] with get
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Array", new Func<_,_>(id)))
@@ -327,17 +318,10 @@ class JsonProvider+IntOrBooleanOrDateTime : FDR.IJsonDocument
 
 
 class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
-    new : numbers:int[] -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    JsonRuntime.CreateObject((numbers :> obj), "")
-
-    new : boolean:bool -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    JsonRuntime.CreateObject((boolean :> obj), "")
-
-    new : record:JsonProvider+HeterogeneousArray -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    JsonRuntime.CreateObject((record :> obj), "")
-
-    new : () -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
-    JsonRuntime.CreateObject(null, "")
+    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+HeterogeneousArray option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (record :> obj) |], "")
 
     member Boolean: bool option with get
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
@@ -350,17 +334,10 @@ class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
 
 
 class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
-    new : numbers:int[] -> JsonProvider+NumbersOrBooleanOrString
-    JsonRuntime.CreateObject((numbers :> obj), "")
-
-    new : boolean:bool -> JsonProvider+NumbersOrBooleanOrString
-    JsonRuntime.CreateObject((boolean :> obj), "")
-
-    new : string:string -> JsonProvider+NumbersOrBooleanOrString
-    JsonRuntime.CreateObject((string :> obj), "")
-
-    new : () -> JsonProvider+NumbersOrBooleanOrString
-    JsonRuntime.CreateObject(null, "")
+    new : numbers:int[] -> boolean:bool -> string:string option -> JsonProvider+NumbersOrBooleanOrString
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (string :> obj) |], "")
 
     member Boolean: bool with get
     let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Boolean")
@@ -374,17 +351,10 @@ class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
 
 
 class JsonProvider+NumbersOrBooleanOrB : FDR.IJsonDocument
-    new : numbers:int[] -> JsonProvider+NumbersOrBooleanOrB
-    JsonRuntime.CreateObject((numbers :> obj), "")
-
-    new : boolean:bool -> JsonProvider+NumbersOrBooleanOrB
-    JsonRuntime.CreateObject((boolean :> obj), "")
-
-    new : record:JsonProvider+HeterogeneousArray -> JsonProvider+NumbersOrBooleanOrB
-    JsonRuntime.CreateObject((record :> obj), "")
-
-    new : () -> JsonProvider+NumbersOrBooleanOrB
-    JsonRuntime.CreateObject(null, "")
+    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+HeterogeneousArray option -> JsonProvider+NumbersOrBooleanOrB
+    JsonRuntime.CreateArray([| (numbers :> obj)
+                               (boolean :> obj)
+                               (record :> obj) |], "")
 
     member Boolean: bool option with get
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Boolean", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
