@@ -42,7 +42,7 @@ class JsonProvider+Ab : FDR.IJsonDocument
 
 
 class JsonProvider+Person : FDR.IJsonDocument
-    new : contacts:JsonProvider+Contact[] -> emails:FDR.IJsonDocument[] -> phones:FDR.IJsonDocument[] -> JsonProvider+Person
+    new : contacts:JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
     JsonRuntime.CreateObject([| ("contacts",
                                  (contacts :> obj))
                                 ("emails",
@@ -61,11 +61,11 @@ class JsonProvider+Person : FDR.IJsonDocument
 
 
 class JsonProvider+Contact : FDR.IJsonDocument
-    new : emailCapability:int[] -> emailIMEnabled:bool[] -> emails:string[] -> phones:FDR.IJsonDocument[] -> JsonProvider+Contact
+    new : emailCapability:int[] -> emailImEnabled:bool[] -> emails:string[] -> phones:JsonValue[] -> JsonProvider+Contact
     JsonRuntime.CreateObject([| ("emailCapability",
                                  (emailCapability :> obj))
                                 ("emailIMEnabled",
-                                 (emailIMEnabled :> obj))
+                                 (emailImEnabled :> obj))
                                 ("emails",
                                  (emails :> obj))
                                 ("phones",

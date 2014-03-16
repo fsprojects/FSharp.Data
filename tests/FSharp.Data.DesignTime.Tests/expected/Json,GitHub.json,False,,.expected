@@ -24,41 +24,41 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : assignee:FDR.IJsonDocument -> body:string option -> closed_at:FDR.IJsonDocument -> comments:int -> comments_url:string -> created_at:System.DateTime -> events_url:string -> html_url:string -> id:int -> labels:JsonProvider+Label[] -> labels_url:string -> milestone:FDR.IJsonDocument -> number:int -> pull_request:JsonProvider+PullRequest -> state:string -> title:string -> updated_at:System.DateTime -> url:string -> user:JsonProvider+User -> JsonProvider+Root
+    new : assignee:JsonValue -> body:string option -> closedAt:JsonValue -> comments:int -> commentsUrl:string -> createdAt:System.DateTime -> eventsUrl:string -> htmlUrl:string -> id:int -> labels:JsonProvider+Label[] -> labelsUrl:string -> milestone:JsonValue -> number:int -> pullRequest:JsonProvider+PullRequest -> state:string -> title:string -> updatedAt:System.DateTime -> url:string -> user:JsonProvider+User -> JsonProvider+Root
     JsonRuntime.CreateObject([| ("assignee",
                                  (assignee :> obj))
                                 ("body",
                                  (body :> obj))
                                 ("closed_at",
-                                 (closed_at :> obj))
+                                 (closedAt :> obj))
                                 ("comments",
                                  (comments :> obj))
                                 ("comments_url",
-                                 (comments_url :> obj))
+                                 (commentsUrl :> obj))
                                 ("created_at",
-                                 (created_at :> obj))
+                                 (createdAt :> obj))
                                 ("events_url",
-                                 (events_url :> obj))
+                                 (eventsUrl :> obj))
                                 ("html_url",
-                                 (html_url :> obj))
+                                 (htmlUrl :> obj))
                                 ("id",
                                  (id :> obj))
                                 ("labels",
                                  (labels :> obj))
                                 ("labels_url",
-                                 (labels_url :> obj))
+                                 (labelsUrl :> obj))
                                 ("milestone",
                                  (milestone :> obj))
                                 ("number",
                                  (number :> obj))
                                 ("pull_request",
-                                 (pull_request :> obj))
+                                 (pullRequest :> obj))
                                 ("state",
                                  (state :> obj))
                                 ("title",
                                  (title :> obj))
                                 ("updated_at",
-                                 (updated_at :> obj))
+                                 (updatedAt :> obj))
                                 ("url",
                                  (url :> obj))
                                 ("user",
@@ -156,13 +156,13 @@ class JsonProvider+Label : FDR.IJsonDocument
 
 
 class JsonProvider+PullRequest : FDR.IJsonDocument
-    new : diff_url:string option -> html_url:string option -> patch_url:string option -> JsonProvider+PullRequest
+    new : diffUrl:string option -> htmlUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
     JsonRuntime.CreateObject([| ("diff_url",
-                                 (diff_url :> obj))
+                                 (diffUrl :> obj))
                                 ("html_url",
-                                 (html_url :> obj))
+                                 (htmlUrl :> obj))
                                 ("patch_url",
-                                 (patch_url :> obj)) |], "")
+                                 (patchUrl :> obj)) |], "")
 
     member DiffUrl: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "diff_url"))
@@ -175,35 +175,35 @@ class JsonProvider+PullRequest : FDR.IJsonDocument
 
 
 class JsonProvider+User : FDR.IJsonDocument
-    new : avatar_url:string -> events_url:string -> followers_url:string -> following_url:string -> gists_url:string -> gravatar_id:System.Guid -> html_url:string -> id:int -> login:string -> organizations_url:string -> received_events_url:string -> repos_url:string -> starred_url:string -> subscriptions_url:string -> type:string -> url:string -> JsonProvider+User
+    new : avatarUrl:string -> eventsUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> gravatarId:System.Guid -> htmlUrl:string -> id:int -> login:string -> organizationsUrl:string -> receivedEventsUrl:string -> reposUrl:string -> starredUrl:string -> subscriptionsUrl:string -> type:string -> url:string -> JsonProvider+User
     JsonRuntime.CreateObject([| ("avatar_url",
-                                 (avatar_url :> obj))
+                                 (avatarUrl :> obj))
                                 ("events_url",
-                                 (events_url :> obj))
+                                 (eventsUrl :> obj))
                                 ("followers_url",
-                                 (followers_url :> obj))
+                                 (followersUrl :> obj))
                                 ("following_url",
-                                 (following_url :> obj))
+                                 (followingUrl :> obj))
                                 ("gists_url",
-                                 (gists_url :> obj))
+                                 (gistsUrl :> obj))
                                 ("gravatar_id",
-                                 (gravatar_id :> obj))
+                                 (gravatarId :> obj))
                                 ("html_url",
-                                 (html_url :> obj))
+                                 (htmlUrl :> obj))
                                 ("id",
                                  (id :> obj))
                                 ("login",
                                  (login :> obj))
                                 ("organizations_url",
-                                 (organizations_url :> obj))
+                                 (organizationsUrl :> obj))
                                 ("received_events_url",
-                                 (received_events_url :> obj))
+                                 (receivedEventsUrl :> obj))
                                 ("repos_url",
-                                 (repos_url :> obj))
+                                 (reposUrl :> obj))
                                 ("starred_url",
-                                 (starred_url :> obj))
+                                 (starredUrl :> obj))
                                 ("subscriptions_url",
-                                 (subscriptions_url :> obj))
+                                 (subscriptionsUrl :> obj))
                                 ("type",
                                  (type :> obj))
                                 ("url",
@@ -275,8 +275,14 @@ class JsonProvider+User : FDR.IJsonDocument
 
 
 class JsonProvider+FloatOrString : FDR.IJsonDocument
-    new : Number:float option -> String:string option -> JsonProvider+FloatOrString
-    null
+    new : number:float -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject((number :> obj), "")
+
+    new : string:string -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject((string :> obj), "")
+
+    new : () -> JsonProvider+FloatOrString
+    JsonRuntime.CreateObject(null, "")
 
     member Number: float option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertFloat("", "", Some t.JsonValue), Some t.JsonValue)))

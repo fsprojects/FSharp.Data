@@ -43,9 +43,9 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
 
 
 class XmlProvider+BlahDataSomethingFoo : FDR.IJsonDocument
-    new : Something.Schema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
+    new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
     JsonRuntime.CreateObject([| ("Something.Schema",
-                                 (Something.Schema :> obj))
+                                 (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
 
@@ -66,9 +66,9 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
 
 
 class XmlProvider+BlahDataSomethingFoo3 : FDR.IJsonDocument
-    new : Something.Schema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
+    new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
     JsonRuntime.CreateObject([| ("Something.Schema",
-                                 (Something.Schema :> obj))
+                                 (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
 
@@ -90,11 +90,11 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.XmlElement
 
 
 class XmlProvider+Results : FDR.IJsonDocument
-    new : Something.Schema:string -> Query:string option -> XmlProvider+Results
+    new : somethingSchema:string -> query:string option -> XmlProvider+Results
     JsonRuntime.CreateObject([| ("Something.Schema",
-                                 (Something.Schema :> obj))
+                                 (somethingSchema :> obj))
                                 ("Query",
-                                 (Query :> obj)) |], "")
+                                 (query :> obj)) |], "")
 
     member Query: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "Query"))
@@ -105,11 +105,11 @@ class XmlProvider+Results : FDR.IJsonDocument
 
 
 class XmlProvider+Results2 : FDR.IJsonDocument
-    new : Query:string -> Something.Schema:string -> XmlProvider+Results2
+    new : query:string -> somethingSchema:string -> XmlProvider+Results2
     JsonRuntime.CreateObject([| ("Query",
-                                 (Query :> obj))
+                                 (query :> obj))
                                 ("Something.Schema",
-                                 (Something.Schema :> obj)) |], "")
+                                 (somethingSchema :> obj)) |], "")
 
     member Query: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Query")

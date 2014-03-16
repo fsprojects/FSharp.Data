@@ -25,6 +25,7 @@ type JsonGenerationContext =
     // to nameclash type names
     UniqueNiceName : string -> string 
     IJsonDocumentType : Type
+    JsonValueType : Type
     JsonRuntimeType : Type
     // the type that is used to represent documents (JsonDocument or ApiaryDocument)
     Representation : Type
@@ -39,9 +40,12 @@ type JsonGenerationContext =
       Replacer = replacer 
       UniqueNiceName = uniqueNiceName 
       IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
+      JsonValueType = replacer.ToRuntime typeof<JsonValue>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
       Representation = replacer.ToRuntime representation
       TypeCache = typeCache }
+  member x.MakeOptionType(typ:Type) = 
+    (x.Replacer.ToRuntime typedefof<option<_>>).MakeGenericType typ
 
 type JsonGenerationResult = 
     { ConvertedType : Type
@@ -103,6 +107,16 @@ module JsonTypeBuilder =
       Converter = None
       ConversionCallingType = JsonDocument }
 
+  let replaceJDocWithJValue (ctx:JsonGenerationContext) (typ:Type) = 
+    if typ = ctx.IJsonDocumentType then 
+        ctx.JsonValueType
+    elif typ.IsArray && typ.GetElementType() = ctx.IJsonDocumentType then 
+        ctx.JsonValueType.MakeArrayType()
+    elif typ.IsGenericType && typ.GetGenericArguments() = [| ctx.IJsonDocumentType |] then
+        typ.GetGenericTypeDefinition().MakeGenericType ctx.JsonValueType
+    else
+        typ
+
   /// Common code that is shared by code generators that generate 
   /// "Choice" type. This is parameterized by the types (choices) to generate,
   /// by functions that get the multiplicity and the type tag for each option
@@ -162,22 +176,29 @@ module JsonTypeBuilder =
               | InferedTypeTag.Record _ -> "Record"
               | _ -> tag.NiceName
           
-          let name, typ = 
-            match multiplicity with 
-            | InferedMultiplicity.OptionalSingle ->
-                makeUnique propName, typedefof<option<_>>.MakeGenericType [| result.ConvertedType |]
-            | InferedMultiplicity.Single ->
-                makeUnique propName, result.ConvertedType
-            | InferedMultiplicity.Multiple ->
-                makeUnique (NameUtils.pluralize tag.NiceName), result.ConvertedType.MakeArrayType()
+          let name, typ, constructorType = 
+              match multiplicity with 
+              | InferedMultiplicity.OptionalSingle ->
+                  makeUnique propName, ctx.MakeOptionType result.ConvertedType, replaceJDocWithJValue ctx result.ConvertedType
+              | InferedMultiplicity.Single ->
+                  makeUnique propName, result.ConvertedType, replaceJDocWithJValue ctx result.ConvertedType
+              | InferedMultiplicity.Multiple ->
+                  makeUnique (NameUtils.pluralize tag.NiceName), result.ConvertedType.MakeArrayType(), (replaceJDocWithJValue ctx result.ConvertedType).MakeArrayType()
 
           ProvidedProperty(name, typ, GetterCode = codeGenerator multiplicity result tag.Code),
-          ProvidedParameter(name, typ) ]
+          ProvidedParameter(NameUtils.niceCamelName name, constructorType) ]
 
     let properties, parameters = List.unzip members
     objectTy.AddMembers properties
 
-    let ctor = ProvidedConstructor(parameters, InvokeCode = fun _ -> <@@ () @@>)
+    let cultureStr = ctx.CultureStr
+    for param in parameters do
+        let ctor = ProvidedConstructor([param], InvokeCode = fun (Singleton arg) -> 
+            let arg = Expr.Coerce(arg, typeof<obj>)
+            ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateObject((%%arg:obj), cultureStr) @@>)
+        objectTy.AddMember ctor
+
+    let ctor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateObject(null :> obj, cultureStr) @@>)
     objectTy.AddMember ctor
 
     objectTy
@@ -282,21 +303,22 @@ module JsonTypeBuilder =
 
               let convertedType = 
                 if prop.Type.IsOptional && not optionalityHandledByProperty 
-                then typedefof<option<_>>.MakeGenericType propResult.ConvertedType
+                then ctx.MakeOptionType propResult.ConvertedType
                 else propResult.ConvertedType
 
               let name = makeUnique prop.Name
+              prop.Name,
               ProvidedProperty(name, convertedType, GetterCode = getter),
-              ProvidedParameter(prop.Name, propResult.ConvertedType) ]
+              ProvidedParameter(NameUtils.niceCamelName name, replaceJDocWithJValue ctx convertedType) ]
 
-        let properties, parameters = List.unzip members
+        let names, properties, parameters = List.unzip3 members
         objectTy.AddMembers properties
 
         let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
             let properties = 
                 Expr.NewArray(typeof<string * obj>, 
                               args 
-                              |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value parameters.[i].Name
+                              |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
                                                                        Expr.Coerce(a, typeof<obj>) ]))
             let cultureStr = ctx.CultureStr
             <@@ JsonRuntime.CreateObject(%%properties, cultureStr) @@>

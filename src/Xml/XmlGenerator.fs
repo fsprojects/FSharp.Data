@@ -135,7 +135,7 @@ module internal XmlTypeBuilder =
 
                 let typ = 
                     if optional 
-                    then typedefof<option<_>>.MakeGenericType result.ConvertedType
+                    then ctx.MakeOptionType result.ConvertedType
                     else result.ConvertedType
 
                 let conv = fun xml ->
@@ -189,8 +189,8 @@ module internal XmlTypeBuilder =
                     let result = generateXmlType ctx case
                     let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<XmlElement>)
                     ProvidedProperty(makeUnique (XName.Get(nameWithNS).LocalName),
-                                    typedefof<option<_>>.MakeGenericType [| result.ConvertedType |],
-                                    GetterCode = fun (Singleton xml) ->               
+                                     typedefof<option<_>>.MakeGenericType result.ConvertedType,
+                                     GetterCode = fun (Singleton xml) ->               
                         // XmlRuntime.ConvertAsName checks that the name of the current node
                         // has the required name and returns Some/None
                         let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
@@ -322,7 +322,7 @@ module internal XmlTypeBuilder =
                                                      xmlRuntime?ConvertOptional2 (result.ConvertedType.GenericTypeArguments.[0]) (xml, nameWithNS, convFunc))
                             else
                               ProvidedProperty(makeUnique names.[0], 
-                                               typedefof<option<_>>.MakeGenericType [| result.ConvertedType |],
+                                               typedefof<option<_>>.MakeGenericType result.ConvertedType,
                                                GetterCode = fun (Singleton xml) -> 
                                                    let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
                                                    xmlRuntime?ConvertOptional (result.ConvertedType) (xml, nameWithNS, convFunc))

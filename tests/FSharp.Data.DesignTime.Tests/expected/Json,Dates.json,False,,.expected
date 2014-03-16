@@ -24,11 +24,11 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : NoTimeZone:System.DateTime -> UtcTime:System.DateTime -> anniversary:System.DateTime -> birthdate:System.DateTime -> JsonProvider+Root
+    new : noTimeZone:System.DateTime -> utcTime:System.DateTime -> anniversary:System.DateTime -> birthdate:System.DateTime -> JsonProvider+Root
     JsonRuntime.CreateObject([| ("NoTimeZone",
-                                 (NoTimeZone :> obj))
+                                 (noTimeZone :> obj))
                                 ("UtcTime",
-                                 (UtcTime :> obj))
+                                 (utcTime :> obj))
                                 ("anniversary",
                                  (anniversary :> obj))
                                 ("birthdate",

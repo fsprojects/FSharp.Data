@@ -24,8 +24,14 @@ class JsonProvider
 
 
 class JsonProvider+ArrayOrWorldBank : FDR.IJsonDocument
-    new : Array:JsonProvider+WorldBank[] -> Record:JsonProvider+WorldBank2 -> JsonProvider+ArrayOrWorldBank
-    null
+    new : array:JsonProvider+WorldBank[] -> JsonProvider+ArrayOrWorldBank
+    JsonRuntime.CreateObject((array :> obj), "")
+
+    new : record:JsonProvider+WorldBank2 -> JsonProvider+ArrayOrWorldBank
+    JsonRuntime.CreateObject((record :> obj), "")
+
+    new : () -> JsonProvider+ArrayOrWorldBank
+    JsonRuntime.CreateObject(null, "")
 
     member Array: JsonProvider+WorldBank[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "", "Array"), new Func<_,_>(id)))
@@ -66,13 +72,13 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
 
 
 class JsonProvider+WorldBank2 : FDR.IJsonDocument
-    new : page:int -> pages:int -> per_page:int -> total:int -> JsonProvider+WorldBank2
+    new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+WorldBank2
     JsonRuntime.CreateObject([| ("page",
                                  (page :> obj))
                                 ("pages",
                                  (pages :> obj))
                                 ("per_page",
-                                 (per_page :> obj))
+                                 (perPage :> obj))
                                 ("total",
                                  (total :> obj)) |], "")
 

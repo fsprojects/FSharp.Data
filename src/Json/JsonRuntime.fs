@@ -231,7 +231,7 @@ type JsonRuntime =
     then Some (mapping.Invoke doc)
     else None
 
-  static member ToJsonValue (cultureInfo:CultureInfo) (value:obj) = 
+  static member ToJsonValue(value:obj, cultureInfo:CultureInfo) = 
     let f g = function None -> JsonValue.Null | Some v -> g v
     match value with
     | null                            -> JsonValue.Null
@@ -255,13 +255,22 @@ type JsonRuntime =
     | :? option<IJsonDocument>   as v -> f (fun (v:IJsonDocument) -> v.JsonValue) v
     | :? (IJsonDocument[])       as v -> JsonValue.Array [| for i in v -> i.JsonValue |]
     | :? option<IJsonDocument[]> as v -> f (fun (v:IJsonDocument[]) -> [| for i in v -> i.JsonValue|] |> JsonValue.Array) v
+    | :? JsonValue               as v -> v
+    | :? option<JsonValue>       as v -> f id v
+    | :? (JsonValue[])           as v -> JsonValue.Array v
+    | :? option<JsonValue[]>     as v -> f JsonValue.Array v
     | _ -> failwithf "Unsupported value: %A" value
+
+  static member CreateObject(value:obj, cultureStr) = 
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let json = JsonRuntime.ToJsonValue(value, cultureInfo)
+    JsonDocument.Create(json, "")
 
   static member CreateObject(properties, cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = 
       properties 
-      |> Array.map (fun (k, v:obj) -> k, JsonRuntime.ToJsonValue cultureInfo v)
+      |> Array.map (fun (k, v:obj) -> k, JsonRuntime.ToJsonValue(v, cultureInfo))
       |> Map.ofArray
       |> JsonValue.Object
     JsonDocument.Create(json, "")
