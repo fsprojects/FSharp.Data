@@ -34,7 +34,7 @@ type JsonValue =
   | String of string
   | Number of decimal
   | Float of float 
-  | Record of properties:(string*JsonValue)[]
+  | Record of properties:(string * JsonValue)[]
   | Array of elements:JsonValue[]
   | Boolean of bool
   | Null
@@ -81,18 +81,21 @@ type JsonValue =
 
     (serialize (new StringBuilder()) 0 x).ToString()
 
+/// [omit]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonValue =
 
-  /// Active Pattern to view a `JsonValue.Record of (string*JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// Active Pattern to view a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
   /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
   let (|Object|_|) x =
     match x with 
     | JsonValue.Record properties -> Map.ofArray properties |> Some
     | _ -> None
 
-  /// Constructor to view a `JsonValue.Record of (string*JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// Constructor to create a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
   /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
   let Object = Map.toArray >> JsonValue.Record 
 
 // --------------------------------------------------------------------------------------

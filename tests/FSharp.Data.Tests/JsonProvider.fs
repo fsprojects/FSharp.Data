@@ -511,57 +511,57 @@ let ``Can construct complex objects``() =
     let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
                             JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
     json.JsonValue.ToString() |> normalize |> should equal (normalize """{
-  "assignee": null,
-  "body": null,
-  "closed_at": null,
-  "comments": 2,
+  "url": "url",
+  "labels_url": "labelsUrl",
   "comments_url": "commentsUrl",
-  "created_at": "03/15/2013 00:00:00",
   "events_url": "eventsUrl",
   "html_url": "htmlUrl",
   "id": 0,
-  "labels": [
-    {
-      "color": 1.5,
-      "name": "name",
-      "url": "url"
-    },
-    {
-      "color": "string",
-      "name": "name",
-      "url": "url"
-    }
-  ],
-  "labels_url": "labelsUrl",
-  "milestone": null,
   "number": 1,
-  "pull_request": {
-    "diff_url": null,
-    "html_url": null,
-    "patch_url": null
-  },
-  "state": "state",
   "title": "title",
-  "updated_at": "03/16/2013 00:00:00",
-  "url": "url",
   "user": {
+    "login": "login",
+    "id": 0,
     "avatar_url": "avatarUrl",
-    "events_url": "eventsUrl",
+    "gravatar_id": "75b3e239-bf95-4fab-abe3-f2795d3c843b",
+    "url": "url",
+    "html_url": "htmlUrl",
     "followers_url": "folowersUrl",
     "following_url": "followingUrl",
     "gists_url": "gistsUrl",
-    "gravatar_id": "75b3e239-bf95-4fab-abe3-f2795d3c843b",
-    "html_url": "htmlUrl",
-    "id": 0,
-    "login": "login",
-    "organizations_url": "organizationsUrl",
-    "received_events_url": "receivedEventsUrl",
-    "repos_url": "reposUrl",
     "starred_url": "starredUrl",
     "subscriptions_url": "subscriptionsUrl",
-    "type": "type",
-    "url": "url"
-  }
+    "organizations_url": "organizationsUrl",
+    "repos_url": "reposUrl",
+    "events_url": "eventsUrl",
+    "received_events_url": "receivedEventsUrl",
+    "type": "type"
+  },
+  "labels": [
+    {
+      "url": "url",
+      "name": "name",
+      "color": 1.5
+    },
+    {
+      "url": "url",
+      "name": "name",
+      "color": "string"
+    }
+  ],
+  "state": "state",
+  "assignee": null,
+  "milestone": null,
+  "comments": 2,
+  "created_at": "03/15/2013 00:00:00",
+  "updated_at": "03/16/2013 00:00:00",
+  "closed_at": null,
+  "pull_request": {
+    "html_url": null,
+    "diff_url": null,
+    "patch_url": null
+  },
+  "body": null
 }""")
 
 type HeterogeneousArray = JsonProvider<"""[8, 9, false, { "a": 3 }]""">
