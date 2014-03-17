@@ -212,9 +212,15 @@ module internal XmlTypeBuilder =
                                                                                Expr.Coerce(a, typeof<obj>) ]))
                     let cultureStr = ctx.CultureStr
                     <@@ XmlRuntime.CreateObject(name, %%properties, cultureStr) @@>
-                    |> ctx.Replacer.ToRuntime
-                )
-                   
+                    |> ctx.Replacer.ToRuntime)
+
+            objectTy.AddMember <| 
+                ProvidedConstructor(
+                    [ProvidedParameter("xelement",ctx.Replacer.ToRuntime  typeof<XElement>)], 
+                    InvokeCode = fun args -> 
+                        let mi = (ctx.Replacer.ToRuntime  typeof<XmlRuntime>).GetMethod("CreateFromElement",BindingFlags.Static ||| BindingFlags.Public)                    
+                        Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)       
+
             { ConvertedType = objectTy
               Converter = ctx.Replacer.ToRuntime }
        
@@ -393,6 +399,12 @@ module internal XmlTypeBuilder =
                     <@@ XmlRuntime.CreateObject(name, %%properties, cultureStr) @@>
                     |> ctx.Replacer.ToRuntime
                 )
+            objectTy.AddMember <| 
+                ProvidedConstructor(
+                    [ProvidedParameter("xelement",ctx.Replacer.ToRuntime  typeof<XElement>)], 
+                    InvokeCode = fun args -> 
+                        let mi = (ctx.Replacer.ToRuntime  typeof<XmlRuntime>).GetMethod("CreateFromElement",BindingFlags.Static ||| BindingFlags.Public)                    
+                        Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)
 
             { ConvertedType = objectTy 
               Converter = ctx.Replacer.ToRuntime }

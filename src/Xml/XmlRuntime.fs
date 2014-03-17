@@ -126,6 +126,9 @@ type XmlRuntime =
         with _ -> None
     | None -> None
 
+  static member CreateFromElement(element:XElement) =
+    XmlElement.Create(element)
+
   static member CreateObject(name:string,properties:(string*obj)[], cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr // i dont know what to do with this
     let sb = Text.StringBuilder().AppendFormat("<{0}>",name)
