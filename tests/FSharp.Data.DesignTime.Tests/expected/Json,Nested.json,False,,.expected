@@ -33,15 +33,15 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Main : FDR.IJsonDocument
-    new : age:int -> firstName:string -> isCool:bool -> lastName:string -> JsonProvider+Main
-    JsonRuntime.CreateObject([| ("age",
-                                 (age :> obj))
-                                ("firstName",
+    new : firstName:string -> lastName:string -> age:int -> isCool:bool -> JsonProvider+Main
+    JsonRuntime.CreateObject([| ("firstName",
                                  (firstName :> obj))
-                                ("isCool",
-                                 (isCool :> obj))
                                 ("lastName",
-                                 (lastName :> obj)) |], "")
+                                 (lastName :> obj))
+                                ("age",
+                                 (age :> obj))
+                                ("isCool",
+                                 (isCool :> obj)) |], "")
 
     member Age: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "age")

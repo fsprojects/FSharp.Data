@@ -33,11 +33,11 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Author : FDR.IJsonDocument
-    new : age:int option -> name:string -> JsonProvider+Author
-    JsonRuntime.CreateObject([| ("age",
-                                 (age :> obj))
-                                ("name",
-                                 (name :> obj)) |], "")
+    new : name:string -> age:int option -> JsonProvider+Author
+    JsonRuntime.CreateObject([| ("name",
+                                 (name :> obj))
+                                ("age",
+                                 (age :> obj)) |], "")
 
     member Age: int option with get
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "age"))

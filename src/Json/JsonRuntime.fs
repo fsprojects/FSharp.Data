@@ -124,7 +124,7 @@ type JsonRuntime =
         else "a " + name
     match opt, originalValue with 
     | Some value, _ -> value
-    | None, Some ((JsonValue.Array _ | JsonValue.Object _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
+    | None, Some ((JsonValue.Array _ | JsonValue.Record _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
     | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
     | None, _ when typeof<'T> = typeof<float> -> Double.NaN |> unbox
     | None, None -> failwithf "'%s' is missing" path
@@ -194,7 +194,7 @@ type JsonRuntime =
     | InferedTypeTag.Collection -> 
         function JsonValue.Array _ -> true | _ -> false
     | InferedTypeTag.Record _ -> 
-        function JsonValue.Object _ -> true | _ -> false
+        function JsonValue.Record _ -> true | _ -> false
     | InferedTypeTag.Json -> 
         failwith "Json type not supported"
     | InferedTypeTag.Null -> 
@@ -267,14 +267,13 @@ type JsonRuntime =
     let json = JsonRuntime.ToJsonValue cultureInfo value
     JsonDocument.Create(json, "")
 
-  // Creates a JsonValue.Object and wraps it in a json document
+  // Creates a JsonValue.Record and wraps it in a json document
   static member CreateObject(properties, cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = 
       properties 
       |> Array.map (fun (k, v:obj) -> k, JsonRuntime.ToJsonValue cultureInfo v)
-      |> Map.ofArray
-      |> JsonValue.Object
+      |> JsonValue.Record
     JsonDocument.Create(json, "")
 
   // Creates a scalar JsonValue.Array and wraps it in a json document

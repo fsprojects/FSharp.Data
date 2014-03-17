@@ -24,29 +24,29 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : arrayOfObjects:JsonProvider+ArrayOfObject[] -> emptyArrayProperty:JsonValue[] -> emptyStringProperty:JsonValue -> heterogeneousArray:JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray -> heterogeneousRecords:JsonProvider+HeterogeneousRecord[] -> multipleElementsArrayProperty:int[] -> nullProperty:JsonValue -> oneElementArrayProperty:int[] -> optionalPrimitives:JsonProvider+OptionalPrimitive[] -> optionalRecords:JsonProvider+OptionalRecord[] -> recordProperty:JsonProvider+RecordProperty -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("arrayOfObjects",
-                                 (arrayOfObjects :> obj))
-                                ("emptyArrayProperty",
-                                 (emptyArrayProperty :> obj))
-                                ("emptyStringProperty",
-                                 (emptyStringProperty :> obj))
-                                ("heterogeneousArray",
-                                 (heterogeneousArray :> obj))
-                                ("heterogeneousRecords",
-                                 (heterogeneousRecords :> obj))
-                                ("multipleElementsArrayProperty",
-                                 (multipleElementsArrayProperty :> obj))
+    new : recordProperty:JsonProvider+RecordProperty -> nullProperty:JsonValue -> emptyStringProperty:JsonValue -> emptyArrayProperty:JsonValue[] -> oneElementArrayProperty:int[] -> multipleElementsArrayProperty:int[] -> arrayOfObjects:JsonProvider+ArrayOfObject[] -> optionalPrimitives:JsonProvider+OptionalPrimitive[] -> optionalRecords:JsonProvider+OptionalRecord[] -> heterogeneousArray:JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray -> heterogeneousRecords:JsonProvider+HeterogeneousRecord[] -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("recordProperty",
+                                 (recordProperty :> obj))
                                 ("nullProperty",
                                  (nullProperty :> obj))
+                                ("emptyStringProperty",
+                                 (emptyStringProperty :> obj))
+                                ("emptyArrayProperty",
+                                 (emptyArrayProperty :> obj))
                                 ("oneElementArrayProperty",
                                  (oneElementArrayProperty :> obj))
+                                ("multipleElementsArrayProperty",
+                                 (multipleElementsArrayProperty :> obj))
+                                ("arrayOfObjects",
+                                 (arrayOfObjects :> obj))
                                 ("optionalPrimitives",
                                  (optionalPrimitives :> obj))
                                 ("optionalRecords",
                                  (optionalRecords :> obj))
-                                ("recordProperty",
-                                 (recordProperty :> obj)) |], "")
+                                ("heterogeneousArray",
+                                 (heterogeneousArray :> obj))
+                                ("heterogeneousRecords",
+                                 (heterogeneousRecords :> obj)) |], "")
 
     member ArrayOfObjects: JsonProvider+ArrayOfObject[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "arrayOfObjects"), new Func<_,_>(id)))
@@ -83,13 +83,13 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+ArrayOfObject : FDR.IJsonDocument
-    new : heterogeneousArrayProperty:JsonProvider+NumbersOrBooleanOrString -> heterogeneousOptionalProperty:JsonProvider+IntOrBoolean -> heterogeneousProperty:JsonProvider+IntOrBooleanOrDateTime -> JsonProvider+ArrayOfObject
+    new : heterogeneousArrayProperty:JsonProvider+NumbersOrBooleanOrString -> heterogeneousProperty:JsonProvider+IntOrBooleanOrDateTime -> heterogeneousOptionalProperty:JsonProvider+IntOrBoolean -> JsonProvider+ArrayOfObject
     JsonRuntime.CreateObject([| ("heterogeneousArrayProperty",
                                  (heterogeneousArrayProperty :> obj))
-                                ("heterogeneousOptionalProperty",
-                                 (heterogeneousOptionalProperty :> obj))
                                 ("heterogeneousProperty",
-                                 (heterogeneousProperty :> obj)) |], "")
+                                 (heterogeneousProperty :> obj))
+                                ("heterogeneousOptionalProperty",
+                                 (heterogeneousOptionalProperty :> obj)) |], "")
 
     member HeterogeneousArrayProperty: JsonProvider+NumbersOrBooleanOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousArrayProperty")
@@ -111,7 +111,7 @@ class JsonProvider+HeterogeneousRecord : FDR.IJsonDocument
 
 
 class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.IJsonDocument
-    new : number:int -> boolean:bool -> arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+HeterogeneousArray -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
+    new : number:int -> boolean:bool -> arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
     JsonRuntime.CreateArray([| (number :> obj)
                                (boolean :> obj)
                                (arrays :> obj)
@@ -128,22 +128,22 @@ class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.IJsonDocument
     let value = JsonRuntime.GetArrayChildByTypeTag(this, "", "Number")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", Some value.JsonValue), Some value.JsonValue)
 
-    member Record: JsonProvider+HeterogeneousArray with get
+    member Record: JsonProvider+OptionalBecauseMissing with get
     JsonRuntime.GetArrayChildByTypeTag(this, "", "Record@heterogeneousArray")
 
 
 class JsonProvider+OptionalPrimitive : FDR.IJsonDocument
-    new : notOptional:int -> nullNotOptional:JsonValue -> optionalBecauseEmptyString:int option -> optionalBecauseMissing:int option -> optionalBecauseNull:int option -> JsonProvider+OptionalPrimitive
-    JsonRuntime.CreateObject([| ("notOptional",
-                                 (notOptional :> obj))
-                                ("nullNotOptional",
-                                 (nullNotOptional :> obj))
-                                ("optionalBecauseEmptyString",
-                                 (optionalBecauseEmptyString :> obj))
-                                ("optionalBecauseMissing",
+    new : optionalBecauseMissing:int option -> optionalBecauseNull:int option -> optionalBecauseEmptyString:int option -> notOptional:int -> nullNotOptional:JsonValue -> JsonProvider+OptionalPrimitive
+    JsonRuntime.CreateObject([| ("optionalBecauseMissing",
                                  (optionalBecauseMissing :> obj))
                                 ("optionalBecauseNull",
-                                 (optionalBecauseNull :> obj)) |], "")
+                                 (optionalBecauseNull :> obj))
+                                ("optionalBecauseEmptyString",
+                                 (optionalBecauseEmptyString :> obj))
+                                ("notOptional",
+                                 (notOptional :> obj))
+                                ("nullNotOptional",
+                                 (nullNotOptional :> obj)) |], "")
 
     member NotOptional: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "notOptional")
@@ -163,47 +163,47 @@ class JsonProvider+OptionalPrimitive : FDR.IJsonDocument
 
 
 class JsonProvider+OptionalRecord : FDR.IJsonDocument
-    new : notOptional:JsonProvider+HeterogeneousArray -> optionalBecauseEmptyString:JsonProvider+HeterogeneousArray option -> optionalBecauseMissing:JsonProvider+HeterogeneousArray option -> optionalBecauseNull:JsonProvider+HeterogeneousArray option -> JsonProvider+OptionalRecord
-    JsonRuntime.CreateObject([| ("notOptional",
-                                 (notOptional :> obj))
-                                ("optionalBecauseEmptyString",
-                                 (optionalBecauseEmptyString :> obj))
-                                ("optionalBecauseMissing",
+    new : optionalBecauseMissing:JsonProvider+OptionalBecauseMissing option -> optionalBecauseNull:JsonProvider+OptionalBecauseMissing option -> optionalBecauseEmptyString:JsonProvider+OptionalBecauseMissing option -> notOptional:JsonProvider+OptionalBecauseMissing -> JsonProvider+OptionalRecord
+    JsonRuntime.CreateObject([| ("optionalBecauseMissing",
                                  (optionalBecauseMissing :> obj))
                                 ("optionalBecauseNull",
-                                 (optionalBecauseNull :> obj)) |], "")
+                                 (optionalBecauseNull :> obj))
+                                ("optionalBecauseEmptyString",
+                                 (optionalBecauseEmptyString :> obj))
+                                ("notOptional",
+                                 (notOptional :> obj)) |], "")
 
-    member NotOptional: JsonProvider+HeterogeneousArray with get
+    member NotOptional: JsonProvider+OptionalBecauseMissing with get
     JsonRuntime.GetPropertyPacked(this, "notOptional")
 
-    member OptionalBecauseEmptyString: JsonProvider+HeterogeneousArray option with get
+    member OptionalBecauseEmptyString: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseEmptyString")
 
-    member OptionalBecauseMissing: JsonProvider+HeterogeneousArray option with get
+    member OptionalBecauseMissing: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseMissing")
 
-    member OptionalBecauseNull: JsonProvider+HeterogeneousArray option with get
+    member OptionalBecauseNull: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseNull")
 
 
 class JsonProvider+RecordProperty : FDR.IJsonDocument
-    new : boolProperty:bool -> dateProperty:System.DateTime -> decimalProperty:decimal -> floatProperty:float -> guidProperty:System.Guid -> int64Property:int64 -> intProperty:int -> stringProperty:string -> JsonProvider+RecordProperty
-    JsonRuntime.CreateObject([| ("boolProperty",
-                                 (boolProperty :> obj))
-                                ("dateProperty",
-                                 (dateProperty :> obj))
+    new : stringProperty:string -> intProperty:int -> int64Property:int64 -> decimalProperty:decimal -> floatProperty:float -> boolProperty:bool -> dateProperty:System.DateTime -> guidProperty:System.Guid -> JsonProvider+RecordProperty
+    JsonRuntime.CreateObject([| ("stringProperty",
+                                 (stringProperty :> obj))
+                                ("intProperty",
+                                 (intProperty :> obj))
+                                ("int64Property",
+                                 (int64Property :> obj))
                                 ("decimalProperty",
                                  (decimalProperty :> obj))
                                 ("floatProperty",
                                  (floatProperty :> obj))
+                                ("boolProperty",
+                                 (boolProperty :> obj))
+                                ("dateProperty",
+                                 (dateProperty :> obj))
                                 ("guidProperty",
-                                 (guidProperty :> obj))
-                                ("int64Property",
-                                 (int64Property :> obj))
-                                ("intProperty",
-                                 (intProperty :> obj))
-                                ("stringProperty",
-                                 (stringProperty :> obj)) |], "")
+                                 (guidProperty :> obj)) |], "")
 
     member BoolProperty: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolProperty")
@@ -238,16 +238,6 @@ class JsonProvider+RecordProperty : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-class JsonProvider+HeterogeneousArray : FDR.IJsonDocument
-    new : a:int -> JsonProvider+HeterogeneousArray
-    JsonRuntime.CreateObject([| ("a",
-                                 (a :> obj)) |], "")
-
-    member A: int with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "a")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
-
-
 class JsonProvider+IntOrBoolean : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrBoolean
     JsonRuntime.CreateObject((number :> obj), "")
@@ -275,7 +265,7 @@ class JsonProvider+IntOrBooleanOrArrayOrB : FDR.IJsonDocument
     new : array:JsonProvider+NumbersOrBooleanOrB -> JsonProvider+IntOrBooleanOrArrayOrB
     JsonRuntime.CreateObject((array :> obj), "")
 
-    new : record:JsonProvider+HeterogeneousArray -> JsonProvider+IntOrBooleanOrArrayOrB
+    new : record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArrayOrB
     JsonRuntime.CreateObject((record :> obj), "")
 
     new : () -> JsonProvider+IntOrBooleanOrArrayOrB
@@ -290,7 +280,7 @@ class JsonProvider+IntOrBooleanOrArrayOrB : FDR.IJsonDocument
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Record: JsonProvider+HeterogeneousArray option with get
+    member Record: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Record@b", new Func<_,_>(id)))
 
 
@@ -318,7 +308,7 @@ class JsonProvider+IntOrBooleanOrDateTime : FDR.IJsonDocument
 
 
 class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
-    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+HeterogeneousArray option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
+    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
     JsonRuntime.CreateArray([| (numbers :> obj)
                                (boolean :> obj)
                                (record :> obj) |], "")
@@ -329,7 +319,7 @@ class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
     member Numbers: int[] with get
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Record: JsonProvider+HeterogeneousArray option with get
+    member Record: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Record@heterogeneousArray", new Func<_,_>(id)))
 
 
@@ -350,8 +340,18 @@ class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
+class JsonProvider+OptionalBecauseMissing : FDR.IJsonDocument
+    new : a:int -> JsonProvider+OptionalBecauseMissing
+    JsonRuntime.CreateObject([| ("a",
+                                 (a :> obj)) |], "")
+
+    member A: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "a")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+
 class JsonProvider+NumbersOrBooleanOrB : FDR.IJsonDocument
-    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+HeterogeneousArray option -> JsonProvider+NumbersOrBooleanOrB
+    new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrB
     JsonRuntime.CreateArray([| (numbers :> obj)
                                (boolean :> obj)
                                (record :> obj) |], "")
@@ -362,7 +362,7 @@ class JsonProvider+NumbersOrBooleanOrB : FDR.IJsonDocument
     member Numbers: int[] with get
     JsonRuntime.GetArrayChildrenByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
-    member Record: JsonProvider+HeterogeneousArray option with get
+    member Record: JsonProvider+OptionalBecauseMissing option with get
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Record@b", new Func<_,_>(id)))
 
 

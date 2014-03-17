@@ -71,10 +71,10 @@ type JsonAnonymizer(?propertiesToSkip, ?valuesToSkip) =
             |> Double.Parse 
             |> JsonValue.Float
         | JsonValue.Boolean _  | JsonValue.Null -> json
-        | JsonValue.Object props -> 
+        | JsonValue.Record props -> 
             props 
-            |> Map.map (fun key value -> if propertiesToSkip.Contains key then value else anonymize value) 
-            |> JsonValue.Object
+            |> Array.map (fun (key, value) -> key, if propertiesToSkip.Contains key then value else anonymize value)
+            |> JsonValue.Record
         | JsonValue.Array array -> 
             array 
             |> Array.map anonymize 

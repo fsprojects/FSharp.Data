@@ -188,3 +188,6 @@
 #### 2.0.2 - March 16 2014
 * Always send User-Agent and Accept headers when making requests in the type providers.
 * Added support for creating typed JSON objects in JsonProvider.
+
+#### 2.0.3 - March 17 2014
+* Respect the order of the attributes present in the JSON in JsonProvider.

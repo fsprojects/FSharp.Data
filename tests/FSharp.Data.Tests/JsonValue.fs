@@ -228,9 +228,6 @@ let ``Pretty printing works``() =
     let text = """{"items":[{"id":"Open"},null,{"id":25}],"x":{"y":2},"z":[]}"""
     let json = JsonValue.Parse text
     json.ToString() |> normalize |> should equal (normalize """{
-  "x": {
-    "y": 2
-  },
   "items": [
     {
       "id": "Open"
@@ -240,5 +237,8 @@ let ``Pretty printing works``() =
       "id": 25
     }
   ],
+  "x": {
+    "y": 2
+  },
   "z": []
 }""")

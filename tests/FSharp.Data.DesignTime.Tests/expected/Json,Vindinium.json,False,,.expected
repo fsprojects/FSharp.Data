@@ -24,17 +24,17 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> playUrl:string -> token:string -> viewUrl:string -> JsonProvider+Root
+    new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
     JsonRuntime.CreateObject([| ("game",
                                  (game :> obj))
                                 ("hero",
                                  (hero :> obj))
-                                ("playUrl",
-                                 (playUrl :> obj))
                                 ("token",
                                  (token :> obj))
                                 ("viewUrl",
-                                 (viewUrl :> obj)) |], "")
+                                 (viewUrl :> obj))
+                                ("playUrl",
+                                 (playUrl :> obj)) |], "")
 
     member Game: JsonProvider+Game with get
     JsonRuntime.GetPropertyPacked(this, "game")
@@ -56,19 +56,19 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Game : FDR.IJsonDocument
-    new : board:JsonProvider+Board -> finished:bool -> heroes:JsonProvider+Hero[] -> id:string -> maxTurns:int -> turn:int -> JsonProvider+Game
-    JsonRuntime.CreateObject([| ("board",
-                                 (board :> obj))
-                                ("finished",
-                                 (finished :> obj))
-                                ("heroes",
-                                 (heroes :> obj))
-                                ("id",
+    new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
+                                ("turn",
+                                 (turn :> obj))
                                 ("maxTurns",
                                  (maxTurns :> obj))
-                                ("turn",
-                                 (turn :> obj)) |], "")
+                                ("heroes",
+                                 (heroes :> obj))
+                                ("board",
+                                 (board :> obj))
+                                ("finished",
+                                 (finished :> obj)) |], "")
 
     member Board: JsonProvider+Board with get
     JsonRuntime.GetPropertyPacked(this, "board")
@@ -94,27 +94,27 @@ class JsonProvider+Game : FDR.IJsonDocument
 
 
 class JsonProvider+Hero : FDR.IJsonDocument
-    new : crashed:bool -> elo:int -> gold:int -> id:int -> life:int -> mineCount:int -> name:string -> pos:JsonProvider+Pos -> spawnPos:JsonProvider+Pos -> userId:string -> JsonProvider+Hero
-    JsonRuntime.CreateObject([| ("crashed",
-                                 (crashed :> obj))
-                                ("elo",
-                                 (elo :> obj))
-                                ("gold",
-                                 (gold :> obj))
-                                ("id",
+    new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
-                                ("life",
-                                 (life :> obj))
-                                ("mineCount",
-                                 (mineCount :> obj))
                                 ("name",
                                  (name :> obj))
+                                ("userId",
+                                 (userId :> obj))
+                                ("elo",
+                                 (elo :> obj))
                                 ("pos",
                                  (pos :> obj))
+                                ("life",
+                                 (life :> obj))
+                                ("gold",
+                                 (gold :> obj))
+                                ("mineCount",
+                                 (mineCount :> obj))
                                 ("spawnPos",
                                  (spawnPos :> obj))
-                                ("userId",
-                                 (userId :> obj)) |], "")
+                                ("crashed",
+                                 (crashed :> obj)) |], "")
 
     member Crashed: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "crashed")

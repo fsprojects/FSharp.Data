@@ -247,11 +247,11 @@ create an instance, and send a POST request:
 
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
-let newIssue = GitHubIssue.Issue(assignee = "fsharp", 
-                                 body = "This is a test issue created in F# Data documentation", 
+let newIssue = GitHubIssue.Issue("Test issue",
+                                 "This is a test issue created in F# Data documentation", 
+                                 assignee = "",
                                  labels = [| |], 
-                                 milestone = 0, 
-                                 title = "Test issue")
+                                 milestone = 0)
 newIssue.JsonValue.Post "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**

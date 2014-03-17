@@ -33,11 +33,11 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Main : FDR.IJsonDocument
-    new : nested:JsonProvider+Nested -> title:string -> JsonProvider+Main
-    JsonRuntime.CreateObject([| ("nested",
-                                 (nested :> obj))
-                                ("title",
-                                 (title :> obj)) |], "")
+    new : title:string -> nested:JsonProvider+Nested -> JsonProvider+Main
+    JsonRuntime.CreateObject([| ("title",
+                                 (title :> obj))
+                                ("nested",
+                                 (nested :> obj)) |], "")
 
     member Nested: JsonProvider+Nested with get
     JsonRuntime.GetPropertyPacked(this, "nested")

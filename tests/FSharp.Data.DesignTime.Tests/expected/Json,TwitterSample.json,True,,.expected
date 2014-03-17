@@ -24,29 +24,19 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : contributors:JsonValue -> coordinates:JsonValue -> createdAt:string option -> entities:JsonProvider+Entities option -> favoriteCount:int option -> favorited:bool option -> filterLevel:string option -> geo:JsonValue -> id:int64 option -> idStr:int64 option -> inReplyToScreenName:string option -> inReplyToStatusId:int64 option -> inReplyToStatusIdStr:int64 option -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> place:JsonProvider+Place option -> retweetCount:int option -> retweeted:bool option -> retweetedStatus:JsonProvider+RetweetedStatus option -> source:string option -> text:string option -> truncated:bool option -> user:JsonProvider+User2 option -> possiblySensitive:bool option -> lang:string option -> delete:JsonProvider+Delete option -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("contributors",
-                                 (contributors :> obj))
-                                ("coordinates",
-                                 (coordinates :> obj))
-                                ("created_at",
+    new : createdAt:string option -> id:int64 option -> idStr:int64 option -> text:string option -> source:string option -> truncated:bool option -> inReplyToStatusId:int64 option -> inReplyToStatusIdStr:int64 option -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User option -> geo:JsonValue -> coordinates:JsonValue -> place:JsonProvider+Place option -> contributors:JsonValue -> retweetedStatus:JsonProvider+RetweetedStatus option -> retweetCount:int option -> favoriteCount:int option -> entities:JsonProvider+Entities2 option -> favorited:bool option -> retweeted:bool option -> filterLevel:string option -> possiblySensitive:bool option -> lang:string option -> delete:JsonProvider+Delete option -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("created_at",
                                  (createdAt :> obj))
-                                ("entities",
-                                 (entities :> obj))
-                                ("favorite_count",
-                                 (favoriteCount :> obj))
-                                ("favorited",
-                                 (favorited :> obj))
-                                ("filter_level",
-                                 (filterLevel :> obj))
-                                ("geo",
-                                 (geo :> obj))
                                 ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
-                                ("in_reply_to_screen_name",
-                                 (inReplyToScreenName :> obj))
+                                ("text",
+                                 (text :> obj))
+                                ("source",
+                                 (source :> obj))
+                                ("truncated",
+                                 (truncated :> obj))
                                 ("in_reply_to_status_id",
                                  (inReplyToStatusId :> obj))
                                 ("in_reply_to_status_id_str",
@@ -55,22 +45,32 @@ class JsonProvider+Root : FDR.IJsonDocument
                                  (inReplyToUserId :> obj))
                                 ("in_reply_to_user_id_str",
                                  (inReplyToUserIdStr :> obj))
-                                ("place",
-                                 (place :> obj))
-                                ("retweet_count",
-                                 (retweetCount :> obj))
-                                ("retweeted",
-                                 (retweeted :> obj))
-                                ("retweeted_status",
-                                 (retweetedStatus :> obj))
-                                ("source",
-                                 (source :> obj))
-                                ("text",
-                                 (text :> obj))
-                                ("truncated",
-                                 (truncated :> obj))
+                                ("in_reply_to_screen_name",
+                                 (inReplyToScreenName :> obj))
                                 ("user",
                                  (user :> obj))
+                                ("geo",
+                                 (geo :> obj))
+                                ("coordinates",
+                                 (coordinates :> obj))
+                                ("place",
+                                 (place :> obj))
+                                ("contributors",
+                                 (contributors :> obj))
+                                ("retweeted_status",
+                                 (retweetedStatus :> obj))
+                                ("retweet_count",
+                                 (retweetCount :> obj))
+                                ("favorite_count",
+                                 (favoriteCount :> obj))
+                                ("entities",
+                                 (entities :> obj))
+                                ("favorited",
+                                 (favorited :> obj))
+                                ("retweeted",
+                                 (retweeted :> obj))
+                                ("filter_level",
+                                 (filterLevel :> obj))
                                 ("possibly_sensitive",
                                  (possiblySensitive :> obj))
                                 ("lang",
@@ -90,7 +90,7 @@ class JsonProvider+Root : FDR.IJsonDocument
     member Delete: JsonProvider+Delete option with get
     JsonRuntime.TryGetPropertyPacked(this, "delete")
 
-    member Entities: JsonProvider+Entities option with get
+    member Entities: JsonProvider+Entities2 option with get
     JsonRuntime.TryGetPropertyPacked(this, "entities")
 
     member FavoriteCount: int option with get
@@ -153,7 +153,7 @@ class JsonProvider+Root : FDR.IJsonDocument
     member Truncated: bool option with get
     JsonRuntime.ConvertBoolean("", JsonRuntime.TryGetPropertyUnpacked(this, "truncated"))
 
-    member User: JsonProvider+User2 option with get
+    member User: JsonProvider+User option with get
     JsonRuntime.TryGetPropertyPacked(this, "user")
 
 
@@ -166,8 +166,8 @@ class JsonProvider+Delete : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "status")
 
 
-class JsonProvider+Entities : FDR.IJsonDocument
-    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> JsonProvider+Entities
+class JsonProvider+Entities2 : FDR.IJsonDocument
+    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> JsonProvider+Entities2
     JsonRuntime.CreateObject([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
@@ -191,25 +191,25 @@ class JsonProvider+Entities : FDR.IJsonDocument
 
 
 class JsonProvider+Place : FDR.IJsonDocument
-    new : attributes:JsonProvider+Attributes -> boundingBox:JsonProvider+BoundingBox -> country:string -> countryCode:string -> fullName:string -> id:string -> name:string -> placeType:string -> url:string -> JsonProvider+Place
-    JsonRuntime.CreateObject([| ("attributes",
-                                 (attributes :> obj))
-                                ("bounding_box",
-                                 (boundingBox :> obj))
-                                ("country",
-                                 (country :> obj))
-                                ("country_code",
-                                 (countryCode :> obj))
-                                ("full_name",
-                                 (fullName :> obj))
-                                ("id",
+    new : id:string -> url:string -> placeType:string -> name:string -> fullName:string -> countryCode:string -> country:string -> boundingBox:JsonProvider+BoundingBox -> attributes:JsonProvider+Attributes -> JsonProvider+Place
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
-                                ("name",
-                                 (name :> obj))
+                                ("url",
+                                 (url :> obj))
                                 ("place_type",
                                  (placeType :> obj))
-                                ("url",
-                                 (url :> obj)) |], "")
+                                ("name",
+                                 (name :> obj))
+                                ("full_name",
+                                 (fullName :> obj))
+                                ("country_code",
+                                 (countryCode :> obj))
+                                ("country",
+                                 (country :> obj))
+                                ("bounding_box",
+                                 (boundingBox :> obj))
+                                ("attributes",
+                                 (attributes :> obj)) |], "")
 
     member Attributes: JsonProvider+Attributes with get
     JsonRuntime.GetPropertyPacked(this, "attributes")
@@ -247,27 +247,19 @@ class JsonProvider+Place : FDR.IJsonDocument
 
 
 class JsonProvider+RetweetedStatus : FDR.IJsonDocument
-    new : contributors:JsonValue -> coordinates:JsonValue -> createdAt:string -> entities:JsonProvider+Entities2 -> favoriteCount:int -> favorited:bool -> geo:JsonValue -> id:int64 -> idStr:int64 -> inReplyToScreenName:string option -> inReplyToStatusId:JsonValue -> inReplyToStatusIdStr:JsonValue -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> lang:string -> place:JsonValue -> retweetCount:int -> retweeted:bool -> source:string -> text:string -> truncated:bool -> user:JsonProvider+User -> possiblySensitive:bool option -> JsonProvider+RetweetedStatus
-    JsonRuntime.CreateObject([| ("contributors",
-                                 (contributors :> obj))
-                                ("coordinates",
-                                 (coordinates :> obj))
-                                ("created_at",
+    new : createdAt:string -> id:int64 -> idStr:int64 -> text:string -> source:string -> truncated:bool -> inReplyToStatusId:JsonValue -> inReplyToStatusIdStr:JsonValue -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User2 -> geo:JsonValue -> coordinates:JsonValue -> place:JsonValue -> contributors:JsonValue -> retweetCount:int -> favoriteCount:int -> entities:JsonProvider+Entities -> favorited:bool -> retweeted:bool -> lang:string -> possiblySensitive:bool option -> JsonProvider+RetweetedStatus
+    JsonRuntime.CreateObject([| ("created_at",
                                  (createdAt :> obj))
-                                ("entities",
-                                 (entities :> obj))
-                                ("favorite_count",
-                                 (favoriteCount :> obj))
-                                ("favorited",
-                                 (favorited :> obj))
-                                ("geo",
-                                 (geo :> obj))
                                 ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
-                                ("in_reply_to_screen_name",
-                                 (inReplyToScreenName :> obj))
+                                ("text",
+                                 (text :> obj))
+                                ("source",
+                                 (source :> obj))
+                                ("truncated",
+                                 (truncated :> obj))
                                 ("in_reply_to_status_id",
                                  (inReplyToStatusId :> obj))
                                 ("in_reply_to_status_id_str",
@@ -276,22 +268,30 @@ class JsonProvider+RetweetedStatus : FDR.IJsonDocument
                                  (inReplyToUserId :> obj))
                                 ("in_reply_to_user_id_str",
                                  (inReplyToUserIdStr :> obj))
-                                ("lang",
-                                 (lang :> obj))
-                                ("place",
-                                 (place :> obj))
-                                ("retweet_count",
-                                 (retweetCount :> obj))
-                                ("retweeted",
-                                 (retweeted :> obj))
-                                ("source",
-                                 (source :> obj))
-                                ("text",
-                                 (text :> obj))
-                                ("truncated",
-                                 (truncated :> obj))
+                                ("in_reply_to_screen_name",
+                                 (inReplyToScreenName :> obj))
                                 ("user",
                                  (user :> obj))
+                                ("geo",
+                                 (geo :> obj))
+                                ("coordinates",
+                                 (coordinates :> obj))
+                                ("place",
+                                 (place :> obj))
+                                ("contributors",
+                                 (contributors :> obj))
+                                ("retweet_count",
+                                 (retweetCount :> obj))
+                                ("favorite_count",
+                                 (favoriteCount :> obj))
+                                ("entities",
+                                 (entities :> obj))
+                                ("favorited",
+                                 (favorited :> obj))
+                                ("retweeted",
+                                 (retweeted :> obj))
+                                ("lang",
+                                 (lang :> obj))
                                 ("possibly_sensitive",
                                  (possiblySensitive :> obj)) |], "")
 
@@ -305,7 +305,7 @@ class JsonProvider+RetweetedStatus : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_at")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Entities: JsonProvider+Entities2 with get
+    member Entities: JsonProvider+Entities with get
     JsonRuntime.GetPropertyPacked(this, "entities")
 
     member FavoriteCount: int with get
@@ -372,50 +372,54 @@ class JsonProvider+RetweetedStatus : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "truncated")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
 
-    member User: JsonProvider+User with get
+    member User: JsonProvider+User2 with get
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
-class JsonProvider+User2 : FDR.IJsonDocument
-    new : contributorsEnabled:bool -> createdAt:string -> defaultProfile:bool -> defaultProfileImage:bool -> description:string -> favouritesCount:int -> followRequestSent:JsonValue -> followersCount:int -> following:JsonValue -> friendsCount:int -> geoEnabled:bool -> id:int -> idStr:int -> isTranslator:bool -> lang:string -> listedCount:int -> location:string option -> name:string -> notifications:JsonValue -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileBannerUrl:string option -> profileImageUrl:string -> profileImageUrlHttps:string -> profileLinkColor:JsonProvider+IntOrString -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> protected:bool -> screenName:string -> statusesCount:int -> timeZone:string option -> url:string option -> utcOffset:int option -> verified:bool -> JsonProvider+User2
-    JsonRuntime.CreateObject([| ("contributors_enabled",
-                                 (contributorsEnabled :> obj))
-                                ("created_at",
-                                 (createdAt :> obj))
-                                ("default_profile",
-                                 (defaultProfile :> obj))
-                                ("default_profile_image",
-                                 (defaultProfileImage :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("favourites_count",
-                                 (favouritesCount :> obj))
-                                ("follow_request_sent",
-                                 (followRequestSent :> obj))
-                                ("followers_count",
-                                 (followersCount :> obj))
-                                ("following",
-                                 (following :> obj))
-                                ("friends_count",
-                                 (friendsCount :> obj))
-                                ("geo_enabled",
-                                 (geoEnabled :> obj))
-                                ("id",
+class JsonProvider+User : FDR.IJsonDocument
+    new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:JsonProvider+IntOrString -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
-                                ("is_translator",
-                                 (isTranslator :> obj))
-                                ("lang",
-                                 (lang :> obj))
-                                ("listed_count",
-                                 (listedCount :> obj))
-                                ("location",
-                                 (location :> obj))
                                 ("name",
                                  (name :> obj))
-                                ("notifications",
-                                 (notifications :> obj))
+                                ("screen_name",
+                                 (screenName :> obj))
+                                ("location",
+                                 (location :> obj))
+                                ("url",
+                                 (url :> obj))
+                                ("description",
+                                 (description :> obj))
+                                ("protected",
+                                 (protected :> obj))
+                                ("followers_count",
+                                 (followersCount :> obj))
+                                ("friends_count",
+                                 (friendsCount :> obj))
+                                ("listed_count",
+                                 (listedCount :> obj))
+                                ("created_at",
+                                 (createdAt :> obj))
+                                ("favourites_count",
+                                 (favouritesCount :> obj))
+                                ("utc_offset",
+                                 (utcOffset :> obj))
+                                ("time_zone",
+                                 (timeZone :> obj))
+                                ("geo_enabled",
+                                 (geoEnabled :> obj))
+                                ("verified",
+                                 (verified :> obj))
+                                ("statuses_count",
+                                 (statusesCount :> obj))
+                                ("lang",
+                                 (lang :> obj))
+                                ("contributors_enabled",
+                                 (contributorsEnabled :> obj))
+                                ("is_translator",
+                                 (isTranslator :> obj))
                                 ("profile_background_color",
                                  (profileBackgroundColor :> obj))
                                 ("profile_background_image_url",
@@ -424,12 +428,12 @@ class JsonProvider+User2 : FDR.IJsonDocument
                                  (profileBackgroundImageUrlHttps :> obj))
                                 ("profile_background_tile",
                                  (profileBackgroundTile :> obj))
-                                ("profile_banner_url",
-                                 (profileBannerUrl :> obj))
                                 ("profile_image_url",
                                  (profileImageUrl :> obj))
                                 ("profile_image_url_https",
                                  (profileImageUrlHttps :> obj))
+                                ("profile_banner_url",
+                                 (profileBannerUrl :> obj))
                                 ("profile_link_color",
                                  (profileLinkColor :> obj))
                                 ("profile_sidebar_border_color",
@@ -440,20 +444,16 @@ class JsonProvider+User2 : FDR.IJsonDocument
                                  (profileTextColor :> obj))
                                 ("profile_use_background_image",
                                  (profileUseBackgroundImage :> obj))
-                                ("protected",
-                                 (protected :> obj))
-                                ("screen_name",
-                                 (screenName :> obj))
-                                ("statuses_count",
-                                 (statusesCount :> obj))
-                                ("time_zone",
-                                 (timeZone :> obj))
-                                ("url",
-                                 (url :> obj))
-                                ("utc_offset",
-                                 (utcOffset :> obj))
-                                ("verified",
-                                 (verified :> obj)) |], "")
+                                ("default_profile",
+                                 (defaultProfile :> obj))
+                                ("default_profile_image",
+                                 (defaultProfileImage :> obj))
+                                ("following",
+                                 (following :> obj))
+                                ("follow_request_sent",
+                                 (followRequestSent :> obj))
+                                ("notifications",
+                                 (notifications :> obj)) |], "")
 
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
@@ -601,11 +601,11 @@ class JsonProvider+Attributes : FDR.IJsonDocument
 
 
 class JsonProvider+BoundingBox : FDR.IJsonDocument
-    new : coordinates:decimal[][][] -> type:string -> JsonProvider+BoundingBox
-    JsonRuntime.CreateObject([| ("coordinates",
-                                 (coordinates :> obj))
-                                ("type",
-                                 (type :> obj)) |], "")
+    new : type:string -> coordinates:decimal[][][] -> JsonProvider+BoundingBox
+    JsonRuntime.CreateObject([| ("type",
+                                 (type :> obj))
+                                ("coordinates",
+                                 (coordinates :> obj)) |], "")
 
     member Coordinates: decimal[][][] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "coordinates"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))))))
@@ -615,8 +615,8 @@ class JsonProvider+BoundingBox : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-class JsonProvider+Entities2 : FDR.IJsonDocument
-    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> media:JsonProvider+Media[] -> JsonProvider+Entities2
+class JsonProvider+Entities : FDR.IJsonDocument
+    new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
     JsonRuntime.CreateObject([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
@@ -645,11 +645,11 @@ class JsonProvider+Entities2 : FDR.IJsonDocument
 
 
 class JsonProvider+Hashtag : FDR.IJsonDocument
-    new : indices:int[] -> text:string -> JsonProvider+Hashtag
-    JsonRuntime.CreateObject([| ("indices",
-                                 (indices :> obj))
-                                ("text",
-                                 (text :> obj)) |], "")
+    new : text:string -> indices:int[] -> JsonProvider+Hashtag
+    JsonRuntime.CreateObject([| ("text",
+                                 (text :> obj))
+                                ("indices",
+                                 (indices :> obj)) |], "")
 
     member Indices: int[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
@@ -677,13 +677,13 @@ class JsonProvider+IntOrString : FDR.IJsonDocument
 
 
 class JsonProvider+Status : FDR.IJsonDocument
-    new : id:int64 -> idStr:int64 -> userId:int -> userIdStr:int -> JsonProvider+Status
+    new : id:int64 -> userId:int -> idStr:int64 -> userIdStr:int -> JsonProvider+Status
     JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
-                                ("id_str",
-                                 (idStr :> obj))
                                 ("user_id",
                                  (userId :> obj))
+                                ("id_str",
+                                 (idStr :> obj))
                                 ("user_id_str",
                                  (userIdStr :> obj)) |], "")
 
@@ -705,15 +705,15 @@ class JsonProvider+Status : FDR.IJsonDocument
 
 
 class JsonProvider+Url : FDR.IJsonDocument
-    new : displayUrl:string -> expandedUrl:string -> indices:int[] -> url:string -> JsonProvider+Url
-    JsonRuntime.CreateObject([| ("display_url",
-                                 (displayUrl :> obj))
+    new : url:string -> expandedUrl:string -> displayUrl:string -> indices:int[] -> JsonProvider+Url
+    JsonRuntime.CreateObject([| ("url",
+                                 (url :> obj))
                                 ("expanded_url",
                                  (expandedUrl :> obj))
+                                ("display_url",
+                                 (displayUrl :> obj))
                                 ("indices",
-                                 (indices :> obj))
-                                ("url",
-                                 (url :> obj)) |], "")
+                                 (indices :> obj)) |], "")
 
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
@@ -731,46 +731,50 @@ class JsonProvider+Url : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-class JsonProvider+User : FDR.IJsonDocument
-    new : contributorsEnabled:bool -> createdAt:string -> defaultProfile:bool -> defaultProfileImage:bool -> description:string -> favouritesCount:int -> followRequestSent:JsonValue -> followersCount:int -> following:JsonValue -> friendsCount:int -> geoEnabled:bool -> id:int -> idStr:int -> isTranslator:bool -> lang:string -> listedCount:int -> location:string option -> name:string -> notifications:JsonValue -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileBannerUrl:string option -> profileImageUrl:string -> profileImageUrlHttps:string -> profileLinkColor:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> protected:bool -> screenName:string -> statusesCount:int -> timeZone:string option -> url:string option -> utcOffset:int option -> verified:bool -> JsonProvider+User
-    JsonRuntime.CreateObject([| ("contributors_enabled",
-                                 (contributorsEnabled :> obj))
-                                ("created_at",
-                                 (createdAt :> obj))
-                                ("default_profile",
-                                 (defaultProfile :> obj))
-                                ("default_profile_image",
-                                 (defaultProfileImage :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("favourites_count",
-                                 (favouritesCount :> obj))
-                                ("follow_request_sent",
-                                 (followRequestSent :> obj))
-                                ("followers_count",
-                                 (followersCount :> obj))
-                                ("following",
-                                 (following :> obj))
-                                ("friends_count",
-                                 (friendsCount :> obj))
-                                ("geo_enabled",
-                                 (geoEnabled :> obj))
-                                ("id",
+class JsonProvider+User2 : FDR.IJsonDocument
+    new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User2
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
-                                ("is_translator",
-                                 (isTranslator :> obj))
-                                ("lang",
-                                 (lang :> obj))
-                                ("listed_count",
-                                 (listedCount :> obj))
-                                ("location",
-                                 (location :> obj))
                                 ("name",
                                  (name :> obj))
-                                ("notifications",
-                                 (notifications :> obj))
+                                ("screen_name",
+                                 (screenName :> obj))
+                                ("location",
+                                 (location :> obj))
+                                ("url",
+                                 (url :> obj))
+                                ("description",
+                                 (description :> obj))
+                                ("protected",
+                                 (protected :> obj))
+                                ("followers_count",
+                                 (followersCount :> obj))
+                                ("friends_count",
+                                 (friendsCount :> obj))
+                                ("listed_count",
+                                 (listedCount :> obj))
+                                ("created_at",
+                                 (createdAt :> obj))
+                                ("favourites_count",
+                                 (favouritesCount :> obj))
+                                ("utc_offset",
+                                 (utcOffset :> obj))
+                                ("time_zone",
+                                 (timeZone :> obj))
+                                ("geo_enabled",
+                                 (geoEnabled :> obj))
+                                ("verified",
+                                 (verified :> obj))
+                                ("statuses_count",
+                                 (statusesCount :> obj))
+                                ("lang",
+                                 (lang :> obj))
+                                ("contributors_enabled",
+                                 (contributorsEnabled :> obj))
+                                ("is_translator",
+                                 (isTranslator :> obj))
                                 ("profile_background_color",
                                  (profileBackgroundColor :> obj))
                                 ("profile_background_image_url",
@@ -779,12 +783,12 @@ class JsonProvider+User : FDR.IJsonDocument
                                  (profileBackgroundImageUrlHttps :> obj))
                                 ("profile_background_tile",
                                  (profileBackgroundTile :> obj))
-                                ("profile_banner_url",
-                                 (profileBannerUrl :> obj))
                                 ("profile_image_url",
                                  (profileImageUrl :> obj))
                                 ("profile_image_url_https",
                                  (profileImageUrlHttps :> obj))
+                                ("profile_banner_url",
+                                 (profileBannerUrl :> obj))
                                 ("profile_link_color",
                                  (profileLinkColor :> obj))
                                 ("profile_sidebar_border_color",
@@ -795,20 +799,16 @@ class JsonProvider+User : FDR.IJsonDocument
                                  (profileTextColor :> obj))
                                 ("profile_use_background_image",
                                  (profileUseBackgroundImage :> obj))
-                                ("protected",
-                                 (protected :> obj))
-                                ("screen_name",
-                                 (screenName :> obj))
-                                ("statuses_count",
-                                 (statusesCount :> obj))
-                                ("time_zone",
-                                 (timeZone :> obj))
-                                ("url",
-                                 (url :> obj))
-                                ("utc_offset",
-                                 (utcOffset :> obj))
-                                ("verified",
-                                 (verified :> obj)) |], "")
+                                ("default_profile",
+                                 (defaultProfile :> obj))
+                                ("default_profile_image",
+                                 (defaultProfileImage :> obj))
+                                ("following",
+                                 (following :> obj))
+                                ("follow_request_sent",
+                                 (followRequestSent :> obj))
+                                ("notifications",
+                                 (notifications :> obj)) |], "")
 
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
@@ -952,17 +952,17 @@ class JsonProvider+User : FDR.IJsonDocument
 
 
 class JsonProvider+UserMention : FDR.IJsonDocument
-    new : id:int -> idStr:int -> indices:int[] -> name:string -> screenName:string -> JsonProvider+UserMention
-    JsonRuntime.CreateObject([| ("id",
+    new : screenName:string -> name:string -> id:int -> idStr:int -> indices:int[] -> JsonProvider+UserMention
+    JsonRuntime.CreateObject([| ("screen_name",
+                                 (screenName :> obj))
+                                ("name",
+                                 (name :> obj))
+                                ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
                                 ("indices",
-                                 (indices :> obj))
-                                ("name",
-                                 (name :> obj))
-                                ("screen_name",
-                                 (screenName :> obj)) |], "")
+                                 (indices :> obj)) |], "")
 
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -985,12 +985,8 @@ class JsonProvider+UserMention : FDR.IJsonDocument
 
 
 class JsonProvider+Media : FDR.IJsonDocument
-    new : displayUrl:string -> expandedUrl:string -> id:int64 -> idStr:int64 -> indices:int[] -> mediaUrl:string -> mediaUrlHttps:string -> sizes:JsonProvider+Sizes -> sourceStatusId:int64 -> sourceStatusIdStr:int64 -> type:string -> url:string -> JsonProvider+Media
-    JsonRuntime.CreateObject([| ("display_url",
-                                 (displayUrl :> obj))
-                                ("expanded_url",
-                                 (expandedUrl :> obj))
-                                ("id",
+    new : id:int64 -> idStr:int64 -> indices:int[] -> mediaUrl:string -> mediaUrlHttps:string -> url:string -> displayUrl:string -> expandedUrl:string -> type:string -> sizes:JsonProvider+Sizes -> sourceStatusId:int64 -> sourceStatusIdStr:int64 -> JsonProvider+Media
+    JsonRuntime.CreateObject([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
@@ -1000,16 +996,20 @@ class JsonProvider+Media : FDR.IJsonDocument
                                  (mediaUrl :> obj))
                                 ("media_url_https",
                                  (mediaUrlHttps :> obj))
+                                ("url",
+                                 (url :> obj))
+                                ("display_url",
+                                 (displayUrl :> obj))
+                                ("expanded_url",
+                                 (expandedUrl :> obj))
+                                ("type",
+                                 (type :> obj))
                                 ("sizes",
                                  (sizes :> obj))
                                 ("source_status_id",
                                  (sourceStatusId :> obj))
                                 ("source_status_id_str",
-                                 (sourceStatusIdStr :> obj))
-                                ("type",
-                                 (type :> obj))
-                                ("url",
-                                 (url :> obj)) |], "")
+                                 (sourceStatusIdStr :> obj)) |], "")
 
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
@@ -1059,37 +1059,37 @@ class JsonProvider+Media : FDR.IJsonDocument
 
 
 class JsonProvider+Sizes : FDR.IJsonDocument
-    new : large:JsonProvider+Large -> medium:JsonProvider+Large -> small:JsonProvider+Large -> thumb:JsonProvider+Large -> JsonProvider+Sizes
-    JsonRuntime.CreateObject([| ("large",
-                                 (large :> obj))
-                                ("medium",
-                                 (medium :> obj))
-                                ("small",
+    new : small:JsonProvider+Small -> thumb:JsonProvider+Small -> large:JsonProvider+Small -> medium:JsonProvider+Small -> JsonProvider+Sizes
+    JsonRuntime.CreateObject([| ("small",
                                  (small :> obj))
                                 ("thumb",
-                                 (thumb :> obj)) |], "")
+                                 (thumb :> obj))
+                                ("large",
+                                 (large :> obj))
+                                ("medium",
+                                 (medium :> obj)) |], "")
 
-    member Large: JsonProvider+Large with get
+    member Large: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "large")
 
-    member Medium: JsonProvider+Large with get
+    member Medium: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "medium")
 
-    member Small: JsonProvider+Large with get
+    member Small: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "small")
 
-    member Thumb: JsonProvider+Large with get
+    member Thumb: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "thumb")
 
 
-class JsonProvider+Large : FDR.IJsonDocument
-    new : h:int -> resize:string -> w:int -> JsonProvider+Large
-    JsonRuntime.CreateObject([| ("h",
+class JsonProvider+Small : FDR.IJsonDocument
+    new : w:int -> h:int -> resize:string -> JsonProvider+Small
+    JsonRuntime.CreateObject([| ("w",
+                                 (w :> obj))
+                                ("h",
                                  (h :> obj))
                                 ("resize",
-                                 (resize :> obj))
-                                ("w",
-                                 (w :> obj)) |], "")
+                                 (resize :> obj)) |], "")
 
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "h")
