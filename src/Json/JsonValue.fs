@@ -33,8 +33,8 @@ type JsonValue =
   | String of string
   | Number of decimal
   | Float of float 
-  | Object of Map<string, JsonValue>
-  | Array of JsonValue[]
+  | Record of properties:(string * JsonValue)[]
+  | Array of elements:JsonValue[]
   | Boolean of bool
   | Null
 
@@ -62,14 +62,10 @@ type JsonValue =
           append "\""
           append <| JavaScriptStringEncode s
           append "\""
-      | Object properties -> 
+      | Record properties -> 
           let isNotFirst = ref false
           append "{"
-          let getOrder = function
-            | JsonValue.Array _ -> 2
-            | JsonValue.Object _ -> 1
-            | _ -> 0
-          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
+          for k, v in properties do
             if !isNotFirst 
             then append "," 
             else isNotFirst := true
@@ -97,6 +93,23 @@ type JsonValue =
     let sb = StringBuilder()
     serialize sb 0 x
     sb.ToString()
+
+/// [omit]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module JsonValue =
+
+  /// Active Pattern to view a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
+  let (|Object|_|) x =
+    match x with 
+    | JsonValue.Record properties -> Map.ofArray properties |> Some
+    | _ -> None
+
+  /// Constructor to create a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
+  let Object = Map.toArray >> JsonValue.Record 
 
 // --------------------------------------------------------------------------------------
 // JSON parser
@@ -233,7 +246,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
-        JsonValue.Object(pairs |> Map.ofSeq)
+        JsonValue.Record(pairs |> Array.ofSeq)
 
     and parseArray() =
         ensure(i < s.Length && s.[i] = '[')
@@ -295,7 +308,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" uri
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
@@ -306,11 +319,17 @@ type JsonValue with
     |> Async.RunSynchronously
 
   /// Posts the JSON to the specified uri
-  member x.Post(uri:string) =  
+  member x.Post(uri:string, ?headers) =  
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
     Http.Request(
       uri,
       body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = [HttpRequestHeaders.ContentType HttpContentTypes.Json])
+      headers = headers)
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =

@@ -227,12 +227,3 @@ printfn "%s" blog.Channel.Title
 // Get all item nodes and print title with link
 for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
-
-(**
-
-## Related articles
-
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
-
-*)

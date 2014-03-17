@@ -31,6 +31,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool
     let rootName = args.[2] :?> string
+    let rootName = if String.IsNullOrWhiteSpace rootName then "Root" else NameUtils.singularize rootName
     let cultureStr = args.[3] :?> string
     let resolutionFolder = args.[4] :?> string
 
@@ -43,13 +44,13 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let getSpecFromSamples samples = 
 
       let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
-        [ for sampleJson in samples -> JsonInference.inferType cultureInfo (NameUtils.singularize rootName) sampleJson ]
+        [ for sampleJson in samples -> JsonInference.inferType cultureInfo "" sampleJson ]
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
-  
+
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
       let ctx = JsonGenerationContext.Create(cultureStr, tpType, replacer)
-      let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false inferedType
+      let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false rootName inferedType
 
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
@@ -65,7 +66,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>)
       ProvidedStaticParameter("SampleIsList", typeof<bool>, parameterDefaultValue = false) 
-      ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "") 
+      ProvidedStaticParameter("RootName", typeof<string>, parameterDefaultValue = "Root") 
       ProvidedStaticParameter("Culture", typeof<string>, parameterDefaultValue = "") 
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 

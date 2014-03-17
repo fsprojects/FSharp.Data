@@ -208,9 +208,9 @@ type FreebaseObject internal (fb:FreebaseDataConnection, objProps:FreebaseProper
         let extractPrimValue v = 
             match v with 
             // Some constraints cause Freebase primitives to be extracted to { 'value' : 3 }
-            | JsonValue.Object map ->
-                match Map.toList map with
-                | [ "value", v ] -> convJsonPrimValue v
+            | JsonValue.Record properties ->
+                match properties with
+                | [| "value", v |] -> convJsonPrimValue v
                 | _ -> convJsonPrimValue v
             | v -> convJsonPrimValue v
         

@@ -6,15 +6,10 @@
 module FSharp.Data.DesignTime.Tests.SignatureTests
 #endif
 
-open System
 open System.IO
-open System.Net
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-
-//alow tests that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 let (++) a b = Path.Combine(a, b)
 
