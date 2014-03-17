@@ -70,7 +70,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 配列の要素として含まれるようになります。
 
 変換関数は `XElement` を引数にとり、 `JsonValue` を返すような再帰関数です。
-この関数は( `JsonValue.Object` と `JsonValue.Array` を使って)JSONオブジェクトと
+この関数は( `JsonValue.Record` と `JsonValue.Array` を使って)JSONオブジェクトと
 配列を組み立てます。
 すべての属性は `JsonValue.String` に変換されます。
 ただし今回の例では数値型を適切なJSON型に変換するような機能は実装しません：

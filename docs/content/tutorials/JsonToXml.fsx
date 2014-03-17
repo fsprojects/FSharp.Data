@@ -62,7 +62,7 @@ As you can see, the `item` element has been automatically pluralized to `items` 
 array contains two record values that consist of the `value` attribute.
 
 The conversion function is a recursive function that takes a `XElement` and produces 
-`JsonValue`. It builds JSON objects (using `JsonValue.Object`) and arrays (using
+`JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
 `JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the 
 sample does not imlement more sophisticated conversion that would turn numeric 
 attributes to a corresponding JSON type:

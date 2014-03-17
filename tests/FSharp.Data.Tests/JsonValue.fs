@@ -17,7 +17,7 @@ open FsUnit
 [<Test>]
 let ``Can parse empty document``() = 
     let j = JsonValue.Parse "{}"
-    j |> should equal (JsonValue.Object Map.empty)
+    j |> should equal (JsonValue.Record [| |])
 
 [<Test>] 
 let ``Can parse document with single property``() =
@@ -197,20 +197,18 @@ let ``Can parse nested array``() =
 
 [<Test>]
 let ``Can serialize empty document``() = 
-    (JsonValue.Object Map.empty).ToString(JsonSaveOptions.DisableFormatting) 
+    (JsonValue.Record [| |]).ToString(JsonSaveOptions.DisableFormatting) 
     |> should equal "{}"
 
 [<Test>] 
 let ``Can serialize document with single property``() =
-    ( [ "firstName", JsonValue.String "John" ]
-        |> Map.ofSeq |> JsonValue.Object ).ToString(JsonSaveOptions.DisableFormatting)
+    (JsonValue.Record [| "firstName", JsonValue.String "John" |]).ToString(JsonSaveOptions.DisableFormatting)
     |> should equal "{\"firstName\":\"John\"}"
 
 [<Test>] 
 let ``Can serialize document with booleans``() =
-    ( [ "aa", JsonValue.Boolean true
-        "bb", JsonValue.Boolean false ]
-        |> Map.ofSeq |> JsonValue.Object ).ToString(JsonSaveOptions.DisableFormatting)
+    ( JsonValue.Record [| "aa", JsonValue.Boolean true
+                          "bb", JsonValue.Boolean false |] ).ToString(JsonSaveOptions.DisableFormatting)
     |> should equal "{\"aa\":true,\"bb\":false}"
 
 [<Test>]
