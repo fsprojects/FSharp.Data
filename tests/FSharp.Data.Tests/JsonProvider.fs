@@ -503,35 +503,47 @@ type GitHub = JsonProvider<"Data/github.json", RootName="Issue">
 
 [<Test>]
 let ``Can construct complex objects``() =
-    let user = GitHub.User("avatarUrl", "eventsUrl", "folowersUrl", "followingUrl", "gistsUrl", Guid.Parse("{75B3E239-BF95-4FAB-ABE3-F2795D3C843B}"),
-                           "htmlUrl", 0, "login", "organizationsUrl", "receivedEventsUrl", "reposUrl", "starredUrl", "subscriptionsUrl", "type", "url")
+    let user = GitHub.User("login", 0, "avatarUrl", Guid.Parse("{75B3E239-BF95-4FAB-ABE3-F2795D3C843B}"), "url", "htmlUrl", "folowersUrl", "followingUrl", "gistsUrl",
+                           "starredUrl", "subscriptionsUrl", "organizationsUrl", "reposUrl", "eventsUrl", "receivedEventsUrl", "type")
     let pullRequest = GitHub.PullRequest(None, None, None)
-    let label1 = GitHub.Label(GitHub.FloatOrString(1.5), "name", "url")
-    let label2 = GitHub.Label(GitHub.FloatOrString("string"), "name", "url")
-    let json = GitHub.Issue(JsonValue.Null, None, JsonValue.Null, 0, "comments_url", DateTime(2013,03,15), "events_url", "html_url", 1,
-                            [| label1; label2 |], "labels_url", JsonValue.String "milestone", 2, pullRequest, "state", "title", DateTime(2013,03,16), "url", user)
+    let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
+    let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
+    let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
+                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
     json.JsonValue.ToString() |> normalize |> should equal (normalize """{
   "assignee": null,
   "body": null,
   "closed_at": null,
-  "comments": 0,
-  "comments_url": "comments_url",
+  "comments": 2,
+  "comments_url": "commentsUrl",
   "created_at": "03/15/2013 00:00:00",
-  "events_url": "events_url",
-  "html_url": "html_url",
-  "id": 1,
-  "labels_url": "labels_url",
-  "milestone": "milestone",
-  "number": 2,
-  "state": "state",
-  "title": "title",
-  "updated_at": "03/16/2013 00:00:00",
-  "url": "url",
+  "events_url": "eventsUrl",
+  "html_url": "htmlUrl",
+  "id": 0,
+  "labels": [
+    {
+      "color": 1.5,
+      "name": "name",
+      "url": "url"
+    },
+    {
+      "color": "string",
+      "name": "name",
+      "url": "url"
+    }
+  ],
+  "labels_url": "labelsUrl",
+  "milestone": null,
+  "number": 1,
   "pull_request": {
     "diff_url": null,
     "html_url": null,
     "patch_url": null
   },
+  "state": "state",
+  "title": "title",
+  "updated_at": "03/16/2013 00:00:00",
+  "url": "url",
   "user": {
     "avatar_url": "avatarUrl",
     "events_url": "eventsUrl",
@@ -549,19 +561,7 @@ let ``Can construct complex objects``() =
     "subscriptions_url": "subscriptionsUrl",
     "type": "type",
     "url": "url"
-  },
-  "labels": [
-    {
-      "color": 1.5,
-      "name": "name",
-      "url": "url"
-    },
-    {
-      "color": "string",
-      "name": "name",
-      "url": "url"
-    }
-  ]
+  }
 }""")
 
 type HeterogeneousArray = JsonProvider<"""[8, 9, false, { "a": 3 }]""">

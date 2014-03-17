@@ -102,9 +102,8 @@ let rec fromXml (xml:XElement) =
         | children -> key + "s", createArray children )
         
   // 子要素および属性用に生成された要素を連結する
-  Seq.concat [Seq.ofList attrs; children]
-  |> Map.ofSeq
-  |> JsonValue.Object
+  Array.append (Array.ofList attrs) (Array.ofSeq children)
+  |> JsonValue.Record
 
 (**
 
@@ -163,10 +162,9 @@ let toXml(x:JsonValue) =
     // JSONオブジェクトは(プリミティブであれば)XML属性か、
     // あるいは子要素になる
     // attributes (for primitives) or child elements
-    | JsonValue.Object properties -> 
+    | JsonValue.Record properties -> 
       properties 
-      |> Seq.sortBy (fun (KeyValue(key, _)) -> key)
-      |> Seq.map (fun (KeyValue(key,value)) ->
+      |> Array.map (fun (key, value) ->
           match value with
           | JsonValue.String s -> attr key s
           | JsonValue.Boolean b -> attr key b
@@ -176,7 +174,7 @@ let toXml(x:JsonValue) =
 
     // JSON配列は <item> 要素のシーケンスになる
     | JsonValue.Array elements -> 
-        elements |> Seq.map (fun item -> 
+        elements |> Array.map (fun item -> 
           elem "item" (toXml item)) :> obj
 
   // 変換を実行して、結果をオブジェクトのシーケンスにキャストする

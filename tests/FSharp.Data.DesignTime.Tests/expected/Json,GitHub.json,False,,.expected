@@ -24,45 +24,45 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : assignee:JsonValue -> body:string option -> closedAt:JsonValue -> comments:int -> commentsUrl:string -> createdAt:System.DateTime -> eventsUrl:string -> htmlUrl:string -> id:int -> labels:JsonProvider+Label[] -> labelsUrl:string -> milestone:JsonValue -> number:int -> pullRequest:JsonProvider+PullRequest -> state:string -> title:string -> updatedAt:System.DateTime -> url:string -> user:JsonProvider+User -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("assignee",
-                                 (assignee :> obj))
-                                ("body",
-                                 (body :> obj))
-                                ("closed_at",
-                                 (closedAt :> obj))
-                                ("comments",
-                                 (comments :> obj))
+    new : url:string -> labelsUrl:string -> commentsUrl:string -> eventsUrl:string -> htmlUrl:string -> id:int -> number:int -> title:string -> user:JsonProvider+User -> labels:JsonProvider+Label[] -> state:string -> assignee:JsonValue -> milestone:JsonValue -> comments:int -> createdAt:System.DateTime -> updatedAt:System.DateTime -> closedAt:JsonValue -> pullRequest:JsonProvider+PullRequest -> body:string option -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("url",
+                                 (url :> obj))
+                                ("labels_url",
+                                 (labelsUrl :> obj))
                                 ("comments_url",
                                  (commentsUrl :> obj))
-                                ("created_at",
-                                 (createdAt :> obj))
                                 ("events_url",
                                  (eventsUrl :> obj))
                                 ("html_url",
                                  (htmlUrl :> obj))
                                 ("id",
                                  (id :> obj))
-                                ("labels",
-                                 (labels :> obj))
-                                ("labels_url",
-                                 (labelsUrl :> obj))
-                                ("milestone",
-                                 (milestone :> obj))
                                 ("number",
                                  (number :> obj))
-                                ("pull_request",
-                                 (pullRequest :> obj))
-                                ("state",
-                                 (state :> obj))
                                 ("title",
                                  (title :> obj))
+                                ("user",
+                                 (user :> obj))
+                                ("labels",
+                                 (labels :> obj))
+                                ("state",
+                                 (state :> obj))
+                                ("assignee",
+                                 (assignee :> obj))
+                                ("milestone",
+                                 (milestone :> obj))
+                                ("comments",
+                                 (comments :> obj))
+                                ("created_at",
+                                 (createdAt :> obj))
                                 ("updated_at",
                                  (updatedAt :> obj))
-                                ("url",
-                                 (url :> obj))
-                                ("user",
-                                 (user :> obj)) |], "")
+                                ("closed_at",
+                                 (closedAt :> obj))
+                                ("pull_request",
+                                 (pullRequest :> obj))
+                                ("body",
+                                 (body :> obj)) |], "")
 
     member Assignee: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "assignee")
@@ -135,13 +135,13 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 
 class JsonProvider+Label : FDR.IJsonDocument
-    new : color:JsonProvider+FloatOrString -> name:string -> url:string -> JsonProvider+Label
-    JsonRuntime.CreateObject([| ("color",
-                                 (color :> obj))
+    new : url:string -> name:string -> color:JsonProvider+FloatOrString -> JsonProvider+Label
+    JsonRuntime.CreateObject([| ("url",
+                                 (url :> obj))
                                 ("name",
                                  (name :> obj))
-                                ("url",
-                                 (url :> obj)) |], "")
+                                ("color",
+                                 (color :> obj)) |], "")
 
     member Color: JsonProvider+FloatOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "color")
@@ -156,11 +156,11 @@ class JsonProvider+Label : FDR.IJsonDocument
 
 
 class JsonProvider+PullRequest : FDR.IJsonDocument
-    new : diffUrl:string option -> htmlUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
-    JsonRuntime.CreateObject([| ("diff_url",
-                                 (diffUrl :> obj))
-                                ("html_url",
+    new : htmlUrl:string option -> diffUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
+    JsonRuntime.CreateObject([| ("html_url",
                                  (htmlUrl :> obj))
+                                ("diff_url",
+                                 (diffUrl :> obj))
                                 ("patch_url",
                                  (patchUrl :> obj)) |], "")
 
@@ -175,39 +175,39 @@ class JsonProvider+PullRequest : FDR.IJsonDocument
 
 
 class JsonProvider+User : FDR.IJsonDocument
-    new : avatarUrl:string -> eventsUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> gravatarId:System.Guid -> htmlUrl:string -> id:int -> login:string -> organizationsUrl:string -> receivedEventsUrl:string -> reposUrl:string -> starredUrl:string -> subscriptionsUrl:string -> type:string -> url:string -> JsonProvider+User
-    JsonRuntime.CreateObject([| ("avatar_url",
+    new : login:string -> id:int -> avatarUrl:string -> gravatarId:System.Guid -> url:string -> htmlUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> starredUrl:string -> subscriptionsUrl:string -> organizationsUrl:string -> reposUrl:string -> eventsUrl:string -> receivedEventsUrl:string -> type:string -> JsonProvider+User
+    JsonRuntime.CreateObject([| ("login",
+                                 (login :> obj))
+                                ("id",
+                                 (id :> obj))
+                                ("avatar_url",
                                  (avatarUrl :> obj))
-                                ("events_url",
-                                 (eventsUrl :> obj))
+                                ("gravatar_id",
+                                 (gravatarId :> obj))
+                                ("url",
+                                 (url :> obj))
+                                ("html_url",
+                                 (htmlUrl :> obj))
                                 ("followers_url",
                                  (followersUrl :> obj))
                                 ("following_url",
                                  (followingUrl :> obj))
                                 ("gists_url",
                                  (gistsUrl :> obj))
-                                ("gravatar_id",
-                                 (gravatarId :> obj))
-                                ("html_url",
-                                 (htmlUrl :> obj))
-                                ("id",
-                                 (id :> obj))
-                                ("login",
-                                 (login :> obj))
-                                ("organizations_url",
-                                 (organizationsUrl :> obj))
-                                ("received_events_url",
-                                 (receivedEventsUrl :> obj))
-                                ("repos_url",
-                                 (reposUrl :> obj))
                                 ("starred_url",
                                  (starredUrl :> obj))
                                 ("subscriptions_url",
                                  (subscriptionsUrl :> obj))
+                                ("organizations_url",
+                                 (organizationsUrl :> obj))
+                                ("repos_url",
+                                 (reposUrl :> obj))
+                                ("events_url",
+                                 (eventsUrl :> obj))
+                                ("received_events_url",
+                                 (receivedEventsUrl :> obj))
                                 ("type",
-                                 (type :> obj))
-                                ("url",
-                                 (url :> obj)) |], "")
+                                 (type :> obj)) |], "")
 
     member AvatarUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "avatar_url")

@@ -24,15 +24,15 @@ class JsonProvider
 
 
 class JsonProvider+Root : FDR.IJsonDocument
-    new : noTimeZone:System.DateTime -> utcTime:System.DateTime -> anniversary:System.DateTime -> birthdate:System.DateTime -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("NoTimeZone",
-                                 (noTimeZone :> obj))
-                                ("UtcTime",
-                                 (utcTime :> obj))
+    new : birthdate:System.DateTime -> anniversary:System.DateTime -> noTimeZone:System.DateTime -> utcTime:System.DateTime -> JsonProvider+Root
+    JsonRuntime.CreateObject([| ("birthdate",
+                                 (birthdate :> obj))
                                 ("anniversary",
                                  (anniversary :> obj))
-                                ("birthdate",
-                                 (birthdate :> obj)) |], "")
+                                ("NoTimeZone",
+                                 (noTimeZone :> obj))
+                                ("UtcTime",
+                                 (utcTime :> obj)) |], "")
 
     member Anniversary: System.DateTime with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "anniversary")
