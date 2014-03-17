@@ -125,3 +125,20 @@ type XmlRuntime =
             JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
         with _ -> None
     | None -> None
+
+  static member CreateObject(name:string,properties:(string*obj)[], cultureStr) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr // i dont know what to do with this
+    let sb = Text.StringBuilder().AppendFormat("<{0}>",name)
+    let extractXml (x:XmlElement) =  
+        let x = x.XElement
+        String.concat Environment.NewLine (x.Nodes() |> Seq.map(fun n -> n.ToString()))
+    
+    properties
+    |> Array.iter(fun (k,v) ->
+        match v with
+        | :? (XmlElement[]) as xs -> sb.Append(String.concat Environment.NewLine (Array.map (fun x -> sprintf "<%s>%s</%s>" k (extractXml x) k) xs)) |> ignore
+        | :? (XmlElement) as x -> sb.AppendFormat("<{0}>{1}</{0}>", k, (extractXml x)) |> ignore
+        | _ ->  sb.AppendFormat("<{0}>{1}</{0}>",k,v.ToString()) |> ignore ) 
+    
+    XmlElement.Create(new StringReader(sb.AppendFormat("</{0}>",name).ToString()))
+    

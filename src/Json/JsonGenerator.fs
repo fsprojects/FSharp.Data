@@ -350,6 +350,12 @@ module JsonTypeBuilder =
             |> ctx.Replacer.ToRuntime)
 
         objectTy.AddMember ctor
+        objectTy.AddMember <| 
+            ProvidedConstructor(
+                [ProvidedParameter("jsonValue",ctx.JsonValueType)], 
+                InvokeCode = fun args -> 
+                    let mi = ctx.JsonRuntimeType.GetMethod("CreateFromJsonValue",BindingFlags.Static ||| BindingFlags.Public)                    
+                    Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)
 
         objectTy
 

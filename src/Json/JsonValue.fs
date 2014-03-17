@@ -305,7 +305,7 @@ type JsonValue with
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
-  /// Posts the JSON to the specified uri
+  /// POSTs the JSON to the specified uri
   member x.Post(uri:string, ?headers) =  
     let headers = defaultArg headers []
     let headers =
@@ -317,6 +317,34 @@ type JsonValue with
       uri,
       body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
       headers = headers)
+
+  /// PUTs the JSON to the specified uri
+  member x.Put(uri:string, ?headers) =  
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.Request(
+      uri,
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers = headers,
+      httpMethod = HttpMethod.Put)
+
+  /// DELETEs the JSON to the specified uri
+  member x.Delete(uri:string, ?headers) =  
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.Request(
+      uri,
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers = headers,
+      httpMethod = HttpMethod.Delete)
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =
