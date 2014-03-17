@@ -34,8 +34,8 @@ type JsonValue =
   | String of string
   | Number of decimal
   | Float of float 
-  | Object of Map<string, JsonValue>
-  | Array of JsonValue[]
+  | Record of properties:(string*JsonValue)[]
+  | Array of elements:JsonValue[]
   | Boolean of bool
   | Null
 
@@ -55,14 +55,10 @@ type JsonValue =
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
           sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
-      | Object properties -> 
+      | Record properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
-          let getOrder = function
-            | JsonValue.Array _ -> 2
-            | JsonValue.Object _ -> 1
-            | _ -> 0
-          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
+          for k, v in properties do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             newLine 2
             if saveOptions = JsonSaveOptions.None then
@@ -84,6 +80,16 @@ type JsonValue =
           sb.Append "]"
 
     (serialize (new StringBuilder()) 0 x).ToString()
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module JsonValue =
+
+  let (|Object|_|) x =
+    match x with 
+    | JsonValue.Record properties -> Map.ofArray properties |> Some
+    | _ -> None
+
+  let Object = Map.toArray >> JsonValue.Record 
 
 // --------------------------------------------------------------------------------------
 // JSON parser
@@ -220,7 +226,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
-        JsonValue.Object(pairs |> Map.ofSeq)
+        JsonValue.Record(pairs |> Array.ofSeq)
 
     and parseArray() =
         ensure(i < s.Length && s.[i] = '[')

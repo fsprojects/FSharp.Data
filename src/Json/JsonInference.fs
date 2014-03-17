@@ -31,13 +31,13 @@ let rec inferType cultureInfo parentName json =
   | JsonValue.Float _ -> InferedType.Primitive(typeof<float>, None, false)
   // More interesting types 
   | JsonValue.Array ar -> StructuralInference.inferCollectionType (*allowEmptyValues*)false (Seq.map (inferType cultureInfo (NameUtils.singularize parentName)) ar)
-  | JsonValue.Object o ->
+  | JsonValue.Record properties ->
       let name = 
         if String.IsNullOrEmpty parentName 
         then None 
         else Some parentName
       let props = 
-        [ for propName, value in o |> Map.toArray |> Array.sortBy fst -> 
+        [ for propName, value in properties -> 
             let t = inferType cultureInfo propName value
             { Name = propName
               Type = t } ]
