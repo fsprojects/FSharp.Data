@@ -84,11 +84,15 @@ type JsonValue =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonValue =
 
+  /// Active Pattern to view a `JsonValue.Record of (string*JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
   let (|Object|_|) x =
     match x with 
     | JsonValue.Record properties -> Map.ofArray properties |> Some
     | _ -> None
 
+  /// Constructor to view a `JsonValue.Record of (string*JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
   let Object = Map.toArray >> JsonValue.Record 
 
 // --------------------------------------------------------------------------------------
