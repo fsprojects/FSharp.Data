@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> isCool:bool -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("firstName",
+    JsonRuntime.CreateRecord([| ("firstName",
                                  (firstName :> obj))
                                 ("lastName",
                                  (lastName :> obj))

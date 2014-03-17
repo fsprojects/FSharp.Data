@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : main:JsonProvider+Main -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("main",
+    JsonRuntime.CreateRecord([| ("main",
                                  (main :> obj)) |], "")
 
     member Main: JsonProvider+Main with get
@@ -34,7 +34,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Main : FDR.IJsonDocument
     new : title:string -> nested:JsonProvider+Nested -> JsonProvider+Main
-    JsonRuntime.CreateObject([| ("title",
+    JsonRuntime.CreateRecord([| ("title",
                                  (title :> obj))
                                 ("nested",
                                  (nested :> obj)) |], "")
@@ -49,7 +49,7 @@ class JsonProvider+Main : FDR.IJsonDocument
 
 class JsonProvider+Nested : FDR.IJsonDocument
     new : nestedTitle:string -> JsonProvider+Nested
-    JsonRuntime.CreateObject([| ("nestedTitle",
+    JsonRuntime.CreateRecord([| ("nestedTitle",
                                  (nestedTitle :> obj)) |], "")
 
     member NestedTitle: string with get

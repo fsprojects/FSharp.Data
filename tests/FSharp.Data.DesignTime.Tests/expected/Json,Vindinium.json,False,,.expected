@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("game",
+    JsonRuntime.CreateRecord([| ("game",
                                  (game :> obj))
                                 ("hero",
                                  (hero :> obj))
@@ -57,7 +57,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Game : FDR.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("turn",
                                  (turn :> obj))
@@ -95,7 +95,7 @@ class JsonProvider+Game : FDR.IJsonDocument
 
 class JsonProvider+Hero : FDR.IJsonDocument
     new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("name",
                                  (name :> obj))
@@ -157,7 +157,7 @@ class JsonProvider+Hero : FDR.IJsonDocument
 
 class JsonProvider+Board : FDR.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
-    JsonRuntime.CreateObject([| ("size",
+    JsonRuntime.CreateRecord([| ("size",
                                  (size :> obj))
                                 ("tiles",
                                  (tiles :> obj)) |], "")
@@ -173,7 +173,7 @@ class JsonProvider+Board : FDR.IJsonDocument
 
 class JsonProvider+Pos : FDR.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
-    JsonRuntime.CreateObject([| ("x",
+    JsonRuntime.CreateRecord([| ("x",
                                  (x :> obj))
                                 ("y",
                                  (y :> obj)) |], "")

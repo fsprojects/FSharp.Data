@@ -37,7 +37,7 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
 
 class JsonProvider+Record : FDR.IJsonDocument
     new : indicator:JsonProvider+Indicator -> country:JsonProvider+Indicator -> value:decimal option -> decimal:int -> date:int -> JsonProvider+Record
-    JsonRuntime.CreateObject([| ("indicator",
+    JsonRuntime.CreateRecord([| ("indicator",
                                  (indicator :> obj))
                                 ("country",
                                  (country :> obj))
@@ -68,7 +68,7 @@ class JsonProvider+Record : FDR.IJsonDocument
 
 class JsonProvider+Record2 : FDR.IJsonDocument
     new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
-    JsonRuntime.CreateObject([| ("page",
+    JsonRuntime.CreateRecord([| ("page",
                                  (page :> obj))
                                 ("pages",
                                  (pages :> obj))
@@ -96,7 +96,7 @@ class JsonProvider+Record2 : FDR.IJsonDocument
 
 class JsonProvider+Indicator : FDR.IJsonDocument
     new : id:string -> value:string -> JsonProvider+Indicator
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("value",
                                  (value :> obj)) |], "")

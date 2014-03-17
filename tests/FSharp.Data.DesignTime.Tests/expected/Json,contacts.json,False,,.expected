@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : ab:JsonProvider+Ab -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("ab",
+    JsonRuntime.CreateRecord([| ("ab",
                                  (ab :> obj)) |], "")
 
     member Ab: JsonProvider+Ab with get
@@ -34,7 +34,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Ab : FDR.IJsonDocument
     new : persons:JsonProvider+Person[] -> JsonProvider+Ab
-    JsonRuntime.CreateObject([| ("persons",
+    JsonRuntime.CreateRecord([| ("persons",
                                  (persons :> obj)) |], "")
 
     member Persons: JsonProvider+Person[] with get
@@ -43,7 +43,7 @@ class JsonProvider+Ab : FDR.IJsonDocument
 
 class JsonProvider+Person : FDR.IJsonDocument
     new : contacts:JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
-    JsonRuntime.CreateObject([| ("contacts",
+    JsonRuntime.CreateRecord([| ("contacts",
                                  (contacts :> obj))
                                 ("emails",
                                  (emails :> obj))
@@ -62,7 +62,7 @@ class JsonProvider+Person : FDR.IJsonDocument
 
 class JsonProvider+Contact : FDR.IJsonDocument
     new : emailCapability:int[] -> emailImEnabled:bool[] -> emails:string[] -> phones:JsonValue[] -> JsonProvider+Contact
-    JsonRuntime.CreateObject([| ("emailCapability",
+    JsonRuntime.CreateRecord([| ("emailCapability",
                                  (emailCapability :> obj))
                                 ("emailIMEnabled",
                                  (emailImEnabled :> obj))

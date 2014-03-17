@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : createdAt:string option -> id:int64 option -> idStr:int64 option -> text:string option -> source:string option -> truncated:bool option -> inReplyToStatusId:int64 option -> inReplyToStatusIdStr:int64 option -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User option -> geo:JsonValue -> coordinates:JsonValue -> place:JsonProvider+Place option -> contributors:JsonValue -> retweetedStatus:JsonProvider+RetweetedStatus option -> retweetCount:int option -> favoriteCount:int option -> entities:JsonProvider+Entities2 option -> favorited:bool option -> retweeted:bool option -> filterLevel:string option -> possiblySensitive:bool option -> lang:string option -> delete:JsonProvider+Delete option -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("created_at",
+    JsonRuntime.CreateRecord([| ("created_at",
                                  (createdAt :> obj))
                                 ("id",
                                  (id :> obj))
@@ -159,7 +159,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Delete : FDR.IJsonDocument
     new : status:JsonProvider+Status -> JsonProvider+Delete
-    JsonRuntime.CreateObject([| ("status",
+    JsonRuntime.CreateRecord([| ("status",
                                  (status :> obj)) |], "")
 
     member Status: JsonProvider+Status with get
@@ -168,7 +168,7 @@ class JsonProvider+Delete : FDR.IJsonDocument
 
 class JsonProvider+Entities2 : FDR.IJsonDocument
     new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> JsonProvider+Entities2
-    JsonRuntime.CreateObject([| ("hashtags",
+    JsonRuntime.CreateRecord([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
                                  (symbols :> obj))
@@ -192,7 +192,7 @@ class JsonProvider+Entities2 : FDR.IJsonDocument
 
 class JsonProvider+Place : FDR.IJsonDocument
     new : id:string -> url:string -> placeType:string -> name:string -> fullName:string -> countryCode:string -> country:string -> boundingBox:JsonProvider+BoundingBox -> attributes:JsonProvider+Attributes -> JsonProvider+Place
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("url",
                                  (url :> obj))
@@ -248,7 +248,7 @@ class JsonProvider+Place : FDR.IJsonDocument
 
 class JsonProvider+RetweetedStatus : FDR.IJsonDocument
     new : createdAt:string -> id:int64 -> idStr:int64 -> text:string -> source:string -> truncated:bool -> inReplyToStatusId:JsonValue -> inReplyToStatusIdStr:JsonValue -> inReplyToUserId:int option -> inReplyToUserIdStr:int option -> inReplyToScreenName:string option -> user:JsonProvider+User2 -> geo:JsonValue -> coordinates:JsonValue -> place:JsonValue -> contributors:JsonValue -> retweetCount:int -> favoriteCount:int -> entities:JsonProvider+Entities -> favorited:bool -> retweeted:bool -> lang:string -> possiblySensitive:bool option -> JsonProvider+RetweetedStatus
-    JsonRuntime.CreateObject([| ("created_at",
+    JsonRuntime.CreateRecord([| ("created_at",
                                  (createdAt :> obj))
                                 ("id",
                                  (id :> obj))
@@ -378,7 +378,7 @@ class JsonProvider+RetweetedStatus : FDR.IJsonDocument
 
 class JsonProvider+User : FDR.IJsonDocument
     new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:JsonProvider+IntOrString -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
@@ -597,12 +597,12 @@ class JsonProvider+User : FDR.IJsonDocument
 
 class JsonProvider+Attributes : FDR.IJsonDocument
     new : () -> JsonProvider+Attributes
-    JsonRuntime.CreateObject([| |], "")
+    JsonRuntime.CreateRecord([| |], "")
 
 
 class JsonProvider+BoundingBox : FDR.IJsonDocument
     new : type:string -> coordinates:decimal[][][] -> JsonProvider+BoundingBox
-    JsonRuntime.CreateObject([| ("type",
+    JsonRuntime.CreateRecord([| ("type",
                                  (type :> obj))
                                 ("coordinates",
                                  (coordinates :> obj)) |], "")
@@ -617,7 +617,7 @@ class JsonProvider+BoundingBox : FDR.IJsonDocument
 
 class JsonProvider+Entities : FDR.IJsonDocument
     new : hashtags:JsonProvider+Hashtag[] -> symbols:JsonValue[] -> urls:JsonProvider+Url[] -> userMentions:JsonProvider+UserMention[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
-    JsonRuntime.CreateObject([| ("hashtags",
+    JsonRuntime.CreateRecord([| ("hashtags",
                                  (hashtags :> obj))
                                 ("symbols",
                                  (symbols :> obj))
@@ -646,7 +646,7 @@ class JsonProvider+Entities : FDR.IJsonDocument
 
 class JsonProvider+Hashtag : FDR.IJsonDocument
     new : text:string -> indices:int[] -> JsonProvider+Hashtag
-    JsonRuntime.CreateObject([| ("text",
+    JsonRuntime.CreateRecord([| ("text",
                                  (text :> obj))
                                 ("indices",
                                  (indices :> obj)) |], "")
@@ -661,13 +661,13 @@ class JsonProvider+Hashtag : FDR.IJsonDocument
 
 class JsonProvider+IntOrString : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject((number :> obj), "")
+    JsonRuntime.CreateValue((number :> obj), "")
 
     new : string:string -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject((string :> obj), "")
+    JsonRuntime.CreateValue((string :> obj), "")
 
     new : () -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject(null, "")
+    JsonRuntime.CreateValue(null, "")
 
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
@@ -678,7 +678,7 @@ class JsonProvider+IntOrString : FDR.IJsonDocument
 
 class JsonProvider+Status : FDR.IJsonDocument
     new : id:int64 -> userId:int -> idStr:int64 -> userIdStr:int -> JsonProvider+Status
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("user_id",
                                  (userId :> obj))
@@ -706,7 +706,7 @@ class JsonProvider+Status : FDR.IJsonDocument
 
 class JsonProvider+Url : FDR.IJsonDocument
     new : url:string -> expandedUrl:string -> displayUrl:string -> indices:int[] -> JsonProvider+Url
-    JsonRuntime.CreateObject([| ("url",
+    JsonRuntime.CreateRecord([| ("url",
                                  (url :> obj))
                                 ("expanded_url",
                                  (expandedUrl :> obj))
@@ -733,7 +733,7 @@ class JsonProvider+Url : FDR.IJsonDocument
 
 class JsonProvider+User2 : FDR.IJsonDocument
     new : id:int -> idStr:int -> name:string -> screenName:string -> location:string option -> url:string option -> description:string -> protected:bool -> followersCount:int -> friendsCount:int -> listedCount:int -> createdAt:string -> favouritesCount:int -> utcOffset:int option -> timeZone:string option -> geoEnabled:bool -> verified:bool -> statusesCount:int -> lang:string -> contributorsEnabled:bool -> isTranslator:bool -> profileBackgroundColor:JsonProvider+IntOrString -> profileBackgroundImageUrl:string -> profileBackgroundImageUrlHttps:string -> profileBackgroundTile:bool -> profileImageUrl:string -> profileImageUrlHttps:string -> profileBannerUrl:string option -> profileLinkColor:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> profileSidebarFillColor:JsonProvider+IntOrString -> profileTextColor:JsonProvider+IntOrString -> profileUseBackgroundImage:bool -> defaultProfile:bool -> defaultProfileImage:bool -> following:JsonValue -> followRequestSent:JsonValue -> notifications:JsonValue -> JsonProvider+User2
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
@@ -953,7 +953,7 @@ class JsonProvider+User2 : FDR.IJsonDocument
 
 class JsonProvider+UserMention : FDR.IJsonDocument
     new : screenName:string -> name:string -> id:int -> idStr:int -> indices:int[] -> JsonProvider+UserMention
-    JsonRuntime.CreateObject([| ("screen_name",
+    JsonRuntime.CreateRecord([| ("screen_name",
                                  (screenName :> obj))
                                 ("name",
                                  (name :> obj))
@@ -986,7 +986,7 @@ class JsonProvider+UserMention : FDR.IJsonDocument
 
 class JsonProvider+Media : FDR.IJsonDocument
     new : id:int64 -> idStr:int64 -> indices:int[] -> mediaUrl:string -> mediaUrlHttps:string -> url:string -> displayUrl:string -> expandedUrl:string -> type:string -> sizes:JsonProvider+Sizes -> sourceStatusId:int64 -> sourceStatusIdStr:int64 -> JsonProvider+Media
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("id_str",
                                  (idStr :> obj))
@@ -1060,7 +1060,7 @@ class JsonProvider+Media : FDR.IJsonDocument
 
 class JsonProvider+Sizes : FDR.IJsonDocument
     new : small:JsonProvider+Small -> thumb:JsonProvider+Small -> large:JsonProvider+Small -> medium:JsonProvider+Small -> JsonProvider+Sizes
-    JsonRuntime.CreateObject([| ("small",
+    JsonRuntime.CreateRecord([| ("small",
                                  (small :> obj))
                                 ("thumb",
                                  (thumb :> obj))
@@ -1084,7 +1084,7 @@ class JsonProvider+Sizes : FDR.IJsonDocument
 
 class JsonProvider+Small : FDR.IJsonDocument
     new : w:int -> h:int -> resize:string -> JsonProvider+Small
-    JsonRuntime.CreateObject([| ("w",
+    JsonRuntime.CreateRecord([| ("w",
                                  (w :> obj))
                                 ("h",
                                  (h :> obj))

@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : birthdate:System.DateTime -> anniversary:System.DateTime -> noTimeZone:System.DateTime -> utcTime:System.DateTime -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("birthdate",
+    JsonRuntime.CreateRecord([| ("birthdate",
                                  (birthdate :> obj))
                                 ("anniversary",
                                  (anniversary :> obj))

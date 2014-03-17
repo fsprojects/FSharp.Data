@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : authors:JsonProvider+Author[] -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("authors",
+    JsonRuntime.CreateRecord([| ("authors",
                                  (authors :> obj)) |], "")
 
     member Authors: JsonProvider+Author[] with get
@@ -34,7 +34,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Author : FDR.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
-    JsonRuntime.CreateObject([| ("name",
+    JsonRuntime.CreateRecord([| ("name",
                                  (name :> obj))
                                 ("age",
                                  (age :> obj)) |], "")

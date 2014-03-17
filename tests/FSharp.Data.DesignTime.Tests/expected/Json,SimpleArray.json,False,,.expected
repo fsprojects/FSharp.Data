@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : items:JsonProvider+Item[] -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("items",
+    JsonRuntime.CreateRecord([| ("items",
                                  (items :> obj)) |], "")
 
     member Items: JsonProvider+Item[] with get
@@ -34,7 +34,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Item : FDR.IJsonDocument
     new : id:string -> JsonProvider+Item
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj)) |], "")
 
     member Id: string with get

@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("ordercontainer",
+    JsonRuntime.CreateRecord([| ("ordercontainer",
                                  (ordercontainer :> obj)) |], "")
 
     member Ordercontainer: JsonProvider+Ordercontainer with get
@@ -34,7 +34,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Ordercontainer : FDR.IJsonDocument
     new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
-    JsonRuntime.CreateObject([| ("backgrounds",
+    JsonRuntime.CreateRecord([| ("backgrounds",
                                  (backgrounds :> obj))
                                 ("project",
                                  (project :> obj)) |], "")
@@ -48,7 +48,7 @@ class JsonProvider+Ordercontainer : FDR.IJsonDocument
 
 class JsonProvider+Background : FDR.IJsonDocument
     new : title:JsonProvider+Title -> JsonProvider+Background
-    JsonRuntime.CreateObject([| ("title",
+    JsonRuntime.CreateRecord([| ("title",
                                  (title :> obj)) |], "")
 
     member Title: JsonProvider+Title with get
@@ -57,7 +57,7 @@ class JsonProvider+Background : FDR.IJsonDocument
 
 class JsonProvider+Backgrounds : FDR.IJsonDocument
     new : background:JsonProvider+Background -> JsonProvider+Backgrounds
-    JsonRuntime.CreateObject([| ("background",
+    JsonRuntime.CreateRecord([| ("background",
                                  (background :> obj)) |], "")
 
     member Background: JsonProvider+Background with get
@@ -66,7 +66,7 @@ class JsonProvider+Backgrounds : FDR.IJsonDocument
 
 class JsonProvider+Title : FDR.IJsonDocument
     new : text:string -> JsonProvider+Title
-    JsonRuntime.CreateObject([| ("text",
+    JsonRuntime.CreateRecord([| ("text",
                                  (text :> obj)) |], "")
 
     member Text: string with get

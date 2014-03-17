@@ -214,10 +214,10 @@ module JsonTypeBuilder =
         for param in parameters do
             let ctor = ProvidedConstructor([param], InvokeCode = fun (Singleton arg) -> 
                 let arg = Expr.Coerce(arg, typeof<obj>)
-                ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateObject((%%arg:obj), cultureStr) @@>)
+                ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue((%%arg:obj), cultureStr) @@>)
             objectTy.AddMember ctor
 
-        let defaultCtor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateObject(null :> obj, cultureStr) @@>)
+        let defaultCtor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue(null :> obj, cultureStr) @@>)
         objectTy.AddMember defaultCtor
 
     objectTy
@@ -346,7 +346,7 @@ module JsonTypeBuilder =
                               |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
                                                                        Expr.Coerce(a, typeof<obj>) ]))
             let cultureStr = ctx.CultureStr
-            <@@ JsonRuntime.CreateObject(%%properties, cultureStr) @@>
+            <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
             |> ctx.Replacer.ToRuntime)
 
         objectTy.AddMember ctor

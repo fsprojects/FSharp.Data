@@ -44,7 +44,7 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
 
 class XmlProvider+BlahDataSomethingFoo : FDR.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
-    JsonRuntime.CreateObject([| ("Something.Schema",
+    JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
@@ -67,7 +67,7 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
 
 class XmlProvider+BlahDataSomethingFoo3 : FDR.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
-    JsonRuntime.CreateObject([| ("Something.Schema",
+    JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
@@ -91,7 +91,7 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.XmlElement
 
 class XmlProvider+Results : FDR.IJsonDocument
     new : somethingSchema:string -> query:string option -> XmlProvider+Results
-    JsonRuntime.CreateObject([| ("Something.Schema",
+    JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("Query",
                                  (query :> obj)) |], "")
@@ -106,7 +106,7 @@ class XmlProvider+Results : FDR.IJsonDocument
 
 class XmlProvider+Results2 : FDR.IJsonDocument
     new : somethingSchema:string -> query:string -> XmlProvider+Results2
-    JsonRuntime.CreateObject([| ("Something.Schema",
+    JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("Query",
                                  (query :> obj)) |], "")

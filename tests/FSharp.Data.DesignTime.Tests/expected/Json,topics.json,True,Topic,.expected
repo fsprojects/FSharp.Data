@@ -18,7 +18,7 @@ class JsonProvider
 
 class JsonProvider+Topic : FDR.IJsonDocument
     new : photo:string -> previewLink:string option -> smallIconHover:string -> largeIcon:string -> video:string option -> universityIds:string[] -> id:int -> universities:JsonProvider+University[] -> selfServiceCourseId:int option -> shortDescription:string -> shortName:string -> categoryIds:string[] -> visibility:int option -> smallIcon:string -> instructor:string option -> categories:JsonProvider+Category[] -> name:string -> language:string -> courses:JsonProvider+Course[] -> universityLogo:string option -> courseIds:int[] -> display:bool -> subtitleLanguagesCsv:string option -> JsonProvider+Topic
-    JsonRuntime.CreateObject([| ("photo",
+    JsonRuntime.CreateRecord([| ("photo",
                                  (photo :> obj))
                                 ("preview_link",
                                  (previewLink :> obj))
@@ -147,7 +147,7 @@ class JsonProvider+Topic : FDR.IJsonDocument
 
 class JsonProvider+Category : FDR.IJsonDocument
     new : id:int -> name:string -> mailingListId:int option -> shortName:string -> description:string option -> JsonProvider+Category
-    JsonRuntime.CreateObject([| ("id",
+    JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
                                 ("name",
                                  (name :> obj))
@@ -179,7 +179,7 @@ class JsonProvider+Category : FDR.IJsonDocument
 
 class JsonProvider+Course : FDR.IJsonDocument
     new : gradingPolicyDistinction:string option -> aceTrackPriceDisplay:JsonValue -> signatureTrackCertificateDesignId:JsonValue -> aceSemesterHours:JsonValue -> startDay:int option -> durationString:string option -> signatureTrackLastChanceTime:System.DateTime option -> id:int -> startMonth:int option -> certificateDescription:string option -> startDateString:JsonProvider+StringOrDateTime -> cheggSessionId:JsonValue -> signatureTrackRegularPrice:int option -> gradesReleaseDate:System.DateTime option -> certificatesReady:bool -> signatureTrackPrice:int option -> statementDesignId:int option -> signatureTrackRegistrationOpen:bool -> topicId:int -> eligibleForSignatureTrack:bool -> startDate:System.DateTime option -> record:JsonProvider+Record -> status:bool -> startYear:int option -> signatureTrackCertificateCombinedSignature:JsonValue -> endDate:JsonValue -> notifiedSubscribers:bool -> instructors:int[] -> active:bool -> eligibleForCertificates:bool -> signatureTrackCertificateSignatureBlurb:JsonValue -> deployed:bool -> aceCloseDate:JsonValue -> name:JsonProvider+IntOrString -> textbooks:JsonValue[] -> signatureTrackOpenTime:System.DateTime option -> eligibleForAce:bool option -> gradingPolicyNormal:string option -> aceOpenDate:JsonValue -> homeLink:string option -> creatorId:int option -> proctoredExamCompletionDate:JsonValue -> universityLogo:JsonValue -> signatureTrackCloseTime:System.DateTime option -> authReviewCompletionDate:JsonValue -> JsonProvider+Course
-    JsonRuntime.CreateObject([| ("grading_policy_distinction",
+    JsonRuntime.CreateRecord([| ("grading_policy_distinction",
                                  (gradingPolicyDistinction :> obj))
                                 ("ace_track_price_display",
                                  (aceTrackPriceDisplay :> obj))
@@ -418,7 +418,7 @@ class JsonProvider+Course : FDR.IJsonDocument
 
 class JsonProvider+University : FDR.IJsonDocument
     new : rectangularLogoSvg:string option -> wordmark:JsonValue -> websiteTwitter:string option -> chinaMirror:int option -> favicon:string option -> websiteFacebook:string option -> logo:string option -> backgroundColor:JsonValue -> id:int -> locationCity:string option -> locationCountry:string option -> locationLat:decimal option -> location:string option -> primaryColor:string option -> abbrName:string -> website:string option -> description:string option -> shortName:string -> landingPageBanner:string option -> mailingListId:JsonValue -> websiteYoutube:string option -> partnerType:int -> banner:string option -> locationState:string option -> name:string -> squareLogo:string option -> squareLogoSource:string option -> squareLogoSvg:string option -> locationLng:decimal option -> homeLink:string option -> classLogo:string option -> display:bool -> JsonProvider+University
-    JsonRuntime.CreateObject([| ("rectangular_logo_svg",
+    JsonRuntime.CreateRecord([| ("rectangular_logo_svg",
                                  (rectangularLogoSvg :> obj))
                                 ("wordmark",
                                  (wordmark :> obj))
@@ -588,13 +588,13 @@ class JsonProvider+University : FDR.IJsonDocument
 
 class JsonProvider+IntOrString : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject((number :> obj), "")
+    JsonRuntime.CreateValue((number :> obj), "")
 
     new : string:string -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject((string :> obj), "")
+    JsonRuntime.CreateValue((string :> obj), "")
 
     new : () -> JsonProvider+IntOrString
-    JsonRuntime.CreateObject(null, "")
+    JsonRuntime.CreateValue(null, "")
 
     member Number: int option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
@@ -605,7 +605,7 @@ class JsonProvider+IntOrString : FDR.IJsonDocument
 
 class JsonProvider+Record : FDR.IJsonDocument
     new : gradeDistinction:decimal option -> shareForWork:bool option -> isEnrolledForProctoredExam:bool -> achievementLevel:int option -> signatureTrack:bool -> passedAce:bool -> aceGrade:int -> gradeNormal:decimal option -> verifyCertId:JsonValue -> authenticatedOverall:bool -> withGradeCertId:JsonValue -> JsonProvider+Record
-    JsonRuntime.CreateObject([| ("grade_distinction",
+    JsonRuntime.CreateRecord([| ("grade_distinction",
                                  (gradeDistinction :> obj))
                                 ("share_for_work",
                                  (shareForWork :> obj))
@@ -669,13 +669,13 @@ class JsonProvider+Record : FDR.IJsonDocument
 
 class JsonProvider+StringOrDateTime : FDR.IJsonDocument
     new : string:string -> JsonProvider+StringOrDateTime
-    JsonRuntime.CreateObject((string :> obj), "")
+    JsonRuntime.CreateValue((string :> obj), "")
 
     new : dateTime:System.DateTime -> JsonProvider+StringOrDateTime
-    JsonRuntime.CreateObject((dateTime :> obj), "")
+    JsonRuntime.CreateValue((dateTime :> obj), "")
 
     new : () -> JsonProvider+StringOrDateTime
-    JsonRuntime.CreateObject(null, "")
+    JsonRuntime.CreateValue(null, "")
 
     member DateTime: System.DateTime option with get
     JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))

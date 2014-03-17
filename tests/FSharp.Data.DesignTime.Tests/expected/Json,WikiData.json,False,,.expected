@@ -25,7 +25,7 @@ class JsonProvider
 
 class JsonProvider+Root : FDR.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> address:JsonProvider+Address -> JsonProvider+Root
-    JsonRuntime.CreateObject([| ("firstName",
+    JsonRuntime.CreateRecord([| ("firstName",
                                  (firstName :> obj))
                                 ("lastName",
                                  (lastName :> obj))
@@ -52,7 +52,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 class JsonProvider+Address : FDR.IJsonDocument
     new : streetAddress:string -> city:string -> state:string -> postalCode:int -> JsonProvider+Address
-    JsonRuntime.CreateObject([| ("streetAddress",
+    JsonRuntime.CreateRecord([| ("streetAddress",
                                  (streetAddress :> obj))
                                 ("city",
                                  (city :> obj))
