@@ -60,14 +60,8 @@ let private portable47AssembliesPath =
     ++ "v4.0" 
     ++ "Profile" 
     ++ "Profile47" 
-
         
-let forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
 let private designTimeAssemblies = 
-
-    // this only exists to force System.Xml.Linq to be loaded into the appdomain
-    let _ = forceLinqXml
-
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
     // If there are dups, Map.ofSeq will take the last one. When the portable version
@@ -123,12 +117,15 @@ type FSharpDataRuntimeVersion =
         | _ -> false
 
 let init (cfg : TypeProviderConfig) = 
-
-    if not initialized then
-        initialized <- true
+    let init (_:System.Xml.Linq.SaveOptions) = 
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
+        
+    if not initialized then
+      initialized <- true
+      // the following parameter is a dummy, forcing System.Xml.Linq to load
+      init System.Xml.Linq.SaveOptions.None
     
     let useReflectionOnly = true
 
