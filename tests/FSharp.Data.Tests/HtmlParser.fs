@@ -1,20 +1,14 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
 
 open NUnit.Framework
-open FSharp.Data
 open FsUnit
-open System.Xml
-open System.Xml.Linq
-open System.Text
-open System.IO
+open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Test>]
@@ -237,3 +231,9 @@ let ``Should substitute char references``(ref:string, result:string) =
             ])
         ])
     parsed |> should equal expected
+
+[<Test>]
+let ``Can handle html with doctype and xml namespaces``() = 
+    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"></html>"""
+    let htmlDoc = HtmlDocument.Parse html
+    htmlDoc.ToString().Replace("\n", null) |> should equal html

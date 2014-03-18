@@ -91,9 +91,9 @@ module HtmlRuntime =
               Headers = headers
               Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
     
-    let getTables (HtmlDocument(_, doc)) =
-        doc
-        |> List.collect (getElementsNamed ["table"]) 
+    let getTables (doc:HtmlDocument) =
+        let tableElements = doc.Elements |> List.collect (getElementsNamed ["table"]) 
+        tableElements
         |> List.mapi parseTable 
         |> List.choose id
 

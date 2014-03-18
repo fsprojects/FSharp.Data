@@ -5,6 +5,7 @@
 open System
 open System.IO
 open System.Xml
+open FSharp.Data
 
 let name (x:HtmlElement) =
     match x with

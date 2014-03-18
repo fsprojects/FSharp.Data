@@ -83,6 +83,10 @@ type HtmlDocument =
     member x.Elements = 
         match x with
         | HtmlDocument(elements = elements) -> elements
+    override x.ToString() =
+        (if String.IsNullOrEmpty x.DocType then "" else "<!" + x.DocType + ">\n")
+        +
+        (x.Elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
 
 // --------------------------------------------------------------------------------------
 
@@ -200,12 +204,12 @@ module private HtmlParser =
     
         member x.CurrentTagName() = 
             match (!(!x.CurrentTag).Contents) with
-            | [] ->  String.Empty
+            | [] -> String.Empty
             | h :: _ -> h.ToString()
     
         member x.CurrentAttrName() = 
             match !x.Attributes with
-            | [] ->  String.Empty
+            | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
     
         member x.ConsAttrValue() =
@@ -286,7 +290,7 @@ module private HtmlParser =
                 charRef state
             | _ ->
                 match !state.InsertionMode with
-                | ScriptMode ->  state.Cons(); script state
+                | ScriptMode -> state.Cons(); script state
                 | StyleMode -> state.Cons(); script state
                 | DefaultMode -> state.Cons(); data state
                 | CharRefMode -> charRef state
@@ -303,15 +307,15 @@ module private HtmlParser =
             | _ -> state.Cons(); script state
         and scriptEndTagOpen state = 
             match state.Peek() with
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state;
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
             | _ -> script state
         and scriptEndTagName state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop();  state.EmitTag(true); 
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state;
-            | _ -> state.ConsTag(); scriptEndTagName state;
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | _ -> state.ConsTag(); scriptEndTagName state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
@@ -319,8 +323,8 @@ module private HtmlParser =
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
-            | '!' ->  state.Pop(); docType state
-            | '/'  -> state.Pop(); endTagOpen state
+            | '!' -> state.Pop(); docType state
+            | '/' -> state.Pop(); endTagOpen state
             | '?' -> state.Pop(); bogusComment state
             | TextParser.Letter _ -> state.ConsTag(); tagName false state
             | _ -> data state
@@ -350,7 +354,7 @@ module private HtmlParser =
             | _ -> state.ConsTag(); tagName isEndTag state
         and selfClosingStartTag state = 
             match state.Peek() with
-            | '>' -> state.Pop(); state.EmitSelfClosingTag();
+            | '>' -> state.Pop(); state.EmitSelfClosingTag()
             | TextParser.EndOfFile _ -> data state
             | _ -> beforeAttributeName state
         and endTagOpen state = 
@@ -370,10 +374,10 @@ module private HtmlParser =
             match state.Peek() with
             | '\'' | '"'  -> state.Pop(); attributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
-            | '=' -> state.Pop(); beforeAttributeValue state;
+            | '=' -> state.Pop(); beforeAttributeValue state
             | '>' -> state.Pop(); state.EmitTag(false)
-            | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state;
-            | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state;
+            | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
+            | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state
             | _ -> state.ConsAttrName(); tagOpen state
         and beforeAttributeValue state = 
             match state.Peek() with
@@ -382,7 +386,7 @@ module private HtmlParser =
             | '&' -> state.Pop(); attributeValueUnquoted state
             | '\'' -> state.Pop(); attributeValueSingleQuoted state
             | '>' -> state.Pop(); state.EmitTag(false);
-            | _ -> state.ConsAttrValue(); attributeValueUnquoted state;
+            | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueUnquoted state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
