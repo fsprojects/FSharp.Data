@@ -66,7 +66,7 @@ let forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
 let private designTimeAssemblies = 
 
     // this only exists to force System.Xml.Linq to be loaded into the appdomain
-    let _ = forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
+    let _ = forceLinqXml
 
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
