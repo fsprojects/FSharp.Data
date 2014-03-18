@@ -63,9 +63,11 @@ let private portable47AssembliesPath =
 
         
 let forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
-
 let private designTimeAssemblies = 
+
+    // this only exists to force System.Xml.Linq to be loaded into the appdomain
     let _ = forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
+
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
     // If there are dups, Map.ofSeq will take the last one. When the portable version
