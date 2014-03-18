@@ -6,6 +6,7 @@ open System.Net
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
+open System.Xml.Linq
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
@@ -60,7 +61,11 @@ let private portable47AssembliesPath =
     ++ "Profile" 
     ++ "Profile47" 
 
+        
+let forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
+
 let private designTimeAssemblies = 
+    let _ = forceLinqXml = System.Xml.Linq.SaveOptions.DisableFormatting
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
     // If there are dups, Map.ofSeq will take the last one. When the portable version
@@ -144,7 +149,7 @@ let init (cfg : TypeProviderConfig) =
 
     let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
-    let referencedAssembliesPairs = 
+    let referencedAssembliesPairs =         
         runtimeAssembly.GetReferencedAssemblies()
         |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
         |> Seq.choose (fun asmName -> 

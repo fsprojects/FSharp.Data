@@ -215,11 +215,11 @@ module internal XmlTypeBuilder =
                     |> ctx.Replacer.ToRuntime)
 
             objectTy.AddMember <| 
-                ProvidedConstructor(
-                    [ProvidedParameter("xelement",ctx.Replacer.ToRuntime  typeof<XElement>)], 
-                    InvokeCode = fun args -> 
-                        let mi = (ctx.Replacer.ToRuntime  typeof<XmlRuntime>).GetMethod("CreateFromElement",BindingFlags.Static ||| BindingFlags.Public)                    
-                        Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)       
+              ProvidedConstructor(
+                  [ProvidedParameter("xelement",ctx.Replacer.ToRuntime typeof<XElement>)], 
+                  InvokeCode = fun (Singleton arg) -> 
+                      let arg = ctx.Replacer.ToDesignTime arg
+                      <@@ XmlElement.Create(%%arg:XElement) @@> |> ctx.Replacer.ToRuntime)
 
             { ConvertedType = objectTy
               Converter = ctx.Replacer.ToRuntime }
@@ -400,11 +400,11 @@ module internal XmlTypeBuilder =
                     |> ctx.Replacer.ToRuntime
                 )
             objectTy.AddMember <| 
-                ProvidedConstructor(
-                    [ProvidedParameter("xelement",ctx.Replacer.ToRuntime  typeof<XElement>)], 
-                    InvokeCode = fun args -> 
-                        let mi = (ctx.Replacer.ToRuntime  typeof<XmlRuntime>).GetMethod("CreateFromElement",BindingFlags.Static ||| BindingFlags.Public)                    
-                        Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)
+              ProvidedConstructor(
+                  [ProvidedParameter("xelement",ctx.Replacer.ToRuntime typeof<XElement>)], 
+                  InvokeCode = fun (Singleton arg) -> 
+                      let arg = ctx.Replacer.ToDesignTime arg
+                      <@@ XmlElement.Create(%%arg:XElement) @@> |> ctx.Replacer.ToRuntime)
 
             { ConvertedType = objectTy 
               Converter = ctx.Replacer.ToRuntime }
