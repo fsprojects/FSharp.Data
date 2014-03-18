@@ -259,5 +259,7 @@ newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issu
 
  * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 
    working with JSON values dynamically.
+ * [API Reference: JsonProvider type provider](../reference/fsharp-data-jsonprovider.html)
+ * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
 
 *)
