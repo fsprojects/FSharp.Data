@@ -252,7 +252,7 @@ let newIssue = GitHubIssue.Issue("Test issue",
                                  assignee = "",
                                  labels = [| |], 
                                  milestone = 0)
-newIssue.JsonValue.Post "https://api.github.com/repos/fsharp/FSharp.Data/issues"
+newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**
 ## Related articles

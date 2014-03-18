@@ -191,3 +191,6 @@
 
 #### 2.0.3 - March 17 2014
 * Respect the order of the attributes present in the JSON in JsonProvider.
+
+#### 2.0.4 - March 18 2014
+* Helpers for sending HTTP requests with JSON and XML content.
