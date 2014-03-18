@@ -6,7 +6,9 @@ namespace FSharp.Data
 open System.Xml.Linq
 
 [<AutoOpen>]
+/// Extension methods for XElement. It is auto opened.
 module XElementExtensions = 
+
     type XElement with
 
       /// Sends the XML to the specified uri. Defaults to a POST request.
