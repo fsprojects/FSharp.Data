@@ -7,7 +7,6 @@
     <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
