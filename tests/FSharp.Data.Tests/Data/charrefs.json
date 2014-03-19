@@ -2227,5 +2227,17 @@
 
 
   {"key": "&zwj;", "characters": "\u200D" },
-  {"key": "&zwnj;", "characters": "\u200C" }
+  {"key": "&zwnj;", "characters": "\u200C" },
+  {"key": "&#160;", "characters": " "},
+  {"key": "&#64;", "characters": "@" },
+  {"key": "&#65;", "characters": "A" },
+  {"key": "&#160", "characters": " "},
+  {"key": "&#64", "characters": "@" },
+  {"key": "&#65", "characters": "A" },
+  {"key": "&xA0;", "characters": " "},
+  {"key": "&x40;", "characters": "@" },
+  {"key": "&x41;", "characters": "A" },
+  {"key": "&XA0;", "characters": " "},
+  {"key": "&X40;", "characters": "@" },
+  {"key": "&X41;", "characters": "A" }
 ]}

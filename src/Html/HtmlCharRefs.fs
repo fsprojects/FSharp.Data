@@ -1,5 +1,7 @@
 ﻿namespace FSharp.Data
 
+open System
+
 module HtmlCharRefs = 
 
     let private refs = 
@@ -2237,5 +2239,17 @@ module HtmlCharRefs =
           "&zwnj;", "\u200C";
         |] |> Map.ofArray
 
-    let substitute (ref:string) = refs.TryFind ref 
-       
+    let (|Hex|Num|Std|) (ref:string) = 
+        let (delimeters, discriminator) = ref.ToLower() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
+        match delimeters with
+        | ("&#", ';') -> Num(ref.Substring(2, ref.Length - 3))
+        | ("&#", _) -> Num(ref.Substring(2, ref.Length - 2))
+        | ("&x", ';') when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
+        | ("&x", _) when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
+        | _ -> Std(ref) 
+
+    let substitute (ref:string) = 
+        match ref with
+        | Hex(num) -> Some (Convert.ToChar(Int32.Parse(num, Globalization.NumberStyles.AllowHexSpecifier)).ToString())     
+        | Num(num) -> Some (Convert.ToChar(Int32.Parse(num)).ToString())
+        | Std(ref) -> refs.TryFind ref     
