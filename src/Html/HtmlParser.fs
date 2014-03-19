@@ -39,11 +39,11 @@ type HtmlElement =
                 for attr in attributes do
                     append " "
                     append attr.Name
-                    append "='"
+                    append "=\""
                     append attr.Value
-                    append "'"
+                    append "\""
                 if elements.IsEmpty
-                then append "/>"
+                then append " />"
                 else
                     append ">"
                     newLine 2
@@ -218,11 +218,12 @@ module private HtmlParser =
             | (_,h) :: _ -> h.Cons(x.Reader.ReadChar())
     
         member x.GetAttributes() = 
-            !x.Attributes |> List.choose (fun (key,value) -> 
-                                            if key.Length > 0
-                                            then Some <| HtmlAttribute(key.ToString(), value.ToString())
-                                            else None
-                                            )
+            !x.Attributes 
+            |> List.choose (fun (key, value) -> 
+                if key.Length > 0
+                then Some <| HtmlAttribute(key.ToString(), value.ToString())
+                else None)
+            |> List.rev
     
         member x.EmitSelfClosingTag() = 
             let name = (!x.CurrentTag).ToString()
@@ -258,7 +259,7 @@ module private HtmlParser =
                 | Some(r) -> r
                 | None -> ref
                  
-            let result : HtmlToken = 
+            let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
                 | DefaultMode -> Text content
@@ -378,7 +379,7 @@ module private HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
             | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state
-            | _ -> state.ConsAttrName(); tagOpen state
+            | _ -> state.ConsAttrName(); attributeName state
         and beforeAttributeValue state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
