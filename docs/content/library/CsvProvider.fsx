@@ -354,5 +354,6 @@ stocks.Take(10).Cache()
 
  * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
    working with CSV documents dynamically.
+ * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 
 *)

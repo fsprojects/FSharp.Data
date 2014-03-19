@@ -87,7 +87,8 @@ Http.RequestString
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
 
-(** ## Getting extra information
+(**
+## Getting extra information
 
 Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
 and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
@@ -219,3 +220,18 @@ let clientCert =
 Http.Request
   ( "http://yourprotectedresouce.com/data",
     certificate = clientCert)
+
+(**
+## Related articles
+
+ * [API Reference: HTTP class](../reference/fsharp-data-http.html)
+ * [API Reference: HttpMethod module](../reference/fsharp-data-httpmethod.html)
+ * [API Reference: HttpRequestHeaders module](../reference/fsharp-data-httprequestheaders.html)
+ * [API Reference: HttpResponseHeaders module](../reference/fsharp-data-httpresponseheaders.html)
+ * [API Reference: HttpContentTypes module](../reference/fsharp-data-httpcontenttypes.html)
+ * [API Reference: HttpRequestBody discriminated union](../reference/fsharp-data-httprequestbody.html)
+ * [API Reference: HttpResponse record](../reference/fsharp-data-httpresponse.html)
+ * [API Reference: HttpResponseBody discriminated union](../reference/fsharp-data-httpresponsebody.html)
+ * [API Reference: HttpResponseWithStream record](../reference/fsharp-data-httpresponsewithstream.html)
+
+ *)
