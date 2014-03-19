@@ -4,9 +4,9 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("FSharp.Data")>]
 [<assembly: AssemblyProductAttribute("FSharp.Data")>]
 [<assembly: AssemblyDescriptionAttribute("Library of F# type providers and data access tools")>]
-[<assembly: AssemblyVersionAttribute("2.0.3.0")>]
-[<assembly: AssemblyFileVersionAttribute("2.0.3.0")>]
+[<assembly: AssemblyVersionAttribute("2.0.4.0")>]
+[<assembly: AssemblyFileVersionAttribute("2.0.4.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "2.0.3.0"
+    let [<Literal>] Version = "2.0.4.0"
