@@ -422,7 +422,7 @@ create an instance, and send a POST request:</p>
                                  <span class="i">assignee</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">&quot;</span>,
                                  <span class="i">labels</span> <span class="o">=</span> [| |], 
                                  <span class="i">milestone</span> <span class="o">=</span> <span class="n">0</span>)
-<span onmouseout="hideTip(event, 'fs78', 152)" onmouseover="showTip(event, 'fs78', 152)" class="i">newIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 153)" onmouseover="showTip(event, 'fs80', 153)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 154)" onmouseover="showTip(event, 'fs81', 154)" class="i">Post</span> <span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">github</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">repos</span><span class="s">/</span><span class="s">fsharp</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">/</span><span class="s">issues</span><span class="s">&quot;</span></pre>
+<span onmouseout="hideTip(event, 'fs78', 152)" onmouseover="showTip(event, 'fs78', 152)" class="i">newIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 153)" onmouseover="showTip(event, 'fs80', 153)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 154)" onmouseover="showTip(event, 'fs81', 154)" class="i">Request</span> <span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">github</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">repos</span><span class="s">/</span><span class="s">fsharp</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">/</span><span class="s">issues</span><span class="s">&quot;</span></pre>
 </td>
 </tr>
 </table>
@@ -432,6 +432,8 @@ create an instance, and send a POST request:</p>
 <ul>
 <li><a href="JsonValue.html">F# Data: JSON Parser and Reader</a> - provides more information about 
 working with JSON values dynamically.</li>
+<li><a href="../reference/fsharp-data-jsonprovider.html">API Reference: JsonProvider type provider</a></li>
+<li><a href="../reference/fsharp-data-jsonvalue.html">API Reference: JsonValue discriminated union</a></li>
 </ul>
 
 <div class="tip" id="fs1">namespace FSharp</div>
@@ -514,7 +516,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs78">val newIssue : JsonProvider&lt;...&gt;.Issue<br /><br />Full name: JsonProvider.newIssue</div>
 <div class="tip" id="fs79">type Issue =<br />&#160;&#160;inherit IJsonDocument<br />&#160;&#160;new : title: string * body: string * assignee: string * milestone: int * labels: string [] -&gt; Issue<br />&#160;&#160;member Assignee : string<br />&#160;&#160;member Body : string<br />&#160;&#160;member JsonValue : JsonValue<br />&#160;&#160;member Labels : string []<br />&#160;&#160;member Milestone : int<br />&#160;&#160;member Path : string<br />&#160;&#160;member Title : string<br /><br />Full name: FSharp.Data.JsonProvider,Sample=&quot;<br />{<br />&#160;&#160;\&quot;title\&quot;: \&quot;Found a bug\&quot;,<br />&#160;&#160;\&quot;body\&quot;: \&quot;I&#39;m having a problem with this.\&quot;,<br />&#160;&#160;\&quot;assignee\&quot;: \&quot;octocat\&quot;,<br />&#160;&#160;\&quot;milestone\&quot;: 1,<br />&#160;&#160;\&quot;labels\&quot;: [<br />&#160;&#160;&#160;&#160;\&quot;Label1\&quot;,<br />&#160;&#160;&#160;&#160;\&quot;Label2\&quot;<br />&#160;&#160;]<br />}<br />&quot;,RootName=&quot;issue&quot;.Issue</div>
 <div class="tip" id="fs80">property Runtime.IJsonDocument.JsonValue: JsonValue</div>
-<div class="tip" id="fs81">member JsonValue.Post : uri:string * ?headers:(string * string) list -&gt; HttpResponse</div>
+<div class="tip" id="fs81">member JsonValue.Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse</div>
 
         </div>
         <div class="span3">

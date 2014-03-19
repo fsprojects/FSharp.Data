@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>HttpResponseWithStream - F# Data</title>
+    <title>XElementExtensions - F# Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
@@ -37,89 +37,49 @@
 
 
 
-<h1>HttpResponseWithStream</h1>
+<h1>XElementExtensions</h1>
 <div class="xmldoc">
-<p>The response returned by an HTTP request with direct access to the response stream</p>
+<p>Extension methods for XElement. It is auto opened.</p>
 </div>
-  <h3>Record Fields</h3>
+
+<!-- Render nested types and modules, if there are any -->
+
+  <h3>Type extensions</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Record Field</td><td>Description</td></tr>
+      <tr><td>Type extension</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '165', 165)" onmouseover="showTip(event, '165', 165)">
-            Cookies
+          <code onmouseout="hideTip(event, '122', 122)" onmouseover="showTip(event, '122', 122)">
+            Request(uri, ?httpMethod, ?headers)
           </code>
-          <div class="tip" id="165">
-            <strong>Signature:</strong> Map&lt;string,string&gt;<br />
+          <div class="tip" id="122">
+            <strong>Signature:</strong> (uri:string * httpMethod:string option * headers:(string * string) list option) -&gt; HttpResponse<br />
                       </div>
         </td>
         <td class="xmldoc">
-        
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L222-222" class="github-link">Go to GitHub source</a>
+        <p>Sends the XML to the specified uri. Defaults to a POST request.</p>
+
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Xml/XmlRuntime.fs#L15-15" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
-            Headers
+          <code onmouseout="hideTip(event, '138', 138)" onmouseover="showTip(event, '138', 138)">
+            RequestAsync(uri, ?httpMethod, ?headers)
           </code>
-          <div class="tip" id="166">
-            <strong>Signature:</strong> Map&lt;string,string&gt;<br />
+          <div class="tip" id="138">
+            <strong>Signature:</strong> (uri:string * httpMethod:string option * headers:(string * string) list option) -&gt; Async&lt;HttpResponse&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L221-221" class="github-link">Go to GitHub source</a>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
+        <p>Sends the XML to the specified uri. Defaults to a POST request.</p>
 
-          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
-            ResponseStream
-          </code>
-          <div class="tip" id="167">
-            <strong>Signature:</strong> Stream<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-        
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L218-218" class="github-link">Go to GitHub source</a>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
-            ResponseUrl
-          </code>
-          <div class="tip" id="168">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-        
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L220-220" class="github-link">Go to GitHub source</a>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
-            StatusCode
-          </code>
-          <div class="tip" id="169">
-            <strong>Signature:</strong> int<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-        
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L219-219" class="github-link">Go to GitHub source</a>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Xml/XmlRuntime.fs#L30-30" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
     </tbody>
