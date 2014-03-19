@@ -34,8 +34,11 @@ let ``Can handle unclosed tags correctly``() =
             [
                HtmlElement("head", [], 
                 [
-                    HtmlElement("script", [HtmlAttribute("src","/bwx_generic.js");HtmlAttribute("language","JavaScript")], [])
-                    HtmlElement("link", [HtmlAttribute("href","/bwx_style.css");HtmlAttribute("type","text/css");HtmlAttribute("rel","stylesheet")], [])
+                    HtmlElement("script", [HtmlAttribute("language","JavaScript")
+                                           HtmlAttribute("src","/bwx_generic.js")], [])
+                    HtmlElement("link", [HtmlAttribute("rel","stylesheet")
+                                         HtmlAttribute("type","text/css")
+                                         HtmlAttribute("href","/bwx_style.css")], [])
                 ])
                HtmlElement("body", [],
                 [
@@ -234,6 +237,6 @@ let ``Should substitute char references``(ref:string, result:string) =
 
 [<Test>]
 let ``Can handle html with doctype and xml namespaces``() = 
-    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"></html>"""
+    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" />"""
     let htmlDoc = HtmlDocument.Parse html
     htmlDoc.ToString().Replace("\n", null) |> should equal html
