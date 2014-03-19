@@ -318,8 +318,17 @@ type JsonValue with
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
-  /// Posts the JSON to the specified uri
-  member x.Post(uri:string, ?headers) =  
+  /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
+  static member ParseSample(text, ?cultureInfo) =
+    JsonParser(text, cultureInfo, true).Parse()
+
+  /// Parses the specified string into multiple JSON values
+  static member ParseMultiple(text, ?cultureInfo) =
+    JsonParser(text, cultureInfo, false).ParseMultiple()
+
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.Request(uri:string, ?httpMethod, ?headers) =  
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg headers []
     let headers =
         if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
@@ -329,12 +338,24 @@ type JsonValue with
     Http.Request(
       uri,
       body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = headers)
+      headers = headers,
+      httpMethod = httpMethod)
 
-  /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
-  static member ParseSample(text, ?cultureInfo) =
-    JsonParser(text, cultureInfo, true).Parse()
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.AsyncRequest(
+      uri,
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers = headers,
+      httpMethod = httpMethod)
 
-  /// Parses the specified string into multiple JSON values
-  static member ParseMultiple(text, ?cultureInfo) =
-    JsonParser(text, cultureInfo, false).ParseMultiple()
+  [<Obsolete("Please use JsonValue.Request instead")>]
+  member x.Post(uri:string, ?headers) =  
+    x.Request(uri, ?headers = headers)
