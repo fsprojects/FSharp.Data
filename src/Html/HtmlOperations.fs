@@ -91,7 +91,7 @@ type HtmlElement with
                                                 match e with
                                                 | HtmlText(text) -> yield text
                                                 | elem -> yield innerText' elem })
-                | HtmlText(text) | HtmlCharRef(text) -> text
+                | HtmlText(text) -> text
                 | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
             innerText' x
 
@@ -104,7 +104,6 @@ type HtmlElement with
                 
             let rec writeElement (writer:XmlWriter) = function
                 | HtmlText(c) -> writer.WriteValue(c)
-                | HtmlCharRef(c) -> writer.WriteValue(c)
                 | HtmlComment(c) -> writer.WriteComment(c)
                 | HtmlScript(c) -> writer.WriteCData(c)
                 | HtmlStyle(c) -> writer.WriteCData(c)

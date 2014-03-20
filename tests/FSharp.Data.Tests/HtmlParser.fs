@@ -71,7 +71,7 @@ let ``Can parse tables from a simple html``() =
     (tables.[0].Rows.[0]) |> should equal ["1"]
 
 [<Test>]
-let ``Can parse tables from a simple html table with no defined headers``() = 
+let ``Can parse tables from a simple html table but infer headers``() = 
     let html = """<html>
                     <body>
                         <table id="table">
@@ -86,6 +86,24 @@ let ``Can parse tables from a simple html table with no defined headers``() =
     tables.[0].Name |> should equal "table"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+[<Test>]
+let ``Can parse tables with no headers``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                            <tr><td>2</td></tr>
+                            <tr><td>1</td></tr>
+                            <tr><td>3</td></tr>
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
+
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "table"
+    tables.[0].Headers |> should equal []
+    (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
 
 [<Test>]
 let ``Extracts table when title attribute is set``() = 
@@ -237,6 +255,17 @@ let ``Should substitute char references``(ref:string, result:string) =
 
 [<Test>]
 let ``Can handle html with doctype and xml namespaces``() = 
-    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" />"""
+    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
     let htmlDoc = HtmlDocument.Parse html
-    htmlDoc.ToString().Replace("\n", null) |> should equal html
+    let expected = 
+            HtmlDocument("DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 
+             [
+               HtmlElement("html", [HtmlAttribute("lang","en"); HtmlAttribute("xml:lang","en"); HtmlAttribute("xmlns","http://www.w3.org/1999/xhtml")] ,
+                [
+                   HtmlElement("body", [],
+                    [
+                       HtmlText("content")
+                    ])
+                ])
+            ])
+    expected |> should equal htmlDoc

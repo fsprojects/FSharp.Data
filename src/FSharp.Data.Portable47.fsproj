@@ -70,6 +70,7 @@
     <Compile Include="Html\HtmlCharRefs.fs" />
     <Compile Include="Html\HtmlParser.fs" />
     <Compile Include="Html\HtmlOperations.fs" />
+    <Compile Include="Html\HtmlInference.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.Portable47.fs" />

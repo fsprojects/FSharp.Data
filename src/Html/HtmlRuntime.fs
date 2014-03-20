@@ -54,11 +54,6 @@ module HtmlRuntime =
                 | [] -> defaultName
                 | h :: _ -> h.InnerText
 
-    let private tryGetIntAttribute name x = 
-        defaultArg (tryGetAttribute name x 
-                    |> Option.map (function HtmlAttribute(_, value) -> value)
-                    |> Option.bind (TextConversions.AsInteger CultureInfo.InvariantCulture)) 0
-
     let private parseTable index (table:HtmlElement) = 
         let rows = table.Elements ["tr"] |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
@@ -82,19 +77,18 @@ module HtmlRuntime =
                         for i in [rowindex..(rowindex + rowSpan)] do
                             res.[i].[j] <- data
 
-            let headers = 
+            let (startIndex, headers) = 
                 if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-                then res.[0] |> Array.map (fun x -> x.Data)
-                else res.[0] |> Array.map (fun x -> x.Data) //Humm!! need better semantics around detecting headers
+                then 1, res.[0] |> Array.map (fun x -> x.Data)
+                else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
                     
+
             { Name = (getName ("Table_" + (string index)) table)
               Headers = headers
-              Rows = res.[1..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
-    let private getTables (doc:HtmlDocument) =
-        let tableElements = doc.Elements |> List.collect (fun e -> e.Elements ["table"])
-    
+              Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
+
     let getTables (doc:HtmlDocument) =
-        let tableElements = doc.Elements |> List.collect (getElementsNamed ["table"]) 
+        let tableElements = doc.Elements |> List.collect (fun e -> e.Elements ["table"])
         tableElements
         |> List.mapi parseTable 
         |> List.choose id

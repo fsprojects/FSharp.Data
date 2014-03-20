@@ -38,7 +38,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
                 tables 
                 |> List.filter (fun table -> table.Headers.Length > 0)
-                |> List.map (fun table -> table.Name, HtmlInference.inferColumns preferOptionals missingValuesList cultureInfo table)
+                |> List.map (fun table -> table.Name, HtmlInference.inferColumns preferOptionals missingValuesList cultureInfo table.Headers table.Rows)
                 |> HtmlGenerator.generateTypes asm ns typeName (missingValues, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
