@@ -13,3 +13,5 @@ TestResult.xml
 *.userprefs
 log.csv
 log.txt
+
+*.orig
