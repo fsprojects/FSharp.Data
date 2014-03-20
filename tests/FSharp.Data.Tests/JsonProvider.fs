@@ -495,3 +495,96 @@ let ``Can parse optional arrays``() =
     j.Ab.Persons.[0].Contacts.[0].Emails |> should equal [| |]
     j.Ab.Persons.[0].Contacts.[1].Emails.Length |> should equal 1
 
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
+type GitHub = JsonProvider<"Data/github.json", RootName="Issue">
+
+[<Test>]
+let ``Can construct complex objects``() =
+    let user = GitHub.User("login", 0, "avatarUrl", Guid.Parse("{75B3E239-BF95-4FAB-ABE3-F2795D3C843B}"), "url", "htmlUrl", "folowersUrl", "followingUrl", "gistsUrl",
+                           "starredUrl", "subscriptionsUrl", "organizationsUrl", "reposUrl", "eventsUrl", "receivedEventsUrl", "type")
+    let pullRequest = GitHub.PullRequest(None, None, None)
+    let label1 = GitHub.Label("url", "name", GitHub.FloatOrString(1.5))
+    let label2 = GitHub.Label("url", "name", GitHub.FloatOrString("string"))
+    let json = GitHub.Issue("url", "labelsUrl", "commentsUrl", "eventsUrl", "htmlUrl", 0, 1, "title", user, [| label1; label2 |], "state",
+                            JsonValue.Null, JsonValue.Null, 2, DateTime(2013,03,15), DateTime(2013,03,16), JsonValue.Null, pullRequest, None)
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """{
+  "url": "url",
+  "labels_url": "labelsUrl",
+  "comments_url": "commentsUrl",
+  "events_url": "eventsUrl",
+  "html_url": "htmlUrl",
+  "id": 0,
+  "number": 1,
+  "title": "title",
+  "user": {
+    "login": "login",
+    "id": 0,
+    "avatar_url": "avatarUrl",
+    "gravatar_id": "75b3e239-bf95-4fab-abe3-f2795d3c843b",
+    "url": "url",
+    "html_url": "htmlUrl",
+    "followers_url": "folowersUrl",
+    "following_url": "followingUrl",
+    "gists_url": "gistsUrl",
+    "starred_url": "starredUrl",
+    "subscriptions_url": "subscriptionsUrl",
+    "organizations_url": "organizationsUrl",
+    "repos_url": "reposUrl",
+    "events_url": "eventsUrl",
+    "received_events_url": "receivedEventsUrl",
+    "type": "type"
+  },
+  "labels": [
+    {
+      "url": "url",
+      "name": "name",
+      "color": 1.5
+    },
+    {
+      "url": "url",
+      "name": "name",
+      "color": "string"
+    }
+  ],
+  "state": "state",
+  "assignee": null,
+  "milestone": null,
+  "comments": 2,
+  "created_at": "03/15/2013 00:00:00",
+  "updated_at": "03/16/2013 00:00:00",
+  "closed_at": null,
+  "pull_request": {
+    "html_url": null,
+    "diff_url": null,
+    "patch_url": null
+  },
+  "body": null
+}""")
+
+type HeterogeneousArray = JsonProvider<"""[8, 9, false, { "a": 3 }]""">
+
+[<Test>]
+let ``Can construct heterogeneous array``() =
+    let json = HeterogeneousArray.Root([| 8; 9 |], false, HeterogeneousArray.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  8,
+  9,
+  false,
+  {
+    "a": 3
+  }
+]""")
+
+type HeterogeneousArrayWithOptionals = JsonProvider<"""[ [{ "a": 3 }], [8, 9, false, { "a": 3 }] ]""", SampleIsList=true>
+
+[<Test>]
+let ``Can construct heterogeneous arrays with optionals``() =
+    let json = HeterogeneousArrayWithOptionals.Root([| |], None, HeterogeneousArrayWithOptionals.Record(3))
+    json.JsonValue.ToString() |> normalize |> should equal (normalize """[
+  {
+    "a": 3
+  }
+]""")

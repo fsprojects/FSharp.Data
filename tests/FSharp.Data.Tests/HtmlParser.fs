@@ -1,20 +1,14 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
 
 open NUnit.Framework
-open FSharp.Data
 open FsUnit
-open System.Xml
-open System.Xml.Linq
-open System.Text
-open System.IO
+open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Test>]
@@ -40,8 +34,11 @@ let ``Can handle unclosed tags correctly``() =
             [
                HtmlElement("head", [], 
                 [
-                    HtmlElement("script", [HtmlAttribute("src","/bwx_generic.js");HtmlAttribute("language","JavaScript")], [])
-                    HtmlElement("link", [HtmlAttribute("href","/bwx_style.css");HtmlAttribute("type","text/css");HtmlAttribute("rel","stylesheet")], [])
+                    HtmlElement("script", [HtmlAttribute("language","JavaScript")
+                                           HtmlAttribute("src","/bwx_generic.js")], [])
+                    HtmlElement("link", [HtmlAttribute("rel","stylesheet")
+                                         HtmlAttribute("type","text/css")
+                                         HtmlAttribute("href","/bwx_style.css")], [])
                 ])
                HtmlElement("body", [],
                 [
@@ -66,7 +63,7 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -83,7 +80,7 @@ let ``Can parse tables from a simple html table with no defined headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -100,7 +97,7 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html |> Seq.toList
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -115,7 +112,7 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html |> Seq.toList
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -130,7 +127,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_id"
@@ -145,7 +142,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_name"
@@ -160,7 +157,7 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
     tables.Length |> should equal 1
 
 [<Test>]
@@ -185,7 +182,7 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
@@ -203,7 +200,7 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = HtmlRuntime.parseTables html
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Table_0"
@@ -214,8 +211,8 @@ type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
 
 let charRefsTestCases =
     CharRefs.GetSample().Items
-    |> Array.map (fun x -> [|x.Key; x.Characters|])
-    |> Array.filter (fun [|_;c|] -> c <> "")
+    |> Array.filter (fun x -> x.Characters <> "")
+    |> Array.map (fun x -> [| x.Key; x.Characters |])
 
 ///When using `data\charrefs-full.json` there seems to be some encoding problems
 ///and equality issues on these characters however this gives a resonable 
@@ -237,3 +234,9 @@ let ``Should substitute char references``(ref:string, result:string) =
             ])
         ])
     parsed |> should equal expected
+
+[<Test>]
+let ``Can handle html with doctype and xml namespaces``() = 
+    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" />"""
+    let htmlDoc = HtmlDocument.Parse html
+    htmlDoc.ToString().Replace("\n", null) |> should equal html

@@ -7,6 +7,7 @@ open System
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
+open FSharp.Data
 open FSharp.Data.Runtime
 
 #nowarn "10001"
@@ -47,7 +48,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReader = fun reader ->  replacer.ToRuntime <@@ TypedHtmlDocument.Create(%reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlRuntime.parseTables) (fun _ _ -> failwith "Not Applicable")
+        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse >> HtmlRuntime.getTables) (fun _ _ -> failwith "Not Applicable")
                      getSpecFromSamples version this cfg replacer resolutionFolder typeName
 
     let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)

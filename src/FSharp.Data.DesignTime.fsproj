@@ -94,7 +94,6 @@
     <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
-    <None Include="Test.HtmlRuntime.fsx" />
     <None Include="Test.fsx" />
   </ItemGroup>
   <ItemGroup>

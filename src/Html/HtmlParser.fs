@@ -20,11 +20,60 @@ type HtmlAttribute =
 
 type HtmlElement =
     | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
-    | HtmlCharRef of string
     | HtmlText of string
     | HtmlScript of string
     | HtmlStyle of string
     | HtmlComment of string
+    
+    override x.ToString() =
+
+        let rec serialize (sb:StringBuilder) indentation html =
+            let append (str:string) = sb.Append str |> ignore
+            let newLine plus =
+                sb.AppendLine() |> ignore
+                System.String(' ', indentation + plus) |> append
+            match html with
+            | HtmlElement(name, attributes, elements) ->
+                append "<"
+                append name
+                for attr in attributes do
+                    append " "
+                    append attr.Name
+                    append "=\""
+                    append attr.Value
+                    append "\""
+                if elements.IsEmpty
+                then append " />"
+                else
+                    append ">"
+                    newLine 2
+                    for element in elements do
+                        serialize sb (indentation + 2) element
+                    newLine 0
+                    append "</"
+                    append name
+                    append ">"
+            | HtmlText str -> append str
+            | HtmlScript str -> 
+                append "<script>"
+                newLine 0
+                append str
+                newLine 0
+                append "</script>"
+            | HtmlStyle str -> 
+                append "<style>"
+                newLine 0
+                append str
+                newLine 0
+                append "</style>"
+            | HtmlComment str -> 
+                append "<!-- "
+                append str
+                append " -->"
+        
+        let sb = StringBuilder()
+        serialize sb 0 x
+        sb.ToString()
 
 type HtmlDocument = 
     | HtmlDocument of docType:string * elements:HtmlElement list
@@ -34,6 +83,10 @@ type HtmlDocument =
     member x.Elements = 
         match x with
         | HtmlDocument(elements = elements) -> elements
+    override x.ToString() =
+        (if String.IsNullOrEmpty x.DocType then "" else "<!" + x.DocType + ">\n")
+        +
+        (x.Elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
 
 // --------------------------------------------------------------------------------------
 
@@ -87,7 +140,6 @@ module private HtmlParser =
         | Tag of bool * string * HtmlAttribute list
         | TagEnd of string
         | Text of string
-        | CharRef of string
         | Script of string
         | Style of string
         | Comment of string
@@ -152,12 +204,12 @@ module private HtmlParser =
     
         member x.CurrentTagName() = 
             match (!(!x.CurrentTag).Contents) with
-            | [] ->  String.Empty
+            | [] -> String.Empty
             | h :: _ -> h.ToString()
     
         member x.CurrentAttrName() = 
             match !x.Attributes with
-            | [] ->  String.Empty
+            | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
     
         member x.ConsAttrValue() =
@@ -166,11 +218,12 @@ module private HtmlParser =
             | (_,h) :: _ -> h.Cons(x.Reader.ReadChar())
     
         member x.GetAttributes() = 
-            !x.Attributes |> List.choose (fun (key,value) -> 
-                                            if key.Length > 0
-                                            then Some <| HtmlAttribute(key.ToString(), value.ToString())
-                                            else None
-                                            )
+            !x.Attributes 
+            |> List.choose (fun (key, value) -> 
+                if key.Length > 0
+                then Some <| HtmlAttribute(key.ToString(), value.ToString())
+                else None)
+            |> List.rev
     
         member x.EmitSelfClosingTag() = 
             let name = (!x.CurrentTag).ToString()
@@ -206,14 +259,15 @@ module private HtmlParser =
                 | Some(r) -> r
                 | None -> ref
                  
-            let result : HtmlToken = 
+            let result = 
+                let content = (!x.Content).ToString()
                 match !x.InsertionMode with
-                | DefaultMode -> Text((!x.Content).ToString())
-                | ScriptMode -> Script((!x.Content).ToString())
-                | StyleMode -> Style((!x.Content).ToString())
-                | CharRefMode -> Text((!x.Content).ToString().Trim() |> substituteCharRef)
-                | CommentMode -> Comment((!x.Content).ToString())
-                | DocTypeMode -> DocType((!x.Content).ToString())
+                | DefaultMode -> Text content
+                | ScriptMode -> Script content
+                | StyleMode -> Style content
+                | CharRefMode -> Text (substituteCharRef (content.Trim()))
+                | CommentMode -> Comment content
+                | DocTypeMode -> DocType content
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
             result
@@ -237,7 +291,7 @@ module private HtmlParser =
                 charRef state
             | _ ->
                 match !state.InsertionMode with
-                | ScriptMode ->  state.Cons(); script state
+                | ScriptMode -> state.Cons(); script state
                 | StyleMode -> state.Cons(); script state
                 | DefaultMode -> state.Cons(); data state
                 | CharRefMode -> charRef state
@@ -254,15 +308,15 @@ module private HtmlParser =
             | _ -> state.Cons(); script state
         and scriptEndTagOpen state = 
             match state.Peek() with
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state;
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
             | _ -> script state
         and scriptEndTagName state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
             | '/' -> state.Pop(); selfClosingStartTag state
             | '>' -> state.Pop();  state.EmitTag(true); 
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state;
-            | _ -> state.ConsTag(); scriptEndTagName state;
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | _ -> state.ConsTag(); scriptEndTagName state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
@@ -270,8 +324,8 @@ module private HtmlParser =
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
-            | '!' ->  state.Pop(); docType state
-            | '/'  -> state.Pop(); endTagOpen state
+            | '!' -> state.Pop(); docType state
+            | '/' -> state.Pop(); endTagOpen state
             | '?' -> state.Pop(); bogusComment state
             | TextParser.Letter _ -> state.ConsTag(); tagName false state
             | _ -> data state
@@ -301,7 +355,7 @@ module private HtmlParser =
             | _ -> state.ConsTag(); tagName isEndTag state
         and selfClosingStartTag state = 
             match state.Peek() with
-            | '>' -> state.Pop(); state.EmitSelfClosingTag();
+            | '>' -> state.Pop(); state.EmitSelfClosingTag()
             | TextParser.EndOfFile _ -> data state
             | _ -> beforeAttributeName state
         and endTagOpen state = 
@@ -321,11 +375,11 @@ module private HtmlParser =
             match state.Peek() with
             | '\'' | '"'  -> state.Pop(); attributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
-            | '=' -> state.Pop(); beforeAttributeValue state;
+            | '=' -> state.Pop(); beforeAttributeValue state
             | '>' -> state.Pop(); state.EmitTag(false)
-            | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state;
-            | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state;
-            | _ -> state.ConsAttrName(); tagOpen state
+            | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
+            | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state
+            | _ -> state.ConsAttrName(); attributeName state
         and beforeAttributeValue state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
@@ -333,7 +387,7 @@ module private HtmlParser =
             | '&' -> state.Pop(); attributeValueUnquoted state
             | '\'' -> state.Pop(); attributeValueSingleQuoted state
             | '>' -> state.Pop(); state.EmitTag(false);
-            | _ -> state.ConsAttrValue(); attributeValueUnquoted state;
+            | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueUnquoted state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
@@ -364,7 +418,7 @@ module private HtmlParser =
     let parse reader =
         let rec parse' docType elements tokens =
             match tokens with
-            | DocType(dt) :: rest -> parse' dt elements rest
+            | DocType dt :: rest -> parse' dt elements rest
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
@@ -372,14 +426,13 @@ module private HtmlParser =
                 let dt, tokens, content = parse' docType [] rest
                 let e = HtmlElement(name.ToLower(), attributes, content)
                 parse' dt (e :: elements) tokens
-            | TagEnd(_) :: rest -> docType, rest, (elements |> List.rev)
-            | Text(cont) :: rest ->
-                if cont <> " " && (String.IsNullOrEmpty(cont) || String.IsNullOrWhiteSpace(cont))
+            | TagEnd _ :: rest -> docType, rest, (elements |> List.rev)
+            | Text cont :: rest ->
+                if cont <> " " && (String.IsNullOrWhiteSpace cont)
                 then parse' docType elements rest
-                else parse' docType (HtmlText(cont) :: elements) rest
+                else parse' docType (HtmlText(cont.Trim()) :: elements) rest
             | Script(cont) :: rest -> parse' docType (HtmlScript(cont.Trim()) :: elements) rest
             | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
-            | CharRef(cont) :: rest -> parse' docType (HtmlCharRef(cont.Trim()) :: elements) rest
             | Style(cont) :: rest -> parse' docType (HtmlStyle(cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
@@ -406,7 +459,7 @@ type HtmlDocument with
 
   /// Loads HTML from the specified uri asynchronously
   static member AsyncLoad(uri:string) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" uri
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" uri
     return HtmlParser.parse reader
   }
 

@@ -5,6 +5,7 @@
 open System
 open System.IO
 open System.Xml
+open FSharp.Data
 
 type HtmlAttribute with
     
@@ -88,9 +89,9 @@ type HtmlElement with
                 | HtmlElement(_,_, content) ->
                     String.Join(" ", seq { for e in content do
                                                 match e with
-                                                | HtmlText(text) -> yield text.Trim()
+                                                | HtmlText(text) -> yield text
                                                 | elem -> yield innerText' elem })
-                | HtmlText(text) | HtmlCharRef(text) -> text.Trim()
+                | HtmlText(text) | HtmlCharRef(text) -> text
                 | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
             innerText' x
 

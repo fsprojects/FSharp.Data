@@ -65,3 +65,9 @@ let ``Can infer tables out of the market depth file``() =
     let table = MarketDepth().Tables.Table3
     table.Rows.[0].``Settlement Day`` |> should equal (DateTime(2014, 1, 14, 0, 0,0))
     table.Rows.[0].Period |> should equal 1
+
+[<Test>]
+let ``NuGet table gets all rows``() =
+    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.Table0
+    table.Rows.Length |> should equal 35
+
