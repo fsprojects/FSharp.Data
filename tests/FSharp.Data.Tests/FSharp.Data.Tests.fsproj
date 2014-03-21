@@ -251,6 +251,7 @@
     <Compile Include="JsonProvider.fs" />
     <Compile Include="FreebaseProvider.fs" />
     <Compile Include="WorldBankProvider.fs" />
+    <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlProvider.fs" />
     <None Include="packages.config" />

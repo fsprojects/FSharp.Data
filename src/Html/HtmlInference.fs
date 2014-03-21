@@ -55,12 +55,6 @@ let inferHeaders (rows : string [][]) =
     let computeRowType row = 
         inferRowType false TextConversions.DefaultMissingValues CultureInfo.InvariantCulture [||] row
 
-//    let inferedTypeOfHeadersString row = 
-//        match row with
-//        | StructuralTypes.InferedType.Record(None, props, false) ->
-//            props |> List.forall (fun p -> p.Type = InferedType.Primitive(typeof<string>, None, false))
-//        | _ -> false
-
     let headerRow = computeRowType rows.[0]
     let dataRow =  rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
     if headerRow = dataRow

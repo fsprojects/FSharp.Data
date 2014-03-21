@@ -77,6 +77,7 @@ let ``Can parse tables from a simple html table but infer headers``() =
                         <table id="table">
                             <tr><td>Column 1</td></tr>
                             <tr><td>1</td></tr>
+                            <tr><td>2</td></tr>
                         </table>
                     </body>
                 </html>"""
@@ -86,6 +87,18 @@ let ``Can parse tables from a simple html table but infer headers``() =
     tables.[0].Name |> should equal "table"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+[<Test>]
+let ``Ignores empty tables``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
+
+    tables.Length |> should equal 0
 
 [<Test>]
 let ``Can parse tables with no headers``() = 
@@ -225,33 +238,6 @@ let ``Extracts tables in malformed html``() =
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
 
-type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
-
-let charRefsTestCases =
-    CharRefs.GetSample().Items
-    |> Array.filter (fun x -> x.Characters <> "")
-    |> Array.map (fun x -> [| x.Key; x.Characters |])
-
-///When using `data\charrefs-full.json` there seems to be some encoding problems
-///and equality issues on these characters however this gives a resonable 
-///cross-section of the named char refs in the HTML standard. 
-[<Test>]
-[<TestCaseSource "charRefsTestCases">]
-let ``Should substitute char references``(ref:string, result:string) = 
-    let html = sprintf """<html><body>%s</body></html>""" ref
-    let parsed = HtmlDocument.Parse html
-    let expected = 
-        HtmlDocument("", 
-         [
-           HtmlElement("html", [] ,
-            [
-               HtmlElement("body", [],
-                [
-                   HtmlText(result)
-                ])
-            ])
-        ])
-    parsed |> should equal expected
 
 [<Test>]
 let ``Can handle html with doctype and xml namespaces``() = 
