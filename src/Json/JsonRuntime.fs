@@ -99,8 +99,8 @@ type JsonRuntime =
   static member ConvertDecimal(cultureStr, json) =
     json |> Option.bind (JsonConversions.AsDecimal (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertFloat(cultureStr, missingValues:string, json) = 
-    json |> Option.bind (JsonConversions.AsFloat (missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)) 
+  static member ConvertFloat(cultureStr, missingValuesStr, json) = 
+    json |> Option.bind (JsonConversions.AsFloat (TextRuntime.GetMissingValues missingValuesStr) 
                                                  (*useNoneForMissingValues*)true
                                                  (TextRuntime.GetCulture cultureStr))
 

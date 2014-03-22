@@ -14,12 +14,12 @@ open ProviderImplementation.QuotationBuilder
 
 #nowarn "10001"
 
-let getConversionQuotation missingValues cultureStr typ (value:Expr<JsonValue option>) =
+let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<JsonValue option>) =
   if typ = typeof<string> then <@@ JsonRuntime.ConvertString(cultureStr, %value) @@>
   elif typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ JsonRuntime.ConvertInteger(cultureStr, %value) @@>
   elif typ = typeof<int64> then <@@ JsonRuntime.ConvertInteger64(cultureStr, %value) @@>
   elif typ = typeof<decimal> then <@@ JsonRuntime.ConvertDecimal(cultureStr, %value) @@>
-  elif typ = typeof<float> then <@@ JsonRuntime.ConvertFloat(cultureStr, missingValues, %value) @@>
+  elif typ = typeof<float> then <@@ JsonRuntime.ConvertFloat(cultureStr, missingValuesStr, %value) @@>
   elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(cultureStr, %value) @@>
   elif typ = typeof<DateTime> then <@@ JsonRuntime.ConvertDateTime(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ JsonRuntime.ConvertGuid(%value) @@>
@@ -30,7 +30,7 @@ type JsonConversionCallingType =
 
 /// Creates a function that takes Expr<JsonValue option> and converts it to 
 /// an expression of other type - the type is specified by `field`
-let convertJsonValue (replacer:AssemblyReplacer) missingValues cultureStr canPassAllConversionCallingTypes (field:PrimitiveInferedProperty) = 
+let convertJsonValue (replacer:AssemblyReplacer) missingValuesStr cultureStr canPassAllConversionCallingTypes (field:PrimitiveInferedProperty) = 
 
   assert (field.TypeWithMeasure = field.RuntimeType)
   assert (field.Name = "")
@@ -54,7 +54,7 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValues cultureStr canPas
 
   let convert (value:Expr) =
     let convert value = 
-      getConversionQuotation missingValues cultureStr field.InferedType value
+      getConversionQuotation missingValuesStr cultureStr field.InferedType value
     match field.TypeWrapper, canPassAllConversionCallingTypes with
     | TypeWrapper.None, true ->
         wrapInLetIfNeeded value <| fun (varExpr:Expr<JsonValueOptionAndPath>) ->
