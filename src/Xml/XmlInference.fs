@@ -31,7 +31,7 @@ let getInferedTypeFromValue cultureInfo (element:XElement) =
     | InferedType.Primitive(t, _, optional) when t = typeof<string> && value.TrimStart().StartsWith "{" ->
         try        
             match JsonValue.Parse value with
-            | JsonValue.Object _ as json -> 
+            | JsonValue.Record _ as json -> 
                 let jsonType = json |> JsonInference.inferType cultureInfo element.Name.LocalName
                 InferedType.Json(jsonType, optional)
             | _ -> typ

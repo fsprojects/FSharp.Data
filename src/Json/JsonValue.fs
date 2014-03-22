@@ -34,8 +34,8 @@ type JsonValue =
   | String of string
   | Number of decimal
   | Float of float 
-  | Object of Map<string, JsonValue>
-  | Array of JsonValue[]
+  | Record of properties:(string * JsonValue)[]
+  | Array of elements:JsonValue[]
   | Boolean of bool
   | Null
 
@@ -55,14 +55,10 @@ type JsonValue =
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s -> 
           sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
-      | Object properties -> 
+      | Record properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
-          let getOrder = function
-            | JsonValue.Array _ -> 2
-            | JsonValue.Object _ -> 1
-            | _ -> 0
-          for KeyValue(k, v) in properties |> Seq.sortBy (fun (KeyValue(k, v)) -> getOrder v, k) do
+          for k, v in properties do
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             newLine 2
             if saveOptions = JsonSaveOptions.None then
@@ -84,6 +80,23 @@ type JsonValue =
           sb.Append "]"
 
     (serialize (new StringBuilder()) 0 x).ToString()
+
+/// [omit]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module JsonValue =
+
+  /// Active Pattern to view a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
+  let (|Object|_|) x =
+    match x with 
+    | JsonValue.Record properties -> Map.ofArray properties |> Some
+    | _ -> None
+
+  /// Constructor to create a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
+  /// backwards compatibility reaons
+  [<Obsolete("Please use JsonValue.Record instead")>]
+  let Object = Map.toArray >> JsonValue.Record 
 
 // --------------------------------------------------------------------------------------
 // JSON parser
@@ -220,7 +233,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
-        JsonValue.Object(pairs |> Map.ofSeq)
+        JsonValue.Record(pairs |> Array.ofSeq)
 
     and parseArray() =
         ensure(i < s.Length && s.[i] = '[')
@@ -282,7 +295,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = asyncReadTextAtRuntime false "" "" uri
+    let! reader = asyncReadTextAtRuntime false "" "" "JSON" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
@@ -292,13 +305,6 @@ type JsonValue with
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
-  /// Posts the JSON to the specified uri
-  member x.Post(uri:string) =  
-    Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = [HttpRequestHeaders.ContentType HttpContentTypes.Json])
-
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, true).Parse()
@@ -306,3 +312,37 @@ type JsonValue with
   /// Parses the specified string into multiple JSON values
   static member ParseMultiple(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()
+
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.Request(uri:string, ?httpMethod, ?headers) =  
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.Request(
+      uri,
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers = headers,
+      httpMethod = httpMethod)
+
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
+    let headers = defaultArg headers []
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.AsyncRequest(
+      uri,
+      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      headers = headers,
+      httpMethod = httpMethod)
+
+  [<Obsolete("Please use JsonValue.Request instead")>]
+  member x.Post(uri:string, ?headers) =  
+    x.Request(uri, ?headers = headers)

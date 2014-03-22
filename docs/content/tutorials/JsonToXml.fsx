@@ -62,7 +62,7 @@ As you can see, the `item` element has been automatically pluralized to `items` 
 array contains two record values that consist of the `value` attribute.
 
 The conversion function is a recursive function that takes a `XElement` and produces 
-`JsonValue`. It builds JSON objects (using `JsonValue.Object`) and arrays (using
+`JsonValue`. It builds JSON records (using `JsonValue.Record`) and arrays (using
 `JsonValue.Array`). All attribute values are turned into `JsonValue.String` - the 
 sample does not imlement more sophisticated conversion that would turn numeric 
 attributes to a corresponding JSON type:
@@ -94,9 +94,8 @@ let rec fromXml (xml:XElement) =
         | children -> key + "s", createArray children )
         
   // Concatenate elements produced for child elements & attributes
-  Seq.concat [Seq.ofList attrs; children]
-  |> Map.ofSeq
-  |> JsonValue.Object
+  Array.append (Array.ofList attrs) (Array.ofSeq children)
+  |> JsonValue.Record
 
 (**
 
@@ -152,10 +151,9 @@ let toXml(x:JsonValue) =
 
     // JSON object becomes a collection of XML
     // attributes (for primitives) or child elements
-    | JsonValue.Object properties -> 
+    | JsonValue.Record properties -> 
       properties 
-      |> Seq.sortBy (fun (KeyValue(key, _)) -> key)
-      |> Seq.map (fun (KeyValue(key,value)) ->
+      |> Array.map (fun (key, value) ->
           match value with
           | JsonValue.String s -> attr key s
           | JsonValue.Boolean b -> attr key b
@@ -166,7 +164,7 @@ let toXml(x:JsonValue) =
     // JSON array is turned into a 
     // sequence of <item> elements
     | JsonValue.Array elements -> 
-        elements |> Seq.map (fun item -> 
+        elements |> Array.map (fun item -> 
           elem "item" (toXml item)) :> obj
 
   // Perform the conversion and cast the result to sequence

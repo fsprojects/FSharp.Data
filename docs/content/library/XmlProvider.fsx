@@ -229,10 +229,9 @@ for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
 
 (**
-
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
+ * [API Reference: XmlProvider type provider](../reference/fsharp-data-xmlprovider.html)
+ * [API Reference: XElementExtensions module](../reference/fsharp-data-xelementextensions.html)
 
 *)

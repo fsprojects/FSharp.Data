@@ -184,3 +184,17 @@
 
 #### 2.0.1 - March 14 2014
 * Fixed Freebase provider throwing exceptions in the absense of network connectivity even when not used.
+
+#### 2.0.2 - March 16 2014
+* Always send User-Agent and Accept headers when making requests in the type providers.
+* Added support for creating typed JSON objects in JsonProvider.
+
+#### 2.0.3 - March 17 2014
+* Respect the order of the attributes present in the JSON in JsonProvider.
+
+#### 2.0.4 - March 20 2014
+* Helpers for sending HTTP requests with JSON and XML content.
+* Removed built-in HTTP certificates support, and moved it to a sample in the documentation.
+
+#### 2.0.5 - Unreleased
+* Add - to the list of default missing values.

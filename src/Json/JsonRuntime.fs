@@ -124,7 +124,7 @@ type JsonRuntime =
         else "a " + name
     match opt, originalValue with 
     | Some value, _ -> value
-    | None, Some ((JsonValue.Array _ | JsonValue.Object _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
+    | None, Some ((JsonValue.Array _ | JsonValue.Record _) as x) -> failwithf "Expecting %s at '%s', got %s" (getTypeName()) path <| x.ToString(JsonSaveOptions.DisableFormatting)
     | None, _ when typeof<'T> = typeof<string> -> "" |> unbox
     | None, _ when typeof<'T> = typeof<float> -> Double.NaN |> unbox
     | None, None -> failwithf "'%s' is missing" path
@@ -194,7 +194,7 @@ type JsonRuntime =
     | InferedTypeTag.Collection -> 
         function JsonValue.Array _ -> true | _ -> false
     | InferedTypeTag.Record _ -> 
-        function JsonValue.Object _ -> true | _ -> false
+        function JsonValue.Record _ -> true | _ -> false
     | InferedTypeTag.Json -> 
         failwith "Json type not supported"
     | InferedTypeTag.Null -> 
@@ -231,3 +231,58 @@ type JsonRuntime =
     then Some (mapping.Invoke doc)
     else None
 
+  static member private ToJsonValue (cultureInfo:CultureInfo) (value:obj) = 
+    let f g = function None -> JsonValue.Null | Some v -> g v
+    if value = null then 
+        JsonValue.Null
+    elif value.GetType().IsArray then 
+        JsonValue.Array [| for elem in unbox<Array> value -> JsonRuntime.ToJsonValue cultureInfo elem |]
+    else
+        match value with
+        | :? string                  as v -> JsonValue.String v
+        | :? option<string>          as v -> f JsonValue.String v
+        | :? DateTime                as v -> v.ToString(cultureInfo) |> JsonValue.String
+        | :? option<DateTime>        as v -> f (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+        | :? int                     as v -> JsonValue.Number(decimal v)
+        | :? option<int>             as v -> f (decimal >> JsonValue.Number) v
+        | :? int64                   as v -> JsonValue.Number(decimal v)
+        | :? option<int64>           as v -> f (decimal >> JsonValue.Number) v
+        | :? float                   as v -> JsonValue.Number(decimal v)
+        | :? option<float>           as v -> f (decimal >> JsonValue.Number) v
+        | :? decimal                 as v -> JsonValue.Number v
+        | :? option<decimal>         as v -> f JsonValue.Number v
+        | :? bool                    as v -> JsonValue.Boolean v
+        | :? option<bool>            as v -> f JsonValue.Boolean v
+        | :? Guid                    as v -> v.ToString() |> JsonValue.String
+        | :? option<Guid>            as v -> f (fun (g:Guid) -> g.ToString() |> JsonValue.String) v
+        | :? IJsonDocument           as v -> v.JsonValue
+        | :? option<IJsonDocument>   as v -> f (fun (v:IJsonDocument) -> v.JsonValue) v
+        | :? JsonValue               as v -> v
+        | :? option<JsonValue>       as v -> f id v
+        | _ -> failwithf "Can't create JsonValue from %A" value
+
+  // Creates a JsonValue and wraps it in a json document
+  static member CreateValue(value:obj, cultureStr) = 
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let json = JsonRuntime.ToJsonValue cultureInfo value
+    JsonDocument.Create(json, "")
+
+  // Creates a JsonValue.Record and wraps it in a json document
+  static member CreateRecord(properties, cultureStr) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let json = 
+      properties 
+      |> Array.map (fun (k, v:obj) -> k, JsonRuntime.ToJsonValue cultureInfo v)
+      |> JsonValue.Record
+    JsonDocument.Create(json, "")
+
+  // Creates a scalar JsonValue.Array and wraps it in a json document
+  static member CreateArray(elements:obj[], cultureStr) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let json = 
+      elements 
+      |> Array.collect (JsonRuntime.ToJsonValue cultureInfo
+                        >>
+                        function JsonValue.Array elements -> elements | JsonValue.Null -> [| |] | element -> [| element |])
+      |> JsonValue.Array
+    JsonDocument.Create(json, "")

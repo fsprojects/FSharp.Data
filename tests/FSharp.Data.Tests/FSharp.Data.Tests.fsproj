@@ -61,6 +61,9 @@
     <Content Include="Data/file with spaces.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/tendulkarHistoryWithGameNumber.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/LastFM.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

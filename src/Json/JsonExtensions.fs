@@ -12,16 +12,16 @@ type JsonValue with
   /// Get a sequence of key-value pairs representing the properties of an object
   member x.Properties =
     match x with
-    | JsonValue.Object map -> Map.toList map
-    | _ -> []
+    | JsonValue.Record properties -> properties
+    | _ -> [| |]
 
   /// Get property of a JSON object. Fails if the value is not an object
   /// or if the property is not present
   member x.GetProperty(propertyName) = 
     match x with
-    | JsonValue.Object properties -> 
-        match Map.tryFind propertyName properties with 
-        | Some res -> res
+    | JsonValue.Record properties -> 
+        match Array.tryFind (fst >> ((=) propertyName)) properties with 
+        | Some (_, value) -> value
         | None -> failwithf "Didn't find property '%s' in %s" propertyName <| x.ToString(JsonSaveOptions.DisableFormatting)
     | _ -> failwithf "Not an object: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
@@ -29,8 +29,8 @@ type JsonValue with
   /// Returns None if the value is not an object or if the property is not present.
   member x.TryGetProperty(propertyName) = 
     match x with
-    | JsonValue.Object properties -> 
-        Map.tryFind propertyName properties 
+    | JsonValue.Record properties -> 
+        Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
     | _ -> None
 
   /// Assuming the value is an object, get value with the specified name
@@ -130,15 +130,15 @@ module Options =
     /// Get a sequence of key-value pairs representing the properties of an object
     member x.Properties = 
       match x with
-      | JsonValue.Object map -> Map.toList map
-      | _ -> []
+      | JsonValue.Record properties -> properties
+      | _ -> [| |]
   
     /// Try to get a property of a JSON value.
     /// Returns None if the value is not an object or if the property is not present.
     member x.TryGetProperty(propertyName) = 
       match x with
-      | JsonValue.Object properties -> 
-          Map.tryFind propertyName properties 
+      | JsonValue.Record properties -> 
+          Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
       | _ -> None
   
     /// Try to get a property of a JSON value.
@@ -214,15 +214,15 @@ module Options =
     static member Properties(x) = 
       match x with
       | Some (json:JsonValue) -> json.Properties
-      | None -> []
+      | None -> [| |]
   
     /// Try to get a property of a JSON value.
     /// Returns None if the value is not an object or if the property is not present.
     [<Extension>] 
     static member TryGetProperty(x, propertyName) = 
       match x with
-      | Some (JsonValue.Object properties) -> 
-          Map.tryFind propertyName properties 
+      | Some (JsonValue.Record properties) -> 
+          Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
       | _ -> None
   
     /// Try to get a property of a JSON value.

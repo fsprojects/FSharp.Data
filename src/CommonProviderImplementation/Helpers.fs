@@ -182,7 +182,7 @@ module ProviderHelpers =
             
             let readText() = 
                 Async.RunSynchronously <| async {
-                    use! stream = asyncOpenStream (Some (tp, fullTypeName)) resolver uri
+                    use! stream = asyncOpenStream (Some (tp, fullTypeName)) resolver formatName uri
                     use reader = new StreamReader(stream)
                     return reader.ReadToEnd()
                 } 
@@ -310,7 +310,7 @@ module ProviderHelpers =
           let args = [ ProvidedParameter("uri", typeof<string>) ]
           let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
           m.InvokeCode <- fun (Singleton uri) -> 
-              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri) @>
+              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName %%uri) @>
               |> spec.CreateFromTextReader 
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
@@ -319,7 +319,7 @@ module ProviderHelpers =
           let args = [ ProvidedParameter("uri", typeof<string>) ]
           let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, IsStaticMethod = true)
           m.InvokeCode <- fun (Singleton uri) -> 
-              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder %%uri @>
+              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName %%uri @>
               asyncMap replacer resultType readerAsync spec.CreateFromTextReader
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
@@ -338,7 +338,7 @@ module ProviderHelpers =
                       let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
                       m.InvokeCode <- fun _ -> 
                           if sampleIsUri 
-                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
+                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri) @>
                           else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                           |> spec.CreateFromTextReaderForSampleList
                       yield m :> _
@@ -347,7 +347,7 @@ module ProviderHelpers =
                           // Generate static AsyncGetSamples method
                           let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
                           m.InvokeCode <- fun _ -> 
-                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri @>
                               asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
                           yield m :> _
               
@@ -357,7 +357,7 @@ module ProviderHelpers =
               
                 let getSampleCode = fun _ -> 
                     if sampleIsUri 
-                    then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri) @>
+                    then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri) @>
                     else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                     |> spec.CreateFromTextReader
               
@@ -372,7 +372,7 @@ module ProviderHelpers =
                     // Generate static AsyncGetSample method
                     let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
                     m.InvokeCode <- fun _ -> 
-                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder sampleOrSampleUri @>
+                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri @>
                         asyncMap replacer resultType readerAsync spec.CreateFromTextReader
                     yield m :> _
         
