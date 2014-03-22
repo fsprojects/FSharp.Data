@@ -2,9 +2,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -14,8 +14,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -26,9 +26,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let f = new Func<_,_>(fun (t:TextReader) -> 
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
-                                                                       TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                                                        let value = TextConversions.AsString(row.[1])
-                                                                       TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                                                        let value = TextConversions.AsString(row.[2])
                                                                        TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                                                        let value = TextConversions.AsString(row.[3])
@@ -38,8 +38,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[5])
                                                                        TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                                                     [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                                                        TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                     [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                        TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                                         TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                                         TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                                         TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -51,9 +51,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let f = new Func<_,_>(fun (t:TextReader) -> 
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
-                                                                       TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                                                        let value = TextConversions.AsString(row.[1])
-                                                                       TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                                                        let value = TextConversions.AsString(row.[2])
                                                                        TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                                                        let value = TextConversions.AsString(row.[3])
@@ -63,8 +63,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[5])
                                                                        TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                                                     [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                                                        TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                                                     [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                                                        TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                                         TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                                         TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                                         TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -75,9 +75,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member GetSample: () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -87,8 +87,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -98,9 +98,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -110,8 +110,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -121,9 +121,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: reader:System.IO.TextReader -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -133,8 +133,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -144,9 +144,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: uri:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -156,8 +156,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))
@@ -167,9 +167,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[1])
-                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:,-", value), value),
                                               let value = TextConversions.AsString(row.[2])
                                               TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
                                               let value = TextConversions.AsString(row.[3])
@@ -179,8 +179,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[5])
                                               TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
-                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
+                                            [| TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let t1,_,_,_,_,_ = row in t1)))
+                                               TextRuntime.ConvertFloatBack("", "NaN,NA,#N/A,:,-", TextRuntime.GetOptionalValue((let _,t2,_,_,_,_ = row in t2)))
                                                TextRuntime.ConvertDecimalBack("", TextRuntime.GetOptionalValue((let _,_,t3,_,_,_ = row in t3)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,t4,_,_ = row in t4)))
                                                TextRuntime.ConvertIntegerBack("", TextRuntime.GetOptionalValue((let _,_,_,_,t5,_ = row in t5)))

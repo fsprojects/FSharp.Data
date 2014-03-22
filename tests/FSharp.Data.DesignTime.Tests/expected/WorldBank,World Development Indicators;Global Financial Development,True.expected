@@ -921,9 +921,6 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
     member Infrastructure: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("9")
 
-    member Labor & Social Protection: WorldBankDataProvider+ServiceTypes+Topic with get
-    (this :> ITopicCollection).GetTopic("10")
-
     member Millenium development goals: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("18")
 
@@ -941,6 +938,12 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
 
     member Social Development: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("15")
+
+    member Social Protection & Labor: WorldBankDataProvider+ServiceTypes+Topic with get
+    (this :> ITopicCollection).GetTopic("10")
+
+    member Trade: WorldBankDataProvider+ServiceTypes+Topic with get
+    (this :> ITopicCollection).GetTopic("21")
 
     member Urban Development: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("16")

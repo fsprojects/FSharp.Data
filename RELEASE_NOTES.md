@@ -195,3 +195,6 @@
 #### 2.0.4 - March 20 2014
 * Helpers for sending HTTP requests with JSON and XML content.
 * Removed built-in HTTP certificates support, and moved it to a sample in the documentation.
+
+#### 2.0.5 - Unreleased
+* Add - to the list of default missing values.
