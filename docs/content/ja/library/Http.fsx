@@ -235,4 +235,5 @@ let clientCert =
 // 証明書付きでリクエストを送信
 Http.Request
   ( "http://yourprotectedresouce.com/data",
-    certificate = clientCert)
+    customizeHttpRequest = fun req -> req.ClientCertificates.Add(clientCert) |> ignore; req)
+

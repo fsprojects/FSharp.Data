@@ -227,3 +227,11 @@ printfn "%s" blog.Channel.Title
 // Get all item nodes and print title with link
 for item in blog.Channel.Items do
   printfn " - %s (%s)" item.Title item.Link
+
+(**
+## Related articles
+
+ * [API Reference: XmlProvider type provider](../reference/fsharp-data-xmlprovider.html)
+ * [API Reference: XElementExtensions module](../reference/fsharp-data-xelementextensions.html)
+
+*)

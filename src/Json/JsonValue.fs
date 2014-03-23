@@ -315,47 +315,6 @@ type JsonValue with
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
-  /// POSTs the JSON to the specified uri
-  member x.Post(uri:string, ?headers) =  
-    let headers = defaultArg headers []
-    let headers =
-        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
-    Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.RemoveNulls)),
-      headers = headers)
-
-  /// PUTs the JSON to the specified uri
-  member x.Put(uri:string, ?headers) =  
-    let headers = defaultArg headers []
-    let headers =
-        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
-    Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.RemoveNulls)),
-      headers = headers,
-      httpMethod = HttpMethod.Put)
-
-  /// DELETEs the JSON to the specified uri
-  member x.Delete(uri:string, ?headers) =  
-    let headers = defaultArg headers []
-    let headers =
-        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
-        then headers
-        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
-    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
-    Http.Request(
-      uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
-      headers = headers,
-      httpMethod = HttpMethod.Delete)
-
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
   static member ParseSample(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, true).Parse()
@@ -363,3 +322,39 @@ type JsonValue with
   /// Parses the specified string into multiple JSON values
   static member ParseMultiple(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()
+
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.Request(uri:string, ?httpMethod, ?headers, ?saveOptions) =  
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
+    let headers = defaultArg headers []
+    let saveOptions = defaultArg saveOptions JsonSaveOptions.DisableFormatting
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.Request(
+      uri,
+      body = TextRequest (x.ToString(saveOptions)),
+      headers = headers,
+      httpMethod = httpMethod)
+
+  /// Sends the JSON to the specified uri. Defaults to a POST request.
+  member x.RequestAsync(uri:string, ?httpMethod, ?headers, ?saveOptions) =
+    let httpMethod = defaultArg httpMethod HttpMethod.Post
+    let headers = defaultArg headers []
+    let saveOptions = defaultArg saveOptions JsonSaveOptions.DisableFormatting
+    let headers =
+        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        then headers
+        else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
+    let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
+    Http.AsyncRequest(
+      uri,
+      body = TextRequest (x.ToString(saveOptions)),
+      headers = headers,
+      httpMethod = httpMethod)
+
+  [<Obsolete("Please use JsonValue.Request instead")>]
+  member x.Post(uri:string, ?headers) =  
+    x.Request(uri, ?headers = headers)

@@ -150,4 +150,7 @@ as possible when parsing the file.
    that provides type-safe access to JSON data
  * [F# Data: WorldBank Provider](WorldBank.html) - the WorldBank type provider
    can be used to easily access data from the WorldBank
+ * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
+ * [API Reference: JsonExtensions module](../reference/fsharp-data-jsonextensions.html)
+
 *)

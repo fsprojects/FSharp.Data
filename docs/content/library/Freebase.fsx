@@ -285,4 +285,7 @@ data.``Science and Technology``.Chemistry.
    tutorial on Try F# uses the Freebase type provider in numerous examples.
  * [Visual F# Team Blog: Integrating Internet-Scale Data Sources into a Strongly Typed Language](http://blogs.msdn.com/b/fsharpteam/archive/2012/09/21/the-f-3-0-freebase-type-provider-sample-integrating-internet-scale-data-sources-into-a-strongly-typed-language.aspx) - A series of 4 blog posts introducing the Freebase type provider
  * [Demo by Don Syme](http://skillsmatter.com/podcast/scala/an-informal-deep-dive-with-don-syme-the-freebase-type-provider) - An Informal Deep Dive With Don Syme: The Freebase Type Provider
+ * [API Reference: FreebaseDataProvider type provider](../reference/fsharp-data-freebasedataprovider.html)
+ * [API Reference: FreebaseOperators module](../reference/fsharp-data-freebaseoperators.html)
+
 *)
