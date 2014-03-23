@@ -353,9 +353,9 @@ module JsonTypeBuilder =
         objectTy.AddMember <| 
             ProvidedConstructor(
                 [ProvidedParameter("jsonValue",ctx.JsonValueType)], 
-                InvokeCode = fun args -> 
-                    let mi = ctx.JsonRuntimeType.GetMethod("CreateFromJsonValue",BindingFlags.Static ||| BindingFlags.Public)                    
-                    Expr.Call(mi,[args.[0]]) |> ctx.Replacer.ToRuntime)
+                InvokeCode = fun (Singleton arg) -> 
+                    let arg = ctx.Replacer.ToDesignTime arg
+                    <@@ JsonRuntime.CreateFromJsonValue(%%arg:JsonValue) @@> |> ctx.Replacer.ToRuntime)
 
         objectTy
 
