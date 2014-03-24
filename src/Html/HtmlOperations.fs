@@ -7,131 +7,178 @@ open System.IO
 open System.Xml
 open FSharp.Data
 
-type HtmlAttribute with
+module HtmlAttribute = 
     
-    member x.As<'a>(parseF : string -> 'a)= 
-        x.Value |> parseF 
+    let name = function
+        | HtmlAttribute(name = name) -> name
+     
+    let value = function
+        | HtmlAttribute(value = value) -> value   
 
-    member x.TryAs<'a>(defaultValue, parseF : string -> (bool * 'a))= 
-        match x.Value |> parseF with
+    let parseValue parseF attr = 
+        value attr |> parseF
+
+    let tryParseValue defaultValue parseF attr = 
+        match value attr |> parseF with
         | true, v -> v
         | false, _ -> defaultValue
 
+type HtmlAttribute with
 
-type HtmlElement with
-    member x.Name 
-        with get() =
-            match x with
-            | HtmlElement(name, _, _) -> name.ToLowerInvariant()
-            | HtmlScript(_) -> "script"
-            | HtmlStyle(_) -> "style"
-            | _ -> String.Empty
+    member x.Name with get() = HtmlAttribute.name x
+    member x.Value() = HtmlAttribute.value x
+    member x.Value<'a>(parseF : string -> 'a)= 
+        HtmlAttribute.parseValue parseF x
+    member x.Value<'a>(defaultValue, parseF : string -> (bool * 'a))= 
+        HtmlAttribute.tryParseValue defaultValue parseF x
 
-    member x.Children
-        with get() = 
-            match x with
-            | HtmlElement(_, _, children) -> children
-            | _ -> []
+module HtmlTag = 
     
-    member x.Descendants(f) = 
-        let rec descendantsBy f (x:HtmlElement) =
+    let name = function
+        | HtmlTag(name, _, _) -> name.ToLowerInvariant()
+        | HtmlScript(_) -> "script"
+        | HtmlStyle(_) -> "style"
+        | _ -> String.Empty
+        
+    let children = function 
+        | HtmlTag(_, _, children) -> children
+        | _ -> []
+
+    let descendents f x = 
+        let rec descendantsBy f (x:HtmlTag) =
                 seq {
                     
-                    for element in x.Children do
+                    for element in children x do
                         if f element then yield element
                         yield! descendantsBy f element
                 }
         descendantsBy f x
+     
+    let tryGetAttribute (name:string) = function
+        | HtmlTag(_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
+        | _ -> None   
 
-    member x.Descendants() = x.Descendants(fun _ -> true)
-
-    member x.TryGetAttribute (name : string) =
-        match x with
-        | HtmlElement(_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
-        | _ -> None
-
-    member x.GetAttributeValue (defaultValue,parseF,name) =
-        match x.TryGetAttribute(name) with
-        | Some(v) -> v.TryAs(defaultValue, parseF)
+    let getAttributeValue defaultValue parseF name x = 
+        match tryGetAttribute name x with
+        | Some(v) -> v.Value(defaultValue, parseF)
         | None -> defaultValue
-    
-    member x.Attribute name = 
-        match x.TryGetAttribute name with
+
+    let attribute name x = 
+        match tryGetAttribute name x with
         | Some(v) -> v
         | None -> failwithf "Unable to find attribute (%s)" name
-
-    member x.HasAttribute (name,value:string) =
-        x.TryGetAttribute(name)
+    
+    let hasAttribute name (value:string) x = 
+        tryGetAttribute name x
         |> function 
-            | Some(attr) ->  attr.Value.ToLowerInvariant() = (value.ToLowerInvariant())
-            | None -> false 
+            | Some(attr) ->  attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
+            | None -> false
 
-    member x.ElementsBy(f) = 
-        let rec elementsBy f (x:HtmlElement) =
+    let elements f x = 
+        let rec elementsBy f (x:HtmlTag) =
              seq {
                  if f x then yield x
-                 for element in x.Children do
+                 for element in children x do
                      yield! elementsBy f element
              }
         elementsBy f x
 
-    member x.Elements (names:seq<string>) =
-        let nameSet = Set.ofSeq (names |> Seq.map (fun n -> n.ToLowerInvariant()))
-        x.ElementsBy(fun x -> nameSet.Contains x.Name) |> Seq.toList
+    let elementsNamed names x = 
+        let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
+        elements (fun x -> name x |> nameSet.Contains) x |> Seq.toList
 
-    member x.HasElement (names:seq<string>) =
-        let nameSet = Set.ofSeq (names |> Seq.map (fun n -> n.ToLowerInvariant()))
-        x.Children |> List.exists (fun x -> nameSet.Contains(x.Name))
-    
-    member x.InnerText
-        with get() =
-            let rec innerText' = function
-                | HtmlElement(_,_, content) ->
-                    String.Join(" ", seq { for e in content do
-                                                match e with
-                                                | HtmlText(text) -> yield text
-                                                | elem -> yield innerText' elem })
-                | HtmlText(text) -> text
-                | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
-            innerText' x
+    let hasElements names x = 
+        let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
+        children x |> List.exists (fun x -> nameSet.Contains(name x))
 
-    static member Write(writer:TextWriter, element:HtmlElement) = 
-            let createXmlWriter(baseWriter:TextWriter) =
-                let s = new System.Xml.XmlWriterSettings(Indent = false,
-                                                            OmitXmlDeclaration = true, 
-                                                            ConformanceLevel = System.Xml.ConformanceLevel.Auto)
-                XmlWriter.Create(baseWriter, s)
-                
-            let rec writeElement (writer:XmlWriter) = function
-                | HtmlText(c) -> writer.WriteValue(c)
-                | HtmlComment(c) -> writer.WriteComment(c)
-                | HtmlScript(c) -> writer.WriteCData(c)
-                | HtmlStyle(c) -> writer.WriteCData(c)
-                | HtmlElement(name, attrs, elems) ->
-                    writer.WriteStartElement(name)
-                    for attr in attrs do
-                        match attr with
-                        | HtmlAttribute(key,value) -> 
-                           if String.IsNullOrEmpty(value)
-                            then writer.WriteStartAttribute(key); writer.WriteEndAttribute()
-                             else writer.WriteAttributeString(key, value)
-                    for elem in elems do 
-                        writeElement writer elem
+    let innerText x = 
+        let rec innerText' = function
+            | HtmlTag(_,_, content) ->
+                String.Join(" ", seq { for e in content do
+                                            match e with
+                                            | HtmlText(text) -> yield text
+                                            | elem -> yield innerText' elem })
+            | HtmlText(text) -> text
+            | HtmlScript _ | HtmlComment _ | HtmlStyle _ -> String.Empty
+        innerText' x
 
-                    writer.WriteEndElement()
+    let write writer x = 
+        let createXmlWriter(baseWriter:TextWriter) =
+            let s = new System.Xml.XmlWriterSettings(Indent = false,
+                                                        OmitXmlDeclaration = true, 
+                                                        ConformanceLevel = System.Xml.ConformanceLevel.Auto)
+            XmlWriter.Create(baseWriter, s)
             
-            use writer = createXmlWriter(writer)
-            writeElement writer element
+        let rec writeElement (writer:XmlWriter) = function
+            | HtmlText(c) -> writer.WriteValue(c)
+            | HtmlComment(c) -> writer.WriteComment(c)
+            | HtmlScript(c) -> writer.WriteCData(c)
+            | HtmlStyle(c) -> writer.WriteCData(c)
+            | HtmlTag(name, attrs, elems) ->
+                writer.WriteStartElement(name)
+                for attr in attrs do
+                    match attr with
+                    | HtmlAttribute(key,value) -> 
+                       if String.IsNullOrEmpty(value)
+                        then writer.WriteStartAttribute(key); writer.WriteEndAttribute()
+                         else writer.WriteAttributeString(key, value)
+                for elem in elems do 
+                    writeElement writer elem
+
+                writer.WriteEndElement()
+        
+        use writer = createXmlWriter(writer)
+        writeElement writer x
+
+    let toString x =
+        let sb = new Text.StringBuilder()
+        use sw = new StringWriter()
+        write sw x
+        sb.ToString()
+        
+
+type HtmlTag with
+    member x.Name with get() = HtmlTag.name x            
+    member x.Children with get() = HtmlTag.children x
+    member x.Descendants(f) = HtmlTag.descendents f x
+    member x.Descendants() = HtmlTag.descendents (fun _ -> true) x
+    member x.TryGetAttribute (name : string) = HtmlTag.tryGetAttribute name x
+    member x.GetAttributeValue (defaultValue,parseF,name) = HtmlTag.getAttributeValue defaultValue parseF name x
+    member x.Attribute name = HtmlTag.attribute name x
+    member x.HasAttribute (name,value:string) = HtmlTag.hasAttribute name value x
+    member x.Elements(f) = HtmlTag.elements f x 
+    member x.Elements (names:seq<string>) = HtmlTag.elementsNamed names x
+    member x.HasElement (names:seq<string>) = HtmlTag.hasElements names x
+    member x.InnerText with get() = HtmlTag.innerText x
+    static member Write(writer:TextWriter, tag:HtmlTag) = HtmlTag.write writer tag
+
+module HtmlDocument = 
+    
+    let docType = function
+        | HtmlDocument(docType = docType) -> docType
+
+    let elements = function
+        | HtmlDocument(elements = elements) -> elements
+
+    let toString x =
+        let docType = docType x
+        (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">\n")
+        +
+        (elements x |> List.map (HtmlTag.toString) |> String.concat "\n")
+
+    let body (x:HtmlDocument) = 
+        elements x
+        |> List.tryPick (fun e -> 
+            match e.Elements ["body"] with
+            | [] -> None
+            | h::_ -> Some(h)
+        )
 
 type HtmlDocument with
-    member x.Body
-        with get() =
-            x.Elements
-            |> List.tryPick (fun e -> 
-                match e.Elements ["body"] with
-                | [] -> None
-                | h::_ -> Some(h)
-            )
+    member x.Body with get() = HtmlDocument.body x
+    member x.Elements with get() = HtmlDocument.elements x
+    member x.DocType with get() = HtmlDocument.docType x
+            
             
 
 

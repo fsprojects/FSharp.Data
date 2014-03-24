@@ -11,82 +11,16 @@ open FSharp.Data.Runtime
 
 type HtmlAttribute = 
     | HtmlAttribute of name:string * value:string    
-    member x.Name =
-        match x with
-        | HtmlAttribute(name = name) -> name
-    member x.Value =
-        match x with
-        | HtmlAttribute(value = value) -> value
 
-type HtmlElement =
-    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlElement list
+type HtmlTag =
+    | HtmlTag of name:string * attributes:HtmlAttribute list * elements:HtmlTag list
     | HtmlText of string
     | HtmlScript of string
     | HtmlStyle of string
     | HtmlComment of string
-    
-    override x.ToString() =
-
-        let rec serialize (sb:StringBuilder) indentation html =
-            let append (str:string) = sb.Append str |> ignore
-            let newLine plus =
-                sb.AppendLine() |> ignore
-                System.String(' ', indentation + plus) |> append
-            match html with
-            | HtmlElement(name, attributes, elements) ->
-                append "<"
-                append name
-                for attr in attributes do
-                    append " "
-                    append attr.Name
-                    append "=\""
-                    append attr.Value
-                    append "\""
-                if elements.IsEmpty
-                then append " />"
-                else
-                    append ">"
-                    newLine 2
-                    for element in elements do
-                        serialize sb (indentation + 2) element
-                    newLine 0
-                    append "</"
-                    append name
-                    append ">"
-            | HtmlText str -> append str
-            | HtmlScript str -> 
-                append "<script>"
-                newLine 0
-                append str
-                newLine 0
-                append "</script>"
-            | HtmlStyle str -> 
-                append "<style>"
-                newLine 0
-                append str
-                newLine 0
-                append "</style>"
-            | HtmlComment str -> 
-                append "<!-- "
-                append str
-                append " -->"
-        
-        let sb = StringBuilder()
-        serialize sb 0 x
-        sb.ToString()
 
 type HtmlDocument = 
-    | HtmlDocument of docType:string * elements:HtmlElement list
-    member x.DocType = 
-        match x with
-        | HtmlDocument(docType = docType) -> docType
-    member x.Elements = 
-        match x with
-        | HtmlDocument(elements = elements) -> elements
-    override x.ToString() =
-        (if String.IsNullOrEmpty x.DocType then "" else "<!" + x.DocType + ">\n")
-        +
-        (x.Elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
+    | HtmlDocument of docType:string * elements:HtmlTag list
 
 // --------------------------------------------------------------------------------------
 
@@ -420,11 +354,11 @@ module private HtmlParser =
             match tokens with
             | DocType dt :: rest -> parse' dt elements rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(name.ToLower(), attributes, [])
+               let e = HtmlTag(name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
             | Tag(false, name, attributes) :: rest ->
                 let dt, tokens, content = parse' docType [] rest
-                let e = HtmlElement(name.ToLower(), attributes, content)
+                let e = HtmlTag(name.ToLower(), attributes, content)
                 parse' dt (e :: elements) tokens
             | TagEnd _ :: rest -> docType, rest, (elements |> List.rev)
             | Text cont :: rest ->

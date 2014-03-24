@@ -29,9 +29,9 @@ let ``Should substitute char references``(ref:string, result:string) =
     let expected = 
         HtmlDocument("", 
          [
-           HtmlElement("html", [] ,
+           HtmlTag("html", [] ,
             [
-               HtmlElement("body", [],
+               HtmlTag("body", [],
                 [
                    HtmlText(result)
                 ])

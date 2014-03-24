@@ -39,7 +39,7 @@ module HtmlRuntime =
 
     open Html
 
-    let private getName defaultName (element:HtmlElement) = 
+    let private getName defaultName (element:HtmlTag) = 
         let tryGetName' choices =
             choices
             |> List.tryPick (fun (attrName) -> 
@@ -54,7 +54,7 @@ module HtmlRuntime =
                 | [] -> defaultName
                 | h :: _ -> h.InnerText
 
-    let private parseTable index (table:HtmlElement) = 
+    let private parseTable index (table:HtmlTag) = 
         let rows = table.Elements ["tr"] |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
         then None
@@ -64,12 +64,12 @@ module HtmlRuntime =
             let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
             for rowindex, _ in rows do
                 for colindex, cell in cells.[rowindex] do
-                    let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue (0,Int32.TryParse,"colspan"))) - 1
+                    let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue(0,Int32.TryParse,"colspan"))) - 1
                     let data =
-                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlElement) -> x.InnerText)).Trim()
+                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlTag) -> x.InnerText)).Trim()
                         match cell with
-                        | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
-                        | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
+                        | HtmlTag("td", _, contents) -> Cell (false, getContents contents)
+                        | HtmlTag("th", _, contents) -> Cell (true, getContents contents)
                         | _ -> Empty
                     let col_i = ref colindex
                     while res.[rowindex].[!col_i] <> Empty do incr(col_i)

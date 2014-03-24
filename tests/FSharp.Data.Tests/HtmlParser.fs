@@ -30,23 +30,23 @@ let ``Can handle unclosed tags correctly``() =
     let expected = 
         HtmlDocument("", 
          [
-           HtmlElement("html", [] ,
+           HtmlTag("html", [] ,
             [
-               HtmlElement("head", [], 
+               HtmlTag("head", [], 
                 [
-                    HtmlElement("script", [HtmlAttribute("language","JavaScript")
-                                           HtmlAttribute("src","/bwx_generic.js")], [])
-                    HtmlElement("link", [HtmlAttribute("rel","stylesheet")
-                                         HtmlAttribute("type","text/css")
-                                         HtmlAttribute("href","/bwx_style.css")], [])
+                    HtmlTag("script", [HtmlAttribute("language","JavaScript")
+                                       HtmlAttribute("src","/bwx_generic.js")], [])
+                    HtmlTag("link", [HtmlAttribute("rel","stylesheet")
+                                     HtmlAttribute("type","text/css")
+                                     HtmlAttribute("href","/bwx_style.css")], [])
                 ])
-               HtmlElement("body", [],
+               HtmlTag("body", [],
                 [
-                    HtmlElement("img", [HtmlAttribute("src", "myimg.jpg")], [])
-                    HtmlElement("table", [HtmlAttribute("title", "table")],
+                    HtmlTag("img", [HtmlAttribute("src", "myimg.jpg")], [])
+                    HtmlTag("table", [HtmlAttribute("title", "table")],
                      [
-                        HtmlElement("tr", [], [HtmlElement("th", [],[HtmlText("Column 1")]); HtmlElement("th", [], [HtmlText("Column 2")])])
-                        HtmlElement("tr", [], [HtmlElement("td", [],[HtmlText("1")]); HtmlElement("td", [], [HtmlText("yes")])])
+                        HtmlTag("tr", [], [HtmlTag("th", [],[HtmlText("Column 1")]); HtmlTag("th", [], [HtmlText("Column 2")])])
+                        HtmlTag("tr", [], [HtmlTag("td", [],[HtmlText("1")]); HtmlTag("td", [], [HtmlText("yes")])])
                      ])    
                 ])
             ])
@@ -246,9 +246,9 @@ let ``Can handle html with doctype and xml namespaces``() =
     let expected = 
             HtmlDocument("DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 
              [
-               HtmlElement("html", [HtmlAttribute("lang","en"); HtmlAttribute("xml:lang","en"); HtmlAttribute("xmlns","http://www.w3.org/1999/xhtml")] ,
+               HtmlTag("html", [HtmlAttribute("lang","en"); HtmlAttribute("xml:lang","en"); HtmlAttribute("xmlns","http://www.w3.org/1999/xhtml")] ,
                 [
-                   HtmlElement("body", [],
+                   HtmlTag("body", [],
                     [
                        HtmlText("content")
                     ])
