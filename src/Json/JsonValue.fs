@@ -29,7 +29,7 @@ type JsonSaveOptions =
   /// Prevent null Record attributes from appearing
   | RemoveNulls       = 0b0010
   /// Prevent JavaScript encoding
-  | NoEncoding        = 0b0100
+  | DisableEncoding   = 0b0100
 
 /// Represents a JSON value. Large numbers that do not fit in the 
 /// Decimal type are represented using the Float case, while
@@ -60,7 +60,7 @@ type JsonValue =
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s ->
-        if saveOption JsonSaveOptions.NoEncoding then
+        if saveOption JsonSaveOptions.DisableEncoding then
             sb.Append("\"").Append(s).Append("\"")
         else
             sb.Append("\"").Append(JavaScriptStringEncode s).Append("\"")
