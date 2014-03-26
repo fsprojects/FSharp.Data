@@ -68,14 +68,14 @@ type JsonValue =
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
           for k, v in properties do
-            if v = JsonValue.Null && noSaveOption JsonSaveOptions.RemoveNulls then
+            if v <> JsonValue.Null || noSaveOption JsonSaveOptions.RemoveNulls then
                 if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
                 newLine 2
                 if saveOption JsonSaveOptions.DisableFormatting then
                   sb.AppendFormat("\"{0}\":", k) |> ignore
                 else
                   sb.AppendFormat("\"{0}\": ", k) |> ignore
-                serialize sb (indentation + 2) v |> ignore
+            serialize sb (indentation + 2) v |> ignore
           newLine 0
           sb.Append "}"
       | Array elements -> 
