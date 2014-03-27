@@ -39,8 +39,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let assumeMissingValues = args.[7] :?> bool
     let preferOptionals = args.[8] :?> bool
     let quote = args.[9] :?> char
-    let missingValues = args.[10] :?> string
-    let missingValuesList = missingValues.Split([| ',' |], StringSplitOptions.RemoveEmptyEntries)
+    let missingValuesStr = args.[10] :?> string
     let cacheRows = args.[11] :?> bool
     let resolutionFolder = args.[12] :?> string
     
@@ -69,14 +68,14 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       let separators = sampleCsv.Separators
   
       let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
-        sampleCsv.InferColumnTypes(inferRows, missingValuesList, cultureInfo, schema,
+        sampleCsv.InferColumnTypes(inferRows, TextRuntime.GetMissingValues missingValuesStr, cultureInfo, schema,
                                    assumeMissingValues, preferOptionals, ProvidedMeasureBuilder.Default.SI)
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
       let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValues, cultureStr) replacer 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
   
       { GeneratedType = csvType
         RepresentationType = csvType
@@ -92,7 +91,6 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
                  getSpecFromSamples version this cfg replacer resolutionFolder typeName
 
-  let defaultMissingValues = String.Join(",", TextConversions.DefaultMissingValues)
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("Sample", typeof<string>, parameterDefaultValue = "") 
@@ -105,7 +103,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
-      ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = defaultMissingValues)
+      ProvidedStaticParameter("MissingValues", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("CacheRows", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
 
@@ -122,7 +120,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</param>
        <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `""` for missing values. Defaults to false.</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to `"`.</param>
-       <param name='MissingValues'>The set of strings recogized as missing values. Defaults to `""" + defaultMissingValues + """`.</param>
+       <param name='MissingValues'>The set of strings recogized as missing values. Defaults to `""" + String.Join(",", TextConversions.DefaultMissingValues) + """`.</param>
        <param name='CacheRows'>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.</param>
        <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution).</param>"""
 

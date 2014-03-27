@@ -171,7 +171,7 @@ type TypeProviderInstantiation =
                   AssumeMissingValues = args.[6] |> bool.Parse
                   PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
-                  MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
+                  MissingValues = ""
                   CacheRows = false
                   ResolutionFolder = "" }
         | "Xml" ->
