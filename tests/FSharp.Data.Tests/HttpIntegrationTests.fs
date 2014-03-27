@@ -80,7 +80,7 @@ let ``when called on a non-existant page returns 404`` () =
 [<Platform("Net")>]
 let ``all of the manually-set request headers get sent to the server`` ()=
     Http.Request("http://localhost:1235/TestServer/RecordRequest",
-                 headers = [ Accept "application/xml,text/html;q=0.3"
+                 headers = [ "accept", "application/xml,text/html;q=0.3"
                              AcceptCharset "utf-8, utf-16;q=0.5" 
                              AcceptDatetime (DateTime(2007,5,31,20,35,0))
                              AcceptLanguage "en-GB, en-US;q=0.1"

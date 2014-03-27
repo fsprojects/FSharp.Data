@@ -197,4 +197,5 @@
 * Removed built-in HTTP certificates support, and moved it to a sample in the documentation.
 
 #### 2.0.5 - Unreleased
-* Add - to the list of default missing values.
+* Added - to the list of default missing values.
+* Re-added support for specifying known HTTP headers in the wrong case.
