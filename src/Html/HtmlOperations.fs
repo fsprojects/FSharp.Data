@@ -1,7 +1,5 @@
 ﻿namespace FSharp.Data
 
-// TODO: document all of these
-
 open System
 open System.IO
 open System.Xml
@@ -10,46 +8,92 @@ open FSharp.Data.Runtime
 
 module Html =
     module HtmlAttribute = 
-        
+        ///<summary>
+        ///Gets the name of the given attribute
+        /// </summary>
         let name = function
             | HtmlAttribute(name = name) -> name
-         
+
+        ///<summary>
+        ///Gets the values of the given attribute
+        /// </summary>
         let value = function
             | HtmlAttribute(value = value) -> value   
-    
+
+        ///<summary>
+        ///Parses the value of the attribute using the given function
+        /// </summary>
         let parseValue parseF attr = 
             value attr |> parseF
-    
+
+        ///<summary>
+        ///Attempts to parse the value of the attribute using the given function
+        ///if the parse functions fails the defaultValue is returned
+        /// </summary>
         let tryParseValue defaultValue parseF attr = 
             match value attr |> parseF with
             | true, v -> v
             | false, _ -> defaultValue
     
     type HtmlAttribute with
-    
+        /// <summary>
+        /// Gets the name of the current attribute
+        /// </summary>
         member x.Name with get() = HtmlAttribute.name x
+
+        /// <summary>
+        /// Gets the value of the current attribute
+        /// </summary>
         member x.Value() = HtmlAttribute.value x
+
+        /// <summary>
+        /// Gets the value of the current attribute and parses the value
+        /// using the function supplied by parseF
+        /// </summary>
+        /// <param name="parseF">The function to parse the attribute value</param>
         member x.Value<'a>(parseF : string -> 'a)= 
             HtmlAttribute.parseValue parseF x
+
+        /// <summary>
+        /// Attempts to parse the attribute value using the given function
+        /// if the parse function returns false then the defaultValue is used
+        /// </summary>
+        /// <param name="defaultValue">Value to return if the parse function fails</param>
+        /// <param name="parseF">Function to parse the attribute value</param>
         member x.Value<'a>(defaultValue, parseF : string -> (bool * 'a))= 
             HtmlAttribute.tryParseValue defaultValue parseF x
     
     module HtmlNode = 
         
+        /// <summary>
+        /// Gets the given nodes name
+        /// </summary>
         let name = function
             | HtmlElement(_, name, _, _) -> name.ToLowerInvariant()
             | HtmlContent(_, HtmlContentType.Script, _ ) -> "script"
             | HtmlContent(_, HtmlContentType.Style, _) -> "style"
             | _ -> String.Empty
             
+        /// <summary>
+        /// Gets all of the nodes immediately under this node
+        /// </summary>
         let children = function 
             | HtmlElement(_, _, _, children) -> children
             | _ -> []
     
+        /// <summary>
+        /// Gets the parent node of this node
+        /// </summary>
         let parent = function
             | HtmlElement(parent = parent) 
             | HtmlContent(parent = parent) -> !parent
         
+        /// <summary>
+        /// Gets all of the descendants of this node that statisfy the given predicate
+        /// the current node is also considered in the comparison
+        /// </summary>
+        /// <param name="f">The predicate by which to match the nodes to return</param>
+        /// <param name="x">The given node</param>
         let descendantsAndSelf f x = 
             let rec descendantsBy f (x:HtmlNode) =
                     [   
@@ -58,11 +102,22 @@ module Html =
                             yield! descendantsBy f element
                     ]
             descendantsBy f x
-    
+        
+        /// <summary>
+        /// Finds all of the descendant nodes of this nodes that match the given set of names
+        /// the current node is also considered for comparison
+        /// </summary>
+        /// <param name="names">The set of names to match</param>
+        /// <param name="x">The given node</param>
         let descendantsAndSelfNamed names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
             descendantsAndSelf (fun x -> name x |> nameSet.Contains) x
-    
+        
+        /// <summary>
+        /// Gets all of the descendants of this node that statisfy the given predicate
+        /// </summary>
+        /// <param name="f">The predicate by which to match the nodes to return</param>
+        /// <param name="x">The given node</param>
         let descendants f x = 
             let rec descendantsBy f (x:HtmlNode) =
                     [   for element in children x do
@@ -71,23 +126,50 @@ module Html =
                     ]
             descendantsBy f x
     
+        /// <summary>
+        /// Finds all of the descendant nodes of this nodes that match the given set of names
+        /// </summary>
+        /// <param name="names">The set of names to match</param>
+        /// <param name="x">The given node</param>
         let descendantsNamed names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
             descendants (fun x -> name x |> nameSet.Contains) x
-    
+        
+        /// <summary>
+        /// Returns true if any of the descendants of the current node exist in the 
+        /// given set of names
+        /// </summary>
+        /// <param name="names">The set of names to match against</param>
+        /// <param name="x">The given node</param>
         let hasDescendants names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
             descendants (fun x -> nameSet.Contains(name x)) x |> Seq.isEmpty |> not
-         
+        
+        /// <summary>
+        /// Trys to return an attribute that exists on the current node
+        /// </summary>
+        /// <param name="name">The name of the attribute to return.</param>
         let tryGetAttribute (name:string) = function
             | HtmlElement(_,_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
             | _ -> None   
-    
+        
+        /// <summary>
+        /// Trys to return a parsed value of the named attribute.
+        /// </summary>
+        /// <param name="defaultValue">The default value to return if the attribute does not exist or the parsing fails</param>
+        /// <param name="parseF">The function to parse the value</param>
+        /// <param name="name">The name of the attribute to get the value from</param>
+        /// <param name="x">The given node</param>
         let getAttributeValue defaultValue parseF name x = 
             match tryGetAttribute name x with
             | Some(v) -> v.Value(defaultValue, parseF)
             | None -> defaultValue
-    
+        
+        /// <summary>
+        /// Returns the attribute with the given name. If the attribute does not exist
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="x"></param>
         let attribute name x = 
             match tryGetAttribute name x with
             | Some(v) -> v
