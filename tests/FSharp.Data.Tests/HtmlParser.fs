@@ -10,6 +10,7 @@ open NUnit.Framework
 open FsUnit
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Html
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
@@ -28,29 +29,33 @@ let ``Can handle unclosed tags correctly``() =
                     </html>"""
     let result = HtmlDocument.Parse simpleHtml
     let expected = 
-        HtmlDocument("", 
+        doc "" 
          [
-           HtmlTag("html", [] ,
+           element "html" []
             [
-               HtmlTag("head", [], 
+               element "head" [] 
                 [
-                    HtmlTag("script", [HtmlAttribute("language","JavaScript")
-                                       HtmlAttribute("src","/bwx_generic.js")], [])
-                    HtmlTag("link", [HtmlAttribute("rel","stylesheet")
-                                     HtmlAttribute("type","text/css")
-                                     HtmlAttribute("href","/bwx_style.css")], [])
-                ])
-               HtmlTag("body", [],
+                    element "script" [
+                                      "language","JavaScript"
+                                      "src","/bwx_generic.js"
+                                     ] []
+                    element "link" [
+                                      "rel","stylesheet"
+                                      "type","text/css"
+                                      "href","/bwx_style.css"
+                                   ][]
+                ]
+               element "body" []
                 [
-                    HtmlTag("img", [HtmlAttribute("src", "myimg.jpg")], [])
-                    HtmlTag("table", [HtmlAttribute("title", "table")],
+                    element "img" ["src", "myimg.jpg"] []
+                    element "table" ["title", "table"]
                      [
-                        HtmlTag("tr", [], [HtmlTag("th", [],[HtmlText("Column 1")]); HtmlTag("th", [], [HtmlText("Column 2")])])
-                        HtmlTag("tr", [], [HtmlTag("td", [],[HtmlText("1")]); HtmlTag("td", [], [HtmlText("yes")])])
-                     ])    
-                ])
-            ])
-        ])
+                        element "tr" [] [element "th" [] [content Content "Column 1"]; element "th" [] [content Content "Column 2"]]
+                        element "tr" [] [element "td" [] [content Content "1"]; element "td" [] [content Content "yes"]]
+                     ]    
+                ]
+            ]
+        ]
     result |> should equal expected
 
 [<Test>]
@@ -244,14 +249,14 @@ let ``Can handle html with doctype and xml namespaces``() =
     let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
     let htmlDoc = HtmlDocument.Parse html
     let expected = 
-            HtmlDocument("DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"", 
+            doc "DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
              [
-               HtmlTag("html", [HtmlAttribute("lang","en"); HtmlAttribute("xml:lang","en"); HtmlAttribute("xmlns","http://www.w3.org/1999/xhtml")] ,
+               element "html" ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"]
                 [
-                   HtmlTag("body", [],
+                   element "body" []
                     [
-                       HtmlText("content")
-                    ])
-                ])
-            ])
+                       content Content "content"
+                    ]
+                ]
+            ]
     expected |> should equal htmlDoc

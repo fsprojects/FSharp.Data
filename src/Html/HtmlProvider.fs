@@ -8,6 +8,7 @@ open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data
+open FSharp.Data.Html
 open FSharp.Data.Runtime
 
 #nowarn "10001"

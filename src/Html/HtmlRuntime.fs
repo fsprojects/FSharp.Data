@@ -8,6 +8,7 @@ open System.Text
 open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Html
 
 #nowarn "10001"
 
@@ -39,7 +40,7 @@ module HtmlRuntime =
 
     open Html
 
-    let private getName defaultName (element:HtmlTag) = 
+    let private getName defaultName (element:HtmlNode) = 
         let tryGetName' choices =
             choices
             |> List.tryPick (fun (attrName) -> 
@@ -50,12 +51,12 @@ module HtmlRuntime =
         match tryGetName' [ "id"; "name"; "title"; "summary"] with
         | Some(name) -> name
         | None ->
-                match element.Elements ["caption"] with
+                match element.Descendants ["caption"] with
                 | [] -> defaultName
                 | h :: _ -> h.InnerText
 
-    let private parseTable index (table:HtmlTag) = 
-        let rows = table.Elements ["tr"] |> List.mapi (fun i r -> i,r)
+    let private parseTable index (table:HtmlNode) = 
+        let rows = table.Descendants(["tr"], true) |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
         then None
         else
@@ -66,10 +67,10 @@ module HtmlRuntime =
                 for colindex, cell in cells.[rowindex] do
                     let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue(0,Int32.TryParse,"colspan"))) - 1
                     let data =
-                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlTag) -> x.InnerText)).Trim()
+                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlNode) -> x.InnerText)).Trim()
                         match cell with
-                        | HtmlTag("td", _, contents) -> Cell (false, getContents contents)
-                        | HtmlTag("th", _, contents) -> Cell (true, getContents contents)
+                        | HtmlElement(_,"td", _, contents) -> Cell (false, getContents contents)
+                        | HtmlElement(_,"th", _, contents) -> Cell (true, getContents contents)
                         | _ -> Empty
                     let col_i = ref colindex
                     while res.[rowindex].[!col_i] <> Empty do incr(col_i)
@@ -88,7 +89,12 @@ module HtmlRuntime =
               Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
 
     let getTables (doc:HtmlDocument) =
-        let tableElements = doc.Elements |> List.collect (fun e -> e.Elements ["table"])
+        let tableElements = 
+            doc.Descendants ["table"]
+            |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0")
+                                     && e.HasAttribute("cellpadding", "0"))
+                                     |> not
+                                     )
         tableElements
         |> List.mapi parseTable 
         |> List.choose id

@@ -3,6 +3,7 @@ module FSharp.Data.Runtime.HtmlInference
 
 open System
 open System.Globalization
+open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -26,7 +27,7 @@ let inferRowType preferOptionals missingValues cultureInfo headers row =
         { Name = getName headers index
           Type = inferedtype }
     
-    StructuralTypes.InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)
+    InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)
 
 let inferColumns preferOptionals missingValues cultureInfo headers rows = 
 

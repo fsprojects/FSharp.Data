@@ -4,6 +4,7 @@ namespace FSharp.Data
 open System
 open System.IO
 open System.Text
+open System.Collections.Generic
 open FSharp.Data
 open FSharp.Data.Runtime
 
@@ -12,15 +13,86 @@ open FSharp.Data.Runtime
 type HtmlAttribute = 
     | HtmlAttribute of name:string * value:string    
 
-type HtmlTag =
-    | HtmlTag of name:string * attributes:HtmlAttribute list * elements:HtmlTag list
-    | HtmlText of string
-    | HtmlScript of string
-    | HtmlStyle of string
-    | HtmlComment of string
+type HtmlContentType =
+    | Script | Style | Comment | Content
+
+
+[<CustomEquality; NoComparison>]
+type HtmlNode =
+    | HtmlElement of parent:HtmlNode option ref * name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+    | HtmlContent of parent:HtmlNode option ref * HtmlContentType * content:string
+    override x.Equals(y:obj) = 
+        match y with
+        | :? HtmlNode as y ->
+            match x, y with
+            | HtmlElement(_, name', attributes', content'), HtmlElement(_, name, attributes, content) -> name' = name && attributes = attributes' && content = content'
+            | HtmlContent(_,t', content'), HtmlContent(_,t, content) -> t' = t && content = content'
+            | _, _ -> false 
+        | _ -> false
+    override x.GetHashCode() = 
+        match x with
+        | HtmlElement(_, name, attrs, content) -> 397 ^^^ hash(name) ^^^ hash(attrs) ^^^ hash(content)
+        | HtmlContent(_, t, content) -> 397 ^^^ hash(t) ^^^ hash(content)
+    override x.ToString() =
+        let rec serialize (sb:StringBuilder) indentation html =
+            let append (str:string) = sb.Append str |> ignore
+            let newLine plus =
+                sb.AppendLine() |> ignore
+                System.String(' ', indentation + plus) |> append
+            match html with
+            | HtmlElement(_, name, attributes, elements) ->
+                append "<"
+                append name
+                for HtmlAttribute(name, value) in attributes do
+                    append " "
+                    append name
+                    append "=\""
+                    append value
+                    append "\""
+                if elements.IsEmpty
+                then append " />"
+                else
+                    append ">"
+                    newLine 2
+                    for element in elements do
+                        serialize sb (indentation + 2) element
+                    newLine 0
+                    append "</"
+                    append name
+                    append ">"
+            | HtmlContent(_,contentType, str) -> 
+                match contentType with
+                | Content -> append str
+                | Script -> 
+                    append "<script>"
+                    newLine 0
+                    append str
+                    newLine 0
+                    append "</script>"
+                | Style -> 
+                    append "<style>"
+                    newLine 0
+                    append str
+                    newLine 0
+                    append "</style>"
+                | Comment -> 
+                    append "<!-- "
+                    append str
+                    append " -->"
+        
+        let sb = StringBuilder()
+        serialize sb 0 x
+        sb.ToString()
+
 
 type HtmlDocument = 
-    | HtmlDocument of docType:string * elements:HtmlTag list
+    | HtmlDocument of docType:string * elements:HtmlNode list
+    override x.ToString() =
+        match x with
+        | HtmlDocument(docType, elements) ->
+            (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">\n")
+            +
+            (elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
 
 // --------------------------------------------------------------------------------------
 
@@ -67,7 +139,7 @@ module private TextParser =
 
 // --------------------------------------------------------------------------------------
 
-module private HtmlParser =
+module internal HtmlParser =
 
     type HtmlToken =
         | DocType of string
@@ -350,54 +422,27 @@ module private HtmlParser =
         ]
     
     let parse reader =
-        let rec parse' docType elements tokens =
+        let rec parse' docType (parent: HtmlNode option ref) elements tokens =
             match tokens with
-            | DocType dt :: rest -> parse' dt elements rest
+            | DocType dt :: rest -> parse' dt parent elements rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlTag(name.ToLower(), attributes, [])
-               parse' docType (e :: elements) rest
+               let e = HtmlElement(parent, name.ToLower(), attributes, [])
+               parse' docType parent (e :: elements) rest
             | Tag(false, name, attributes) :: rest ->
-                let dt, tokens, content = parse' docType [] rest
-                let e = HtmlTag(name.ToLower(), attributes, content)
-                parse' dt (e :: elements) tokens
+                let refCell = ref None
+                let dt, tokens, content = parse' docType refCell [] rest
+                let e = HtmlElement(parent, name.ToLower(), attributes, content)
+                refCell := Some(e)
+                parse' dt refCell (e :: elements) tokens
             | TagEnd _ :: rest -> docType, rest, (elements |> List.rev)
             | Text cont :: rest ->
                 if cont <> " " && (String.IsNullOrWhiteSpace cont)
-                then parse' docType elements rest
-                else parse' docType (HtmlText(cont.Trim()) :: elements) rest
-            | Script(cont) :: rest -> parse' docType (HtmlScript(cont.Trim()) :: elements) rest
-            | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
-            | Style(cont) :: rest -> parse' docType (HtmlStyle(cont.Trim()) :: elements) rest
+                then parse' docType parent elements rest
+                else parse' docType parent (HtmlContent(parent, HtmlContentType.Content, cont.Trim()) :: elements) rest
+            | Script(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Script, cont.Trim()) :: elements) rest
+            | Comment(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Comment, cont.Trim()) :: elements) rest
+            | Style(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Style, cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
-        let docType, _, elements = tokenise reader |> parse' "" []
+        let docType, _, elements = tokenise reader |> parse' "" (ref None) []
         HtmlDocument(docType, elements)
-
-// --------------------------------------------------------------------------------------
-
-type HtmlDocument with
-
-  /// Parses the specified HTML string
-  static member Parse(text) = 
-    use reader = new StringReader(text)
-    HtmlParser.parse reader
-
-  /// Loads HTML from the specified stream
-  static member Load(stream:Stream) = 
-    use reader = new StreamReader(stream)
-    HtmlParser.parse reader
-
-  /// Loads HTML from the specified reader
-  static member Load(reader:TextReader) = 
-    HtmlParser.parse reader
-
-  /// Loads HTML from the specified uri asynchronously
-  static member AsyncLoad(uri:string) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" uri
-    return HtmlParser.parse reader
-  }
-
-  /// Loads HTML from the specified uri
-  static member Load(uri:string) =
-    HtmlDocument.AsyncLoad(uri)
-    |> Async.RunSynchronously
