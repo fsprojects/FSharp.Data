@@ -166,7 +166,8 @@ module Html =
             | None -> defaultValue
         
         /// <summary>
-        /// Returns the attribute with the given name. If the attribute does not exist
+        /// Returns the attribute with the given name. If the
+        /// attribute does not exist then this will thorw an exception
         /// </summary>
         /// <param name="name"></param>
         /// <param name="x"></param>
@@ -174,13 +175,26 @@ module Html =
             match tryGetAttribute name x with
             | Some(v) -> v
             | None -> failwithf "Unable to find attribute (%s)" name
-        
+
+       ///<summary>
+        ///Returns true id the current node has an attribute that
+        ///matches both the name and the value
+        ///</summary>
+        ///<param name="name">The name of the attribute</param>
+        ///<param name="value">The value of the attribute</param>
+        ///<param name="x">The given html node</param>
         let hasAttribute name (value:string) x = 
             tryGetAttribute name x
             |> function 
                 | Some(attr) ->  attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
                 | None -> false
-    
+
+        ///<summary>
+        ///Returns the elements under the current node that mach the
+        ///given predicate
+        ///</summary>
+        ///<param name="f">The predicate to match the element</param>
+        ///<param name="x">The given html node</param>    
         let elements f x = 
             [
                 for element in children x do
@@ -188,7 +202,14 @@ module Html =
                     then yield element
                     else ()
             ]
-    
+
+        ///<summary>
+        ///Returns the elements under the current node that macht the
+        ///given predicate, this also returns the node aswell if it
+        ///matches the predicate
+        ///</summary>
+        ///<param name="f">The predicate to match the element</param>
+        ///<param name="x">The given html node</param>    
         let elementsAndSelf f x = 
             [
                 if f x then yield x
