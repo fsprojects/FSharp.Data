@@ -50,7 +50,7 @@ module internal CsvTypeBuilder =
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type
     let stringArrayToRow = 
-      let parentVar = Var("parent", typeof<obj>)            
+      let parentVar = Var("parent", typeof<obj>)
       let rowVar = Var("row", typeof<string[]>)
       let rowVarExpr = Expr.Var rowVar
 
