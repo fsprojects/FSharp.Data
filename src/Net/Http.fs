@@ -282,13 +282,19 @@ module private Helpers =
 #if FX_NET_CORE_REFLECTION
         let prop = obj.GetType().GetRuntimeProperty(prop)
         if prop <> null && prop.CanRead then
-            prop.GetValue(obj) |> unbox |> Some
+            try
+                prop.GetValue(obj) |> unbox |> Some
+            with _ -> 
+                None
         else
             None
 #else
         let prop = obj.GetType().GetProperty(prop)
         if prop <> null && prop.CanRead then
-            prop.GetValue(obj, [| |]) |> unbox |> Some
+            try
+                prop.GetValue(obj, [| |]) |> unbox |> Some
+            with _ -> 
+                None
         else
             None
 #endif
@@ -297,8 +303,11 @@ module private Helpers =
 #if FX_NET_CORE_REFLECTION
         let prop = obj.GetType().GetRuntimeProperty(prop)
         if prop <> null && prop.CanWrite then
-            prop.SetValue(obj, box value) |> ignore
-            true
+            try 
+                prop.SetValue(obj, box value) |> ignore
+                true
+            with _ -> 
+                false
         else
             false
 #else
@@ -439,7 +448,7 @@ module private Helpers =
 #endif
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | "referer" -> if not (req?Referer <- value) then req.Headers.[HeaderEnum.Referer] <- value
+            | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
 #else
             | "referer" -> req.Referer <- value
 #endif            
@@ -448,7 +457,7 @@ module private Helpers =
             | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
             | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | "user-agent" -> if not (req?UserAgent <- value) then req.Headers.[HeaderEnum.UserAgent] <- value
+            | "user-agent" -> if not (req?UserAgent <- value) then try req.Headers.[HeaderEnum.UserAgent] <- value with _ -> ()
 #else
             | "user-agent" -> req.UserAgent <- value
 #endif
