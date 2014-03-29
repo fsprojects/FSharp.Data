@@ -136,7 +136,9 @@ Target "RunConsoleTests" <| ignore
 let runConsoleTest name =
     let taskName = sprintf "Run_%s" name
     Target taskName <| fun () ->
-        ExecProcess (fun info -> info.FileName <- name) (TimeSpan.FromMinutes 1.) |> ignore
+        let result = ExecProcess (fun info -> info.FileName <- name) (TimeSpan.FromMinutes 1.)
+        if result <> 0 then
+            failwithf "%s failed" taskName
     taskName ==> "RunConsoleTests" |> ignore
 
 [ for consoleTest in !! "tests/ConsoleTests/*/bin/Release/*.exe" -> consoleTest ]

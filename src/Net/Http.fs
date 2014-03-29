@@ -277,8 +277,41 @@ module private Helpers =
         return output 
     }
 
+    let (?) obj prop =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null then
+            prop.GetValue(obj) |> unbox |> Some
+        else
+            None
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null then
+            prop.GetValue(obj, [| |]) |> unbox |> Some
+        else
+            None
+#endif
+
+    let (?<-) obj prop value =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null then
+            prop.SetValue(obj, box value) |> ignore
+            true
+        else
+            false
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null then
+            prop.SetValue(obj, value, [| |]) |> ignore
+            true
+        else
+            false
+#endif
+
     let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
+        ignore (req?ContentLength <- int64 postBytes.Length)
 #else
         req.ContentLength <- int64 postBytes.Length
 #endif
@@ -348,7 +381,7 @@ module private Helpers =
             | "authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
             | "cache-control" -> req.Headers.[HeaderEnum.CacheControl] <- value
 #if FX_NO_WEBREQUEST_CONNECTION
-            | "connection" -> req.Headers.[HeaderEnum.Connection] <- value
+            | "connection" -> if not (req?Connection <- value) then req.Headers.[HeaderEnum.Connection] <- value
 #else
             | "connection" -> req.Connection <- value
 #endif
@@ -361,25 +394,25 @@ module private Helpers =
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "date" -> req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
 #else
             | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
-            | "expect" -> req.Headers.[HeaderEnum.Expect] <- value
+            | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
 #else
             | "expect" -> req.Expect <- value
 #endif
             | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
             | "from" -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
-            | "host" -> req.Headers.[HeaderEnum.Host] <- value
+            | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
 #else
             | "host" -> req.Host <- value
 #endif       
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "if-modified-since" -> req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
             | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
@@ -402,7 +435,7 @@ module private Helpers =
 #endif
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | "referer" -> req.Headers.[HeaderEnum.Referer] <- value
+            | "referer" -> if not (req?Referer <- value) then req.Headers.[HeaderEnum.Referer] <- value
 #else
             | "referer" -> req.Referer <- value
 #endif            
@@ -411,7 +444,7 @@ module private Helpers =
             | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
             | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | "user-agent" -> req.Headers.[HeaderEnum.UserAgent] <- value
+            | "user-agent" -> if not (req?UserAgent <- value) then req.Headers.[HeaderEnum.UserAgent] <- value
 #else
             | "user-agent" -> req.UserAgent <- value
 #endif
@@ -515,7 +548,8 @@ type Http private() =
         let hasContentType = setHeaders headers req
 
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
+        if not (req?AutomaticDecompression <- 3) then 
+            req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
     #endif
@@ -576,7 +610,7 @@ type Http private() =
                 match resp with
                 | :? HttpWebResponse as resp -> 
 #if FX_NO_WEBRESPONSE_CHARACTERSET
-                    int resp.StatusCode, ""
+                    int resp.StatusCode, (defaultArg resp?CharacterSet "")
 #else
                     int resp.StatusCode, resp.CharacterSet
 #endif
