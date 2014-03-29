@@ -105,6 +105,11 @@ Target "BuildTests" <| fun () ->
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
+Target "BuildConsoleTests" <| fun () ->
+    !! "TestApps.sln"
+    |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
+    |> ignore
+
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
 Target "RunTests" <| ignore
@@ -124,6 +129,18 @@ let runTestTask name =
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
+
+// Run the console tests
+Target "RunConsoleTests" <| ignore
+
+let runConsoleTest name =
+    let taskName = sprintf "Run_%s" name
+    Target taskName <| fun () ->
+        ExecProcess (fun info -> info.FileName <- name) (TimeSpan.FromMinutes 1.) |> ignore
+    taskName ==> "RunConsoleTests" |> ignore
+
+[ for consoleTest in !! "tests/ConsoleTests/*/bin/Release/*.exe" -> consoleTest ]
+|> List.iter runConsoleTest
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
@@ -220,8 +237,10 @@ Target "Help" <| fun () ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
+    printfn "  * BuildConsoleTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 3)"
+    printfn "  * RunConsoleTests"
+    printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
@@ -243,6 +262,8 @@ Target "All" DoNothing
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
+"BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
+"RunConsoleTests" ==> "All"
 
 RunTargetOrDefault "Help"
