@@ -3,9 +3,7 @@
 [<EntryPoint>]
 let main _ = 
     try
-        getStocks() |> ignore
-        getRss() |> ignore
-        getIssues() |> ignore
+        getTestData() |> Async.Ignore |> Async.RunSynchronously
         0
     with e ->
         eprintfn "%s" e.Message

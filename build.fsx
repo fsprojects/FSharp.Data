@@ -106,7 +106,7 @@ Target "BuildTests" <| fun () ->
     |> ignore
 
 Target "BuildConsoleTests" <| fun () ->
-    !! "TestApps.sln"
+    !! "TestApps.Console.sln"
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
@@ -141,7 +141,7 @@ let runConsoleTest name =
             failwithf "%s failed" taskName
     taskName ==> "RunConsoleTests" |> ignore
 
-[ for consoleTest in !! "tests/ConsoleTests/*/bin/Release/*.exe" -> consoleTest ]
+[ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest ]
 |> List.iter runConsoleTest
 
 // --------------------------------------------------------------------------------------
