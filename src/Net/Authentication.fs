@@ -13,7 +13,7 @@ module AuthenticationUtils =
     [<Literal>]
     let DigestAuthType = "Digest"
 
-#if NO_SECURE_STRING
+#if FX_NO_WEBREQUEST_AUTH
 #else
     let toSecureString str =
         let securedStr = new SecureString()
@@ -21,7 +21,7 @@ module AuthenticationUtils =
         securedStr
 #endif
 
-#if PORTABLE
+#if FX_NO_WEBREQUEST_AUTH
 #else
     let removeAuthorizationPart(uri:Uri) =
         new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.PathAndQuery)
@@ -46,7 +46,7 @@ module AuthenticationUtils =
     let isBasicAuthChallenge(challenge: string) =
         challenge.StartsWith(BasicAuthType, StringComparison.OrdinalIgnoreCase)
 
-#if NO_AUTHENTICATION_MODULE
+#if FX_NO_WEBREQUEST_AUTH
 #else  
     let shouldSendCredentials(policy:ICredentialPolicy, request:WebRequest, credential:NetworkCredential, authenticationModule) =
         isNull policy || policy.ShouldSendCredential(request.RequestUri, request, credential, authenticationModule)
@@ -85,7 +85,7 @@ type BasicAuthentication() =
 [<AutoOpen>]
 module AuthenticationRegistration =
     let registerAllAuthenticationModules() =
-#if NO_AUTHENTICATION_MODULE
+#if FX_NO_WEBREQUEST_AUTH
 #else 
         AuthenticationManager.Unregister(AuthenticationUtils.BasicAuthType)
         AuthenticationManager.Register(BasicAuthentication())

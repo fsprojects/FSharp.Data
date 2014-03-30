@@ -547,7 +547,7 @@ type Http private() =
        
         let applyAuthorizations(request:HttpWebRequest, credentials:seq<Credential>) =
             if not (Seq.isEmpty credentials) then
-#if PORTABLE
+#if FX_NO_WEBREQUEST_AUTH
                 // Apparently there can be only one set of credentials enforced at a time in portable libraries.
                 // And there are also other inconsistencies regarding PreAuthenticate, for instance.
                 // Maybe the features are reachable via reflection as exempliefied at
@@ -563,7 +563,7 @@ type Http private() =
         let createRequestAndApplyCredentials(uri:Uri, credentials:seq<Credential>) = 
             let request = WebRequest.Create(uri) :?> HttpWebRequest
 
-#if PORTABLE
+#if FX_NO_WEBREQUEST_AUTH
 #else
             // TODO: Should these be exposed to users?
             request.PreAuthenticate <- true
