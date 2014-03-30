@@ -10,11 +10,19 @@ module AuthenticationUtils =
     [<Literal>]
     let BasicAuthType = "Basic"
 
+    [<Literal>]
+    let DigestAuthType = "Digest"
+
+#if NO_SECURE_STRING
+#else
     let toSecureString str =
         let securedStr = new SecureString()
         String.iter securedStr.AppendChar str
         securedStr
+#endif
 
+#if PORTABLE
+#else
     let removeAuthorizationPart(uri:Uri) =
         new Uri(sprintf "%s%s%s%s" uri.Scheme Uri.SchemeDelimiter uri.Authority uri.PathAndQuery)
 
@@ -26,9 +34,7 @@ module AuthenticationUtils =
     // Inspired by https://stackoverflow.com/questions/6817852/handling-null-values-in-f .
     let(|NotNull|_|) value = 
         if isNull value then None else Some()
-    
-    let shouldSendCredentials(policy:ICredentialPolicy, request:WebRequest, credential:NetworkCredential, authenticationModule) =
-        isNull policy || policy.ShouldSendCredential(request.RequestUri, request, credential, authenticationModule)
+#endif
 
     let createBasicAuthTicket(credentials:NetworkCredential, encoding:Encoding) =
         // Note that NetworkCredential represents non-ASCII characters as percentange escaped unicode strings (a sequence of chars). Example: "passwdä" -> "passwd%C3%A4".
@@ -39,6 +45,11 @@ module AuthenticationUtils =
 
     let isBasicAuthChallenge(challenge: string) =
         challenge.StartsWith(BasicAuthType, StringComparison.OrdinalIgnoreCase)
+
+#if NO_AUTHENTICATION_MODULE
+#else  
+    let shouldSendCredentials(policy:ICredentialPolicy, request:WebRequest, credential:NetworkCredential, authenticationModule) =
+        isNull policy || policy.ShouldSendCredential(request.RequestUri, request, credential, authenticationModule)
 
 // This was inspired by Yishai Galatzer's post at http://blogs.iis.net/yigalatz/archive/2010/11/24/replacing-the-built-in-basic-authentication-module-to-support-non-english-characters-in-a-httpwebrequest.aspx .
 type BasicAuthentication() =
@@ -68,15 +79,17 @@ type BasicAuthentication() =
                     this.buildAuthorization(AuthenticationManager.CredentialPolicy, request, nc)
                 | _ -> null
             | _ -> null
+#endif
+
 
 [<AutoOpen>]
 module AuthenticationRegistration =
-    
     let registerAllAuthenticationModules() =
+#if NO_AUTHENTICATION_MODULE
+#else 
         AuthenticationManager.Unregister(AuthenticationUtils.BasicAuthType)
         AuthenticationManager.Register(BasicAuthentication())
 
         // Register here possible OAuth2 module as well...
-            
-    
-            
+#endif
+        ()
