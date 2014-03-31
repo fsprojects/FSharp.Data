@@ -141,6 +141,7 @@ module internal Misc =
         member __.AddXmlDocDelayed(xmlDoc : unit -> string) = xmlDocDelayed <- Some xmlDoc
         member this.AddXmlDoc(text:string) =  this.AddXmlDocDelayed (fun () -> text)
         member __.HideObjectMethods with set v = hideObjectMethods <- v
+        member __.AddCustomAttribute(attribute) = customAttributes.Add(attribute)
         member __.GetCustomAttributesData() = 
             [| yield! customAttributesOnce.Force()
                match xmlDocAlwaysRecomputed with None -> () | Some f -> customAttributes.Add(mkXmlDocCustomAttributeData (f()))  |]
@@ -425,6 +426,7 @@ type ProvidedMethod(methodName: string, parameters: ProvidedParameter list, retu
     member this.AddXmlDoc xmlDoc                            = customAttributesImpl.AddXmlDoc xmlDoc
     member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
+    member __.AddCustomAttribute(attribute) = customAttributesImpl.AddCustomAttribute(attribute)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
@@ -511,6 +513,7 @@ type ProvidedProperty(propertyName:string,propertyType:Type, ?parameters:Provide
     member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
+    member this.AddCustomAttribute attribute                = customAttributesImpl.AddCustomAttribute attribute
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
@@ -1084,6 +1087,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
+    member this.AddCustomAttribute attribute                = customAttributesImpl.AddCustomAttribute attribute
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
     override this.GetCustomAttributesData()                 = customAttributesImpl.GetCustomAttributesData()
