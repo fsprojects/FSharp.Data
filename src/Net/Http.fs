@@ -488,7 +488,6 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
 #else
-        failwith "Automatic gzip decompression failed"
         memoryStream
 #endif
 
@@ -498,7 +497,6 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
 #else
-        failwith "Automatic deflate decompression failed"
         memoryStream
 #endif
 
