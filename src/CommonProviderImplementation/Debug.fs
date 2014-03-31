@@ -38,7 +38,10 @@ module Debug =
         match args with
         | [||] -> providedTypeDefinition
         | args ->
-            let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
+            // I found a prefixed "Debug" to be more useful than combining the name using the static parameters
+            // The type name ends up quite mangled in the dll output if you choose to use that to aid debugging.
+            // let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
+            let typeName = "Debug" + providedTypeDefinition.Name 
             providedTypeDefinition.MakeParametricType(typeName, args)
 
     /// Returns a string representation of the signature (and optionally also the body) of all the
@@ -418,6 +421,7 @@ module Debug =
                 |> m.GetInvokeCodeInternal false
 
             let getConstructorBody (c: ProvidedConstructor) = 
+                if c.IsImplicitCtor then Expr.Value(()) else
                 seq { for param in c.GetParameters() do yield (ProvidedTypeDefinition.EraseType param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
