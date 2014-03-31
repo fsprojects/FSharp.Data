@@ -488,6 +488,7 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
 #else
+        failwith "Automatic gzip decompression failed"
         memoryStream
 #endif
 
@@ -497,6 +498,7 @@ module private Helpers =
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
 #else
+        failwith "Automatic deflate decompression failed"
         memoryStream
 #endif
 
@@ -574,8 +576,11 @@ type Http private() =
         // set headers
         let hasContentType = setHeaders headers req
 
+        let automaticDecompression = ref true
+
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         if not (req?AutomaticDecompression <- 3) then 
+            automaticDecompression := false
             req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
@@ -643,7 +648,10 @@ type Http private() =
 #endif
                 | _ -> 0, ""
 
-            let contentEncoding = defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
+            let contentEncoding = 
+                if !automaticDecompression
+                then "" 
+                else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
             let stream = resp.GetResponseStream()
 
