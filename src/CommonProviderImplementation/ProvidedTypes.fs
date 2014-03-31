@@ -381,7 +381,11 @@ type ProvidedConstructor(parameters : ProvidedParameter list) =
         match invokeCode with
         | Some f -> 
             // FSharp.Data change: use the real variable names instead of indices, to improve output of Debug.fs
-            let paramNames = parameters |> List.map (fun p -> p.Name) |> Array.ofList
+            let paramNames = 
+                parameters
+                |> List.map (fun p -> p.Name) 
+                |> List.append (if not isGenerated || this.IsStatic then [] else ["this"])
+                |> Array.ofList
             transQuotationToCode isGenerated f paramNames
         | None -> failwith (sprintf "ProvidedConstructor: no invoker for '%s'" (nameText()))
 
