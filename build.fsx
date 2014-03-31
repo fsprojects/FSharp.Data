@@ -123,7 +123,7 @@ let runTestTask name =
                 DisableShadowCopy = true
                 TimeOut = TimeSpan.FromMinutes 20.
                 Framework = "4.0"
-                Domain = "Multiple"
+                Domain = MultipleDomainModel
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
 
@@ -131,18 +131,9 @@ let runTestTask name =
 |> List.iter runTestTask
 
 // Run the console tests
-Target "RunConsoleTests" <| ignore
-
-let runConsoleTest name =
-    let taskName = sprintf "Run_%s" name
-    Target taskName <| fun () ->
-        let result = ExecProcess (fun info -> info.FileName <- name) (TimeSpan.FromMinutes 1.)
-        if result <> 0 then
-            failwithf "%s failed" taskName
-    taskName ==> "RunConsoleTests" |> ignore
-
-[ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest ]
-|> List.iter runConsoleTest
+Target "RunConsoleTests" (fun _ ->
+    [ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest, "" ]
+    |> ProcessTestRunner.RunConsoleTests (fun p -> { p with TimeOut = TimeSpan.FromMinutes 1. } ))
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
