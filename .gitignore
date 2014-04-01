@@ -11,3 +11,4 @@ packages
 TestResult.xml
 *.VisualState.xml
 *.userprefs
+src/temp.fsx
