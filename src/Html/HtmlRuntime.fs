@@ -93,8 +93,7 @@ module HtmlRuntime =
             doc.Descendants ["table"]
             |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0")
                                      && e.HasAttribute("cellpadding", "0"))
-                                     |> not
-                                     )
+                                     |> not)
         tableElements
         |> List.mapi parseTable 
         |> List.choose id

@@ -73,7 +73,6 @@
     <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.fs" />
-    <None Include="Scratchpad.fsx" />
     <None Include="Test.HtmlRuntime.fsx" />
   </ItemGroup>
   <ItemGroup>

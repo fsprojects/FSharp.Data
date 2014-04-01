@@ -124,6 +124,23 @@ let ``Can parse tables with no headers``() =
     (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
 
 [<Test>]
+let ``Can parse tables with no headers and only 2 rows``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                            <tr><td>1</td></tr>
+                            <tr><td>3</td></tr>
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables
+
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "table"
+    tables.[0].Headers |> should equal []
+    (tables.[0].Rows) |> should equal [["1"]; ["3"]]
+
+[<Test>]
 let ``Extracts table when title attribute is set``() = 
     let html = """<html>
                     <body>

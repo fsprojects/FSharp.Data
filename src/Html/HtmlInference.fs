@@ -53,12 +53,11 @@ let inferColumns preferOptionals missingValues cultureInfo headers rows =
     | _ -> failwithf "inferType: Expected record type, got %A" inferedType
 
 let inferHeaders (rows : string [][]) =
-//    if rows.Length < 2
-//    then 1, rows.[0] //just assume first row is header
-//    else
+    if rows.Length <= 2
+    then 0, [||] //Not enough info to infer anything, assume first row data
+    else
         let computeRowType row = 
             inferRowType false TextConversions.DefaultMissingValues CultureInfo.InvariantCulture [||] row
-
         let headerRow = computeRowType rows.[0]
         let dataRow =  rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
         if headerRow = dataRow
