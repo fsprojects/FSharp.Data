@@ -39,6 +39,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Heterogeneous
   // Possibly named record
   | Record of string option
+  | Constant of string
 
 /// Represents inferred structural type. A type may be either primitive type
 /// (one of those listed by `primitiveTypes`) or it can be collection, 
@@ -55,6 +56,7 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
+  | Constant of name:string * typ:System.Type * value:obj
   | Primitive of System.Type * (*unit*)option<System.Type>
   | Record of string option * InferedProperty list
   | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
@@ -75,6 +77,14 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
       | Collection(m1), Collection(m2) -> m1 = m2
       | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
       | Null, Null | Top, Top -> true
+      | Constant(n1,t1,v1), Constant(n2,t2,v2) -> 
+             if n1 = n2 && t1 = t2 then
+                if v1 <> v2 then
+                   failwithf "Redeclaration of constant %s" n1
+                else
+                   true
+             else
+                  false
       | _ -> false
     else false
 
@@ -96,17 +106,20 @@ type InferedTypeTag with
     | Heterogeneous -> "Choice"
     | Record None -> "Record"
     | Record (Some name) -> name
+    | Constant (n) -> n
   
   /// Converts tag to string code that can be passed to generated code
   member x.Code = 
     match x with
     | Record (Some name) -> "Record@" + name
+    | Constant(name) -> "Constant@" + name
     | _ -> x.NiceName
 
   /// Parses code returned by 'Code' member (to be used in provided code)
   static member ParseCode(str:string) =
     match str with
     | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
+    | s when s.StartsWith("Constant@") -> Constant(s.Substring("Constant@".Length))
     | "Record" -> Record None
     | "Number" -> Number 
     | "Boolean" -> Boolean

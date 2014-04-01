@@ -74,7 +74,11 @@ module internal XmlTypeBuilder =
     // If we already generated object for this type, return it
     | InferedType.Record(Some nameWithNs, props) when ctx.GeneratedResults.ContainsKey(nameWithNs) -> 
         ctx.GeneratedResults.[nameWithNs]
-    
+
+    | InferedType.Constant(name, typ, value) ->
+        let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(name, typ, false)
+        typ, fun xml -> 
+          conv <@ Some (value.ToString()) @>
     // If the node does not have any children and always contains only primitive type
     // then we turn it into a primitive value of type such as int/string/etc.
     | InferedType.Record(Some nameWithNs, [{ Name = ""; Optional = opt; Type = InferedType.Primitive(typ, _) }]) ->
@@ -209,7 +213,7 @@ module internal XmlTypeBuilder =
             |> objectTy.AddMembers 
 
         | [_] -> failwith "generateXmlType: Children should be collection or heterogeneous"
-        | _::_ -> failwith "generateXmlType: Only one child collection expected"
+        | _::_ as x-> failwithf "generateXmlType: Only one child collection expected %A" x
         | [] -> ()
         objectTy :> Type, ctx.Replacer.ToRuntime
 

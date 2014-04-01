@@ -117,6 +117,7 @@ module JsonTypeBuilder =
   /// Recursively walks over inferred type information and 
   /// generates types for read-only access to the document
   and internal generateJsonType ctx input = function
+    | InferedType.Constant(_) -> failwith "Constants not supported for JSON"
     | InferedType.Primitive(inferedTyp, _) ->
         let typ, conv = 
             PrimitiveInferedProperty.Create(input.ParentJsonName, inferedTyp, input.Optional)

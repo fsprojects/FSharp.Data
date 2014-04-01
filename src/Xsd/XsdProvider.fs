@@ -30,6 +30,7 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
         
         let sample = args.[0] :?> string
         let resolutionFolder = args.[1] :?> string
+        let includeMetadata = args.[2] :?> bool
         
         let parseSingle _ value = XDocument.Parse(value).Root
         let parseList _ value = XDocument.Parse(value).Root.Elements()
@@ -58,7 +59,7 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                         
               let schema = read reader
               schema.SourceUri <- path
-              schema |> XsdBuilder.generateType |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              schema |> XsdBuilder.generateType <| includeMetadata |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
             types := ts
             ts
           | _ -> !types
@@ -138,13 +139,15 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
-    [ ProvidedStaticParameter("SchemaFile", typeof<string>)
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "") ]
+    [ ProvidedStaticParameter("SchemaFile", typeof<string>);
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "");
+      ProvidedStaticParameter("IncludeMetadata", typeof<bool>, parameterDefaultValue = false)]
 
   let helpText = 
     """<summary>Typed representation of a XML file based on a xml schema definition (XSD)</summary>
        <param name='SchemaFile'>Location of a XSD file or a string containing the XSD</param>                    
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
+       <param name='IncludeMetadata'>If true XSD metadata such as target namespace will be included and accessible from each generated type</param>                    """
 
   do xmlProvTy.AddXmlDoc helpText
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)

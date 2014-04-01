@@ -178,7 +178,7 @@ and internal Schema(this:System.Xml.Schema.XmlSchema) =
                     | _ -> ()]
 
 module XsdBuilder = 
-  let generateType (schema:System.Xml.Schema.XmlSchema) =
+  let generateType (schema:System.Xml.Schema.XmlSchema) includeMetadata  =
     let schema = Schema(schema)
     let _types = new System.Collections.Generic.Dictionary<string, InferedType>()
 
@@ -288,8 +288,13 @@ module XsdBuilder =
                                              InferedType.Record(Some "", p) ->
                                                 InferedType.Record(Some el.Name,p)
                                              | _ as t -> t
-                                       
                                        (InferedTypeTag.Record (Some el.Name),(multiplicity, elemType)))
+                      let elements =
+                         if includeMetadata then 
+                             let name = "TargetNamespace"
+                             (InferedTypeTag.Record(Some name),(InferedMultiplicity.Single,InferedType.Constant(name,typeof<string>,typeDeclaration.Schema.TargetNamespace)))::elements
+                         else
+                              elements
                       let attributes = 
                             typeDeclaration.Attributes 
                             |> List.map (fun a -> 

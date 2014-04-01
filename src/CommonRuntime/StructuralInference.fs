@@ -43,6 +43,7 @@ let supportsUnitsOfMeasure typ =
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)
 let typeTag = function
+  | InferedType.Constant(n, _, v)-> InferedTypeTag.Constant n
   | InferedType.Record(n, _)-> InferedTypeTag.Record n
   | InferedType.Collection _ -> InferedTypeTag.Collection
   | InferedType.Null | InferedType.Top -> InferedTypeTag.Null
