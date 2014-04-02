@@ -92,14 +92,19 @@ module Html =
         /// Gets all of the descendants of this node that statisfy the given predicate
         /// the current node is also considered in the comparison
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="f">The predicate by which to match the nodes to return</param>
         /// <param name="x">The given node</param>
-        let descendantsAndSelf f x = 
+        let descendantsAndSelf recurseOnMatch f x = 
             let rec descendantsBy f (x:HtmlNode) =
                     [   
                         if f x then yield x
                         for element in children x do
-                            yield! descendantsBy f element
+                            if f element 
+                            then 
+                                yield element
+                                if recurseOnMatch then yield! descendantsBy f element
+                            else yield! descendantsBy f element
                     ]
             descendantsBy f x
         
@@ -107,33 +112,39 @@ module Html =
         /// Finds all of the descendant nodes of this nodes that match the given set of names
         /// the current node is also considered for comparison
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="names">The set of names to match</param>
         /// <param name="x">The given node</param>
-        let descendantsAndSelfNamed names x = 
+        let descendantsAndSelfNamed recurseOnMatch names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
-            descendantsAndSelf (fun x -> name x |> nameSet.Contains) x
+            descendantsAndSelf recurseOnMatch (fun x -> name x |> nameSet.Contains) x
         
         /// <summary>
         /// Gets all of the descendants of this node that statisfy the given predicate
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="f">The predicate by which to match the nodes to return</param>
         /// <param name="x">The given node</param>
-        let descendants f x = 
+        let descendants recurseOnMatch f x = 
             let rec descendantsBy f (x:HtmlNode) =
                     [   for element in children x do
-                            if f element then yield element
-                            yield! descendantsBy f element
+                            if f element 
+                            then 
+                                yield element
+                                if recurseOnMatch then yield! descendantsBy f element
+                            else yield! descendantsBy f element
                     ]
             descendantsBy f x
     
         /// <summary>
         /// Finds all of the descendant nodes of this nodes that match the given set of names
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="names">The set of names to match</param>
         /// <param name="x">The given node</param>
-        let descendantsNamed names x = 
+        let descendantsNamed recurseOnMatch names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
-            descendants (fun x -> name x |> nameSet.Contains) x
+            descendants recurseOnMatch (fun x -> name x |> nameSet.Contains) x
         
         /// <summary>
         /// Returns true if any of the descendants of the current node exist in the 
@@ -143,7 +154,7 @@ module Html =
         /// <param name="x">The given node</param>
         let hasDescendants names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
-            descendants (fun x -> nameSet.Contains(name x)) x |> Seq.isEmpty |> not
+            descendants true (fun x -> nameSet.Contains(name x)) x |> Seq.isEmpty |> not
         
         /// <summary>
         /// Trys to return an attribute that exists on the current node
@@ -306,23 +317,27 @@ module Html =
         /// <summary>
         /// Gets all of the descendants of the current node
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="f">The predicate for which descendants to return</param>
         /// <param name="includeSelf">include the current node</param>
-        member x.Descendants(?f, ?includeSelf) = 
+        member x.Descendants(?f, ?includeSelf, ?recurseOnMatch) = 
             let f = defaultArg f (fun _ -> true)
+            let recurseOnMatch = defaultArg recurseOnMatch true
             if (defaultArg includeSelf false)
-            then HtmlNode.descendantsAndSelf f x
-            else HtmlNode.descendants f x
+            then HtmlNode.descendantsAndSelf recurseOnMatch f x
+            else HtmlNode.descendants recurseOnMatch f x
 
         /// <summary>
         /// Gets all of the descendants of the current node, which match the given set of names
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="names">The set of names by which to map the descendants</param>
         /// <param name="includeSelf">include the current node</param>
-        member x.Descendants(names:seq<string>, ?includeSelf) = 
+        member x.Descendants(names:seq<string>, ?includeSelf, ?recurseOnMatch) = 
+            let recurseOnMatch = defaultArg recurseOnMatch true
             if (defaultArg includeSelf false)
-            then HtmlNode.descendantsAndSelfNamed names x
-            else HtmlNode.descendantsNamed names x
+            then HtmlNode.descendantsAndSelfNamed recurseOnMatch names x
+            else HtmlNode.descendantsNamed recurseOnMatch names x
 
         /// <summary>
         /// Trys to select an attribute with the given name from the current node.
@@ -432,23 +447,28 @@ module Html =
         /// <summary>
         /// Gets all of the descendants of this document that statisfy the given predicate
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="f">The predicate by which to match the nodes to return</param>
         /// <param name="x">The given node</param>
-        let descendants f x =
+        let descendants recurseOnMatch f x =
             [
                for e in elements (fun _ -> true) x do
-                   if f e then yield e
-                   yield! HtmlNode.descendants f e
+                   if f e 
+                   then 
+                        yield e
+                        if recurseOnMatch then yield! HtmlNode.descendants recurseOnMatch f e
+                   else yield! HtmlNode.descendants recurseOnMatch f e
             ] 
 
         /// <summary>
         /// Finds all of the descendant nodes of this document that match the given set of names
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="names">The set of names to match</param>
         /// <param name="x">The given document</param>
-        let descendantsNamed names x = 
+        let descendantsNamed recurseOnMatch names x = 
             let nameSet = Set.ofSeq (names |> Seq.map (fun (n:string) -> n.ToLowerInvariant()))
-            descendants (fun x -> HtmlNode.name x |> nameSet.Contains) x
+            descendants recurseOnMatch (fun x -> HtmlNode.name x |> nameSet.Contains) x
     
         /// <summary>
         /// Returns true if any of the descendants of the current document exist in the 
@@ -457,7 +477,7 @@ module Html =
         /// <param name="names">The set of names to match against</param>
         /// <param name="x">The given document</param>
         let hasDescendants names x = 
-            descendantsNamed names x |> List.isEmpty |> not
+            descendantsNamed true names x |> List.isEmpty |> not
 
         /// <summary>
         /// Finds the body element of the given document,
@@ -465,7 +485,7 @@ module Html =
         /// </summary>
         /// <param name="x">The given document</param>
         let body (x:HtmlDocument) = 
-            match descendantsNamed ["body"] x with
+            match descendantsNamed true ["body"] x with
             | [] -> failwith "No element body found!"
             | h:: _ -> h
     
@@ -474,7 +494,7 @@ module Html =
         /// </summary>
         /// <param name="x">The given document</param>
         let tryBody (x:HtmlDocument) = 
-            match descendantsNamed ["body"] x with
+            match descendantsNamed true ["body"] x with
             | [] -> None
             | h:: _ -> Some(h)
     
@@ -493,17 +513,21 @@ module Html =
         /// <summary>
         /// Gets all of the descendants of this document that statisfy the given predicate
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="f">The predicate by which to match the nodes to return</param>
-        member x.Descendants(?f) = 
+        member x.Descendants(?f, ?recurseOnMatch) = 
             let f = defaultArg f (fun _ -> true)
-            HtmlDocument.descendants f x
+            let recurseOnMatch = defaultArg recurseOnMatch true
+            HtmlDocument.descendants recurseOnMatch f x
 
         /// <summary>
         /// Finds all of the descendant nodes of this document that match the given set of names
         /// </summary>
+        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
         /// <param name="names">The set of names to match</param>
-        member x.Descendants(names) = 
-            HtmlDocument.descendantsNamed names x
+        member x.Descendants(names, ?recurseOnMatch) =
+            let recurseOnMatch = defaultArg recurseOnMatch true
+            HtmlDocument.descendantsNamed recurseOnMatch names x
 
         /// <summary>
         /// Returns all of the elements of the current document

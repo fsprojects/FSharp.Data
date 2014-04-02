@@ -56,7 +56,7 @@ module HtmlRuntime =
                 | h :: _ -> h.InnerText
 
     let private parseTable index (table:HtmlNode) = 
-        let rows = table.Descendants(["tr"], true) |> List.mapi (fun i r -> i,r)
+        let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
         then None
         else
@@ -82,7 +82,12 @@ module HtmlRuntime =
                 if res.[0] |> Array.forall (fun r -> r.IsHeader) 
                 then 1, res.[0] |> Array.map (fun x -> x.Data)
                 else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
-                    
+            
+            let headers = 
+                if headers.Length = 0
+                then res.[0] |> Array.mapi (fun i _ -> "Column_" + (string i))
+                else headers
+                       
 
             { Name = (getName ("Table_" + (string index)) table)
               Headers = headers
@@ -90,7 +95,7 @@ module HtmlRuntime =
 
     let getTables (doc:HtmlDocument) =
         let tableElements = 
-            doc.Descendants ["table"]
+            doc.Descendants(["table"],false)
             |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0")
                                      && e.HasAttribute("cellpadding", "0"))
                                      |> not)
@@ -100,7 +105,7 @@ module HtmlRuntime =
 
     let formatTable (data:HtmlTable) =
         let sb = StringBuilder()
-        use wr = new StringWriter(sb)  
+        use wr = new StringWriter(sb) 
         let data = array2D ((data.Headers |> List.ofArray) :: (data.Rows |> Array.map (List.ofArray) |> List.ofArray))    
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
@@ -109,7 +114,7 @@ module HtmlRuntime =
             widths.[c] <- max (widths.[c]) (cell.Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-            wr.Write(data.[r,c].PadRight(widths.[c] + 1))
+                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
             wr.WriteLine()
         sb.ToString()
 
