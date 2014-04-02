@@ -1,0 +1,60 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" >
+        <annotation>
+          <documentation>This is an identification of the preferred language</documentation>
+        </annotation>
+      </element>
+      <element name="elem1" type="tns:foo" />
+      <element name="choice" type="tns:bar" maxOccurs="2" />
+      <element name="anonymousTyped">
+        <complexType>
+          <sequence>
+            <element name="covert" type="boolean" />
+          </sequence>
+          <attribute name="attr" type="string" />
+          <attribute name="windy">
+            <simpleType>
+              <restriction base="string">
+                <maxLength value="10" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="bar">
+    <choice>
+      <element name="language" type="string" >
+        <annotation>
+          <documentation>This is an identification of the preferred language</documentation>
+        </annotation>
+      </element>
+      <element name="country" type="integer" />
+      <element name="snur">
+        <complexType>
+          <sequence>
+            <element name ="baz" type ="string"/>
+          </sequence>
+        </complexType>
+      </element>
+    </choice>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="ISO639Code">
+        <annotation>
+          <documentation>This is an ISO 639-1 or 639-2 identifier</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="10" />
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+</schema>
