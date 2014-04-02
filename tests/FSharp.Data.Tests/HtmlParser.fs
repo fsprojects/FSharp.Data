@@ -120,7 +120,7 @@ let ``Can parse tables with no headers``() =
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal []
+    tables.[0].Headers |> should equal ["Column0"]
     (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
 
 [<Test>]
@@ -137,7 +137,7 @@ let ``Can parse tables with no headers and only 2 rows``() =
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal []
+    tables.[0].Headers |> should equal ["Column0"]
     (tables.[0].Rows) |> should equal [["1"]; ["3"]]
 
 [<Test>]
