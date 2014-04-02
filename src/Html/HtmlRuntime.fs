@@ -85,7 +85,7 @@ module HtmlRuntime =
             
             let headers = 
                 if headers.Length = 0
-                then res.[0] |> Array.mapi (fun i _ -> "Column_" + (string i))
+                then res.[0] |> Array.mapi (fun i _ -> "Column" + (string i))
                 else headers
                        
 
