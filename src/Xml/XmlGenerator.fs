@@ -167,7 +167,13 @@ module internal XmlTypeBuilder =
             let typ, _, conv = getTypesForPrimitves ctx false [ primitive ] |> Seq.exactlyOne
             { ConvertedType = typ
               Converter = conv }
+        | InferedType.Constant(n,t,v)
+        | InferedType.Record(Some _, [{ Name = ""
+                                        Type = InferedType.Constant(n,t,v)}], false) ->
        
+            let conv = fun _ -> <@@ v @@>
+            { ConvertedType = t
+              Converter = conv }
         // If the node is heterogeneous type containin records, generate type with multiple
         // optional properties (this can only happen when using sample list with multiple root
         // elements of different names). Otherwise, heterogeneous types appear only as child nodes
