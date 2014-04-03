@@ -10,6 +10,7 @@ open System.IO
 open System.Net
 open System.Text
 open System.Reflection
+open System.Runtime.CompilerServices
 open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
@@ -277,8 +278,53 @@ module private Helpers =
         return output 
     }
 
+    let (?) obj prop =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj, [| |]) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
+#endif
+
+    let (?<-) obj prop value =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, box value) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, value, [| |]) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#endif
+
     let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
+        ignore (req?ContentLength <- int64 postBytes.Length)
 #else
         req.ContentLength <- int64 postBytes.Length
 #endif
@@ -348,7 +394,7 @@ module private Helpers =
             | "authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
             | "cache-control" -> req.Headers.[HeaderEnum.CacheControl] <- value
 #if FX_NO_WEBREQUEST_CONNECTION
-            | "connection" -> req.Headers.[HeaderEnum.Connection] <- value
+            | "connection" -> if not (req?Connection <- value) then req.Headers.[HeaderEnum.Connection] <- value
 #else
             | "connection" -> req.Connection <- value
 #endif
@@ -361,25 +407,25 @@ module private Helpers =
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "date" -> req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
 #else
             | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
-            | "expect" -> req.Headers.[HeaderEnum.Expect] <- value
+            | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
 #else
             | "expect" -> req.Expect <- value
 #endif
             | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
             | "from" -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
-            | "host" -> req.Headers.[HeaderEnum.Host] <- value
+            | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
 #else
             | "host" -> req.Host <- value
 #endif       
             | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "if-modified-since" -> req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
             | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
@@ -402,7 +448,7 @@ module private Helpers =
 #endif
             | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | "referer" -> req.Headers.[HeaderEnum.Referer] <- value
+            | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
 #else
             | "referer" -> req.Referer <- value
 #endif            
@@ -411,7 +457,7 @@ module private Helpers =
             | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
             | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | "user-agent" -> req.Headers.[HeaderEnum.UserAgent] <- value
+            | "user-agent" -> if not (req?UserAgent <- value) then try req.Headers.[HeaderEnum.UserAgent] <- value with _ -> ()
 #else
             | "user-agent" -> req.UserAgent <- value
 #endif
@@ -436,7 +482,27 @@ module private Helpers =
         else 
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
-    let toHttpResponse forceText responseUrl statusCode contentType (_contentEncoding:string)
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressGZip (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic gzip decompression failed"
+        memoryStream
+#endif
+
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressDeflate (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic deflate decompression failed"
+        memoryStream
+#endif
+
+    let toHttpResponse forceText responseUrl statusCode contentType contentEncoding
                        characterSet responseEncodingOverride cookies headers stream = async {
 
         let isText (mimeType:string) =
@@ -455,15 +521,11 @@ module private Helpers =
         use stream = stream
         let! memoryStream = asyncRead stream
 
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
         let memoryStream = 
-            if _contentEncoding = "gzip" then
-                new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-            elif _contentEncoding = "deflate" then
-                new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
-            else
-                memoryStream
-#endif
+            // this only applies when automatic decompression is off
+            if contentEncoding = "gzip" then decompressGZip memoryStream
+            elif contentEncoding = "deflate" then decompressDeflate memoryStream
+            else memoryStream
 
         let respBody = 
             if forceText || isText contentType then
@@ -514,8 +576,12 @@ type Http private() =
         // set headers
         let hasContentType = setHeaders headers req
 
+        let automaticDecompression = ref true
+
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
+        if not (req?AutomaticDecompression <- 3) then 
+            automaticDecompression := false
+            req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
     #endif
@@ -576,13 +642,16 @@ type Http private() =
                 match resp with
                 | :? HttpWebResponse as resp -> 
 #if FX_NO_WEBRESPONSE_CHARACTERSET
-                    int resp.StatusCode, ""
+                    int resp.StatusCode, (defaultArg resp?CharacterSet "")
 #else
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
 
-            let contentEncoding = defaultArg (Map.tryFind "Content-Encoding" headers) ""
+            let contentEncoding = 
+                if !automaticDecompression
+                then "" 
+                else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
             let stream = resp.GetResponseStream()
 
@@ -618,7 +687,19 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
-        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+        let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+            let! stream = async {
+                // this only applies when automatic decompression is off
+                if contentEncoding = "gzip" then 
+                    use stream = stream
+                    let! memoryStream = asyncRead stream
+                    return decompressGZip memoryStream :> Stream
+                elif contentEncoding = "deflate" then 
+                    use stream = stream
+                    let! memoryStream = asyncRead stream
+                    return decompressDeflate memoryStream :> Stream
+                else
+                    return stream }
             return { ResponseStream = stream
                      StatusCode = statusCode
                      ResponseUrl = responseUrl
