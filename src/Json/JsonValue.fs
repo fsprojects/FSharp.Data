@@ -62,9 +62,9 @@ type JsonValue =
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             newLine 2
             if saveOptions = JsonSaveOptions.None then
-              sb.AppendFormat("\"{0}\": ", k) |> ignore
+              sb.AppendFormat("\"{0}\": ", JavaScriptStringEncode(k)) |> ignore
             else
-              sb.AppendFormat("\"{0}\":", k) |> ignore
+              sb.AppendFormat("\"{0}\":", JavaScriptStringEncode(k)) |> ignore
             serialize sb (indentation + 2) v |> ignore
           newLine 0
           sb.Append "}"
