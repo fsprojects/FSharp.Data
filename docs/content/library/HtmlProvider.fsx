@@ -46,7 +46,7 @@ The following sample calls the `Load` method with an URL that points to a live m
 *)
  
 // Download the latest market depth information
-let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table3
+let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table0
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -97,7 +97,7 @@ open FSharp.Charting
 type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats().Tables.Table0
+let rawStats = NugetStats().Tables.VersionHistory
 
 // group by minor version and calculate download count
 let stats = 
