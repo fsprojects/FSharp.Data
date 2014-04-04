@@ -289,3 +289,9 @@ let ``Can find header when nested in a div``() =
     Map.containsKey "Ranking points [ edit ]" tables |> should equal true
     Map.containsKey "Records [ edit ]" tables |> should equal true
     Map.containsKey "Current champions [ edit ]" tables |> should equal true
+
+[<Test>]
+let ``Can parse tables imdb chart``() = 
+    let imdb = HtmlDocument.Load "http://www.imdb.com/chart/top?sort=ir,desc"
+    let tables = imdb |> HtmlRuntime.getTables
+    true |> should equal true

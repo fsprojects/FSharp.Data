@@ -2239,14 +2239,17 @@ module HtmlCharRefs =
           "&zwnj;", "\u200C";
         |] |> Map.ofArray
 
-    let (|Hex|Num|Std|) (ref:string) = 
-        let (delimeters, discriminator) = ref.ToLower() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
-        match delimeters with
-        | ("&#", ';') -> Num(ref.Substring(2, ref.Length - 3))
-        | ("&#", _) -> Num(ref.Substring(2, ref.Length - 2))
-        | ("&x", ';') when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
-        | ("&x", _) when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
-        | _ -> Std(ref) 
+    let (|Hex|Num|Std|) (ref:string) =
+        if ref.Length > 2
+        then
+            let (delimeters, discriminator) = ref.ToLower() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
+            match delimeters with
+            | ("&#", ';') -> Num(ref.Substring(2, ref.Length - 3))
+            | ("&#", _) -> Num(ref.Substring(2, ref.Length - 2))
+            | ("&x", ';') when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
+            | ("&x", _) when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
+            | _ -> Std(ref) 
+        else Std(ref)
 
     let substitute (ref:string) = 
         match ref with

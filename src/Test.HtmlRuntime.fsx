@@ -33,8 +33,8 @@ HtmlDocument.Parse """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"></html>"""
 |> printfn "%O" 
 
-HtmlDocument.Load "http://www.fifa.com/u17womensworldcup/statistics/index.html"
-|> printfn "%O" 
+HtmlDocument.Load "http://www.imdb.com/chart/top"
+|> printfn "%A" 
 
 printTables "http://www.fifa.com/u17womensworldcup/statistics/index.html"
 printTables "http://en.wikipedia.org/wiki/Athletics_at_the_2012_Summer_Olympics_%E2%80%93_Women's_heptathlon"
