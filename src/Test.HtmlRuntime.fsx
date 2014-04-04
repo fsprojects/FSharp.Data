@@ -39,34 +39,8 @@ HtmlDocument.Load "http://www.fifa.com/u17womensworldcup/statistics/index.html"
 printTables "http://www.fifa.com/u17womensworldcup/statistics/index.html"
 printTables "http://en.wikipedia.org/wiki/Athletics_at_the_2012_Summer_Olympics_%E2%80%93_Women's_heptathlon"
 printTables "http://www.imdb.com/chart/top"
+printTables "https://www.nuget.org/packages/FSharp.Data"
 
 HtmlDocument.Load "http://www.imdb.com/chart/top"
 |> printfn "%O" 
 
-let thead = 
-    """     
-       <div>
-            <h3>Savings</h3>
-            <table>
-                    <thead>
-                      <tr>
-                        <th>Month</th><th>Savings</th>
-                      </tr>
-                    </thead>
-                    <tfoot>
-                      <tr>
-                        <td>Sum</td><td>$180</td>
-                      </tr>
-                    </tfoot>
-                    <tbody>
-                      <tr>
-                        <td>January</td><td>$100</td>
-                      </tr>
-                      <tr>
-                        <td>February</td><td>$80</td>
-                      </tr>
-                    </tbody>
-                  </table></div>""" |> HtmlDocument.Parse
-
-thead |> HtmlRuntime.getTables
-thead.Elements().[0] |> printfn "%O"

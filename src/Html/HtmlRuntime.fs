@@ -41,7 +41,7 @@ module HtmlRuntime =
 
     open Html
 
-    let private getTableName defaultName (element:HtmlNode) = 
+    let private getTableName defaultName nameSet (element:HtmlNode) = 
         let tryGetName' choices =
             choices
             |> List.tryPick (fun (attrName) -> 
@@ -50,25 +50,22 @@ module HtmlRuntime =
                 | None -> None
             )
         let deriveFromSibling element = 
-            let siblings = HtmlNode.siblingsBefore element
-            siblings
-            |> List.tryPick (fun s -> 
+            let isHeading s =
                 let name = HtmlNode.name s
-                if Regex.IsMatch(name, """h\d""")
-                then Some s
-                else None
-            )
+                Regex.IsMatch(name, """h\d""")
+            HtmlNode.tryFindPrevious isHeading element
+
         match deriveFromSibling element with
-        | Some(e) -> e.InnerText
-        | None ->
+        | Some(e) when not(Set.contains e.InnerText nameSet) -> e.InnerText
+        | _ ->
                 match element.Descendants ["caption"] with
                 | [] ->
                      match tryGetName' [ "id"; "name"; "title"; "summary"] with
-                     | Some(name) -> name
-                     | None -> defaultName
+                     | Some(name) when not(Set.contains name nameSet) -> name
+                     | _ -> defaultName
                 | h :: _ -> h.InnerText
 
-    let private parseTable index (table:HtmlNode) = 
+    let private parseTable (index, nameSet) (table:HtmlNode) = 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         if rows.Length <= 1 
         then None
@@ -102,7 +99,7 @@ module HtmlRuntime =
                 else headers
                        
 
-            { Name = (getTableName ("Table_" + (string index)) table)
+            { Name = (getTableName ("Table_" + (string index)) nameSet table)
               Headers = headers
               Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
 
@@ -112,9 +109,15 @@ module HtmlRuntime =
             |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0")
                                      && e.HasAttribute("cellpadding", "0"))
                                      |> not)
-        tableElements
-        |> List.mapi parseTable 
-        |> List.choose id
+        let (_,_,tables) =
+            tableElements
+            |> List.fold (fun (index,names,tables) node -> 
+                            match parseTable (index,names) node with
+                            | Some(table) -> 
+                                (index + 1, Set.add table.Name names, table::tables)
+                            | None -> (index + 1, names, tables)
+                         ) (0, Set.empty, [])
+        tables |> List.rev
 
     let formatTable (data:HtmlTable) =
         let sb = StringBuilder()

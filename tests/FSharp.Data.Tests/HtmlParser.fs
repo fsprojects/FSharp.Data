@@ -277,3 +277,15 @@ let ``Can handle html with doctype and xml namespaces``() =
                 ]
             ]
     expected |> should equal htmlDoc
+
+[<Test>]
+let ``Can find header when nested in a div``() = 
+    let tables = 
+        HtmlDocument.Load "data/wimbledon_wikipedia.html" 
+        |> HtmlRuntime.getTables
+        |> List.map (fun t -> t.Name, t)
+        |> Map.ofList
+    
+    Map.containsKey "Ranking points [ edit ]" tables |> should equal true
+    Map.containsKey "Records [ edit ]" tables |> should equal true
+    Map.containsKey "Current champions [ edit ]" tables |> should equal true

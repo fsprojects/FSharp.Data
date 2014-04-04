@@ -293,16 +293,19 @@ module Html =
                elements ((<>) x) p
             | None -> []
 
-        let siblingsBefore x =
+        let rec tryFindPrevious f (x:HtmlNode) = 
             match parent x with
-            | Some(p) -> 
-               elements (fun _ -> true) p
-               |> Seq.takeWhile ((<>) x)
-               |> List.ofSeq
-            | None -> []
-                
+            | Some(p) ->
+                let nearest = 
+                    descendants true (fun _ -> true) p 
+                    |> Seq.takeWhile ((<>) x) 
+                    |> Seq.filter f
+                    |> Seq.toList |> List.rev
+                match nearest with
+                | [] -> tryFindPrevious f p
+                | h :: _ -> Some h 
+            | None -> None
                
-    
     type HtmlNode with
                
         /// <summary>
