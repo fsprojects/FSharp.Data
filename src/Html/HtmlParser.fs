@@ -50,7 +50,7 @@ type HtmlNode =
                     append value
                     append "\""
                 if elements.IsEmpty
-                then append " />"
+                then append " />"; newLine 0
                 else
                     append ">"
                     newLine 2

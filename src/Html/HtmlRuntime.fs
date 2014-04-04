@@ -103,12 +103,13 @@ module HtmlRuntime =
               Headers = headers
               Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
 
-    let getTables (doc:HtmlDocument) =
+    let getTables includeLayoutTables (doc:HtmlDocument) =
         let tableElements = 
             doc.Descendants(["table"],false)
-            |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0")
-                                     && e.HasAttribute("cellpadding", "0"))
-                                     |> not)
+            |> (fun x -> if includeLayoutTables 
+                         then x 
+                         else x |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)
+                )
         let (_,_,tables) =
             tableElements
             |> List.fold (fun (index,names,tables) node -> 
@@ -139,11 +140,11 @@ type TypedHtmlDocument internal (tables:Map<string,HtmlTable>) =
 
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(reader:TextReader) =
+    static member Create(includeLayoutTables:bool, reader:TextReader) =
         let tables = 
             reader 
             |> HtmlDocument.Load
-            |> HtmlRuntime.getTables
+            |> HtmlRuntime.getTables includeLayoutTables
             |> List.map (fun table -> table.Name, table) 
             |> Map.ofList
         TypedHtmlDocument tables
