@@ -150,6 +150,16 @@ module internal HtmlParser =
         | Style of string
         | Comment of string
         | EOF
+        override x.ToString() =
+            match x with
+            | DocType dt -> sprintf "doctype %s" dt
+            | Tag(selfClose,name,_) -> sprintf "tag %b %s" selfClose name
+            | TagEnd name -> sprintf "tagEnd %s" name
+            | Text _ -> "text"
+            | Script _ -> "script"
+            | Style _ -> "style"
+            | Comment _ -> "comment"
+            | EOF -> "eof"
 
     type TextReader with
        
@@ -422,27 +432,32 @@ module internal HtmlParser =
         ]
     
     let parse reader =
-        let rec parse' docType (parent: HtmlNode option ref) elements tokens =
+        let parentStack = new Stack<HtmlNode option ref>([ref None])
+        let rec parse' docType elements (tokens:HtmlToken list) =
             match tokens with
-            | DocType dt :: rest -> parse' dt parent elements rest
+            | DocType dt :: rest -> parse' dt elements rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(parent, name.ToLower(), attributes, [])
-               parse' docType parent (e :: elements) rest
+               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               parse' docType (e :: elements) rest
             | Tag(false, name, attributes) :: rest ->
                 let refCell = ref None
-                let dt, tokens, content = parse' docType refCell [] rest
-                let e = HtmlElement(parent, name.ToLower(), attributes, content)
-                refCell := Some(e)
-                parse' dt refCell (e :: elements) tokens
-            | TagEnd _ :: rest -> docType, rest, (elements |> List.rev)
+                let currentParent = parentStack.Peek()
+                parentStack.Push(refCell);
+                let dt, tokens, content = parse' docType [] rest
+                let e = HtmlElement(currentParent, name.ToLower(), attributes, content)
+                refCell := Some e
+                parse' dt (e :: elements) tokens
+            | TagEnd _ :: rest -> 
+                parentStack.Pop() |> ignore;
+                docType, rest, (elements |> List.rev)
             | Text cont :: rest ->
                 if cont <> " " && (String.IsNullOrWhiteSpace cont)
-                then parse' docType parent elements rest
-                else parse' docType parent (HtmlContent(parent, HtmlContentType.Content, cont.Trim()) :: elements) rest
-            | Script(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Script, cont.Trim()) :: elements) rest
-            | Comment(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Comment, cont.Trim()) :: elements) rest
-            | Style(cont) :: rest -> parse' docType parent (HtmlContent(parent, HtmlContentType.Style, cont.Trim()) :: elements) rest
+                then parse' docType elements rest
+                else parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Content, cont.Trim()) :: elements) rest
+            | Script(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Script, cont.Trim()) :: elements) rest
+            | Comment(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Comment, cont.Trim()) :: elements) rest
+            | Style(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Style, cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
-        let docType, _, elements = tokenise reader |> parse' "" (ref None) []
+        let docType, _, elements = tokenise reader |> parse' "" []
         HtmlDocument(docType, elements)

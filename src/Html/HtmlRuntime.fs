@@ -9,6 +9,7 @@ open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Html
+open System.Text.RegularExpressions
 
 #nowarn "10001"
 
@@ -40,7 +41,7 @@ module HtmlRuntime =
 
     open Html
 
-    let private getName defaultName (element:HtmlNode) = 
+    let private getTableName defaultName (element:HtmlNode) = 
         let tryGetName' choices =
             choices
             |> List.tryPick (fun (attrName) -> 
@@ -48,11 +49,23 @@ module HtmlRuntime =
                 | Some(HtmlAttribute(_,value)) -> Some <| value
                 | None -> None
             )
-        match tryGetName' [ "id"; "name"; "title"; "summary"] with
-        | Some(name) -> name
+        let deriveFromSibling element = 
+            let siblings = HtmlNode.siblingsBefore element
+            siblings
+            |> List.tryPick (fun s -> 
+                let name = HtmlNode.name s
+                if Regex.IsMatch(name, """h\d""")
+                then Some s
+                else None
+            )
+        match deriveFromSibling element with
+        | Some(e) -> e.InnerText
         | None ->
                 match element.Descendants ["caption"] with
-                | [] -> defaultName
+                | [] ->
+                     match tryGetName' [ "id"; "name"; "title"; "summary"] with
+                     | Some(name) -> name
+                     | None -> defaultName
                 | h :: _ -> h.InnerText
 
     let private parseTable index (table:HtmlNode) = 
@@ -89,7 +102,7 @@ module HtmlRuntime =
                 else headers
                        
 
-            { Name = (getName ("Table_" + (string index)) table)
+            { Name = (getTableName ("Table_" + (string index)) table)
               Headers = headers
               Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
 

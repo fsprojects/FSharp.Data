@@ -23,7 +23,9 @@ open FSharp.Data.Runtime
 
 let printTables (url:string) = 
     for table in HtmlRuntime.getTables (HtmlDocument.Load url) do
+        printfn "%s" table.Name
         printfn "%s" (table |> HtmlRuntime.formatTable)
+        printfn "+++++++++++++++++++++++++++++++++++++"
 
 printTables """D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\wimbledon_wikipedia.html"""
 
@@ -42,7 +44,10 @@ HtmlDocument.Load "http://www.imdb.com/chart/top"
 |> printfn "%O" 
 
 let thead = 
-    """<table id="savings_table">
+    """     
+       <div>
+            <h3>Savings</h3>
+            <table>
                     <thead>
                       <tr>
                         <th>Month</th><th>Savings</th>
@@ -61,7 +66,7 @@ let thead =
                         <td>February</td><td>$80</td>
                       </tr>
                     </tbody>
-                  </table>""" |> HtmlDocument.Parse
+                  </table></div>""" |> HtmlDocument.Parse
 
 thead |> HtmlRuntime.getTables
 thead.Elements().[0] |> printfn "%O"

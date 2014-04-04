@@ -85,7 +85,7 @@ module Html =
         /// Gets the parent node of this node
         /// </summary>
         let parent = function
-            | HtmlElement(parent = parent) 
+            | HtmlElement(parent = parent) -> !parent
             | HtmlContent(parent = parent) -> !parent
         
         /// <summary>
@@ -288,13 +288,19 @@ module Html =
         /// </summary>
         /// <param name="x">The given node</param>
         let siblings x =
-            match x with
-            | HtmlElement(parent = parent)
-            | HtmlContent(parent = parent) ->
-                 match !parent with
-                 | Some(p) -> 
-                    elements ((<>) x) p
-                 | None -> []
+            match parent x with
+            | Some(p) -> 
+               elements ((<>) x) p
+            | None -> []
+
+        let siblingsBefore x =
+            match parent x with
+            | Some(p) -> 
+               elements (fun _ -> true) p
+               |> Seq.takeWhile ((<>) x)
+               |> List.ofSeq
+            | None -> []
+                
                
     
     type HtmlNode with
