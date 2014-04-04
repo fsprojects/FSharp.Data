@@ -293,6 +293,12 @@ module Html =
                elements ((<>) x) p
             | None -> []
 
+        /// <summary>
+        /// Trys to find a node that statifies the given function by walking backwards up the
+        /// tree 
+        /// </summary>
+        /// <param name="f">The predicate to statisfy</param>
+        /// <param name="x">The given HTML node</param>
         let rec tryFindPrevious f (x:HtmlNode) = 
             match parent x with
             | Some(p) ->
@@ -414,6 +420,14 @@ module Html =
         /// Returns the inner text of the current node
         /// </summary>
         member x.InnerText with get() = HtmlNode.innerText x
+
+        /// <summary>
+        /// Trys to find a node that statifies the given function by walking backwards up the
+        /// tree 
+        /// </summary>
+        /// <param name="f">The predicate to statisfy</param>
+        /// <param name="x">The given HTML node</param>
+        member x.TryFindPrevious(f) = HtmlNode.tryFindPrevious f x
     
     module HtmlDocument = 
         
