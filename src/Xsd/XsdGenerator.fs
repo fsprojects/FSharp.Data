@@ -23,7 +23,7 @@ type internal SchemaType(this : System.Xml.Schema.XmlSchemaType) =
            :? XmlSchemaElement as p -> p :> XmlSchemaAnnotated
            | :? XmlSchemaAttribute as a -> a :> XmlSchemaAnnotated
            | null 
-           | :? XmlSchema ->  failwith "Couldn't find a parent"
+           | :? XmlSchema ->  failwithf "Couldn't find a parent for %A" node
            |_ as p -> _inner p 
        _inner node
 
