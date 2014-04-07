@@ -177,7 +177,7 @@ let ``tvrage_id is not unique in mql query``() =
     query {
         for p in data.Commons.People.Persons do
         select (p.Name, p.``Date of birth``)
-    } |> Seq.head |> should equal ("Jack Abramoff", "1958-02-28")
+    } |> Seq.head |> should equal ("Jack Abramoffa", "1958-02-28")
 
 #if TEAM_CITY
 // US
