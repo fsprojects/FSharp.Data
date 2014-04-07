@@ -47,16 +47,20 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                  if File.Exists(sample) then
                     sample,new StreamReader(File.OpenRead(sample)) :> TextReader
                  else
-                     let p = Path.Combine(resolutionFolder,sample)
-                     if File.Exists(p) then
-                        p,new StreamReader(File.OpenRead(p)) :> TextReader
-                     else
-                        try
+                     try
                            XDocument.Parse(sample) |> ignore
                            Path.Combine(resolutionFolder, "temp.xsd"),new StringReader(sample) :> TextReader
-                        with e ->
-                           failwith "Could not find a file and could not interprete as valid XML either"
-                        
+                     with e ->
+                           let exists,path = 
+                               try
+                                  let p = Path.Combine(resolutionFolder,sample)
+                                  File.Exists(p),p
+                               with e ->
+                                  false, ""
+                           if  exists then
+                              path, new StreamReader(File.OpenRead(path)) :> TextReader
+                           else
+                              failwith "Could not find a file and could not interprete as valid XML either"
               let schema = read reader
               schema.SourceUri <- path
               schema |> XsdBuilder.generateType <| includeMetadata |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
