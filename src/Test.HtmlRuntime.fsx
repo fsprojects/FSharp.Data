@@ -38,7 +38,7 @@ printTables false @"http://www.orbitz.com/shop/home?airDA=true&ar.rt.leaveSlice.
 printTables true "http://ojp.nationalrail.co.uk/service/timesandfares/COV/EUS/300414/1745/dep"
 
 // Rotten tomatoes: crashes
-printTables false @"http://www.rottentomatoes.com/movie/in-theaters/"
+printTables false @"http://www.rottentomatoes.com"
 
 // Sherdog fight finder: This works but produces completely crap results
 (*
