@@ -70,8 +70,8 @@ module Html =
         /// </summary>
         let name = function
             | HtmlElement(_, name, _, _) -> name.ToLowerInvariant()
-            | HtmlContent(_, HtmlContentType.Script, _ ) -> "script"
-            | HtmlContent(_, HtmlContentType.Style, _) -> "style"
+//            | HtmlContent(_, HtmlContentType.Script, _ ) -> "script"
+//            | HtmlContent(_, HtmlContentType.Style, _) -> "style"
             | _ -> String.Empty
             
         /// <summary>

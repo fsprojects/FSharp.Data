@@ -39,6 +39,7 @@ type JsonProviderArgs =
 type HtmlProviderArgs = 
     { Sample : string
       PreferOptionals : bool
+      IncludeLayoutTables : bool
       MissingValues : string
       Culture : string
       ResolutionFolder : string }
@@ -102,6 +103,7 @@ type TypeProviderInstantiation =
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.PreferOptionals
+                   box x.IncludeLayoutTables
                    box x.MissingValues
                    box x.Culture
                    box x.ResolutionFolder|] 
@@ -209,8 +211,9 @@ type TypeProviderInstantiation =
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
+                   IncludeLayoutTables = args.[3] |> bool.Parse
                    MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
-                   Culture = args.[3] 
+                   Culture = args.[4] 
                    ResolutionFolder = ""}
         | "WorldBank" ->
             WorldBank { Sources = args.[1]

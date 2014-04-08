@@ -292,6 +292,8 @@ let ``Can find header when nested in a div``() =
 
 [<Test>]
 let ``Can parse tables imdb chart``() = 
-    let imdb = HtmlDocument.Load "http://www.imdb.com/chart/top?sort=ir,desc"
+    let imdb = HtmlDocument.Load "data/imdb_chart.htm"
     let tables = imdb |> HtmlRuntime.getTables false
-    true |> should equal true
+    tables.Length |> should equal 2
+    tables.[0].Name |> should equal "Top 250"
+    tables.[0].Rows.Length |> should equal 250

@@ -14,7 +14,7 @@ type HtmlAttribute =
     | HtmlAttribute of name:string * value:string    
 
 type HtmlContentType =
-    | Script | Style | Comment | Content
+    | Comment | Content
 
 
 [<CustomEquality; NoComparison>]
@@ -63,18 +63,6 @@ type HtmlNode =
             | HtmlContent(_,contentType, str) -> 
                 match contentType with
                 | Content -> append str
-                | Script -> 
-                    append "<script>"
-                    newLine 0
-                    append str
-                    newLine 0
-                    append "</script>"
-                | Style -> 
-                    append "<style>"
-                    newLine 0
-                    append str
-                    newLine 0
-                    append "</style>"
                 | Comment -> 
                     append "<!-- "
                     append str
@@ -146,8 +134,6 @@ module internal HtmlParser =
         | Tag of bool * string * HtmlAttribute list
         | TagEnd of string
         | Text of string
-        | Script of string
-        | Style of string
         | Comment of string
         | EOF
         override x.ToString() =
@@ -156,8 +142,6 @@ module internal HtmlParser =
             | Tag(selfClose,name,_) -> sprintf "tag %b %s" selfClose name
             | TagEnd name -> sprintf "tagEnd %s" name
             | Text _ -> "text"
-            | Script _ -> "script"
-            | Style _ -> "style"
             | Comment _ -> "comment"
             | EOF -> "eof"
 
@@ -180,16 +164,12 @@ module internal HtmlParser =
         member x.Clear() = x.Contents := []
 
     type InsertionMode = 
-        | ScriptMode
-        | StyleMode
         | DefaultMode
         | CharRefMode
         | CommentMode
         | DocTypeMode
         override x.ToString() =
             match x with
-            | ScriptMode -> "script"
-            | StyleMode -> "style"
             | DefaultMode -> "default"
             | CharRefMode -> "charref"
             | CommentMode -> "comment"
@@ -250,9 +230,9 @@ module internal HtmlParser =
             result 
     
         member x.EmitTag(isEnd) =
-            let name = (!x.CurrentTag).ToString()
+            let name = (!x.CurrentTag).ToString().Trim().ToLower()
             let isVoid (name:string) = 
-                match name.Trim().ToLower() with
+                match name with
                 | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
                 | "source" | "track" | "wbr" -> true
                 | _ -> false
@@ -261,11 +241,7 @@ module internal HtmlParser =
                 then TagEnd(name)
                 else Tag((isVoid name), name, x.GetAttributes()) 
             x.CurrentTag := CharList.Empty
-            x.InsertionMode :=
-                match isEnd, name with
-                | false, "script" -> ScriptMode
-                | false, "style" -> StyleMode
-                | _, _ -> DefaultMode
+            x.InsertionMode := DefaultMode
             x.Attributes := []
             result
     
@@ -279,8 +255,6 @@ module internal HtmlParser =
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
                 | DefaultMode -> Text content
-                | ScriptMode -> Script content
-                | StyleMode -> Style content
                 | CharRefMode -> Text (substituteCharRef (content.Trim()))
                 | CommentMode -> Comment content
                 | DocTypeMode -> DocType content
@@ -289,6 +263,7 @@ module internal HtmlParser =
             result
     
         member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
+        member x.Cons(char) = (!x.Content).Cons(char); x.Cons();
         member x.ConsTag() = (!x.CurrentTag).Cons(x.Reader.ReadChar())
         member x.ClearContent() = 
             (!x.Content).Clear()
@@ -307,32 +282,10 @@ module internal HtmlParser =
                 charRef state
             | _ ->
                 match !state.InsertionMode with
-                | ScriptMode -> state.Cons(); script state
-                | StyleMode -> state.Cons(); script state
                 | DefaultMode -> state.Cons(); data state
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
-                | CommentMode -> bogusComment state
-        and script state = 
-            match state.Peek() with
-            | '<' -> state.Pop(); scriptLessThanSign state
-            | TextParser.EndOfFile _ -> data state
-            | _ -> state.Cons(); script state
-        and scriptLessThanSign state =
-            match state.Peek() with
-            | '/' -> state.Pop(); (!state.Content).Clear(); scriptEndTagOpen state
-            | _ -> state.Cons(); script state
-        and scriptEndTagOpen state = 
-            match state.Peek() with
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
-            | _ -> script state
-        and scriptEndTagName state = 
-            match state.Peek() with
-            | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | '>' -> state.Pop();  state.EmitTag(true); 
-            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
-            | _ -> state.ConsTag(); scriptEndTagName state
+                | CommentMode -> comment state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
@@ -340,11 +293,15 @@ module internal HtmlParser =
             | _ -> state.Cons(); charRef state
         and tagOpen state =
             match state.Peek() with
-            | '!' -> state.Pop(); docType state
+            | '!' -> state.Pop(); markupDeclaration state
             | '/' -> state.Pop(); endTagOpen state
-            | '?' -> state.Pop(); bogusComment state
+            | '?' -> state.Pop(); comment state
             | TextParser.Letter _ -> state.ConsTag(); tagName false state
             | _ -> data state
+        and markupDeclaration state =
+            match state.Peek() with
+            | '-' | '[' -> state.Pop(); comment state 
+            | _ -> docType state
         and docType state =
             match state.Peek() with
             | '>' -> 
@@ -352,16 +309,31 @@ module internal HtmlParser =
                 state.InsertionMode := DocTypeMode
                 state.Emit()
             | _ -> state.Cons(); docType state
-        and bogusComment state = 
+        and comment state = 
+            match state.Peek() with
+            | '-' -> state.Pop(); commentEndDash state;
+            | TextParser.EndOfFile _ -> 
+                state.InsertionMode := CommentMode 
+                state.Emit();
+            | _ -> state.Cons(); comment state
+        and commentEndDash state = 
+            match state.Peek() with
+            | '-' -> state.Pop(); commentEndState state
+            | TextParser.EndOfFile _ -> 
+                state.InsertionMode := CommentMode 
+                state.Emit();
+            | _ -> 
+                state.Cons(); comment state;
+        and commentEndState state = 
             match state.Peek() with
             | '>' -> 
                 state.Pop();
                 state.InsertionMode := CommentMode 
-                state.Emit()
+                state.Emit();
             | TextParser.EndOfFile _ -> 
                 state.InsertionMode := CommentMode 
                 state.Emit();
-            | _ -> state.Cons(); bogusComment state
+            | _ -> state.Cons(); comment state 
         and tagName isEndTag state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
@@ -379,22 +351,21 @@ module internal HtmlParser =
             | TextParser.Letter _ -> state.ConsTag(); tagName true state
             | TextParser.EndOfFile _ -> data state
             | '>' -> state.Pop(); data state
-            | _ -> bogusComment state
+            | _ -> comment state
         and beforeAttributeName state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
-            | '>' -> selfClosingStartTag state
             | TextParser.EndOfFile _ -> data state
             | _ -> attributeName state
         and attributeName state =
             match state.Peek() with
-            | '\'' | '"'  -> state.Pop(); attributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
             | '=' -> state.Pop(); beforeAttributeValue state
             | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
             | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state
+            | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsAttrName(); attributeName state
         and beforeAttributeValue state = 
             match state.Peek() with
@@ -454,9 +425,7 @@ module internal HtmlParser =
                 if cont <> " " && (String.IsNullOrWhiteSpace cont)
                 then parse' docType elements rest
                 else parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Content, cont.Trim()) :: elements) rest
-            | Script(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Script, cont.Trim()) :: elements) rest
             | Comment(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Comment, cont.Trim()) :: elements) rest
-            | Style(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Style, cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []

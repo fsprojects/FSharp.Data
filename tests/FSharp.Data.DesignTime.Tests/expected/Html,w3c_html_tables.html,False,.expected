@@ -1,36 +1,36 @@
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "w3c_html_tables.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "w3c_html_tables.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "w3c_html_tables.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "w3c_html_tables.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "w3c_html_tables.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(reader)
+    TypedHtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri)))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
 
 
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member RecentMajorVolcanicEruptionsInThePacificNorthwest: HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest with get
+    member AddingSomeMoreFeatures: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -40,9 +40,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Last Major Eruption", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Recent Major Volcanic Eruptions in the Pacific Northwest")
+    HtmlTable<_>.Create(rowConverter, this, "Adding some more features")
 
-    member RecentMajorVolcanicEruptionsInThePacificNorthwest2: HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest2 with get
+    member StructuringTheTableFurther: HtmlProvider+StructuringTheTableFurther with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -52,9 +52,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Last Major Eruption", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Recent Major Volcanic Eruptions in the Pacific Northwest")
+    HtmlTable<_>.Create(rowConverter, this, "Structuring the table further")
 
-    member Table0: HtmlProvider+Table0 with get
+    member TheMostBasicTable: HtmlProvider+TheMostBasicTable with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -64,16 +64,16 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Last Major Eruption", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table_0")
+    HtmlTable<_>.Create(rowConverter, this, "The most basic table")
 
 
-class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest : FDR.HtmlTable<HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest+Row>
+class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
 
-class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest2 : FDR.HtmlTable<HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest2+Row>
+class HtmlProvider+StructuringTheTableFurther : FDR.HtmlTable<HtmlProvider+StructuringTheTableFurther+Row>
 
-class HtmlProvider+Table0 : FDR.HtmlTable<HtmlProvider+Table0+Row>
+class HtmlProvider+TheMostBasicTable : FDR.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
 
-class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest+Row : string * string * string * string
+class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
     member Last Major Eruption: string with get
     (let _,_,t3,_ = this in t3)
 
@@ -87,7 +87,7 @@ class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest+Row : strin
     (let t1,_,_,_ = this in t1)
 
 
-class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest2+Row : string * string * string * string
+class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * string
     member Last Major Eruption: string with get
     (let _,_,t3,_ = this in t3)
 
@@ -101,7 +101,7 @@ class HtmlProvider+RecentMajorVolcanicEruptionsInThePacificNorthwest2+Row : stri
     (let t1,_,_,_ = this in t1)
 
 
-class HtmlProvider+Table0+Row : string * string * string * string
+class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
     member Last Major Eruption: string with get
     (let _,_,t3,_ = this in t3)
 

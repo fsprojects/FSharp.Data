@@ -1,36 +1,36 @@
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "MarketDepth.htm")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "MarketDepth.htm")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "MarketDepth.htm"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "MarketDepth.htm")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "MarketDepth.htm")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(reader)
+    TypedHtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri)))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
 
 
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member Table2: HtmlProvider+Table2 with get
+    member Table0: HtmlProvider+Table0 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Settlement Day", TextRuntime.ConvertDateTime("", value), value),
@@ -46,12 +46,12 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[8]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[9]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[10]))))
-    HtmlTable<_>.Create(rowConverter, this, "Table_2")
+    HtmlTable<_>.Create(rowConverter, this, "Table_0")
 
 
-class HtmlProvider+Table2 : FDR.HtmlTable<HtmlProvider+Table2+Row>
+class HtmlProvider+Table0 : FDR.HtmlTable<HtmlProvider+Table0+Row>
 
-class HtmlProvider+Table2+Row : System.DateTime * int * decimal * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal>
+class HtmlProvider+Table0+Row : System.DateTime * int * decimal * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal>
     member Accepted Bid Vol: System.Nullable<decimal> with get
     (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7)
 
