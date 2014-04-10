@@ -297,3 +297,9 @@ let ``Can parse tables imdb chart``() =
     tables.Length |> should equal 2
     tables.[0].Name |> should equal "Top 250"
     tables.[0].Rows.Length |> should equal 250
+
+
+[<Test>]
+let ``Can parse tables ebay cars``() = 
+    let ebay = HtmlDocument.Load "data/ebay_cars.htm"
+    true |> should equal true

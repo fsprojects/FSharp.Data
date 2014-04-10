@@ -370,6 +370,7 @@ module internal HtmlParser =
         and beforeAttributeValue state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
+            | TextParser.EndOfFile _ -> data state;
             | '"' -> state.Pop(); attributeValueQuoted state
             | '&' -> state.Pop(); attributeValueUnquoted state
             | '\'' -> state.Pop(); attributeValueSingleQuoted state
@@ -378,16 +379,19 @@ module internal HtmlParser =
         and attributeValueUnquoted state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
+            | TextParser.EndOfFile _ -> data state;
             | '>' -> state.Pop(); state.EmitTag(false)
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueSingleQuoted state = 
             match state.Peek() with
+            | TextParser.EndOfFile _ -> data state;
             | '\'' -> state.Pop(); afterAttributeValueQuoted state
             | '/' -> state.EmitSelfClosingTag()
             | _ -> state.ConsAttrValue(); attributeValueQuoted state
         and attributeValueQuoted state = 
             match state.Peek() with
             | '"' -> state.Pop(); afterAttributeValueQuoted state
+            | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsAttrValue(); attributeValueQuoted state
         and afterAttributeValueQuoted state = 
             match state.Peek() with

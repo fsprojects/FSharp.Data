@@ -27,7 +27,7 @@ let printTables includeLayout (url:string) =
         printfn "%s" (table |> HtmlRuntime.formatTable)
         printfn "+++++++++++++++++++++++++++++++++++++"
 
-HtmlDocument.Load @"http://www.sherdog.com/stats/fightfinder?SearchTxt=silva"
+printTables false @"D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\ebay_cars.htm"
 
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
