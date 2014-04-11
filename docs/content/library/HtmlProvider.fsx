@@ -35,18 +35,18 @@ Usually with HTML files headers are demarked by using the <th> tag, however in t
 first row is headers. (This behaviour is likely to get smarer in later releases). But it highlights a general problem about HTML's strictness. 
 *)
 
-type MarketDepth = HtmlProvider<"../data/MarketDepth.htm">
+type MarketDepth = HtmlProvider<"http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet">
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
 Each types name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
-entities exist then the table will simply be named `Table_xx` where xx is the position in the HTML doc if all of the tables were flatterned out into a list.
+entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML doc if all of the tables were flatterned out into a list.
 The `Load` method allows reading the data from a file or from a web resource. We could also have used a web url instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
 *)
  
 // Download the latest market depth information
-let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table0
+let mrktDepth = MarketDepth().Tables.Table0
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'

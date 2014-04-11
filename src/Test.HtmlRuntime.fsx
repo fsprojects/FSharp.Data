@@ -28,7 +28,10 @@ let printTables includeLayout (url:string) =
         printfn "+++++++++++++++++++++++++++++++++++++"
 
 let doc =
-    HtmlDocument.Load @"C:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\ebay_cars.htm"
+    HtmlDocument.Load @"D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\ebay_cars.htm"
+
+let doc2 = 
+    HtmlDocument.Load "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"

@@ -230,7 +230,13 @@ module internal HtmlParser =
             x.InsertionMode := DefaultMode
             x.Attributes := []
             result 
-    
+        
+        member x.IsScriptTag 
+            with get() = 
+               match x.CurrentTagName() with
+               | "script" -> true
+               | _ -> false
+
         member x.EmitTag(isEnd) =
             let name = (!x.CurrentTag).ToString().Trim().ToLower()
             let isVoid (name:string) = 
@@ -244,9 +250,9 @@ module internal HtmlParser =
                 else Tag((isVoid name), name, x.GetAttributes()) 
             x.CurrentTag := CharList.Empty
             x.InsertionMode :=
-                match name with
-                | "script" -> ScriptMode
-                | _ -> DefaultMode
+                if x.IsScriptTag
+                then ScriptMode
+                else DefaultMode
 
             x.Attributes := []
             result
@@ -270,7 +276,11 @@ module internal HtmlParser =
     
         member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
         member x.Cons(char) = (!x.Content).Cons(char); x.Cons();
-        member x.ConsTag() = (!x.CurrentTag).Cons(x.Reader.ReadChar())
+        member x.Cons(char) = Array.iter ((!x.Content).Cons) char; x.Cons();
+        member x.ConsTag() = 
+            match x.Reader.ReadChar() with
+            | TextParser.Whitespace _ -> ()
+            | a -> (!x.CurrentTag).Cons(Char.ToLower a)
         member x.ClearContent() = 
             (!x.Content).Clear()
 
@@ -301,7 +311,84 @@ module internal HtmlParser =
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
+            | '!' -> state.Pop(); scriptDataEscapeStart state
             | _ -> state.Cons('<'); script state
+        and scriptDataEscapeStart state = 
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataEscapeStartDash state
+            | _ -> script state
+        and scriptDataEscapeStartDash state =
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataEscapedDashDash state
+            | _ -> script state
+        and scriptDataEscapedDashDash state = 
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataEscapedDashDash state
+            | '<' -> state.Pop(); scriptDataEscapedLessThanSign state
+            | '>' -> state.Cons(); script state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataEscaped state
+        and scriptDataEscapedLessThanSign state =
+            match state.Peek() with
+            | '/' -> state.Pop(); scriptDataEscapedEndTagOpen state
+            | TextParser.Letter _ -> state.Cons('<'); scriptDataDoubleEscapeStart state
+            | _ -> state.Cons('<'); scriptDataEscaped state
+        and scriptDataDoubleEscapeStart state = 
+            match state.Peek() with
+            | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.Cons(); scriptDataDoubleEscaped state
+            | TextParser.Letter _ -> state.Cons(); scriptDataDoubleEscapeStart state
+            | _ -> state.Cons(); scriptDataEscaped state
+        and scriptDataDoubleEscaped state = 
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataDoubleEscapedDash state
+            | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataDoubleEscaped state
+        and scriptDataDoubleEscapedDash state = 
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataDoubleEscapedDashDash state
+            | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataDoubleEscaped state
+        and scriptDataDoubleEscapedLessThanSign state =
+            match state.Peek() with
+            | '/' -> state.Cons(); scriptDataDoubleEscapeEnd state
+            | _ -> state.Cons(); scriptDataDoubleEscaped state
+        and scriptDataDoubleEscapeEnd state = 
+            match state.Peek() with
+            | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.Cons(); scriptDataDoubleEscaped state
+            | TextParser.Letter _ -> state.Cons(); scriptDataDoubleEscapeEnd state
+            | _ -> state.Cons(); scriptDataDoubleEscaped state
+        and scriptDataDoubleEscapedDashDash state =
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataDoubleEscapedDashDash state
+            | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
+            | '>' -> state.Cons(); script state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataDoubleEscaped state
+        and scriptDataEscapedEndTagOpen state = 
+            match state.Peek() with
+            | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
+            | _ -> state.Cons([|'<';'/'|]); scriptDataEscaped state
+        and scriptDataEscapedEndTagName state =
+            match state.Peek() with
+            | TextParser.Whitespace _ when state.IsScriptTag -> state.Pop(); beforeAttributeName state
+            | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
+            | '>' when state.IsScriptTag -> state.EmitTag(true)
+            | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
+            | _ -> state.Cons([|'<';'/'|]); scriptDataEscaped state
+        and scriptDataEscaped state =
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataEscapedDash state
+            | '<' -> scriptDataEscapedLessThanSign state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataEscaped state
+        and scriptDataEscapedDash state = 
+            match state.Peek() with
+            | '-' -> state.Cons(); scriptDataEscapedDashDash state
+            | '<' -> scriptDataEscapedLessThanSign state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); scriptDataEscaped state
         and scriptEndTagOpen state = 
             match state.Peek() with
             | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
@@ -386,12 +473,6 @@ module internal HtmlParser =
             | TextParser.EndOfFile _ -> data state
             | '>' -> state.EmitTag(false)
             | _ -> attributeName state
-        and afterAttributeName state = 
-            match state.Peek() with
-            | TextParser.Whitespace _ -> state.Pop(); afterAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | '=' -> state.Pop(); beforeAttributeName state
-            | 
         and attributeName state =
             match state.Peek() with
             | '/' -> state.Pop(); selfClosingStartTag state
@@ -401,6 +482,14 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.ConsAttrName(); afterAttributeName state
             | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsAttrName(); attributeName state
+        and afterAttributeName state = 
+            match state.Peek() with
+            | TextParser.Whitespace _ -> state.Pop(); afterAttributeName state
+            | '/' -> state.Pop(); selfClosingStartTag state
+            | '=' -> state.Pop(); beforeAttributeValue state
+            | '>' -> state.EmitTag(false)
+            | TextParser.EndOfFile _ -> data state;
+            | _ -> attributeName state
         and beforeAttributeValue state = 
             match state.Peek() with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
