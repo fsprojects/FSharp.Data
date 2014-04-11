@@ -278,7 +278,7 @@ module internal HtmlParser =
     let private tokenise reader =
         let state = HtmlState.Create reader
         let rec data (state:HtmlState) =
-            match state.Reader.PeekChar() with
+            match state.Peek() with
             | '<' when (!state.Content).Length > 0 -> state.Emit()
             | '<' -> state.Pop(); tagOpen state
             | TextParser.EndOfFile _ -> EOF
@@ -384,14 +384,21 @@ module internal HtmlParser =
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
             | '/' -> state.Pop(); selfClosingStartTag state
             | TextParser.EndOfFile _ -> data state
+            | '>' -> state.EmitTag(false)
             | _ -> attributeName state
+        and afterAttributeName state = 
+            match state.Peek() with
+            | TextParser.Whitespace _ -> state.Pop(); afterAttributeName state
+            | '/' -> state.Pop(); selfClosingStartTag state
+            | '=' -> state.Pop(); beforeAttributeName state
+            | 
         and attributeName state =
             match state.Peek() with
             | '/' -> state.Pop(); selfClosingStartTag state
             | '=' -> state.Pop(); beforeAttributeValue state
             | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
-            | TextParser.Whitespace _ -> state.ConsAttrName(); attributeName state
+            | TextParser.Whitespace _ -> state.ConsAttrName(); afterAttributeName state
             | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsAttrName(); attributeName state
         and beforeAttributeValue state = 
