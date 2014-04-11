@@ -165,12 +165,14 @@ module internal HtmlParser =
 
     type InsertionMode = 
         | DefaultMode
+        | ScriptMode
         | CharRefMode
         | CommentMode
         | DocTypeMode
         override x.ToString() =
             match x with
             | DefaultMode -> "default"
+            | ScriptMode -> "script"
             | CharRefMode -> "charref"
             | CommentMode -> "comment"
             | DocTypeMode -> "doctype"
@@ -241,7 +243,11 @@ module internal HtmlParser =
                 then TagEnd(name)
                 else Tag((isVoid name), name, x.GetAttributes()) 
             x.CurrentTag := CharList.Empty
-            x.InsertionMode := DefaultMode
+            x.InsertionMode :=
+                match name with
+                | "script" -> ScriptMode
+                | _ -> DefaultMode
+
             x.Attributes := []
             result
     
@@ -254,7 +260,7 @@ module internal HtmlParser =
             let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
-                | DefaultMode -> Text content
+                | DefaultMode | ScriptMode -> Text content
                 | CharRefMode -> Text (substituteCharRef (content.Trim()))
                 | CommentMode -> Comment content
                 | DocTypeMode -> DocType content
@@ -283,9 +289,30 @@ module internal HtmlParser =
             | _ ->
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
+                | ScriptMode -> script state;
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
                 | CommentMode -> comment state
+        and script state = 
+            match state.Peek() with
+            | '<' -> state.Pop(); scriptLessThanSign state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons(); script state
+        and scriptLessThanSign state =
+            match state.Peek() with
+            | '/' -> state.Pop(); scriptEndTagOpen state
+            | _ -> state.Cons('<'); script state
+        and scriptEndTagOpen state = 
+            match state.Peek() with
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | _ -> script state
+        and scriptEndTagName state = 
+            match state.Peek() with
+            | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
+            | '/' -> state.Pop(); selfClosingStartTag state
+            | '>' -> state.Pop();  state.EmitTag(true); 
+            | TextParser.EndOfFile _ -> data state;
+            | _ -> state.ConsTag(); scriptEndTagName state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()

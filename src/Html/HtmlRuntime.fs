@@ -86,7 +86,8 @@ module HtmlRuntime =
                     while res.[rowindex].[!col_i] <> Empty do incr(col_i)
                     for j in [!col_i..(!col_i + colSpan)] do
                         for i in [rowindex..(rowindex + rowSpan)] do
-                            res.[i].[j] <- data
+                            if i < rows.Length && j < width
+                            then res.[i].[j] <- data
 
             let (startIndex, headers) = 
                 if res.[0] |> Array.forall (fun r -> r.IsHeader) 
