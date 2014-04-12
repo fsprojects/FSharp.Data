@@ -29,8 +29,8 @@ let inferType = CsvInference.inferType ProvidedMeasureBuilder.Default.SI
 let toRecord fields = InferedType.Record(None, fields, false)
 
 [<Test>]
-let ``Seq.pairBy helper function works``() = 
-  let actual = Seq.pairBy fst [(2, "a"); (1, "b")] [(1, "A"); (3, "C")]
+let ``List.pairBy helper function works``() = 
+  let actual = List.pairBy fst [(2, "a"); (1, "b")] [(1, "A"); (3, "C")]
   let expected = 
     [ (1, Some (1, "b"), Some (1, "A"))
       (2, Some (2, "a"), None)
@@ -38,8 +38,8 @@ let ``Seq.pairBy helper function works``() =
   set actual |> shouldEqual (set expected)
 
 [<Test>]
-let ``Seq.pairBy helper function preserves order``() = 
-  let actual = Seq.pairBy fst [("one", "a"); ("two", "b")] [("one", "A"); ("two", "B")]
+let ``List.pairBy helper function preserves order``() = 
+  let actual = List.pairBy fst [("one", "a"); ("two", "b")] [("one", "A"); ("two", "B")]
   let expected = 
     [ ("one", Some ("one", "a"), Some ("one", "A"))
       ("two", Some ("two", "b"), Some ("two", "B")) ] 

@@ -48,7 +48,7 @@ Xml { Sample = "JsonInXml.xml"
 |> dumpPortable47 false
 
 Csv { Sample = "AirQuality.csv"
-      Separator = ";" 
+      Separators = ";" 
       Culture = "" 
       InferRows = Int32.MaxValue
       Schema = ""

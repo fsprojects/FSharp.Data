@@ -57,7 +57,6 @@ module internal CsvTypeBuilder =
       // Convert each element of the row using the appropriate conversion
       let body = 
         Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
-        |> replacer.ToRuntime
 
       let delegateType = 
         typedefof<Func<_,_,_>>.MakeGenericType(typeof<obj>, typeof<string[]>, rowErasedType)
