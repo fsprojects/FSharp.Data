@@ -254,9 +254,9 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
         InferedType.Record(None, fields, false) ]
 
   let inferedType = 
-    if schema |> Seq.forall Option.isSome then
+    if schema |> Array.forall Option.isSome then
         // all the columns types are already set, so all the rows will be the same
-        types |> Seq.head
+        types |> List.head
     else
         List.reduce (StructuralInference.subtypeInfered ((*allowEmptyValues*)not preferOptionals)) types
   
