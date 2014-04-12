@@ -18,12 +18,24 @@ let private referenceAssembliesPath =
     ++ "Reference Assemblies" 
     ++ "Microsoft" 
 
-let private fsharp30Portable47AssembliesPath = 
+let private fsharp30Portable47AssembliesPath1 = 
     referenceAssembliesPath
     ++ "FSharp" 
     ++ "3.0" 
     ++ "Runtime" 
     ++ ".NETPortable"
+
+let private fsharp30Portable47AssembliesPath2 = 
+     referenceAssembliesPath
+     ++ "FSharp" 
+     ++ ".NETPortable" 
+     ++ "2.3.5.0"
+
+let private fsharp31Portable47AssembliesPath = 
+     referenceAssembliesPath
+     ++ "FSharp" 
+     ++ ".NETPortable" 
+     ++ "2.3.5.1"
 
 let private fsharp31Portable7AssembliesPath = 
     referenceAssembliesPath
@@ -84,7 +96,8 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         match asmName.Name, version with
         | "FSharp.Core", "4.3.0.0" -> [fsharp30AssembliesPath1; fsharp30AssembliesPath2]
         | "FSharp.Core", "4.3.1.0" -> [fsharp31AssembliesPath]
-        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath]
+        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath1; fsharp30Portable47AssembliesPath2]
+        | "FSharp.Core", "2.3.5.1" -> [fsharp31Portable47AssembliesPath]
         | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
         | _, "2.0.5.0" -> [portable47AssembliesPath]
         | _, _ -> []
@@ -148,7 +161,11 @@ let init (cfg : TypeProviderConfig) =
         runtimeAssembly.GetReferencedAssemblies()
         |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
         |> Seq.choose (fun asmName -> 
-            designTimeAssemblies.TryFind asmName.Name
+            let designTimeAsmName =
+                match asmName.Name with
+                | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
+                | asmName -> asmName
+            designTimeAssemblies.TryFind designTimeAsmName
             |> Option.bind (fun designTimeAsm ->
                 let targetAsm = getAssembly asmName useReflectionOnly
                 if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||

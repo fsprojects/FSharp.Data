@@ -200,3 +200,7 @@
 * Added - to the list of default missing values.
 * Re-added support for specifying known HTTP headers in the wrong case.
 * Fixed sending of HTTP requests when using a portable class library version of FSharp.Data in the full .NET version.
+
+#### 2.0.6 - Unreleased
+* Performance improvements
+* Fix PCL profile 7
