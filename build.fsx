@@ -109,7 +109,8 @@ Target "BuildConsoleTests" <| fun () ->
 #if MONO
     !! "TestApps.Console.Mono.sln" // excludes PCL7
 #else
-    !! "TestApps.Console.sln"
+    //!! "TestApps.Console.sln"
+    !! "TestApps.Console.Mono.sln" // excludes PCL7
 #endif
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
