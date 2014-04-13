@@ -52,7 +52,7 @@ data
 
 *)
 
-#load "../../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
+#load "../../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 open FSharp.Charting
 
 data.Countries.``United Kingdom``
