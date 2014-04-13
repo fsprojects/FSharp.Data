@@ -53,65 +53,78 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '19', 19)" onmouseover="showTip(event, '19', 19)">
+          <code onmouseout="hideTip(event, '38', 38)" onmouseover="showTip(event, '38', 38)">
             getInferedTypeFromString (...)
           </code>
-          <div class="tip" id="19">
+          <div class="tip" id="38">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; unit:Type option -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Infers the type of a simple string value</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L286-286" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Infers the type of a simple string value</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L287-287" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '94', 94)" onmouseover="showTip(event, '94', 94)">
+          <code onmouseout="hideTip(event, '39', 39)" onmouseover="showTip(event, '39', 39)">
             inferCollectionType (...)
           </code>
-          <div class="tip" id="94">
+          <div class="tip" id="39">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; types:seq&lt;InferedType&gt; -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Infer the type of the collection based on multiple sample types
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L207-207" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Infer the type of the collection based on multiple sample types
 (group the types by tag, count their multiplicity)</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L208-208" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '95', 95)" onmouseover="showTip(event, '95', 95)">
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
             inferPrimitiveType cultureInfo value
           </code>
-          <div class="tip" id="95">
+          <div class="tip" id="40">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; Type<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Infers the type of a simple string value
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L236-236" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Infers the type of a simple string value
 Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<string></p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L237-237" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '96', 96)" onmouseover="showTip(event, '96', 96)">
+          <code onmouseout="hideTip(event, '41', 41)" onmouseover="showTip(event, '41', 41)">
             subtypeInfered allowEmptyValues ot1 ot2
           </code>
-          <div class="tip" id="96">
+          <div class="tip" id="41">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; ot1:InferedType -&gt; ot2:InferedType -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Find common subtype of two infered types:</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L119-119" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Find common subtype of two infered types:</p>
 
 <ul>
 <li>If the types are both primitive, then we find common subtype of the primitive types</li>
@@ -127,58 +140,66 @@ Otherwise, we return bottom.</li>
 <p>The contract that should hold about the function is that given two types with the
 same <code>InferedTypeTag</code>, the result also has the same <code>InferedTypeTag</code>.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L119-119" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '97', 97)" onmouseover="showTip(event, '97', 97)">
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
             supportsUnitsOfMeasure typ
           </code>
-          <div class="tip" id="97">
+          <div class="tip" id="42">
             <strong>Signature:</strong> typ:Type -&gt; bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Checks whether a type supports unit of measure</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L36-36" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Checks whether a type supports unit of measure</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L36-36" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '98', 98)" onmouseover="showTip(event, '98', 98)">
+          <code onmouseout="hideTip(event, '43', 43)" onmouseover="showTip(event, '43', 43)">
             typeTag _arg1
           </code>
-          <div class="tip" id="98">
+          <div class="tip" id="43">
             <strong>Signature:</strong> _arg1:InferedType -&gt; InferedTypeTag<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a tag of a type - a tag represents a 'kind' of type 
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L41-41" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a tag of a type - a tag represents a 'kind' of type 
 (essentially it describes the different bottom types we have)</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L41-41" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '99', 99)" onmouseover="showTip(event, '99', 99)">
+          <code onmouseout="hideTip(event, '44', 44)" onmouseover="showTip(event, '44', 44)">
             unionRecordTypes allowEmptyValues t1 t2
           </code>
-          <div class="tip" id="99">
+          <div class="tip" id="44">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; t1:InferedProperty list -&gt; t2:InferedProperty list -&gt; InferedProperty list<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Get the union of record types (merge their properties)
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L190-190" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Get the union of record types (merge their properties)
 This matches the corresponding members and marks them as <code>Optional</code>
 if one may be missing. It also returns subtype of their types.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L190-190" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
     </tbody>

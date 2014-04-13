@@ -55,260 +55,308 @@ If <code>ignoreErrors</code> is true (the default is false), rows with a differe
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
             Cache()
           </code>
-          <div class="tip" id="203">
+          <div class="tip" id="202">
             <strong>Signature:</strong> unit -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a new csv with the same rows as the original but which guarantees
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L257-257" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv with the same rows as the original but which guarantees
 that each row will be only be read and parsed from the input at most once.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L257-257" class="github-link">Go to GitHub source</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+            Filter(predicate)
+          </code>
+          <div class="tip" id="203">
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L261-261" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv containing only the rows for which the given predicate returns "true".</p>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
-            Filter(predicate)
+            Headers
           </code>
           <div class="tip" id="204">
-            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> string [] option<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a new csv containing only the rows for which the given predicate returns "true".</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L119-119" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The names of the columns</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L261-261" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
-            Headers
+            NumberOfColumns
           </code>
           <div class="tip" id="205">
-            <strong>Signature:</strong> string [] option<br />
+            <strong>Signature:</strong> int<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>The names of the columns</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L121-121" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The number of columns</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L119-119" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
-            NumberOfColumns
+            Quote
           </code>
           <div class="tip" id="206">
-            <strong>Signature:</strong> int<br />
+            <strong>Signature:</strong> char<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>The number of columns</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L125-125" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The quotation mark use for surrounding values containing separator chars</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L121-121" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
-            Quote
+            Rows
           </code>
           <div class="tip" id="207">
-            <strong>Signature:</strong> char<br />
+            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>The quotation mark use for surrounding values containing separator chars</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L117-117" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The rows with data</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L125-125" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
-            Rows
+            Save(path, ?separator, ?quote)
           </code>
           <div class="tip" id="208">
-            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> (path:string * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>The rows with data</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L241-241" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified file</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L117-117" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
-            Save(path, ?separator, ?quote)
+            Save(stream, ?separator, ?quote)
           </code>
           <div class="tip" id="209">
-            <strong>Signature:</strong> (path:string * separator:char option * quote:char option) -&gt; unit<br />
+            <strong>Signature:</strong> (stream:Stream * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Saves CSV to the specified file</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L234-234" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified stream</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L241-241" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
-            Save(stream, ?separator, ?quote)
+            Save(writer, ?separator, ?quote)
           </code>
           <div class="tip" id="210">
-            <strong>Signature:</strong> (stream:Stream * separator:char option * quote:char option) -&gt; unit<br />
+            <strong>Signature:</strong> (writer:TextWriter * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Saves CSV to the specified stream</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L205-205" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to the specified writer</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L234-234" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
-            Save(writer, ?separator, ?quote)
+            SaveToString(?separator, ?quote)
           </code>
           <div class="tip" id="211">
-            <strong>Signature:</strong> (writer:TextWriter * separator:char option * quote:char option) -&gt; unit<br />
+            <strong>Signature:</strong> (separator:char option * quote:char option) -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Saves CSV to the specified writer</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L247-247" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Saves CSV to a string</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L205-205" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
-            SaveToString(?separator, ?quote)
+            Separators
           </code>
           <div class="tip" id="212">
-            <strong>Signature:</strong> (separator:char option * quote:char option) -&gt; string<br />
+            <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Saves CSV to a string</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L123-123" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The character(s) used as column separator(s)</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L247-247" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
-            Separators
+            Skip(count)
           </code>
           <div class="tip" id="213">
-            <strong>Signature:</strong> string<br />
+            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>The character(s) used as column separator(s)</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L274-274" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that skips N rows and then yields the remaining rows.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L123-123" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
-            Skip(count)
+            SkipWhile(predicate)
           </code>
           <div class="tip" id="214">
-            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a csv that skips N rows and then yields the remaining rows.</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L279-279" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that, when iterated, skips rows while the given predicate returns
+<c>true</c>, and then yields the remaining rows.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L274-274" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
-            SkipWhile(predicate)
+            Take(count)
           </code>
           <div class="tip" id="215">
-            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a csv that, when iterated, skips rows while the given predicate returns
-<c>true</c>, and then yields the remaining rows.</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L265-265" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv with only the first N rows of the underlying csv.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L279-279" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
-            Take(count)
+            TakeWhile(predicate)
           </code>
           <div class="tip" id="216">
-            <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a new csv with only the first N rows of the underlying csv.</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L270-270" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that, when iterated, yields rowswhile the given predicate
+returns <c>true</c>, and then returns no further rows.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L265-265" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
-            TakeWhile(predicate)
-          </code>
-          <div class="tip" id="217">
-            <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-        <p>Returns a csv that, when iterated, yields rowswhile the given predicate
-returns <c>true</c>, and then returns no further rows.</p>
-
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L270-270" class="github-link">Go to GitHub source</a>
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
             Truncate(count)
           </code>
-          <div class="tip" id="218">
+          <div class="tip" id="217">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Returns a csv that when enumerated returns at most N rows.</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L283-283" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv that when enumerated returns at most N rows.</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L283-283" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
     </tbody>
@@ -322,81 +370,96 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '228', 228)" onmouseover="showTip(event, '228', 228)">
+          <code onmouseout="hideTip(event, '234', 234)" onmouseover="showTip(event, '234', 234)">
             AsyncLoad(...)
           </code>
-          <div class="tip" id="228">
+          <div class="tip" id="234">
             <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; Async&lt;CsvFile&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Loads CSV from the specified uri asynchronously</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L94-94" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified uri asynchronously</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L94-94" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '229', 229)" onmouseover="showTip(event, '229', 229)">
+          <code onmouseout="hideTip(event, '235', 235)" onmouseover="showTip(event, '235', 235)">
             Load(...)
           </code>
-          <div class="tip" id="229">
+          <div class="tip" id="235">
             <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Loads CSV from the specified uri</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L85-85" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified uri</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L85-85" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '230', 230)" onmouseover="showTip(event, '230', 230)">
+          <code onmouseout="hideTip(event, '236', 236)" onmouseover="showTip(event, '236', 236)">
             Load(...)
           </code>
-          <div class="tip" id="230">
+          <div class="tip" id="236">
             <strong>Signature:</strong> (reader:TextReader * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Loads CSV from the specified reader</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L72-72" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified reader</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L72-72" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '231', 231)" onmouseover="showTip(event, '231', 231)">
+          <code onmouseout="hideTip(event, '237', 237)" onmouseover="showTip(event, '237', 237)">
             Load(...)
           </code>
-          <div class="tip" id="231">
+          <div class="tip" id="237">
             <strong>Signature:</strong> (stream:Stream * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Loads CSV from the specified stream</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L63-63" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Loads CSV from the specified stream</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L63-63" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '232', 232)" onmouseover="showTip(event, '232', 232)">
+          <code onmouseout="hideTip(event, '238', 238)" onmouseover="showTip(event, '238', 238)">
             Parse(...)
           </code>
-          <div class="tip" id="232">
+          <div class="tip" id="238">
             <strong>Signature:</strong> (text:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Parses the specified CSV content</p>
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L58-58" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Parses the specified CSV content</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L58-58" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
     </tbody>

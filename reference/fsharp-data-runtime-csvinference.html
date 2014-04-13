@@ -53,15 +53,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '143', 143)" onmouseover="showTip(event, '143', 143)">
+          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
             InferColumnTypes(...)
           </code>
-          <div class="tip" id="143">
+          <div class="tip" id="140">
             <strong>Signature:</strong> (inferRows:int * missingValues:string [] * cultureInfo:CultureInfo * schema:string * assumeMissingValues:bool * preferOptionals:bool * getUnitOfMeasure:(string -&gt; Type) option) -&gt; PrimitiveInferedProperty list<br />
                       </div>
         </td>
         <td class="xmldoc">
-        <p>Infers the types of the columns of a CSV file
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvInference.fs#L328-328" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Infers the types of the columns of a CSV file
 Parameters:
 <em> inferRows - Number of rows to use for inference. If this is zero, all rows are used
 </em> missingValues - The set of strings recogized as missing values
@@ -71,7 +75,6 @@ Parameters:
 </em> preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
 * getUnitOfMeasure - optional function to resolve Units of Measure</p>
 
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvInference.fs#L328-328" class="github-link">Go to GitHub source</a>
         </td>
       </tr>
     </tbody>
