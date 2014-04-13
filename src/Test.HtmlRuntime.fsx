@@ -33,6 +33,9 @@ let doc =
 let doc2 = 
     HtmlDocument.Load "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 
+let doc3 = 
+    HtmlDocument.Parse "<html><head></head><body>Foobar</body></html>"
+
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"

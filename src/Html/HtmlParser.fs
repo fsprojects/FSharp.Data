@@ -131,7 +131,7 @@ module internal HtmlParser =
 
     type HtmlToken =
         | DocType of string
-        | Tag of bool * string * HtmlAttribute list
+        | Tag of isSelfClosing:bool * name:string * attrs:HtmlAttribute list
         | TagEnd of string
         | Text of string
         | Comment of string
@@ -192,6 +192,10 @@ module internal HtmlParser =
 
         member x.Pop() = x.Reader.Read() |> ignore
         member x.Peek() = x.Reader.PeekChar()
+        member x.Pop(count) = 
+            [|0..(count-1)|] |> Array.map (fun _ -> x.Reader.ReadChar())
+            
+        member x.GetContent() = (!x.Content).ToString() 
     
         member x.NewAttribute() = x.Attributes := (CharList.Empty, CharList.Empty) :: (!x.Attributes)
     
@@ -239,15 +243,10 @@ module internal HtmlParser =
 
         member x.EmitTag(isEnd) =
             let name = (!x.CurrentTag).ToString().Trim().ToLower()
-            let isVoid (name:string) = 
-                match name with
-                | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
-                | "source" | "track" | "wbr" -> true
-                | _ -> false
             let result = 
                 if isEnd
                 then TagEnd(name)
-                else Tag((isVoid name), name, x.GetAttributes()) 
+                else Tag(false, name, x.GetAttributes()) 
             x.CurrentTag := CharList.Empty
             x.InsertionMode :=
                 if x.IsScriptTag
@@ -262,7 +261,6 @@ module internal HtmlParser =
                 match HtmlCharRefs.substitute ref with
                 | Some(r) -> r
                 | None -> ref
-                 
             let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
@@ -275,8 +273,8 @@ module internal HtmlParser =
             result
     
         member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
-        member x.Cons(char) = (!x.Content).Cons(char); x.Cons();
-        member x.Cons(char) = Array.iter ((!x.Content).Cons) char; x.Cons();
+        member x.Cons(char) = (!x.Content).Cons(char)
+        member x.Cons(char) = Array.iter ((!x.Content).Cons) char
         member x.ConsTag() = 
             match x.Reader.ReadChar() with
             | TextParser.Whitespace _ -> ()
@@ -289,10 +287,11 @@ module internal HtmlParser =
         let state = HtmlState.Create reader
         let rec data (state:HtmlState) =
             match state.Peek() with
-            | '<' when (!state.Content).Length > 0 -> state.Emit()
-            | '<' -> state.Pop(); tagOpen state
+            | '<' -> 
+                if state.GetContent().Length > 0
+                then state.Emit();
+                else state.Pop(); tagOpen state
             | TextParser.EndOfFile _ -> EOF
-            | '&' when (!state.Content).Length > 0 -> state.Emit()
             | '&' -> 
                 state.InsertionMode := CharRefMode
                 charRef state
@@ -312,7 +311,7 @@ module internal HtmlParser =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
             | '!' -> state.Pop(); scriptDataEscapeStart state
-            | _ -> state.Cons('<'); script state
+            | _ -> state.Cons('<'); state.Cons(); script state
         and scriptDataEscapeStart state = 
             match state.Peek() with
             | '-' -> state.Cons(); scriptDataEscapeStartDash state
@@ -331,8 +330,8 @@ module internal HtmlParser =
         and scriptDataEscapedLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptDataEscapedEndTagOpen state
-            | TextParser.Letter _ -> state.Cons('<'); scriptDataDoubleEscapeStart state
-            | _ -> state.Cons('<'); scriptDataEscaped state
+            | TextParser.Letter _ -> state.Cons('<'); state.Cons(); scriptDataDoubleEscapeStart state
+            | _ -> state.Cons('<'); state.Cons(); scriptDataEscaped state
         and scriptDataDoubleEscapeStart state = 
             match state.Peek() with
             | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.Cons(); scriptDataDoubleEscaped state
@@ -369,14 +368,14 @@ module internal HtmlParser =
         and scriptDataEscapedEndTagOpen state = 
             match state.Peek() with
             | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
-            | _ -> state.Cons([|'<';'/'|]); scriptDataEscaped state
+            | _ -> state.Cons([|'<';'/'|]); state.Cons(); scriptDataEscaped state
         and scriptDataEscapedEndTagName state =
             match state.Peek() with
             | TextParser.Whitespace _ when state.IsScriptTag -> state.Pop(); beforeAttributeName state
             | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
             | '>' when state.IsScriptTag -> state.EmitTag(true)
             | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
-            | _ -> state.Cons([|'<';'/'|]); scriptDataEscaped state
+            | _ -> state.Cons([|'<';'/'|]); state.Cons(); scriptDataEscaped state
         and scriptDataEscaped state =
             match state.Peek() with
             | '-' -> state.Cons(); scriptDataEscapedDash state
@@ -409,13 +408,41 @@ module internal HtmlParser =
             match state.Peek() with
             | '!' -> state.Pop(); markupDeclaration state
             | '/' -> state.Pop(); endTagOpen state
-            | '?' -> state.Pop(); comment state
+            | '?' -> state.Pop(); bogusComment state
             | TextParser.Letter _ -> state.ConsTag(); tagName false state
-            | _ -> data state
+            | _ -> state.Cons('<'); state.Cons(); data state
+        and bogusComment state =
+            let rec bogusComment' (state:HtmlState) = 
+                let exitBogusComment state = 
+                    state.InsertionMode := CommentMode
+                    state.Emit()
+                match state.Peek() with
+                | '>' -> state.Cons(); exitBogusComment state 
+                | TextParser.EndOfFile _ -> exitBogusComment state
+                | _ -> state.Cons(); bogusComment' state
+            bogusComment' state
         and markupDeclaration state =
-            match state.Peek() with
-            | '-' | '[' -> state.Pop(); comment state 
-            | _ -> docType state
+            match state.Pop(2) with
+            | [|'-';'-'|] -> comment state
+            | current -> 
+                match new String(Array.append current (state.Pop(5))) with
+                | "DOCTYPE" -> docType state
+                | "[CDATA[" -> cData [||] state
+                | _ -> bogusComment state
+        and cData prev state = 
+            if (string prev) = "]]>"
+            then 
+               state.InsertionMode := CommentMode
+               state.Emit()
+            else 
+               match prev, state.Peek() with
+               | [||], ']' -> state.Pop();  cData [|']'|] state 
+               | [|']'|], ']' -> state.Pop(); cData [|']'|] state
+               | [|']';']'|], '>' -> state.Pop();  cData [|']';']';'>'|] state
+               | _, TextParser.EndOfFile _ -> 
+                    state.InsertionMode := CommentMode
+                    state.Emit()
+               | _, _ -> state.Cons(); cData [||] state
         and docType state =
             match state.Peek() with
             | '>' -> 
