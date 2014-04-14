@@ -34,7 +34,8 @@ let doc2 =
     HtmlDocument.Load "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 
 let doc3 = 
-    HtmlDocument.Parse "<html><head></head><body>Foobar</body></html>"
+    HtmlDocument.Load @"D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\MarketDepth.htm"
+    |> HtmlRuntime.getTables false
 
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"

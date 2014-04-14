@@ -106,7 +106,7 @@ module HtmlRuntime =
 
     let getTables includeLayoutTables (doc:HtmlDocument) =
         let tableElements = 
-            doc.Descendants(["table"],false)
+            doc.Descendants(["table"],true)
             |> (fun x -> if includeLayoutTables 
                          then x 
                          else x |> List.filter (fun e -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)

@@ -560,7 +560,7 @@ module internal HtmlParser =
         let parentStack = new Stack<HtmlNode option ref>([ref None])
         let rec parse' docType elements (tokens:HtmlToken list) =
             match tokens with
-            | DocType dt :: rest -> parse' dt elements rest
+            | DocType dt :: rest -> parse' (dt.Trim()) elements rest
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest

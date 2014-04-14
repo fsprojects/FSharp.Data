@@ -262,6 +262,7 @@
     <Compile Include="WorldBankProvider.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />
+    <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
