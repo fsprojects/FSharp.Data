@@ -274,7 +274,7 @@ module Html =
         /// <param name="x">The current node</param>
         let innerText x = 
             let rec innerText' = function
-                | HtmlElement(_,_,_, content) ->
+                | HtmlElement(_,name,_, content) when name <> "style" && name <> "script" ->
                     String.Join(" ", seq { for e in content do
                                                 match e with
                                                 | HtmlContent(_,HtmlContentType.Content,text) -> yield text
