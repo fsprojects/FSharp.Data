@@ -144,6 +144,10 @@ module internal HtmlParser =
             | Text _ -> "text"
             | Comment _ -> "comment"
             | EOF -> "eof"
+        member x.IsEndTag name =
+            match x with
+            | TagEnd(endName) when name = endName -> true
+            | _ -> false
 
     type TextReader with
        
@@ -247,6 +251,7 @@ module internal HtmlParser =
                 if isEnd
                 then TagEnd(name)
                 else Tag(false, name, x.GetAttributes()) 
+                    
             x.CurrentTag := CharList.Empty
             x.InsertionMode :=
                 if x.IsScriptTag
@@ -561,10 +566,13 @@ module internal HtmlParser =
         let rec parse' docType elements (tokens:HtmlToken list) =
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements rest
+            | Tag(true, name, attributes) :: TagEnd(endName) :: rest when name = endName ->
+               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               parse' docType (e :: elements) rest
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
-            | Tag(false, name, attributes) :: rest ->
+            | Tag(_, name, attributes) :: rest ->
                 let refCell = ref None
                 let currentParent = parentStack.Peek()
                 parentStack.Push(refCell);
