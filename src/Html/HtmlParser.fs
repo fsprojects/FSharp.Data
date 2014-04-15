@@ -561,8 +561,8 @@ module internal HtmlParser =
                yield data state
         ]
     
-    let parse reader =
-        let parentStack = new Stack<HtmlNode option ref>([ref None])
+    let private parse parent reader =
+        let parentStack = new Stack<HtmlNode option ref>([parent])
         let isVoid (name:string) = 
             match name with
             | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
@@ -602,4 +602,10 @@ module internal HtmlParser =
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []
-        HtmlDocument(docType, elements)
+        docType, elements
+
+    let parseDocument reader = 
+        HtmlDocument(parse (ref None) reader)
+
+    let parseFragment reader parent = 
+        parse parent reader |> snd

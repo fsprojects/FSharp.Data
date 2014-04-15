@@ -7,6 +7,62 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 module Html =
+
+    [<AutoOpen>]
+    module Dsl =
+        
+        /// <summary>
+        /// Creates a HtmlElement
+        /// </summary>
+        /// <param name="name">The name of the element</param>
+        /// <param name="attrs">The HtmlAttribute(s) of the element</param>
+        /// <param name="children">The children elements of this element</param>
+        let element name attrs children =
+            (fun parent ->  
+                let this = ref None
+                let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
+                let e = HtmlElement(parent, name, attrs, children |> List.map (fun c -> c this))
+                this := Some e
+                e
+            )
+        
+        /// <summary>
+        /// Creates a HtmlContent element
+        /// </summary>
+        /// <param name="contentType">The content type</param>
+        /// <param name="content">The actual content</param>
+        let content contentType content = 
+            (fun parent -> 
+                HtmlContent(parent, contentType, content)
+            )
+
+        /// <summary>
+        /// Creates a text content element
+        /// </summary>
+        /// <param name="content">The actual content</param>
+        let text content = 
+            (fun parent -> 
+                HtmlContent(parent, HtmlContentType.Content, content)
+            )
+
+        /// <summary>
+        /// Creates a comment element
+        /// </summary>
+        /// <param name="content">The actual content</param>
+        let comment content = 
+            (fun parent -> 
+                HtmlContent(parent, HtmlContentType.Comment, content)
+            )
+        
+        /// <summary>
+        /// Creates a HtmlDocument
+        /// </summary>
+        /// <param name="docType">The document type specifier string</param>
+        /// <param name="children">The child elements of this document</param>
+        let doc docType children = 
+            let this = ref None
+            HtmlDocument(docType, children |> List.map (fun c -> c this))
+
     module HtmlAttribute = 
         ///<summary>
         ///Gets the name of the given attribute
@@ -426,6 +482,23 @@ module Html =
         /// <param name="f">The predicate to statisfy</param>
         /// <param name="x">The given HTML node</param>
         member x.TryFindPrevious(f) = HtmlNode.tryFindPrevious f x
+
+        /// <summary>
+        /// Parses the specified HTML string to a list of HTML nodes
+        /// </summary>
+        static member Parse(text) = 
+          use reader = new StringReader(text)
+          HtmlParser.parseFragment reader
+
+        /// <summary>
+        /// Parses the specified HTML string to a list of HTML nodes
+        /// </summary>
+        static member ParseRooted(rootName, text) = 
+          use reader = new StringReader(text)
+          let parent = ref None
+          let e = HtmlElement(ref None, rootName, [], HtmlParser.parseFragment reader parent)
+          parent := Some e
+          e
     
     module HtmlDocument = 
         
@@ -571,27 +644,27 @@ module Html =
         /// </summary>
         static member Parse(text) = 
           use reader = new StringReader(text)
-          HtmlParser.parse reader
+          HtmlParser.parseDocument reader
         
         /// <summary>
         /// Loads HTML from the specified stream
         /// </summary>
         static member Load(stream:Stream) = 
           use reader = new StreamReader(stream)
-          HtmlParser.parse reader
+          HtmlParser.parseDocument reader
     
         /// <summary>
         /// Loads HTML from the specified reader
         /// </summary>
         static member Load(reader:TextReader) = 
-          HtmlParser.parse reader
+          HtmlParser.parseDocument reader
         
         /// <summary>
         /// Loads HTML from the specified uri asynchronously
         /// </summary>
         static member AsyncLoad(uri:string) = async {
           let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" uri
-          return HtmlParser.parse reader
+          return HtmlParser.parseDocument reader
         }
     
         /// <summary>
@@ -601,39 +674,4 @@ module Html =
             HtmlDocument.AsyncLoad(uri)
             |> Async.RunSynchronously
     
-    [<AutoOpen>]
-    module Dsl =
-        
-        /// <summary>
-        /// Creates a HtmlElement
-        /// </summary>
-        /// <param name="name">The name of the element</param>
-        /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-        /// <param name="children">The children elements of this element</param>
-        let element name attrs children =
-            (fun parent ->  
-                let this = ref None
-                let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
-                let e = HtmlElement(parent, name, attrs, children |> List.map (fun c -> c this))
-                this := Some e
-                e
-            )
-        
-        /// <summary>
-        /// Creates a HtmlContent element
-        /// </summary>
-        /// <param name="contentType">The content type</param>
-        /// <param name="content">The actual content</param>
-        let content contentType content = 
-            (fun parent -> 
-                HtmlContent(parent, contentType, content)
-            )
-        
-        /// <summary>
-        /// Creates a HtmlDocument
-        /// </summary>
-        /// <param name="docType">The document type specifier string</param>
-        /// <param name="children">The child elements of this document</param>
-        let doc docType children = 
-            let this = ref None
-            HtmlDocument(docType, children |> List.map (fun c -> c this))
+

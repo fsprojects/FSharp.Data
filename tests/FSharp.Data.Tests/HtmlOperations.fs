@@ -39,5 +39,60 @@ let ``If tryParse HtmlAttribute failes it should return the defaultValue``() =
     let attr = HtmlAttribute("cost", "59.99")
     HtmlAttribute.tryParseValue 0M (fun _ -> false, 100M) attr |> should equal 0M
 
+let htmlFragment = 
+    element "div" ["id", "my_div"; "class", "my_class"] [
+        content Content "Hello World!"
+    ] (ref None)
+
+[<Test>]
+let ``Can get the name of a HtmlElement``() =
+    HtmlNode.name htmlFragment |> should equal "div"
+
+[<Test>]
+let ``Name of a content element is an Empty string``() = 
+    HtmlNode.name (content Content "Hello" (ref None)) |> should equal String.Empty
+
+[<Test>]
+let ``The children of a content node is an empty list``() =
+    HtmlNode.children (content Content "Hello" (ref None)) |> should equal []
+
+[<Test>]
+let ``Can get the children of a node``() =
+    HtmlNode.children htmlFragment |> should equal [content Content "Hello World!" (ref None)]
+
+[<Test>]
+let ``Can get the parent of a node``() =
+    let child = HtmlNode.children htmlFragment |> List.head
+    HtmlNode.parent child |> should equal htmlFragment
+
+let doc = 
+    """<html>
+            <head>
+               <script language="JavaScript" src="/bwx_generic.js"></script>
+               <link rel="stylesheet" type="text/css" href="/bwx_style.css">
+               </head>
+           <body>
+               <img src="myimg.jpg">
+               <table title="table">
+                   <tr><th>Column 1</th><th>Column 2</th></tr>
+                   <tr><td>1</td><td>yes</td></tr>
+               </table>
+           </body>
+       </html>""" 
+       |> HtmlDocument.Parse
+       |> HtmlDocument.elements (fun _ -> true)
+       |> Seq.head
+
+[<Test>]
+let ``Can get descendants of a node that matches a predicate``() =
+    let result = doc |> HtmlNode.descendants false (HtmlNode.name >> (=) "link")
+    let expected = element "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] [] (ref None)
+    result |> should equal expected
+
+[<Test>]
+let ``Can get all of the descendants that match the given set of names``() =
+    let result = doc |> HtmlNode.descendantsNamed false ["link"]
+    let expected = element "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] [] (ref None)
+    result |> should equal expected
 
 

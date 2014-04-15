@@ -37,20 +37,6 @@ type PrintableContent =
 
 fsi.AddPrintTransformer(PrintableContent.ofHtmlNode >> box)
           
-let doc = 
-    """<html>
-            <head>
-               <script language="JavaScript" src="/bwx_generic.js"></script>
-               <link rel="stylesheet" type="text/css" href="/bwx_style.css">
-               </head>
-           <body>
-               <img src="myimg.jpg">
-               <table title="table">
-                   <tr><th>Column 1</th><th>Column 2</th></tr>
-                   <tr><td>1</td><td>yes</td></tr>
-               </table>
-           </body>
-       </html>""" |> HtmlDocument.Parse
 
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
