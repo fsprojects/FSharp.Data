@@ -167,9 +167,9 @@ module internal XmlTypeBuilder =
             let typ, _, conv = getTypesForPrimitves ctx false [ primitive ] |> Seq.exactlyOne
             { ConvertedType = typ
               Converter = conv }
-        | InferedType.Constant(n,t,v)
+        | InferedType.Constant(_,t,v)
         | InferedType.Record(Some _, [{ Name = ""
-                                        Type = InferedType.Constant(n,t,v)}], false) ->
+                                        Type = InferedType.Constant(_,t,v)}], false) ->
        
             let conv = fun _ -> <@@ v @@>
             { ConvertedType = t
