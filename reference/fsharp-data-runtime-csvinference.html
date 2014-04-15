@@ -44,41 +44,6 @@
 
 <!-- Render nested types and modules, if there are any -->
 
-  <h3>Type extensions</h3>
-  <table class="table table-bordered member-list">
-    <thead>
-      <tr><td>Type extension</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '135', 135)" onmouseover="showTip(event, '135', 135)">
-            InferColumnTypes(...)
-          </code>
-          <div class="tip" id="135">
-            <strong>Signature:</strong> (inferRows:int * missingValues:string [] * cultureInfo:CultureInfo * schema:string * assumeMissingValues:bool * preferOptionals:bool * getUnitOfMeasure:(string -&gt; Type) option) -&gt; PrimitiveInferedProperty list<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvInference.fs#L328-328" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Infers the types of the columns of a CSV file
-Parameters:
-<em> inferRows - Number of rows to use for inference. If this is zero, all rows are used
-</em> missingValues - The set of strings recogized as missing values
-<em> cultureInfo - The culture used for parsing numbers and dates
-</em> schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&amp;lt;unit&amp;gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
-<em> assumeMissingValues - Assumes all columns can have missing values
-</em> preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
-* getUnitOfMeasure - optional function to resolve Units of Measure</p>
-
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
         </div>
         <div class="span3">
