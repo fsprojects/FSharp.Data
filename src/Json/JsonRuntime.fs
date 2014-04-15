@@ -201,6 +201,7 @@ type JsonRuntime =
         failwith "Null type not supported"
     | InferedTypeTag.Heterogeneous -> 
         failwith "Heterogeneous type not supported"
+    | InferedTypeTag.Constant _ -> failwith "Constants not supported in JSON"
 
   /// Returns all array values that match the specified tag
   static member GetArrayChildrenByTypeTag<'T>(doc:IJsonDocument, cultureStr, tagCode, mapping:Func<IJsonDocument,'T>) =     
