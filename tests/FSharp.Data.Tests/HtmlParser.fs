@@ -50,13 +50,18 @@ let ``Can handle unclosed tags correctly``() =
                     element "img" ["src", "myimg.jpg"] []
                     element "table" ["title", "table"]
                      [
-                        element "tr" [] [element "th" [] [content Content "Column 1"]; element "th" [] [content Content "Column 2"]]
-                        element "tr" [] [element "td" [] [content Content "1"]; element "td" [] [content Content "yes"]]
+                        element "tr" [] [element "th" [] [text "Column 1"]; element "th" [] [text "Column 2"]]
+                        element "tr" [] [element "td" [] [text "1"]; element "td" [] [text "yes"]]
                      ]    
                 ]
             ]
         ]
     result |> should equal expected
+
+[<Test>]
+let ``Can handle multiple char refs in a text run``() = 
+    let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
+    html.Head.InnerText |> should equal "\"Foo\""
 
 [<Test>]
 let ``Can parse tables from a simple html``() = 
@@ -272,7 +277,7 @@ let ``Can handle html with doctype and xml namespaces``() =
                 [
                    element "body" []
                     [
-                       content Content "content"
+                       text "content"
                     ]
                 ]
             ]

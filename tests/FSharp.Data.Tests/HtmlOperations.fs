@@ -41,7 +41,7 @@ let ``If tryParse HtmlAttribute failes it should return the defaultValue``() =
 
 let htmlFragment = 
     element "div" ["id", "my_div"; "class", "my_class"] [
-        content Content "Hello World!"
+        text"Hello World!"
     ] (ref None)
 
 [<Test>]
@@ -50,15 +50,15 @@ let ``Can get the name of a HtmlElement``() =
 
 [<Test>]
 let ``Name of a content element is an Empty string``() = 
-    HtmlNode.name (content Content "Hello" (ref None)) |> should equal String.Empty
+    HtmlNode.name (text"Hello" (ref None)) |> should equal String.Empty
 
 [<Test>]
 let ``The children of a content node is an empty list``() =
-    HtmlNode.children (content Content "Hello" (ref None)) |> should equal []
+    HtmlNode.children (text"Hello" (ref None)) |> should equal []
 
 [<Test>]
 let ``Can get the children of a node``() =
-    HtmlNode.children htmlFragment |> should equal [content Content "Hello World!" (ref None)]
+    HtmlNode.children htmlFragment |> should equal [text"Hello World!" (ref None)]
 
 [<Test>]
 let ``Can get the parent of a node``() =

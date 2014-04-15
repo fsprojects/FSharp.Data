@@ -34,7 +34,7 @@ let ``Should substitute char references``(ref:string, result:string) =
             [
                element "body" []
                 [
-                   content Content result
+                   text result
                 ]
             ]
          ]

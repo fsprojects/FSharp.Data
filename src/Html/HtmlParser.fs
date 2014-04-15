@@ -13,26 +13,25 @@ open FSharp.Data.Runtime
 type HtmlAttribute = 
     | HtmlAttribute of name:string * value:string    
 
-type HtmlContentType =
-    | Comment | Content
-
-
 [<CustomEquality; NoComparison>]
 type HtmlNode =
     | HtmlElement of parent:HtmlNode option ref * name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-    | HtmlContent of parent:HtmlNode option ref * HtmlContentType * content:string
+    | HtmlText of parent:HtmlNode option ref * content:string
+    | HtmlComment of parent:HtmlNode option ref * content:string
     override x.Equals(y:obj) = 
         match y with
         | :? HtmlNode as y ->
             match x, y with
             | HtmlElement(_, name', attributes', content'), HtmlElement(_, name, attributes, content) -> name' = name && attributes = attributes' && content = content'
-            | HtmlContent(_,t', content'), HtmlContent(_,t, content) -> t' = t && content = content'
+            | HtmlText(_, content'), HtmlText(_, content) -> content = content'
+            | HtmlComment(_, content'), HtmlComment(_, content) -> content = content'
             | _, _ -> false 
         | _ -> false
     override x.GetHashCode() = 
         match x with
         | HtmlElement(_, name, attrs, content) -> 397 ^^^ hash(name) ^^^ hash(attrs) ^^^ hash(content)
-        | HtmlContent(_, t, content) -> 397 ^^^ hash(t) ^^^ hash(content)
+        | HtmlText(_, content) -> 397 ^^^ hash(127) ^^^ hash(content)
+        | HtmlComment(_, comment) -> 397 ^^^ hash(143) ^^^ hash(comment)
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation html =
             let append (str:string) = sb.Append str |> ignore
@@ -60,10 +59,8 @@ type HtmlNode =
                     append "</"
                     append name
                     append ">"
-            | HtmlContent(_,contentType, str) -> 
-                match contentType with
-                | Content -> append str
-                | Comment -> 
+            | HtmlText(_, str) -> append str
+            | HtmlComment(_, str) -> 
                     append "<!-- "
                     append str
                     append " -->"
@@ -297,9 +294,12 @@ module internal HtmlParser =
                 then state.Emit();
                 else state.Pop(); tagOpen state
             | TextParser.EndOfFile _ -> EOF
-            | '&' -> 
-                state.InsertionMode := CharRefMode
-                charRef state
+            | '&' ->
+                if state.GetContent().Length > 0
+                then state.Emit();
+                else
+                    state.InsertionMode := CharRefMode
+                    charRef state
             | TextParser.Whitespace _ when state.GetContent().Length = 0 -> state.Pop(); data state
             | _ ->
                 match !state.InsertionMode with
@@ -416,7 +416,7 @@ module internal HtmlParser =
             | '/' -> state.Pop(); endTagOpen state
             | '?' -> state.Pop(); bogusComment state
             | TextParser.Letter _ -> state.ConsTag(); tagName false state
-            | _ -> state.Cons('<'); state.Cons(); data state
+            | _ -> state.Cons('<'); data state
         and bogusComment state =
             let rec bogusComment' (state:HtmlState) = 
                 let exitBogusComment state = 
@@ -543,7 +543,7 @@ module internal HtmlParser =
             | TextParser.EndOfFile _ -> data state;
             | '\'' -> state.Pop(); afterAttributeValueQuoted state
             | '/' -> state.EmitSelfClosingTag()
-            | _ -> state.ConsAttrValue(); attributeValueQuoted state
+            | _ -> state.ConsAttrValue(); attributeValueSingleQuoted state
         and attributeValueQuoted state = 
             match state.Peek() with
             | '"' -> state.Pop(); afterAttributeValueQuoted state
@@ -597,8 +597,8 @@ module internal HtmlParser =
             | Text cont :: rest ->
                 if cont <> " " && (String.IsNullOrWhiteSpace cont)
                 then parse' docType elements rest
-                else parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Content, cont.Trim()) :: elements) rest
-            | Comment(cont) :: rest -> parse' docType (HtmlContent(parentStack.Peek(), HtmlContentType.Comment, cont.Trim()) :: elements) rest
+                else parse' docType (HtmlText(parentStack.Peek(), cont.Trim()) :: elements) rest
+            | Comment(cont) :: rest -> parse' docType (HtmlComment(parentStack.Peek(), cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []

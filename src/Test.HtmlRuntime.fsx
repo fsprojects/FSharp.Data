@@ -29,15 +29,16 @@ let printTables includeLayout (url:string) =
 
 type PrintableContent =
     | Element of string * HtmlAttribute list * (PrintableContent list)
-    | Content of HtmlContentType * string
+    | Text of string
+    | Comment of string
     static member ofHtmlNode(x) =
         match x with
         | HtmlElement(_, name, attrs, content) -> Element(name, attrs, content |> List.map PrintableContent.ofHtmlNode)
-        | HtmlContent(_,t,content) -> Content(t, content)
+        | HtmlText(_,content) -> Text(content)
+        | HtmlComment(_, content) -> Comment(content)
 
 fsi.AddPrintTransformer(PrintableContent.ofHtmlNode >> box)
-          
-
+    
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"
@@ -50,6 +51,6 @@ printTables false "http://www.sherdog.com/stats/fightfinder?SearchTxt=silva"
 printTables false "http://www.ebay.com/sch/i.html?_nkw=cars"
 printTables false "http://www.ebay.com/sch/i.html?_nkw=cars&_sacat=0&_from=R40"
 printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1.TR11.TRC1.A0.H0.Xcar&_nkw=cars&_sacat=0&_from=R40"
-
+printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
  
 

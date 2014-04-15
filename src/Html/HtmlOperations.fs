@@ -27,22 +27,12 @@ module Html =
             )
         
         /// <summary>
-        /// Creates a HtmlContent element
-        /// </summary>
-        /// <param name="contentType">The content type</param>
-        /// <param name="content">The actual content</param>
-        let content contentType content = 
-            (fun parent -> 
-                HtmlContent(parent, contentType, content)
-            )
-
-        /// <summary>
         /// Creates a text content element
         /// </summary>
         /// <param name="content">The actual content</param>
         let text content = 
             (fun parent -> 
-                HtmlContent(parent, HtmlContentType.Content, content)
+                HtmlText(parent, content)
             )
 
         /// <summary>
@@ -51,7 +41,7 @@ module Html =
         /// <param name="content">The actual content</param>
         let comment content = 
             (fun parent -> 
-                HtmlContent(parent, HtmlContentType.Comment, content)
+                HtmlComment(parent, content)
             )
         
         /// <summary>
@@ -140,7 +130,8 @@ module Html =
         /// </summary>
         let parent = function
             | HtmlElement(parent = parent) -> !parent
-            | HtmlContent(parent = parent) -> !parent
+            | HtmlText(parent = parent) -> !parent
+            | HtmlComment(parent = parent) -> !parent
         
         /// <summary>
         /// Gets all of the descendants of this node that statisfy the given predicate
@@ -331,9 +322,10 @@ module Html =
                 | HtmlElement(_,name,_, content) when name <> "style" && name <> "script" ->
                     String.Join(" ", seq { for e in content do
                                                 match e with
-                                                | HtmlContent(_,HtmlContentType.Content,text) -> yield text
+                                                | HtmlText(_,text) -> yield text
+                                                | HtmlComment(_,_) -> yield String.Empty
                                                 | elem -> yield innerText' elem })
-                | HtmlContent(_,HtmlContentType.Content,text) -> text
+                | HtmlText(_,text) -> text
                 | _ -> String.Empty
             innerText' x
         
@@ -488,7 +480,7 @@ module Html =
         /// </summary>
         static member Parse(text) = 
           use reader = new StringReader(text)
-          HtmlParser.parseFragment reader
+          HtmlParser.parseFragment reader (ref None)
 
         /// <summary>
         /// Parses the specified HTML string to a list of HTML nodes
