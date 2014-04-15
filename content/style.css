@@ -158,6 +158,19 @@ td.title, thead {
   font-size:12pt;
   margin:10px 0px 0px 0px;
 }
+.github-link {
+  float:right;
+  text-decoration:none;
+}
+.github-link img {
+  border-style:none;
+  margin-left:10px;
+}
+.github-link .hover { display:none; }
+.github-link:hover .hover { display:block; }
+.github-link .normal { display: block; }
+.github-link:hover .normal { display: none; }
+
 /*-------------------------------------------------------------------------- 
   Additional formatting for the homepage 
 /*--------------------------------------------------------------------------*/
