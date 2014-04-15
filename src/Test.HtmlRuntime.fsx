@@ -27,6 +27,31 @@ let printTables includeLayout (url:string) =
         printfn "%s" (table |> HtmlRuntime.formatTable)
         printfn "+++++++++++++++++++++++++++++++++++++"
 
+type PrintableContent =
+    | Element of string * HtmlAttribute list * (PrintableContent list)
+    | Content of HtmlContentType * string
+    static member ofHtmlNode(x) =
+        match x with
+        | HtmlElement(_, name, attrs, content) -> Element(name, attrs, content |> List.map PrintableContent.ofHtmlNode)
+        | HtmlContent(_,t,content) -> Content(t, content)
+
+fsi.AddPrintTransformer(PrintableContent.ofHtmlNode >> box)
+          
+let doc = 
+    """<html>
+            <head>
+               <script language="JavaScript" src="/bwx_generic.js"></script>
+               <link rel="stylesheet" type="text/css" href="/bwx_style.css">
+               </head>
+           <body>
+               <img src="myimg.jpg">
+               <table title="table">
+                   <tr><th>Column 1</th><th>Column 2</th></tr>
+                   <tr><td>1</td><td>yes</td></tr>
+               </table>
+           </body>
+       </html>""" |> HtmlDocument.Parse
+
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"

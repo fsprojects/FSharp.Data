@@ -300,6 +300,7 @@ module internal HtmlParser =
             | '&' -> 
                 state.InsertionMode := CharRefMode
                 charRef state
+            | TextParser.Whitespace _ when state.GetContent().Length = 0 -> state.Pop(); data state
             | _ ->
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
@@ -555,7 +556,6 @@ module internal HtmlParser =
             | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.EndOfFile _ -> data state
             | _ -> attributeName state
-        
         [
            while state.Reader.Peek() <> -1 do
                yield data state
@@ -563,6 +563,11 @@ module internal HtmlParser =
     
     let parse reader =
         let parentStack = new Stack<HtmlNode option ref>([ref None])
+        let isVoid (name:string) = 
+            match name with
+            | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
+            | "source" | "track" | "wbr" -> true
+            | _ -> false
         let rec parse' docType elements (tokens:HtmlToken list) =
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements rest
@@ -572,6 +577,12 @@ module internal HtmlParser =
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
+            | Tag(false, name, attributes) :: (Tag(_, nextName, _) as next) :: rest when (name <> nextName) && (isVoid name) ->
+               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               parse' docType (e :: elements) (next :: rest)  
+            | Tag(false, name, attributes) :: (TagEnd(nextName) as next) :: rest when (name <> nextName) && (isVoid name) ->
+               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               parse' docType (e :: elements) (next :: rest)  
             | Tag(_, name, attributes) :: rest ->
                 let refCell = ref None
                 let currentParent = parentStack.Peek()
