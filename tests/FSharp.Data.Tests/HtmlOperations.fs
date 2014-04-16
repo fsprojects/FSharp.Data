@@ -160,3 +160,44 @@ let ``Can extract the inner text from a node``() =
         "1 yes"
     ]
 
+[<Test>]
+let ``Inner text on a comment should be String.Empty``() = 
+    let comment = comment "Hello World" (ref None)
+    HtmlNode.innerText comment |> should equal String.Empty
+
+[<Test>]
+let ``Inner text on a style should be String.Empty``() = 
+    let comment = element "style" [] [text "Hello World"] (ref None)
+    HtmlNode.innerText comment |> should equal String.Empty
+
+[<Test>]
+let ``Inner text on a script should be String.Empty``() = 
+    let comment = element "script" [] [text "Hello World"] (ref None)
+    HtmlNode.innerText comment |> should equal String.Empty
+
+[<Test>]
+let ``Can get to siblings of a node``() =
+    let result = 
+        doc.Descendants(["table"]) 
+        |> List.head
+        |> HtmlNode.siblings
+    let expected = element "img" ["src", "myimg.jpg"] [] (ref None)
+    result |> should equal [expected]
+
+[<Test>]
+let ``Can find the nearest node that matches a predicate before the current node``() =
+    let doc = 
+        HtmlNode.ParseRooted("html", """<body>
+                <div>
+                    <h3>Heading</h3>
+                </div>
+                <div>
+                    <table title="table">
+                        <tr><th>Column 1</th><th>Column 2</th></tr>
+                        <tr><td>1</td><td>yes</td></tr>
+                    </table>
+                </div>
+            </body>""")
+    let table = HtmlNode.descendantsNamed false ["table"] doc |> List.head
+    let result = HtmlNode.tryFindPrevious (HtmlNode.name >> (=) "h3") table
+    result |> should equal (Some (element "h3" [] [text "Heading"] (ref None)))
