@@ -116,9 +116,6 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member Burundi: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("BDI", "Burundi")
 
-    member Cabo Verde: WorldBankDataProvider+ServiceTypes+Country with get
-    (this :> ICountryCollection).GetCountry("CPV", "Cabo Verde")
-
     member Cambodia: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("KHM", "Cambodia")
 
@@ -127,6 +124,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
 
     member Canada: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("CAN", "Canada")
+
+    member Cape Verde: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("CPV", "Cape Verde")
 
     member Caribbean small states: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("CSS", "Caribbean small states")
@@ -921,6 +921,9 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
     member Infrastructure: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("9")
 
+    member Labor & Social Protection: WorldBankDataProvider+ServiceTypes+Topic with get
+    (this :> ITopicCollection).GetTopic("10")
+
     member Millenium development goals: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("18")
 
@@ -938,12 +941,6 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
 
     member Social Development: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("15")
-
-    member Social Protection & Labor: WorldBankDataProvider+ServiceTypes+Topic with get
-    (this :> ITopicCollection).GetTopic("10")
-
-    member Trade: WorldBankDataProvider+ServiceTypes+Topic with get
-    (this :> ITopicCollection).GetTopic("21")
 
     member Urban Development: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("16")

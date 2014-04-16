@@ -86,12 +86,22 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Metropolitan Area [ 4 ] [ 5 ]", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Scotland [ edit ]")
 
+    member ReferencesAndNotesEdit: HtmlProvider+ReferencesAndNotesEdit with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "References and Notes [ edit ]")
+
 
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row>
 
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row>
 
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row>
+
+class HtmlProvider+ReferencesAndNotesEdit : FDR.HtmlTable<HtmlProvider+ReferencesAndNotesEdit+Row>
 
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
     member Area (km�) [ 3 ]: decimal with get
@@ -163,5 +173,13 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string
 
     member Urban Area [ 8 ]: string with get
     (let _,t2,_,_,_,_,_ = this in t2)
+
+
+class HtmlProvider+ReferencesAndNotesEdit+Row : string * string
+    member v t e List of settlements in the United Kingdom: string with get
+    (let t1,_ = this in t1)
+
+    member v t e List of settlements in the United Kingdom: string with get
+    (let _,t2 = this in t2)
 
 
