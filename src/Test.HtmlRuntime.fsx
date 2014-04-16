@@ -51,6 +51,8 @@ printTables false "http://www.sherdog.com/stats/fightfinder?SearchTxt=silva"
 printTables false "http://www.ebay.com/sch/i.html?_nkw=cars"
 printTables false "http://www.ebay.com/sch/i.html?_nkw=cars&_sacat=0&_from=R40"
 printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1.TR11.TRC1.A0.H0.Xcar&_nkw=cars&_sacat=0&_from=R40"
+
+//Interesting table structure, with col and row spans.
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
  
 
