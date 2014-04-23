@@ -20,11 +20,16 @@ open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
+[<Flags>]
 type JsonSaveOptions = 
   /// Format (indent) the JsonValue
-  | None = 0
+  | None              = 0b0000
   /// Print the JsonValue in one line in a compact way
-  | DisableFormatting = 1
+  | DisableFormatting = 0b0001
+  /// Prevent null Record attributes from appearing
+  | RemoveNulls       = 0b0010
+  /// Prevent JavaScript encoding
+  | DisableEncoding   = 0b0100
 
 /// Represents a JSON value. Large numbers that do not fit in the 
 /// Decimal type are represented using the Float case, while
@@ -42,10 +47,11 @@ type JsonValue =
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 
   member x.ToString saveOptions = 
-
+    let saveOption flag = saveOptions &&& flag <> enum 0
+    let noSaveOption = saveOption >> not
     let rec serialize (sb:StringBuilder) indentation json =
       let newLine plus =
-        if saveOptions = JsonSaveOptions.None then
+        if noSaveOption JsonSaveOptions.DisableFormatting then
           sb.AppendLine() |> ignore
           System.String(' ', indentation + plus) |> sb.Append |> ignore
       match json with
@@ -53,19 +59,23 @@ type JsonValue =
       | Boolean b -> sb.Append(if b then "true" else "false")
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
-      | String s -> 
-          sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
+      | String s ->
+        if saveOption JsonSaveOptions.DisableEncoding then
+            sb.Append("\"").Append(s).Append("\"")
+        else
+            sb.Append("\"").Append(JavaScriptStringEncode s).Append("\"")
       | Record properties -> 
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
           for k, v in properties do
-            if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
-            newLine 2
-            if saveOptions = JsonSaveOptions.None then
-              sb.AppendFormat("\"{0}\": ", k) |> ignore
-            else
-              sb.AppendFormat("\"{0}\":", k) |> ignore
-            serialize sb (indentation + 2) v |> ignore
+            if v <> JsonValue.Null || noSaveOption JsonSaveOptions.RemoveNulls then
+                if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
+                newLine 2
+                if saveOption JsonSaveOptions.DisableFormatting then
+                  sb.AppendFormat("\"{0}\":", k) |> ignore
+                else
+                  sb.AppendFormat("\"{0}\": ", k) |> ignore
+                serialize sb (indentation + 2) v |> ignore
           newLine 0
           sb.Append "}"
       | Array elements -> 
@@ -314,9 +324,10 @@ type JsonValue with
     JsonParser(text, cultureInfo, false).ParseMultiple()
 
   /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, ?httpMethod, ?headers) =  
+  member x.Request(uri:string, ?httpMethod, ?headers, ?saveOptions) =  
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg headers []
+    let saveOptions = defaultArg saveOptions JsonSaveOptions.DisableFormatting
     let headers =
         if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
         then headers
@@ -324,14 +335,15 @@ type JsonValue with
     let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
     Http.Request(
       uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      body = TextRequest (x.ToString(saveOptions)),
       headers = headers,
       httpMethod = httpMethod)
 
   /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
+  member x.RequestAsync(uri:string, ?httpMethod, ?headers, ?saveOptions) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg headers []
+    let saveOptions = defaultArg saveOptions JsonSaveOptions.DisableFormatting
     let headers =
         if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
         then headers
@@ -339,7 +351,7 @@ type JsonValue with
     let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
     Http.AsyncRequest(
       uri,
-      body = TextRequest (x.ToString(JsonSaveOptions.DisableFormatting)),
+      body = TextRequest (x.ToString(saveOptions)),
       headers = headers,
       httpMethod = httpMethod)
 

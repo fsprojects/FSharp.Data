@@ -6,6 +6,7 @@ open System.Net
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
+open System.Xml.Linq
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
@@ -71,7 +72,7 @@ let private portable47AssembliesPath =
     ++ "v4.0" 
     ++ "Profile" 
     ++ "Profile47" 
-
+        
 let private designTimeAssemblies = 
     AppDomain.CurrentDomain.GetAssemblies()
     |> Seq.map (fun asm -> asm.GetName().Name, asm)
@@ -129,12 +130,15 @@ type FSharpDataRuntimeVersion =
         | _ -> false
 
 let init (cfg : TypeProviderConfig) = 
-
-    if not initialized then
-        initialized <- true
+    let init (_:System.Xml.Linq.SaveOptions) = 
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
+        
+    if not initialized then
+      initialized <- true
+      // the following parameter is a dummy, forcing System.Xml.Linq to load
+      init System.Xml.Linq.SaveOptions.None
     
     let useReflectionOnly = true
 
@@ -157,7 +161,7 @@ let init (cfg : TypeProviderConfig) =
 
     let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
 
-    let referencedAssembliesPairs = 
+    let referencedAssembliesPairs =         
         runtimeAssembly.GetReferencedAssemblies()
         |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
         |> Seq.choose (fun asmName -> 

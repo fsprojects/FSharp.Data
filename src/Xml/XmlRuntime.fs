@@ -94,11 +94,13 @@ type XmlElement =
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
 
+    override this.ToString() = this._Print
+
 /// Static helper methods called from the generated code for working with XML
 type XmlRuntime = 
 
   // Operations for getting node values and values of attributes
-
+    
   static member TryGetValue(xml:XmlElement) = 
     if String.IsNullOrEmpty(xml.XElement.Value) then None else Some xml.XElement.Value
 
@@ -165,3 +167,21 @@ type XmlRuntime =
             JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
         with _ -> None
     | None -> None
+
+  static member CreateObject(name:string,properties:(string*obj)[], cultureStr) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr // i dont know what to do with this
+    let sb = Text.StringBuilder().AppendFormat("<{0}",NameUtils.niceCamelName name)
+    let attributes, elements = properties |> Array.partition(fun (k,_)->k.EndsWith "#Attribute")
+    attributes |> Array.iter(fun (k,v) -> sb.AppendFormat(" {0}=\"{1}\"",NameUtils.niceCamelName <| k.Substring(0,k.LastIndexOf("#Attribute"))  ,v.ToString()) |> ignore )
+    sb.Append(">") |> ignore
+    elements 
+    |> Array.iter(fun (k,v) ->
+        match v with
+        | :? (XmlElement[]) as xs -> 
+            let x = String.concat Environment.NewLine (Array.map (fun x -> sprintf "%s" (x.ToString())) xs)
+            sb.Append(x) |> ignore
+        | :? (XmlElement) as x -> sb.Append(x.ToString()) |> ignore
+        | _ ->  
+            sb.AppendFormat("<{0}>{1}</{0}>",k,v.ToString()) |> ignore ) 
+    XmlElement.Create(new StringReader(sb.AppendFormat("</{0}>",NameUtils.niceCamelName name).ToString()))
+    
