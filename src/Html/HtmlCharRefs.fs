@@ -2,7 +2,7 @@
 
 open System
 
-module HtmlCharRefs = 
+module internal HtmlCharRefs = 
 
     let private refs = 
         [|
