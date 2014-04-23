@@ -31,18 +31,6 @@ let private fsharp31Portable7AssembliesPath =
     ++ ".NETCore" 
     ++ "3.3.1.0" 
 
-let private fsharp30Portable47AssembliesPath1 = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ ".NETPortable" 
-    ++ "2.3.5.0"
-
-let private fsharp31Portable47AssembliesPath = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ ".NETPortable" 
-    ++ "2.3.5.1"
-
 let private fsharp30AssembliesPath1 = 
     referenceAssembliesPath
     ++ "FSharp" 
@@ -96,7 +84,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         match asmName.Name, version with
         | "FSharp.Core", "4.3.0.0" -> [fsharp30AssembliesPath1; fsharp30AssembliesPath2]
         | "FSharp.Core", "4.3.1.0" -> [fsharp31AssembliesPath]
-        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath1; fsharp30Portable47AssembliesPath]
+        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath]
         | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
         | _, "2.0.5.0" -> [portable47AssembliesPath]
         | _, _ -> []

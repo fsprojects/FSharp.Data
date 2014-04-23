@@ -5,11 +5,11 @@ open System.ComponentModel
 open System.Globalization
 open System.IO
 open System.Text
+open System.Text.RegularExpressions
 open System.Xml
 open FSharp.Data
-open FSharp.Data.Runtime
 open FSharp.Data.Html
-open System.Text.RegularExpressions
+open FSharp.Data.Runtime
 
 #nowarn "10001"
 

@@ -62,4 +62,4 @@ let inferHeaders (rows : string [][]) =
         let dataRow =  rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
         if headerRow = dataRow
         then 0, [||]
-        else 1, rows.[0] 
+        else 1, rows.[0]

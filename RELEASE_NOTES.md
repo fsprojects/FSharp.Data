@@ -192,6 +192,6 @@
 #### 2.0.3 - March 17 2014
 * Respect the order of the attributes present in the JSON in JsonProvider.
 
-#### 2.0.4 - March 19 2014
+#### 2.0.4 - March 20 2014
 * Helpers for sending HTTP requests with JSON and XML content.
 * Removed built-in HTTP certificates support, and moved it to a sample in the documentation.

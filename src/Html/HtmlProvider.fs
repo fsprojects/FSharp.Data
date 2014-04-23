@@ -32,7 +32,6 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let cultureStr = args.[4] :?> string
         let cultureInfo = TextRuntime.GetCulture cultureStr
         let resolutionFolder = args.[5] :?> string
-        
 
         let getSpecFromSamples samples = 
       

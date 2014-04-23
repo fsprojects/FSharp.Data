@@ -2,9 +2,9 @@
 namespace FSharp.Data
 
 open System
+open System.Collections.Generic
 open System.IO
 open System.Text
-open System.Collections.Generic
 open FSharp.Data
 open FSharp.Data.Runtime
 
@@ -68,7 +68,6 @@ type HtmlNode =
         let sb = StringBuilder()
         serialize sb 0 x
         sb.ToString()
-
 
 type HtmlDocument = 
     | HtmlDocument of docType:string * elements:HtmlNode list
@@ -235,7 +234,7 @@ module internal HtmlParser =
             x.InsertionMode := DefaultMode
             x.Attributes := []
             result 
-        
+
         member x.IsScriptTag 
             with get() = 
                match x.CurrentTagName() with
@@ -248,7 +247,7 @@ module internal HtmlParser =
                 if isEnd
                 then TagEnd(name)
                 else Tag(false, name, x.GetAttributes()) 
-                    
+
             x.CurrentTag := CharList.Empty
             x.InsertionMode :=
                 if x.IsScriptTag
