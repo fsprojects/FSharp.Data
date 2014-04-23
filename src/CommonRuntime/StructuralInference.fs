@@ -9,7 +9,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
 /// [omit]
-module Seq = 
+module List = 
     /// Merge two sequences by pairing elements for which
     /// the specified predicate returns the same key
     ///
@@ -147,23 +147,23 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
 /// Heterogeneous types already handle optionality on their own, so we drop
 /// optionality from all its inner types
 and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t.DropOptionality()
       | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> 
           tag, (subtypeInfered allowEmptyValues t1 t2).DropOptionality()
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
 
 /// A collection can contain multiple types - in that case, we do keep 
 /// the multiplicity for each different type tag to generate better types
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
 and private unionCollectionTypes allowEmptyValues cases1 cases2 = 
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
@@ -182,14 +182,14 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
           let t = if m <> Single then t.DropOptionality() else t
           tag, (m, t)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes allowEmptyValues t1 t2 =
-  Seq.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
-  |> Seq.map (fun (name, fst, snd) ->
+  List.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
+  |> List.map (fun (name, fst, snd) ->
       match fst, snd with
       // If one is missing, return the other, but optional
       | Some p, None | None, Some p -> { p with Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
@@ -201,7 +201,6 @@ and unionRecordTypes allowEmptyValues t1 t2 =
           { InferedProperty.Name = name
             Type = subtypeInfered allowEmptyValues p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
-  |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)

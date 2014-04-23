@@ -51,7 +51,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member RankingPointsEdit: HtmlProvider+RankingPointsEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("ATP", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
@@ -75,7 +75,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member SeeAlsoEdit: HtmlProvider+SeeAlsoEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Column0", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                        TextRuntime.GetNonOptionalValue("Column0", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "See also [ edit ]")
@@ -94,10 +94,14 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
 
     member Table30: HtmlProvider+Table30 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[0]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[1]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[3]))),
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertInteger("", value), value),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[4]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[5]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[6]))),
@@ -108,10 +112,14 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
 
     member Table31: HtmlProvider+Table31 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[0]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[1]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[3]))),
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertInteger("", value), value),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[4]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[5]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[6]))),
@@ -129,11 +137,11 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table35: HtmlProvider+Table35 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value),
+                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "NaN,NA,#N/A,:", value), value))
+                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertFloat("", "", value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table_35")
 
     member Table37: HtmlProvider+Table37 with get
@@ -251,11 +259,11 @@ class HtmlProvider+ExternalLinksEdit+Row : string
 
 
 class HtmlProvider+RankingPointsEdit+Row : string * int * int
-    member : string with get
-    (let t1,_,_ = this in t1)
-
     member ATP: int with get
     (let _,t2,_ = this in t2)
+
+    member Column1: string with get
+    (let t1,_,_ = this in t1)
 
     member WTA: int with get
     (let _,_,t3 = this in t3)
@@ -296,68 +304,68 @@ class HtmlProvider+Table29+Row : string
     (let t1 = this in t1)
 
 
-class HtmlProvider+Table30+Row : System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
-    member : System.Nullable<int> with get
-    (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
-
-    member : System.Nullable<int> with get
-    (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
-
-    member : System.Nullable<int> with get
-    (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
-
-    member : System.Nullable<int> with get
-    (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
-
-    member : System.Nullable<int> with get
-    (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
-
-    member : System.Nullable<int> with get
-    (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
-
-    member : System.Nullable<int> with get
-    (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
-
-    member : System.Nullable<int> with get
-    (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
-
+class HtmlProvider+Table30+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
     member 1969: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
-
-class HtmlProvider+Table31+Row : System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
-    member : System.Nullable<int> with get
+    member Column1: int with get
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
-    member : System.Nullable<int> with get
+    member Column2: int with get
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
-    member : System.Nullable<int> with get
+    member Column3: int with get
     (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
 
-    member : System.Nullable<int> with get
+    member Column4: int with get
     (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
 
-    member : System.Nullable<int> with get
+    member Column5: System.Nullable<int> with get
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
-    member : System.Nullable<int> with get
+    member Column6: System.Nullable<int> with get
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
-    member : System.Nullable<int> with get
+    member Column7: System.Nullable<int> with get
     (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
 
-    member : System.Nullable<int> with get
+    member Column8: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
+
+class HtmlProvider+Table31+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
     member 1969: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
+
+    member Column1: int with get
+    (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
+
+    member Column2: int with get
+    (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
+
+    member Column3: int with get
+    (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
+
+    member Column4: int with get
+    (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
+
+    member Column5: System.Nullable<int> with get
+    (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
+
+    member Column6: System.Nullable<int> with get
+    (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
+
+    member Column7: System.Nullable<int> with get
+    (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
+
+    member Column8: System.Nullable<int> with get
+    (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
 class HtmlProvider+Table33+Row : string

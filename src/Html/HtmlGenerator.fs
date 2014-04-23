@@ -17,7 +17,7 @@ module internal HtmlGenerator =
         Property : ProvidedProperty
         Convert: Expr -> Expr }
 
-    let generateTypes asm ns typeName (missingValues, cultureStr) (replacer:AssemblyReplacer) columnsPerTable =
+    let generateTypes asm ns typeName (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) columnsPerTable =
         
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
     
@@ -30,7 +30,7 @@ module internal HtmlGenerator =
         for tableName, columns in columnsPerTable do
 
             let fields = columns |> List.mapi (fun index field ->
-                let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValues cultureStr field
+                let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
                 { TypeForTuple = typWithoutMeasure
                   Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
                   Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )

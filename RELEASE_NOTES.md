@@ -195,3 +195,12 @@
 #### 2.0.4 - March 20 2014
 * Helpers for sending HTTP requests with JSON and XML content.
 * Removed built-in HTTP certificates support, and moved it to a sample in the documentation.
+
+#### 2.0.5 - March 29 2014
+* Added - to the list of default missing values.
+* Re-added support for specifying known HTTP headers in the wrong case.
+* Fixed sending of HTTP requests when using a portable class library version of FSharp.Data in the full .NET version.
+
+#### 2.0.6 - Unreleased
+* Performance improvements
+

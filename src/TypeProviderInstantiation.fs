@@ -9,7 +9,7 @@ open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
 type CsvProviderArgs = 
     { Sample : string
-      Separator : string
+      Separators : string
       Culture : string
       InferRows : int
       Schema : string
@@ -73,7 +73,7 @@ type TypeProviderInstantiation =
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
-                   box x.Separator
+                   box x.Separators
                    box x.Culture
                    box x.InferRows
                    box x.Schema
@@ -129,7 +129,7 @@ type TypeProviderInstantiation =
         | Csv x -> 
             ["Csv"
              x.Sample
-             x.Separator
+             x.Separators
              x.Culture
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
@@ -184,7 +184,7 @@ type TypeProviderInstantiation =
         match args.[0] with
         | "Csv" ->
             Csv { Sample = args.[1]
-                  Separator = args.[2]
+                  Separators = args.[2]
                   Culture = args.[3]
                   InferRows = Int32.MaxValue
                   Schema = args.[4].Replace(';', ',')
@@ -193,7 +193,7 @@ type TypeProviderInstantiation =
                   AssumeMissingValues = args.[6] |> bool.Parse
                   PreferOptionals = args.[7] |> bool.Parse
                   Quote = '"'
-                  MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
+                  MissingValues = ""
                   CacheRows = false
                   ResolutionFolder = "" }
         | "Xml" ->
@@ -212,7 +212,7 @@ type TypeProviderInstantiation =
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
                    IncludeLayoutTables = args.[3] |> bool.Parse
-                   MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
+                   MissingValues = ""
                    Culture = args.[4] 
                    ResolutionFolder = ""}
         | "WorldBank" ->

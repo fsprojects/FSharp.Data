@@ -19,10 +19,10 @@ module internal CsvTypeBuilder =
       Convert: Expr -> Expr
       ConvertBack: Expr -> Expr }
 
-  let generateTypes asm ns typeName (missingValues, cultureStr) replacer inferredFields =
+  let generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer inferredFields =
     
     let fields = inferredFields |> List.mapi (fun index field ->
-      let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValues cultureStr field
+      let typ, typWithoutMeasure, conv, convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
       { TypeForTuple = typWithoutMeasure
         Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
         Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>
@@ -50,14 +50,13 @@ module internal CsvTypeBuilder =
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type
     let stringArrayToRow = 
-      let parentVar = Var("parent", typeof<obj>)            
+      let parentVar = Var("parent", typeof<obj>)
       let rowVar = Var("row", typeof<string[]>)
       let rowVarExpr = Expr.Var rowVar
 
       // Convert each element of the row using the appropriate conversion
       let body = 
         Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
-        |> replacer.ToRuntime
 
       let delegateType = 
         typedefof<Func<_,_,_>>.MakeGenericType(typeof<obj>, typeof<string[]>, rowErasedType)

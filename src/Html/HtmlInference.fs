@@ -9,9 +9,9 @@ open FSharp.Data.Runtime.StructuralTypes
 
 let inferRowType preferOptionals missingValues cultureInfo headers row = 
 
-    let getName (headers:string[]) index = 
-        if Array.isEmpty headers
-        then "Column" + (string index)
+    let getName headers index = 
+        if Array.isEmpty headers || String.IsNullOrWhiteSpace headers.[index]
+        then "Column" + (index+1).ToString()
         else headers.[index]
 
     let inferProperty index value =

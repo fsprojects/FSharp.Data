@@ -27,6 +27,7 @@ let printTables includeLayout (url:string) =
         printfn "%s" (table |> HtmlRuntime.formatTable)
         printfn "+++++++++++++++++++++++++++++++++++++"
 
+#if INTERACTIVE
 type PrintableContent =
     | Element of string * HtmlAttribute list * (PrintableContent list)
     | Text of string
@@ -38,7 +39,8 @@ type PrintableContent =
         | HtmlComment(_, content) -> Comment(content)
 
 fsi.AddPrintTransformer(PrintableContent.ofHtmlNode >> box)
-    
+#endif
+
 //Working sensibly
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"

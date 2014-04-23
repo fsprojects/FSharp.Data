@@ -118,9 +118,9 @@ module ProviderHelpers =
         let (?) = ProviderImplementation.QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
-        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f)
-        Expr.Let(f, convFunc, body) |> replacer.ToRuntime
-    
+        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
+        Expr.Let(f, convFunc, replacer.ToRuntime body)
+
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
     let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
