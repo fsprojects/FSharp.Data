@@ -102,7 +102,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths =
         | "FSharp.Data", _ -> fsharpDataPaths
         | _, "2.0.5.0" -> [portable47AssembliesPath]
         | _, _ -> []
-    let search1 = 
+    let asm = 
         folders |> List.tryPick (fun folder -> 
           try
             let assemblyPath = folder ++ (asmName.Name + ".dll")
@@ -111,7 +111,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths =
                 else nullToOption (Assembly.LoadFrom assemblyPath)
             else None 
           with _ -> None)
-    match search1 with 
+    match asm with 
     | Some asm -> asm
     | None -> 
         if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
@@ -169,12 +169,25 @@ let init (cfg : TypeProviderConfig) =
                 | asmName -> asmName
             designTimeAssemblies.TryFind designTimeAsmName
             |> Option.bind (fun designTimeAsm ->
-                let targetAsm = getAssembly asmName useReflectionOnly [Path.GetDirectoryName runtimeAssembly.Location]
-                if asmName.Name = "FSharp.Data" then
-                    let obtainedVersion = targetAsm.GetName().Version
-                    let expectedVersion = Version(asmName.Version.Major, asmName.Version.Minor, asmName.Version.Build, runtimeAssemblyName.Version.Revision)
-                    if obtainedVersion <> expectedVersion then
-                        failwithf "Unexpected version of FSharp.Data.dll: %O [Looking for %O]" obtainedVersion expectedVersion
+                let targetAsm = 
+                    if asmName.Name = "FSharp.Data" then                        
+                        let runtimeAssemblyPath = Path.GetDirectoryName runtimeAssembly.Location
+                        let fsharpDataPaths = [ runtimeAssemblyPath
+                                                runtimeAssemblyPath.Replace(sprintf "%s.%d.%d.%d" runtimeAssemblyName.Name 
+                                                                                                  runtimeAssemblyName.Version.Major 
+                                                                                                  runtimeAssemblyName.Version.Minor 
+                                                                                                  runtimeAssemblyName.Version.Build,
+                                                                            sprintf "FSharp.Data.%d.%d.%d" asmName.Version.Major
+                                                                                                           asmName.Version.Minor
+                                                                                                           asmName.Version.Build) ]
+                        let targetAsm = getAssembly asmName useReflectionOnly fsharpDataPaths
+                        let expectedVersion = Version(asmName.Version.Major, asmName.Version.Minor, asmName.Version.Build, runtimeAssemblyName.Version.Revision)
+                        let obtainedVersion = targetAsm.GetName().Version
+                        if obtainedVersion <> expectedVersion then
+                            failwithf "Unexpected version of FSharp.Data.dll: %O [Looking for %O]" obtainedVersion expectedVersion
+                        targetAsm
+                    else
+                        getAssembly asmName useReflectionOnly []
                 if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
                                             targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
                     Some (designTimeAsm, targetAsm)
