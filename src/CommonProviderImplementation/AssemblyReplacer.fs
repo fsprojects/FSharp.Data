@@ -287,6 +287,8 @@ module AssemblyReplacer =
         rr t (List.map re exprs)
     | NewArray (t, exprs) ->
         Expr.NewArray (rt t, List.map re exprs)
+    | NewTuple (exprs) ->
+        Expr.NewTuple (List.map re exprs)
     | TupleGet (expr, i) ->
         Expr.TupleGet (re expr, i)
     | NewDelegate (t, vars, expr) ->
