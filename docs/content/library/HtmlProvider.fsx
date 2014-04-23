@@ -90,7 +90,7 @@ let getMinorVersion (v:string) =
   | exn -> v
 
 // Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 open FSharp.Charting
 
 // Configure the type provider
