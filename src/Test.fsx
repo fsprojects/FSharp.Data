@@ -11,9 +11,6 @@ open System.IO
 open System.Net
 open ProviderImplementation
 
-//alow test cases that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"

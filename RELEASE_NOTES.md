@@ -202,5 +202,5 @@
 * Fixed sending of HTTP requests when using a portable class library version of FSharp.Data in the full .NET version.
 
 #### 2.0.6 - Unreleased
-* Performance improvements
-
+* Performance improvements.
+* Support reuse by other type providers projects like ApiaryProvider.

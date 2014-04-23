@@ -88,7 +88,7 @@ let private safeFileExists path =
 
 let private nullToOption x = match x with null -> None | _ -> Some x
 
-let private getAssembly (asmName:AssemblyName) reflectionOnly = 
+let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths = 
     let folders = 
         let version = 
             if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
@@ -99,6 +99,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly =
         | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath1; fsharp30Portable47AssembliesPath2]
         | "FSharp.Core", "2.3.5.1" -> [fsharp31Portable47AssembliesPath]
         | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
+        | "FSharp.Data", _ -> fsharpDataPaths
         | _, "2.0.5.0" -> [portable47AssembliesPath]
         | _, _ -> []
     let search1 = 
@@ -133,8 +134,8 @@ let init (cfg : TypeProviderConfig) =
     if not initialized then
         initialized <- true
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-        AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false)
-        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true)
+        AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false [])
+        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true [])
     
     let useReflectionOnly = true
 
@@ -142,20 +143,20 @@ let init (cfg : TypeProviderConfig) =
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
         else Assembly.LoadFrom cfg.RuntimeAssembly
 
-    let runtimeAssemblyVersion = runtimeAssembly.GetName().Version
-    let designtimeAssemblyName = Assembly.GetExecutingAssembly().GetName()
+    let runtimeAssemblyName = runtimeAssembly.GetName()
+    let designtimeAssemblyName = Assembly.GetCallingAssembly().GetName()
 
-    if designtimeAssemblyName.Name <> "FSI-ASSEMBLY" && designtimeAssemblyName.Version <> new Version(runtimeAssemblyVersion.Major, runtimeAssemblyVersion.Minor, runtimeAssemblyVersion.Build, 0) then
-        failwithf "Unexpected version of FSharp.Data.dll:%O [Looking for %O]" runtimeAssemblyVersion designtimeAssemblyName.Version
+    if designtimeAssemblyName.Name <> "FSI-ASSEMBLY" && designtimeAssemblyName.Version <> new Version(runtimeAssemblyName.Version.Major, runtimeAssemblyName.Version.Minor, runtimeAssemblyName.Version.Build, 0) then
+        failwithf "Unexpected version of %s.dll: %O [Looking for %O]" runtimeAssemblyName.Name runtimeAssemblyName.Version designtimeAssemblyName.Version
 
     let runtimeVersion =
-        match runtimeAssemblyVersion.Revision with
+        match runtimeAssemblyName.Version.Revision with
         | 0 -> FSharpDataRuntimeVersion.Net40
         | 7 -> FSharpDataRuntimeVersion.Portable7
         | 47 -> FSharpDataRuntimeVersion.Portable47
-        | _ -> failwith <| "Unexpected version of FSharp.Data.dll: " + runtimeAssemblyVersion.ToString()
+        | _ -> failwithf "Unexpected version of %s.dll: %O [Looking for revision 0, 7 or 47]" runtimeAssemblyName.Name runtimeAssemblyName.Version
 
-    let runtimeAssemblyPair = Assembly.GetExecutingAssembly(), runtimeAssembly
+    let runtimeAssemblyPair = Assembly.GetCallingAssembly(), runtimeAssembly
 
     let referencedAssembliesPairs = 
         runtimeAssembly.GetReferencedAssemblies()
@@ -163,11 +164,17 @@ let init (cfg : TypeProviderConfig) =
         |> Seq.choose (fun asmName -> 
             let designTimeAsmName =
                 match asmName.Name with
+                | "FSharp.Data" -> "FSharp.Data.DesignTime" // this applies when this code is being used by another assembly that depends on FSharp.Data, like ApiaryProvider
                 | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
                 | asmName -> asmName
             designTimeAssemblies.TryFind designTimeAsmName
             |> Option.bind (fun designTimeAsm ->
-                let targetAsm = getAssembly asmName useReflectionOnly
+                let targetAsm = getAssembly asmName useReflectionOnly [Path.GetDirectoryName runtimeAssembly.Location]
+                if asmName.Name = "FSharp.Data" then
+                    let obtainedVersion = targetAsm.GetName().Version
+                    let expectedVersion = Version(asmName.Version.Major, asmName.Version.Minor, asmName.Version.Build, runtimeAssemblyName.Version.Revision)
+                    if obtainedVersion <> expectedVersion then
+                        failwithf "Unexpected version of FSharp.Data.dll: %O [Looking for %O]" obtainedVersion expectedVersion
                 if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
                                             targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
                     Some (designTimeAsm, targetAsm)

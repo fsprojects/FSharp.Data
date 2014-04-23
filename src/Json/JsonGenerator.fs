@@ -29,12 +29,13 @@ type JsonGenerationContext =
     JsonRuntimeType : Type
     // the type that is used to represent documents (JsonDocument or ApiaryDocument)
     Representation : Type
-    TypeCache : Dictionary<InferedType, ProvidedTypeDefinition> }
+    TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
+    GenerateConstructors : bool }
   static member Create(cultureStr, tpType, replacer, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
-    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName, typeCache)
-  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName, typeCache) =
+    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName, typeCache, true)
+  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer 
@@ -43,7 +44,8 @@ type JsonGenerationContext =
       JsonValueType = replacer.ToRuntime typeof<JsonValue>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
       Representation = replacer.ToRuntime representation
-      TypeCache = typeCache }
+      TypeCache = typeCache 
+      GenerateConstructors = generateConstructors }
   member x.MakeOptionType(typ:Type) = 
     (x.Replacer.ToRuntime typedefof<option<_>>).MakeGenericType typ
 
@@ -201,24 +203,26 @@ module JsonTypeBuilder =
     let properties, parameters = List.unzip members
     objectTy.AddMembers properties
 
-    let cultureStr = ctx.CultureStr
+    if ctx.GenerateConstructors then
 
-    if forCollection then
-        let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
-            let elements = Expr.NewArray(typeof<obj>, args |> List.map (fun a -> Expr.Coerce(a, typeof<obj>)))
-            let cultureStr = ctx.CultureStr
-            <@@ JsonRuntime.CreateArray(%%elements, cultureStr) @@>
-            |> ctx.Replacer.ToRuntime)
-        objectTy.AddMember ctor
-    else
-        for param in parameters do
-            let ctor = ProvidedConstructor([param], InvokeCode = fun (Singleton arg) -> 
-                let arg = Expr.Coerce(arg, typeof<obj>)
-                ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue((%%arg:obj), cultureStr) @@>)
+        let cultureStr = ctx.CultureStr
+
+        if forCollection then
+            let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
+                let elements = Expr.NewArray(typeof<obj>, args |> List.map (fun a -> Expr.Coerce(a, typeof<obj>)))
+                let cultureStr = ctx.CultureStr
+                <@@ JsonRuntime.CreateArray(%%elements, cultureStr) @@>
+                |> ctx.Replacer.ToRuntime)
             objectTy.AddMember ctor
+        else
+            for param in parameters do
+                let ctor = ProvidedConstructor([param], InvokeCode = fun (Singleton arg) -> 
+                    let arg = Expr.Coerce(arg, typeof<obj>)
+                    ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue((%%arg:obj), cultureStr) @@>)
+                objectTy.AddMember ctor
 
-        let defaultCtor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue(null :> obj, cultureStr) @@>)
-        objectTy.AddMember defaultCtor
+            let defaultCtor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue(null :> obj, cultureStr) @@>)
+            objectTy.AddMember defaultCtor
 
     objectTy
 
@@ -339,17 +343,19 @@ module JsonTypeBuilder =
         let names, properties, parameters = List.unzip3 members
         objectTy.AddMembers properties
 
-        let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
-            let properties = 
-                Expr.NewArray(typeof<string * obj>, 
-                              args 
-                              |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
-                                                                       Expr.Coerce(a, typeof<obj>) ]))
-            let cultureStr = ctx.CultureStr
-            <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
-            |> ctx.Replacer.ToRuntime)
+        if ctx.GenerateConstructors then
 
-        objectTy.AddMember ctor
+            let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
+                let properties = 
+                    Expr.NewArray(typeof<string * obj>, 
+                                  args 
+                                  |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
+                                                                           Expr.Coerce(a, typeof<obj>) ]))
+                let cultureStr = ctx.CultureStr
+                <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
+                |> ctx.Replacer.ToRuntime)
+
+            objectTy.AddMember ctor
 
         objectTy
 

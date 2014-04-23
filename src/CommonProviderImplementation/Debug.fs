@@ -131,7 +131,7 @@ module Debug =
                     | :? ProvidedTypeDefinition -> ""
                     | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
                     | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
-                    | t -> if not t.IsGenericParameter && t.Assembly = Assembly.GetExecutingAssembly() then " [DESIGNTIME]" else ""
+                    | t -> if not t.IsGenericParameter && t.Assembly.FullName.Contains "DesignTime" then " [DESIGNTIME]" else ""
 
                 if ignoreOutput then
                     ""
