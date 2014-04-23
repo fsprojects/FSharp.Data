@@ -75,7 +75,7 @@ type JsonValue =
                   sb.AppendFormat("\"{0}\":", k) |> ignore
                 else
                   sb.AppendFormat("\"{0}\": ", k) |> ignore
-            serialize sb (indentation + 2) v |> ignore
+                serialize sb (indentation + 2) v |> ignore
           newLine 0
           sb.Append "}"
       | Array elements -> 
