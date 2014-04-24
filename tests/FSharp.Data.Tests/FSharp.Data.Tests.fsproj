@@ -245,6 +245,9 @@
     <None Include="Data\topics.json" />
     <None Include="Data\Vindinium.json" />
     <None Include="Data\optionals.json" />
+    <None Include="Data\us_presidents_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>
