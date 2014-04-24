@@ -7,7 +7,7 @@
     <authors>@authors@</authors>
     <owners>@authors@</owners>
     <licenseUrl>http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md</licenseUrl>
-    <projectUrl>http://fsharp.github.com/FSharp.Data</projectUrl>
+    <projectUrl>http://fsharp.github.io/FSharp.Data</projectUrl>
     <iconUrl>https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
