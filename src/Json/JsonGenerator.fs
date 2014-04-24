@@ -393,3 +393,4 @@ module JsonTypeBuilder =
           ctx.JsonRuntimeType?TryGetValueByTypeTag (result.ConvertedTypeErased ctx) (jDoc, cultureStr, tagCode, result.ConverterFunc ctx))
 
     | InferedType.Json _ -> failwith "Json type not supported"
+    | InferedType.Constant _ -> failwith "Constants not supported here"

@@ -72,6 +72,9 @@
     <Compile Include="Xml\XmlInference.fs" />
     <Compile Include="Xml\XmlGenerator.fs" />
     <Compile Include="Xml\XmlProvider.fs" />
+    <Compile Include="Xsd\XsdRuntime.fs" />
+    <Compile Include="Xsd\XsdGenerator.fs" />
+    <Compile Include="Xsd\XsdProvider.fs" />
     <Compile Include="Csv\CsvRuntime.fs" />
     <Compile Include="Csv\CsvFile.fs" />
     <Compile Include="Csv\CsvExtensions.fs" />
