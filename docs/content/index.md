@@ -97,7 +97,7 @@ contribute [samples][samples] that can be turned into a documentation.
    then you can submit [an issue or feature request][issues] via Github or you can 
    send an email to the [F# open source][fsharp-oss] mailing list.
 
- * For more information about the library architecture, organization, how to debug, etc., see the [contributing to F# data](contributing.html) page.
+ * For more information about the library architecture, organization, how to debug, etc., see the [contributing to F# data][contributing] page.
 
   [source]: https://github.com/fsharp/FSharp.Data/zipball/master
   [compiled]: https://github.com/fsharp/FSharp.Data/zipball/release
@@ -105,4 +105,5 @@ contribute [samples][samples] that can be turned into a documentation.
   [gh]: https://github.com/fsharp/FSharp.Data
   [issues]: https://github.com/fsharp/FSharp.Data/issues
   [license]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
+  [contributing]: https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md
   [fsharp-oss]: http://groups.google.com/group/fsharp-opensource

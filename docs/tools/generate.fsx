@@ -74,7 +74,8 @@ let buildReference () =
   CleanDir (output @@ "reference")
   MetadataFormat.Generate
     ( referenceBinaries |> List.map ((@@) bin),
-      output @@ "reference", layoutRoots, 
+      output @@ "reference",
+      layoutRoots, 
       parameters = ("root", root)::info,
       sourceRepo = repo,
       sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
