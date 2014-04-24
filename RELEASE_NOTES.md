@@ -204,3 +204,4 @@
 #### 2.0.6 - Unreleased
 * Performance improvements.
 * Support reuse by other type providers projects like ApiaryProvider.
+* Fixed problems with HTTP requests not downloading fully.
