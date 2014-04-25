@@ -10,7 +10,7 @@ let website = "/FSharp.Data/ja"
 let info =
   [ "project-name", "F# Data"
     "project-author", "Tomas Petricek; Gustavo Guerra"
-    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase data. It also includes helpers for other data-related tasks."
+    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks."
     "project-github", "http://github.com/fsharp/FSharp.Data"
     "project-nuget", "https://nuget.org/packages/FSharp.Data" ]
 
@@ -73,7 +73,7 @@ let copyFiles () =
   CopyRecursive data (output @@ "data") true |> Log "Copying data files: "
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
-  CopyRecursive (content @@ "styles") (output @@ "content") true 
+  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
 
 // FSI evaluator will put images into 'output/images' and 
