@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
@@ -334,7 +335,7 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 
 <h2>Twitterのストリームをパースする</h2>
 
-<p>最後の例として、 <a href="http://dev.twitter.com/">Twitter API</a> から返される
+<p>次の例として、 <a href="http://dev.twitter.com/">Twitter API</a> から返される
 ツイートをパースする例を紹介しましょう。
 ツイートには非常に多種多様なデータが含まれているため、
 単に文字列を1つ指定するのではなく、入力 <strong>リスト</strong> を使って
@@ -373,13 +374,114 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 同じように <code>RetweetCount</code> と <code>Text</code> プロパティも値無しになることがあるため、
 上のコードは安全ではないことに注意してください。</p>
 
+<h2>GitHubのIssuesを取得および作成する</h2>
+
+<p>この例ではJSONを作成するだけでなく、それを実際に使用する方法を紹介します。
+まず FSharp.Data リポジトリのオープンされているIssuesのうちで
+直近の5つを取得してみましょう。</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs62', 117)" onmouseover="showTip(event, 'fs62', 117)" class="i">GitHub</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 118)" onmouseover="showTip(event, 'fs4', 118)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">github</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">repos</span><span class="s">/</span><span class="s">fsharp</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">/</span><span class="s">issues</span><span class="s">&quot;</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs63', 119)" onmouseover="showTip(event, 'fs63', 119)" class="i">topRecentlyUpdatedIssues</span> <span class="o">=</span> 
+    <span onmouseout="hideTip(event, 'fs62', 120)" onmouseover="showTip(event, 'fs62', 120)" class="i">GitHub</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 121)" onmouseover="showTip(event, 'fs23', 121)" class="i">GetSamples</span>()
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 122)" onmouseover="showTip(event, 'fs13', 122)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 123)" onmouseover="showTip(event, 'fs64', 123)" class="i">filter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs65', 124)" onmouseover="showTip(event, 'fs65', 124)" class="i">issue</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs65', 125)" onmouseover="showTip(event, 'fs65', 125)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs66', 126)" onmouseover="showTip(event, 'fs66', 126)" class="i">State</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">open</span><span class="s">&quot;</span>)
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 127)" onmouseover="showTip(event, 'fs13', 127)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 128)" onmouseover="showTip(event, 'fs67', 128)" class="i">sortBy</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs65', 129)" onmouseover="showTip(event, 'fs65', 129)" class="i">issue</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs68', 130)" onmouseover="showTip(event, 'fs68', 130)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 131)" onmouseover="showTip(event, 'fs69', 131)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 132)" onmouseover="showTip(event, 'fs70', 132)" class="i">Now</span> <span class="o">-</span> <span onmouseout="hideTip(event, 'fs65', 133)" onmouseover="showTip(event, 'fs65', 133)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 134)" onmouseover="showTip(event, 'fs71', 134)" class="i">UpdatedAt</span>)
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 135)" onmouseover="showTip(event, 'fs13', 135)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs72', 136)" onmouseover="showTip(event, 'fs72', 136)" class="i">truncate</span> <span class="n">5</span>
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs65', 137)" onmouseover="showTip(event, 'fs65', 137)" class="i">issue</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs63', 138)" onmouseover="showTip(event, 'fs63', 138)" class="i">topRecentlyUpdatedIssues</span> <span class="k">do</span>
+    <span onmouseout="hideTip(event, 'fs28', 139)" onmouseover="showTip(event, 'fs28', 139)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">#</span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs65', 140)" onmouseover="showTip(event, 'fs65', 140)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 141)" onmouseover="showTip(event, 'fs73', 141)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs65', 142)" onmouseover="showTip(event, 'fs65', 142)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 143)" onmouseover="showTip(event, 'fs74', 143)" class="i">Title</span></pre>
+</td>
+</tr>
+</table>
+
+<p>次に新しいIssueを作成してみます。
+GitHubのドキュメント http://developer.github.com/v3/issues/#create-an-issue
+を見てみると、以下のようなJSON値をポストすればいいことがわかります：</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[&lt;<span onmouseout="hideTip(event, 'fs75', 144)" onmouseover="showTip(event, 'fs75', 144)" class="i">Literal</span>&gt;]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs76', 145)" onmouseover="showTip(event, 'fs76', 145)" class="i">issueSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">{</span>
+<span class="s">  </span><span class="s">&quot;</span><span class="s">title</span><span class="s">&quot;</span><span class="s">:</span><span class="s"> </span><span class="s">&quot;</span><span class="s">Found</span><span class="s"> </span><span class="s">a</span><span class="s"> </span><span class="s">bug</span><span class="s">&quot;</span><span class="s">,</span>
+<span class="s">  </span><span class="s">&quot;</span><span class="s">body</span><span class="s">&quot;</span><span class="s">:</span><span class="s"> </span><span class="s">&quot;</span><span class="s">I&#39;m</span><span class="s"> </span><span class="s">having</span><span class="s"> </span><span class="s">a</span><span class="s"> </span><span class="s">problem</span><span class="s"> </span><span class="s">with</span><span class="s"> </span><span class="s">this</span><span class="s">.</span><span class="s">&quot;</span><span class="s">,</span>
+<span class="s">  </span><span class="s">&quot;</span><span class="s">assignee</span><span class="s">&quot;</span><span class="s">:</span><span class="s"> </span><span class="s">&quot;</span><span class="s">octocat</span><span class="s">&quot;</span><span class="s">,</span>
+<span class="s">  </span><span class="s">&quot;</span><span class="s">milestone</span><span class="s">&quot;</span><span class="s">:</span><span class="s"> </span><span class="s">1</span><span class="s">,</span>
+<span class="s">  </span><span class="s">&quot;</span><span class="s">labels</span><span class="s">&quot;</span><span class="s">:</span><span class="s"> </span><span class="s">[</span>
+<span class="s">    </span><span class="s">&quot;</span><span class="s">Label1</span><span class="s">&quot;</span><span class="s">,</span>
+<span class="s">    </span><span class="s">&quot;</span><span class="s">Label2</span><span class="s">&quot;</span>
+<span class="s">  </span><span class="s">]</span>
+<span class="s">}</span>
+<span class="s">&quot;&quot;&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>このJSONデータは先ほどAPIを呼び出して取得した
+Issueそれぞれに対応するものとは異なります。
+そのため、このサンプルデータを元にして新しい型を定義し、
+そのインスタンスを作成してリクエストをPOSTします：</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs77', 146)" onmouseover="showTip(event, 'fs77', 146)" class="i">GitHubIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 147)" onmouseover="showTip(event, 'fs4', 147)" class="i">JsonProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs76', 148)" onmouseover="showTip(event, 'fs76', 148)" class="i">issueSample</span>, <span class="i">RootName</span><span class="o">=</span><span class="s">&quot;</span><span class="s">issue</span><span class="s">&quot;</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs78', 149)" onmouseover="showTip(event, 'fs78', 149)" class="i">newIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs77', 150)" onmouseover="showTip(event, 'fs77', 150)" class="i">GitHubIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs79', 151)" onmouseover="showTip(event, 'fs79', 151)" class="i">Issue</span>(<span class="s">&quot;</span><span class="s">Test</span><span class="s"> </span><span class="s">issue</span><span class="s">&quot;</span>,
+                                 <span class="s">&quot;</span><span class="s">This</span><span class="s"> </span><span class="s">is</span><span class="s"> </span><span class="s">a</span><span class="s"> </span><span class="s">test</span><span class="s"> </span><span class="s">issue</span><span class="s"> </span><span class="s">created</span><span class="s"> </span><span class="s">in</span><span class="s"> </span><span class="s">F</span><span class="s">#</span><span class="s"> </span><span class="s">Data</span><span class="s"> </span><span class="s">documentation</span><span class="s">&quot;</span>, 
+                                 <span class="i">assignee</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">&quot;</span>,
+                                 <span class="i">labels</span> <span class="o">=</span> [| |], 
+                                 <span class="i">milestone</span> <span class="o">=</span> <span class="n">0</span>)
+<span onmouseout="hideTip(event, 'fs78', 152)" onmouseover="showTip(event, 'fs78', 152)" class="i">newIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 153)" onmouseover="showTip(event, 'fs80', 153)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 154)" onmouseover="showTip(event, 'fs81', 154)" class="i">Request</span> <span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">github</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">repos</span><span class="s">/</span><span class="s">fsharp</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">/</span><span class="s">issues</span><span class="s">&quot;</span></pre>
+</td>
+</tr>
+</table>
+
 <h2>関連する記事</h2>
 
 <ul>
-<li><a href="../fsharpdata.html">F# Data: 型プロバイダー</a> -
-<code>FSharp.Data</code> パッケージ内の型プロバイダーについての説明があります。</li>
 <li><a href="JsonValue.html">F# Data: JSON パーサーおよびリーダー</a> -
 JSONの値を動的に処理する方法についての説明があります。</li>
+<li><a href="../../reference/fsharp-data-jsonprovider.html">API リファレンス: JsonProvider 型プロバイダー</a></li>
+<li><a href="../../reference/fsharp-data-jsonvalue.html">API リファレンス: JsonValue 判別共用体</a></li>
 </ul>
 
 <div class="tip" id="fs1">namespace FSharp</div>
@@ -443,6 +545,26 @@ JSONの値を動的に処理する方法についての説明があります。<
 <div class="tip" id="fs59">property Option.Value: int</div>
 <div class="tip" id="fs60">property JsonProvider&lt;...&gt;.Root.Text: Option&lt;string&gt;</div>
 <div class="tip" id="fs61">property Option.Value: string</div>
+<div class="tip" id="fs62">type GitHub = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.GitHub</div>
+<div class="tip" id="fs63">val topRecentlyUpdatedIssues : seq&lt;JsonProvider&lt;...&gt;.Root&gt;<br /><br />Full name: JsonProvider.topRecentlyUpdatedIssues</div>
+<div class="tip" id="fs64">val filter : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.filter</div>
+<div class="tip" id="fs65">val issue : JsonProvider&lt;...&gt;.Root</div>
+<div class="tip" id="fs66">property JsonProvider&lt;...&gt;.Root.State: string</div>
+<div class="tip" id="fs67">val sortBy : projection:(&#39;T -&gt; &#39;Key) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.sortBy</div>
+<div class="tip" id="fs68">namespace System</div>
+<div class="tip" id="fs69">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.DateTime<br /><br />--------------------<br />System.DateTime()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(ticks: int64) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(ticks: int64, kind: System.DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, calendar: System.Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: System.DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: System.Globalization.Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />System.DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: System.DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs70">property System.DateTime.Now: System.DateTime</div>
+<div class="tip" id="fs71">property JsonProvider&lt;...&gt;.Root.UpdatedAt: System.DateTime</div>
+<div class="tip" id="fs72">val truncate : count:int -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.truncate</div>
+<div class="tip" id="fs73">property JsonProvider&lt;...&gt;.Root.Number: int</div>
+<div class="tip" id="fs74">property JsonProvider&lt;...&gt;.Root.Title: string</div>
+<div class="tip" id="fs75">Multiple items<br />type LiteralAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : unit -&gt; LiteralAttribute<br /><br />Full name: Microsoft.FSharp.Core.LiteralAttribute<br /><br />--------------------<br />new : unit -&gt; LiteralAttribute</div>
+<div class="tip" id="fs76">val issueSample : string<br /><br />Full name: JsonProvider.issueSample</div>
+<div class="tip" id="fs77">type GitHubIssue = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.GitHubIssue</div>
+<div class="tip" id="fs78">val newIssue : JsonProvider&lt;...&gt;.Issue<br /><br />Full name: JsonProvider.newIssue</div>
+<div class="tip" id="fs79">type Issue =<br />&#160;&#160;inherit IJsonDocument<br />&#160;&#160;new : title: string * body: string * assignee: string * milestone: int * labels: string [] -&gt; Issue<br />&#160;&#160;member Assignee : string<br />&#160;&#160;member Body : string<br />&#160;&#160;member JsonValue : JsonValue<br />&#160;&#160;member Labels : string []<br />&#160;&#160;member Milestone : int<br />&#160;&#160;member Path : string<br />&#160;&#160;member Title : string<br /><br />Full name: FSharp.Data.JsonProvider,Sample=&quot;<br />{<br />&#160;&#160;\&quot;title\&quot;: \&quot;Found a bug\&quot;,<br />&#160;&#160;\&quot;body\&quot;: \&quot;I&#39;m having a problem with this.\&quot;,<br />&#160;&#160;\&quot;assignee\&quot;: \&quot;octocat\&quot;,<br />&#160;&#160;\&quot;milestone\&quot;: 1,<br />&#160;&#160;\&quot;labels\&quot;: [<br />&#160;&#160;&#160;&#160;\&quot;Label1\&quot;,<br />&#160;&#160;&#160;&#160;\&quot;Label2\&quot;<br />&#160;&#160;]<br />}<br />&quot;,RootName=&quot;issue&quot;.Issue</div>
+<div class="tip" id="fs80">property Runtime.IJsonDocument.JsonValue: JsonValue</div>
+<div class="tip" id="fs81">member JsonValue.Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse</div>
 
         </div>
         <div class="span3">
@@ -463,13 +585,13 @@ JSONの値を動的に処理する方法についての説明があります。<
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
             <li><span>
                 <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
-                (<a href="/FSharp.Data/ja/../contributing.html">En</a>)
+                (<a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">En</a>)
                 </span></li>
             
             <li class="nav-header">F# Data ライブラリ</li>
             <li><span>
-                <a href="/FSharp.Data/ja/fsharpdata.html">はじめに</a>
-                (<a href="/FSharp.Data/ja/../fsharpdata.html">En</a>)
+                <a href="/FSharp.Data/ja/index.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../index.html">En</a>)
                 </span></li>
             <li class="divider"></li>
             <li><span>
@@ -510,6 +632,11 @@ JSONの値を動的に処理する方法についての説明があります。<
             <li><span>
                 <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
                 (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonAnonymizer.html">JSONの匿名化</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonAnonymizer.html">En</a>)
                 </span></li>
 
             <li class="nav-header">リファレンス</li>

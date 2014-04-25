@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>F# Data: JSONの匿名化
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/fsdata.css" />
+    <script type="text/javascript" src="/FSharp.Data/ja/../content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FSharp.Data/ja/index.html">F# Data</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>F# Data: JSONの匿名化</h1>
+
+<p>このチュートリアルではJSONドキュメント
+( <a href="../library/JsonValue.html">JSONパーサーの記事</a> で説明した
+<code>JsonValue</code> 型で表現されるドキュメント)
+の匿名化機能を実装する方法を紹介します。
+この機能はF# Dataライブラリに備わっている機能ではありませんが、
+JSONドキュメントを再帰的に処理するだけで非常に簡単に実装できます。</p>
+
+<p>JSON匿名化機能をコード内で利用したい場合には、
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/docs/content/tutorials/JsonAnonymizer.fsx">GitHubにあるソースコード</a> をコピーして
+プロジェクトに加えるだけです。
+この機能を頻繁に利用するようになり、F# Dataライブラリに取り込んでもらいたい
+ということであれば <a href="https://github.com/fsharp/FSharp.Data/issues">機能のリクエスト</a> を送信してください。</p>
+
+<p><strong>警告</strong>: この機能は単なるサンプルであるため、重要なデータを処理させないでください。</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+<span class="l">19: </span>
+<span class="l">20: </span>
+<span class="l">21: </span>
+<span class="l">22: </span>
+<span class="l">23: </span>
+<span class="l">24: </span>
+<span class="l">25: </span>
+<span class="l">26: </span>
+<span class="l">27: </span>
+<span class="l">28: </span>
+<span class="l">29: </span>
+<span class="l">30: </span>
+<span class="l">31: </span>
+<span class="l">32: </span>
+<span class="l">33: </span>
+<span class="l">34: </span>
+<span class="l">35: </span>
+<span class="l">36: </span>
+<span class="l">37: </span>
+<span class="l">38: </span>
+<span class="l">39: </span>
+<span class="l">40: </span>
+<span class="l">41: </span>
+<span class="l">42: </span>
+<span class="l">43: </span>
+<span class="l">44: </span>
+<span class="l">45: </span>
+<span class="l">46: </span>
+<span class="l">47: </span>
+<span class="l">48: </span>
+<span class="l">49: </span>
+<span class="l">50: </span>
+<span class="l">51: </span>
+<span class="l">52: </span>
+<span class="l">53: </span>
+<span class="l">54: </span>
+<span class="l">55: </span>
+<span class="l">56: </span>
+<span class="l">57: </span>
+<span class="l">58: </span>
+<span class="l">59: </span>
+<span class="l">60: </span>
+<span class="l">61: </span>
+<span class="l">62: </span>
+<span class="l">63: </span>
+<span class="l">64: </span>
+<span class="l">65: </span>
+<span class="l">66: </span>
+<span class="l">67: </span>
+<span class="l">68: </span>
+<span class="l">69: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">System</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 2)" onmouseover="showTip(event, 'fs1', 2)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 3)" onmouseover="showTip(event, 'fs2', 3)" class="i">Globalization</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">Data</span>
+
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">JsonAnonymizer</span>(<span class="o">?</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">propertiesToSkip</span>, <span class="o">?</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">valuesToSkip</span>) <span class="o">=</span> 
+
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="i">propertiesToSkip</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="i">Set</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">ofList</span> (<span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">defaultArg</span> <span onmouseout="hideTip(event, 'fs8', 13)" onmouseover="showTip(event, 'fs8', 13)" class="i">propertiesToSkip</span> [])
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="i">valuesToSkip</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="i">Set</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 16)" onmouseover="showTip(event, 'fs10', 16)" class="i">ofList</span> (<span onmouseout="hideTip(event, 'fs11', 17)" onmouseover="showTip(event, 'fs11', 17)" class="i">defaultArg</span> <span onmouseout="hideTip(event, 'fs12', 18)" onmouseover="showTip(event, 'fs12', 18)" class="i">valuesToSkip</span> [])
+
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 19)" onmouseover="showTip(event, 'fs13', 19)" class="i">rng</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs14', 20)" onmouseover="showTip(event, 'fs14', 20)" class="i">Random</span>()
+
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="i">digits</span> <span class="o">=</span> [| <span class="s">&#39;0&#39;</span> <span class="o">..</span> <span class="s">&#39;9&#39;</span> |]
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="i">lowerLetters</span> <span class="o">=</span> [| <span class="s">&#39;a&#39;</span> <span class="o">..</span> <span class="s">&#39;z&#39;</span> |]
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 23)" onmouseover="showTip(event, 'fs17', 23)" class="i">upperLetters</span> <span class="o">=</span> [| <span class="s">&#39;A&#39;</span> <span class="o">..</span> <span class="s">&#39;Z&#39;</span> |]
+
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="i">getRandomChar</span> (<span onmouseout="hideTip(event, 'fs19', 25)" onmouseover="showTip(event, 'fs19', 25)" class="i">c</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs20', 26)" onmouseover="showTip(event, 'fs20', 26)" class="i">char</span>) <span class="o">=</span>
+        <span class="k">if</span> <span onmouseout="hideTip(event, 'fs21', 27)" onmouseover="showTip(event, 'fs21', 27)" class="i">Char</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 28)" onmouseover="showTip(event, 'fs22', 28)" class="i">IsDigit</span> <span onmouseout="hideTip(event, 'fs19', 29)" onmouseover="showTip(event, 'fs19', 29)" class="i">c</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs15', 30)" onmouseover="showTip(event, 'fs15', 30)" class="i">digits</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs13', 31)" onmouseover="showTip(event, 'fs13', 31)" class="i">rng</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 32)" onmouseover="showTip(event, 'fs23', 32)" class="i">Next</span>(<span class="n">10</span>)]
+        <span class="k">elif</span> <span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">Char</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 34)" onmouseover="showTip(event, 'fs24', 34)" class="i">IsLetter</span> <span onmouseout="hideTip(event, 'fs19', 35)" onmouseover="showTip(event, 'fs19', 35)" class="i">c</span> <span class="k">then</span>
+            <span class="k">if</span> <span onmouseout="hideTip(event, 'fs21', 36)" onmouseover="showTip(event, 'fs21', 36)" class="i">Char</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 37)" onmouseover="showTip(event, 'fs25', 37)" class="i">IsLower</span> <span onmouseout="hideTip(event, 'fs19', 38)" onmouseover="showTip(event, 'fs19', 38)" class="i">c</span>
+            <span class="k">then</span> <span onmouseout="hideTip(event, 'fs16', 39)" onmouseover="showTip(event, 'fs16', 39)" class="i">lowerLetters</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs13', 40)" onmouseover="showTip(event, 'fs13', 40)" class="i">rng</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="i">Next</span>(<span class="n">26</span>)]
+            <span class="k">else</span> <span onmouseout="hideTip(event, 'fs17', 42)" onmouseover="showTip(event, 'fs17', 42)" class="i">upperLetters</span><span class="o">.</span>[<span onmouseout="hideTip(event, 'fs13', 43)" onmouseover="showTip(event, 'fs13', 43)" class="i">rng</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 44)" onmouseover="showTip(event, 'fs23', 44)" class="i">Next</span>(<span class="n">26</span>)]
+        <span class="k">else</span> <span onmouseout="hideTip(event, 'fs19', 45)" onmouseover="showTip(event, 'fs19', 45)" class="i">c</span>
+
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs26', 46)" onmouseover="showTip(event, 'fs26', 46)" class="i">randomize</span> (<span onmouseout="hideTip(event, 'fs27', 47)" onmouseover="showTip(event, 'fs27', 47)" class="i">str</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs28', 48)" onmouseover="showTip(event, 'fs28', 48)" class="i">string</span>) <span class="o">=</span>
+        <span onmouseout="hideTip(event, 'fs29', 49)" onmouseover="showTip(event, 'fs29', 49)" class="i">String</span>(<span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="i">str</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 51)" onmouseover="showTip(event, 'fs30', 51)" class="i">ToCharArray</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 52)" onmouseover="showTip(event, 'fs31', 52)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 53)" onmouseover="showTip(event, 'fs32', 53)" class="i">map</span> <span onmouseout="hideTip(event, 'fs18', 54)" onmouseover="showTip(event, 'fs18', 54)" class="i">getRandomChar</span>)
+
+    <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs33', 55)" onmouseover="showTip(event, 'fs33', 55)" class="i">anonymize</span> <span onmouseout="hideTip(event, 'fs34', 56)" onmouseover="showTip(event, 'fs34', 56)" class="i">json</span> <span class="o">=</span>
+        <span class="k">match</span> <span onmouseout="hideTip(event, 'fs34', 57)" onmouseover="showTip(event, 'fs34', 57)" class="i">json</span> <span class="k">with</span>
+        | <span onmouseout="hideTip(event, 'fs35', 58)" onmouseover="showTip(event, 'fs35', 58)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 59)" onmouseover="showTip(event, 'fs36', 59)" class="i">String</span> <span onmouseout="hideTip(event, 'fs37', 60)" onmouseover="showTip(event, 'fs37', 60)" class="i">s</span> <span class="k">when</span> <span onmouseout="hideTip(event, 'fs12', 61)" onmouseover="showTip(event, 'fs12', 61)" class="i">valuesToSkip</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 62)" onmouseover="showTip(event, 'fs38', 62)" class="i">Contains</span> <span onmouseout="hideTip(event, 'fs37', 63)" onmouseover="showTip(event, 'fs37', 63)" class="i">s</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs34', 64)" onmouseover="showTip(event, 'fs34', 64)" class="i">json</span>
+        | <span onmouseout="hideTip(event, 'fs35', 65)" onmouseover="showTip(event, 'fs35', 65)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 66)" onmouseover="showTip(event, 'fs36', 66)" class="i">String</span> <span onmouseout="hideTip(event, 'fs37', 67)" onmouseover="showTip(event, 'fs37', 67)" class="i">s</span> <span class="k">-&gt;</span>
+            <span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 68)" onmouseover="showTip(event, 'fs39', 68)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 69)" onmouseover="showTip(event, 'fs40', 69)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 70)" onmouseover="showTip(event, 'fs41', 70)" class="i">StructuralInference</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 71)" onmouseover="showTip(event, 'fs42', 71)" class="i">inferPrimitiveType</span> <span onmouseout="hideTip(event, 'fs43', 72)" onmouseover="showTip(event, 'fs43', 72)" class="i">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 73)" onmouseover="showTip(event, 'fs44', 73)" class="i">InvariantCulture</span> <span onmouseout="hideTip(event, 'fs37', 74)" onmouseover="showTip(event, 'fs37', 74)" class="i">s</span>
+            <span class="k">if</span> <span onmouseout="hideTip(event, 'fs39', 75)" onmouseover="showTip(event, 'fs39', 75)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 76)" onmouseover="showTip(event, 'fs45', 76)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs46', 77)" onmouseover="showTip(event, 'fs46', 77)" class="i">Guid</span><span class="o">&gt;</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs46', 78)" onmouseover="showTip(event, 'fs46', 78)" class="i">Guid</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 79)" onmouseover="showTip(event, 'fs47', 79)" class="i">NewGuid</span>()<span class="o">.</span><span class="i">ToString</span>()
+            <span class="k">elif</span> <span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 81)" onmouseover="showTip(event, 'fs45', 81)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs40', 82)" onmouseover="showTip(event, 'fs40', 82)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 83)" onmouseover="showTip(event, 'fs48', 83)" class="i">StructuralTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 84)" onmouseover="showTip(event, 'fs49', 84)" class="i">Bit0</span><span class="o">&gt;</span> <span class="o">||</span> <span onmouseout="hideTip(event, 'fs39', 85)" onmouseover="showTip(event, 'fs39', 85)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 86)" onmouseover="showTip(event, 'fs45', 86)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs40', 87)" onmouseover="showTip(event, 'fs40', 87)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 88)" onmouseover="showTip(event, 'fs48', 88)" class="i">StructuralTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 89)" onmouseover="showTip(event, 'fs50', 89)" class="i">Bit1</span><span class="o">&gt;</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs37', 90)" onmouseover="showTip(event, 'fs37', 90)" class="i">s</span>
+            <span class="k">elif</span> <span onmouseout="hideTip(event, 'fs39', 91)" onmouseover="showTip(event, 'fs39', 91)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 92)" onmouseover="showTip(event, 'fs45', 92)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs51', 93)" onmouseover="showTip(event, 'fs51', 93)" class="i">DateTime</span><span class="o">&gt;</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs37', 94)" onmouseover="showTip(event, 'fs37', 94)" class="i">s</span>
+            <span class="k">else</span> 
+                <span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 95)" onmouseover="showTip(event, 'fs52', 95)" class="i">prefix</span>, <span onmouseout="hideTip(event, 'fs37', 96)" onmouseover="showTip(event, 'fs37', 96)" class="i">s</span> <span class="o">=</span>
+                    <span class="k">if</span> <span onmouseout="hideTip(event, 'fs37', 97)" onmouseover="showTip(event, 'fs37', 97)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 98)" onmouseover="showTip(event, 'fs53', 98)" class="i">StartsWith</span> <span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span> <span class="k">then</span> <span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs37', 99)" onmouseover="showTip(event, 'fs37', 99)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 100)" onmouseover="showTip(event, 'fs54', 100)" class="i">Substring</span>(<span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span><span class="o">.</span><span class="i">Length</span>)
+                    <span class="k">elif</span> <span onmouseout="hideTip(event, 'fs37', 101)" onmouseover="showTip(event, 'fs37', 101)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 102)" onmouseover="showTip(event, 'fs53', 102)" class="i">StartsWith</span> <span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span> <span class="k">then</span> <span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs37', 103)" onmouseover="showTip(event, 'fs37', 103)" class="i">s</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 104)" onmouseover="showTip(event, 'fs54', 104)" class="i">Substring</span>(<span class="s">&quot;</span><span class="s">https</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">&quot;</span><span class="o">.</span><span class="i">Length</span>)
+                    <span class="k">else</span> <span class="s">&quot;</span><span class="s">&quot;</span>, <span onmouseout="hideTip(event, 'fs37', 105)" onmouseover="showTip(event, 'fs37', 105)" class="i">s</span>
+                <span onmouseout="hideTip(event, 'fs52', 106)" onmouseover="showTip(event, 'fs52', 106)" class="i">prefix</span> <span class="o">+</span> <span onmouseout="hideTip(event, 'fs26', 107)" onmouseover="showTip(event, 'fs26', 107)" class="i">randomize</span> <span onmouseout="hideTip(event, 'fs37', 108)" onmouseover="showTip(event, 'fs37', 108)" class="i">s</span>
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 109)" onmouseover="showTip(event, 'fs35', 109)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs36', 110)" onmouseover="showTip(event, 'fs36', 110)" class="i">String</span>
+        | <span onmouseout="hideTip(event, 'fs35', 111)" onmouseover="showTip(event, 'fs35', 111)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 112)" onmouseover="showTip(event, 'fs55', 112)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs56', 113)" onmouseover="showTip(event, 'fs56', 113)" class="i">d</span> <span class="k">-&gt;</span> 
+            <span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 114)" onmouseover="showTip(event, 'fs39', 114)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs40', 115)" onmouseover="showTip(event, 'fs40', 115)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 116)" onmouseover="showTip(event, 'fs41', 116)" class="i">StructuralInference</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 117)" onmouseover="showTip(event, 'fs42', 117)" class="i">inferPrimitiveType</span> <span onmouseout="hideTip(event, 'fs43', 118)" onmouseover="showTip(event, 'fs43', 118)" class="i">CultureInfo</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 119)" onmouseover="showTip(event, 'fs44', 119)" class="i">InvariantCulture</span> (<span onmouseout="hideTip(event, 'fs56', 120)" onmouseover="showTip(event, 'fs56', 120)" class="i">d</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 121)" onmouseover="showTip(event, 'fs57', 121)" class="i">ToString</span>())
+            <span class="k">if</span> <span onmouseout="hideTip(event, 'fs39', 122)" onmouseover="showTip(event, 'fs39', 122)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 123)" onmouseover="showTip(event, 'fs45', 123)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs40', 124)" onmouseover="showTip(event, 'fs40', 124)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 125)" onmouseover="showTip(event, 'fs48', 125)" class="i">StructuralTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 126)" onmouseover="showTip(event, 'fs49', 126)" class="i">Bit0</span><span class="o">&gt;</span> <span class="o">||</span> <span onmouseout="hideTip(event, 'fs39', 127)" onmouseover="showTip(event, 'fs39', 127)" class="i">typ</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 128)" onmouseover="showTip(event, 'fs45', 128)" class="i">typeof</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs40', 129)" onmouseover="showTip(event, 'fs40', 129)" class="i">Runtime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 130)" onmouseover="showTip(event, 'fs48', 130)" class="i">StructuralTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 131)" onmouseover="showTip(event, 'fs50', 131)" class="i">Bit1</span><span class="o">&gt;</span>
+            <span class="k">then</span> <span onmouseout="hideTip(event, 'fs34', 132)" onmouseover="showTip(event, 'fs34', 132)" class="i">json</span>
+            <span class="k">else</span> <span onmouseout="hideTip(event, 'fs56', 133)" onmouseover="showTip(event, 'fs56', 133)" class="i">d</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 134)" onmouseover="showTip(event, 'fs57', 134)" class="i">ToString</span>() <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 135)" onmouseover="showTip(event, 'fs26', 135)" class="i">randomize</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs58', 136)" onmouseover="showTip(event, 'fs58', 136)" class="i">Decimal</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 137)" onmouseover="showTip(event, 'fs59', 137)" class="i">Parse</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 138)" onmouseover="showTip(event, 'fs35', 138)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 139)" onmouseover="showTip(event, 'fs55', 139)" class="i">Number</span>
+        | <span onmouseout="hideTip(event, 'fs35', 140)" onmouseover="showTip(event, 'fs35', 140)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 141)" onmouseover="showTip(event, 'fs60', 141)" class="i">Float</span> <span onmouseout="hideTip(event, 'fs61', 142)" onmouseover="showTip(event, 'fs61', 142)" class="i">f</span> <span class="k">-&gt;</span> 
+            <span onmouseout="hideTip(event, 'fs61', 143)" onmouseover="showTip(event, 'fs61', 143)" class="i">f</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 144)" onmouseover="showTip(event, 'fs62', 144)" class="i">ToString</span>()
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 145)" onmouseover="showTip(event, 'fs26', 145)" class="i">randomize</span> 
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs63', 146)" onmouseover="showTip(event, 'fs63', 146)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 147)" onmouseover="showTip(event, 'fs64', 147)" class="i">Parse</span> 
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 148)" onmouseover="showTip(event, 'fs35', 148)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 149)" onmouseover="showTip(event, 'fs60', 149)" class="i">Float</span>
+        | <span onmouseout="hideTip(event, 'fs35', 150)" onmouseover="showTip(event, 'fs35', 150)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 151)" onmouseover="showTip(event, 'fs65', 151)" class="i">Boolean</span> _  | <span onmouseout="hideTip(event, 'fs35', 152)" onmouseover="showTip(event, 'fs35', 152)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs66', 153)" onmouseover="showTip(event, 'fs66', 153)" class="i">Null</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs34', 154)" onmouseover="showTip(event, 'fs34', 154)" class="i">json</span>
+        | <span onmouseout="hideTip(event, 'fs35', 155)" onmouseover="showTip(event, 'fs35', 155)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 156)" onmouseover="showTip(event, 'fs67', 156)" class="i">Record</span> <span onmouseout="hideTip(event, 'fs68', 157)" onmouseover="showTip(event, 'fs68', 157)" class="i">props</span> <span class="k">-&gt;</span> 
+            <span onmouseout="hideTip(event, 'fs68', 158)" onmouseover="showTip(event, 'fs68', 158)" class="i">props</span> 
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 159)" onmouseover="showTip(event, 'fs31', 159)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 160)" onmouseover="showTip(event, 'fs32', 160)" class="i">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs69', 161)" onmouseover="showTip(event, 'fs69', 161)" class="i">key</span>, <span onmouseout="hideTip(event, 'fs70', 162)" onmouseover="showTip(event, 'fs70', 162)" class="i">value</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs69', 163)" onmouseover="showTip(event, 'fs69', 163)" class="i">key</span>, <span class="k">if</span> <span onmouseout="hideTip(event, 'fs8', 164)" onmouseover="showTip(event, 'fs8', 164)" class="i">propertiesToSkip</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 165)" onmouseover="showTip(event, 'fs38', 165)" class="i">Contains</span> <span onmouseout="hideTip(event, 'fs69', 166)" onmouseover="showTip(event, 'fs69', 166)" class="i">key</span> <span class="k">then</span> <span onmouseout="hideTip(event, 'fs70', 167)" onmouseover="showTip(event, 'fs70', 167)" class="i">value</span> <span class="k">else</span> <span onmouseout="hideTip(event, 'fs33', 168)" onmouseover="showTip(event, 'fs33', 168)" class="i">anonymize</span> <span onmouseout="hideTip(event, 'fs70', 169)" onmouseover="showTip(event, 'fs70', 169)" class="i">value</span>)
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 170)" onmouseover="showTip(event, 'fs35', 170)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 171)" onmouseover="showTip(event, 'fs67', 171)" class="i">Record</span>
+        | <span onmouseout="hideTip(event, 'fs35', 172)" onmouseover="showTip(event, 'fs35', 172)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 173)" onmouseover="showTip(event, 'fs71', 173)" class="i">Array</span> <span onmouseout="hideTip(event, 'fs72', 174)" onmouseover="showTip(event, 'fs72', 174)" class="i">array</span> <span class="k">-&gt;</span> 
+            <span onmouseout="hideTip(event, 'fs72', 175)" onmouseover="showTip(event, 'fs72', 175)" class="i">array</span> 
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 176)" onmouseover="showTip(event, 'fs31', 176)" class="i">Array</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 177)" onmouseover="showTip(event, 'fs32', 177)" class="i">map</span> <span onmouseout="hideTip(event, 'fs33', 178)" onmouseover="showTip(event, 'fs33', 178)" class="i">anonymize</span> 
+            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs35', 179)" onmouseover="showTip(event, 'fs35', 179)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 180)" onmouseover="showTip(event, 'fs71', 180)" class="i">Array</span>
+
+    <span class="k">member</span> <span class="i">__</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 181)" onmouseover="showTip(event, 'fs73', 181)" class="i">Anonymize</span> <span onmouseout="hideTip(event, 'fs34', 182)" onmouseover="showTip(event, 'fs34', 182)" class="i">json</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs33', 183)" onmouseover="showTip(event, 'fs33', 183)" class="i">anonymize</span> <span onmouseout="hideTip(event, 'fs34', 184)" onmouseover="showTip(event, 'fs34', 184)" class="i">json</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs74', 185)" onmouseover="showTip(event, 'fs74', 185)" class="i">json</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs35', 186)" onmouseover="showTip(event, 'fs35', 186)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs75', 187)" onmouseover="showTip(event, 'fs75', 187)" class="i">Load</span> (<span class="k">__SOURCE_DIRECTORY__</span> <span class="o">+</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">TwitterStream</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>)
+<span onmouseout="hideTip(event, 'fs76', 188)" onmouseover="showTip(event, 'fs76', 188)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">O</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs74', 189)" onmouseover="showTip(event, 'fs74', 189)" class="i">json</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs77', 190)" onmouseover="showTip(event, 'fs77', 190)" class="i">anonymizedJson</span> <span class="o">=</span> (<span onmouseout="hideTip(event, 'fs5', 191)" onmouseover="showTip(event, 'fs5', 191)" class="i">JsonAnonymizer</span> [<span class="s">&quot;</span><span class="s">lang</span><span class="s">&quot;</span>])<span class="o">.</span><span class="i">Anonymize</span> <span onmouseout="hideTip(event, 'fs74', 192)" onmouseover="showTip(event, 'fs74', 192)" class="i">json</span>
+<span onmouseout="hideTip(event, 'fs76', 193)" onmouseover="showTip(event, 'fs76', 193)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">O</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs77', 194)" onmouseover="showTip(event, 'fs77', 194)" class="i">anonymizedJson</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>関連する記事</h2>
+
+<ul>
+<li><a href="../library/JsonValue.html">F# Data: JSON パーサーおよびリーダー</a> -
+JSONの値を動的に処理する方法についての説明があります。</li>
+<li><a href="../library/JsonProvider.html">F# Data: JSON 型プロバイダー</a> -
+型安全な方法でJSONデータにアクセスする機能を持った
+F# 型プロバイダーについて説明しています。</li>
+</ul>
+
+<div class="tip" id="fs1">namespace System</div>
+<div class="tip" id="fs2">namespace System.Globalization</div>
+<div class="tip" id="fs3">namespace FSharp</div>
+<div class="tip" id="fs4">namespace FSharp.Data</div>
+<div class="tip" id="fs5">Multiple items<br />type JsonAnonymizer =<br />&#160;&#160;new : ?propertiesToSkip:string list * ?valuesToSkip:string list -&gt; JsonAnonymizer<br />&#160;&#160;member Anonymize : json:JsonValue -&gt; JsonValue<br /><br />Full name: JsonAnonymizer.JsonAnonymizer<br /><br />--------------------<br />new : ?propertiesToSkip:string list * ?valuesToSkip:string list -&gt; JsonAnonymizer</div>
+<div class="tip" id="fs6">val propertiesToSkip : string list option</div>
+<div class="tip" id="fs7">val valuesToSkip : string list option</div>
+<div class="tip" id="fs8">val propertiesToSkip : Set&lt;string&gt;</div>
+<div class="tip" id="fs9">Multiple items<br />module Set<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type Set&lt;&#39;T (requires comparison)&gt; =<br />&#160;&#160;interface IComparable<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IEnumerable&lt;&#39;T&gt;<br />&#160;&#160;interface ICollection&lt;&#39;T&gt;<br />&#160;&#160;new : elements:seq&lt;&#39;T&gt; -&gt; Set&lt;&#39;T&gt;<br />&#160;&#160;member Add : value:&#39;T -&gt; Set&lt;&#39;T&gt;<br />&#160;&#160;member Contains : value:&#39;T -&gt; bool<br />&#160;&#160;override Equals : obj -&gt; bool<br />&#160;&#160;member IsProperSubsetOf : otherSet:Set&lt;&#39;T&gt; -&gt; bool<br />&#160;&#160;member IsProperSupersetOf : otherSet:Set&lt;&#39;T&gt; -&gt; bool<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Collections.Set&lt;_&gt;<br /><br />--------------------<br />new : elements:seq&lt;&#39;T&gt; -&gt; Set&lt;&#39;T&gt;</div>
+<div class="tip" id="fs10">val ofList : elements:&#39;T list -&gt; Set&lt;&#39;T&gt; (requires comparison)<br /><br />Full name: Microsoft.FSharp.Collections.Set.ofList</div>
+<div class="tip" id="fs11">val defaultArg : arg:&#39;T option -&gt; defaultValue:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.defaultArg</div>
+<div class="tip" id="fs12">val valuesToSkip : Set&lt;string&gt;</div>
+<div class="tip" id="fs13">val rng : Random</div>
+<div class="tip" id="fs14">Multiple items<br />type Random =<br />&#160;&#160;new : unit -&gt; Random + 1 overload<br />&#160;&#160;member Next : unit -&gt; int + 2 overloads<br />&#160;&#160;member NextBytes : buffer:byte[] -&gt; unit<br />&#160;&#160;member NextDouble : unit -&gt; float<br /><br />Full name: System.Random<br /><br />--------------------<br />Random() : unit<br />Random(Seed: int) : unit</div>
+<div class="tip" id="fs15">val digits : char []</div>
+<div class="tip" id="fs16">val lowerLetters : char []</div>
+<div class="tip" id="fs17">val upperLetters : char []</div>
+<div class="tip" id="fs18">val getRandomChar : (char -&gt; char)</div>
+<div class="tip" id="fs19">val c : char</div>
+<div class="tip" id="fs20">Multiple items<br />val char : value:&#39;T -&gt; char (requires member op_Explicit)<br /><br />Full name: Microsoft.FSharp.Core.Operators.char<br /><br />--------------------<br />type char = Char<br /><br />Full name: Microsoft.FSharp.Core.char</div>
+<div class="tip" id="fs21">type Char =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 1 overload<br />&#160;&#160;&#160;&#160;static val MaxValue : char<br />&#160;&#160;&#160;&#160;static val MinValue : char<br />&#160;&#160;&#160;&#160;static member ConvertFromUtf32 : utf32:int -&gt; string<br />&#160;&#160;&#160;&#160;static member ConvertToUtf32 : highSurrogate:char * lowSurrogate:char -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;static member GetNumericValue : c:char -&gt; float + 1 overload<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Char</div>
+<div class="tip" id="fs22">Char.IsDigit(c: char) : bool<br />Char.IsDigit(s: string, index: int) : bool</div>
+<div class="tip" id="fs23">Random.Next() : int<br />Random.Next(maxValue: int) : int<br />Random.Next(minValue: int, maxValue: int) : int</div>
+<div class="tip" id="fs24">Char.IsLetter(c: char) : bool<br />Char.IsLetter(s: string, index: int) : bool</div>
+<div class="tip" id="fs25">Char.IsLower(c: char) : bool<br />Char.IsLower(s: string, index: int) : bool</div>
+<div class="tip" id="fs26">val randomize : (string -&gt; String)</div>
+<div class="tip" id="fs27">val str : string</div>
+<div class="tip" id="fs28">Multiple items<br />val string : value:&#39;T -&gt; string<br /><br />Full name: Microsoft.FSharp.Core.Operators.string<br /><br />--------------------<br />type string = String<br /><br />Full name: Microsoft.FSharp.Core.string</div>
+<div class="tip" id="fs29">Multiple items<br />type String =<br />&#160;&#160;new : value:char -&gt; string + 7 overloads<br />&#160;&#160;member Chars : int -&gt; char<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;member Contains : value:string -&gt; bool<br />&#160;&#160;member CopyTo : sourceIndex:int * destination:char[] * destinationIndex:int * count:int -&gt; unit<br />&#160;&#160;member EndsWith : value:string -&gt; bool + 2 overloads<br />&#160;&#160;member Equals : obj:obj -&gt; bool + 2 overloads<br />&#160;&#160;member GetEnumerator : unit -&gt; CharEnumerator<br />&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;...<br /><br />Full name: System.String<br /><br />--------------------<br />String(value: nativeptr&lt;char&gt;) : unit<br />String(value: nativeptr&lt;sbyte&gt;) : unit<br />String(value: char []) : unit<br />String(c: char, count: int) : unit<br />String(value: nativeptr&lt;char&gt;, startIndex: int, length: int) : unit<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int) : unit<br />String(value: char [], startIndex: int, length: int) : unit<br />String(value: nativeptr&lt;sbyte&gt;, startIndex: int, length: int, enc: Text.Encoding) : unit</div>
+<div class="tip" id="fs30">String.ToCharArray() : char []<br />String.ToCharArray(startIndex: int, length: int) : char []</div>
+<div class="tip" id="fs31">type Array =<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CopyTo : array:Array * index:int -&gt; unit + 1 overload<br />&#160;&#160;member GetEnumerator : unit -&gt; IEnumerator<br />&#160;&#160;member GetLength : dimension:int -&gt; int<br />&#160;&#160;member GetLongLength : dimension:int -&gt; int64<br />&#160;&#160;member GetLowerBound : dimension:int -&gt; int<br />&#160;&#160;member GetUpperBound : dimension:int -&gt; int<br />&#160;&#160;member GetValue : params indices:int[] -&gt; obj + 7 overloads<br />&#160;&#160;member Initialize : unit -&gt; unit<br />&#160;&#160;member IsFixedSize : bool<br />&#160;&#160;...<br /><br />Full name: System.Array</div>
+<div class="tip" id="fs32">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; array:&#39;T [] -&gt; &#39;U []<br /><br />Full name: Microsoft.FSharp.Collections.Array.map</div>
+<div class="tip" id="fs33">val anonymize : (JsonValue -&gt; JsonValue)</div>
+<div class="tip" id="fs34">val json : JsonValue</div>
+<div class="tip" id="fs35">type JsonValue =<br />&#160;&#160;| String of string<br />&#160;&#160;| Number of decimal<br />&#160;&#160;| Float of float<br />&#160;&#160;| Record of properties: (string * JsonValue) []<br />&#160;&#160;| Array of elements: JsonValue []<br />&#160;&#160;| Boolean of bool<br />&#160;&#160;| Null<br />&#160;&#160;member Post : uri:string * ?headers:(string * string) list -&gt; HttpResponse<br />&#160;&#160;member Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse<br />&#160;&#160;member RequestAsync : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; Async&lt;HttpResponse&gt;<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member ToString : saveOptions:JsonSaveOptions -&gt; string<br />&#160;&#160;static member AsyncLoad : uri:string * ?cultureInfo:CultureInfo -&gt; Async&lt;JsonValue&gt;<br />&#160;&#160;static member Load : uri:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : reader:TextReader * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : stream:Stream * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Parse : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member ParseMultiple : text:string * ?cultureInfo:CultureInfo -&gt; seq&lt;JsonValue&gt;<br />&#160;&#160;static member ParseSample : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br /><br />Full name: FSharp.Data.JsonValue</div>
+<div class="tip" id="fs36">union case JsonValue.String: string -&gt; JsonValue</div>
+<div class="tip" id="fs37">val s : string</div>
+<div class="tip" id="fs38">member Set.Contains : value:&#39;T -&gt; bool</div>
+<div class="tip" id="fs39">val typ : Type</div>
+<div class="tip" id="fs40">Multiple items<br />namespace FSharp.Data.Runtime<br /><br />--------------------<br />namespace System.Runtime</div>
+<div class="tip" id="fs41">module StructuralInference<br /><br />from FSharp.Data.Runtime</div>
+<div class="tip" id="fs42">val inferPrimitiveType : cultureInfo:CultureInfo -&gt; value:string -&gt; Type<br /><br />Full name: FSharp.Data.Runtime.StructuralInference.inferPrimitiveType</div>
+<div class="tip" id="fs43">Multiple items<br />type CultureInfo =<br />&#160;&#160;new : name:string -&gt; CultureInfo + 3 overloads<br />&#160;&#160;member Calendar : Calendar<br />&#160;&#160;member ClearCachedData : unit -&gt; unit<br />&#160;&#160;member Clone : unit -&gt; obj<br />&#160;&#160;member CompareInfo : CompareInfo<br />&#160;&#160;member CultureTypes : CultureTypes<br />&#160;&#160;member DateTimeFormat : DateTimeFormatInfo with get, set<br />&#160;&#160;member DisplayName : string<br />&#160;&#160;member EnglishName : string<br />&#160;&#160;member Equals : value:obj -&gt; bool<br />&#160;&#160;...<br /><br />Full name: System.Globalization.CultureInfo<br /><br />--------------------<br />CultureInfo(name: string) : unit<br />CultureInfo(culture: int) : unit<br />CultureInfo(name: string, useUserOverride: bool) : unit<br />CultureInfo(culture: int, useUserOverride: bool) : unit</div>
+<div class="tip" id="fs44">property CultureInfo.InvariantCulture: CultureInfo</div>
+<div class="tip" id="fs45">val typeof&lt;&#39;T&gt; : Type<br /><br />Full name: Microsoft.FSharp.Core.Operators.typeof</div>
+<div class="tip" id="fs46">Multiple items<br />type Guid =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : b:byte[] -&gt; Guid + 4 overloads<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : o:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member ToByteArray : unit -&gt; byte[]<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 2 overloads<br />&#160;&#160;&#160;&#160;static val Empty : Guid<br />&#160;&#160;&#160;&#160;static member NewGuid : unit -&gt; Guid<br />&#160;&#160;&#160;&#160;static member Parse : input:string -&gt; Guid<br />&#160;&#160;&#160;&#160;static member ParseExact : input:string * format:string -&gt; Guid<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Guid<br /><br />--------------------<br />Guid()<br />Guid(b: byte []) : unit<br />Guid(g: string) : unit<br />Guid(a: int, b: int16, c: int16, d: byte []) : unit<br />Guid(a: uint32, b: uint16, c: uint16, d: byte, e: byte, f: byte, g: byte, h: byte, i: byte, j: byte, k: byte) : unit<br />Guid(a: int, b: int16, c: int16, d: byte, e: byte, f: byte, g: byte, h: byte, i: byte, j: byte, k: byte) : unit</div>
+<div class="tip" id="fs47">Guid.NewGuid() : Guid</div>
+<div class="tip" id="fs48">namespace FSharp.Data.Runtime.StructuralTypes</div>
+<div class="tip" id="fs49">Multiple items<br />union case Runtime.StructuralTypes.Bit0.Bit0: Runtime.StructuralTypes.Bit0<br /><br />--------------------<br />type Bit0 = | Bit0<br /><br />Full name: FSharp.Data.Runtime.StructuralTypes.Bit0</div>
+<div class="tip" id="fs50">Multiple items<br />union case Runtime.StructuralTypes.Bit1.Bit1: Runtime.StructuralTypes.Bit1<br /><br />--------------------<br />type Bit1 = | Bit1<br /><br />Full name: FSharp.Data.Runtime.StructuralTypes.Bit1</div>
+<div class="tip" id="fs51">Multiple items<br />type DateTime =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : ticks:int64 -&gt; DateTime + 10 overloads<br />&#160;&#160;&#160;&#160;member Add : value:TimeSpan -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddDays : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddHours : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMilliseconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMinutes : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddMonths : months:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddSeconds : value:float -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddTicks : value:int64 -&gt; DateTime<br />&#160;&#160;&#160;&#160;member AddYears : value:int -&gt; DateTime<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.DateTime<br /><br />--------------------<br />DateTime()<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(ticks: int64, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, calendar: Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, calendar: Calendar) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em><br />DateTime(year: int, month: int, day: int, hour: int, minute: int, second: int, millisecond: int, kind: DateTimeKind) : unit<br />&#160;&#160;&#160;<em>(+0 other overloads)</em></div>
+<div class="tip" id="fs52">val prefix : string</div>
+<div class="tip" id="fs53">String.StartsWith(value: string) : bool<br />String.StartsWith(value: string, comparisonType: StringComparison) : bool<br />String.StartsWith(value: string, ignoreCase: bool, culture: CultureInfo) : bool</div>
+<div class="tip" id="fs54">String.Substring(startIndex: int) : string<br />String.Substring(startIndex: int, length: int) : string</div>
+<div class="tip" id="fs55">union case JsonValue.Number: decimal -&gt; JsonValue</div>
+<div class="tip" id="fs56">val d : decimal</div>
+<div class="tip" id="fs57">Decimal.ToString() : string<br />Decimal.ToString(provider: IFormatProvider) : string<br />Decimal.ToString(format: string) : string<br />Decimal.ToString(format: string, provider: IFormatProvider) : string</div>
+<div class="tip" id="fs58">Multiple items<br />type Decimal =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : value:int -&gt; decimal + 7 overloads<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : value:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val Zero : decimal<br />&#160;&#160;&#160;&#160;static val One : decimal<br />&#160;&#160;&#160;&#160;static val MinusOne : decimal<br />&#160;&#160;&#160;&#160;static val MaxValue : decimal<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Decimal<br /><br />--------------------<br />Decimal()<br />Decimal(value: int) : unit<br />Decimal(value: uint32) : unit<br />Decimal(value: int64) : unit<br />Decimal(value: uint64) : unit<br />Decimal(value: float32) : unit<br />Decimal(value: float) : unit<br />Decimal(bits: int []) : unit<br />Decimal(lo: int, mid: int, hi: int, isNegative: bool, scale: byte) : unit</div>
+<div class="tip" id="fs59">Decimal.Parse(s: string) : decimal<br />Decimal.Parse(s: string, provider: IFormatProvider) : decimal<br />Decimal.Parse(s: string, style: NumberStyles) : decimal<br />Decimal.Parse(s: string, style: NumberStyles, provider: IFormatProvider) : decimal</div>
+<div class="tip" id="fs60">union case JsonValue.Float: float -&gt; JsonValue</div>
+<div class="tip" id="fs61">val f : float</div>
+<div class="tip" id="fs62">Double.ToString() : string<br />Double.ToString(provider: IFormatProvider) : string<br />Double.ToString(format: string) : string<br />Double.ToString(format: string, provider: IFormatProvider) : string</div>
+<div class="tip" id="fs63">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
+<div class="tip" id="fs64">Double.Parse(s: string) : float<br />Double.Parse(s: string, provider: IFormatProvider) : float<br />Double.Parse(s: string, style: NumberStyles) : float<br />Double.Parse(s: string, style: NumberStyles, provider: IFormatProvider) : float</div>
+<div class="tip" id="fs65">union case JsonValue.Boolean: bool -&gt; JsonValue</div>
+<div class="tip" id="fs66">union case JsonValue.Null: JsonValue</div>
+<div class="tip" id="fs67">union case JsonValue.Record: properties: (string * JsonValue) [] -&gt; JsonValue</div>
+<div class="tip" id="fs68">val props : (string * JsonValue) []</div>
+<div class="tip" id="fs69">val key : string</div>
+<div class="tip" id="fs70">val value : JsonValue</div>
+<div class="tip" id="fs71">union case JsonValue.Array: elements: JsonValue [] -&gt; JsonValue</div>
+<div class="tip" id="fs72">Multiple items<br />val array : JsonValue []<br /><br />--------------------<br />type &#39;T array = &#39;T []<br /><br />Full name: Microsoft.FSharp.Core.array&lt;_&gt;</div>
+<div class="tip" id="fs73">member JsonAnonymizer.Anonymize : json:JsonValue -&gt; JsonValue<br /><br />Full name: JsonAnonymizer.JsonAnonymizer.Anonymize</div>
+<div class="tip" id="fs74">val json : JsonValue<br /><br />Full name: JsonAnonymizer.json</div>
+<div class="tip" id="fs75">static member JsonValue.Load : uri:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />static member JsonValue.Load : reader:IO.TextReader * ?cultureInfo:CultureInfo -&gt; JsonValue<br />static member JsonValue.Load : stream:IO.Stream * ?cultureInfo:CultureInfo -&gt; JsonValue</div>
+<div class="tip" id="fs76">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
+<div class="tip" id="fs77">val anonymizedJson : JsonValue<br /><br />Full name: JsonAnonymizer.anonymizedJson</div>
+
+        </div>
+        <div class="span3">
+          <a href="/FSharp.Data/ja/index.html">
+            <img src="/FSharp.Data/ja/../images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/ja/../images/ja.png" /></a>
+              <a href="/FSharp.Data/ja/../index.html" class="nflag nflag2"><img src="/FSharp.Data/ja/../images/en.png" /></a>
+              F# Data
+            </li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">NuGet経由でライブラリを取得</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">GitHub上のソースコード</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
+                (<a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">En</a>)
+                </span></li>
+            
+            <li class="nav-header">F# Data ライブラリ</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/index.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../index.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonProvider.html">JSON 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/XmlProvider.html">XML 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/XmlProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvProvider.html">CSV 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/WorldBank.html">WorldBank プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/WorldBank.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Freebase.html">Freebase プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/Freebase.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonValue.html">JSON パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonValue.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvFile.html">CSV パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvFile.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Http.html">HTTP ユーティリティ</a>
+                (<a href="/FSharp.Data/ja/../library/Http.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">チュートリアル</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonAnonymizer.html">JSONの匿名化</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonAnonymizer.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">リファレンス</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/../reference/index.html">API リファレンス (En)</a>
+                </span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

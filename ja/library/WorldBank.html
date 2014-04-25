@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
@@ -104,16 +105,22 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span>
-<span class="l">4: </span>
-<span class="l">5: </span>
-<span class="l">6: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span></pre>
+</td>
+</tr>
+</table>
 
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="i">data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
     <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">Line</span></pre>
@@ -124,6 +131,8 @@ Webサイトにある"Data Science" のチュートリアルでも使われて�
 <p><code>Chart.Line</code> 関数はXとYの値ペアのシーケンスを受け取ります。
 そのため、世界銀行から受信したデータセットをそのまま渡せば
 Xが年、Yがその年の値になったチャートが作成できます。</p>
+
+<p><img src="/FSharp.Data/ja/images/chart3.png" alt="Chart" /></p>
 
 <h2>世界銀行のデータを非同期的に使う</h2>
 
@@ -235,14 +244,15 @@ F# Dataライブラリには様々なstatic引数を受け取るような
 それぞれのデータセットから1つの折れ線チャートを出力して、
 各チャートを <code>Chart.Combine</code> で1つの総合チャートにしています。</p>
 
+<p><img src="/FSharp.Data/ja/images/chart4.png" alt="Chart" /></p>
+
 <h2>関連する記事</h2>
 
 <ul>
-<li><a href="../fsharpdata.html">F# Data: 型プロバイダー</a> -
-<code>FSharp.Data</code> パッケージ内の型プロバイダーについての説明があります。</li>
 <li><a href="http://www.tryfsharp.org/Learn/data-science">Try F#: Data Science</a> -
 Try F# の Data Science チュートリアルにはFreebase 型プロバイダーを使った
 様々な例があります。</li>
+<li><a href="../../reference/fsharp-data-worldbankdataprovider.html">API リファレンス: WorldBankDataProvider 型プロバイダー</a></li>
 </ul>
 
 <div class="tip" id="fs1">namespace FSharp</div>
@@ -298,13 +308,13 @@ Try F# の Data Science チュートリアルにはFreebase 型プロバイダ�
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
             <li><span>
                 <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
-                (<a href="/FSharp.Data/ja/../contributing.html">En</a>)
+                (<a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">En</a>)
                 </span></li>
             
             <li class="nav-header">F# Data ライブラリ</li>
             <li><span>
-                <a href="/FSharp.Data/ja/fsharpdata.html">はじめに</a>
-                (<a href="/FSharp.Data/ja/../fsharpdata.html">En</a>)
+                <a href="/FSharp.Data/ja/index.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../index.html">En</a>)
                 </span></li>
             <li class="divider"></li>
             <li><span>
@@ -345,6 +355,11 @@ Try F# の Data Science チュートリアルにはFreebase 型プロバイダ�
             <li><span>
                 <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
                 (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonAnonymizer.html">JSONの匿名化</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonAnonymizer.html">En</a>)
                 </span></li>
 
             <li class="nav-header">リファレンス</li>
