@@ -14,6 +14,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/fsdata.css" />
     <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -25,11 +26,11 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
         </ul>
-        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -52,10 +53,10 @@ resources with specified headers, query parameters and HTTP body</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
+          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
             AsyncRequest(...)
           </code>
-          <div class="tip" id="207">
+          <div class="tip" id="211">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * responseEncodingOverride:string option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; Async&lt;HttpResponse&gt;<br />
                       </div>
         </td>
@@ -75,10 +76,10 @@ that will be encoded, and the method will automatically be set if not specified<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
+          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
             AsyncRequestStream(...)
           </code>
-          <div class="tip" id="208">
+          <div class="tip" id="212">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; Async&lt;HttpResponseWithStream&gt;<br />
                       </div>
         </td>
@@ -98,10 +99,10 @@ that will be encoded, and the method will automatically be set if not specified<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
+          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
             AsyncRequestString(...)
           </code>
-          <div class="tip" id="209">
+          <div class="tip" id="213">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * responseEncodingOverride:string option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; Async&lt;string&gt;<br />
                       </div>
         </td>
@@ -121,10 +122,10 @@ that will be encoded, and the method will automatically be set if not specified<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
+          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
             Request(...)
           </code>
-          <div class="tip" id="210">
+          <div class="tip" id="214">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * responseEncodingOverride:string option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; HttpResponse<br />
                       </div>
         </td>
@@ -144,10 +145,10 @@ that will be encoded, and the method will automatically be set if not specified<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
+          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
             RequestStream(...)
           </code>
-          <div class="tip" id="211">
+          <div class="tip" id="215">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; HttpResponseWithStream<br />
                       </div>
         </td>
@@ -167,10 +168,10 @@ that will be encoded, and the method will automatically be set if not specified<
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
+          <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
             RequestString(...)
           </code>
-          <div class="tip" id="212">
+          <div class="tip" id="216">
             <strong>Signature:</strong> (url:string * query:(string * string) list option * headers:(string * string) list option * httpMethod:string option * body:HttpRequestBody option * cookies:(string * string) list option * cookieContainer:CookieContainer option * silentHttpErrors:bool option * responseEncodingOverride:string option * customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) option) -&gt; string<br />
                       </div>
         </td>
@@ -198,7 +199,11 @@ that will be encoded, and the method will automatically be set if not specified<
 
           <ul class="nav nav-list" id="menu">
 
-            <li class="nav-header">F# Data</li>
+            <li class="nav-header">
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/images/ja.png" /></a>
+              <a href="/FSharp.Data/index.html" class="nflag nflag2"><img src="/FSharp.Data/images/en.png" /></a>
+              F# Data
+            </li>
 
             <li class="divider"></li>
 

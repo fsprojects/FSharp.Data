@@ -15,6 +15,7 @@
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/fsdata.css" />
     <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -26,11 +27,11 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
           <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
         </ul>
-        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -38,56 +39,68 @@
           
 <h1>F# Data: Library for Data Access</h1>
 
-<p>The F# Data library (<code>FSharp.Data.dll</code>) implements everything you need to 
-access data in your F# applications and scripts. It implements F# type 
+<p>The F# Data library implements everything you need to 
+access data in your F# applications and scripts. It contains F# type 
 providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank and Freebase data. It also includes helpers for parsing 
+and for accessing the WorldBank and Freebase services. It also includes helpers for parsing 
 JSON and CSV files and for sending HTTP requests.</p>
 
-<h3>Library philosophy</h3>
-
-<p>This library focuses on providing a simple read-only access to the structured documents 
+<p>This library focuses on providing a simple, mostly read-only, access to the structured documents 
 and other data sources. It does not aim to be a comprehensive collection of F# type providers 
 (which can be used for numerous other purposes). It's also designed to play well with other libraries
-like <a href="http://bluemountaincapital.github.io/Deedle">Deedle</a>, <a href="http://bluemountaincapital.github.io/FSharpRProvider">F# R Type Provider</a>, <a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a> and <a href="http://funscript.info">FunScript</a>.</p>
+like <a href="http://bluemountaincapital.github.io/Deedle">Deedle</a>, <a href="http://bluemountaincapital.github.io/FSharpRProvider">R Type Provider</a>, 
+<a href="http://fsharp.github.io/FSharp.Charting">F# Charting</a> and <a href="http://funscript.info">FunScript</a>.</p>
 
-<h3>Library license</h3>
+<h3>F# Data type providers in action</h3>
 
-<p>The library is available under Apache 2.0. For more information see the 
-<a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License file</a> in the GitHub repository. In summary, this means that you can 
-use the library for commercial purposes, fork it, and modify it as you wish.</p>
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <div id="wbtn" style="right:10px">WorldBank</div>
+            <div id="jbtn" style="right:110px">JSON</div>
+            <div id="cbtn" style="right:210px">CSV</div>
+            <a id="lnk" href="images/start.png"><img id="anim" src="images/start.png" /></a>
+        </div>
+        <div class="span1"></div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+  var wi = new Image();
+  var ji = new Image();
+  var ci = new Image();
+  wi.src ='images/wb.gif';
+  ji.src ='images/json.gif';
+  ci.src ='images/csv.gif';
+  $('#wbtn').click(function(){ $('#anim').attr('src',wi.src); $('#lnk').attr('href',wi.src); });
+  $('#jbtn').click(function(){ $('#anim').attr('src',ji.src); $('#lnk').attr('href',ji.src); });
+  $('#cbtn').click(function(){ $('#anim').attr('src',ci.src); $('#lnk').attr('href',ci.src); });
+});</script>
 
-<br/><hr/>
-
-<h1>How to get FSharp.Data</h1>
+<h3>How to get F# Data</h3>
 
 <ul>
-<li><p>The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.</p></li>
-<li><p>In addition to the official releases, you can also get NuGet packages from the <a href="https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782">Continuous Integration package source</a>.</p></li>
+<li><p>The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
+In addition to the official releases, you can also get NuGet packages from the <a href="https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782">Continuous Integration
+package source</a>.</p></li>
 <li><p>Alternatively, you can download the <a href="https://github.com/fsharp/FSharp.Data/zipball/master">source as a ZIP file</a> or download the <a href="https://github.com/fsharp/FSharp.Data/zipball/release">compiled binaries</a> as a ZIP. <br /> Please note that on windows when downloading a zip file with <code>dll</code> files the files will be blocked, and you have to manually unblock them in the file properties.</p></li>
 </ul>
 
-<br/><hr/>
-
-<h1>Using F# Data</h1>
+<h2>F# Data documentation and tutorials</h2>
 
 <h3>F# type providers</h3>
 
 <p>The type providers for structured file formats infer the structure of a sample 
 document (or a document containing multiple samples). The structure is then used
 to provide easy to use type-safe access to documents that follow the same structure.
-For more information see:</p>
+The library also implements a type provider for accessing data from 
+<a href="http://data.worldbank.org/">the WorldBank</a> and <a href="http://www.freebase.com/">Freebase graph database</a>.</p>
 
 <ul>
 <li><a href="library/XmlProvider.html">XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
 <li><a href="library/JsonProvider.html">JSON Type Provider</a> - discusses the <code>JsonProvider&lt;..&gt;</code> type</li>
 <li><a href="library/CsvProvider.html">CSV Type Provider</a> - discusses the <code>CsvProvider&lt;..&gt;</code> type</li>
-</ul>
-
-<p>The library also implements a type provider for accessing data from 
-<a href="http://data.worldbank.org/">the WorldBank</a> and <a href="http://www.freebase.com/">Freebase graph database</a>.</p>
-
-<ul>
 <li><a href="library/WorldBank.html">WorldBank Provider</a> - discusses the <code>WorldBankData</code> type 
 and the <code>WorldBankDataProvider&lt;..&gt;</code> type</li>
 <li><a href="library/Freebase.html">Freebase Provider</a> - discusses the <code>FreebaseData</code> type 
@@ -113,25 +126,33 @@ to send HTTP web requests.</li>
 <h3>Tutorials</h3>
 
 <p>The above articles cover all key features of the F# Data library. However, if you're interested
-in more samples or more details, then the following tutorials contain additional examples that use multiple different features together:</p>
+in more samples or more details, then the following tutorials contain additional examples that 
+use multiple different features together:</p>
 
 <ul>
-<li><p><a href="tutorials/JsonToXml.html">Converting between JSON and XML</a> - implements two serialization 
+<li><a href="tutorials/JsonToXml.html">Converting between JSON and XML</a> - implements two serialization 
 functions that convert between the standard .NET <code>XElement</code> and the <code>JsonValue</code> from F# Data.
-The tutorial demonstrates pattern matching on <code>JsonValue</code>.</p></li>
-<li><p><a href="tutorials/JsonAnonymizer.html">Anonymizing JSON</a> - implements a function to anonymize a <code>JsonValue</code> from F# Data.
-The tutorial demonstrates pattern matching on <code>JsonValue</code>.</p></li>
+The tutorial demonstrates pattern matching on <code>JsonValue</code>.</li>
+<li><a href="tutorials/JsonAnonymizer.html">Anonymizing JSON</a> - implements a function to anonymize a <code>JsonValue</code> from F# Data.
+The tutorial demonstrates pattern matching on <code>JsonValue</code>.</li>
 </ul>
 
 <h3>Reference Documentation</h3>
 
-<p>There's also <a href="reference">reference documentation</a> available. Please note that everything under the <code>FSharp.Data.Runtime</code> namespace is not considered as part of the public API and can change without notice.</p>
+<p>There's also <a href="reference">reference documentation</a> available. Please note that everything under 
+the <code>FSharp.Data.Runtime</code> namespace is not considered as part of the public API and can change without notice.</p>
 
-<br/><hr/>
+<h2>Contributing and license</h2>
 
-<h1>Contributing</h1>
+<p>The library is available under Apache 2.0. For more information see the 
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License file</a> in the GitHub repository. In summary, this means that you can 
+use the library for commercial purposes, fork it, and modify it as you wish.</p>
 
-<p>F# Data is made possible by the volunteer work <a href="https://github.com/fsharp/FSharp.Data/graphs/contributors">of more than a dozen contributors</a> and we're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the <a href="https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&amp;state=open">Up-For-Grabs</a> issues, or help to improve the documentation.</p>
+<p>F# Data is made possible by the volunteer work <a href="https://github.com/fsharp/FSharp.Data/graphs/contributors">of more than a dozen 
+contributors</a> and we're open to 
+contributions from anyone. If you want to help out but don't know where to start, you 
+can take one of the <a href="https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&amp;state=open">Up-For-Grabs</a> 
+issues, or help to improve the documentation.</p>
 
 <p>The project is hosted on <a href="https://github.com/fsharp/FSharp.Data">GitHub</a> where you can <a href="https://github.com/fsharp/FSharp.Data/issues">report issues</a>, fork 
 the project and submit pull requests. If you're adding new public API's, please also 
@@ -153,7 +174,11 @@ send an email to the <a href="http://groups.google.com/group/fsharp-opensource">
 
           <ul class="nav nav-list" id="menu">
 
-            <li class="nav-header">F# Data</li>
+            <li class="nav-header">
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/images/ja.png" /></a>
+              <a href="/FSharp.Data/index.html" class="nflag nflag2"><img src="/FSharp.Data/images/en.png" /></a>
+              F# Data
+            </li>
 
             <li class="divider"></li>
 

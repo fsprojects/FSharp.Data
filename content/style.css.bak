@@ -93,10 +93,6 @@ pre {
 .masthead {
   overflow: hidden;
 }
-.masthead .muted a {
-  text-decoration:none;
-  color:#999999;
-}
 .masthead ul, .masthead li {
   margin-bottom:0px;
 }
