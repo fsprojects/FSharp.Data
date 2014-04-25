@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
@@ -23,12 +24,12 @@
   <body>
     <div class="container">
       <div class="masthead">
-          <ul class="nav nav-pills pull-right">
-              <li><a href="http://fsharp.org">fsharp.org</a></li>
-              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
-          </ul>
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+        </ul>
         <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
@@ -182,15 +183,18 @@ the response content, so it's easier to debug in F# interactive when the server 
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
-<span class="l">2: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span onmouseout="hideTip(event, 'fs3', 32)" onmouseover="showTip(event, 'fs3', 32)" class="i">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 33)" onmouseover="showTip(event, 'fs4', 33)" class="i">RequestString</span>(<span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">themoviedb</span><span class="s">.</span><span class="s">org</span><span class="s">/</span><span class="s">3</span><span class="s">/</span><span class="s">search</span><span class="s">/</span><span class="s">movie</span><span class="s">&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)
-<span class="c">// returns {&quot;status_code&quot;:7,&quot;status_message&quot;:&quot;Invalid API key - You must be granted a valid key&quot;}</span></pre>
+<span onmouseout="hideTip(event, 'fs3', 32)" onmouseover="showTip(event, 'fs3', 32)" class="i">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 33)" onmouseover="showTip(event, 'fs4', 33)" class="i">RequestString</span>(<span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">api</span><span class="s">.</span><span class="s">themoviedb</span><span class="s">.</span><span class="s">org</span><span class="s">/</span><span class="s">3</span><span class="s">/</span><span class="s">search</span><span class="s">/</span><span class="s">movie</span><span class="s">&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)</pre>
 </td>
 </tr>
 </table>
+
+<p>This returns the following:</p>
+
+<pre><code>"{"status_code":7,"status_message":"Invalid API key: You must be granted a valid key."}"
+</code></pre>
 
 <p>In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
@@ -419,7 +423,7 @@ create a <code>X509ClientCertificate2</code> value, and add it to the <code>Clie
 
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
-<div class="tip" id="fs3">type Http =<br />&#160;&#160;private new : unit -&gt; Http<br />&#160;&#160;static member private AppendQueryToUrl : url:string * query:(string * string) list -&gt; string<br />&#160;&#160;static member AsyncRequest : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;HttpResponse&gt;<br />&#160;&#160;static member AsyncRequestStream : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;HttpResponseWithStream&gt;<br />&#160;&#160;static member AsyncRequestString : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;string&gt;<br />&#160;&#160;static member private InnerRequest : url:string * toHttpResponse:(string -&gt; int -&gt; string -&gt; string -&gt; string -&gt; &#39;a0 option -&gt; Map&lt;string,string&gt; -&gt; Map&lt;string,string&gt; -&gt; Stream -&gt; Async&lt;&#39;a1&gt;) * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:&#39;a0 * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;&#39;a1&gt;<br />&#160;&#160;static member Request : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; HttpResponse<br />&#160;&#160;static member RequestStream : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; HttpResponseWithStream<br />&#160;&#160;static member RequestString : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; string<br /><br />Full name: FSharp.Data.Http</div>
+<div class="tip" id="fs3">type Http =<br />&#160;&#160;private new : unit -&gt; Http<br />&#160;&#160;static member private AppendQueryToUrl : url:string * query:(string * string) list -&gt; string<br />&#160;&#160;static member AsyncRequest : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;HttpResponse&gt;<br />&#160;&#160;static member AsyncRequestStream : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;HttpResponseWithStream&gt;<br />&#160;&#160;static member AsyncRequestString : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;string&gt;<br />&#160;&#160;static member private InnerRequest : url:string * toHttpResponse:(string -&gt; int -&gt; string -&gt; string -&gt; &#39;a0 option -&gt; Map&lt;string,string&gt; -&gt; Map&lt;string,string&gt; -&gt; MemoryStream -&gt; Async&lt;&#39;a1&gt;) * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:&#39;a0 * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; Async&lt;&#39;a1&gt;<br />&#160;&#160;static member Request : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; HttpResponse<br />&#160;&#160;static member RequestStream : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; HttpResponseWithStream<br />&#160;&#160;static member RequestString : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(HttpWebRequest -&gt; HttpWebRequest) -&gt; string<br /><br />Full name: FSharp.Data.Http</div>
 <div class="tip" id="fs4">static member Http.RequestString : url:string * ?query:(string * string) list * ?headers:(string * string) list * ?httpMethod:string * ?body:HttpRequestBody * ?cookies:(string * string) list * ?cookieContainer:System.Net.CookieContainer * ?silentHttpErrors:bool * ?responseEncodingOverride:string * ?customizeHttpRequest:(System.Net.HttpWebRequest -&gt; System.Net.HttpWebRequest) -&gt; string</div>
 <div class="tip" id="fs5">val async : AsyncBuilder<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.async</div>
 <div class="tip" id="fs6">val html : string</div>
@@ -479,31 +483,42 @@ create a <code>X509ClientCertificate2</code> value, and add it to the <code>Clie
           </a>
 
           <ul class="nav nav-list" id="menu">
+
             <li class="nav-header">F# Data</li>
+
             <li class="divider"></li>
+
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
             
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
             <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+
             <li class="nav-header">Tutorials</li>
+
             <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
             <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
             <li class="nav-header">Reference</li>
+
             <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
         </div>

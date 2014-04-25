@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
@@ -23,12 +24,12 @@
   <body>
     <div class="container">
       <div class="masthead">
-          <ul class="nav nav-pills pull-right">
-              <li><a href="http://fsharp.org">fsharp.org</a></li>
-              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
-          </ul>
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+        </ul>
         <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
@@ -387,7 +388,7 @@ offers. The code looks like this:</p>
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Author = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.Author</div>
-<div class="tip" id="fs4">type XmlProvider<br /><br />Full name: FSharp.Data.XmlProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a XML file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type XmlProvider<br /><br />Full name: FSharp.Data.XmlProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a XML file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val sample : XmlProvider&lt;...&gt;.Author<br /><br />Full name: XmlProvider.sample</div>
 <div class="tip" id="fs6">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Author<br /><em><br /><br />Parses the specified XML string</em></div>
 <div class="tip" id="fs7">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
@@ -443,31 +444,42 @@ offers. The code looks like this:</p>
           </a>
 
           <ul class="nav nav-list" id="menu">
+
             <li class="nav-header">F# Data</li>
+
             <li class="divider"></li>
+
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
             
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
             <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+
             <li class="nav-header">Tutorials</li>
+
             <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
             <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
             <li class="nav-header">Reference</li>
+
             <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
         </div>

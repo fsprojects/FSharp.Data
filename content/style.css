@@ -1,4 +1,4 @@
-@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono|Open+Sans:400,700,400italic);
+@import url(http://fonts.googleapis.com/css?family=Droid+Sans|Droid+Sans+Mono|Open+Sans:400,600,700);
 
 /*-------------------------------------------------------------------------- 
   Formatting for F# code snippets 
@@ -190,13 +190,4 @@ td.title, thead {
   border-style:none;
   color: #e0e0e0;
   margin-top:15px;
-}
-
-/* Hide snippets on the home page snippet & nicely format table */
-#hp-snippet td.lines {
-  display: none;
-}
-#hp-snippet .table {
-  width:80%;
-  margin-left:30px;
 }

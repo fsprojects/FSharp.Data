@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
@@ -23,12 +24,12 @@
   <body>
     <div class="container">
       <div class="masthead">
-          <ul class="nav nav-pills pull-right">
-              <li><a href="http://fsharp.org">fsharp.org</a></li>
-              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
-          </ul>
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+        </ul>
         <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
@@ -97,16 +98,22 @@ values for different years. Using <code>Seq.maxBy fst</code> we get the most rec
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span>
-<span class="l">4: </span>
-<span class="l">5: </span>
-<span class="l">6: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="prep">#load</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span></pre>
+</td>
+</tr>
+</table>
 
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
 <span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="i">data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
     <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">Line</span></pre>
@@ -117,6 +124,8 @@ values for different years. Using <code>Seq.maxBy fst</code> we get the most rec
 <p>The <code>Chart.Line</code> function takes a sequence of pairs containing X and Y values, so we
 can call it directly with the World Bank data set using the year as the X value and the
 value as a Y value.</p>
+
+<p><img src="/FSharp.Data/images/chart3.png" alt="Chart" /></p>
 
 <h2>Using World Bank data asynchronously</h2>
 
@@ -224,6 +233,8 @@ computation to perform all the downloads:</p>
 it also turns every single downloaded data set into a line chart (using <code>Chart.Line</code>) 
 and then creates a single composed chart using <code>Chart.Combine</code>.</p>
 
+<p><img src="/FSharp.Data/images/chart4.png" alt="Chart" /></p>
+
 <h2>Related articles</h2>
 
 <ul>
@@ -245,7 +256,7 @@ tutorial on Try F# uses the WorldBank type provider in numerous examples.</li>
 <div class="tip" id="fs11">type Chart =<br />&#160;&#160;static member Area : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Area : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member Bar : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; GenericChart<br />&#160;&#160;static member BoxPlotFromData : data:seq&lt;#key * #seq&lt;&#39;a2&gt;&gt; * ?Name:string * ?Title:string * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart (requires &#39;a2 :&gt; value)<br />&#160;&#160;static member BoxPlotFromStatistics : data:seq&lt;#key * #value * #value * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?Percentile:int * ?ShowAverage:bool * ?ShowMedian:bool * ?ShowUnusualValues:bool * ?WhiskerPercentile:int -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Bubble : data:seq&lt;#key * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string * ?BubbleMaxSize:int * ?BubbleMinSize:int * ?BubbleScaleMax:float * ?BubbleScaleMin:float * ?UseSizeForLabel:bool -&gt; GenericChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;static member Candlestick : data:seq&lt;#key * #value * #value * #value * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:Color * ?XTitle:string * ?YTitle:string -&gt; CandlestickChart<br />&#160;&#160;...<br /><br />Full name: FSharp.Charting.Chart</div>
 <div class="tip" id="fs12">static member Chart.Line : data:seq&lt;#value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:System.Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart<br />static member Chart.Line : data:seq&lt;#key * #value&gt; * ?Name:string * ?Title:string * ?Labels:#seq&lt;string&gt; * ?Color:System.Drawing.Color * ?XTitle:string * ?YTitle:string -&gt; ChartTypes.GenericChart</div>
 <div class="tip" id="fs13">type WorldBank = WorldBankDataProvider&lt;...&gt;<br /><br />Full name: WorldBank.WorldBank</div>
-<div class="tip" id="fs14">type WorldBankDataProvider<br /><br />Full name: FSharp.Data.WorldBankDataProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of WorldBank data with additional configuration parameters. See http://www.worldbank.org for terms and conditions.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sources&#39;&gt;The World Bank data sources to include, separated by semicolons. Defaults to `World Development Indicators;Global Financial Development`.<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;If an empty string is specified, includes all data sources.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Asynchronous&#39;&gt;Generate asynchronous calls. Defaults to false.&lt;/param&gt;</em></div>
+<div class="tip" id="fs14">type WorldBankDataProvider<br /><br />Full name: FSharp.Data.WorldBankDataProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of WorldBank data with additional configuration parameters. See http://www.worldbank.org for terms and conditions.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sources&#39;&gt;The World Bank data sources to include, separated by semicolons. Defaults to `World Development Indicators;Global Financial Development`.<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;If an empty string is specified, includes all data sources.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Asynchronous&#39;&gt;Generate asynchronous calls. Defaults to false.&lt;/param&gt;</em></div>
 <div class="tip" id="fs15">WorldBankDataProvider&lt;...&gt;.GetDataContext() : WorldBankDataProvider&lt;...&gt;.ServiceTypes.WorldBankDataService</div>
 <div class="tip" id="fs16">val wb : WorldBankDataProvider&lt;...&gt;.ServiceTypes.WorldBankDataService<br /><br />Full name: WorldBank.wb</div>
 <div class="tip" id="fs17">val countries : WorldBankDataProvider&lt;...&gt;.ServiceTypes.Country []<br /><br />Full name: WorldBank.countries</div>
@@ -273,31 +284,42 @@ tutorial on Try F# uses the WorldBank type provider in numerous examples.</li>
           </a>
 
           <ul class="nav nav-list" id="menu">
+
             <li class="nav-header">F# Data</li>
+
             <li class="divider"></li>
+
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
             
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
             <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+
             <li class="nav-header">Tutorials</li>
+
             <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
             <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
             <li class="nav-header">Reference</li>
+
             <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
         </div>

@@ -11,6 +11,7 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
@@ -23,12 +24,12 @@
   <body>
     <div class="container">
       <div class="masthead">
-          <ul class="nav nav-pills pull-right">
-              <li><a href="http://fsharp.org">fsharp.org</a></li>
-              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
-          </ul>
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
+        </ul>
         <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a> <a href="/FSharp.Data/ja/index.html">(Ja)</a></h3>
       </div>
       <hr />
@@ -243,7 +244,7 @@ file and loads it:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="k">type</span> <span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="i">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span><span class="o">&gt;</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="i">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 72)" onmouseover="showTip(event, 'fs38', 72)" class="i">Load</span>(<span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>)</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="i">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 72)" onmouseover="showTip(event, 'fs38', 72)" class="i">GetSample</span>()</pre>
 </td>
 </tr>
 </table>
@@ -439,7 +440,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Simple = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Simple</div>
-<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val simple : JsonProvider&lt;...&gt;.Root<br /><br />Full name: JsonProvider.simple</div>
 <div class="tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Parses the specified JSON string</em></div>
 <div class="tip" id="fs7">property JsonProvider&lt;...&gt;.Root.Age: int</div>
@@ -473,7 +474,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs35">val str : string</div>
 <div class="tip" id="fs36">type WorldBank = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.WorldBank</div>
 <div class="tip" id="fs37">val doc : JsonProvider&lt;...&gt;.Root<br /><br />Full name: JsonProvider.doc</div>
-<div class="tip" id="fs38">JsonProvider&lt;...&gt;.Load(uri: string) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Loads JSON from the specified uri</em><br />JsonProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Loads JSON from the specified reader</em><br />JsonProvider&lt;...&gt;.Load(stream: System.IO.Stream) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Loads JSON from the specified stream</em></div>
+<div class="tip" id="fs38">JsonProvider&lt;...&gt;.GetSample() : JsonProvider&lt;...&gt;.Root</div>
 <div class="tip" id="fs39">val docAsync : Async&lt;JsonProvider&lt;...&gt;.Root&gt;<br /><br />Full name: JsonProvider.docAsync</div>
 <div class="tip" id="fs40">JsonProvider&lt;...&gt;.AsyncLoad(uri: string) : Async&lt;JsonProvider&lt;...&gt;.Root&gt;<br /><em><br /><br />Loads JSON from the specified uri</em></div>
 <div class="tip" id="fs41">val info : JsonProvider&lt;...&gt;.Record2<br /><br />Full name: JsonProvider.info</div>
@@ -514,7 +515,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs76">val issueSample : string<br /><br />Full name: JsonProvider.issueSample</div>
 <div class="tip" id="fs77">type GitHubIssue = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.GitHubIssue</div>
 <div class="tip" id="fs78">val newIssue : JsonProvider&lt;...&gt;.Issue<br /><br />Full name: JsonProvider.newIssue</div>
-<div class="tip" id="fs79">type Issue =<br />&#160;&#160;inherit IJsonDocument<br />&#160;&#160;new : title: string * body: string * assignee: string * milestone: int * labels: string [] -&gt; Issue<br />&#160;&#160;member Assignee : string<br />&#160;&#160;member Body : string<br />&#160;&#160;member JsonValue : JsonValue<br />&#160;&#160;member Labels : string []<br />&#160;&#160;member Milestone : int<br />&#160;&#160;member Path : string<br />&#160;&#160;member Title : string<br /><br />Full name: FSharp.Data.JsonProvider,Sample=&quot;<br />{<br />&#160;&#160;\&quot;title\&quot;: \&quot;Found a bug\&quot;,<br />&#160;&#160;\&quot;body\&quot;: \&quot;I&#39;m having a problem with this.\&quot;,<br />&#160;&#160;\&quot;assignee\&quot;: \&quot;octocat\&quot;,<br />&#160;&#160;\&quot;milestone\&quot;: 1,<br />&#160;&#160;\&quot;labels\&quot;: [<br />&#160;&#160;&#160;&#160;\&quot;Label1\&quot;,<br />&#160;&#160;&#160;&#160;\&quot;Label2\&quot;<br />&#160;&#160;]<br />}<br />&quot;,RootName=&quot;issue&quot;.Issue</div>
+<div class="tip" id="fs79">type Issue =<br />&#160;&#160;inherit IJsonDocument<br />&#160;&#160;new : title: string * body: string * assignee: string * milestone: int * labels: string [] -&gt; Issue<br />&#160;&#160;member Assignee : string<br />&#160;&#160;member Body : string<br />&#160;&#160;member JsonValue : JsonValue<br />&#160;&#160;member Labels : string []<br />&#160;&#160;member Milestone : int<br />&#160;&#160;member Path : string<br />&#160;&#160;member Title : string<br /><br />Full name: FSharp.Data.JsonProvider,Sample=&quot;<br />{<br />&#160;&#160;\&quot;title\&quot;: \&quot;Found a bug\&quot;,<br />&#160;&#160;\&quot;body\&quot;: \&quot;I&#39;m having a problem with this.\&quot;,<br />&#160;&#160;\&quot;assignee\&quot;: \&quot;octocat\&quot;,<br />&#160;&#160;\&quot;milestone\&quot;: 1,<br />&#160;&#160;\&quot;labels\&quot;: [<br />&#160;&#160;&#160;&#160;\&quot;Label1\&quot;,<br />&#160;&#160;&#160;&#160;\&quot;Label2\&quot;<br />&#160;&#160;]<br />}<br />&quot;,RootName=&quot;issue&quot;.Issue</div>
 <div class="tip" id="fs80">property Runtime.IJsonDocument.JsonValue: JsonValue</div>
 <div class="tip" id="fs81">member JsonValue.Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse</div>
 
@@ -525,31 +526,42 @@ working with JSON values dynamically.</li>
           </a>
 
           <ul class="nav nav-list" id="menu">
+
             <li class="nav-header">F# Data</li>
+
             <li class="divider"></li>
+
             <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="/FSharp.Data/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
             
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="/FSharp.Data">Introduction</a></li>
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
             <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
+
             <li class="divider"></li>
+
             <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+
             <li class="nav-header">Tutorials</li>
+
             <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
             <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
             <li class="nav-header">Reference</li>
+
             <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
           </ul>
         </div>
