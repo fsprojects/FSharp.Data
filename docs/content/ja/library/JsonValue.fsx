@@ -167,4 +167,7 @@ match value with
  * [F# Data: WorldBank プロバイダー](WorldBank.html) -
    WorldBank 型プロバイダーを使うとWorldBankから受け取ったデータを
    簡単に処理出来るようになります。
+ * [API リファレンス: JsonValue 判別共用体](../../reference/fsharp-data-jsonvalue.html)
+ * [API リファレンス: JsonExtensions モジュール](../../reference/fsharp-data-jsonextensions.html)
+
 *)

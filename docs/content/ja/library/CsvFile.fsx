@@ -100,4 +100,7 @@ msft.Filter(fun row -> row?Close.AsFloat() > row?Open.AsFloat())
  * [F# Data: CSV 型プロバイダー](CsvProvider.html) - 
    型セーフな方法でCSVデータにアクセスできるような
    F# 型プロバイダーについて説明しています。
+ * [API リファレンス: CsvFile クラス](../../reference/fsharp-data-csvfile.html)
+ * [API リファレンス: CsvRow クラス](../../reference/fsharp-data-csvrow.html)
+ * [API リファレンス: CsvExtensions モジュール](../../reference/fsharp-data-csvextensions.html)
 *)

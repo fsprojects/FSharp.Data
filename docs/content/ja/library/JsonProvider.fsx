@@ -214,7 +214,7 @@ for record in doc.Array do
 
 ## Twitterのストリームをパースする
 
-最後の例として、 [Twitter API](http://dev.twitter.com/) から返される
+次の例として、 [Twitter API](http://dev.twitter.com/) から返される
 ツイートをパースする例を紹介しましょう。
 ツイートには非常に多種多様なデータが含まれているため、
 単に文字列を1つ指定するのではなく、入力 **リスト** を使って
@@ -243,11 +243,72 @@ printfn "%s (%d 回リツイートされました)\n:%s"
 同じように `RetweetCount` と `Text` プロパティも値無しになることがあるため、
 上のコードは安全ではないことに注意してください。
 
+## GitHubのIssuesを取得および作成する
+
+この例ではJSONを作成するだけでなく、それを実際に使用する方法を紹介します。
+まず FSharp.Data リポジトリのオープンされているIssuesのうちで
+直近の5つを取得してみましょう。
+
+*)
+
+
+type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+
+let topRecentlyUpdatedIssues = 
+    GitHub.GetSamples()
+    |> Seq.filter (fun issue -> issue.State = "open")
+    |> Seq.sortBy (fun issue -> System.DateTime.Now - issue.UpdatedAt)
+    |> Seq.truncate 5
+
+for issue in topRecentlyUpdatedIssues do
+    printfn "#%d %s" issue.Number issue.Title
+
+(**
+
+次に新しいIssueを作成してみます。
+GitHubのドキュメント http://developer.github.com/v3/issues/#create-an-issue
+を見てみると、以下のようなJSON値をポストすればいいことがわかります：
+
+*)
+
+[<Literal>]
+let issueSample = """
+{
+  "title": "Found a bug",
+  "body": "I'm having a problem with this.",
+  "assignee": "octocat",
+  "milestone": 1,
+  "labels": [
+    "Label1",
+    "Label2"
+  ]
+}
+"""
+
+(**
+
+このJSONデータは先ほどAPIを呼び出して取得した
+Issueそれぞれに対応するものとは異なります。
+そのため、このサンプルデータを元にして新しい型を定義し、
+そのインスタンスを作成してリクエストをPOSTします：
+
+*)
+
+type GitHubIssue = JsonProvider<issueSample, RootName="issue">
+
+let newIssue = GitHubIssue.Issue("Test issue",
+                                 "This is a test issue created in F# Data documentation", 
+                                 assignee = "",
+                                 labels = [| |], 
+                                 milestone = 0)
+newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
+
+(**
 ## 関連する記事
 
- * [F# Data: 型プロバイダー](../fsharpdata.html) -
-   `FSharp.Data` パッケージ内の型プロバイダーについての説明があります。
  * [F# Data: JSON パーサーおよびリーダー](JsonValue.html) -
    JSONの値を動的に処理する方法についての説明があります。
+ * [API リファレンス: JsonProvider 型プロバイダー](../../reference/fsharp-data-jsonprovider.html)
+ * [API リファレンス: JsonValue 判別共用体](../../reference/fsharp-data-jsonvalue.html)
 
 *)

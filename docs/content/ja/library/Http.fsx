@@ -93,7 +93,8 @@ Http.RequestString
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
 
-(** ## 特別な情報の取得
+(**
+## 特別な情報の取得
 
 先のコードスニペットでは、正しいAPIキーを指定しなかった場合には(401)認証エラーが返され、
 例外が発生することに注意してください。
@@ -103,8 +104,12 @@ Http.RequestString
 また `silentHttpErrors` 引数を設定することによって例外を無効化することもできます:
 *)
 
+(*** define-output:request ***)
+
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
-// {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"} が返される
+
+(** この結果は以下のようになります： *)
+(*** include-it:request ***)
 
 (** この場合にはHTTPステータスコードを確認すればよいため、実際にレスポンスとして返されたデータと
 エラーメッセージとを混同することもないでしょう。
@@ -216,12 +221,18 @@ match Http.Request(logoUrl).Body with
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**
-## クライアント証明書の送信
+## HTTPリクエストのカスタマイズ
 
-リクエストにクライアント証明書を追加したい場合には
-オプション引数 `certificate` に `X509ClientCertificate` の値を指定します。
+ライブラリに元々備えられていないような機能を使用したい場合には、
+`customizeHttpRequest` 引数を設定することになります。
+この引数には `HttpWebRequest` を変更するための関数を指定します。
+
+たとえばリクエストにクライアント証明書を追加したいとします。
 そのためにはまず `System.Security.Cryptography` 以下の
-`X509Certificates` 名前空間をオープンします。
+`X509Certificates` 名前空間をオープンして、
+`X509ClientCertificate2` の値を用意し、
+この値をリクエストの `ClientCertificates` リストに追加します。
+
 証明書が `myCertificate.pfx` に格納されているとすると、
 以下のようなコードになります：
 *)
@@ -237,3 +248,17 @@ Http.Request
   ( "http://yourprotectedresouce.com/data",
     customizeHttpRequest = fun req -> req.ClientCertificates.Add(clientCert) |> ignore; req)
 
+(**
+## 関連する記事
+
+ * [API リファレンス: HTTP クラス](../../reference/fsharp-data-http.html)
+ * [API リファレンス: HttpMethod モジュール](../../reference/fsharp-data-httpmethod.html)
+ * [API リファレンス: HttpRequestHeaders モジュール](../../reference/fsharp-data-httprequestheaders.html)
+ * [API リファレンス: HttpResponseHeaders モジュール](../../reference/fsharp-data-httpresponseheaders.html)
+ * [API リファレンス: HttpContentTypes モジュール](../../reference/fsharp-data-httpcontenttypes.html)
+ * [API リファレンス: HttpRequestBody 判別共用体](../../reference/fsharp-data-httprequestbody.html)
+ * [API リファレンス: HttpResponse レコード](../../reference/fsharp-data-httpresponse.html)
+ * [API リファレンス: HttpResponseBody 判別共用体](../../reference/fsharp-data-httpresponsebody.html)
+ * [API リファレンス: HttpResponseWithStream レコード](../../reference/fsharp-data-httpresponsewithstream.html)
+
+*)

@@ -96,9 +96,13 @@ for row in msft.Rows do
 open System
 open FSharp.Charting
 
+(*** define-output:chart1 ***)
+
 // 株価をビジュアル化
 [ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
+
+(*** include-it:chart1 ***)
 
 (**
 もう1つ例として、先月のデータの詳細を確認できるように
@@ -111,8 +115,12 @@ let recent =
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
+(*** define-output:chart2 ***)
+
 // ローソクチャートを使って株価をビジュアル化
-Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
+Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+
+(*** include-it:chart2 ***)
 
 (**
 ## 測定単位を使用する
@@ -403,9 +411,8 @@ stocks.Take(10).Cache()
 (**
 ## 関連する記事
 
- * [F# Data: 型プロバイダー](../fsharpdata.html) -
-   `FSharp.Data` パッケージ内の型プロバイダーについての説明があります。
  * [F# Data: CSV パーサーおよびリーダー](CsvFile.html) -
    CSVドキュメントを動的に処理するための詳しい説明があります。
+ * [API リファレンス: CsvProvider 型プロバイダー](../../reference/fsharp-data-csvprovider.html)
 
 *)
