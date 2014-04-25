@@ -224,6 +224,13 @@ module JsonTypeBuilder =
             let defaultCtor = ProvidedConstructor([], InvokeCode = fun _ -> ctx.Replacer.ToRuntime <@@ JsonRuntime.CreateValue(null :> obj, cultureStr) @@>)
             objectTy.AddMember defaultCtor
 
+        objectTy.AddMember <| 
+            ProvidedConstructor(
+                [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
+                InvokeCode = fun (Singleton arg) -> 
+                    let arg = ctx.Replacer.ToDesignTime arg
+                    <@@ JsonRuntime.CreateFromJsonValue(%%arg:JsonValue) @@> |> ctx.Replacer.ToRuntime)
+
     objectTy
 
   /// Recursively walks over inferred type information and 
