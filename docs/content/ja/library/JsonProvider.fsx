@@ -173,7 +173,7 @@ for item in Values.GetSamples() do
 *)
 
 type WorldBank = JsonProvider<"../../data/WorldBank.json">
-let doc = WorldBank.Load("../../data/WorldBank.json")
+let doc = WorldBank.GetSample()
 
 (**
 型プロバイダーのサンプル用の引数と、 `Load` メソッドの引数にはいずれも

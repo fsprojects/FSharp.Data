@@ -39,13 +39,17 @@ let processFile file =
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
-  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
-  literateDoc.Errors 
-  |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-    if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-      Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-    else None)
-  |> String.concat "\n"
+  let fsiEvaluator = FsiEvaluator()
+  let errors = System.Text.StringBuilder()
+  fsiEvaluator.EvaluationFailed.Add(fun x -> 
+    errors.AppendLine(sprintf "Error evaluating expression (%s):\n%s" x.Exception.Message x.Text) |> ignore)
+  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
+  (literateDoc.Errors 
+   |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
+     if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+       Some <| sprintf "%A %s (%s)" (startl, endl) msg file
+     else None)
+   |> String.concat "\n") + errors.ToString()
 
 // ------------------------------------------------------------------------------------
 // Core API documentation

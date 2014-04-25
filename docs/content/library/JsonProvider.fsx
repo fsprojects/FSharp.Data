@@ -146,7 +146,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"../data/WorldBank.json">
-let doc = WorldBank.Load("../data/WorldBank.json")
+let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
