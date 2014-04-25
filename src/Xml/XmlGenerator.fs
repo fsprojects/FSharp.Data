@@ -258,8 +258,8 @@ module internal XmlTypeBuilder =
                 
                     let createMemberForAttribute typ unit (optional:bool) =            
                         let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Attribute " + name, typ, optional, unit)
-                        let name = (makeUnique name) + "#Attribute"
-                        name,
+                        let name = (makeUnique name)
+                        name + "#Attribute",
                         ProvidedProperty(name, typ, GetterCode = fun (Singleton xml) -> 
                             let xml = ctx.Replacer.ToDesignTime xml
                             conv <@ XmlRuntime.TryGetAttribute(%%xml, nameWithNS) @>),
