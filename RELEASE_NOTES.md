@@ -205,3 +205,5 @@
 * Performance improvements.
 * Support reuse by other type providers projects like ApiaryProvider.
 * Fixed problems with HTTP requests not downloading fully.
+* Added support for creating typed XML objects in XmlProvider.
+* Added support for creating typed JSON and XML objects from untyped JsonValue and XElement objects.
