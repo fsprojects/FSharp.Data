@@ -19,7 +19,7 @@ let info =
 // --------------------------------------------------------------------------------------
 
 #I "../../packages/FSharp.Compiler.Service.0.0.44/lib/net40"
-#I "../../packages/FSharp.Formatting.2.4.4/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.7/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
@@ -49,7 +49,7 @@ let outputJa   = __SOURCE_DIRECTORY__ @@ "../output/ja"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates/ja"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.4/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.7/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)
