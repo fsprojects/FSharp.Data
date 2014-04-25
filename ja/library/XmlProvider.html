@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>F# Data: XML Type Provider
+    <title>F# Data: XML 型プロバイダー
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
@@ -11,12 +11,11 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/fsdata.css" />
-    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/fsdata.css" />
+    <script type="text/javascript" src="/FSharp.Data/ja/../content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -31,30 +30,36 @@
           <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
         </ul>
-        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a></h3>
+        <h3 class="muted"><a href="/FSharp.Data/ja/index.html">F# Data</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
           
-<h1>F# Data: XML Type Provider</h1>
+<h1>F# Data: XML 型プロバイダー</h1>
 
-<p>This article demonstrates how to use the XML type provider to access XML documents
-in a statically typed way. We first look how the structure is inferred and then 
-demonstrate the provider by parsing RSS feed.</p>
+<p>このドキュメントではXML型プロバイダーを使用して、静的に型付けされた
+方法でXMLドキュメントにアクセスする方法について説明します。
+まず、XMLドキュメントの構造が推測される方法について説明した後に、
+XML型プロバイダーを使用してRSSフィードを解析するデモを紹介します。</p>
 
-<p>The XML type provider provides a statically typed access to XML documents.
-It takes a sample document as an input (or document containing a root XML node with
-multiple child nodes that are used as samples). The generated type can then be used 
-to read files with the same structure. If the loaded file does not match the structure 
-of the sample, an runtime error may occur (but only when accessing e.g. non-existing element).</p>
+<p>ML型プロバイダーを使用すると、静的に型付けされた方法でXMLドキュメントに
+アクセスできます。
+このプロバイダーはサンプルとなるドキュメントを入力として受け取ります
+(あるいはサンプルとして使用されるような複数の子ノードを持った
+ルートXMLノードを含むドキュメントを受け取ります)。
+そして生成された型を使用すると、サンプルドキュメントと同じ構造のファイルを
+読み取ることができるようになります。
+ファイルの構造がサンプルと異なる場合には実行時エラーが発生します
+(ただし存在しない要素にアクセスしようとした場合に限られます)。</p>
 
-<h2>Introducing the provider</h2>
+<h2>プロバイダーの基本</h2>
 
-<p>The type provider is located in the <code>FSharp.Data.dll</code> assembly. Assuming the assembly 
-is located in the <code>../../bin</code> directory, we can load it in F# Interactive as follows:
-(note we also need a reference to <code>System.Xml.Linq</code>, because the provider uses the
-<code>XDocument</code> type under the cover):</p>
+<p>型プロバイダーは <code>FSharp.Data.dll</code> アセンブリ内にあります。
+このアセンブリが <code>../../../../bin</code> ディレクトリにあると仮定すると、
+F# Interactive内で読み込むためには以下のようにします
+(なおこの型プロバイダーは内部で <code>XDocument</code> を使用しているため、
+<code>System.Xml.Linq</code> への参照も必要になる点に注意してください)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -63,21 +68,24 @@ is located in the <code>../../bin</code> directory, we can load it in F# Interac
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
 <span class="prep">#r</span> <span class="s">&quot;</span><span class="s">System</span><span class="s">.</span><span class="s">Xml</span><span class="s">.</span><span class="s">Linq</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span></pre>
 </td>
 </tr>
 </table>
 
-<h3>Inferring type from sample</h3>
+<h3>サンプルからの型の推論</h3>
 
-<p>The <code>XmlProvider&lt;...&gt;</code> takes one static parameter of type <code>string</code>. The parameter can 
-be <em>either</em> a sample XML string <em>or</em> a sample file (relatively to the current folder or online 
-accessible via <code>http</code> or <code>https</code>). It is not likely that this could lead to ambiguities.</p>
+<p><code>XmlProvider&lt;...&gt;</code> には <code>string</code> 型の静的パラメータを1つ指定します。
+このパラメータには <strong>サンプルとなるXML文字列</strong> または
+<strong>サンプルファイル</strong> のいずれかを指定します
+(カレントディレクトリからの相対パスか、 <strong>http</strong> または <strong>https</strong> 経由で
+アクセス可能なファイル名を指定します)。
+パラメータの値があいまいで認識できないようなケースはほとんど無いでしょう。</p>
 
-<p>The following sample generates a type that can read simple XML documents with a root node
-containing a two attributes:</p>
+<p>以下のサンプルではルートノードに2つの属性を持ったXMLドキュメントを
+読み取ることができるような型を生成しています：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -95,14 +103,15 @@ containing a two attributes:</p>
 </tr>
 </table>
 
-<p>The type provider generates a type <code>Author</code> that has properties corresponding to the
-attributes of the root element of the XML document. The types of the properties are 
-inferred based on the values in the sample document. In this case, the <code>Name</code> property
-has a type <code>string</code> and <code>Born</code> is <code>int</code>.</p>
+<p>型プロバイダーによって生成された型 <code>Author</code> には、XMLドキュメントの
+ルート要素にある2つの属性と同じ名前のプロパティがあります。
+プロパティの型はサンプルとして指定したドキュメントの値から推測されます。
+今回の場合、 <code>Name</code> プロパティは <code>string</code> 型で
+<code>Born</code> プロパティは <code>int</code> 型です。</p>
 
-<p>XML is quite flexible format, so we could represent the same document differently.
-Instead of using attributes, we could use nested nodes (<code>&lt;name&gt;</code> and <code>&lt;born&gt;</code> nested
-under <code>&lt;author&gt;</code>) that directly contain the values:</p>
+<p>XMLは非常に柔軟な形式なので、同じドキュメントを異なる形式で表現できます。
+具体的には属性を使用する代わりに、値を直接含むようなネストされたノードとして
+表現できます( <code>&lt;author&gt;</code> 以下に <code>&lt;name&gt;</code> および <code>&lt;born&gt;</code> をネストさせます)</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -122,17 +131,18 @@ under <code>&lt;author&gt;</code>) that directly contain the values:</p>
 </tr>
 </table>
 
-<p>The generated type provides exactly the same API for reading documents following this
-convention (Note that you cannot use <code>AuthorAlt</code> to parse samples that use the
-first style - the implementation of the types differs, they just provide the same public API.)</p>
+<p>生成された型を使用すると、同じ形式のドキュメントを読み取る場合には完全に同じAPIで
+アクセスできるようになります（ただし1番目の形式を使用するサンプルを <code>AuthorAlt</code>
+で解析することはできません。両者は単にpublic APIの形式が同じだけであって、
+型の実装としてはそれぞれ別のものだからです）。</p>
 
-<p>The provider turns a node into a simply typed property only when the node contains just
-a primitive value and has no children or attributes.</p>
+<p>この型プロバイダーはノードにプリミティブな値だけが含まれていて、子ノードも属性も
+持たないような場合に限って、ノードを単純に型付けされたプロパティへと変換します。</p>
 
-<h3>Types for more complex structure</h3>
+<h3>さらに複雑な構造を持つドキュメントに対する型</h3>
 
-<p>Now let's look at a number of examples that have more interesting structure. First of 
-all, what if a node contains some value, but also has some attributes?</p>
+<p>もう少し興味深い構造を持った例をいくつか見ていくことにしましょう。
+まず、ノードが同じ値を持つものの、属性の値が異なる場合にはどうなるでしょうか？</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -150,17 +160,19 @@ all, what if a node contains some value, but also has some attributes?</p>
 </tr>
 </table>
 
-<p>If the node cannot be represented as a simple type (like <code>string</code>) then the provider
-builds a new type with multiple properties. Here, it generates a property <code>Full</code> 
-(based on the name of the attribute) and infers its type to be boolean. Then it
-adds a property with a (special) name <code>Value</code> that returns the content of the element.</p>
+<p>ノードが( <code>string</code> のような)単純型として表現できない場合、
+この型プロバイダーは複数のプロパティを持つような型を新しく作成します。
+今回の場合、(属性の名前を元にして) <code>Full</code> というbool型のプロパティが生成されます。
+次に要素のコンテンツを返すような、<code>Value</code> という(特別な)名前のプロパティが
+追加されます。</p>
 
-<h3>Types for multiple simple elements</h3>
+<h3>単純な要素を複数持つドキュメントに対する型</h3>
 
-<p>Another interesting case is when there are multiple nodes that contain just a 
-primitive value. The following example shows what happens when the root node
-contains multiple <code>&lt;value&gt;</code> nodes (note that if we leave out the parameter to the 
-<code>Parse</code> method, the same text used for the schema will be used as the runtime value)</p>
+<p>もう1つ興味深い例として、プリミティブ値しか持たないような複数のノードが存在する
+場合を考えてみましょう。
+以下の例ではルートノード以下に複数の <code>&lt;value&gt;</code> ノードがあるドキュメントを
+サンプルとして指定しています( <code>Parse</code> メソッドにパラメータを指定しなかった場合、
+スキーマ用に指定したものと同じテキストが実行時の値に反映されます)。</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -178,24 +190,25 @@ contains multiple <code>&lt;value&gt;</code> nodes (note that if we leave out th
 </tr>
 </table>
 
-<p>The type provider generates a property <code>Values</code> that returns an array with the
-values - as the <code>&lt;value&gt;</code> nodes do not contain any attributes or children, they
-are turned into <code>int</code> values and so the <code>Values</code> property returns just <code>int[]</code>!</p>
+<p>型パラメータは複数の値を配列として返すような <code>Values</code> メソッドを生成します。
+<code>&lt;value&gt;</code> ノードは任意個の属性や子ノードを持つわけではないため、
+それぞれ <code>int</code> 値となり、 <code>Values</code> メソッドも単に <code>int[]</code> を返すようになります！</p>
 
-<h2>Processing philosophers</h2>
+<h2>哲学者たちをもてなす</h2>
 
-<p>In this section we look at an example that demonstrates how the type provider works 
-on a simple document that lists authors that write about a specific topic. The 
-sample document <a href="../data/Writers.xml"><code>data/Writers.xml</code></a> looks as follows:</p>
+<p>このセクションでは特定の話題に関する著者のリストを含んだ、単純なドキュメントを
+型プロバイダーで処理する方法についてのデモを紹介します。
+サンプルとなるドキュメント <a href="../../data/Writers.xml"><code>data/Writers.xml</code></a> は
+以下のようになっています：</p>
 
 <pre lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Paul Feyerabend"</span> <span class="o">born</span><span class="k">="1924"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Thomas Kuhn"</span> <span class="k">/&gt;</span>
 <span class="k">&lt;/</span><span class="i">authors</span><span class="k">&gt;</span> </pre>
 
-<p>At runtime, we use the generated type provider to parse the following string
-(which has the same structure as the sample document with the exception that 
-one of the <code>author</code> nodes also contains <code>died</code> attribute):</p>
+<p>実行時には型プロバイダーから生成された型を使用して、以下のような文字列を
+解析します(構造としてはサンプルのドキュメントと同じですが、
+<code>author</code> ノードに <code>died</code> 属性が含まれているという違いがあります)：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -217,9 +230,11 @@ one of the <code>author</code> nodes also contains <code>died</code> attribute):
 </tr>
 </table>
 
-<p>When initializing the <code>XmlProvider</code>, we can pass it a file name or a web url.
-The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data from a file or from a web resource. The
-<code>Parse</code> method takes the data as a string, so we can now print the information as follows:</p>
+<p><code>XmlProvider</code> の初期化時にはファイル名またはWebのURLを指定できます。
+<code>Load</code> や <code>AsyncLoad</code> メソッドを使用すると、
+ファイルあるいはWeb上のリソースを読み取ることができます。
+<code>Parse</code> メソッドの場合はデータとして文字列を指定できるため、以下のようにすると
+データ内の情報を表示することができます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -233,7 +248,7 @@ The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="i">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="i">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">Writers</span><span class="s">.</span><span class="s">xml</span><span class="s">&quot;</span><span class="o">&gt;</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="i">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="i">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">Writers</span><span class="s">.</span><span class="s">xml</span><span class="s">&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="i">topic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="i">Authors</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 49)" onmouseover="showTip(event, 'fs25', 49)" class="i">Parse</span>(<span onmouseout="hideTip(event, 'fs22', 50)" onmouseover="showTip(event, 'fs22', 50)" class="i">authors</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">topic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="i">Topic</span>
@@ -245,22 +260,26 @@ The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data
 </tr>
 </table>
 
-<p>The value <code>topic</code> has a property <code>Topic</code> (of type <code>string</code>) which returns the value
-of the attribute with the same name. It also has a property <code>Authors</code> that returns
-an array with all the authors. The <code>Born</code> property is missing for some authors,
-so it becomes <code>option&lt;int&gt;</code> and we need to print it using <code>Option.iter</code>.</p>
+<p>値 <code>topic</code> には( <code>string</code> 型の) <code>Topic</code> プロパティがあります。
+このプロパティは同名の属性の値を返します。
+また、すべての著者名をコレクションとして返すような <code>Authors</code> メソッドもあります。
+<code>Born</code> プロパティはいくつかの著者では指定されていないため、
+<code>option&lt;int&gt;</code> 型として定義されています。
+そのため、 <code>Option.iter</code> を使用して表示する必要があります。</p>
 
-<p>The <code>died</code> attribute was not present in the sample used for the inference, so we
-cannot obtain it in a statically typed way (although it can still be obtained
-dynamically using <code>author.XElement.Attribute(XName.Get("died"))</code>).</p>
+<p><code>died</code> 属性はサンプルからの推論時には存在しないため、
+静的に型付けられた方法でこの値を取得することはできません
+(ただし <code>author.XElement.Attribute(XName.Get("died"))</code> というコードを使用して
+動的に取得することは可能です)。</p>
 
-<h2>Global inference mode</h2>
+<h2>グローバル推測モード</h2>
 
-<p>In the examples shown earlier, an element was never (recursively) contained in an
-element of the same name (for example <code>&lt;author&gt;</code> never contained another <code>&lt;author&gt;</code>).
-However, when we work with documents such as XHTML files, this can often be the case.
-Consider for example, the following sample (a simplified version of 
-<a href="../data/HtmlBody.xml"><code>data/HtmlBody.xml</code></a>):</p>
+<p>これまでの例では、同じ名前の要素を（再帰的に）含むような要素は
+出てきませんでした(つまりたとえば <code>&lt;author&gt;</code> 以下に <code>&lt;author&gt;</code> ノードは
+決して現れないということです)。
+しかしXHTMLファイルのようなドキュメントを扱う場合、こういった状況はよくあることです。
+例として以下のようなサンプルドキュメントがあるとしましょう
+(単純化したバージョンが <a href="../../data/HtmlBody.xml"><code>data/HtmlBody.xml</code></a> にあります)：</p>
 
 <pre lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">span</span><span class="k">&gt;</span>Main text<span class="k">&lt;/</span><span class="i">span</span><span class="k">&gt;</span>
@@ -269,10 +288,10 @@ Consider for example, the following sample (a simplified version of
   <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
 <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span></pre>
 
-<p>Here, a <code>&lt;div&gt;</code> element can contain other <code>&lt;div&gt;</code> elements and it is quite clear that
-they should all have the same type - we want to be able to write a recursive function
-that processes <code>&lt;div&gt;</code> elements. To make this possible, you need to set an optional
-parameter <code>Global</code> to <code>true</code>:</p>
+<p>この例では <code>&lt;div&gt;</code> 要素内に <code>&lt;div&gt;</code> 要素がありますが、いずれも同じ型として
+扱われるべきであることは明らかです。
+<code>&lt;div&gt;</code> 要素を処理する再帰関数を作成できるようになっていてもらいたいはずです。
+このような場合には引数 <code>Global</code> に <code>true</code> を指定します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -280,18 +299,20 @@ parameter <code>Global</code> to <code>true</code>:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="i">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">HtmlBody</span><span class="s">.</span><span class="s">xml</span><span class="s">&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="i">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">HtmlBody</span><span class="s">.</span><span class="s">xml</span><span class="s">&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 68)" onmouseover="showTip(event, 'fs34', 68)" class="i">html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs33', 69)" onmouseover="showTip(event, 'fs33', 69)" class="i">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 70)" onmouseover="showTip(event, 'fs35', 70)" class="i">GetSample</span>()</pre>
 </td>
 </tr>
 </table>
 
-<p>When the <code>Global</code> parameter is <code>true</code>, the type provider <em>unifies</em> all elements of the
-same name. This means that all <code>&lt;div&gt;</code> elements have the same type (with a union
-of all attributes and all possible children nodes that appear in the sample document).</p>
+<p>引数 <code>Global</code> を <code>true</code> にすると、型プロバイダーは同名の要素すべてを <strong>一元化</strong> します。
+つまりすべての <code>&lt;div&gt;</code> 要素が同じ型として扱われることになります
+( <code>&lt;div&gt;</code> に指定されたすべての属性をプロパティとして持ち、
+サンプルドキュメント内で見つけられるすべての子要素の組み合わせが考慮されます)。</p>
 
-<p>The type is located under a type <code>Html</code>, so we can write a <code>printDiv</code> function
-that takes <code>Html.Div</code> and acts as follows:</p>
+<p>型は <code>Html</code> 以下に定義されます。
+したがって、<code>Html.Div</code> を引数にとり、
+各 <code>&lt;div&gt;</code> 要素を処理するような <code>printDiv</code> 関数を以下のようにして作成できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -306,29 +327,29 @@ that takes <code>Html.Div</code> and acts as follows:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">/// Prints the content of a &lt;div&gt; element</span>
+<span class="c">/// &lt;div&gt; 要素のコンテンツを表示します</span>
 <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="i">printDiv</span> (<span onmouseout="hideTip(event, 'fs37', 72)" onmouseover="showTip(event, 'fs37', 72)" class="i">div</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs33', 73)" onmouseover="showTip(event, 'fs33', 73)" class="i">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="i">Div</span>) <span class="o">=</span>
   <span onmouseout="hideTip(event, 'fs37', 75)" onmouseover="showTip(event, 'fs37', 75)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 76)" onmouseover="showTip(event, 'fs39', 76)" class="i">Spans</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 77)" onmouseover="showTip(event, 'fs20', 77)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 78)" onmouseover="showTip(event, 'fs21', 78)" class="i">iter</span> (<span onmouseout="hideTip(event, 'fs7', 79)" onmouseover="showTip(event, 'fs7', 79)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span>)
   <span onmouseout="hideTip(event, 'fs37', 80)" onmouseover="showTip(event, 'fs37', 80)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 81)" onmouseover="showTip(event, 'fs40', 81)" class="i">Divs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 82)" onmouseover="showTip(event, 'fs20', 82)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 83)" onmouseover="showTip(event, 'fs21', 83)" class="i">iter</span> <span onmouseout="hideTip(event, 'fs36', 84)" onmouseover="showTip(event, 'fs36', 84)" class="i">printDiv</span>
   <span class="k">if</span> <span onmouseout="hideTip(event, 'fs37', 85)" onmouseover="showTip(event, 'fs37', 85)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 86)" onmouseover="showTip(event, 'fs39', 86)" class="i">Spans</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 87)" onmouseover="showTip(event, 'fs41', 87)" class="i">Length</span> <span class="o">=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs37', 88)" onmouseover="showTip(event, 'fs37', 88)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 89)" onmouseover="showTip(event, 'fs40', 89)" class="i">Divs</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 90)" onmouseover="showTip(event, 'fs41', 90)" class="i">Length</span> <span class="o">=</span> <span class="n">0</span> <span class="k">then</span>
       <span onmouseout="hideTip(event, 'fs37', 91)" onmouseover="showTip(event, 'fs37', 91)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 92)" onmouseover="showTip(event, 'fs42', 92)" class="i">Value</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 93)" onmouseover="showTip(event, 'fs31', 93)" class="i">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 94)" onmouseover="showTip(event, 'fs32', 94)" class="i">iter</span> (<span onmouseout="hideTip(event, 'fs7', 95)" onmouseover="showTip(event, 'fs7', 95)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span>)
 
-<span class="c">// Print the root &lt;div&gt; element with all children  </span>
+<span class="c">// すべての子要素と共にルートの &lt;div&gt; 要素を表示します</span>
 <span onmouseout="hideTip(event, 'fs36', 96)" onmouseover="showTip(event, 'fs36', 96)" class="i">printDiv</span> <span onmouseout="hideTip(event, 'fs34', 97)" onmouseover="showTip(event, 'fs34', 97)" class="i">html</span></pre>
 </td>
 </tr>
 </table>
 
-<p>The function first prints all text included as <code>&lt;span&gt;</code> (the element never has any
-attributes in our sample, so it is inferred as <code>string</code>), then it recursively prints
-the content of all <code>&lt;div&gt;</code> elements. If the element does not contain nested elements,
-then we print the <code>Value</code> (inner text).</p>
+<p>この関数はまず <code>&lt;span&gt;</code> 内のすべてのテキストを表示します
+(今回の例の場合、属性が全く指定されていないため、
+<code>string</code> 型として推論されます)。
+次に、すべての <code>&lt;div&gt;</code> 要素を再帰的に表示します。
+ネストされた要素が見つからない場合は <code>Value</code> (インナーテキスト)を表示します。</p>
 
-<h2>Reading RSS feeds</h2>
+<h2>RSSフィードの読み取り</h2>
 
-<p>To conclude this introduction with a more interesting example, let's look how to parse a
-RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
-the type provider:</p>
+<p>今回の総まとめとして、もう少し実用的な例としてRSSフィードを解析してみましょう。
+既に説明した通り、型プロバイダーには相対パスあるいはWebページのアドレスを指定できます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -340,10 +361,12 @@ the type provider:</p>
 </tr>
 </table>
 
-<p>This code builds a type <code>Rss</code> that represents RSS feeds (with the features that are used
-on <code>http://tomasp.net</code>). The type <code>Rss</code> provides static methods <code>Parse</code>, <code>Load</code> and <code>AsyncLoad</code>
-to construct it - here, we just want to reuse the same uri of the schema, so we
-use the <code>GetSample</code> static method:</p>
+<p>このコードではRSSフィード（および <code>http://tomasp.net</code> で使用されている機能）
+を表す <code>Rss</code> 型を生成しています。
+<code>Rss</code> 型にはこの型のインスタンスを生成するための機能として、staticメソッド
+<code>Parse</code> 、 <code>Load</code> 、 <code>AsyncLoad</code> が定義されています。
+今回の場合、スキーマとして指定したものと同じURIを再利用したいので、
+staticメソッド <code>GetSample</code> を使用します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -355,9 +378,9 @@ use the <code>GetSample</code> static method:</p>
 </tr>
 </table>
 
-<p>Printing the title of the RSS feed together with a list of recent posts is now quite
-easy - you can simply type <code>blog</code> followed by <code>.</code> and see what the autocompletion
-offers. The code looks like this:</p>
+<p>ここまで来ればRSSフィードのタイトルと直近の投稿一覧を表示することは簡単です。
+単に <code>blog</code> に続けて <code>.</code> と入力すれば、自動補完の候補一覧が確認できるでしょう。
+コードとしては以下のようにします：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -369,21 +392,22 @@ offers. The code looks like this:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="c">// Title is a property returning string </span>
+<span class="c">// Title は文字列を返すプロパティです</span>
 <span onmouseout="hideTip(event, 'fs7', 103)" onmouseover="showTip(event, 'fs7', 103)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs44', 104)" onmouseover="showTip(event, 'fs44', 104)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 105)" onmouseover="showTip(event, 'fs46', 105)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 106)" onmouseover="showTip(event, 'fs47', 106)" class="i">Title</span>
 
-<span class="c">// Get all item nodes and print title with link</span>
+<span class="c">// すべてのitemノードを取得して、それぞれのタイトルとリンクを表示します</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs48', 107)" onmouseover="showTip(event, 'fs48', 107)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs44', 108)" onmouseover="showTip(event, 'fs44', 108)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 110)" onmouseover="showTip(event, 'fs49', 110)" class="i">Items</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs7', 111)" onmouseover="showTip(event, 'fs7', 111)" class="i">printfn</span> <span class="s">&quot;</span><span class="s"> </span><span class="s">-</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">s</span><span class="s">)</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs48', 112)" onmouseover="showTip(event, 'fs48', 112)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 113)" onmouseover="showTip(event, 'fs50', 113)" class="i">Title</span> <span onmouseout="hideTip(event, 'fs48', 114)" onmouseover="showTip(event, 'fs48', 114)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 115)" onmouseover="showTip(event, 'fs51', 115)" class="i">Link</span></pre>
 </td>
 </tr>
 </table>
 
-<h2>Related articles</h2>
+<h2>関連する記事</h2>
 
 <ul>
-<li><a href="../reference/fsharp-data-xmlprovider.html">API Reference: XmlProvider type provider</a></li>
-<li><a href="../reference/fsharp-data-xelementextensions.html">API Reference: XElementExtensions module</a></li>
+<li><a href="../fsharpdata.html">F# Data: 型プロバイダー</a> -
+<code>FSharp.Data</code> パッケージ内にある
+その他の型プロバイダーに関する情報があります。</li>
 </ul>
 
 <div class="tip" id="fs1">namespace FSharp</div>
@@ -421,9 +445,9 @@ offers. The code looks like this:</p>
 <div class="tip" id="fs33">type Html = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.Html</div>
 <div class="tip" id="fs34">val html : XmlProvider&lt;...&gt;.Div<br /><br />Full name: XmlProvider.html</div>
 <div class="tip" id="fs35">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Div</div>
-<div class="tip" id="fs36">val printDiv : div:XmlProvider&lt;...&gt;.Div -&gt; unit<br /><br />Full name: XmlProvider.printDiv<br /><em><br /><br />&#160;Prints the content of a &lt;div&gt; element</em></div>
+<div class="tip" id="fs36">val printDiv : div:XmlProvider&lt;...&gt;.Div -&gt; unit<br /><br />Full name: XmlProvider.printDiv<br /><em><br /><br />&#160;&lt;div&gt; 要素のコンテンツを表示します</em></div>
 <div class="tip" id="fs37">val div : XmlProvider&lt;...&gt;.Div</div>
-<div class="tip" id="fs38">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;member Divs : Div []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Spans : string []<br />&#160;&#160;member Value : Option&lt;string&gt;<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../data/HtmlBody.xml&quot;,Global=&quot;True&quot;.Div</div>
+<div class="tip" id="fs38">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;member Divs : Div []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Spans : string []<br />&#160;&#160;member Value : Option&lt;string&gt;<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../../data/HtmlBody.xml&quot;,Global=&quot;True&quot;.Div</div>
 <div class="tip" id="fs39">property XmlProvider&lt;...&gt;.Div.Spans: string []</div>
 <div class="tip" id="fs40">property XmlProvider&lt;...&gt;.Div.Divs: XmlProvider&lt;...&gt;.Div []</div>
 <div class="tip" id="fs41">property System.Array.Length: int</div>
@@ -440,52 +464,76 @@ offers. The code looks like this:</p>
 
         </div>
         <div class="span3">
-          <a href="/FSharp.Data/index.html">
-            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="/FSharp.Data/ja/index.html">
+            <img src="/FSharp.Data/ja/../images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
-
             <li class="nav-header">
-              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/images/ja.png" /></a>
-              <a href="/FSharp.Data/index.html" class="nflag nflag2"><img src="/FSharp.Data/images/en.png" /></a>
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/ja/../images/ja.png" /></a>
+              <a href="/FSharp.Data/ja/../index.html" class="nflag nflag2"><img src="/FSharp.Data/ja/../images/en.png" /></a>
               F# Data
             </li>
-
             <li class="divider"></li>
-
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">NuGet経由でライブラリを取得</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">GitHub上のソースコード</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
+                (<a href="/FSharp.Data/ja/../contributing.html">En</a>)
+                </span></li>
             
-            <li class="nav-header">Documentation</li>
-
-            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
-
+            <li class="nav-header">F# Data ライブラリ</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/fsharpdata.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../fsharpdata.html">En</a>)
+                </span></li>
             <li class="divider"></li>
-
-            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
-
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonProvider.html">JSON 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/XmlProvider.html">XML 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/XmlProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvProvider.html">CSV 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/WorldBank.html">WorldBank プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/WorldBank.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Freebase.html">Freebase プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/Freebase.html">En</a>)
+                </span></li>
             <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonValue.html">JSON パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonValue.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvFile.html">CSV パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvFile.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Http.html">HTTP ユーティリティ</a>
+                (<a href="/FSharp.Data/ja/../library/Http.html">En</a>)
+                </span></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">チュートリアル</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
 
-            <li class="nav-header">Tutorials</li>
-
-            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
-            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
-
-            <li class="nav-header">Reference</li>
-
-            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
+            <li class="nav-header">リファレンス</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/../reference/index.html">API リファレンス (En)</a>
+                </span></li>
           </ul>
         </div>
       </div>

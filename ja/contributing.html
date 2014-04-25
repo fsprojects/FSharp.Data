@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>F# Data に貢献する
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
+
+    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/fsdata.css" />
+    <script type="text/javascript" src="/FSharp.Data/ja/../content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FSharp.Data/ja/index.html">F# Data</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>F# Data に貢献する</h1>
+
+<p>このページには、F# Dataパッケージに貢献しようとするあなたにとって必要な
+基本的な情報が揃えられています。
+たとえばライブラリの構造に関する簡単な説明や、型プロバイダの作成方法、
+F# Dataにおける複数のターゲットに対する処理方法
+(デスクトップやSilverlight、ポータブルライブラリで型プロバイダを
+利用できるようにする方法)があります。</p>
+
+<ul>
+<li><p>このページはGitHub上のF# Dataプロジェクトに対して
+pullリクエストを送信することで編集できます。
+そのため、F# Dataで遊んでいる間に何かしら学んだことがあれば、是非それを
+<a href="https://github.com/fsharp/FSharp.Data/blob/master/docs/content/ja/contributing.md">こちら</a>
+に記録として残してください!</p></li>
+<li><p>機能(あるいはすばらしいアイディア！)に関する議論、
+あるいは貢献方法に関する提案がある場合には、GitHub上の
+<a href="https://github.com/fsharp/FSharp.Data/issues">Issue list</a> をチェックするか、
+<a href="http://groups.google.com/group/fsharp-opensource">F# オープンソースメーリングリスト</a>
+宛にメールをください。</p></li>
+</ul>
+
+<h2>ソリューションファイル</h2>
+
+<p>ルートディレクトリには複数のVisual Studioソリューションファイル
+(<code>*.sln</code>)があり、それぞれ論理的なグループ毎に分けられています。</p>
+
+<ul>
+<li><p><strong>FSharp.Data.sln</strong> にはF# Dataの機能
+(たとえば実行時あるいはデザイン時の型プロバイダライブラリ)を
+実装する主要なプロジェクトが含まれています。
+未完成だけれども興味深いコードを追加したい場合には試験的プロジェクトの方に
+追加するようにしてください。</p></li>
+<li><p><strong>FSharp.Data.ExtraPlatforms.sln</strong> には <code>FSharp.Data.sln</code> と同じプロジェクトが
+含まれていますが、対象となるプラットフォームとして
+Silverlightやポータブルクラスライブラリなどが追加されています。</p></li>
+<li><p><strong>FSharp.Data.Tests.sln</strong> にはF# Dataをテストするためのライブラリがあります。
+また、Webサイト用のファイル ( <code>*.fsx</code> および <code>*.md</code>) も含まれています。
+ドキュメントを編集したい場合はこのソリューションをチェックしてください！</p></li>
+</ul>
+
+<h2>プロジェクトおよびマルチターゲット</h2>
+
+<p>型プロバイダを開発する上で問題となることの1つとして、
+複数バージョンの.NETプラットフォームサポートがあります。
+型プロバイダは2つのコンポーネントから構成されます：</p>
+
+<ul>
+<li><p><strong>実行時</strong> コンポーネントは型プロバイダを使用するコンパイル済みのF#コードを
+実行した時に実際に使用される型プロバイダの一部のことです。
+このアセンブリにはJSONやCSVパーサー、HTTPユーティリティなど、
+FSharp.Dataの型プロバイダではないコンポーネントも含まれます。</p></li>
+<li><p><strong>デザイン時</strong> コンポーネントは型プロバイダを使用するF#コードを
+任意のエディタで記述している間、あるいはコードをコンパイルしている間に
+使用される型プロバイダの一部のことです。
+たとえばCSVプロバイダの場合、このコンポーネントは型推論および型の生成を行います
+(生成された型はコンパイラによって実行時コンポーネントと結びつけられます)。</p></li>
+</ul>
+
+<p>複数ターゲットをサポートするためには、ターゲット(Silverlight、.NET 4.0、
+ポータブルプロファイル)それぞれに <strong>実行時コンポーネント</strong> が必要です。
+しかし <strong>デザイン時</strong> コンポーネントはVisual StudioあるいはMonoDevelopを使用して、
+デスクトップ用の.NET上でしか実行されないため、1つしか作成する必要がありません。
+(本当のことを言うと、 <a href="http://tryfsharp.org">tryfsharp.org</a> のWebサイトを
+サポートするために、Silverlight用の <strong>デザイン時</strong> コンポーネントを
+作成する必要があります...)</p>
+
+<p>というわけで、4つの <strong>実行時</strong> コンポーネントと2つの <strong>デザイン時</strong>
+コンポーネントがあります。
+今のところはコンポーネント毎にそれぞれ別のプロジェクトファイルが用意されていますが、
+プロジェクト間で共有されているファイルもあります。
+プロジェクトでは単にシンボルがいくつか定義されているだけで、
+特定のプラットフォームに対してはそれらのシンボルに対する <code>#if</code> で
+コードを組み込んだり除外したりするようになっています。
+試験的プロジェクトには2つの <strong>実行時</strong> コンポーネントと2つの <strong>デザイン時</strong>
+コンポーネントがあります。</p>
+
+<p><code>FSharp.Data.sln</code> を開くと、以下のような <strong>実行時コンポーネント</strong> が
+含まれていることが確認できるでしょう：</p>
+
+<ul>
+<li><strong>FSharp.Data</strong> - デスクトップ.NET 4.0 バージョン</li>
+<li><strong>FSharp.Data.Portable</strong> - F# ポータブルライブラリバージョン
+(デスクトップの.NET 4.0、Windows Phone 8、 Windows 8を対象とする)
+ポータブルライブラリバージョン</li>
+</ul>
+
+<p>ポータブルライブラリをSilverlight上で使用することは可能ですが、
+その場合にはLINQクエリ演算が定義されているSystem.Coreアセンブリへの参照が
+正しいバージョンに設定できないという問題があるためにFreebaseプロバイダが
+機能しなくなるという点に注意してください。
+同様に、ポータブルバージョンあるいはSilverlightバージョンを使用する場合には
+XmlProviderもSilverlight上では機能しません。</p>
+
+<p><strong>デザイン時</strong> コンポーネントとしては以下のプロジェクトがあります：</p>
+
+<ul>
+<li><strong>FSharp.Data.DesignTime</strong> - デスクトップエディタ用のメインバージョン</li>
+<li><strong>FSharp.Data.DesignTime.Silverlight</strong> - Try F#用のメインバージョン</li>
+</ul>
+
+<p>Silverlight 5のプロジェクトをコンパイルするためには、
+<a href="http://go.microsoft.com/fwlink/?LinkId=229324">Silverlight 5.0 開発者用ランタイム</a>
+をインストールしておく必要があります。</p>
+
+<h3>型プロバイダの構成</h3>
+
+<p>F# Dataの型プロバイダのうち、いくつかのものは同じような構造になっています。
+CSVやJSON、XMLプロバイダはいずれもサンプルとして入力されたファイル構造から
+型を構成します。
+さらに、いずれにも実行時コンポーネントがあります(CSVパーサーやJSONパーサー、
+あるいは.NETの <code>XDocument</code> です)。</p>
+
+<p>では一般的な型プロバイダはどのように実装すればいいのでしょうか？
+まず、プロジェクト間で共有されるファイルについてはプロジェクトの
+<code>Common</code> や <code>Library</code> サブディレクトリに配置します。
+これらのファイルは(パーサーやHTTPヘルパなど)汎用の <strong>実行時</strong> コンポーネントが
+含まれることになります。</p>
+
+<p>次に、いくつかの <strong>デザイン時</strong> コンポーネントがあります。
+これらは(DesignTimeプロジェクト内の) <code>Providers</code> フォルダ内にあるもので、
+F#チームによって作成された <code>ProvidedTypes</code> ヘルパや、
+<code>StructureInference.fs</code>(構造化データに対する型推論機能の実装)、
+およびその他いくつかのヘルパ機能を実装したコードがあります。</p>
+
+<p>JSONプロバイダのような型プロバイダの場合、1つのフォルダ内に複数のファイルが置かれます。
+一般的には以下のようになります：</p>
+
+<ul>
+<li><p><code>JsonRuntime.fs</code> - 唯一の <strong>実行時</strong> コンポーネントです。
+実行時における型の定義や、生成されたコードから呼び出されるメソッドの
+定義などがあります。</p></li>
+<li><p><code>JsonInference.fs</code> - <code>StructureInference.fs</code> にある一般的なAPIを使用して
+構造を推測するような <strong>デザイン時</strong> コンポーネントです。</p></li>
+<li><p><code>JsonGenerator.fs</code> - 公開される型を生成したり、公開される型にプロパティや
+メソッドなどを追加するためのコードがあります。
+このコードでは推論によって得られた情報を使用して、実行時コンポーネントを
+呼び出すコードが生成されます。</p></li>
+<li><p><code>JsonProvider.fs</code> - 型プロバイダのstaticプロパティを定義したり、
+公開される型を登録する処理を行うようなエントリポイントです。</p></li>
+</ul>
+
+<p>WorldBank、Freebaseの型プロバイダの場合は異なります。
+これらには推論が必要ありませんが、やはり <strong>実行時</strong> と <strong>デザイン時</strong>
+コンポーネントの区別があります。
+したがってこれらの型プロバイダの場合、少なくとも2つのファイル
+(およびいくつかのヘルパ用ファイル)がディレクトリ内にあります。</p>
+
+<h2>ソースコード</h2>
+
+<h3>Assembly replacer</h3>
+
+<p>型プロバイダ内でのコード生成はややトリッキーです
+(たとえば <code>JsonGenerator.fs</code> を参照してください)。
+というのも、生成されたコードでは特定の実行時アセンブリ
+(Silverlightやデスクトッププロファイル、ポータブルプロファイル)
+への参照が必要になるからです。
+特に、F#のクォート式を使用してコードを生成するような場合には顕著です。
+ソースコード中に <code>&lt;@@ foo.Bar @@&gt;</code> というコードがあると、
+このクォート式は現在のアセンブリにある <code>foo</code> という型を
+直接参照していることになります。</p>
+
+<p>この問題はAssembly replacer
+(アセンブリ置換機。<code>Providers</code> 内の <code>AssemblyReplacer.fs</code> ファイルを参照)
+によって処理されます。
+Assemlby replacerはクォート式を変換して、正しいバージョンを参照するように
+コードを置き換えます。
+Assembly replacerの動作の詳細については
+<a href="https://github.com/fsharp/FSharp.Data/pull/5">GitHub上での議論</a>
+を参照してください。</p>
+
+<p><code>AssemblyReplacer</code> 型には以下のようなドキュメントがあります：</p>
+
+<blockquote>
+  <p>型プロバイダを実行時アセンブリとデザイン時アセンブリに分離することによって、
+クォート式が間違った型を参照するようになってしまったため、
+クォート式を直接使用することができなくなってしまいました。
+<code>AssemblyReplacer</code> を使用すると、
+クォート式によって生成された式が変形されて、適切な型を参照するようになるため
+この問題を回避できるようになります。</p>
+
+  <p><code>ProvidedMethod</code> や <code>ProvidedConstructor</code> 、
+<code>ProvidedProperty</code> の <code>InvokeCode</code> や <code>GetterCode</code>
+に指定する式は <code>(fun args -&gt; &lt;@@ doSomethingWith(%%args) @@&gt;)</code> ではなく、
+<code>(fun args -&gt; let args = replacer.ToDesignTime args in replacer.ToRuntime &lt;@@ doSomethingWith(%%args) @@&gt;)</code>
+という式にする必要があります。</p>
+
+  <p>たとえば <code>ProvidedXYZ</code> という型を作成する場合は
+必ず実行時型を指定する必要があります。</p>
+
+  <p>また、この型に対して <code>InvokeCode</code> や <code>GetterCode</code> で指定された機能が呼び出されると
+引数として指定された式をまずデザイン時の型に変換する必要があります。
+そして変換後の式をクォート式と連結した後、最終的に
+実行時型へと変換し直す必要があるわけです。</p>
+
+  <p>もう1つ面倒なことがあります。
+<code>Expr.Var</code> には参照同値性があるため、同じ名前で型が異なる新しい <code>Expr.Var</code> を
+単純に新しく作成することはできません。
+これらを実行時からデザイン時の型へと変換する場合、
+元々のインスタンスと完全に同じインスタンスへと戻すことができるように
+それぞれをディクショナリとして保持しています。</p>
+
+  <p>また、F#の関数をパラメータや返り値として使用するような式を
+使用することができないため 、
+代わりに常にデリゲートを使うようにしなければならないという制限もあります
+(この制限は今回のメソッドだけではなく、型プロバイダのメンバいずれにも該当します)。</p>
+</blockquote>
+
+<p>標準的な型プロバイダはいずれも生成時に <code>AssemblyReplacer</code> のインスタンスを
+取得して、それをコードジェネレータに渡し、適切なコードが
+生成されるようにすることになります：</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">AssemblyReplacer</span> <span class="o">=</span>
+
+  <span class="c">/// Gets the equivalent runtime type</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeType</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Type</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">Type</span>
+
+  <span class="c">/// Gets an equivalent expression with all the types </span>
+  <span class="c">/// replaced with runtime equivalents</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs4', 5)" onmouseover="showTip(event, 'fs4', 5)" class="i">ToRuntime</span> <span class="o">:</span> <span class="i">designTimeTypeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs5', 6)" onmouseover="showTip(event, 'fs5', 6)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 7)" onmouseover="showTip(event, 'fs5', 7)" class="i">Expr</span>
+
+  <span class="c">/// Gets an equivalent expression with all the types </span>
+  <span class="c">/// replaced with designTime equivalents</span>
+  <span class="k">abstract</span> <span class="k">member</span> <span onmouseout="hideTip(event, 'fs6', 8)" onmouseover="showTip(event, 'fs6', 8)" class="i">ToDesignTime</span><span class="o">:</span> <span class="i">runtimeExpr</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">Expr</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">Expr</span></pre>
+</td>
+</tr>
+</table>
+
+<h2>ドキュメント</h2>
+
+<p>F# Dataライブラリのドキュメントは
+<a href="https://github.com/tpetricek/FSharp.Formatting">F# Formatting</a>
+を使用して自動生成されています。
+このライブラリを使用すると <code>*.md</code> (コードスニペットが埋め込まれた
+マークダウンファイル) や <code>*.fsx</code> (マークダウンドキュメントが埋め込まれた
+F#スクリプトファイル) ファイルを素敵なHTMLドキュメントに変換してくれます。</p>
+
+<ul>
+<li><p>すべてのドキュメントに関連するコードは
+<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples">GitHub上の</a>
+<code>samples</code> ディレクトリにあります。
+バグや新機能を追加した場合には、必ずドキュメントが残るようにしてください！</p></li>
+<li><p><p>それぞれの型に直接関連したドキュメントだけでなく、
+(<a href="https://github.com/fsharp/FSharp.Data/tree/master/samples/tutorials">GitHub上の</a>)
+<code>tutorials</code> フォルダにもドキュメントがあります。
+ここにはF# Dataの機能を紹介するためのサンプルやチュートリアルを追加できます。</p></li>
+<li><p>ドキュメントをビルドしたい場合には単に <code>build.fsx</code> スクリプト
+(<a href="https://github.com/fsharp/FSharp.Data/blob/master/tools/build.fsx">GitHubへのリンク</a>)
+を実行するだけでビルドできます。</p></li>
+</ul>
+
+<h2>関連する記事</h2>
+
+<p>一般的な型プロバイダを作成する方法が知りたい場合には、以下のリソースが役に立つことでしょう：</p>
+
+<ul>
+<li><p><a href="http://blogs.msdn.com/b/fsharpteam/archive/2011/09/24/developing-f-type-providers-with-the-f-3-0-developer-preview-an-introductory-guide-and-samples.aspx">Writing F# Type Providers with the F# 3.0 Developer Preview - An Introductory Guide and Samples</a></p></li>
+<li><p><a href="http://fsharp3sample.codeplex.com/">F# 3.0 Sample Pack</a>
+には非常に単純なものからかなり複雑なものまで、
+様々な型プロバイダのサンプルがあります。</p></li>
+<li><a href="http://msdn.microsoft.com/en-gb/library/hh361034.aspx">Tutorial: Creating a Type Provider (F#)</a></li>
+</ul>
+
+<div class="tip" id="fs1">type AssemblyReplacer =<br />&#160;&#160;interface<br />&#160;&#160;&#160;&#160;abstract member ToDesignTime : runtimeExpr:Expr -&gt; Expr<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeType:Type -&gt; Type<br />&#160;&#160;&#160;&#160;abstract member ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br />&#160;&#160;end<br /><br />Full name: contributing.AssemblyReplacer</div>
+<div class="tip" id="fs2">abstract member AssemblyReplacer.ToRuntime : designTimeType:Type -&gt; Type<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets the equivalent runtime type</em></div>
+<div class="tip" id="fs3">type Type =<br />&#160;&#160;inherit MemberInfo<br />&#160;&#160;member Assembly : Assembly<br />&#160;&#160;member AssemblyQualifiedName : string<br />&#160;&#160;member Attributes : TypeAttributes<br />&#160;&#160;member BaseType : Type<br />&#160;&#160;member ContainsGenericParameters : bool<br />&#160;&#160;member DeclaringMethod : MethodBase<br />&#160;&#160;member DeclaringType : Type<br />&#160;&#160;member Equals : o:obj -&gt; bool + 1 overload<br />&#160;&#160;member FindInterfaces : filter:TypeFilter * filterCriteria:obj -&gt; Type[]<br />&#160;&#160;member FindMembers : memberType:MemberTypes * bindingAttr:BindingFlags * filter:MemberFilter * filterCriteria:obj -&gt; MemberInfo[]<br />&#160;&#160;...<br /><br />Full name: System.Type</div>
+<div class="tip" id="fs4">abstract member AssemblyReplacer.ToRuntime : designTimeTypeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToRuntime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with runtime equivalents</em></div>
+<div class="tip" id="fs5">Multiple items<br />type Expr =<br />&#160;&#160;override Equals : obj:obj -&gt; bool<br />&#160;&#160;member GetFreeVars : unit -&gt; seq&lt;Var&gt;<br />&#160;&#160;member Substitute : substitution:(Var -&gt; Expr option) -&gt; Expr<br />&#160;&#160;member ToString : full:bool -&gt; string<br />&#160;&#160;member CustomAttributes : Expr list<br />&#160;&#160;member Type : Type<br />&#160;&#160;static member AddressOf : target:Expr -&gt; Expr<br />&#160;&#160;static member AddressSet : target:Expr * value:Expr -&gt; Expr<br />&#160;&#160;static member Application : functionExpr:Expr * argument:Expr -&gt; Expr<br />&#160;&#160;static member Applications : functionExpr:Expr * arguments:Expr list list -&gt; Expr<br />&#160;&#160;...<br /><br />Full name: Microsoft.FSharp.Quotations.Expr<br /><br />--------------------<br />type Expr&lt;&#39;T&gt; =<br />&#160;&#160;inherit Expr<br />&#160;&#160;member Raw : Expr<br /><br />Full name: Microsoft.FSharp.Quotations.Expr&lt;_&gt;</div>
+<div class="tip" id="fs6">abstract member AssemblyReplacer.ToDesignTime : runtimeExpr:Expr -&gt; Expr<br /><br />Full name: contributing.AssemblyReplacer.ToDesignTime<br /><em><br /><br />&#160;Gets an equivalent expression with all the types <br />&#160;replaced with designTime equivalents</em></div>
+
+        </div>
+        <div class="span3">
+          <a href="/FSharp.Data/ja/index.html">
+            <img src="/FSharp.Data/ja/../images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+            <li class="nav-header">
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/ja/../images/ja.png" /></a>
+              <a href="/FSharp.Data/ja/../index.html" class="nflag nflag2"><img src="/FSharp.Data/ja/../images/en.png" /></a>
+              F# Data
+            </li>
+            <li class="divider"></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">NuGet経由でライブラリを取得</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">GitHub上のソースコード</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
+                (<a href="/FSharp.Data/ja/../contributing.html">En</a>)
+                </span></li>
+            
+            <li class="nav-header">F# Data ライブラリ</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/fsharpdata.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../fsharpdata.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonProvider.html">JSON 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/XmlProvider.html">XML 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/XmlProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvProvider.html">CSV 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/WorldBank.html">WorldBank プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/WorldBank.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Freebase.html">Freebase プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/Freebase.html">En</a>)
+                </span></li>
+            <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonValue.html">JSON パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonValue.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvFile.html">CSV パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvFile.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Http.html">HTTP ユーティリティ</a>
+                (<a href="/FSharp.Data/ja/../library/Http.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">チュートリアル</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li class="nav-header">リファレンス</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/../reference/index.html">API リファレンス (En)</a>
+                </span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

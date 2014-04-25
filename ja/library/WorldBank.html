@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>F# Data: WorldBank Provider
+    <title>F# Data: WorldBank プロバイダー
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
@@ -11,12 +11,11 @@
     <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
     <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
-    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
-    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/fsdata.css" />
-    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/ja/../content/fsdata.css" />
+    <script type="text/javascript" src="/FSharp.Data/ja/../content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -31,30 +30,33 @@
           <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
           <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
         </ul>
-        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a></h3>
+        <h3 class="muted"><a href="/FSharp.Data/ja/index.html">F# Data</a></h3>
       </div>
       <hr />
       <div class="row">
         <div class="span9" id="main">
           
-<h1>F# Data: WorldBank Provider</h1>
+<h1>F# Data: WorldBank プロバイダー</h1>
 
-<p>The <a href="http://www.worldbank.org">World Bank</a> is an international organization that provides
-financial and technical assistance to developing countries around the world. As one of the
-activities, the World Bank also collects development indicators and other data about
-countries in the world. The <a href="http://data.worldbank.org/">data catalog</a> contains over
-8000 indicators that can be programmatically accessed.</p>
+<p><a href="http://www.worldbank.org">世界銀行</a> (World Bank)は世界中の発展途上国に対して、
+経済的かつ技術的な支援を行っている国際組織です。
+また、世界銀行は活動の一環として世界中の各国における発展指標や
+その他のデータを収集しています。
+<a href="http://data.worldbank.org/">data catalog</a> のページではプログラムからも
+アクセスできる8000以上の指標が公開されています。</p>
 
-<p>The WorldBank type provider makes the WorldBank data easily accessible to F# programs and
-scripts in a type safe way. This article provides an introduction. The type provider
-is also used on the <a href="http://www.tryfsharp.org">Try F#</a> web site in the "Data Science" tutorial,
-so you can find more examples there.</p>
+<p>WorldBank 型プロバイダーを使うと、F#プログラムやスクリプトから型安全かつ
+簡単な方法でWorldBankのデータにアクセスできるようになります。
+このドキュメントはこの型プロバイダーの基本的な部分のみ説明しています。
+WorldBank 型プロバイダーは <a href="http://www.tryfsharp.org">Try F#</a> の
+Webサイトにある"Data Science" のチュートリアルでも使われているため、
+そちらも参考にするとよいでしょう。</p>
 
-<h2>Introducing the provider</h2>
+<h2>型プロバイダーの基本</h2>
 
-<p>The following example loads the <code>FSharp.Data.dll</code> library (in F# Interactive), 
-initializes a connection to the WorldBank using the <code>GetDataContext</code> method and then
-retrieves the percentage of population who attend universities in the UK:</p>
+<p>以下の例では(F# Interactive上で) <code>FSharp.Data.dll</code> ライブラリを読み込んだ後、
+<code>GetDataContext</code> メソッドを使ってWorldBankへの接続を初期化し、
+イギリスで大学に進学した人口の割合を受信しています；</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -69,7 +71,7 @@ retrieves the percentage of population who attend universities in the UK:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
+<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">data</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">WorldBankData</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">GetDataContext</span>()
@@ -82,39 +84,36 @@ retrieves the percentage of population who attend universities in the UK:</p>
 </tr>
 </table>
 
-<p>When generating the data context, the WorldBank type provider retrieves the list of all
-countries known to the WorldBank and the list of all supported indicators. Both of these
-dimensions are provided as properties, so you can use autocomplete to easily discover
-various data sources. Most of the indicators use longer name, so we need to wrap the name
-in <code>\</code>``.</p>
+<p>データコンテキストが生成されると、WorldBank 型プロバイダーは
+世界銀行で把握されているすべての国のリスト、および
+利用可能なすべての指針のリストを受信します。
+それぞれはプロパティとして参照できるようになっているため、
+自動コンプリートの候補から様々なデータソースが利用できることが確認できるでしょう。
+多くの指標には長い名前がつけられているため、
+名前を <code>\</code>`` で囲む必要があります。</p>
 
-<p>The result of the <code>School enrollment, tertiary (% gross)</code> property is a sequence with 
-values for different years. Using <code>Seq.maxBy fst</code> we get the most recent available value.</p>
+<p><code>School enrollment, tertiary (% gross)</code> プロパティの結果は
+異なる年毎の値のシーケンスです。
+<code>Seq.maxBy fst</code> とすることで直近で利用可能な最新のデータを取得できます。</p>
 
-<h3>Charting World Bank data</h3>
+<h3>世界銀行のデータをチャート表示する</h3>
 
-<p>We can easily see how the university enrollment changes over time by using the
-<a href="http://fsharp.github.io/FSharp.Charting/">FSharp.Charting</a> library and plotting the data:</p>
-
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-<span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span></pre>
-</td>
-</tr>
-</table>
+<p><a href="http://fsharp.github.io/FSharp.Charting/">FSharp.Charting</a> ライブラリを使うと
+大学進学率の変遷を簡単に図表にできます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
+<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 10)" onmouseover="showTip(event, 'fs1', 10)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Charting</span>
+
 <span onmouseout="hideTip(event, 'fs3', 12)" onmouseover="showTip(event, 'fs3', 12)" class="i">data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="i">Countries</span><span class="o">.</span><span class="i">``United Kingdom``</span>
     <span class="o">.</span><span class="i">Indicators</span><span class="o">.</span><span class="i">``School enrollment, tertiary (% gross)``</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs11', 14)" onmouseover="showTip(event, 'fs11', 14)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">Line</span></pre>
@@ -122,19 +121,20 @@ values for different years. Using <code>Seq.maxBy fst</code> we get the most rec
 </tr>
 </table>
 
-<p>The <code>Chart.Line</code> function takes a sequence of pairs containing X and Y values, so we
-can call it directly with the World Bank data set using the year as the X value and the
-value as a Y value.</p>
+<p><code>Chart.Line</code> 関数はXとYの値ペアのシーケンスを受け取ります。
+そのため、世界銀行から受信したデータセットをそのまま渡せば
+Xが年、Yがその年の値になったチャートが作成できます。</p>
 
-<p><img src="/FSharp.Data/images/chart3.png" alt="Chart" /></p>
+<h2>世界銀行のデータを非同期的に使う</h2>
 
-<h2>Using World Bank data asynchronously</h2>
-
-<p>If you need to download large amount of data or if you need to run the operation without
-blocking the caller, then you probably want to use F# asynchronous workflows to perform
-the operation. The F# Data Library also provides the <code>WorldBankDataProvider</code> type which takes
-a number of static parameters. If the <code>Asynchronous</code> parameter is set to <code>true</code> then the
-type provider generates all operations as asynchronous:</p>
+<p>非常に大量のデータをダウンロードする必要がある場合、
+あるいは呼び出し元をブロックせずに処理を実行した場合には、
+F#の非同期ワークフローを使って操作ができればいいなと思うのではないでしょうか。
+F# Dataライブラリには様々なstatic引数を受け取るような
+<code>WorldBankDataProvider</code> 型があります。
+引数 <code>Asyncronous</code> を <code>true</code> にすると、
+すべての操作を非同期的に実行するような型が
+型プロバイダーによって生成されます：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -148,19 +148,20 @@ type provider generates all operations as asynchronous:</p>
 </tr>
 </table>
 
-<p>The above snippet specified "World Development Indicators" as the name of the data 
-source (a collection of commonly available indicators) and it set the optional argument
-<code>Asynchronous</code> to <code>true</code>. As a result, properties such as 
-<code>School enrollment, tertiary (% gross)</code> will now have a type <code>Async&lt;(int * int)[]&gt;</code> meaning
-that they represent an asynchronous computation that can be started and will eventually
-produce the data.</p>
+<p>上のコードではデータソース(一般的に利用可能な指標のコレクション)の名前として
+"World Development Indicators" を指定して、オプション引数 <code>Asynchronous</code> に
+<code>true</code> を設定しています。
+そうするとたとえば <code>School enrollment, tertiary (% gross)</code> などのプロパティが
+<code>Async&lt;(int * int)[]&gt;</code> になります。
+これはつまり非同期的に処理を始めることができ、最終的にデータを生成するような
+操作であることを示しています。</p>
 
-<h3>Downloading data in parallel</h3>
+<h3>データを並列にダウンロードする</h3>
 
-<p>To demonstrate the asynchronous version of the type provider, let's write code that
-downloads the university enrollement data about a number of countries in parallel.
-We first create a data context and then define an array with some countries we want to 
-process:</p>
+<p>非同期バージョンの型プロバイダーのデモとして、
+多数の国における大学進学率を並列にダウンロートしてみます。
+まずデータコンテキストを作成した後に、
+対象とする国を配列として定義します：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l"> 1: </span>
@@ -186,7 +187,7 @@ process:</p>
 <td class="snippet"><pre class="fssnip">
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 20)" onmouseover="showTip(event, 'fs16', 20)" class="i">wb</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 21)" onmouseover="showTip(event, 'fs13', 21)" class="i">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 22)" onmouseover="showTip(event, 'fs15', 22)" class="i">GetDataContext</span>()
 
-<span class="c">// Create a list of countries to process</span>
+<span class="c">// 対象とする国のリストを作成</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 23)" onmouseover="showTip(event, 'fs17', 23)" class="i">countries</span> <span class="o">=</span> 
  [| <span onmouseout="hideTip(event, 'fs16', 24)" onmouseover="showTip(event, 'fs16', 24)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 25)" onmouseover="showTip(event, 'fs18', 25)" class="i">Countries</span><span class="o">.</span><span class="i">``Arab World``</span>
     <span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">wb</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 27)" onmouseover="showTip(event, 'fs18', 27)" class="i">Countries</span><span class="o">.</span><span class="i">``European Union``</span>
@@ -206,9 +207,9 @@ process:</p>
 </tr>
 </table>
 
-<p>To download the information in parallel, we can create a list of asynchronous 
-computations, compose them using <code>Async.Parallel</code> and then run the (single) obtained 
-computation to perform all the downloads:</p>
+<p>データを並列にダウンロードするには、非同期計算のリストを作成した後、
+それらを <code>Async.Parallel</code> で組み合わせ、
+(1つになった)計算を実行してすべてのダウンロード処理を行います：</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -230,18 +231,18 @@ computation to perform all the downloads:</p>
 </tr>
 </table>
 
-<p>The above snippet does not just download the data using <code>Async.RunSynchronously</code>, but
-it also turns every single downloaded data set into a line chart (using <code>Chart.Line</code>) 
-and then creates a single composed chart using <code>Chart.Combine</code>.</p>
+<p>上のコードは単に <code>Async.RunSynchronously</code> を使ってダウンロードするだけではなく、
+それぞれのデータセットから1つの折れ線チャートを出力して、
+各チャートを <code>Chart.Combine</code> で1つの総合チャートにしています。</p>
 
-<p><img src="/FSharp.Data/images/chart4.png" alt="Chart" /></p>
-
-<h2>Related articles</h2>
+<h2>関連する記事</h2>
 
 <ul>
-<li><a href="http://www.tryfsharp.org/Learn/data-science">Try F#: Data Science</a> - The Data Science
-tutorial on Try F# uses the WorldBank type provider in numerous examples.</li>
-<li><a href="../reference/fsharp-data-worldbankdataprovider.html">API Reference: WorldBankDataProvider type provider</a></li>
+<li><a href="../fsharpdata.html">F# Data: 型プロバイダー</a> -
+<code>FSharp.Data</code> パッケージ内の型プロバイダーについての説明があります。</li>
+<li><a href="http://www.tryfsharp.org/Learn/data-science">Try F#: Data Science</a> -
+Try F# の Data Science チュートリアルにはFreebase 型プロバイダーを使った
+様々な例があります。</li>
 </ul>
 
 <div class="tip" id="fs1">namespace FSharp</div>
@@ -280,52 +281,76 @@ tutorial on Try F# uses the WorldBank type provider in numerous examples.</li>
 
         </div>
         <div class="span3">
-          <a href="/FSharp.Data/index.html">
-            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          <a href="/FSharp.Data/ja/index.html">
+            <img src="/FSharp.Data/ja/../images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
           </a>
 
           <ul class="nav nav-list" id="menu">
-
             <li class="nav-header">
-              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/images/ja.png" /></a>
-              <a href="/FSharp.Data/index.html" class="nflag nflag2"><img src="/FSharp.Data/images/en.png" /></a>
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/ja/../images/ja.png" /></a>
+              <a href="/FSharp.Data/ja/../index.html" class="nflag nflag2"><img src="/FSharp.Data/ja/../images/en.png" /></a>
               F# Data
             </li>
-
             <li class="divider"></li>
-
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get Library via NuGet</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data">NuGet経由でライブラリを取得</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">GitHub上のソースコード</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/contributing.html">F# Dataに貢献する</a>
+                (<a href="/FSharp.Data/ja/../contributing.html">En</a>)
+                </span></li>
             
-            <li class="nav-header">Documentation</li>
-
-            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
-
+            <li class="nav-header">F# Data ライブラリ</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/fsharpdata.html">はじめに</a>
+                (<a href="/FSharp.Data/ja/../fsharpdata.html">En</a>)
+                </span></li>
             <li class="divider"></li>
-
-            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
-
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonProvider.html">JSON 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/XmlProvider.html">XML 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/XmlProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvProvider.html">CSV 型プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvProvider.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/WorldBank.html">WorldBank プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/WorldBank.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Freebase.html">Freebase プロバイダー</a>
+                (<a href="/FSharp.Data/ja/../library/Freebase.html">En</a>)
+                </span></li>
             <li class="divider"></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/JsonValue.html">JSON パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/JsonValue.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/CsvFile.html">CSV パーサーおよびリーダー</a>
+                (<a href="/FSharp.Data/ja/../library/CsvFile.html">En</a>)
+                </span></li>
+            <li><span>
+                <a href="/FSharp.Data/ja/library/Http.html">HTTP ユーティリティ</a>
+                (<a href="/FSharp.Data/ja/../library/Http.html">En</a>)
+                </span></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li class="nav-header">チュートリアル</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
+                (<a href="/FSharp.Data/ja/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
 
-            <li class="nav-header">Tutorials</li>
-
-            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
-            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
-
-            <li class="nav-header">Reference</li>
-
-            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
+            <li class="nav-header">リファレンス</li>
+            <li><span>
+                <a href="/FSharp.Data/ja/../reference/index.html">API リファレンス (En)</a>
+                </span></li>
           </ul>
         </div>
       </div>
