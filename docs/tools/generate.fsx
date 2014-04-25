@@ -21,19 +21,28 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
+#I "../../packages/FSharp.Charting.0.90.6/lib/net40"
 #I "../../packages/FSharp.Compiler.Service.0.0.44/lib/net40"
 #I "../../packages/FSharp.Formatting.2.4.7/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
+#r "Fsharp.Charting.dll"
+#r "System.Windows.Forms.DataVisualization.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
+#r "FSharp.Markdown.dll"
 #r "FSharp.MetadataFormat.dll"
-open Fake
 open System.IO
+open Fake
 open Fake.FileHelper
+open FSharp.Charting
+open System.Drawing
+open System.Drawing.Imaging
+open System.Windows.Forms
 open FSharp.Literate
+open FSharp.Markdown
 open FSharp.MetadataFormat
 
 // When called from 'build.fsx', use the public project URL as <root>
@@ -80,15 +89,48 @@ let buildReference () =
       sourceRepo = repo,
       sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
 
+let createFsiEvaluator root output =
+
+  // Counter for saving files
+  let imageCounter = 
+    let count = ref 0
+    (fun () -> incr count; !count)
+
+  let transformation (value:obj, typ:System.Type) =
+    match value with 
+    | :? ChartTypes.GenericChart as ch ->
+        // Pretty print F# Chart - save the chart to the "images" directory 
+        // and return a DirectImage reference to the appropriate location
+        let id = imageCounter().ToString()
+        let file = "chart" + id + ".png"
+        ensureDirectory (output @@ "images")
+
+        // We need to reate host control, but it does not have to be visible
+        ( use ctl = new ChartTypes.ChartControl(ch, Dock = DockStyle.Fill, Width=800, Height=300)
+          ch.CopyAsBitmap().Save(output @@ "images" @@ file, ImageFormat.Png) )
+        Some [ Paragraph [DirectImage ("Chart", (root + "/images/" + file, None))]  ]
+
+    | _ -> None 
+    
+  // Create FSI evaluator, register transformations & return
+  let fsiEvaluator = FsiEvaluator()
+  fsiEvaluator.RegisterTransformation(transformation)
+  fsiEvaluator
+
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
                 |> Seq.filter (fun x -> not <| x.Contains "ja")
+  
+  // FSI evaluator will put images into 'output/images' and 
+  // reference them as 'root/images/image1.png' in the HTML
+  let fsiEvaluator = createFsiEvaluator root output
+
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
     Literate.ProcessDirectory
       ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots )
+        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator )
 
 // Generate
 copyFiles()

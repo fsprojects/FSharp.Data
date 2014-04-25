@@ -97,8 +97,12 @@ the response content, so it's easier to debug in F# interactive when the server 
 You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
 *)
 
+(*** define-output:request ***)
+
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
-// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+
+(** This returns the following: *)
+(*** include-it:request ***)
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
