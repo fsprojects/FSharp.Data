@@ -345,17 +345,23 @@ module JsonTypeBuilder =
 
         if ctx.GenerateConstructors then
 
-            let ctor = ProvidedConstructor(parameters, InvokeCode = fun args -> 
-                let properties = 
-                    Expr.NewArray(typeof<string * obj>, 
-                                  args 
-                                  |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
-                                                                           Expr.Coerce(a, typeof<obj>) ]))
-                let cultureStr = ctx.CultureStr
-                <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
-                |> ctx.Replacer.ToRuntime)
+            objectTy.AddMember <| 
+                ProvidedConstructor(parameters, InvokeCode = fun args -> 
+                    let properties = 
+                        Expr.NewArray(typeof<string * obj>, 
+                                      args 
+                                      |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
+                                                                               Expr.Coerce(a, typeof<obj>) ]))
+                    let cultureStr = ctx.CultureStr
+                    <@@ JsonRuntime.CreateRecord(%%properties, cultureStr) @@>
+                    |> ctx.Replacer.ToRuntime)
 
-            objectTy.AddMember ctor
+            objectTy.AddMember <| 
+                    ProvidedConstructor(
+                        [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
+                        InvokeCode = fun (Singleton arg) -> 
+                            let arg = ctx.Replacer.ToDesignTime arg
+                            <@@ JsonRuntime.CreateFromJsonValue(%%arg:JsonValue) @@> |> ctx.Replacer.ToRuntime)
 
         objectTy
 

@@ -261,7 +261,11 @@ type JsonRuntime =
         | :? option<JsonValue>       as v -> f id v
         | _ -> failwithf "Can't create JsonValue from %A" value
 
-  // Creates a JsonValue and wraps it in a json document
+  /// Wraps an existing JsonValue in a json document
+  static member CreateFromJsonValue(json:JsonValue) =     
+    JsonDocument.Create(json, "")
+  
+  /// Creates a scalar JsonValue and wraps it in a json document
   static member CreateValue(value:obj, cultureStr) = 
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = JsonRuntime.ToJsonValue cultureInfo value
@@ -276,7 +280,7 @@ type JsonRuntime =
       |> JsonValue.Record
     JsonDocument.Create(json, "")
 
-  // Creates a scalar JsonValue.Array and wraps it in a json document
+  /// Creates a scalar JsonValue.Array and wraps it in a json document
   static member CreateArray(elements:obj[], cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let json = 

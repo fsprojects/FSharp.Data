@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Net
 open System.Reflection
+open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
 
@@ -131,11 +132,15 @@ type FSharpDataRuntimeVersion =
 
 let init (cfg : TypeProviderConfig) = 
 
-    if not initialized then
-        initialized <- true
+    let init (_:SaveOptions) = 
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false [])
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true [])
+
+    if not initialized then
+      initialized <- true
+      // the following parameter is just here to force System.Xml.Linq to load
+      init SaveOptions.None
     
     let useReflectionOnly = true
 
