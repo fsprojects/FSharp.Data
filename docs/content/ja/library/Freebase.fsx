@@ -246,11 +246,12 @@ data.``Science and Technology``.Chemistry.
 (**
 ## 関連する記事
 
- * [F# Data: 型プロバイダー](../fsharpdata.html) -
-   `FSharp.Data` パッケージ内の型プロバイダーについての説明があります。
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) -
    Try F# の Data Science チュートリアルにはFreebase 型プロバイダーを使った
    様々な例があります。
  * [Visual F# Team Blog: Integrating Internet-Scale Data Sources into a Strongly Typed Language](http://blogs.msdn.com/b/fsharpteam/archive/2012/09/21/the-f-3-0-freebase-type-provider-sample-integrating-internet-scale-data-sources-into-a-strongly-typed-language.aspx) - Freebase 型プロバイダーの基本に関する4つのシリーズ記事です
  * [Don Syme氏によるデモ](http://skillsmatter.com/podcast/scala/an-informal-deep-dive-with-don-syme-the-freebase-type-provider) - An Informal Deep Dive With Don Syme: The Freebase Type Provider
+ * [API リファレンス: FreebaseDataProvider 型プロバイダー](../../reference/fsharp-data-freebasedataprovider.html)
+ * [API リファレンス: FreebaseOperators モジュール](../../reference/fsharp-data-freebaseoperators.html)
+
 *)

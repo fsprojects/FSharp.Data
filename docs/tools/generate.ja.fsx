@@ -92,11 +92,11 @@ let createFsiEvaluator root output =
         // and return a DirectImage reference to the appropriate location
         let id = imageCounter().ToString()
         let file = "chart" + id + ".png"
-        ensureDirectory (output @@ "images")
+        ensureDirectory (outputJa @@ "images")
 
         // We need to reate host control, but it does not have to be visible
         ( use ctl = new ChartTypes.ChartControl(ch, Dock = DockStyle.Fill, Width=800, Height=300)
-          ch.CopyAsBitmap().Save(output @@ "images" @@ file, ImageFormat.Png) )
+          ch.CopyAsBitmap().Save(outputJa @@ "images" @@ file, ImageFormat.Png) )
         Some [ Paragraph [DirectImage ("Chart", (root + "/images/" + file, None))]  ]
 
     | _ -> None 
