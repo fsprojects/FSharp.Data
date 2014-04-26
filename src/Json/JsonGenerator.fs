@@ -229,7 +229,7 @@ module JsonTypeBuilder =
                 [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                 InvokeCode = fun (Singleton arg) -> 
                     let arg = ctx.Replacer.ToDesignTime arg
-                    <@@ JsonRuntime.CreateFromJsonValue(%%arg:JsonValue) @@> |> ctx.Replacer.ToRuntime)
+                    <@@ JsonDocument.Create((%%arg:JsonValue), "") @@> |> ctx.Replacer.ToRuntime)
 
     objectTy
 
@@ -368,7 +368,7 @@ module JsonTypeBuilder =
                         [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                         InvokeCode = fun (Singleton arg) -> 
                             let arg = ctx.Replacer.ToDesignTime arg
-                            <@@ JsonRuntime.CreateFromJsonValue(%%arg:JsonValue) @@> |> ctx.Replacer.ToRuntime)
+                            <@@ JsonDocument.Create((%%arg:JsonValue), "") @@> |> ctx.Replacer.ToRuntime)
 
         objectTy
 

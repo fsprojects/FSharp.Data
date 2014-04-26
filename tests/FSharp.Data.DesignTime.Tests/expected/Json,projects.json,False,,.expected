@@ -28,6 +28,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("ordercontainer",
                                  (ordercontainer :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Ordercontainer: JsonProvider+Ordercontainer with get
     JsonRuntime.GetPropertyPacked(this, "ordercontainer")
 
@@ -38,6 +41,9 @@ class JsonProvider+Ordercontainer : FDR.IJsonDocument
                                  (backgrounds :> obj))
                                 ("project",
                                  (project :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Ordercontainer
+    JsonDocument.Create(jsonValue, "")
 
     member Backgrounds: JsonProvider+Backgrounds with get
     JsonRuntime.GetPropertyPacked(this, "backgrounds")
@@ -51,6 +57,9 @@ class JsonProvider+Background : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("title",
                                  (title :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Background
+    JsonDocument.Create(jsonValue, "")
+
     member Title: JsonProvider+Title with get
     JsonRuntime.GetPropertyPacked(this, "title")
 
@@ -60,6 +69,9 @@ class JsonProvider+Backgrounds : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("background",
                                  (background :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Backgrounds
+    JsonDocument.Create(jsonValue, "")
+
     member Background: JsonProvider+Background with get
     JsonRuntime.GetPropertyPacked(this, "background")
 
@@ -68,6 +80,9 @@ class JsonProvider+Title : FDR.IJsonDocument
     new : text:string -> JsonProvider+Title
     JsonRuntime.CreateRecord([| ("text",
                                  (text :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Title
+    JsonDocument.Create(jsonValue, "")
 
     member Text: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")

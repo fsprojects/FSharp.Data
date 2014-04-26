@@ -65,14 +65,17 @@ class JsonProvider+Topic : FDR.IJsonDocument
                                 ("subtitle_languages_csv",
                                  (subtitleLanguagesCsv :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Topic
+    JsonDocument.Create(jsonValue, "")
+
     member Categories: JsonProvider+Category[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "categories"), new Func<_,_>(id)))
 
     member CategoryIds: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "category-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "category-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member CourseIds: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "course-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Courses: JsonProvider+Course[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "courses"), new Func<_,_>(id)))
@@ -133,7 +136,7 @@ class JsonProvider+Topic : FDR.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "universities"), new Func<_,_>(id)))
 
     member UniversityIds: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "university-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "university-ids"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member UniversityLogo: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "university_logo"))
@@ -157,6 +160,9 @@ class JsonProvider+Category : FDR.IJsonDocument
                                  (shortName :> obj))
                                 ("description",
                                  (description :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Category
+    JsonDocument.Create(jsonValue, "")
 
     member Description: string option with get
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "description"))
@@ -270,6 +276,9 @@ class JsonProvider+Course : FDR.IJsonDocument
                                 ("auth_review_completion_date",
                                  (authReviewCompletionDate :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Course
+    JsonDocument.Create(jsonValue, "")
+
     member AceCloseDate: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "ace_close_date")
 
@@ -340,7 +349,7 @@ class JsonProvider+Course : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Instructors: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "instructors"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Name: JsonProvider+IntOrString with get
     JsonRuntime.GetPropertyPackedOrNull(this, "name")
@@ -483,6 +492,9 @@ class JsonProvider+University : FDR.IJsonDocument
                                 ("display",
                                  (display :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+University
+    JsonDocument.Create(jsonValue, "")
+
     member AbbrName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "abbr_name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -596,11 +608,14 @@ class JsonProvider+IntOrString : FDR.IJsonDocument
     new : () -> JsonProvider+IntOrString
     JsonRuntime.CreateValue(null, "")
 
+    new : jsonValue:JsonValue -> JsonProvider+IntOrString
+    JsonDocument.Create(jsonValue, "")
+
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+Record : FDR.IJsonDocument
@@ -627,6 +642,9 @@ class JsonProvider+Record : FDR.IJsonDocument
                                  (authenticatedOverall :> obj))
                                 ("with_grade_cert_id",
                                  (withGradeCertId :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Record
+    JsonDocument.Create(jsonValue, "")
 
     member AceGrade: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "ace_grade")
@@ -677,10 +695,13 @@ class JsonProvider+StringOrDateTime : FDR.IJsonDocument
     new : () -> JsonProvider+StringOrDateTime
     JsonRuntime.CreateValue(null, "")
 
+    new : jsonValue:JsonValue -> JsonProvider+StringOrDateTime
+    JsonDocument.Create(jsonValue, "")
+
     member DateTime: System.DateTime option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "DateTime", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertDateTime("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
