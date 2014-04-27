@@ -242,15 +242,19 @@ let ``Optional value elements should work at runtime when element is missing 2``
     samples.[1].Channel.Items.[0].Title |> should equal None
     samples.[1].Channel.Items.[1].Title |> should equal (Some "B")
 
+type CollapsedCollections = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">
+
 [<Test>]
 let ``Collections are collapsed into just one element``() =
-    let x = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">.GetSample()
+    let x = CollapsedCollections.GetSample()
     x.Persons.[0] |> should equal "John"
     x.Persons.[1] |> should equal "Doe"
 
+type JsonInXml = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>
+
 [<Test>]
 let ``Json inside Xml``() =
-    let x = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>.GetSamples()
+    let x = JsonInXml.GetSamples()
 
     x.[0].BlahDataArray.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
     x.[0].BlahDataArray.BlahDataSomethingFoos.[0].Results.Query |> should equal None
@@ -333,3 +337,36 @@ let ``Can construct complex objects``() =
   <w>d</w>
   <w>e</w>
 </Customer>""")
+
+[<Test>]
+let ``Can construct collapsed primitive collections``() =
+    let c = CollapsedCollections.Root [| "John"; "Doe" |]
+    c.ToString() |> normalize |> should equal (normalize """<Root>
+  <Persons>
+    <Person>John</Person>
+    <Person>Doe</Person>
+  </Persons>
+</Root>""")
+
+[<Test>]
+let ``Can construct collapsed non-primitive collections and elements with json``() =
+    let pb = 
+        JsonInXml.PropertyBag(
+            JsonInXml.BlahDataArray(
+                [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
+                null, 
+                null, 
+                None))
+    pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
+  <BlahDataArray>
+    <BlahData>
+      <BlahDataSomethingFoo>{
+  "Something.Schema": "schema",
+  "results": {
+    "Something.Schema": "schema2",
+    "Query": "query"
+  }
+}</BlahDataSomethingFoo>
+    </BlahData>
+  </BlahDataArray>
+</PropertyBag>""")
