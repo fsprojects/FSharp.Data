@@ -61,7 +61,7 @@ let convertJsonValue (replacer:AssemblyReplacer) missingValuesStr cultureStr can
           typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path @>, convert <@ (%varExpr).JsonOpt @>, <@ (%varExpr).JsonOpt @>)
     | TypeWrapper.None, false ->
         wrapInLetIfNeeded value <| fun (varExpr:Expr<IJsonDocument>) ->
-          typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>)
+          typeof<JsonRuntime>?GetNonOptionalValue (field.RuntimeType) (<@ (%varExpr).Path() @>, convert <@ Some (%varExpr).JsonValue @>, <@ Some (%varExpr).JsonValue @>)
     | TypeWrapper.Option, true ->
         convert <@ (%%value:JsonValue option) @>
     | TypeWrapper.Option, false ->

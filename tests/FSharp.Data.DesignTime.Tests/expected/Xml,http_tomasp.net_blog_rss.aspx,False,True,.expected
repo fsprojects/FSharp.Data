@@ -24,6 +24,16 @@ class XmlProvider
 
 
 class XmlProvider+Rss : FDR.XmlElement
+    new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
+    XmlRuntime.CreateElement("rss", 
+                             [| ("version",
+                                 (version :> obj)) |], 
+                             [| ("channel",
+                                 (channel :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
+    XmlElement.Create(xElement)
+
     member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
@@ -33,6 +43,23 @@ class XmlProvider+Rss : FDR.XmlElement
 
 
 class XmlProvider+Channel : FDR.XmlElement
+    new : copyright:string -> description:string -> items:XmlProvider+Item[] -> link:string -> title:string -> XmlProvider+Channel
+    XmlRuntime.CreateElement("channel", 
+                             [| |], 
+                             [| ("copyright",
+                                 (copyright :> obj))
+                                ("description",
+                                 (description :> obj))
+                                ("item",
+                                 (items :> obj))
+                                ("link",
+                                 (link :> obj))
+                                ("title",
+                                 (title :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
+    XmlElement.Create(xElement)
+
     member Copyright: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "copyright"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
@@ -54,6 +81,25 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
+    new : description:string -> link:string -> pubDate:System.DateTime -> title:string -> creator:string option -> summary:string option -> XmlProvider+Item
+    XmlRuntime.CreateElement("item", 
+                             [| |], 
+                             [| ("description",
+                                 (description :> obj))
+                                ("link",
+                                 (link :> obj))
+                                ("pubDate",
+                                 (pubDate :> obj))
+                                ("title",
+                                 (title :> obj))
+                                ("{http://dublincore.org/documents/dcmi-namespace/}creator",
+                                 (creator :> obj))
+                                ("{http://tomasp.net/rss/extensions}summary",
+                                 (summary :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
     member Creator: string option with get
     XmlRuntime.ConvertOptional(this, "{http://dublincore.org/documents/dcmi-namespace/}creator", new Func<_,_>(fun (t:XmlElement) -> 
                                                                                                                   let value = XmlRuntime.TryGetValue(t)

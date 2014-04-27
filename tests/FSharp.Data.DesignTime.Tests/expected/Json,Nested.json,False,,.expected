@@ -28,6 +28,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("main",
                                  (main :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Main: JsonProvider+Main with get
     JsonRuntime.GetPropertyPacked(this, "main")
 
@@ -42,6 +45,9 @@ class JsonProvider+Main : FDR.IJsonDocument
                                  (age :> obj))
                                 ("isCool",
                                  (isCool :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Main
+    JsonDocument.Create(jsonValue, "")
 
     member Age: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "age")

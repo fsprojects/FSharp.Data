@@ -6,6 +6,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Diagnostics
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
@@ -111,6 +112,7 @@ type DisposableTypeProviderForNamespaces() as x =
 module ProviderHelpers =
 
     open System.IO
+    open Microsoft.FSharp.Reflection
     open FSharp.Data.Runtime.Caching
     open FSharp.Data.Runtime.IO
     
@@ -120,6 +122,12 @@ module ProviderHelpers =
         let f = Var("f", convFunc.Type)
         let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
         Expr.Let(f, convFunc, body) |> replacer.ToRuntime
+
+    let some (typ:Type) arg =
+        let unionCase = 
+            FSharpType.GetUnionCases(typedefof<option<_>>.MakeGenericType typ)
+            |> Seq.find (fun x -> x.Name = "Some")
+        Expr.NewUnionCase(unionCase, [ arg ])
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
@@ -215,7 +223,7 @@ module ProviderHelpers =
         let key = fullTypeName, runtimeVersion
 
         match providedTypesCache.TryGetValue key with
-        | true, (providedType, time) when DateTime.Now - time < cacheDuration -> 
+        | true, (providedType, time) when DateTime.Now - time < cacheDuration && (not Debugger.IsAttached) -> 
             log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 

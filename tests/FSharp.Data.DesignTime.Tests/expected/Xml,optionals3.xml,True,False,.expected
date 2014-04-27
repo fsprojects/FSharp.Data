@@ -24,6 +24,16 @@ class XmlProvider
 
 
 class XmlProvider+Rss : FDR.XmlElement
+    new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
+    XmlRuntime.CreateElement("rss", 
+                             [| ("version",
+                                 (version :> obj)) |], 
+                             [| ("channel",
+                                 (channel :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
+    XmlElement.Create(xElement)
+
     member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
@@ -33,11 +43,33 @@ class XmlProvider+Rss : FDR.XmlElement
 
 
 class XmlProvider+Channel : FDR.XmlElement
+    new : items:XmlProvider+Item[] -> XmlProvider+Channel
+    XmlRuntime.CreateElement("channel", 
+                             [| |], 
+                             [| ("item",
+                                 (items :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
+    XmlElement.Create(xElement)
+
     member Items: XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
 
 class XmlProvider+Item : FDR.XmlElement
+    new : description:XmlProvider+Description option -> temp:XmlProvider+Temp option -> title:string option -> XmlProvider+Item
+    XmlRuntime.CreateElement("item", 
+                             [| |], 
+                             [| ("description",
+                                 (description :> obj))
+                                ("temp",
+                                 (temp :> obj))
+                                ("title",
+                                 (title :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
     member Description: XmlProvider+Description option with get
     XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(id)))
 
@@ -51,6 +83,22 @@ class XmlProvider+Item : FDR.XmlElement
 
 
 class XmlProvider+Description : FDR.XmlElement
+    new : () -> XmlProvider+Description
+    XmlRuntime.CreateElement("description", 
+                             [| |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Description
+    XmlElement.Create(xElement)
+
 
 class XmlProvider+Temp : FDR.XmlElement
+    new : () -> XmlProvider+Temp
+    XmlRuntime.CreateElement("temp", 
+                             [| |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Temp
+    XmlElement.Create(xElement)
+
 

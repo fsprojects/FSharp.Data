@@ -280,3 +280,56 @@ let ``Json inside Xml``() =
     x.[1].BlahDataArray.BlahDataSomethingFoo2.Number |> should equal (Some 2)
     x.[1].BlahDataArray.BlahDataSomethingFoo3.Size |> should equal 5
     x.[1].BlahDataArray.BlahDataSomethingFoo4.IsSome |> should equal false
+
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
+type Customer = XmlProvider<"""
+  <Customer name="ACME">
+    <Order Number="A012345">
+      <OrderLine Item="widget">
+          <Quantity>2</Quantity>
+      </OrderLine>
+    </Order>
+    <Order>
+      <OrderLine Item="5" />
+    </Order>
+    <Order />
+    <x y="">foo</x>
+    <z>1</z>
+    <z>a</z>
+    <z>b</z>
+    <w>a</w>
+    <w>b</w>
+  </Customer>
+""">
+
+[<Test>]
+let ``Can construct complex objects``() =
+    let customer = 
+        Customer.Customer(
+            "ACME", 
+            [| Customer.Order(Some "A012345", None)
+               Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice(2), None)))
+               Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice("xpto"), Some 2))) |],
+            x = Customer.X("a", "b"),
+            zs = [| Customer.Z(Some 2, None); Customer.Z(None, Some "foo") |],
+            ws = [| "d"; "e" |])
+
+    customer.ToString() |> normalize |> should equal (normalize """<Customer name="ACME">
+  <Order Number="A012345" />
+  <Order>
+    <OrderLine Item="2" />
+  </Order>
+  <Order>
+    <OrderLine Item="xpto">
+      <Quantity>2</Quantity>
+    </OrderLine>
+  </Order>
+  <w>d</w>
+  <w>e</w>
+  <x y="a">b</x>
+  <z>2</z>
+  <z>foo</z>
+</Customer>""")

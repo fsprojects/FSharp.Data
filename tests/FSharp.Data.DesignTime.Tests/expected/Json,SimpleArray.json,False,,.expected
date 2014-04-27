@@ -28,6 +28,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("items",
                                  (items :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Items: JsonProvider+Item[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "items"), new Func<_,_>(id)))
 
@@ -36,6 +39,9 @@ class JsonProvider+Item : FDR.IJsonDocument
     new : id:string -> JsonProvider+Item
     JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Item
+    JsonDocument.Create(jsonValue, "")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")

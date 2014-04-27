@@ -67,6 +67,11 @@ type XmlElement =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  override x.ToString() = x._Print
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member Create(element) =
     { XElement = element }
   
@@ -98,7 +103,7 @@ type XmlElement =
 type XmlRuntime = 
 
   // Operations for getting node values and values of attributes
-
+    
   static member TryGetValue(xml:XmlElement) = 
     if String.IsNullOrEmpty(xml.XElement.Value) then None else Some xml.XElement.Value
 
@@ -165,3 +170,63 @@ type XmlRuntime =
             JsonDocument.Create(new StringReader(jsonStr), cultureStr) |> Some
         with _ -> None
     | None -> None
+
+  // Creates a XElement with the given attributes and elements and wraps it in a XmlElementJsonValue.Record and wraps it in a json document
+  static member CreateElement(nameWithNS, attributes:_[], elements:_[], cultureStr) =
+    let cultureInfo = TextRuntime.GetCulture cultureStr
+    let toXmlContent (v:obj) = 
+        let inline strWithCulture v =
+            (^a : (member ToString : IFormatProvider -> string) (v, cultureInfo)) 
+        let serialize (v:obj) =
+            match v with
+            | :? XmlElement as v -> box v.XElement
+            | _ ->
+                match v with
+                | :? string        as v -> v
+                | :? DateTime      as v -> strWithCulture v
+                | :? int           as v -> strWithCulture v
+                | :? int64         as v -> strWithCulture v
+                | :? float         as v -> strWithCulture v
+                | :? decimal       as v -> strWithCulture v
+                | :? bool          as v -> if v then "true" else "false"
+                | :? Guid          as v -> v.ToString()
+                | :? IJsonDocument as v -> v.JsonValue.ToString()
+                | _ -> failwithf "Unexpected value: %A" v
+                |> box
+        let inline optionToArray f = function Some x -> [| f x |] | None -> [| |]
+        match v with
+        | :? Array as v -> [| for elem in v -> serialize elem |]
+        | :? option<XmlElement>    as v -> optionToArray serialize v
+        | :? option<string>        as v -> optionToArray serialize v
+        | :? option<DateTime>      as v -> optionToArray serialize v
+        | :? option<int>           as v -> optionToArray serialize v
+        | :? option<int64>         as v -> optionToArray serialize v
+        | :? option<float>         as v -> optionToArray serialize v
+        | :? option<decimal>       as v -> optionToArray serialize v
+        | :? option<bool>          as v -> optionToArray serialize v
+        | :? option<Guid>          as v -> optionToArray serialize v
+        | :? option<IJsonDocument> as v -> optionToArray serialize v
+        | v -> [| box (serialize v) |]
+    let element = XElement(XName.Get nameWithNS)
+    for nameWithNS, value in attributes do
+        let xname = XName.Get nameWithNS
+        match toXmlContent value with
+        | [| |] -> ()
+        | [| v |] when v :? string && element.Attribute(xname) = null -> element.SetAttributeValue(xname, v)
+        | _ -> failwithf "Unexpected attribute value: %A" value
+    for nameWithNS, value in elements do
+        if nameWithNS = "" then // it's the value
+            match toXmlContent value with
+            | [| |] -> ()
+            | [| v |] when v :? string && element.Value = "" -> element.Add v
+            | _ -> failwithf "Unexpected content value: %A" value
+        else
+            for value in toXmlContent value do
+                match value with
+                | :? XElement as v -> 
+                    if v.Name.ToString() <> nameWithNS then
+                        failwithf "Unexpected element: %O" v
+                    element.Add v
+                | :? string as v -> element.Add(XElement(XName.Get nameWithNS, v))
+                | _ -> failwithf "Unexpected content for child %s: %A" nameWithNS value
+    XmlElement.Create element

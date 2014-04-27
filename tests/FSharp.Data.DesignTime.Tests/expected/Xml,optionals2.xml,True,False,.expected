@@ -24,6 +24,16 @@ class XmlProvider
 
 
 class XmlProvider+Rss : FDR.XmlElement
+    new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
+    XmlRuntime.CreateElement("rss", 
+                             [| ("version",
+                                 (version :> obj)) |], 
+                             [| ("channel",
+                                 (channel :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
+    XmlElement.Create(xElement)
+
     member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
@@ -33,11 +43,29 @@ class XmlProvider+Rss : FDR.XmlElement
 
 
 class XmlProvider+Channel : FDR.XmlElement
+    new : items:XmlProvider+Item[] -> XmlProvider+Channel
+    XmlRuntime.CreateElement("channel", 
+                             [| |], 
+                             [| ("item",
+                                 (items :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
+    XmlElement.Create(xElement)
+
     member Items: XmlProvider+Item[] with get
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
 
 class XmlProvider+Item : FDR.XmlElement
+    new : description:string option -> XmlProvider+Item
+    XmlRuntime.CreateElement("item", 
+                             [| |], 
+                             [| ("description",
+                                 (description :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
     member Description: string option with get
     XmlRuntime.ConvertOptional2(this, "description", new Func<_,_>(fun (t:XmlElement) -> TextRuntime.ConvertString(XmlRuntime.TryGetValue(t))))
 

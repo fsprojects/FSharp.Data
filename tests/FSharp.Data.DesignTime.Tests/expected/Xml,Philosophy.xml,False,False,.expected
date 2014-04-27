@@ -24,11 +24,36 @@ class XmlProvider
 
 
 class XmlProvider+Authors : FDR.XmlElement
+    new : authors:XmlProvider+Author[] -> XmlProvider+Authors
+    XmlRuntime.CreateElement("authors", 
+                             [| |], 
+                             [| ("author",
+                                 (authors :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Authors
+    XmlElement.Create(xElement)
+
     member Authors: XmlProvider+Author[] with get
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
 
 class XmlProvider+Author : FDR.XmlElement
+    new : name:string -> surname:string -> birth:int option -> books:XmlProvider+Book[] -> manuscript:XmlProvider+Manuscript option -> XmlProvider+Author
+    XmlRuntime.CreateElement("author", 
+                             [| ("name",
+                                 (name :> obj))
+                                ("surname",
+                                 (surname :> obj))
+                                ("birth",
+                                 (birth :> obj)) |], 
+                             [| ("book",
+                                 (books :> obj))
+                                ("manuscript",
+                                 (manuscript :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
+    XmlElement.Create(xElement)
+
     member Birth: int option with get
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "birth"))
 
@@ -48,12 +73,30 @@ class XmlProvider+Author : FDR.XmlElement
 
 
 class XmlProvider+Book : FDR.XmlElement
+    new : title:string -> XmlProvider+Book
+    XmlRuntime.CreateElement("book", 
+                             [| ("title",
+                                 (title :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Book
+    XmlElement.Create(xElement)
+
     member Title: string with get
     let value = XmlRuntime.TryGetAttribute(this, "title")
     TextRuntime.GetNonOptionalValue("Attribute title", TextRuntime.ConvertString(value), value)
 
 
 class XmlProvider+Manuscript : FDR.XmlElement
+    new : title:string -> XmlProvider+Manuscript
+    XmlRuntime.CreateElement("manuscript", 
+                             [| ("title",
+                                 (title :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Manuscript
+    XmlElement.Create(xElement)
+
     member Title: string with get
     let value = XmlRuntime.TryGetAttribute(this, "title")
     TextRuntime.GetNonOptionalValue("Attribute title", TextRuntime.ConvertString(value), value)
