@@ -38,7 +38,7 @@ class XmlProvider+Authors : FDR.XmlElement
 
 
 class XmlProvider+Author : FDR.XmlElement
-    new : name:string -> surname:string -> birth:int option -> manuscript:XmlProvider+Manuscript option -> books:XmlProvider+Book[] -> XmlProvider+Author
+    new : name:string -> surname:string -> birth:int option -> books:XmlProvider+Book[] -> manuscript:XmlProvider+Manuscript option -> XmlProvider+Author
     XmlRuntime.CreateElement("author", 
                              [| ("name",
                                  (name :> obj))
@@ -46,10 +46,10 @@ class XmlProvider+Author : FDR.XmlElement
                                  (surname :> obj))
                                 ("birth",
                                  (birth :> obj)) |], 
-                             [| ("manuscript",
-                                 (manuscript :> obj))
-                                ("book",
-                                 (books :> obj)) |], "")
+                             [| ("book",
+                                 (books :> obj))
+                                ("manuscript",
+                                 (manuscript :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
     XmlElement.Create(xElement)

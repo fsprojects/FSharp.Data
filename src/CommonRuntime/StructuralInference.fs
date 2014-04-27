@@ -185,7 +185,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
   |> Map.ofList
 
 and unionCollectionOrder order1 order2 =
-    (order1 |> List.filter (fun x -> not (List.exists ((=) x) order2))) @ order2
+    order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`

@@ -57,15 +57,15 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
-    new : description:XmlProvider+Description option -> temp:XmlProvider+Temp option -> title:string option -> XmlProvider+Item
+    new : title:string option -> description:XmlProvider+Description option -> temp:XmlProvider+Temp option -> XmlProvider+Item
     XmlRuntime.CreateElement("item", 
                              [| |], 
-                             [| ("description",
+                             [| ("title",
+                                 (title :> obj))
+                                ("description",
                                  (description :> obj))
                                 ("temp",
-                                 (temp :> obj))
-                                ("title",
-                                 (title :> obj)) |], "")
+                                 (temp :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)
