@@ -28,7 +28,7 @@ class XmlProvider+Authors : FDR.XmlElement
     XmlRuntime.CreateElement("authors", 
                              [| |], 
                              [| ("author",
-                                 (authors :> obj)) |])
+                                 (authors :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Authors
     XmlElement.Create(xElement)
@@ -38,7 +38,7 @@ class XmlProvider+Authors : FDR.XmlElement
 
 
 class XmlProvider+Author : FDR.XmlElement
-    new : name:string -> surname:string -> birth:int option -> books:XmlProvider+Book[] -> manuscript:XmlProvider+Manuscript option -> XmlProvider+Author
+    new : name:string -> surname:string -> birth:int option -> manuscript:XmlProvider+Manuscript option -> books:XmlProvider+Book[] -> XmlProvider+Author
     XmlRuntime.CreateElement("author", 
                              [| ("name",
                                  (name :> obj))
@@ -46,10 +46,10 @@ class XmlProvider+Author : FDR.XmlElement
                                  (surname :> obj))
                                 ("birth",
                                  (birth :> obj)) |], 
-                             [| ("book",
-                                 (books :> obj))
-                                ("manuscript",
-                                 (manuscript :> obj)) |])
+                             [| ("manuscript",
+                                 (manuscript :> obj))
+                                ("book",
+                                 (books :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
     XmlElement.Create(xElement)
@@ -77,7 +77,7 @@ class XmlProvider+Book : FDR.XmlElement
     XmlRuntime.CreateElement("book", 
                              [| ("title",
                                  (title :> obj)) |], 
-                             [| |])
+                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Book
     XmlElement.Create(xElement)
@@ -92,7 +92,7 @@ class XmlProvider+Manuscript : FDR.XmlElement
     XmlRuntime.CreateElement("manuscript", 
                              [| ("title",
                                  (title :> obj)) |], 
-                             [| |])
+                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Manuscript
     XmlElement.Create(xElement)

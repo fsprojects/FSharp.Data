@@ -29,7 +29,7 @@ class XmlProvider+Authors : FDR.XmlElement
                              [| ("topic",
                                  (topic :> obj)) |], 
                              [| ("author",
-                                 (authors :> obj)) |])
+                                 (authors :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Authors
     XmlElement.Create(xElement)
@@ -49,7 +49,7 @@ class XmlProvider+Author : FDR.XmlElement
                                  (name :> obj))
                                 ("born",
                                  (born :> obj)) |], 
-                             [| |])
+                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
     XmlElement.Create(xElement)

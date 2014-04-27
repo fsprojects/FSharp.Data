@@ -77,10 +77,8 @@ module JsonTypeBuilder =
         map 
         |> Map.map (fun _ inferedType -> normalize false inferedType) 
         |> InferedType.Heterogeneous
-    | InferedType.Collection map -> 
-        map 
-        |> Map.map (fun _ (multiplicity, inferedType) -> multiplicity, normalize false inferedType) 
-        |> InferedType.Collection
+    | InferedType.Collection (order, types) -> 
+        InferedType.Collection (order, Map.map (fun _ (multiplicity, inferedType) -> multiplicity, normalize false inferedType) types)
     | InferedType.Record (_, props, optional) -> 
         let props = 
           props
@@ -234,10 +232,8 @@ module JsonTypeBuilder =
 
     let inferedType = 
       match inferedType with
-      | InferedType.Collection types ->
-          types 
-          |> Map.remove InferedTypeTag.Null 
-          |> InferedType.Collection 
+      | InferedType.Collection (order, types) ->
+          InferedType.Collection (List.filter ((<>) InferedTypeTag.Null) order, Map.remove InferedTypeTag.Null types)
       | x -> x
 
     match inferedType with
@@ -260,8 +256,8 @@ module JsonTypeBuilder =
           Converter = None
           ConversionCallingType = JsonDocument }
 
-    | InferedType.Collection (SingletonMap(_, (_, typ)))
-    | InferedType.Collection (EmptyMap InferedType.Top typ) -> 
+    | InferedType.Collection (_, SingletonMap(_, (_, typ)))
+    | InferedType.Collection (_, EmptyMap InferedType.Top typ) -> 
 
         let elementResult = generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)false nameOverride typ
 
@@ -367,7 +363,7 @@ module JsonTypeBuilder =
 
         objectTy
 
-    | InferedType.Collection types -> getOrCreateType ctx inferedType <| fun () ->
+    | InferedType.Collection (_, types) -> getOrCreateType ctx inferedType <| fun () ->
 
         // Generate a choice type that calls either `GetArrayChildrenByTypeTag`
         // or `GetArrayChildByTypeTag`, depending on the multiplicity of the item

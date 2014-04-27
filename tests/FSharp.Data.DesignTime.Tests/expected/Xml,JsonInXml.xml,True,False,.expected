@@ -28,7 +28,7 @@ class XmlProvider+PropertyBag : FDR.XmlElement
     XmlRuntime.CreateElement("PropertyBag", 
                              [| |], 
                              [| ("BlahDataArray|BlahData",
-                                 (blahDataArray :> obj)) |])
+                                 (blahDataArray :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+PropertyBag
     XmlElement.Create(xElement)
@@ -38,17 +38,17 @@ class XmlProvider+PropertyBag : FDR.XmlElement
 
 
 class XmlProvider+BlahDataArray : FDR.XmlElement
-    new : blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahDataArray
+    new : blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo4 option -> blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataArray
     XmlRuntime.CreateElement("BlahDataArray|BlahData", 
                              [| |], 
-                             [| ("BlahDataSomethingFoo",
+                             [| ("BlahDataSomethingFoo4",
+                                 (blahDataSomethingFoo4 :> obj))
+                                ("BlahDataSomethingFoo",
                                  (blahDataSomethingFoos :> obj))
                                 ("BlahDataSomethingFoo2",
                                  (blahDataSomethingFoo2 :> obj))
                                 ("BlahDataSomethingFoo3",
-                                 (blahDataSomethingFoo3 :> obj))
-                                ("BlahDataSomethingFoo4",
-                                 (blahDataSomethingFoo4 :> obj)) |])
+                                 (blahDataSomethingFoo3 :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataArray
     XmlElement.Create(xElement)
@@ -56,10 +56,10 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
     member BlahDataSomethingFoo2: XmlProvider+BlahDataSomethingFoo2 with get
     XmlRuntime.GetChild(this, "BlahDataSomethingFoo2")
 
-    member BlahDataSomethingFoo3: XmlProvider+BlahDataSomethingFoo4 with get
+    member BlahDataSomethingFoo3: XmlProvider+BlahDataSomethingFoo3 with get
     XmlRuntime.GetChild(this, "BlahDataSomethingFoo3")
 
-    member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo3 option with get
+    member BlahDataSomethingFoo4: XmlProvider+BlahDataSomethingFoo4 option with get
     XmlRuntime.ConvertOptional(this, "BlahDataSomethingFoo4", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
 
     member BlahDataSomethingFoos: XmlProvider+BlahDataSomethingFoo[] with get
@@ -67,50 +67,13 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
 
 
 class XmlProvider+BlahDataSomethingFoo : FDR.IJsonDocument
-    new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
+    new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo
     JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("results",
                                  (results :> obj)) |], "")
 
     new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo
-    JsonDocument.Create(jsonValue, "")
-
-    member Results: XmlProvider+Results with get
-    JsonRuntime.GetPropertyPacked(this, "results")
-
-    member SomethingSchema: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
-
-
-class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
-    new : number:int option -> json:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahDataSomethingFoo2
-    XmlRuntime.CreateElement("BlahDataSomethingFoo2", 
-                             [| |], 
-                             [| ("",
-                                 (number :> obj))
-                                ("",
-                                 (json :> obj)) |])
-
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo2
-    XmlElement.Create(xElement)
-
-    member Json: XmlProvider+BlahDataSomethingFoo3 option with get
-    XmlRuntime.TryGetJsonValue(this, "")
-
-    member Number: int option with get
-    TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
-
-
-class XmlProvider+BlahDataSomethingFoo3 : FDR.IJsonDocument
-    new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
-    JsonRuntime.CreateRecord([| ("Something.Schema",
-                                 (somethingSchema :> obj))
-                                ("results",
-                                 (results :> obj)) |], "")
-
-    new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo3
     JsonDocument.Create(jsonValue, "")
 
     member Results: XmlProvider+Results2 with get
@@ -121,27 +84,64 @@ class XmlProvider+BlahDataSomethingFoo3 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-class XmlProvider+BlahDataSomethingFoo4 : FDR.XmlElement
-    new : size:int -> value:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo4
+class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
+    new : number:int option -> json:XmlProvider+BlahDataSomethingFoo4 option -> XmlProvider+BlahDataSomethingFoo2
+    XmlRuntime.CreateElement("BlahDataSomethingFoo2", 
+                             [| |], 
+                             [| ("",
+                                 (number :> obj))
+                                ("",
+                                 (json :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo2
+    XmlElement.Create(xElement)
+
+    member Json: XmlProvider+BlahDataSomethingFoo4 option with get
+    XmlRuntime.TryGetJsonValue(this, "")
+
+    member Number: int option with get
+    TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
+
+
+class XmlProvider+BlahDataSomethingFoo3 : FDR.XmlElement
+    new : size:int -> value:XmlProvider+BlahDataSomethingFoo4 -> XmlProvider+BlahDataSomethingFoo3
     XmlRuntime.CreateElement("BlahDataSomethingFoo3", 
                              [| ("size",
                                  (size :> obj)) |], 
                              [| ("",
-                                 (value :> obj)) |])
+                                 (value :> obj)) |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo4
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo3
     XmlElement.Create(xElement)
 
     member Size: int with get
     let value = XmlRuntime.TryGetAttribute(this, "size")
     TextRuntime.GetNonOptionalValue("Attribute size", TextRuntime.ConvertInteger("", value), value)
 
-    member Value: XmlProvider+BlahDataSomethingFoo3 with get
+    member Value: XmlProvider+BlahDataSomethingFoo4 with get
     XmlRuntime.GetJsonValue(this, "")
 
 
+class XmlProvider+BlahDataSomethingFoo4 : FDR.IJsonDocument
+    new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo4
+    JsonRuntime.CreateRecord([| ("Something.Schema",
+                                 (somethingSchema :> obj))
+                                ("results",
+                                 (results :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> XmlProvider+BlahDataSomethingFoo4
+    JsonDocument.Create(jsonValue, "")
+
+    member Results: XmlProvider+Results with get
+    JsonRuntime.GetPropertyPacked(this, "results")
+
+    member SomethingSchema: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+
+
 class XmlProvider+Results : FDR.IJsonDocument
-    new : somethingSchema:string -> query:string option -> XmlProvider+Results
+    new : somethingSchema:string -> query:string -> XmlProvider+Results
     JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("Query",
@@ -150,8 +150,9 @@ class XmlProvider+Results : FDR.IJsonDocument
     new : jsonValue:JsonValue -> XmlProvider+Results
     JsonDocument.Create(jsonValue, "")
 
-    member Query: string option with get
-    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "Query"))
+    member Query: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Query")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member SomethingSchema: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")
@@ -159,7 +160,7 @@ class XmlProvider+Results : FDR.IJsonDocument
 
 
 class XmlProvider+Results2 : FDR.IJsonDocument
-    new : somethingSchema:string -> query:string -> XmlProvider+Results2
+    new : somethingSchema:string -> query:string option -> XmlProvider+Results2
     JsonRuntime.CreateRecord([| ("Something.Schema",
                                  (somethingSchema :> obj))
                                 ("Query",
@@ -168,9 +169,8 @@ class XmlProvider+Results2 : FDR.IJsonDocument
     new : jsonValue:JsonValue -> XmlProvider+Results2
     JsonDocument.Create(jsonValue, "")
 
-    member Query: string with get
-    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Query")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
+    member Query: string option with get
+    JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "Query"))
 
     member SomethingSchema: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Something.Schema")

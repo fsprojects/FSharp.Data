@@ -313,9 +313,9 @@ let ``Can construct complex objects``() =
             [| Customer.Order(Some "A012345", None)
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice(2), None)))
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice("xpto"), Some 2))) |],
-            x = Customer.X("a", "b"),
-            zs = [| Customer.Z(Some 2, None); Customer.Z(None, Some "foo") |],
-            ws = [| "d"; "e" |])
+            Customer.X("a", "b"),
+            [| Customer.Z(Some 2, None); Customer.Z(None, Some "foo") |],
+            [| "d"; "e" |])
 
     customer.ToString() |> normalize |> should equal (normalize """<Customer name="ACME">
   <Order Number="A012345" />
@@ -327,9 +327,9 @@ let ``Can construct complex objects``() =
       <Quantity>2</Quantity>
     </OrderLine>
   </Order>
-  <w>d</w>
-  <w>e</w>
   <x y="a">b</x>
   <z>2</z>
   <z>foo</z>
+  <w>d</w>
+  <w>e</w>
 </Customer>""")

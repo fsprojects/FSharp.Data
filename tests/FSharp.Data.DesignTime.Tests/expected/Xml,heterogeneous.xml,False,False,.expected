@@ -28,7 +28,7 @@ class XmlProvider+Test : FDR.XmlElement
     XmlRuntime.CreateElement("test", 
                              [| |], 
                              [| ("options",
-                                 (options :> obj)) |])
+                                 (options :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Test
     XmlElement.Create(xElement)
@@ -42,7 +42,7 @@ class XmlProvider+Options : FDR.XmlElement
     XmlRuntime.CreateElement("options", 
                              [| |], 
                              [| ("node",
-                                 (node :> obj)) |])
+                                 (node :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Options
     XmlElement.Create(xElement)
@@ -56,7 +56,7 @@ class XmlProvider+Node : FDR.XmlElement
     XmlRuntime.CreateElement("node", 
                              [| ("set",
                                  (set :> obj)) |], 
-                             [| |])
+                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Node
     XmlElement.Create(xElement)

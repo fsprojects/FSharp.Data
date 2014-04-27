@@ -30,7 +30,7 @@ class XmlProvider+Ordercontainer : FDR.XmlElement
                              [| ("backgrounds",
                                  (backgrounds :> obj))
                                 ("project",
-                                 (project :> obj)) |])
+                                 (project :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Ordercontainer
     XmlElement.Create(xElement)
@@ -47,7 +47,7 @@ class XmlProvider+Backgrounds : FDR.XmlElement
     XmlRuntime.CreateElement("backgrounds", 
                              [| |], 
                              [| ("background",
-                                 (background :> obj)) |])
+                                 (background :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Backgrounds
     XmlElement.Create(xElement)
@@ -61,7 +61,7 @@ class XmlProvider+Project : FDR.XmlElement
     XmlRuntime.CreateElement("project", 
                              [| |], 
                              [| ("title",
-                                 (title :> obj)) |])
+                                 (title :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
     XmlElement.Create(xElement)
@@ -76,7 +76,7 @@ class XmlProvider+Background : FDR.XmlElement
     XmlRuntime.CreateElement("background", 
                              [| |], 
                              [| ("title",
-                                 (title :> obj)) |])
+                                 (title :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Background
     XmlElement.Create(xElement)

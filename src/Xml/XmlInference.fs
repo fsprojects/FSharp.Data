@@ -83,7 +83,7 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
                              |> List.fold (subtypeInfered allowEmptyValues) InferedType.Top
           let bodyType =
               match childrenType with
-              | InferedType.Collection (EmptyMap () _) -> body.Type
+              | InferedType.Collection (_, EmptyMap () _) -> body.Type
               | childrenType -> subtypeInfered allowEmptyValues childrenType body.Type
           changed <- changed || body.Type <> bodyType
           body.Type <- bodyType

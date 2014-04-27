@@ -66,29 +66,32 @@ module internal XmlTypeBuilder =
     /// children types (both may be empty)
     let (|ContentType|_|) inferedProp = 
 
+        let inOrder order types = 
+            types |> Map.toList |> List.sortBy (fun (tag, _) -> List.findIndex ((=) tag) order)
+
         let isListName parentName childName =
             parentName = NameUtils.pluralize childName || parentName = childName + "Array" || parentName = childName + "List"
 
         match inferedProp with 
-        | { Type = (InferedType.Primitive _ | InferedType.Json _) as typ } -> Some([typ], Map.empty)
+        | { Type = (InferedType.Primitive _ | InferedType.Json _) as typ } -> Some([typ], [])
         | { Type = InferedType.Collection 
-                    (SingletonMap (_, (InferedMultiplicity.Single, 
-                                       InferedType.Record(Some parentNameWithNS,
-                                                          [ { Type = InferedType.Collection (SingletonMap (InferedTypeTag.Record (Some childNameWithNS), 
-                                                                                                           (multiplicity,
-                                                                                                            InferedType.Record(Some childNameWithNS2, fields, false)))) } ], false)))) } 
+                    (_, SingletonMap (_, (InferedMultiplicity.Single, 
+                                          InferedType.Record(Some parentNameWithNS,
+                                                             [ { Type = InferedType.Collection (_, SingletonMap (InferedTypeTag.Record (Some childNameWithNS), 
+                                                                                                                (multiplicity,
+                                                                                                                 InferedType.Record(Some childNameWithNS2, fields, false)))) } ], false)))) } 
           when childNameWithNS = childNameWithNS2 && isListName (XName.Get(parentNameWithNS).LocalName) (XName.Get(childNameWithNS).LocalName) -> 
               let combinedName = Some (parentNameWithNS + "|" + childNameWithNS)
-              Some([], Map.add (InferedTypeTag.Record combinedName) (multiplicity, InferedType.Record(combinedName, fields, false)) Map.empty)
-        | { Type = InferedType.Collection nodes } -> Some([], nodes)
+              Some([], [InferedTypeTag.Record combinedName, (multiplicity, InferedType.Record(combinedName, fields, false))])
+        | { Type = InferedType.Collection (order, types) } -> Some([], inOrder order types)
         | { Type = InferedType.Heterogeneous cases } ->
               let collections, others = Map.toList cases |> List.partition (fst >> ((=) InferedTypeTag.Collection))
               match collections with
-              | [InferedTypeTag.Collection, InferedType.Collection nodes] -> Some(List.map snd others, nodes)
-              | [] -> Some(List.map snd others, Map.empty)
+              | [InferedTypeTag.Collection, InferedType.Collection (order, types)] -> Some(List.map snd others, inOrder order types)
+              | [] -> Some(List.map snd others, [])
               | _ -> failwith "(|ContentType|_|): Only one collection type expected"
         // an empty element
-        | { Type = InferedType.Top } -> Some([], Map.empty)
+        | { Type = InferedType.Top } -> Some([], [])
         | _ -> None
     
     /// Succeeds when type is a heterogeneous type containing recors
@@ -319,7 +322,7 @@ module internal XmlTypeBuilder =
                 | [ContentType(primitives, nodes)] ->
        
                     // If there may be other nodes, make it optional
-                    let forceOptional = nodes.Count > 0
+                    let forceOptional = nodes.Length > 0
        
                     let primitiveResults =
                         [ for typ, name, conv in getTypesForPrimitives ctx forceOptional primitives ->
@@ -332,7 +335,7 @@ module internal XmlTypeBuilder =
                     let nodeResults =
                         [ for node in nodes ->
                             match node with
-                            | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
+                            | InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ) ->
        
                                 let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
                                 let result = generateXmlType ctx typ 

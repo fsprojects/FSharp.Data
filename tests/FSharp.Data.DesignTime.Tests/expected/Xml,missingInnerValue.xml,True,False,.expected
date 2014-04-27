@@ -31,7 +31,7 @@ class XmlProvider+Child : FDR.XmlElement
                                 ("b",
                                  (b :> obj)) |], 
                              [| ("inner",
-                                 (inner :> obj)) |])
+                                 (inner :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Child
     XmlElement.Create(xElement)
@@ -51,7 +51,7 @@ class XmlProvider+Inner : FDR.XmlElement
     XmlRuntime.CreateElement("inner", 
                              [| ("c",
                                  (c :> obj)) |], 
-                             [| |])
+                             [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Inner
     XmlElement.Create(xElement)

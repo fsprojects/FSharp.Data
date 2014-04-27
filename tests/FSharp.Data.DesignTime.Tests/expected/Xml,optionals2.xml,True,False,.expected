@@ -29,7 +29,7 @@ class XmlProvider+Rss : FDR.XmlElement
                              [| ("version",
                                  (version :> obj)) |], 
                              [| ("channel",
-                                 (channel :> obj)) |])
+                                 (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
     XmlElement.Create(xElement)
@@ -47,7 +47,7 @@ class XmlProvider+Channel : FDR.XmlElement
     XmlRuntime.CreateElement("channel", 
                              [| |], 
                              [| ("item",
-                                 (items :> obj)) |])
+                                 (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
     XmlElement.Create(xElement)
@@ -61,7 +61,7 @@ class XmlProvider+Item : FDR.XmlElement
     XmlRuntime.CreateElement("item", 
                              [| |], 
                              [| ("description",
-                                 (description :> obj)) |])
+                                 (description :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)

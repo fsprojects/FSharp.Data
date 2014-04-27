@@ -29,7 +29,7 @@ class XmlProvider+Rss : FDR.XmlElement
                              [| ("version",
                                  (version :> obj)) |], 
                              [| ("channel",
-                                 (channel :> obj)) |])
+                                 (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
     XmlElement.Create(xElement)
@@ -43,19 +43,19 @@ class XmlProvider+Rss : FDR.XmlElement
 
 
 class XmlProvider+Channel : FDR.XmlElement
-    new : copyright:string -> description:string -> items:XmlProvider+Item[] -> link:string -> title:string -> XmlProvider+Channel
+    new : title:string -> link:string -> description:string -> copyright:string -> items:XmlProvider+Item[] -> XmlProvider+Channel
     XmlRuntime.CreateElement("channel", 
                              [| |], 
-                             [| ("copyright",
-                                 (copyright :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("item",
-                                 (items :> obj))
+                             [| ("title",
+                                 (title :> obj))
                                 ("link",
                                  (link :> obj))
-                                ("title",
-                                 (title :> obj)) |])
+                                ("description",
+                                 (description :> obj))
+                                ("copyright",
+                                 (copyright :> obj))
+                                ("item",
+                                 (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
     XmlElement.Create(xElement)
@@ -81,21 +81,21 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
-    new : description:string -> link:string -> pubDate:System.DateTime -> title:string -> creator:string option -> summary:string option -> XmlProvider+Item
+    new : title:string -> link:string -> pubDate:System.DateTime -> summary:string option -> creator:string option -> description:string -> XmlProvider+Item
     XmlRuntime.CreateElement("item", 
                              [| |], 
-                             [| ("description",
-                                 (description :> obj))
+                             [| ("title",
+                                 (title :> obj))
                                 ("link",
                                  (link :> obj))
                                 ("pubDate",
                                  (pubDate :> obj))
-                                ("title",
-                                 (title :> obj))
+                                ("{http://tomasp.net/rss/extensions}summary",
+                                 (summary :> obj))
                                 ("{http://dublincore.org/documents/dcmi-namespace/}creator",
                                  (creator :> obj))
-                                ("{http://tomasp.net/rss/extensions}summary",
-                                 (summary :> obj)) |])
+                                ("description",
+                                 (description :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)
