@@ -27,15 +27,13 @@ type JsonGenerationContext =
     IJsonDocumentType : Type
     JsonValueType : Type
     JsonRuntimeType : Type
-    // the type that is used to represent documents (JsonDocument or ApiaryDocument)
-    Representation : Type
     TypeCache : Dictionary<InferedType, ProvidedTypeDefinition>
     GenerateConstructors : bool }
   static member Create(cultureStr, tpType, replacer, ?uniqueNiceName, ?typeCache) =
     let uniqueNiceName = defaultArg uniqueNiceName (NameUtils.uniqueGenerator NameUtils.nicePascalName)
     let typeCache = defaultArg typeCache (Dictionary())
-    JsonGenerationContext.Create(cultureStr, tpType, typeof<JsonDocument>, replacer, uniqueNiceName, typeCache, true)
-  static member Create(cultureStr, tpType, representation, replacer, uniqueNiceName, typeCache, generateConstructors) =
+    JsonGenerationContext.Create(cultureStr, tpType, replacer, uniqueNiceName, typeCache, true)
+  static member Create(cultureStr, tpType, replacer, uniqueNiceName, typeCache, generateConstructors) =
     { CultureStr = cultureStr
       TypeProviderType = tpType
       Replacer = replacer 
@@ -43,7 +41,6 @@ type JsonGenerationContext =
       IJsonDocumentType = replacer.ToRuntime typeof<IJsonDocument>
       JsonValueType = replacer.ToRuntime typeof<JsonValue>
       JsonRuntimeType = replacer.ToRuntime typeof<JsonRuntime>
-      Representation = replacer.ToRuntime representation
       TypeCache = typeCache 
       GenerateConstructors = generateConstructors }
   member x.MakeOptionType(typ:Type) = 
@@ -61,12 +58,10 @@ type JsonGenerationResult =
       if x.ConvertedType.IsArray then
         match x.ConvertedType.GetElementType() with
         | :? ProvidedTypeDefinition -> ctx.IJsonDocumentType.MakeArrayType()
-        | x when x = ctx.Representation -> ctx.IJsonDocumentType.MakeArrayType()
         | _ -> x.ConvertedType
       else
         match x.ConvertedType with
         | :? ProvidedTypeDefinition -> ctx.IJsonDocumentType
-        | x when x = ctx.Representation -> ctx.IJsonDocumentType
         | _ -> x.ConvertedType
 
 module JsonTypeBuilder = 
