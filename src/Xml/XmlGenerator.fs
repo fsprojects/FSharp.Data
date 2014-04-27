@@ -407,11 +407,10 @@ module internal XmlTypeBuilder =
                                                                                Expr.Coerce(a, typeof<obj>) ]))
                     let cultureStr = ctx.CultureStr
                     <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
-                    |> ctx.Replacer.ToRuntime
-                )
+                    |> ctx.Replacer.ToRuntime)
             objectTy.AddMember <| 
               ProvidedConstructor(
-                  [ProvidedParameter("xElement",ctx.Replacer.ToRuntime typeof<XElement>)], 
+                  [ProvidedParameter("xElement", ctx.Replacer.ToRuntime typeof<XElement>)], 
                   InvokeCode = fun (Singleton arg) -> 
                       let arg = ctx.Replacer.ToDesignTime arg
                       <@@ XmlElement.Create(%%arg:XElement) @@> |> ctx.Replacer.ToRuntime)
