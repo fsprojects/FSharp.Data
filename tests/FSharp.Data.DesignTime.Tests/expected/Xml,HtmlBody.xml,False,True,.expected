@@ -24,6 +24,20 @@ class XmlProvider
 
 
 class XmlProvider+Div : FDR.XmlElement
+    new : id:string option -> value:string option -> divs:XmlProvider+Div[] -> spans:string[] -> XmlProvider+Div
+    XmlRuntime.CreateElement("div", 
+                             [| ("id",
+                                 (id :> obj)) |], 
+                             [| ("",
+                                 (value :> obj))
+                                ("div",
+                                 (divs :> obj))
+                                ("span",
+                                 (spans :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
+    XmlElement.Create(xElement)
+
     member Divs: XmlProvider+Div[] with get
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 

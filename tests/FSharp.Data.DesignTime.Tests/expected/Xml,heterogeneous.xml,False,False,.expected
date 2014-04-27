@@ -24,21 +24,60 @@ class XmlProvider
 
 
 class XmlProvider+Test : FDR.XmlElement
+    new : options:XmlProvider+Options[] -> XmlProvider+Test
+    XmlRuntime.CreateElement("test", 
+                             [| |], 
+                             [| ("options",
+                                 (options :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Test
+    XmlElement.Create(xElement)
+
     member Options: XmlProvider+Options[] with get
     XmlRuntime.ConvertArray(this, "options", new Func<_,_>(id)))
 
 
 class XmlProvider+Options : FDR.XmlElement
+    new : node:XmlProvider+Node -> XmlProvider+Options
+    XmlRuntime.CreateElement("options", 
+                             [| |], 
+                             [| ("node",
+                                 (node :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Options
+    XmlElement.Create(xElement)
+
     member Node: XmlProvider+Node with get
     XmlRuntime.GetChild(this, "node")
 
 
 class XmlProvider+Node : FDR.XmlElement
+    new : set:XmlProvider+SetChoice -> XmlProvider+Node
+    XmlRuntime.CreateElement("node", 
+                             [| ("set",
+                                 (set :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Node
+    XmlElement.Create(xElement)
+
     member Set: XmlProvider+SetChoice with get
     XmlRuntime.TryGetAttribute(this, "set")
 
 
 class XmlProvider+SetChoice : string option
+    new : value:int -> XmlProvider+SetChoice
+    Some TextRuntime.ConvertIntegerBack("", Some value)
+
+    new : value:bool -> XmlProvider+SetChoice
+    Some TextRuntime.ConvertBooleanBack("", Some value, false)
+
+    new : value:string -> XmlProvider+SetChoice
+    Some TextRuntime.ConvertStringBack(Some value)
+
+    new : () -> XmlProvider+SetChoice
+    None
+
     member Boolean: bool option with get
     TextRuntime.ConvertBoolean("", this)
 

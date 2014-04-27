@@ -24,6 +24,9 @@ class XmlProvider
 
 
 class XmlProvider+Choice : FDR.XmlElement
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Choice
+    XmlElement.Create(xElement)
+
     member Feed: XmlProvider+Feed option with get
     XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}feed", new Func<_,_>(id)))
 
@@ -32,6 +35,26 @@ class XmlProvider+Choice : FDR.XmlElement
 
 
 class XmlProvider+Feed : FDR.XmlElement
+    new : xmlns:string -> entry:XmlProvider+Entry -> id:string -> links:XmlProvider+Link2[] -> subtitle:string -> title:string -> updated:System.DateTime -> XmlProvider+Feed
+    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}feed", 
+                             [| ("xmlns",
+                                 (xmlns :> obj)) |], 
+                             [| ("{http://www.w3.org/2005/Atom}entry",
+                                 (entry :> obj))
+                                ("{http://www.w3.org/2005/Atom}id",
+                                 (id :> obj))
+                                ("{http://www.w3.org/2005/Atom}link",
+                                 (links :> obj))
+                                ("{http://www.w3.org/2005/Atom}subtitle",
+                                 (subtitle :> obj))
+                                ("{http://www.w3.org/2005/Atom}title",
+                                 (title :> obj))
+                                ("{http://www.w3.org/2005/Atom}updated",
+                                 (updated :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Feed
+    XmlElement.Create(xElement)
+
     member Entry: XmlProvider+Entry with get
     XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}entry")
 
@@ -60,6 +83,16 @@ class XmlProvider+Feed : FDR.XmlElement
 
 
 class XmlProvider+Rss : FDR.XmlElement
+    new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
+    XmlRuntime.CreateElement("rss", 
+                             [| ("version",
+                                 (version :> obj)) |], 
+                             [| ("channel",
+                                 (channel :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
+    XmlElement.Create(xElement)
+
     member Channel: XmlProvider+Channel with get
     XmlRuntime.GetChild(this, "channel")
 
@@ -69,6 +102,21 @@ class XmlProvider+Rss : FDR.XmlElement
 
 
 class XmlProvider+Channel : FDR.XmlElement
+    new : description:string -> items:XmlProvider+Item[] -> link:string -> title:string -> XmlProvider+Channel
+    XmlRuntime.CreateElement("channel", 
+                             [| |], 
+                             [| ("description",
+                                 (description :> obj))
+                                ("item",
+                                 (items :> obj))
+                                ("link",
+                                 (link :> obj))
+                                ("title",
+                                 (title :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
+    XmlElement.Create(xElement)
+
     member Description: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
@@ -86,6 +134,25 @@ class XmlProvider+Channel : FDR.XmlElement
 
 
 class XmlProvider+Entry : FDR.XmlElement
+    new : author:XmlProvider+Author -> id:string -> links:XmlProvider+Link[] -> summary:string -> title:string -> updated:System.DateTime -> XmlProvider+Entry
+    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}entry", 
+                             [| |], 
+                             [| ("{http://www.w3.org/2005/Atom}author",
+                                 (author :> obj))
+                                ("{http://www.w3.org/2005/Atom}id",
+                                 (id :> obj))
+                                ("{http://www.w3.org/2005/Atom}link",
+                                 (links :> obj))
+                                ("{http://www.w3.org/2005/Atom}summary",
+                                 (summary :> obj))
+                                ("{http://www.w3.org/2005/Atom}title",
+                                 (title :> obj))
+                                ("{http://www.w3.org/2005/Atom}updated",
+                                 (updated :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Entry
+    XmlElement.Create(xElement)
+
     member Author: XmlProvider+Author with get
     XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}author")
 
@@ -110,6 +177,17 @@ class XmlProvider+Entry : FDR.XmlElement
 
 
 class XmlProvider+Link2 : FDR.XmlElement
+    new : href:string -> rel:string option -> XmlProvider+Link2
+    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}link", 
+                             [| ("href",
+                                 (href :> obj))
+                                ("rel",
+                                 (rel :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link2
+    XmlElement.Create(xElement)
+
     member Href: string with get
     let value = XmlRuntime.TryGetAttribute(this, "href")
     TextRuntime.GetNonOptionalValue("Attribute href", TextRuntime.ConvertString(value), value)
@@ -119,6 +197,17 @@ class XmlProvider+Link2 : FDR.XmlElement
 
 
 class XmlProvider+Author : FDR.XmlElement
+    new : email:string -> name:string -> XmlProvider+Author
+    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}author", 
+                             [| |], 
+                             [| ("{http://www.w3.org/2005/Atom}email",
+                                 (email :> obj))
+                                ("{http://www.w3.org/2005/Atom}name",
+                                 (name :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
+    XmlElement.Create(xElement)
+
     member Email: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}email"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
@@ -129,6 +218,19 @@ class XmlProvider+Author : FDR.XmlElement
 
 
 class XmlProvider+Item : FDR.XmlElement
+    new : description:string -> link:string -> title:string -> XmlProvider+Item
+    XmlRuntime.CreateElement("item", 
+                             [| |], 
+                             [| ("description",
+                                 (description :> obj))
+                                ("link",
+                                 (link :> obj))
+                                ("title",
+                                 (title :> obj)) |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
     member Description: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "description"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
@@ -143,6 +245,19 @@ class XmlProvider+Item : FDR.XmlElement
 
 
 class XmlProvider+Link : FDR.XmlElement
+    new : href:string -> rel:string option -> type:string option -> XmlProvider+Link
+    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}link", 
+                             [| ("href",
+                                 (href :> obj))
+                                ("rel",
+                                 (rel :> obj))
+                                ("type",
+                                 (type :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link
+    XmlElement.Create(xElement)
+
     member Href: string with get
     let value = XmlRuntime.TryGetAttribute(this, "href")
     TextRuntime.GetNonOptionalValue("Attribute href", TextRuntime.ConvertString(value), value)

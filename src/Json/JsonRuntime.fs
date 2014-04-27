@@ -231,34 +231,34 @@ type JsonRuntime =
     else None
 
   static member private ToJsonValue (cultureInfo:CultureInfo) (value:obj) = 
-    let f g = function None -> JsonValue.Null | Some v -> g v
-    if value = null then 
-        JsonValue.Null
-    elif value.GetType().IsArray then 
-        JsonValue.Array [| for elem in unbox<Array> value -> JsonRuntime.ToJsonValue cultureInfo elem |]
-    else
-        match value with
-        | :? string                  as v -> JsonValue.String v
-        | :? option<string>          as v -> f JsonValue.String v
-        | :? DateTime                as v -> v.ToString(cultureInfo) |> JsonValue.String
-        | :? option<DateTime>        as v -> f (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
-        | :? int                     as v -> JsonValue.Number(decimal v)
-        | :? option<int>             as v -> f (decimal >> JsonValue.Number) v
-        | :? int64                   as v -> JsonValue.Number(decimal v)
-        | :? option<int64>           as v -> f (decimal >> JsonValue.Number) v
-        | :? float                   as v -> JsonValue.Number(decimal v)
-        | :? option<float>           as v -> f (decimal >> JsonValue.Number) v
-        | :? decimal                 as v -> JsonValue.Number v
-        | :? option<decimal>         as v -> f JsonValue.Number v
-        | :? bool                    as v -> JsonValue.Boolean v
-        | :? option<bool>            as v -> f JsonValue.Boolean v
-        | :? Guid                    as v -> v.ToString() |> JsonValue.String
-        | :? option<Guid>            as v -> f (fun (g:Guid) -> g.ToString() |> JsonValue.String) v
-        | :? IJsonDocument           as v -> v.JsonValue
-        | :? option<IJsonDocument>   as v -> f (fun (v:IJsonDocument) -> v.JsonValue) v
-        | :? JsonValue               as v -> v
-        | :? option<JsonValue>       as v -> f id v
-        | _ -> failwithf "Can't create JsonValue from %A" value
+    let inline optionToJson f = function None -> JsonValue.Null | Some v -> f v
+    match value with
+    | null -> JsonValue.Null
+    | :? Array                   as v -> JsonValue.Array [| for elem in v -> JsonRuntime.ToJsonValue cultureInfo elem |]
+
+    | :? string                  as v -> JsonValue.String v
+    | :? DateTime                as v -> v.ToString(cultureInfo) |> JsonValue.String
+    | :? int                     as v -> JsonValue.Number(decimal v)
+    | :? int64                   as v -> JsonValue.Number(decimal v)
+    | :? float                   as v -> JsonValue.Number(decimal v)
+    | :? decimal                 as v -> JsonValue.Number v
+    | :? bool                    as v -> JsonValue.Boolean v
+    | :? Guid                    as v -> v.ToString() |> JsonValue.String
+    | :? IJsonDocument           as v -> v.JsonValue
+    | :? JsonValue               as v -> v
+
+    | :? option<string>          as v -> optionToJson JsonValue.String v
+    | :? option<DateTime>        as v -> optionToJson (fun (dt:DateTime) -> dt.ToString(cultureInfo) |> JsonValue.String) v
+    | :? option<int>             as v -> optionToJson (decimal >> JsonValue.Number) v
+    | :? option<int64>           as v -> optionToJson (decimal >> JsonValue.Number) v
+    | :? option<float>           as v -> optionToJson (decimal >> JsonValue.Number) v
+    | :? option<decimal>         as v -> optionToJson JsonValue.Number v
+    | :? option<bool>            as v -> optionToJson JsonValue.Boolean v
+    | :? option<Guid>            as v -> optionToJson (fun (g:Guid) -> g.ToString() |> JsonValue.String) v
+    | :? option<IJsonDocument>   as v -> optionToJson (fun (v:IJsonDocument) -> v.JsonValue) v
+    | :? option<JsonValue>       as v -> optionToJson id v
+
+    | _ -> failwithf "Can't create JsonValue from %A" value
 
   /// Creates a scalar JsonValue and wraps it in a json document
   static member CreateValue(value:obj, cultureStr) = 

@@ -24,6 +24,15 @@ class XmlProvider
 
 
 class XmlProvider+Foo : FDR.XmlElement
+    new : a:string -> XmlProvider+Foo
+    XmlRuntime.CreateElement("foo", 
+                             [| ("a",
+                                 (a :> obj)) |], 
+                             [| |])
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Foo
+    XmlElement.Create(xElement)
+
     member A: string with get
     let value = XmlRuntime.TryGetAttribute(this, "a")
     TextRuntime.GetNonOptionalValue("Attribute a", TextRuntime.ConvertString(value), value)
