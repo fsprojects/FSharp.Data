@@ -171,8 +171,12 @@ type XmlRuntime =
         with _ -> None
     | None -> None
 
-  // Creates a XElement with the given attributes and elements and wraps it in a XmlElementJsonValue.Record and wraps it in a json document
-  static member CreateElement(nameWithNS, attributes:_[], elements:_[], cultureStr) =
+  /// Creates a XElement with a scalar value and wraps it in a XmlElement
+  static member CreateValue(nameWithNS, value:obj, cultureStr) = 
+    XmlRuntime.CreateRecord(nameWithNS, [| |], [| "", value |], cultureStr)
+
+  // Creates a XElement with the given attributes and elements and wraps it in a XmlElement
+  static member CreateRecord(nameWithNS, attributes:_[], elements:_[], cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let toXmlContent (v:obj) = 
         let inline strWithCulture v =

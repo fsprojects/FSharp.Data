@@ -7,10 +7,11 @@
 module FSharp.Data.Tests.XmlProvider
 #endif
 
-open NUnit.Framework
-open FSharp.Data
-open FsUnit
+open System
 open System.Xml.Linq
+open NUnit.Framework
+open FsUnit
+open FSharp.Data
 
 type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
 
@@ -370,3 +371,87 @@ let ``Can construct collapsed non-primitive collections and elements with json``
     </BlahData>
   </BlahDataArray>
 </PropertyBag>""")
+
+[<Test>]
+let ``Can construct elements with namespaces and heterogeneous records``() =
+    let rss = AnyFeed.Choice(AnyFeed.Rss(1.0M, AnyFeed.Channel("title", "link", "description", [| |])))
+    rss.ToString() |> normalize |> should equal (normalize """<rss version="1.0">
+  <channel>
+    <title>title</title>
+    <link>link</link>
+    <description>description</description>
+  </channel>
+</rss>""")
+
+    let atom = 
+        AnyFeed.Choice(
+            AnyFeed.Feed("title", 
+                         "subtitle", 
+                         [| |], 
+                         "id", 
+                         DateTime(2014, 04, 27), 
+                         AnyFeed.Entry("title2", 
+                                       [| |],
+                                       "id2",
+                                       DateTime(2014, 04, 28),
+                                       "summary",
+                                       AnyFeed.Author("name", "email"))))
+    atom.ToString() |> normalize |> should equal (normalize """<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>title</title>
+  <subtitle>subtitle</subtitle>
+  <id>id</id>
+  <updated>04/27/2014 00:00:00</updated>
+  <entry>
+    <title>title2</title>
+    <id>id2</id>
+    <updated>04/28/2014 00:00:00</updated>
+    <summary>summary</summary>
+    <author>
+      <name>name</name>
+      <email>email</email>
+    </author>
+  </entry>
+</feed>""")
+
+type AtomSearch = XmlProvider<"Data/search.atom.xml", SampleIsList=true>
+
+[<Test>]
+let ``Can construct elements with heterogeneous records with primitives``() =
+    let id = AtomSearch.Choice(id = "id")
+    id.XElement.ToString() |> should equal """<id xmlns="http://www.w3.org/2005/Atom">id</id>"""
+    let link = AtomSearch.Choice(AtomSearch.Link2("type", "href", "rel"))
+    link.XElement.ToString() |> should equal """<link type="type" href="href" rel="rel" xmlns="http://www.w3.org/2005/Atom" />"""
+    let title = AtomSearch.Choice(title = "title")
+    title.XElement.ToString() |> should equal """<title xmlns="http://www.w3.org/2005/Atom">title</title>"""
+    let updated = AtomSearch.Choice(updated = DateTime(2000, 1, 1))
+    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">01/01/2000 00:00:00</updated>"""
+    let itemsPerPage = AtomSearch.Choice(2)
+    itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
+    let entry = AtomSearch.Entry("id", 
+                                 DateTime(2000, 2, 2), 
+                                 [| |], 
+                                 "title", 
+                                 AtomSearch.Content("type", "value"),
+                                 DateTime(2000, 3, 3),
+                                 null,
+                                 AtomSearch.Metadata("resultType"),
+                                 "source",
+                                 "lange",
+                                 AtomSearch.Author("name", "uri"))
+    entry.XElement.ToString() |> should equal """<entry xmlns="http://www.w3.org/2005/Atom">
+  <id>id</id>
+  <published>02/02/2000 00:00:00</published>
+  <title>title</title>
+  <content type="type">value</content>
+  <updated>03/03/2000 00:00:00</updated>
+  <metadata xmlns="http://api.twitter.com/">
+    <result_type>resultType</result_type>
+  </metadata>
+  <source xmlns="http://api.twitter.com/">source</source>
+  <lang xmlns="http://api.twitter.com/">lange</lang>
+  <author>
+    <name>name</name>
+    <uri>uri</uri>
+  </author>
+</entry>"""
+    AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())

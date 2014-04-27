@@ -25,12 +25,12 @@ class XmlProvider
 
 class XmlProvider+Item : FDR.XmlElement
     new : title:string -> description:string option -> XmlProvider+Item
-    XmlRuntime.CreateElement("item", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj))
-                                ("description",
-                                 (description :> obj)) |], "")
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("description",
+                                (description :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)

@@ -25,13 +25,13 @@ class XmlProvider
 
 class XmlProvider+Div : FDR.XmlElement
     new : id:string -> span:string -> divs:XmlProvider+Div2[] -> XmlProvider+Div
-    XmlRuntime.CreateElement("div", 
-                             [| ("id",
-                                 (id :> obj)) |], 
-                             [| ("span",
-                                 (span :> obj))
-                                ("div",
-                                 (divs :> obj)) |], "")
+    XmlRuntime.CreateRecord("div", 
+                            [| ("id",
+                                (id :> obj)) |], 
+                            [| ("span",
+                                (span :> obj))
+                               ("div",
+                                (divs :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
     XmlElement.Create(xElement)
@@ -50,13 +50,13 @@ class XmlProvider+Div : FDR.XmlElement
 
 class XmlProvider+Div2 : FDR.XmlElement
     new : id:string -> spans:string[] -> div:string option -> XmlProvider+Div2
-    XmlRuntime.CreateElement("div", 
-                             [| ("id",
-                                 (id :> obj)) |], 
-                             [| ("span",
-                                 (spans :> obj))
-                                ("div",
-                                 (div :> obj)) |], "")
+    XmlRuntime.CreateRecord("div", 
+                            [| ("id",
+                                (id :> obj)) |], 
+                            [| ("span",
+                                (spans :> obj))
+                               ("div",
+                                (div :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div2
     XmlElement.Create(xElement)

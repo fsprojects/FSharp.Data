@@ -1,79 +1,78 @@
 class XmlProvider
-    static member AsyncGetSamples: () -> XmlProvider+Choice[] async
-    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.CreateList(t))
+    static member AsyncGetSample: () -> XmlProvider+Feed async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XML" "Search.Atom.xml"), f)
 
-    static member AsyncLoad: uri:string -> XmlProvider+Choice async
+    static member AsyncLoad: uri:string -> XmlProvider+Feed async
     let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XML" uri), f)
 
-    static member GetSamples: () -> XmlProvider+Choice[]
-    XmlElement.CreateList(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XML" "Search.Atom.xml")))
+    static member GetSample: () -> XmlProvider+Feed
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XML" "Search.Atom.xml")))
 
-    static member Load: stream:System.IO.Stream -> XmlProvider+Choice
+    static member Load: stream:System.IO.Stream -> XmlProvider+Feed
     XmlElement.Create(((new StreamReader(stream)) :> TextReader))
 
-    static member Load: reader:System.IO.TextReader -> XmlProvider+Choice
+    static member Load: reader:System.IO.TextReader -> XmlProvider+Feed
     XmlElement.Create(reader)
 
-    static member Load: uri:string -> XmlProvider+Choice
+    static member Load: uri:string -> XmlProvider+Feed
     XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XML" uri)))
 
-    static member Parse: text:string -> XmlProvider+Choice
+    static member Parse: text:string -> XmlProvider+Feed
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-class XmlProvider+Choice : FDR.XmlElement
-    new : itemsPerPage:int -> XmlProvider+Choice
-    XmlRuntime.CreateValue("{http://a9.com/-/spec/opensearch/1.1/}itemsPerPage", (itemsPerPage :> obj), "")
+class XmlProvider+Feed : FDR.XmlElement
+    new : lang:string -> id:string -> links:XmlProvider+Link[] -> title:string -> updated:System.DateTime -> itemsPerPage:int -> entries:XmlProvider+Entry[] -> XmlProvider+Feed
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
+                            [| ("{http://www.w3.org/XML/1998/namespace}lang",
+                                (lang :> obj)) |], 
+                            [| ("{http://www.w3.org/2005/Atom}id",
+                                (id :> obj))
+                               ("{http://www.w3.org/2005/Atom}link",
+                                (links :> obj))
+                               ("{http://www.w3.org/2005/Atom}title",
+                                (title :> obj))
+                               ("{http://www.w3.org/2005/Atom}updated",
+                                (updated :> obj))
+                               ("{http://a9.com/-/spec/opensearch/1.1/}itemsPerPage",
+                                (itemsPerPage :> obj))
+                               ("{http://www.w3.org/2005/Atom}entry",
+                                (entries :> obj)) |], "")
 
-    new : entry:XmlProvider+Entry -> XmlProvider+Choice
-    entry
-
-    new : id:string -> XmlProvider+Choice
-    XmlRuntime.CreateValue("{http://www.w3.org/2005/Atom}id", (id :> obj), "")
-
-    new : link:XmlProvider+Link2 -> XmlProvider+Choice
-    link
-
-    new : title:string -> XmlProvider+Choice
-    XmlRuntime.CreateValue("{http://www.w3.org/2005/Atom}title", (title :> obj), "")
-
-    new : updated:System.DateTime -> XmlProvider+Choice
-    XmlRuntime.CreateValue("{http://www.w3.org/2005/Atom}updated", (updated :> obj), "")
-
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Choice
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Feed
     XmlElement.Create(xElement)
 
-    member Entry: XmlProvider+Entry option with get
-    XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}entry", new Func<_,_>(id)))
+    member Entries: XmlProvider+Entry[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}entry", new Func<_,_>(id)))
 
-    member Id: string option with get
-    XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}id", new Func<_,_>(fun (t:XmlElement) -> 
-                                                                                       let value = XmlRuntime.TryGetValue(t)
-                                                                                       TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+    member Id: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}id"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member ItemsPerPage: int option with get
-    XmlRuntime.ConvertAsName(this, "{http://a9.com/-/spec/opensearch/1.1/}itemsPerPage", new Func<_,_>(fun (t:XmlElement) -> 
-                                                                                                          let value = XmlRuntime.TryGetValue(t)
-                                                                                                          TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("", value), value)))
+    member ItemsPerPage: int with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://a9.com/-/spec/opensearch/1.1/}itemsPerPage"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("", value), value)
 
-    member Link: XmlProvider+Link2 option with get
-    XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
+    member Lang: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "{http://www.w3.org/XML/1998/namespace}lang")
+    TextRuntime.GetNonOptionalValue("Attribute lang", TextRuntime.ConvertString(value), value)
 
-    member Title: string option with get
-    XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}title", new Func<_,_>(fun (t:XmlElement) -> 
-                                                                                          let value = XmlRuntime.TryGetValue(t)
-                                                                                          TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+    member Links: XmlProvider+Link[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
-    member Updated: System.DateTime option with get
-    XmlRuntime.ConvertAsName(this, "{http://www.w3.org/2005/Atom}updated", new Func<_,_>(fun (t:XmlElement) -> 
-                                                                                            let value = XmlRuntime.TryGetValue(t)
-                                                                                            TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)))
+    member Title: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}title"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Updated: System.DateTime with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}updated"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
 
 class XmlProvider+Entry : FDR.XmlElement
-    new : id:string -> published:System.DateTime -> links:XmlProvider+Link[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTime -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
+    new : id:string -> published:System.DateTime -> links:XmlProvider+Link2[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTime -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
                             [| |], 
                             [| ("{http://www.w3.org/2005/Atom}id",
@@ -119,7 +118,7 @@ class XmlProvider+Entry : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://api.twitter.com/}lang"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
-    member Links: XmlProvider+Link[] with get
+    member Links: XmlProvider+Link2[] with get
     XmlRuntime.ConvertArray(this, "{http://www.w3.org/2005/Atom}link", new Func<_,_>(id)))
 
     member Metadata: XmlProvider+Metadata with get
@@ -142,8 +141,8 @@ class XmlProvider+Entry : FDR.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
 
-class XmlProvider+Link2 : FDR.XmlElement
-    new : type:string -> href:string -> rel:string -> XmlProvider+Link2
+class XmlProvider+Link : FDR.XmlElement
+    new : type:string -> href:string -> rel:string -> XmlProvider+Link
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
                             [| ("type",
                                 (type :> obj))
@@ -153,7 +152,7 @@ class XmlProvider+Link2 : FDR.XmlElement
                                 (rel :> obj)) |], 
                             [| |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link2
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link
     XmlElement.Create(xElement)
 
     member Href: string with get
@@ -220,8 +219,8 @@ class XmlProvider+Geo : FDR.XmlElement
     XmlElement.Create(xElement)
 
 
-class XmlProvider+Link : FDR.XmlElement
-    new : type:string -> href:string -> rel:string -> XmlProvider+Link
+class XmlProvider+Link2 : FDR.XmlElement
+    new : type:string -> href:string -> rel:string -> XmlProvider+Link2
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
                             [| ("type",
                                 (type :> obj))
@@ -231,7 +230,7 @@ class XmlProvider+Link : FDR.XmlElement
                                 (rel :> obj)) |], 
                             [| |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link2
     XmlElement.Create(xElement)
 
     member Href: string with get

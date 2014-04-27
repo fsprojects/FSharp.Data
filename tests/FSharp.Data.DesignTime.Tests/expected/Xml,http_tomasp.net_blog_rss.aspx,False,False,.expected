@@ -25,11 +25,11 @@ class XmlProvider
 
 class XmlProvider+Rss : FDR.XmlElement
     new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
-    XmlRuntime.CreateElement("rss", 
-                             [| ("version",
-                                 (version :> obj)) |], 
-                             [| ("channel",
-                                 (channel :> obj)) |], "")
+    XmlRuntime.CreateRecord("rss", 
+                            [| ("version",
+                                (version :> obj)) |], 
+                            [| ("channel",
+                                (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
     XmlElement.Create(xElement)
@@ -44,18 +44,18 @@ class XmlProvider+Rss : FDR.XmlElement
 
 class XmlProvider+Channel : FDR.XmlElement
     new : title:string -> link:string -> description:string -> copyright:string -> items:XmlProvider+Item[] -> XmlProvider+Channel
-    XmlRuntime.CreateElement("channel", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj))
-                                ("link",
-                                 (link :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("copyright",
-                                 (copyright :> obj))
-                                ("item",
-                                 (items :> obj)) |], "")
+    XmlRuntime.CreateRecord("channel", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("copyright",
+                                (copyright :> obj))
+                               ("item",
+                                (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
     XmlElement.Create(xElement)
@@ -82,20 +82,20 @@ class XmlProvider+Channel : FDR.XmlElement
 
 class XmlProvider+Item : FDR.XmlElement
     new : title:string -> link:string -> pubDate:System.DateTime -> description:string -> summary:string option -> creator:string option -> XmlProvider+Item
-    XmlRuntime.CreateElement("item", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj))
-                                ("link",
-                                 (link :> obj))
-                                ("pubDate",
-                                 (pubDate :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("{http://tomasp.net/rss/extensions}summary",
-                                 (summary :> obj))
-                                ("{http://dublincore.org/documents/dcmi-namespace/}creator",
-                                 (creator :> obj)) |], "")
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("pubDate",
+                                (pubDate :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("{http://tomasp.net/rss/extensions}summary",
+                                (summary :> obj))
+                               ("{http://dublincore.org/documents/dcmi-namespace/}creator",
+                                (creator :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)

@@ -24,6 +24,12 @@ class XmlProvider
 
 
 class XmlProvider+Choice : FDR.XmlElement
+    new : rss:XmlProvider+Rss -> XmlProvider+Choice
+    rss
+
+    new : feed:XmlProvider+Feed -> XmlProvider+Choice
+    feed
+
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Choice
     XmlElement.Create(xElement)
 
@@ -35,22 +41,21 @@ class XmlProvider+Choice : FDR.XmlElement
 
 
 class XmlProvider+Feed : FDR.XmlElement
-    new : xmlns:string -> title:string -> subtitle:string -> links:XmlProvider+Link[] -> id:string -> updated:System.DateTime -> entry:XmlProvider+Entry -> XmlProvider+Feed
-    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}feed", 
-                             [| ("xmlns",
-                                 (xmlns :> obj)) |], 
-                             [| ("{http://www.w3.org/2005/Atom}title",
-                                 (title :> obj))
-                                ("{http://www.w3.org/2005/Atom}subtitle",
-                                 (subtitle :> obj))
-                                ("{http://www.w3.org/2005/Atom}link",
-                                 (links :> obj))
-                                ("{http://www.w3.org/2005/Atom}id",
-                                 (id :> obj))
-                                ("{http://www.w3.org/2005/Atom}updated",
-                                 (updated :> obj))
-                                ("{http://www.w3.org/2005/Atom}entry",
-                                 (entry :> obj)) |], "")
+    new : title:string -> subtitle:string -> links:XmlProvider+Link[] -> id:string -> updated:System.DateTime -> entry:XmlProvider+Entry -> XmlProvider+Feed
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
+                            [| |], 
+                            [| ("{http://www.w3.org/2005/Atom}title",
+                                (title :> obj))
+                               ("{http://www.w3.org/2005/Atom}subtitle",
+                                (subtitle :> obj))
+                               ("{http://www.w3.org/2005/Atom}link",
+                                (links :> obj))
+                               ("{http://www.w3.org/2005/Atom}id",
+                                (id :> obj))
+                               ("{http://www.w3.org/2005/Atom}updated",
+                                (updated :> obj))
+                               ("{http://www.w3.org/2005/Atom}entry",
+                                (entry :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Feed
     XmlElement.Create(xElement)
@@ -77,18 +82,14 @@ class XmlProvider+Feed : FDR.XmlElement
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://www.w3.org/2005/Atom}updated"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
-    member Xmlns: string with get
-    let value = XmlRuntime.TryGetAttribute(this, "xmlns")
-    TextRuntime.GetNonOptionalValue("Attribute xmlns", TextRuntime.ConvertString(value), value)
-
 
 class XmlProvider+Rss : FDR.XmlElement
     new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
-    XmlRuntime.CreateElement("rss", 
-                             [| ("version",
-                                 (version :> obj)) |], 
-                             [| ("channel",
-                                 (channel :> obj)) |], "")
+    XmlRuntime.CreateRecord("rss", 
+                            [| ("version",
+                                (version :> obj)) |], 
+                            [| ("channel",
+                                (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
     XmlElement.Create(xElement)
@@ -103,16 +104,16 @@ class XmlProvider+Rss : FDR.XmlElement
 
 class XmlProvider+Channel : FDR.XmlElement
     new : title:string -> link:string -> description:string -> items:XmlProvider+Item[] -> XmlProvider+Channel
-    XmlRuntime.CreateElement("channel", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj))
-                                ("link",
-                                 (link :> obj))
-                                ("description",
-                                 (description :> obj))
-                                ("item",
-                                 (items :> obj)) |], "")
+    XmlRuntime.CreateRecord("channel", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("description",
+                                (description :> obj))
+                               ("item",
+                                (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
     XmlElement.Create(xElement)
@@ -135,20 +136,20 @@ class XmlProvider+Channel : FDR.XmlElement
 
 class XmlProvider+Entry : FDR.XmlElement
     new : title:string -> links:XmlProvider+Link2[] -> id:string -> updated:System.DateTime -> summary:string -> author:XmlProvider+Author -> XmlProvider+Entry
-    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}entry", 
-                             [| |], 
-                             [| ("{http://www.w3.org/2005/Atom}title",
-                                 (title :> obj))
-                                ("{http://www.w3.org/2005/Atom}link",
-                                 (links :> obj))
-                                ("{http://www.w3.org/2005/Atom}id",
-                                 (id :> obj))
-                                ("{http://www.w3.org/2005/Atom}updated",
-                                 (updated :> obj))
-                                ("{http://www.w3.org/2005/Atom}summary",
-                                 (summary :> obj))
-                                ("{http://www.w3.org/2005/Atom}author",
-                                 (author :> obj)) |], "")
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
+                            [| |], 
+                            [| ("{http://www.w3.org/2005/Atom}title",
+                                (title :> obj))
+                               ("{http://www.w3.org/2005/Atom}link",
+                                (links :> obj))
+                               ("{http://www.w3.org/2005/Atom}id",
+                                (id :> obj))
+                               ("{http://www.w3.org/2005/Atom}updated",
+                                (updated :> obj))
+                               ("{http://www.w3.org/2005/Atom}summary",
+                                (summary :> obj))
+                               ("{http://www.w3.org/2005/Atom}author",
+                                (author :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Entry
     XmlElement.Create(xElement)
@@ -178,12 +179,12 @@ class XmlProvider+Entry : FDR.XmlElement
 
 class XmlProvider+Link : FDR.XmlElement
     new : href:string -> rel:string option -> XmlProvider+Link
-    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}link", 
-                             [| ("href",
-                                 (href :> obj))
-                                ("rel",
-                                 (rel :> obj)) |], 
-                             [| |], "")
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
+                            [| ("href",
+                                (href :> obj))
+                               ("rel",
+                                (rel :> obj)) |], 
+                            [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link
     XmlElement.Create(xElement)
@@ -198,12 +199,12 @@ class XmlProvider+Link : FDR.XmlElement
 
 class XmlProvider+Author : FDR.XmlElement
     new : name:string -> email:string -> XmlProvider+Author
-    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}author", 
-                             [| |], 
-                             [| ("{http://www.w3.org/2005/Atom}name",
-                                 (name :> obj))
-                                ("{http://www.w3.org/2005/Atom}email",
-                                 (email :> obj)) |], "")
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}author", 
+                            [| |], 
+                            [| ("{http://www.w3.org/2005/Atom}name",
+                                (name :> obj))
+                               ("{http://www.w3.org/2005/Atom}email",
+                                (email :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
     XmlElement.Create(xElement)
@@ -219,14 +220,14 @@ class XmlProvider+Author : FDR.XmlElement
 
 class XmlProvider+Item : FDR.XmlElement
     new : title:string -> link:string -> description:string -> XmlProvider+Item
-    XmlRuntime.CreateElement("item", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj))
-                                ("link",
-                                 (link :> obj))
-                                ("description",
-                                 (description :> obj)) |], "")
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("link",
+                                (link :> obj))
+                               ("description",
+                                (description :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)
@@ -246,14 +247,14 @@ class XmlProvider+Item : FDR.XmlElement
 
 class XmlProvider+Link2 : FDR.XmlElement
     new : href:string -> rel:string option -> type:string option -> XmlProvider+Link2
-    XmlRuntime.CreateElement("{http://www.w3.org/2005/Atom}link", 
-                             [| ("href",
-                                 (href :> obj))
-                                ("rel",
-                                 (rel :> obj))
-                                ("type",
-                                 (type :> obj)) |], 
-                             [| |], "")
+    XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
+                            [| ("href",
+                                (href :> obj))
+                               ("rel",
+                                (rel :> obj))
+                               ("type",
+                                (type :> obj)) |], 
+                            [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Link2
     XmlElement.Create(xElement)

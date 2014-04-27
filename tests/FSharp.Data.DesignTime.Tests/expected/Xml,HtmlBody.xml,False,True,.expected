@@ -25,15 +25,15 @@ class XmlProvider
 
 class XmlProvider+Div : FDR.XmlElement
     new : id:string option -> value:string option -> spans:string[] -> divs:XmlProvider+Div[] -> XmlProvider+Div
-    XmlRuntime.CreateElement("div", 
-                             [| ("id",
-                                 (id :> obj)) |], 
-                             [| ("",
-                                 (value :> obj))
-                                ("span",
-                                 (spans :> obj))
-                                ("div",
-                                 (divs :> obj)) |], "")
+    XmlRuntime.CreateRecord("div", 
+                            [| ("id",
+                                (id :> obj)) |], 
+                            [| ("",
+                                (value :> obj))
+                               ("span",
+                                (spans :> obj))
+                               ("div",
+                                (divs :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
     XmlElement.Create(xElement)

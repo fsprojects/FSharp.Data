@@ -25,10 +25,10 @@ class XmlProvider
 
 class XmlProvider+Foo : FDR.XmlElement
     new : a:string -> XmlProvider+Foo
-    XmlRuntime.CreateElement("foo", 
-                             [| ("a",
-                                 (a :> obj)) |], 
-                             [| |], "")
+    XmlRuntime.CreateRecord("foo", 
+                            [| ("a",
+                                (a :> obj)) |], 
+                            [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Foo
     XmlElement.Create(xElement)

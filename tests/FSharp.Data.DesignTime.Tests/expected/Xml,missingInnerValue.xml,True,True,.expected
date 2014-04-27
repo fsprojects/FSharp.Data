@@ -25,13 +25,13 @@ class XmlProvider
 
 class XmlProvider+Child : FDR.XmlElement
     new : a:int option -> b:string option -> inner:XmlProvider+Inner option -> XmlProvider+Child
-    XmlRuntime.CreateElement("child", 
-                             [| ("a",
-                                 (a :> obj))
-                                ("b",
-                                 (b :> obj)) |], 
-                             [| ("inner",
-                                 (inner :> obj)) |], "")
+    XmlRuntime.CreateRecord("child", 
+                            [| ("a",
+                                (a :> obj))
+                               ("b",
+                                (b :> obj)) |], 
+                            [| ("inner",
+                                (inner :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Child
     XmlElement.Create(xElement)
@@ -48,10 +48,10 @@ class XmlProvider+Child : FDR.XmlElement
 
 class XmlProvider+Inner : FDR.XmlElement
     new : c:string -> XmlProvider+Inner
-    XmlRuntime.CreateElement("inner", 
-                             [| ("c",
-                                 (c :> obj)) |], 
-                             [| |], "")
+    XmlRuntime.CreateRecord("inner", 
+                            [| ("c",
+                                (c :> obj)) |], 
+                            [| |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Inner
     XmlElement.Create(xElement)

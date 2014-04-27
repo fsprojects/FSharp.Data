@@ -25,11 +25,11 @@ class XmlProvider
 
 class XmlProvider+Rss : FDR.XmlElement
     new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
-    XmlRuntime.CreateElement("rss", 
-                             [| ("version",
-                                 (version :> obj)) |], 
-                             [| ("channel",
-                                 (channel :> obj)) |], "")
+    XmlRuntime.CreateRecord("rss", 
+                            [| ("version",
+                                (version :> obj)) |], 
+                            [| ("channel",
+                                (channel :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Rss
     XmlElement.Create(xElement)
@@ -44,10 +44,10 @@ class XmlProvider+Rss : FDR.XmlElement
 
 class XmlProvider+Channel : FDR.XmlElement
     new : items:XmlProvider+Item[] -> XmlProvider+Channel
-    XmlRuntime.CreateElement("channel", 
-                             [| |], 
-                             [| ("item",
-                                 (items :> obj)) |], "")
+    XmlRuntime.CreateRecord("channel", 
+                            [| |], 
+                            [| ("item",
+                                (items :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Channel
     XmlElement.Create(xElement)
@@ -58,10 +58,10 @@ class XmlProvider+Channel : FDR.XmlElement
 
 class XmlProvider+Item : FDR.XmlElement
     new : description:string option -> XmlProvider+Item
-    XmlRuntime.CreateElement("item", 
-                             [| |], 
-                             [| ("description",
-                                 (description :> obj)) |], "")
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("description",
+                                (description :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
     XmlElement.Create(xElement)

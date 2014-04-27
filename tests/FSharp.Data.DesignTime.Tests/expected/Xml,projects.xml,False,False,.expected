@@ -25,12 +25,12 @@ class XmlProvider
 
 class XmlProvider+Ordercontainer : FDR.XmlElement
     new : backgrounds:XmlProvider+Backgrounds -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
-    XmlRuntime.CreateElement("ordercontainer", 
-                             [| |], 
-                             [| ("backgrounds",
-                                 (backgrounds :> obj))
-                                ("project",
-                                 (project :> obj)) |], "")
+    XmlRuntime.CreateRecord("ordercontainer", 
+                            [| |], 
+                            [| ("backgrounds",
+                                (backgrounds :> obj))
+                               ("project",
+                                (project :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Ordercontainer
     XmlElement.Create(xElement)
@@ -44,10 +44,10 @@ class XmlProvider+Ordercontainer : FDR.XmlElement
 
 class XmlProvider+Backgrounds : FDR.XmlElement
     new : background:XmlProvider+Background -> XmlProvider+Backgrounds
-    XmlRuntime.CreateElement("backgrounds", 
-                             [| |], 
-                             [| ("background",
-                                 (background :> obj)) |], "")
+    XmlRuntime.CreateRecord("backgrounds", 
+                            [| |], 
+                            [| ("background",
+                                (background :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Backgrounds
     XmlElement.Create(xElement)
@@ -58,10 +58,10 @@ class XmlProvider+Backgrounds : FDR.XmlElement
 
 class XmlProvider+Project : FDR.XmlElement
     new : title:string -> XmlProvider+Project
-    XmlRuntime.CreateElement("project", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj)) |], "")
+    XmlRuntime.CreateRecord("project", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
     XmlElement.Create(xElement)
@@ -73,10 +73,10 @@ class XmlProvider+Project : FDR.XmlElement
 
 class XmlProvider+Background : FDR.XmlElement
     new : title:string -> XmlProvider+Background
-    XmlRuntime.CreateElement("background", 
-                             [| |], 
-                             [| ("title",
-                                 (title :> obj)) |], "")
+    XmlRuntime.CreateRecord("background", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Background
     XmlElement.Create(xElement)

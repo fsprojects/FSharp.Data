@@ -25,20 +25,20 @@ class XmlProvider
 
 class XmlProvider+ObjStation : FDR.XmlElement
     new : stationDesc:string -> stationAlias:string option -> stationLatitude:decimal -> stationLongitude:decimal -> stationCode:string -> stationId:int -> XmlProvider+ObjStation
-    XmlRuntime.CreateElement("{http://api.irishrail.ie/realtime/}objStation", 
-                             [| |], 
-                             [| ("{http://api.irishrail.ie/realtime/}StationDesc",
-                                 (stationDesc :> obj))
-                                ("{http://api.irishrail.ie/realtime/}StationAlias",
-                                 (stationAlias :> obj))
-                                ("{http://api.irishrail.ie/realtime/}StationLatitude",
-                                 (stationLatitude :> obj))
-                                ("{http://api.irishrail.ie/realtime/}StationLongitude",
-                                 (stationLongitude :> obj))
-                                ("{http://api.irishrail.ie/realtime/}StationCode",
-                                 (stationCode :> obj))
-                                ("{http://api.irishrail.ie/realtime/}StationId",
-                                 (stationId :> obj)) |], "")
+    XmlRuntime.CreateRecord("{http://api.irishrail.ie/realtime/}objStation", 
+                            [| |], 
+                            [| ("{http://api.irishrail.ie/realtime/}StationDesc",
+                                (stationDesc :> obj))
+                               ("{http://api.irishrail.ie/realtime/}StationAlias",
+                                (stationAlias :> obj))
+                               ("{http://api.irishrail.ie/realtime/}StationLatitude",
+                                (stationLatitude :> obj))
+                               ("{http://api.irishrail.ie/realtime/}StationLongitude",
+                                (stationLongitude :> obj))
+                               ("{http://api.irishrail.ie/realtime/}StationCode",
+                                (stationCode :> obj))
+                               ("{http://api.irishrail.ie/realtime/}StationId",
+                                (stationId :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+ObjStation
     XmlElement.Create(xElement)

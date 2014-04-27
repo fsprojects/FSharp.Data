@@ -197,31 +197,28 @@ module internal XmlTypeBuilder =
                     let result = generateXmlType ctx case
                     let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<XmlElement>)                            
                     let name = makeUnique (XName.Get(nameWithNS).LocalName)
-                    let typ = ctx.MakeOptionType result.ConvertedType
 
-                    nameWithNS,
-                    ProvidedProperty(name, typ, GetterCode = fun (Singleton xml) ->               
+                    ProvidedProperty(name, ctx.MakeOptionType result.ConvertedType, GetterCode = fun (Singleton xml) ->               
                         // XmlRuntime.ConvertAsName checks that the name of the current node
                         // has the required name and returns Some/None
                         let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
                         xmlRuntime?ConvertAsName (result.ConvertedType) (xml, nameWithNS, convFunc)), 
-                    ProvidedParameter(NameUtils.niceCamelName name, typ) ] 
+                    ((if result.ConvertedType :? ProvidedTypeDefinition then "" else nameWithNS),
+                     ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)) ]
 
-            let _names, properties, _parameters = List.unzip3 members            
+            let properties, parameters = List.unzip members            
             objectTy.AddMembers properties
 
-// TODO: constructor for heterogeneous records
-//            objectTy.AddMember <|
-//                ProvidedConstructor(parameters, InvokeCode = fun args -> 
-//                    let name = typeName
-//                    let properties = 
-//                        Expr.NewArray(typeof<string * obj>, 
-//                                      args 
-//                                      |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value names.[i]
-//                                                                               Expr.Coerce(a, typeof<obj>) ]))
-//                    let cultureStr = ctx.CultureStr
-//                    <@@ XmlRuntime.CreateObject(name, %%properties, cultureStr) @@>
-//                    |> ctx.Replacer.ToRuntime)
+            let cultureStr = ctx.CultureStr
+
+            for nameWithNS, param in parameters do
+                let ctor = ProvidedConstructor([param], InvokeCode = fun (Singleton arg) ->
+                    if nameWithNS = "" then
+                        arg
+                    else
+                        let arg = Expr.Coerce(arg, typeof<obj>)
+                        <@@ XmlRuntime.CreateValue(nameWithNS, %%arg, cultureStr) @@> |> ctx.Replacer.ToRuntime)
+                objectTy.AddMember ctor
 
             objectTy.AddMember <| 
               ProvidedConstructor(
@@ -409,7 +406,7 @@ module internal XmlTypeBuilder =
                                       |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value elemNames.[i]
                                                                                Expr.Coerce(a, typeof<obj>) ]))
                     let cultureStr = ctx.CultureStr
-                    <@@ XmlRuntime.CreateElement(nameWithNS, %%attributes, %%elements, cultureStr) @@>
+                    <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
                     |> ctx.Replacer.ToRuntime
                 )
             objectTy.AddMember <| 
