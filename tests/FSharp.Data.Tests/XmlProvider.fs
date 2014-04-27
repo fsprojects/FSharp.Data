@@ -319,7 +319,7 @@ let ``Can construct complex objects``() =
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice(2), None)))
                Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice("xpto"), Some 2))) |],
             Customer.X("a", "b"),
-            [| Customer.Z(Some 2, None); Customer.Z(None, Some "foo") |],
+            [| Customer.Z(2); Customer.Z("foo") |],
             [| "d"; "e" |])
 
     customer.ToString() |> normalize |> should equal (normalize """<Customer name="ACME">

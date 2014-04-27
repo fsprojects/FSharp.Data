@@ -96,7 +96,7 @@ module internal XmlTypeBuilder =
     
     /// Succeeds when type is a heterogeneous type containing recors
     /// If the type is heterogeneous, but contains other things, exception
-    /// is thrown (this is unexpected, because XML nodes are always records)
+    /// is thrown (this is unexpected, because XML elements are always records)
     let (|HeterogeneousRecords|_|) inferedType =
         match inferedType with
         | InferedType.Heterogeneous cases ->
@@ -113,10 +113,7 @@ module internal XmlTypeBuilder =
     // For every possible primitive type add '<Tag>Value' property that 
     // returns it converted to the right type (or an option)  
     let getTypesForPrimitives (ctx:XmlGenerationContext) forceOptional (primitives:_ list) = [
-    
-        // If there may be other primitives, make it optional
-        let forceOptional = forceOptional || primitives.Length > 1
-        
+
         for primitive in primitives ->
         
             let name = 
@@ -128,21 +125,26 @@ module internal XmlTypeBuilder =
             | InferedType.Primitive(typ, unit, optional) -> 
             
                 let optional = optional || forceOptional
+                let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
+                let optional = optional || primitives.Length > 1
+
                 let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, optional, unit)
                 let conv = fun xml -> conv <@ XmlRuntime.TryGetValue(%%xml) @>
                 
-                typ, name, ctx.Replacer.ToDesignTime >> conv
+                typ, name, ctx.Replacer.ToDesignTime >> conv, optionalJustBecauseThereAreMultiple
             
             | InferedType.Json(typ, optional) -> 
-            
+
                 let cultureStr = ctx.CultureStr
                 let ctx = JsonGenerationContext.Create(cultureStr, ctx.TypeProviderType, ctx.Replacer, ctx.UniqueNiceName, ctx.JsonTypeCache)
                 let result = JsonTypeBuilder.generateJsonType ctx (*canPassAllConversionCallingTypes*)false (*optionalityHandledByParent*)true "" typ          
                 
                 let optional = optional || forceOptional
+                let optionalJustBecauseThereAreMultiple = primitives.Length > 1 && not optional
+                let optional = optional || primitives.Length > 1
 
                 let typ = 
-                    if optional 
+                    if optional
                     then ctx.MakeOptionType result.ConvertedType
                     else result.ConvertedType
 
@@ -152,7 +154,7 @@ module internal XmlTypeBuilder =
                     else <@@ XmlRuntime.GetJsonValue(%%xml, cultureStr) @@>
                     |> result.GetConverter ctx
 
-                typ, name, ctx.Replacer.ToDesignTime >> conv
+                typ, name, ctx.Replacer.ToDesignTime >> conv, optionalJustBecauseThereAreMultiple
             
             | _ -> failwithf "generatePropertiesForValue: Primitive or Json type expected: %A" primitive
     ]
@@ -167,18 +169,18 @@ module internal XmlTypeBuilder =
         | InferedType.Record(Some nameWithNs, _, false) when ctx.XmlTypeCache.ContainsKey nameWithNs -> 
             ctx.XmlTypeCache.[nameWithNs]
         
-        // If the node does not have any children and always contains only primitive type
+        // If the element does not have any children and always contains only primitive type
         // then we turn it into a primitive value of type such as int/string/etc.
         | InferedType.Record(Some _, [{ Name = ""
                                         Type = (InferedType.Primitive _ | InferedType.Json _) as primitive }], false) ->
        
-            let typ, _, conv = getTypesForPrimitives ctx false [ primitive ] |> Seq.exactlyOne
+            let typ, _, conv, _ = getTypesForPrimitives ctx false [ primitive ] |> Seq.exactlyOne
             { ConvertedType = typ
               Converter = conv }
        
-        // If the node is heterogeneous type containin records, generate type with multiple
+        // If the element is a heterogeneous type containing records, generate type with multiple
         // optional properties (this can only happen when using sample list with multiple root
-        // elements of different names). Otherwise, heterogeneous types appear only as child nodes
+        // elements of different names). Otherwise, heterogeneous types appear only as child elements
         // of an element (handled similarly below)
         | HeterogeneousRecords cases ->
        
@@ -199,7 +201,7 @@ module internal XmlTypeBuilder =
                     let name = makeUnique (XName.Get(nameWithNS).LocalName)
 
                     ProvidedProperty(name, ctx.MakeOptionType result.ConvertedType, GetterCode = fun (Singleton xml) ->               
-                        // XmlRuntime.ConvertAsName checks that the name of the current node
+                        // XmlRuntime.ConvertAsName checks that the name of the current element
                         // has the required name and returns Some/None
                         let xmlRuntime = ctx.Replacer.ToRuntime typeof<XmlRuntime>
                         xmlRuntime?ConvertAsName (result.ConvertedType) (xml, nameWithNS, convFunc)), 
@@ -230,7 +232,7 @@ module internal XmlTypeBuilder =
             { ConvertedType = objectTy
               Converter = ctx.Replacer.ToRuntime }
        
-        // If the node is more complicated, then we generate a type to represent it properly
+        // If the element is more complicated, then we generate a type to represent it properly
         | InferedType.Record(Some nameWithNS, props, false) -> 
        
             let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
@@ -312,26 +314,26 @@ module internal XmlTypeBuilder =
                 
                     | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type]                 
 
-            // Add properties that can be used to access content of the node
-            // (either child nodes or primitive values - if the node contains simple values)
-            let contentResults = 
+            // Add properties that can be used to access content of the element
+            // (either child elements or primitive values if the element contains only simple values)
+            let primitiveResults, childResults = 
                 match content with 
-                | [ContentType(primitives, nodes)] ->
+                | [ContentType(primitives, children)] ->
        
-                    // If there may be other nodes, make it optional
-                    let forceOptional = nodes.Length > 0
+                    // If there may be other children, make it optional
+                    let forceOptional = children.Length > 0
        
                     let primitiveResults =
-                        [ for typ, name, conv in getTypesForPrimitives ctx forceOptional primitives ->
+                        [ for typ, name, conv, optionalJustBecauseThereAreMultiple in getTypesForPrimitives ctx forceOptional primitives ->
+                            let nonOptionalType = if optionalJustBecauseThereAreMultiple && typ.IsGenericType then typ.GetGenericArguments().[0] else typ                                
                             let name = makeUnique name
-                            "",
                             ProvidedProperty(name, typ, GetterCode = fun (Singleton xml) -> conv xml),
-                            ProvidedParameter(NameUtils.niceCamelName name, typ) ]
+                            ProvidedParameter(NameUtils.niceCamelName name, nonOptionalType) ]
        
-                    // For every possible child node, generate a getter property
-                    let nodeResults =
-                        [ for node in nodes ->
-                            match node with
+                    // For every possible child element, generate a getter property
+                    let childResults =
+                        [ for child in children ->
+                            match child with
                             | InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ) ->
        
                                 let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
@@ -347,7 +349,7 @@ module internal XmlTypeBuilder =
                                     ProvidedParameter(NameUtils.niceCamelName name, result.ConvertedType)
        
                                 // For options and arrays, we need to generate call to ConvertArray or ConvertOption
-                                // (because the node may be represented as primitive type - so we cannot just
+                                // (because the child may be represented as primitive type - so we cannot just
                                 // return array of XmlElement - it might be for example int[])
                                 | InferedMultiplicity.Multiple ->
                                     let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<XmlElement>)
@@ -376,38 +378,58 @@ module internal XmlTypeBuilder =
                                             xmlRuntime?ConvertOptional (result.ConvertedType) (xml, nameWithNS, convFunc)),
                                         ProvidedParameter(NameUtils.niceCamelName name, typ)
        
-                            | _ -> failwithf "generateXmlType: Child nodes should be named record types, got %A" node ]
+                            | _ -> failwithf "generateXmlType: Child elements should be named record types, got %A" child ]
 
-                    primitiveResults @ nodeResults
+                    primitiveResults, childResults
 
                 | [_] -> failwithf "generateXmlType: Children should be collection or heterogeneous: %A" content
                 | _::_ -> failwithf "generateXmlType: Only one child collection expected: %A" content
-                | [] -> []       
+                | [] -> [], []
                 
             let attrNames, attrProperties, attrParameters = List.unzip3 attributeResults
-            let elemNames, elemProperties, elemParameters = List.unzip3 contentResults
+            let primitiveElemProperties, primitiveElemParameters = List.unzip primitiveResults
+            let childElemNames, childElemProperties, childElemParameters = List.unzip3 childResults
 
-            objectTy.AddMembers (attrProperties @ elemProperties)
+            objectTy.AddMembers (attrProperties @ primitiveElemProperties @ childElemProperties)
+            
+            let createConstrutor primitiveParam = 
+                let parameters = match primitiveParam with
+                                 | Some primitiveParam -> attrParameters @ [primitiveParam] @ childElemParameters
+                                 | None -> attrParameters @ childElemParameters
+                objectTy.AddMember <|                
+                    ProvidedConstructor(parameters, InvokeCode = fun args -> 
+                        let attributes = 
+                            Expr.NewArray(typeof<string * obj>, 
+                                          args 
+                                          |> Seq.take attrParameters.Length
+                                          |> Seq.toList
+                                          |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value attrNames.[i]
+                                                                                   Expr.Coerce(a, typeof<obj>) ]))
+                        let elements =
+                            args 
+                            |> Seq.skip (attrParameters.Length + (match primitiveParam with Some _ -> 1 | None -> 0))
+                            |> Seq.toList
+                            |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value childElemNames.[i]
+                                                                     Expr.Coerce(a, typeof<obj>) ])                    
+                        let elements = 
+                            match primitiveParam with
+                            | Some _ ->
+                                Expr.NewTuple [ Expr.Value ""
+                                                Expr.Coerce (args.[attrParameters.Length], typeof<obj>) ] :: elements
+                            | None -> elements
 
-            objectTy.AddMember <|
-                ProvidedConstructor(attrParameters @ elemParameters, InvokeCode = fun args -> 
-                    let attributes = 
-                        Expr.NewArray(typeof<string * obj>, 
-                                      args 
-                                      |> Seq.take attrParameters.Length
-                                      |> Seq.toList
-                                      |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value attrNames.[i]
-                                                                               Expr.Coerce(a, typeof<obj>) ]))                                      
-                    let elements = 
-                        Expr.NewArray(typeof<string * obj>, 
-                                      args 
-                                      |> Seq.skip attrParameters.Length
-                                      |> Seq.toList
-                                      |> List.mapi (fun i a -> Expr.NewTuple [ Expr.Value elemNames.[i]
-                                                                               Expr.Coerce(a, typeof<obj>) ]))
-                    let cultureStr = ctx.CultureStr
-                    <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
-                    |> ctx.Replacer.ToRuntime)
+                        let elements = Expr.NewArray(typeof<string * obj>, elements)
+
+                        let cultureStr = ctx.CultureStr
+                        <@@ XmlRuntime.CreateRecord(nameWithNS, %%attributes, %%elements, cultureStr) @@>
+                        |> ctx.Replacer.ToRuntime)
+            
+            if primitiveElemParameters.Length = 0 then
+                createConstrutor None
+            else
+                for primitiveParam in primitiveElemParameters do
+                    createConstrutor (Some primitiveParam)
+
             objectTy.AddMember <| 
               ProvidedConstructor(
                   [ProvidedParameter("xElement", ctx.Replacer.ToRuntime typeof<XElement>)], 

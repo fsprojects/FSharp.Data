@@ -85,12 +85,16 @@ class XmlProvider+BlahDataSomethingFoo : FDR.IJsonDocument
 
 
 class XmlProvider+BlahDataSomethingFoo2 : FDR.XmlElement
-    new : number:int option -> json:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahDataSomethingFoo2
+    new : number:int -> XmlProvider+BlahDataSomethingFoo2
     XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
                             [| |], 
                             [| ("",
-                                (number :> obj))
-                               ("",
+                                (number :> obj)) |], "")
+
+    new : json:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo2
+    XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
+                            [| |], 
+                            [| ("",
                                 (json :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataSomethingFoo2
