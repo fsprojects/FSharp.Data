@@ -65,7 +65,7 @@ Freebaseには非常に多様なデータがあるため、
 let firstnames = 
     data.Society.Celebrities.Celebrities
     |> Seq.truncate 100
-    |> Seq.map (fun celeb -> celeb.Name.Split([|' '|]).[0])
+    |> Seq.map (fun celeb -> celeb.Name.Split(' ').[0])
     |> Array.ofSeq
 
 let surnames = 

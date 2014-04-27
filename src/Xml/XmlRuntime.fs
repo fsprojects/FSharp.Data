@@ -116,7 +116,7 @@ type XmlRuntime =
   // just the value (if we think it is always there)
 
   static member private GetChildrenArray(value:XmlElement, nameWithNS:string) =
-    let namesWithNS = nameWithNS.Split [| '|' |]
+    let namesWithNS = nameWithNS.Split '|'
     let mutable current = value.XElement
     for i = 0 to namesWithNS.Length - 2 do
         if current <> null then
@@ -171,8 +171,12 @@ type XmlRuntime =
         with _ -> None
     | None -> None
 
-  // Creates a XElement with the given attributes and elements and wraps it in a XmlElementJsonValue.Record and wraps it in a json document
-  static member CreateElement(nameWithNS, attributes:_[], elements:_[], cultureStr) =
+  /// Creates a XElement with a scalar value and wraps it in a XmlElement
+  static member CreateValue(nameWithNS, value:obj, cultureStr) = 
+    XmlRuntime.CreateRecord(nameWithNS, [| |], [| "", value |], cultureStr)
+
+  // Creates a XElement with the given attributes and elements and wraps it in a XmlElement
+  static member CreateRecord(nameWithNS, attributes:_[], elements:_[], cultureStr) =
     let cultureInfo = TextRuntime.GetCulture cultureStr
     let toXmlContent (v:obj) = 
         let inline strWithCulture v =
@@ -207,7 +211,24 @@ type XmlRuntime =
         | :? option<Guid>          as v -> optionToArray serialize v
         | :? option<IJsonDocument> as v -> optionToArray serialize v
         | v -> [| box (serialize v) |]
-    let element = XElement(XName.Get nameWithNS)
+    let createElement (parent:XElement) (nameWithNS:string) =
+        let namesWithNS = nameWithNS.Split '|'
+        (parent, namesWithNS)
+        ||> Array.fold (fun parent nameWithNS ->
+            let xname = XName.Get nameWithNS
+            if parent = null then
+                XElement xname
+            else
+                let element = if nameWithNS = Seq.last namesWithNS
+                              then null 
+                              else parent.Element(xname) 
+                if element = null then
+                    let element = XElement xname
+                    parent.Add element
+                    element
+                else
+                    element)
+    let element = createElement null nameWithNS
     for nameWithNS, value in attributes do
         let xname = XName.Get nameWithNS
         match toXmlContent value with
@@ -224,9 +245,19 @@ type XmlRuntime =
             for value in toXmlContent value do
                 match value with
                 | :? XElement as v -> 
-                    if v.Name.ToString() <> nameWithNS then
+                    let parentNames = nameWithNS.Split('|') |> Array.rev
+                    if v.Name.ToString() <> parentNames.[0] then
                         failwithf "Unexpected element: %O" v
+                    let v = 
+                        (v, Seq.skip 1 parentNames)
+                        ||> Seq.fold (fun element nameWithNS -> 
+                            let element = element.Parent
+                            if element.Name.ToString() <> nameWithNS then
+                                failwithf "Unexpected element: %O" v
+                            element)
                     element.Add v
-                | :? string as v -> element.Add(XElement(XName.Get nameWithNS, v))
+                | :? string as v -> 
+                    let child = createElement element nameWithNS 
+                    child.Value <- v
                 | _ -> failwithf "Unexpected content for child %s: %A" nameWithNS value
     XmlElement.Create element
