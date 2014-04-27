@@ -90,13 +90,16 @@ type DisposableTypeProviderForNamespaces() as x =
 
     let dispose typeName = lock disposeActionsByTypeName <| fun () ->
         log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
-        for action in disposeActionsByTypeName.[typeName] do
-            action()
-        disposeActionsByTypeName.Remove typeName |> ignore
+        match disposeActionsByTypeName.TryGetValue typeName with
+        | true, disposeActions ->
+            disposeActionsByTypeName.Remove typeName |> ignore
+            for action in disposeActions do
+                action()
+        | false, _ -> ()
 
     let disposeAll() = lock disposeActionsByTypeName <| fun () ->
         log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
-        for typeName in disposeActionsByTypeName.Keys do
+        for typeName in Seq.toArray disposeActionsByTypeName.Keys do
             dispose typeName
 
     interface IDisposable with 
@@ -223,7 +226,7 @@ module ProviderHelpers =
         let key = fullTypeName, runtimeVersion
 
         match providedTypesCache.TryGetValue key with
-        | true, (providedType, time) when DateTime.Now - time < cacheDuration && (not Debugger.IsAttached) -> 
+        | true, (providedType, time) when DateTime.Now - time < cacheDuration -> 
             log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 

@@ -207,3 +207,4 @@
 * Fixed problems with HTTP requests not downloading fully.
 * Added support for creating typed XML objects in XmlProvider.
 * Added support for creating typed JSON and XML objects from untyped JsonValue and XElement objects.
+* Fixed crash when data files used in a type provider used on a fsx file changed.
