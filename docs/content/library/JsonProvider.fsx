@@ -245,6 +245,8 @@ create an instance, and send a POST request:
 
 *)
 
+(*** do-not-eval ***)
+
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",

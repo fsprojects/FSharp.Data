@@ -62,6 +62,8 @@ to search for the word "batman". To run the sample, you'll need to register and
 provide your API key:
 *)
 
+(*** do-not-eval ***)
+
 // API key for http://www.themoviedb.org
 let apiKey = "<please register to get a key>"
 
@@ -79,7 +81,10 @@ use the full name `HttpRequestHeaders.Accept`, or open the module and use just t
 `Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
 well known content types:
 *)
+
 open FSharp.Data.HttpRequestHeaders
+
+(*** do-not-eval ***)
 
 // Run the HTTP web request
 Http.RequestString
@@ -216,6 +221,8 @@ create a `X509ClientCertificate2` value, and add it to the `ClientCertificates` 
 
 Assuming the certificate is stored in `myCertificate.pfx`:
 *)
+
+(*** do-not-eval ***)
 
 open System.Security.Cryptography.X509Certificates
 

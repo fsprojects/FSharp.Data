@@ -68,6 +68,8 @@ Acceptヘッダのような標準的なヘッダも含まれています
 サンプルを実行するためには登録をしてAPIキーを取得する必要があります：
 *)
 
+(*** do-not-eval ***)
+
 // http://www.themoviedb.org 用のAPIキー
 let apiKey = "<登録してキーを取得してください>"
 
@@ -85,7 +87,10 @@ Http.RequestString
 以下の例のようにモジュールをオープンしておいてから `Accept` のような短い名前で指定することになります。
 同様に、 `HttpContentTypes` 列挙体には既知のコンテンツタイプ名が定義されています：
 *)
+
 open FSharp.Data.HttpRequestHeaders
+
+(*** do-not-eval ***)
 
 // HTTP Webリクエストを実行
 Http.RequestString
@@ -236,6 +241,8 @@ match Http.Request(logoUrl).Body with
 証明書が `myCertificate.pfx` に格納されているとすると、
 以下のようなコードになります：
 *)
+
+(*** do-not-eval ***)
 
 open System.Security.Cryptography.X509Certificates
 

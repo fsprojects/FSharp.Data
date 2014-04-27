@@ -294,6 +294,8 @@ Issueそれぞれに対応するものとは異なります。
 
 *)
 
+(*** do-not-eval ***)
+
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",
