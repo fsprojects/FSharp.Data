@@ -146,7 +146,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"../data/WorldBank.json">
-let doc = WorldBank.Load("../data/WorldBank.json")
+let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
@@ -252,6 +252,8 @@ This JSON is different from what we got for each issue in the previous API call,
 create an instance, and send a POST request:
 
 *)
+
+(*** do-not-eval ***)
 
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 

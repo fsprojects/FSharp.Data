@@ -27,4 +27,7 @@ class JsonProvider+Root : FDR.IJsonDocument
     new : () -> JsonProvider+Root
     JsonRuntime.CreateRecord([| |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
 

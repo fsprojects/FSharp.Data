@@ -70,6 +70,8 @@ to search for the word "batman". To run the sample, you'll need to register and
 provide your API key:
 *)
 
+(*** do-not-eval ***)
+
 // API key for http://www.themoviedb.org
 let apiKey = "<please register to get a key>"
 
@@ -87,7 +89,10 @@ use the full name `HttpRequestHeaders.Accept`, or open the module and use just t
 `Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
 well known content types:
 *)
+
 open FSharp.Data.HttpRequestHeaders
+
+(*** do-not-eval ***)
 
 // Run the HTTP web request
 Http.RequestString
@@ -105,8 +110,12 @@ the response content, so it's easier to debug in F# interactive when the server 
 You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
 *)
 
+(*** define-output:request ***)
+
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
-// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+
+(** This returns the following: *)
+(*** include-it:request ***)
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
@@ -220,6 +229,8 @@ create a `X509ClientCertificate2` value, and add it to the `ClientCertificates` 
 
 Assuming the certificate is stored in `myCertificate.pfx`:
 *)
+
+(*** do-not-eval ***)
 
 open System.Security.Cryptography.X509Certificates
 

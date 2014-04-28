@@ -196,5 +196,16 @@
 * Helpers for sending HTTP requests with JSON and XML content.
 * Removed built-in HTTP certificates support, and moved it to a sample in the documentation.
 
-#### 2.0.5 - Unreleased
-* Add - to the list of default missing values.
+#### 2.0.5 - March 29 2014
+* Added - to the list of default missing values.
+* Re-added support for specifying known HTTP headers in the wrong case.
+* Fixed sending of HTTP requests when using a portable class library version of FSharp.Data in the full .NET version.
+
+#### 2.0.6 - April 28 2014
+* Performance improvements.
+* Support reuse by other type providers projects like ApiaryProvider.
+* Fixed problems with HTTP requests not downloading fully.
+* Added support for creating typed XML objects in XmlProvider.
+* Added support for creating typed JSON and XML objects from untyped JsonValue and XElement objects.
+* Fixed crash when data files used in a type provider used on a fsx file changed.
+* Fixed problem parsing JSON values with keys with the double quote character.

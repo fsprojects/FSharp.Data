@@ -1751,6 +1751,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Flak Bait: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Flak Bait Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0g5m2f")
 
+    member Free Life: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Free Life Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/04yg64z")
+
     member Full House: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Full House Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0fr8hx")
 
@@ -1954,9 +1957,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member T1-323: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+T1-323 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/08dj4x")
-
-    member The Free Life: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+The Free Life Item with get
-    this.GetIndividualById("/aviation/aircraft", "/m/04yg64z")
 
     member The Great Artiste: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+The Great Artiste Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/01r3mq")

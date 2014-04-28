@@ -11,6 +11,7 @@ open System.Security
 open System.Net
 open System.Text
 open System.Reflection
+open System.Runtime.CompilerServices
 open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 
@@ -279,8 +280,53 @@ module private Helpers =
         return output 
     }
 
+    let (?) obj prop =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null && prop.CanRead then
+            try
+                prop.GetValue(obj, [| |]) |> unbox |> Some
+            with _ -> 
+                None
+        else
+            None
+#endif
+
+    let (?<-) obj prop value =
+#if FX_NET_CORE_REFLECTION
+        let prop = obj.GetType().GetRuntimeProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, box value) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#else
+        let prop = obj.GetType().GetProperty(prop)
+        if prop <> null && prop.CanWrite then
+            try 
+                prop.SetValue(obj, value, [| |]) |> ignore
+                true
+            with _ -> 
+                false
+        else
+            false
+#endif
+
     let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
+        ignore (req?ContentLength <- int64 postBytes.Length)
 #else
         req.ContentLength <- int64 postBytes.Length
 #endif
@@ -339,87 +385,87 @@ module private Helpers =
     let setHeaders headers (req:HttpWebRequest) =
         let hasContentType = ref false
         headers |> Option.iter (checkForRepeatedHeaders [])
-        headers |> Option.iter (List.iter (fun (header, value) ->
-            match header with
-            | "Accept" -> req.Accept <- value
-            | "Accept-Charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
-            | "Accept-Datetime" -> req.Headers.["Accept-Datetime"] <- value
-            | "Accept-Encoding" -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
-            | "Accept-Language" -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
-            | "Allow" -> req.Headers.[HeaderEnum.Allow] <- value
-            | "Authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
-            | "Cache-Control" -> req.Headers.[HeaderEnum.CacheControl] <- value
+        headers |> Option.iter (List.iter (fun (header:string, value) ->
+            match header.ToLowerInvariant() with
+            | "accept" -> req.Accept <- value
+            | "accept-charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
+            | "accept-datetime" -> req.Headers.["Accept-Datetime"] <- value
+            | "accept-encoding" -> req.Headers.[HeaderEnum.AcceptEncoding] <- value
+            | "accept-language" -> req.Headers.[HeaderEnum.AcceptLanguage] <- value
+            | "allow" -> req.Headers.[HeaderEnum.Allow] <- value
+            | "authorization" -> req.Headers.[HeaderEnum.Authorization] <- value
+            | "cache-control" -> req.Headers.[HeaderEnum.CacheControl] <- value
 #if FX_NO_WEBREQUEST_CONNECTION
-            | "Connection" -> req.Headers.[HeaderEnum.Connection] <- value
+            | "connection" -> if not (req?Connection <- value) then req.Headers.[HeaderEnum.Connection] <- value
 #else
-            | "Connection" -> req.Connection <- value
+            | "connection" -> req.Connection <- value
 #endif
-            | "Content-Encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
-            | "Content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
-            | "Content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
-            | "Content-MD5" -> req.Headers.[HeaderEnum.ContentMd5] <- value
-            | "Content-Range" -> req.Headers.[HeaderEnum.ContentRange] <- value
-            | "Content-Type" ->
+            | "content-encoding" -> req.Headers.[HeaderEnum.ContentEncoding] <- value
+            | "content-Language" -> req.Headers.[HeaderEnum.ContentLanguage] <- value
+            | "content-Location" -> req.Headers.[HeaderEnum.ContentLocation] <- value
+            | "content-md5" -> req.Headers.[HeaderEnum.ContentMd5] <- value
+            | "content-range" -> req.Headers.[HeaderEnum.ContentRange] <- value
+            | "content-type" ->
                 req.ContentType <- value
                 hasContentType := true
 #if FX_NO_WEBREQUEST_DATE
-            | "Date" -> req.Headers.[HeaderEnum.Date] <- value
+            | "date" -> if not (req?Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.Date] <- value
 #else
-            | "Date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "date" -> req.Date <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
 #if FX_NO_WEBREQUEST_EXPECT
-            | "Expect" -> req.Headers.[HeaderEnum.Expect] <- value
+            | "expect" -> if not (req?Expect <- value) then req.Headers.[HeaderEnum.Expect] <- value
 #else
-            | "Expect" -> req.Expect <- value
+            | "expect" -> req.Expect <- value
 #endif
-            | "Expires" -> req.Headers.[HeaderEnum.Expires] <- value
-            | "From" -> req.Headers.[HeaderEnum.From] <- value
+            | "expires" -> req.Headers.[HeaderEnum.Expires] <- value
+            | "from" -> req.Headers.[HeaderEnum.From] <- value
 #if FX_NO_WEBREQUEST_HOST
-            | "Host" -> req.Headers.[HeaderEnum.Host] <- value
+            | "host" -> if not (req?Host <- value) then req.Headers.[HeaderEnum.Host] <- value
 #else
-            | "Host" -> req.Host <- value
+            | "host" -> req.Host <- value
 #endif       
-            | "If-Match" -> req.Headers.[HeaderEnum.IfMatch] <- value
+            | "if-match" -> req.Headers.[HeaderEnum.IfMatch] <- value
 #if FX_NO_WEBREQUEST_IFMODIFIEDSINCE
-            | "IfModifiedSince" -> req.Headers.[HeaderEnum.IfModifiedSince] <- value
+            | "if-modified-since" -> if not (req?IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)) then req.Headers.[HeaderEnum.IfModifiedSince] <- value
 #else
-            | "If-Modified-Since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
+            | "if-modified-since" -> req.IfModifiedSince <- DateTime.ParseExact(value, "R", CultureInfo.InvariantCulture)
 #endif
-            | "If-None-Match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
-            | "If-Range" -> req.Headers.[HeaderEnum.IfRange] <- value
-            | "If-Unmodified-Since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
-            | "Keep-Alive" -> req.Headers.[HeaderEnum.KeepAlive] <- value
-            | "Last-Modified" -> req.Headers.[HeaderEnum.LastModified] <- value
-            | "Max-Forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
-            | "Origin" -> req.Headers.["Origin"] <- value
-            | "Pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
+            | "if-none-match" -> req.Headers.[HeaderEnum.IfNoneMatch] <- value
+            | "if-range" -> req.Headers.[HeaderEnum.IfRange] <- value
+            | "if-unmodified-since" -> req.Headers.[HeaderEnum.IfUnmodifiedSince] <- value
+            | "keep-alive" -> req.Headers.[HeaderEnum.KeepAlive] <- value
+            | "last-modified" -> req.Headers.[HeaderEnum.LastModified] <- value
+            | "max-forwards" -> req.Headers.[HeaderEnum.MaxForwards] <- value
+            | "origin" -> req.Headers.["Origin"] <- value
+            | "pragma" -> req.Headers.[HeaderEnum.Pragma] <- value
 #if FX_NO_WEBREQUEST_RANGE
-            | "Range(start, finish)" -> req.Headers.[HeaderEnum.Range] <- value
+            | "range" -> req.Headers.[HeaderEnum.Range] <- value
 #else
-            | "Range" -> 
+            | "range" -> 
                 if not (value.StartsWith("bytes=")) then failwith "Invalid value for the Range header"
                 let bytes = value.Substring("bytes=".Length).Split('-')
                 if bytes.Length <> 2 then failwith "Invalid value for the Range header"
                 req.AddRange(int64 bytes.[0], int64 bytes.[1])
 #endif
-            | "Proxy-Authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
+            | "proxy-authorization" -> req.Headers.[HeaderEnum.ProxyAuthorization] <- value
 #if FX_NO_WEBREQUEST_REFERER
-            | "Referer" -> req.Headers.[HeaderEnum.Referer] <- value
+            | "referer" -> if not (req?Referer <- value) then try req.Headers.[HeaderEnum.Referer] <- value with _ -> ()
 #else
-            | "Referer" -> req.Referer <- value
+            | "referer" -> req.Referer <- value
 #endif            
-            | "TE" -> req.Headers.[HeaderEnum.Te] <- value
-            | "Trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
-            | "Translate" -> req.Headers.[HeaderEnum.Translate] <- value
-            | "Upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
+            | "te" -> req.Headers.[HeaderEnum.Te] <- value
+            | "trailer" -> req.Headers.[HeaderEnum.Trailer] <- value
+            | "translate" -> req.Headers.[HeaderEnum.Translate] <- value
+            | "upgrade" -> req.Headers.[HeaderEnum.Upgrade] <- value
 #if FX_NO_WEBREQUEST_USERAGENT
-            | "User-Agent" -> req.Headers.[HeaderEnum.UserAgent] <- value
+            | "user-agent" -> if not (req?UserAgent <- value) then try req.Headers.[HeaderEnum.UserAgent] <- value with _ -> ()
 #else
-            | "User-Agent" -> req.UserAgent <- value
+            | "user-agent" -> req.UserAgent <- value
 #endif
-            | "Via" -> req.Headers.[HeaderEnum.Via] <- value
-            | "Warning" -> req.Headers.[HeaderEnum.Warning] <- value
-            | name -> req.Headers.[name] <- value))
+            | "via" -> req.Headers.[HeaderEnum.Via] <- value
+            | "warning" -> req.Headers.[HeaderEnum.Warning] <- value
+            | _ -> req.Headers.[header] <- value))
         hasContentType.Value
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
@@ -438,8 +484,28 @@ module private Helpers =
         else 
             Async.FromBeginEnd(req.BeginGetResponse, req.EndGetResponse)
 
-    let toHttpResponse forceText responseUrl statusCode contentType (_contentEncoding:string)
-                       characterSet responseEncodingOverride cookies headers stream = async {
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressGZip (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic gzip decompression failed"
+        memoryStream
+#endif
+
+    // No inlining to don't cause a depency on ZLib.Portable when a PCL version of FSharp.Data is used in full .NET
+    [<MethodImpl(MethodImplOptions.NoInlining)>]
+    let decompressDeflate (memoryStream:MemoryStream) =
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+        new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
+#else
+        failwith "Automatic deflate decompression failed"
+        memoryStream
+#endif
+
+    let toHttpResponse forceText responseUrl statusCode contentType characterSet
+                       responseEncodingOverride cookies headers (memoryStream:MemoryStream) = async {
 
         let isText (mimeType:string) =
             let isText (mimeType:string) =
@@ -453,19 +519,6 @@ module private Helpers =
                 mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
-
-        use stream = stream
-        let! memoryStream = asyncRead stream
-
-#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        let memoryStream = 
-            if _contentEncoding = "gzip" then
-                new MemoryStream(Ionic.Zlib.GZipStream.UncompressBuffer(memoryStream.ToArray()))
-            elif _contentEncoding = "deflate" then
-                new MemoryStream(Ionic.Zlib.DeflateStream.UncompressBuffer(memoryStream.ToArray()))
-            else
-                memoryStream
-#endif
 
         let respBody = 
             if forceText || isText contentType then
@@ -541,8 +594,12 @@ type Http private() =
         // set headers
         let hasContentType = setHeaders headers req
 
+        let automaticDecompression = ref true
+
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
+        if not (req?AutomaticDecompression <- 3) then 
+            automaticDecompression := false
+            req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
         req.AutomaticDecompression <- DecompressionMethods.GZip ||| DecompressionMethods.Deflate
     #endif
@@ -603,17 +660,28 @@ type Http private() =
                 match resp with
                 | :? HttpWebResponse as resp -> 
 #if FX_NO_WEBRESPONSE_CHARACTERSET
-                    int resp.StatusCode, ""
+                    int resp.StatusCode, (defaultArg resp?CharacterSet "")
 #else
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
 
-            let contentEncoding = defaultArg (Map.tryFind "Content-Encoding" headers) ""
+            let contentEncoding = 
+                if !automaticDecompression
+                then "" 
+                else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
-            let stream = resp.GetResponseStream()
+            use stream = resp.GetResponseStream()
+            let! memoryStream = asyncRead stream
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            let memoryStream = 
+                // this only applies when automatic decompression is off
+                if contentEncoding = "gzip" then decompressGZip memoryStream
+                elif contentEncoding = "deflate" then decompressDeflate memoryStream
+                else memoryStream
+
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType characterSet
+                                   responseEncodingOverride cookies headers memoryStream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -645,7 +713,7 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
-        let toHttpResponse responseUrl statusCode _contentType _contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
+        let toHttpResponse responseUrl statusCode _contentType _characterSet _responseEncodingOverride cookies headers stream = async {
             return { ResponseStream = stream
                      StatusCode = statusCode
                      ResponseUrl = responseUrl

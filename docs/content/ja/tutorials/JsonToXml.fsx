@@ -70,7 +70,7 @@ JSONの配列やレコードは無名です(ただしレコードには
 配列の要素として含まれるようになります。
 
 変換関数は `XElement` を引数にとり、 `JsonValue` を返すような再帰関数です。
-この関数は( `JsonValue.Record` と `JsonValue.Array` を使って)JSONオブジェクトと
+この関数は( `JsonValue.Record` と `JsonValue.Array` を使って)JSONのレコードと
 配列を組み立てます。
 すべての属性は `JsonValue.String` に変換されます。
 ただし今回の例では数値型を適切なJSON型に変換するような機能は実装しません：
@@ -191,7 +191,7 @@ let toXml(x:JsonValue) =
  * [F# Data: JSON 型プロバイダー](../library/JsonProvider.html) -
    型安全な方法でJSONデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
- * [F# Data: XML Type Provider](../library/XmlProvider.html) -
+ * [F# Data: XML 型プロバイダー](../library/XmlProvider.html) -
    型安全な方法でXMLデータにアクセスする機能を持った
    F# 型プロバイダーについて説明しています。
 

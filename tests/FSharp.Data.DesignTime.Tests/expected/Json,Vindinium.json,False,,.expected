@@ -36,6 +36,9 @@ class JsonProvider+Root : FDR.IJsonDocument
                                 ("playUrl",
                                  (playUrl :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Game: JsonProvider+Game with get
     JsonRuntime.GetPropertyPacked(this, "game")
 
@@ -69,6 +72,9 @@ class JsonProvider+Game : FDR.IJsonDocument
                                  (board :> obj))
                                 ("finished",
                                  (finished :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Game
+    JsonDocument.Create(jsonValue, "")
 
     member Board: JsonProvider+Board with get
     JsonRuntime.GetPropertyPacked(this, "board")
@@ -116,6 +122,9 @@ class JsonProvider+Hero : FDR.IJsonDocument
                                 ("crashed",
                                  (crashed :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Hero
+    JsonDocument.Create(jsonValue, "")
+
     member Crashed: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "crashed")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
@@ -162,6 +171,9 @@ class JsonProvider+Board : FDR.IJsonDocument
                                 ("tiles",
                                  (tiles :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Board
+    JsonDocument.Create(jsonValue, "")
+
     member Size: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "size")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -177,6 +189,9 @@ class JsonProvider+Pos : FDR.IJsonDocument
                                  (x :> obj))
                                 ("y",
                                  (y :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Pos
+    JsonDocument.Create(jsonValue, "")
 
     member X: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "x")

@@ -20,7 +20,7 @@ open FSharp.Data.Runtime.StructuralTypes
 /// Generates record fields for all attributes
 let private getAttributes cultureInfo (element:XElement) =
   [ for attr in element.Attributes() do
-      if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" then
+      if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" && attr.Name.ToString() <> "xmlns" then
         yield { Name = attr.Name.ToString()
                 Type = getInferedTypeFromString cultureInfo attr.Value None } ]
 
@@ -83,7 +83,7 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
                              |> List.fold (subtypeInfered allowEmptyValues) InferedType.Top
           let bodyType =
               match childrenType with
-              | InferedType.Collection (EmptyMap () _) -> body.Type
+              | InferedType.Collection (_, EmptyMap () _) -> body.Type
               | childrenType -> subtypeInfered allowEmptyValues childrenType body.Type
           changed <- changed || body.Type <> bodyType
           body.Type <- bodyType

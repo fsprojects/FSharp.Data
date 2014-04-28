@@ -24,6 +24,18 @@ class XmlProvider
 
 
 class XmlProvider+Child : FDR.XmlElement
+    new : a:int option -> b:string option -> inner:XmlProvider+Inner option -> XmlProvider+Child
+    XmlRuntime.CreateRecord("child", 
+                            [| ("a",
+                                (a :> obj))
+                               ("b",
+                                (b :> obj)) |], 
+                            [| ("inner",
+                                (inner :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Child
+    XmlElement.Create(xElement)
+
     member A: int option with get
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "a"))
 
@@ -35,6 +47,15 @@ class XmlProvider+Child : FDR.XmlElement
 
 
 class XmlProvider+Inner : FDR.XmlElement
+    new : c:string -> XmlProvider+Inner
+    XmlRuntime.CreateRecord("inner", 
+                            [| ("c",
+                                (c :> obj)) |], 
+                            [| |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Inner
+    XmlElement.Create(xElement)
+
     member C: string with get
     let value = XmlRuntime.TryGetAttribute(this, "c")
     TextRuntime.GetNonOptionalValue("Attribute c", TextRuntime.ConvertString(value), value)

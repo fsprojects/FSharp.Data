@@ -1,8 +1,8 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.4.1/lib/net40"
+#I "../../packages/FSharp.Formatting.2.4.8/lib/net40"
 #I "../../packages/RazorEngine.3.3.0/lib/net40/"
 #r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service.0.0.32/lib/net40/FSharp.Compiler.Service.dll"
+#r "../../packages/FSharp.Compiler.Service.0.0.44/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
@@ -39,12 +39,17 @@ let processFile file =
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
-  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
-  literateDoc.Errors 
-  |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-    if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-      Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-    else None)
+  let fsiEvaluator = FsiEvaluator()
+  let evaluationErrors = ResizeArray()
+  fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
+  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
+  Seq.append
+    (literateDoc.Errors 
+     |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
+       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+         Some <| sprintf "%A %s (%s)" (startl, endl) msg file
+       else None))
+    (evaluationErrors |> Seq.map (fun x -> x.ToString()))
   |> String.concat "\n"
 
 // ------------------------------------------------------------------------------------
