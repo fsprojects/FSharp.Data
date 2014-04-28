@@ -213,3 +213,6 @@
 #### 2.0.7 - April 28 2014
 * Support for reading sample CSV, JSON, and XML from an embedded resource.
 * Fix wrong error messages being returned when sample files are not found.
+
+#### 2.0.8 - Unreleased
+* Prevent locking of dll's when reading samples from embedded resources.

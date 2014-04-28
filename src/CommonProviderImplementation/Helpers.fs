@@ -142,6 +142,42 @@ module ProviderHelpers =
           SampleIsWebUri : bool
           SampleIsResource : bool }
 
+    type private EmbeddedResourceReader() =
+        inherit MarshalByRefObject()
+
+        static do
+            AppDomain.CurrentDomain.add_AssemblyResolve(ResolveEventHandler(fun _ args -> 
+                if args.Name = typeof<EmbeddedResourceReader>.Assembly.FullName then 
+                    typeof<EmbeddedResourceReader>.Assembly 
+                else 
+                    null))
+
+        member private __.ReadResource(referencedAssemblies, asmName, resourceName) =
+            try
+                let asmLocation = 
+                    referencedAssemblies
+                    |> Array.tryFind (fun (x:string) -> x.EndsWith(asmName + ".dll", StringComparison.InvariantCultureIgnoreCase))
+                let asm = 
+                    match asmLocation with
+                    | Some asmLocation -> Assembly.LoadFrom(asmLocation)
+                    | None -> Assembly.Load(asmName)
+                use sr = new StreamReader(asm.GetManifestResourceStream(resourceName))
+                Some(sr.ReadToEnd())
+            with _ -> 
+                None
+
+        static member ReadResource(referencedAssemblies, resourceName:string) =
+            match resourceName.Split(',') with
+            | [| asmName; name |] ->
+                let domain = AppDomain.CreateDomain "Embedded Resource Reader"
+                try 
+                    let reader = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location,
+                                                                    typeof<EmbeddedResourceReader>.FullName) :?> EmbeddedResourceReader
+                    reader.ReadResource(referencedAssemblies, asmName.Trim(), name.Trim())
+                finally
+                    AppDomain.Unload domain
+            | _ -> None
+
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
@@ -162,24 +198,9 @@ module ProviderHelpers =
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
-            if String.IsNullOrWhiteSpace(optResource) then None else
-            match optResource.Split(',') with
-            | [| asmName; name |] ->
-                try
-                  let asmLocation = 
-                    cfg.ReferencedAssemblies 
-                    |> Array.tryFind (fun x -> x.EndsWith(asmName + ".dll"))
-                  let asm = 
-                    match asmLocation with
-                    | Some asmLocation -> Assembly.LoadFrom asmLocation
-                    | None -> Assembly.Load(asmName)
-                  use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
-                  Some(sr.ReadToEnd())
-                with _ -> 
-                  // Silently ignore errors - in particular, the above will only be used when 
-                  // an already compiled assembly is referenced by another F# code
-                  None
-            | _ -> None
+            if String.IsNullOrWhiteSpace(optResource)
+            then None 
+            else EmbeddedResourceReader.ReadResource(cfg.ReferencedAssemblies, optResource)
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -248,9 +269,9 @@ module ProviderHelpers =
                           SampleIsResource = false }
                     with _ -> 
                         // if not, return the first exception
-                        failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+                        failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
                 else
-                    failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+                    failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
     
     // carries part of the information needed by generateType
     type TypeProviderSpec = 
