@@ -147,12 +147,28 @@ module ProviderHelpers =
     /// * formatName - the description of what is being parsed (for the error message)
     /// * tp - the type provider
     /// * cfg - the type provider config
+    /// * optResource - when specified, we first try to treat read the sample from an embedded resource
+    ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
-                                      (cfg:TypeProviderConfig) resolutionFolder fullTypeName =
+                                      (cfg:TypeProviderConfig) resolutionFolder optResource fullTypeName =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
+        let tryGetResource () = 
+            if String.IsNullOrWhiteSpace(optResource) then None else
+            match optResource.Split(',') with
+            | [| asmName; name |] ->
+                try 
+                  let asm = Assembly.Load(asmName)
+                  use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
+                  Some(sr.ReadToEnd())
+                with _ -> 
+                  // Silently ignore errors - in particular, the above will only be used when 
+                  // an already compiled assembly is referenced by another F# code
+                  None
+            | _ -> None
+
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
             | false, _ -> None
@@ -160,6 +176,9 @@ module ProviderHelpers =
                 if str.Trim() = "" || not uri.IsAbsoluteUri && Seq.exists invalidChars.Contains str
                 then None else Some uri
     
+        match tryGetResource () with
+        | Some res -> lazy (parseFunc "" res), true, false
+        | _ -> 
         match tryGetUri sampleOrSampleUri with
         | None -> 
     
@@ -248,9 +267,12 @@ module ProviderHelpers =
     /// * cfg -> the type provider config
     /// * replacer -> the assemblyReplacer
     /// * resolutionFolder -> if the type provider allows to override the resolutionFolder pass it here
+    /// * optResource - when specified, we first try to treat read the sample from an embedded resource
+    ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
     let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
-                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) resolutionFolder fullTypeName =
+                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
+                     resolutionFolder optResource fullTypeName =
     
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
@@ -264,7 +286,8 @@ module ProviderHelpers =
         getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let typedSamples, sampleIsUri, sampleIsWebUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder fullTypeName
+        let typedSamples, sampleIsUri, sampleIsWebUri =   
+            parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder optResource fullTypeName
         
         let spec = getSpecFromSamples typedSamples.Value
         
