@@ -70,7 +70,7 @@ let convertStringValue (replacer:AssemblyReplacer) missingValuesStr cultureStr (
   let convertBack value = 
     let value = 
       match field.TypeWrapper with
-      | TypeWrapper.None -> typeof<TextRuntime>?GetOptionalValue (field.RuntimeType) value
+      | TypeWrapper.None -> ProviderHelpers.some field.RuntimeType value
       | TypeWrapper.Option -> value
       | TypeWrapper.Nullable -> typeof<TextRuntime>?NullableToOption (field.RuntimeType) value
       |> replacer.ToDesignTime

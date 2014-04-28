@@ -109,8 +109,6 @@ type TextRuntime =
     | None, None -> failwithf "%s is missing" name
     | None, Some originalValue -> failwithf "Expecting %s in %s, got %s" (typeof<'T>.Name) name originalValue
 
-  static member GetOptionalValue value = Some value
-
   /// Turn an F# option type Option<'T> containing a primitive 
   /// value type into a .NET type Nullable<'T>
   static member OptionToNullable opt =

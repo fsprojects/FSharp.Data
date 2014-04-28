@@ -6,6 +6,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Diagnostics
 open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
@@ -89,13 +90,16 @@ type DisposableTypeProviderForNamespaces() as x =
 
     let dispose typeName = lock disposeActionsByTypeName <| fun () ->
         log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
-        for action in disposeActionsByTypeName.[typeName] do
-            action()
-        disposeActionsByTypeName.Remove typeName |> ignore
+        match disposeActionsByTypeName.TryGetValue typeName with
+        | true, disposeActions ->
+            disposeActionsByTypeName.Remove typeName |> ignore
+            for action in disposeActions do
+                action()
+        | false, _ -> ()
 
     let disposeAll() = lock disposeActionsByTypeName <| fun () ->
         log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
-        for typeName in disposeActionsByTypeName.Keys do
+        for typeName in Seq.toArray disposeActionsByTypeName.Keys do
             dispose typeName
 
     interface IDisposable with 
@@ -111,6 +115,7 @@ type DisposableTypeProviderForNamespaces() as x =
 module ProviderHelpers =
 
     open System.IO
+    open Microsoft.FSharp.Reflection
     open FSharp.Data.Runtime.Caching
     open FSharp.Data.Runtime.IO
     
@@ -119,7 +124,13 @@ module ProviderHelpers =
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
         let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
-        Expr.Let(f, convFunc, replacer.ToRuntime body)
+        Expr.Let(f, convFunc, body) |> replacer.ToRuntime
+
+    let some (typ:Type) arg =
+        let unionCase = 
+            FSharpType.GetUnionCases(typedefof<option<_>>.MakeGenericType typ)
+            |> Seq.find (fun x -> x.Name = "Some")
+        Expr.NewUnionCase(unionCase, [ arg ])
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set

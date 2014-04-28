@@ -5,7 +5,6 @@ VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\contributing.md = docs\content\contributing.md
 		docs\content\index.md = docs\content\index.md
 	EndProjectSection
 EndProject

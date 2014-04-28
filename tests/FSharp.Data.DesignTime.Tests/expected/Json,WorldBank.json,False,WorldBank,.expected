@@ -28,6 +28,9 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
     JsonRuntime.CreateArray([| (array :> obj)
                                (record :> obj) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+WorldBank
+    JsonDocument.Create(jsonValue, "")
+
     member Array: JsonProvider+Record[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetArrayChildByTypeTag(this, "", "Array"), new Func<_,_>(id)))
 
@@ -47,6 +50,9 @@ class JsonProvider+Record : FDR.IJsonDocument
                                  (decimal :> obj))
                                 ("date",
                                  (date :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Record
+    JsonDocument.Create(jsonValue, "")
 
     member Country: JsonProvider+Indicator with get
     JsonRuntime.GetPropertyPacked(this, "country")
@@ -77,6 +83,9 @@ class JsonProvider+Record2 : FDR.IJsonDocument
                                 ("total",
                                  (total :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Record2
+    JsonDocument.Create(jsonValue, "")
+
     member Page: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "page")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -100,6 +109,9 @@ class JsonProvider+Indicator : FDR.IJsonDocument
                                  (id :> obj))
                                 ("value",
                                  (value :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Indicator
+    JsonDocument.Create(jsonValue, "")
 
     member Id: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")

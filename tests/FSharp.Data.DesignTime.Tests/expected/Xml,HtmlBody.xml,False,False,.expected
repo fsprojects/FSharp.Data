@@ -24,6 +24,18 @@ class XmlProvider
 
 
 class XmlProvider+Div : FDR.XmlElement
+    new : id:string -> span:string -> divs:XmlProvider+Div2[] -> XmlProvider+Div
+    XmlRuntime.CreateRecord("div", 
+                            [| ("id",
+                                (id :> obj)) |], 
+                            [| ("span",
+                                (span :> obj))
+                               ("div",
+                                (divs :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div
+    XmlElement.Create(xElement)
+
     member Divs: XmlProvider+Div2[] with get
     XmlRuntime.ConvertArray(this, "div", new Func<_,_>(id)))
 
@@ -37,6 +49,18 @@ class XmlProvider+Div : FDR.XmlElement
 
 
 class XmlProvider+Div2 : FDR.XmlElement
+    new : id:string -> spans:string[] -> div:string option -> XmlProvider+Div2
+    XmlRuntime.CreateRecord("div", 
+                            [| ("id",
+                                (id :> obj)) |], 
+                            [| ("span",
+                                (spans :> obj))
+                               ("div",
+                                (div :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Div2
+    XmlElement.Create(xElement)
+
     member Div: string option with get
     XmlRuntime.ConvertOptional(this, "div", new Func<_,_>(fun (t:XmlElement) -> 
                                                              let value = XmlRuntime.TryGetValue(t)

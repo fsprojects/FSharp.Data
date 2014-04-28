@@ -28,6 +28,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("ab",
                                  (ab :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Ab: JsonProvider+Ab with get
     JsonRuntime.GetPropertyPacked(this, "ab")
 
@@ -36,6 +39,9 @@ class JsonProvider+Ab : FDR.IJsonDocument
     new : persons:JsonProvider+Person[] -> JsonProvider+Ab
     JsonRuntime.CreateRecord([| ("persons",
                                  (persons :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Ab
+    JsonDocument.Create(jsonValue, "")
 
     member Persons: JsonProvider+Person[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
@@ -49,6 +55,9 @@ class JsonProvider+Person : FDR.IJsonDocument
                                  (emails :> obj))
                                 ("phones",
                                  (phones :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Person
+    JsonDocument.Create(jsonValue, "")
 
     member Contacts: JsonProvider+Contact[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "contacts"), new Func<_,_>(id)))
@@ -71,14 +80,17 @@ class JsonProvider+Contact : FDR.IJsonDocument
                                 ("phones",
                                  (phones :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Contact
+    JsonDocument.Create(jsonValue, "")
+
     member EmailCapability: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailCapability"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailCapability"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member EmailImEnabled: bool[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailIMEnabled"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emailIMEnabled"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertBoolean("", Some t.JsonValue), Some t.JsonValue)))
 
     member Emails: string[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "emails"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
     member Phones: FDR.IJsonDocument[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))

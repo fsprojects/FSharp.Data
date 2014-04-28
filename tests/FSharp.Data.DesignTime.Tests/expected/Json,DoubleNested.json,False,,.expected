@@ -28,6 +28,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("main",
                                  (main :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Main: JsonProvider+Main with get
     JsonRuntime.GetPropertyPacked(this, "main")
 
@@ -38,6 +41,9 @@ class JsonProvider+Main : FDR.IJsonDocument
                                  (title :> obj))
                                 ("nested",
                                  (nested :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Main
+    JsonDocument.Create(jsonValue, "")
 
     member Nested: JsonProvider+Nested with get
     JsonRuntime.GetPropertyPacked(this, "nested")
@@ -51,6 +57,9 @@ class JsonProvider+Nested : FDR.IJsonDocument
     new : nestedTitle:string -> JsonProvider+Nested
     JsonRuntime.CreateRecord([| ("nestedTitle",
                                  (nestedTitle :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Nested
+    JsonDocument.Create(jsonValue, "")
 
     member NestedTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "nestedTitle")

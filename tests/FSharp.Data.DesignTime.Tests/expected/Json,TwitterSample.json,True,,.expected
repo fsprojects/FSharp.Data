@@ -78,6 +78,9 @@ class JsonProvider+Root : FDR.IJsonDocument
                                 ("delete",
                                  (delete :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
+
     member Contributors: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "contributors")
 
@@ -162,6 +165,9 @@ class JsonProvider+Delete : FDR.IJsonDocument
     JsonRuntime.CreateRecord([| ("status",
                                  (status :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Delete
+    JsonDocument.Create(jsonValue, "")
+
     member Status: JsonProvider+Status with get
     JsonRuntime.GetPropertyPacked(this, "status")
 
@@ -176,6 +182,9 @@ class JsonProvider+Entities2 : FDR.IJsonDocument
                                  (urls :> obj))
                                 ("user_mentions",
                                  (userMentions :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Entities2
+    JsonDocument.Create(jsonValue, "")
 
     member Hashtags: JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
@@ -210,6 +219,9 @@ class JsonProvider+Place : FDR.IJsonDocument
                                  (boundingBox :> obj))
                                 ("attributes",
                                  (attributes :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Place
+    JsonDocument.Create(jsonValue, "")
 
     member Attributes: JsonProvider+Attributes with get
     JsonRuntime.GetPropertyPacked(this, "attributes")
@@ -294,6 +306,9 @@ class JsonProvider+RetweetedStatus : FDR.IJsonDocument
                                  (lang :> obj))
                                 ("possibly_sensitive",
                                  (possiblySensitive :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+RetweetedStatus
+    JsonDocument.Create(jsonValue, "")
 
     member Contributors: FDR.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "contributors")
@@ -455,6 +470,9 @@ class JsonProvider+User : FDR.IJsonDocument
                                 ("notifications",
                                  (notifications :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+User
+    JsonDocument.Create(jsonValue, "")
+
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
@@ -599,6 +617,9 @@ class JsonProvider+Attributes : FDR.IJsonDocument
     new : () -> JsonProvider+Attributes
     JsonRuntime.CreateRecord([| |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Attributes
+    JsonDocument.Create(jsonValue, "")
+
 
 class JsonProvider+BoundingBox : FDR.IJsonDocument
     new : type:string -> coordinates:decimal[][][] -> JsonProvider+BoundingBox
@@ -607,8 +628,11 @@ class JsonProvider+BoundingBox : FDR.IJsonDocument
                                 ("coordinates",
                                  (coordinates :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+BoundingBox
+    JsonDocument.Create(jsonValue, "")
+
     member Coordinates: decimal[][][] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "coordinates"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))))))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "coordinates"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.ConvertArray(t, new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertDecimal("", Some t.JsonValue), Some t.JsonValue)))))))
 
     member Type: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "type")
@@ -627,6 +651,9 @@ class JsonProvider+Entities : FDR.IJsonDocument
                                  (userMentions :> obj))
                                 ("media",
                                  (media :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Entities
+    JsonDocument.Create(jsonValue, "")
 
     member Hashtags: JsonProvider+Hashtag[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "hashtags"), new Func<_,_>(id)))
@@ -651,8 +678,11 @@ class JsonProvider+Hashtag : FDR.IJsonDocument
                                 ("indices",
                                  (indices :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Hashtag
+    JsonDocument.Create(jsonValue, "")
+
     member Indices: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Text: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "text")
@@ -669,11 +699,14 @@ class JsonProvider+IntOrString : FDR.IJsonDocument
     new : () -> JsonProvider+IntOrString
     JsonRuntime.CreateValue(null, "")
 
+    new : jsonValue:JsonValue -> JsonProvider+IntOrString
+    JsonDocument.Create(jsonValue, "")
+
     member Number: int option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member String: string option with get
-    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
 class JsonProvider+Status : FDR.IJsonDocument
@@ -686,6 +719,9 @@ class JsonProvider+Status : FDR.IJsonDocument
                                  (idStr :> obj))
                                 ("user_id_str",
                                  (userIdStr :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Status
+    JsonDocument.Create(jsonValue, "")
 
     member Id: int64 with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
@@ -715,6 +751,9 @@ class JsonProvider+Url : FDR.IJsonDocument
                                 ("indices",
                                  (indices :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Url
+    JsonDocument.Create(jsonValue, "")
+
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -724,7 +763,7 @@ class JsonProvider+Url : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Url: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "url")
@@ -809,6 +848,9 @@ class JsonProvider+User2 : FDR.IJsonDocument
                                  (followRequestSent :> obj))
                                 ("notifications",
                                  (notifications :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+User2
+    JsonDocument.Create(jsonValue, "")
 
     member ContributorsEnabled: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "contributors_enabled")
@@ -964,6 +1006,9 @@ class JsonProvider+UserMention : FDR.IJsonDocument
                                 ("indices",
                                  (indices :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+UserMention
+    JsonDocument.Create(jsonValue, "")
+
     member Id: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
@@ -973,7 +1018,7 @@ class JsonProvider+UserMention : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member Name: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
@@ -1011,6 +1056,9 @@ class JsonProvider+Media : FDR.IJsonDocument
                                 ("source_status_id_str",
                                  (sourceStatusIdStr :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Media
+    JsonDocument.Create(jsonValue, "")
+
     member DisplayUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "display_url")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
@@ -1028,7 +1076,7 @@ class JsonProvider+Media : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger64("", value.JsonOpt), value.JsonOpt)
 
     member Indices: int[] with get
-    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path, JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
+    JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "indices"), new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
     member MediaUrl: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "media_url")
@@ -1069,6 +1117,9 @@ class JsonProvider+Sizes : FDR.IJsonDocument
                                 ("medium",
                                  (medium :> obj)) |], "")
 
+    new : jsonValue:JsonValue -> JsonProvider+Sizes
+    JsonDocument.Create(jsonValue, "")
+
     member Large: JsonProvider+Small with get
     JsonRuntime.GetPropertyPacked(this, "large")
 
@@ -1090,6 +1141,9 @@ class JsonProvider+Small : FDR.IJsonDocument
                                  (h :> obj))
                                 ("resize",
                                  (resize :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Small
+    JsonDocument.Create(jsonValue, "")
 
     member H: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "h")
