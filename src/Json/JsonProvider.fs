@@ -40,7 +40,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
     let parseSingle _ value = JsonValue.Parse(value, cultureInfo)
     let parseList _ value = 
         JsonDocument.CreateList(new StringReader(value), cultureStr)
-        |> Seq.map (fun doc -> doc.JsonValue)
+        |> Array.map (fun doc -> doc.JsonValue)
     
     let getSpecFromSamples samples = 
 

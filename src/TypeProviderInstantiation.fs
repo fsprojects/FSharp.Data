@@ -20,21 +20,24 @@ type CsvProviderArgs =
       Quote : char
       MissingValues : string
       CacheRows : bool
-      ResolutionFolder : string }
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type XmlProviderArgs = 
     { Sample : string
       SampleIsList : bool
       Global : bool
       Culture : string
-      ResolutionFolder : string }
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type JsonProviderArgs = 
     { Sample : string
       SampleIsList : bool
       RootName : string
       Culture : string
-      ResolutionFolder : string }
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type WorldBankProviderArgs =
     { Sources : string
@@ -75,21 +78,24 @@ type TypeProviderInstantiation =
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
-                   box x.ResolutionFolder |] 
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.Global
                    box x.Culture
-                   box x.ResolutionFolder |] 
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
                    box x.Culture
-                   box x.ResolutionFolder|] 
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |] 
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -173,19 +179,22 @@ type TypeProviderInstantiation =
                   Quote = '"'
                   MissingValues = ""
                   CacheRows = false
-                  ResolutionFolder = "" }
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
-                  ResolutionFolder = "" }
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 
-                   ResolutionFolder = ""}
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
