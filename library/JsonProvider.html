@@ -429,6 +429,36 @@ create an instance, and send a POST request:</p>
 </tr>
 </table>
 
+<a name="jsonlib"></a>
+
+<h2>Using JSON provider in a library</h2>
+
+<p>You can use the types created by JSON type provider in a public API of a library that you are building,
+but there is one important thing to keep in mind - when the user references your library, the type
+provider will be loaded and the types will be generated at that time (the JSON provider is not
+currently a <em>generative</em> type provider). This means that the type provider will need to be able to
+access the sample JSON. This works fine when the sample is specified inline, but it won't work when
+the sample is specified as a local file (unless you distribute the samples with your library).</p>
+
+<p>For this reason, the JSON provider lets you specify samples as embedded resources using the 
+static parameter <code>EmbeddedResource</code>. If you are building a library <code>MyLib.dll</code>, you can write:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs82', 155)" onmouseover="showTip(event, 'fs82', 155)" class="i">WB</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 156)" onmouseover="showTip(event, 'fs4', 156)" class="i">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">WorldBank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span>, <span class="i">EmbeddedResource</span><span class="o">=</span><span class="s">&quot;</span><span class="s">MyLib</span><span class="s">,</span><span class="s"> </span><span class="s">worldbank</span><span class="s">.</span><span class="s">json</span><span class="s">&quot;</span><span class="o">&gt;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>You still need to specify the local path, but this is only used when compiling <code>MyLib.dll</code>. 
+When a user of your library references <code>MyLib.dll</code> later, the JSON type provider will be able
+to load <code>MyLib.dll</code> and locate the sample <code>worldbank.json</code> as a resource of the library. When
+this succeeds, it does not attempt to find the local file and so your library can be used
+without providing a local copy of the sample JSON files.</p>
+
 <h2>Related articles</h2>
 
 <ul>
@@ -441,7 +471,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Simple = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.Simple</div>
-<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type JsonProvider<br /><br />Full name: FSharp.Data.JsonProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a JSON document.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a JSON sample file or a string containing a sample JSON document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, sample should be a list of individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;RootName&#39;&gt;The name to be used to the root type. Defaults to `Root`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(e.g. &#39;MyCompany.MyAssembly, resource_name.json&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val simple : JsonProvider&lt;...&gt;.Root<br /><br />Full name: JsonProvider.simple</div>
 <div class="tip" id="fs6">JsonProvider&lt;...&gt;.Parse(text: string) : JsonProvider&lt;...&gt;.Root<br /><em><br /><br />Parses the specified JSON string</em></div>
 <div class="tip" id="fs7">property JsonProvider&lt;...&gt;.Root.Age: int</div>
@@ -519,6 +549,7 @@ working with JSON values dynamically.</li>
 <div class="tip" id="fs79">type Issue =<br />&#160;&#160;inherit IJsonDocument<br />&#160;&#160;new : title: string * body: string * assignee: string * milestone: int * labels: string [] -&gt; Issue + 1 overload<br />&#160;&#160;member Assignee : string<br />&#160;&#160;member Body : string<br />&#160;&#160;member JsonValue : JsonValue<br />&#160;&#160;member Labels : string []<br />&#160;&#160;member Milestone : int<br />&#160;&#160;member Title : string<br /><br />Full name: FSharp.Data.JsonProvider,Sample=&quot;<br />{<br />&#160;&#160;\&quot;title\&quot;: \&quot;Found a bug\&quot;,<br />&#160;&#160;\&quot;body\&quot;: \&quot;I&#39;m having a problem with this.\&quot;,<br />&#160;&#160;\&quot;assignee\&quot;: \&quot;octocat\&quot;,<br />&#160;&#160;\&quot;milestone\&quot;: 1,<br />&#160;&#160;\&quot;labels\&quot;: [<br />&#160;&#160;&#160;&#160;\&quot;Label1\&quot;,<br />&#160;&#160;&#160;&#160;\&quot;Label2\&quot;<br />&#160;&#160;]<br />}<br />&quot;,RootName=&quot;issue&quot;.Issue</div>
 <div class="tip" id="fs80">property Runtime.IJsonDocument.JsonValue: JsonValue</div>
 <div class="tip" id="fs81">member JsonValue.Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse</div>
+<div class="tip" id="fs82">type WB = JsonProvider&lt;...&gt;<br /><br />Full name: JsonProvider.WB</div>
 
         </div>
         <div class="span3">
