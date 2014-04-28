@@ -165,14 +165,17 @@ module ProviderHelpers =
             if String.IsNullOrWhiteSpace(optResource) then None else
             match optResource.Split(',') with
             | [| asmName; name |] ->
-                try 
-                  let asm = Assembly.Load(asmName)
-                  use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
-                  Some(sr.ReadToEnd())
-                with _ -> 
-                  // Silently ignore errors - in particular, the above will only be used when 
-                  // an already compiled assembly is referenced by another F# code
-                  None
+                let tryLoadByName () = try Some(Assembly.Load(asmName)) with _ -> None
+                let tryLoadFromReferences () =
+                    cfg.ReferencedAssemblies |> Seq.tryPick (fun refName -> 
+                        if refName.EndsWith(asmName + ".dll", StringComparison.InvariantCultureIgnoreCase) then
+                            try Some(Assembly.LoadFrom(refName)) with _ -> None
+                        else None)
+                [tryLoadByName; tryLoadFromReferences] 
+                |> Seq.tryPick (fun f -> f())
+                |> Option.map (fun asm ->
+                    use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
+                    sr.ReadToEnd() )
             | _ -> None
 
         let tryGetUri str =
