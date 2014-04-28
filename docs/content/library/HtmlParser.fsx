@@ -35,7 +35,7 @@ which in this case is the url that the search result is pointing to and addition
 we are looking at. 
 *)
 let links = 
-    results.Descendants(fun x -> x.Name = "a")
+    results.Descendants((fun x -> x.Name = "a"), true)
     |> Seq.choose (fun x -> 
            x.TryGetAttribute("href")
            |> Option.map (fun a -> x.InnerText, a.Value())

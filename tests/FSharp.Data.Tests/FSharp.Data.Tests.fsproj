@@ -248,6 +248,9 @@
     <Content Include="Data/reddit.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\us_presidents_wikipedia.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="../Common/FsUnit.fs">
       <Link>FsUnit.fs</Link>
     </Compile>

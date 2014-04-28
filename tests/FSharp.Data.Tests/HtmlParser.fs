@@ -309,3 +309,8 @@ let ``Can parse tables imdb chart``() =
 let ``Can parse tables ebay cars``() = 
     let ebay = HtmlDocument.Load "data/ebay_cars.htm"
     true |> should equal true
+
+[<Test>]
+let ``Does not crash when parsing us presidents``() =
+    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> HtmlRuntime.getTables false
+    true |> should equal true
