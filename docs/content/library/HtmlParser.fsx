@@ -1,4 +1,4 @@
-(** 
+﻿(** 
 # F# Data: Html Parser
 
 This article demonstrates how to use the HTML Parser to parse HTML files.
@@ -53,18 +53,12 @@ let searchResults =
     links
     |> Seq.filter (fun (name, url) -> 
                     name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
-    |> Seq.map (fun (name, url) -> name, url.Replace("/url?q=", ""))
+    |> Seq.map (fun (name, url) -> name.Replace("�", "·"),
+                                   url.Substring(0, url.IndexOf("&amp;sa=")).Replace("/url?q=", ""))
     |> Seq.toArray
 
-(**
-Putting this all together yields the following
-`   [lang=text]
-    [|("F# Data : Library for Data Access - F# Open Source Group @ GitHub",
-     "http://fsharp.github.io/FSharp.Data/&amp;sa=U&amp;ei=plkhU9H7"+[75 chars]);
-    ("Freebase Provider",
-     "http://fsharp.github.io/FSharp.Data/library/Freebase.html&amp"+[100 chars]);
-    ("Contributing to F# Data",
-     "http://fsharp.github.io/FSharp.Data/contributing.html&amp;sa="+[96 chars]);
-    ("JSON Type Provider",
-     "http://fsharp.github.io/FSharp.Data/library/JsonProvider.html"+[104 chars]);...|]
+(** 
+Putting this all together yields the following:
 *)
+
+(*** include-value:searchResults ***)

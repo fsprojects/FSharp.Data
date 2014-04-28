@@ -78,6 +78,8 @@ This small sample shows how the HTML type provider can be used to scrape data fr
 
 *)
 
+(*** define-output:nugetChart ***)
+
 open System
 
 // helper function to analyze version numbers from nuget
@@ -108,13 +110,8 @@ let stats =
 // Visualize the package stats
 Chart.Bar stats
 
-(**
+(*** include-it:nugetChart ***)
 
-The output looks like:
-
-![alt text](../images/downloads.png "Nuget package stats for FSharp.Data")
-
-*)
 (**
 ## Related articles
 
