@@ -74,7 +74,7 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -92,7 +92,7 @@ let ``Can parse tables from a simple html table but infer headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -107,7 +107,7 @@ let ``Ignores empty tables``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 0
 
@@ -122,11 +122,11 @@ let ``Can parse tables with no headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column0"]
+    tables.[0].Headers |> should equal ["Column1"]
     (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
 
 [<Test>]
@@ -139,11 +139,11 @@ let ``Can parse tables with no headers and only 2 rows``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column0"]
+    tables.[0].Headers |> should equal ["Column1"]
     (tables.[0].Rows) |> should equal [["1"]; ["3"]]
 
 [<Test>]
@@ -156,7 +156,7 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -171,7 +171,7 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -186,7 +186,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_id"
@@ -201,7 +201,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_name"
@@ -216,7 +216,7 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
     tables.Length |> should equal 1
 
 [<Test>]
@@ -241,7 +241,7 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
@@ -259,10 +259,10 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables false
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
-    tables.[0].Name |> should equal "Table_0"
+    tables.[0].Name |> should equal "Table1"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
 
@@ -300,7 +300,7 @@ let ``Can find header when nested in a div``() =
 let ``Can parse tables imdb chart``() = 
     let imdb = HtmlDocument.Load "data/imdb_chart.htm"
     let tables = imdb |> HtmlRuntime.getTables false
-    tables.Length |> should equal 2
+    tables.Length |> should equal 1
     tables.[0].Name |> should equal "Top 250"
     tables.[0].Rows.Length |> should equal 250
 

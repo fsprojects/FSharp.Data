@@ -213,7 +213,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal
-    member Adj Close: decimal with get
+    member ``Adj Close``: decimal with get
     (let _,_,_,_,_,_,t7 = this in t7)
 
     member Close: decimal with get

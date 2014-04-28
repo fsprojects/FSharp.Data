@@ -47,7 +47,7 @@ class HtmlProvider+VersionHistory+Row : string * int * System.DateTime
     member Downloads: int with get
     (let _,t2,_ = this in t2)
 
-    member Last updated: System.DateTime with get
+    member ``Last updated``: System.DateTime with get
     (let _,_,t3 = this in t3)
 
     member Version: string with get

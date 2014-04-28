@@ -74,44 +74,44 @@ class HtmlProvider+StructuringTheTableFurther : FDR.HtmlTable<HtmlProvider+Struc
 class HtmlProvider+TheMostBasicTable : FDR.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
 
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
-    member Last Major Eruption: string with get
+    member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
 
     member Location: string with get
     (let _,t2,_,_ = this in t2)
 
-    member Type of Eruption: string with get
+    member ``Type of Eruption``: string with get
     (let _,_,_,t4 = this in t4)
 
-    member Volcano Name: string with get
+    member ``Volcano Name``: string with get
     (let t1,_,_,_ = this in t1)
 
 
 class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * string
-    member Last Major Eruption: string with get
+    member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
 
     member Location: string with get
     (let _,t2,_,_ = this in t2)
 
-    member Type of Eruption: string with get
+    member ``Type of Eruption``: string with get
     (let _,_,_,t4 = this in t4)
 
-    member Volcano Name: string with get
+    member ``Volcano Name``: string with get
     (let t1,_,_,_ = this in t1)
 
 
 class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
-    member Last Major Eruption: string with get
+    member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
 
     member Location: string with get
     (let _,t2,_,_ = this in t2)
 
-    member Type of Eruption: string with get
+    member ``Type of Eruption``: string with get
     (let _,_,_,t4 = this in t4)
 
-    member Volcano Name: string with get
+    member ``Volcano Name``: string with get
     (let t1,_,_,_ = this in t1)
 
 
