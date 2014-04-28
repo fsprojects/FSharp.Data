@@ -165,8 +165,14 @@ module ProviderHelpers =
             if String.IsNullOrWhiteSpace(optResource) then None else
             match optResource.Split(',') with
             | [| asmName; name |] ->
-                try 
-                  let asm = Assembly.Load(asmName)
+                try
+                  let asmLocation = 
+                    cfg.ReferencedAssemblies 
+                    |> Array.tryFind (fun x -> x.EndsWith(asmName + ".dll"))
+                  let asm = 
+                    match asmLocation with
+                    | Some asmLocation -> Assembly.LoadFrom asmLocation
+                    | None -> Assembly.Load(asmName)
                   use sr = new StreamReader(asm.GetManifestResourceStream(name.Trim()))
                   Some(sr.ReadToEnd())
                 with _ -> 
