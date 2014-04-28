@@ -89,7 +89,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg replacer resolutionFolder typeName
+                 getSpecFromSamples version this cfg replacer resolutionFolder null typeName
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
