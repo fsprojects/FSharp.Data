@@ -379,6 +379,115 @@ offers. The code looks like this:</p>
 </tr>
 </table>
 
+<h2>Transforming XML</h2>
+
+<p>In this example we will now also create XML in addition to consuming it.
+Consider the problem of flattening a data set. Let's say you have xml data that looks like this:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+<span class="l">15: </span>
+<span class="l">16: </span>
+<span class="l">17: </span>
+<span class="l">18: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[&lt;<span onmouseout="hideTip(event, 'fs52', 116)" onmouseover="showTip(event, 'fs52', 116)" class="i">Literal</span>&gt;]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 117)" onmouseover="showTip(event, 'fs53', 117)" class="i">customersXmlSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  </span><span class="s">&lt;</span><span class="s">Customers</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">Customer</span><span class="s"> </span><span class="s">name</span><span class="s">=</span><span class="s">&quot;</span><span class="s">ACME</span><span class="s">&quot;</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">Order</span><span class="s"> </span><span class="s">Number</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012345</span><span class="s">&quot;</span><span class="s">&gt;</span>
+<span class="s">        </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">widget</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Order</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">Order</span><span class="s"> </span><span class="s">Number</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012346</span><span class="s">&quot;</span><span class="s">&gt;</span>
+<span class="s">        </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">trinket</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">2</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Order</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Customer</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">Customer</span><span class="s"> </span><span class="s">name</span><span class="s">=</span><span class="s">&quot;</span><span class="s">Southwind</span><span class="s">&quot;</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">Order</span><span class="s"> </span><span class="s">Number</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012347</span><span class="s">&quot;</span><span class="s">&gt;</span>
+<span class="s">        </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">skyhook</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">3</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">        </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">gizmo</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">4</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">      </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Order</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Customer</span><span class="s">&gt;</span>
+<span class="s">  </span><span class="s">&lt;</span><span class="s">/</span><span class="s">Customers</span><span class="s">&gt;</span><span class="s">&quot;&quot;&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>and you want to transform it into something like this:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[&lt;<span onmouseout="hideTip(event, 'fs52', 118)" onmouseover="showTip(event, 'fs52', 118)" class="i">Literal</span>&gt;]
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 119)" onmouseover="showTip(event, 'fs54', 119)" class="i">orderLinesXmlSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">  </span><span class="s">&lt;</span><span class="s">OrderLines</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Customer</span><span class="s">=</span><span class="s">&quot;</span><span class="s">ACME</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Order</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012345</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">widget</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">1</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Customer</span><span class="s">=</span><span class="s">&quot;</span><span class="s">ACME</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Order</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012346</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">trinket</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">2</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Customer</span><span class="s">=</span><span class="s">&quot;</span><span class="s">Southwind</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Order</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012347</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">skyhook</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">3</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">    </span><span class="s">&lt;</span><span class="s">OrderLine</span><span class="s"> </span><span class="s">Customer</span><span class="s">=</span><span class="s">&quot;</span><span class="s">Southwind</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Order</span><span class="s">=</span><span class="s">&quot;</span><span class="s">A012347</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Item</span><span class="s">=</span><span class="s">&quot;</span><span class="s">gizmo</span><span class="s">&quot;</span><span class="s"> </span><span class="s">Quantity</span><span class="s">=</span><span class="s">&quot;</span><span class="s">4</span><span class="s">&quot;</span><span class="s">/</span><span class="s">&gt;</span>
+<span class="s">  </span><span class="s">&lt;</span><span class="s">/</span><span class="s">OrderLines</span><span class="s">&gt;</span><span class="s">&quot;&quot;&quot;</span></pre>
+</td>
+</tr>
+</table>
+
+<p>We'll create types from both the input and output samples and use the constructors on the types generated by the XmlProvider:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs55', 120)" onmouseover="showTip(event, 'fs55', 120)" class="i">InputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 121)" onmouseover="showTip(event, 'fs4', 121)" class="i">XmlProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs53', 122)" onmouseover="showTip(event, 'fs53', 122)" class="i">customersXmlSample</span><span class="o">&gt;</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs56', 123)" onmouseover="showTip(event, 'fs56', 123)" class="i">OutputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 124)" onmouseover="showTip(event, 'fs4', 124)" class="i">XmlProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs54', 125)" onmouseover="showTip(event, 'fs54', 125)" class="i">orderLinesXmlSample</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 126)" onmouseover="showTip(event, 'fs57', 126)" class="i">orderLines</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs56', 127)" onmouseover="showTip(event, 'fs56', 127)" class="i">OutputXml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 128)" onmouseover="showTip(event, 'fs58', 128)" class="i">OrderLines</span> [|
+    <span class="k">for</span> <span onmouseout="hideTip(event, 'fs59', 129)" onmouseover="showTip(event, 'fs59', 129)" class="i">customer</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs55', 130)" onmouseover="showTip(event, 'fs55', 130)" class="i">InputXml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 131)" onmouseover="showTip(event, 'fs60', 131)" class="i">GetSample</span>()<span class="o">.</span><span class="i">Customers</span> <span class="k">do</span>
+      <span class="k">for</span> <span onmouseout="hideTip(event, 'fs61', 132)" onmouseover="showTip(event, 'fs61', 132)" class="i">order</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs59', 133)" onmouseover="showTip(event, 'fs59', 133)" class="i">customer</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 134)" onmouseover="showTip(event, 'fs62', 134)" class="i">Orders</span> <span class="k">do</span>
+        <span class="k">for</span> <span onmouseout="hideTip(event, 'fs63', 135)" onmouseover="showTip(event, 'fs63', 135)" class="i">line</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs61', 136)" onmouseover="showTip(event, 'fs61', 136)" class="i">order</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 137)" onmouseover="showTip(event, 'fs64', 137)" class="i">OrderLines</span> <span class="k">do</span>
+          <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs56', 138)" onmouseover="showTip(event, 'fs56', 138)" class="i">OutputXml</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 139)" onmouseover="showTip(event, 'fs65', 139)" class="i">OrderLine</span>(<span onmouseout="hideTip(event, 'fs59', 140)" onmouseover="showTip(event, 'fs59', 140)" class="i">customer</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs66', 141)" onmouseover="showTip(event, 'fs66', 141)" class="i">Name</span>,
+                                    <span onmouseout="hideTip(event, 'fs61', 142)" onmouseover="showTip(event, 'fs61', 142)" class="i">order</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 143)" onmouseover="showTip(event, 'fs67', 143)" class="i">Number</span>,
+                                    <span onmouseout="hideTip(event, 'fs63', 144)" onmouseover="showTip(event, 'fs63', 144)" class="i">line</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 145)" onmouseover="showTip(event, 'fs68', 145)" class="i">Item</span>,
+                                    <span onmouseout="hideTip(event, 'fs63', 146)" onmouseover="showTip(event, 'fs63', 146)" class="i">line</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 147)" onmouseover="showTip(event, 'fs69', 147)" class="i">Quantity</span>) |]</pre>
+</td>
+</tr>
+</table>
+
 <h2>Related articles</h2>
 
 <ul>
@@ -389,7 +498,7 @@ offers. The code looks like this:</p>
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Author = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.Author</div>
-<div class="tip" id="fs4">type XmlProvider<br /><br />Full name: FSharp.Data.XmlProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a XML file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type XmlProvider<br /><br />Full name: FSharp.Data.XmlProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a XML file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a XML sample file or a string containing a sample XML document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SampleIsList&#39;&gt;If true, the children of the root in the sample document represent individual samples for the inference.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Global&#39;&gt;If true, the inference unifies all XML elements with the same name.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates.&lt;/param&gt;                     <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val sample : XmlProvider&lt;...&gt;.Author<br /><br />Full name: XmlProvider.sample</div>
 <div class="tip" id="fs6">XmlProvider&lt;...&gt;.Parse(text: string) : XmlProvider&lt;...&gt;.Author<br /><em><br /><br />Parses the specified XML string</em></div>
 <div class="tip" id="fs7">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
@@ -423,7 +532,7 @@ offers. The code looks like this:</p>
 <div class="tip" id="fs35">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Div</div>
 <div class="tip" id="fs36">val printDiv : div:XmlProvider&lt;...&gt;.Div -&gt; unit<br /><br />Full name: XmlProvider.printDiv<br /><em><br /><br />&#160;Prints the content of a &lt;div&gt; element</em></div>
 <div class="tip" id="fs37">val div : XmlProvider&lt;...&gt;.Div</div>
-<div class="tip" id="fs38">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;member Divs : Div []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Spans : string []<br />&#160;&#160;member Value : Option&lt;string&gt;<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../data/HtmlBody.xml&quot;,Global=&quot;True&quot;.Div</div>
+<div class="tip" id="fs38">type Div =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;new : id: Option&lt;string&gt; * value: Option&lt;string&gt; * spans: string [] * divs: Div [] -&gt; Div + 1 overload<br />&#160;&#160;member Divs : Div []<br />&#160;&#160;member Id : Option&lt;string&gt;<br />&#160;&#160;member Spans : string []<br />&#160;&#160;member Value : Option&lt;string&gt;<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;../data/HtmlBody.xml&quot;,Global=&quot;True&quot;.Div</div>
 <div class="tip" id="fs39">property XmlProvider&lt;...&gt;.Div.Spans: string []</div>
 <div class="tip" id="fs40">property XmlProvider&lt;...&gt;.Div.Divs: XmlProvider&lt;...&gt;.Div []</div>
 <div class="tip" id="fs41">property System.Array.Length: int</div>
@@ -437,6 +546,24 @@ offers. The code looks like this:</p>
 <div class="tip" id="fs49">property XmlProvider&lt;...&gt;.Channel.Items: XmlProvider&lt;...&gt;.Item []</div>
 <div class="tip" id="fs50">property XmlProvider&lt;...&gt;.Item.Title: string</div>
 <div class="tip" id="fs51">property XmlProvider&lt;...&gt;.Item.Link: string</div>
+<div class="tip" id="fs52">Multiple items<br />type LiteralAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : unit -&gt; LiteralAttribute<br /><br />Full name: Microsoft.FSharp.Core.LiteralAttribute<br /><br />--------------------<br />new : unit -&gt; LiteralAttribute</div>
+<div class="tip" id="fs53">val customersXmlSample : string<br /><br />Full name: XmlProvider.customersXmlSample</div>
+<div class="tip" id="fs54">val orderLinesXmlSample : string<br /><br />Full name: XmlProvider.orderLinesXmlSample</div>
+<div class="tip" id="fs55">type InputXml = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.InputXml</div>
+<div class="tip" id="fs56">type OutputXml = XmlProvider&lt;...&gt;<br /><br />Full name: XmlProvider.OutputXml</div>
+<div class="tip" id="fs57">val orderLines : XmlProvider&lt;...&gt;.OrderLines<br /><br />Full name: XmlProvider.orderLines</div>
+<div class="tip" id="fs58">type OrderLines =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;new : orderLines: OrderLine [] -&gt; OrderLines + 1 overload<br />&#160;&#160;member OrderLines : OrderLine []<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;<br />&#160;&#160;&lt;OrderLines&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;ACME\&quot; Order=\&quot;A012345\&quot; Item=\&quot;widget\&quot; Quantity=\&quot;1\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;ACME\&quot; Order=\&quot;A012346\&quot; Item=\&quot;trinket\&quot; Quantity=\&quot;2\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;Southwind\&quot; Order=\&quot;A012347\&quot; Item=\&quot;skyhook\&quot; Quantity=\&quot;3\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;Southwind\&quot; Order=\&quot;A012347\&quot; Item=\&quot;gizmo\&quot; Quantity=\&quot;4\&quot;/&gt;<br />&#160;&#160;&lt;/OrderLines&gt;&quot;.OrderLines</div>
+<div class="tip" id="fs59">val customer : XmlProvider&lt;...&gt;.Customer</div>
+<div class="tip" id="fs60">XmlProvider&lt;...&gt;.GetSample() : XmlProvider&lt;...&gt;.Customers</div>
+<div class="tip" id="fs61">val order : XmlProvider&lt;...&gt;.Order</div>
+<div class="tip" id="fs62">property XmlProvider&lt;...&gt;.Customer.Orders: XmlProvider&lt;...&gt;.Order []</div>
+<div class="tip" id="fs63">val line : XmlProvider&lt;...&gt;.OrderLine</div>
+<div class="tip" id="fs64">property XmlProvider&lt;...&gt;.Order.OrderLines: XmlProvider&lt;...&gt;.OrderLine []</div>
+<div class="tip" id="fs65">type OrderLine =<br />&#160;&#160;inherit XmlElement<br />&#160;&#160;new : customer: string * order: string * item: string * quantity: int -&gt; OrderLine + 1 overload<br />&#160;&#160;member Customer : string<br />&#160;&#160;member Item : string<br />&#160;&#160;member Order : string<br />&#160;&#160;member Quantity : int<br />&#160;&#160;member _Print : string<br /><br />Full name: FSharp.Data.XmlProvider,Sample=&quot;<br />&#160;&#160;&lt;OrderLines&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;ACME\&quot; Order=\&quot;A012345\&quot; Item=\&quot;widget\&quot; Quantity=\&quot;1\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;ACME\&quot; Order=\&quot;A012346\&quot; Item=\&quot;trinket\&quot; Quantity=\&quot;2\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;Southwind\&quot; Order=\&quot;A012347\&quot; Item=\&quot;skyhook\&quot; Quantity=\&quot;3\&quot;/&gt;<br />&#160;&#160;&#160;&#160;&lt;OrderLine Customer=\&quot;Southwind\&quot; Order=\&quot;A012347\&quot; Item=\&quot;gizmo\&quot; Quantity=\&quot;4\&quot;/&gt;<br />&#160;&#160;&lt;/OrderLines&gt;&quot;.OrderLine</div>
+<div class="tip" id="fs66">property XmlProvider&lt;...&gt;.Customer.Name: string</div>
+<div class="tip" id="fs67">property XmlProvider&lt;...&gt;.Order.Number: string</div>
+<div class="tip" id="fs68">property XmlProvider&lt;...&gt;.OrderLine.Item: string</div>
+<div class="tip" id="fs69">property XmlProvider&lt;...&gt;.OrderLine.Quantity: int</div>
 
         </div>
         <div class="span3">
