@@ -209,3 +209,7 @@
 * Added support for creating typed JSON and XML objects from untyped JsonValue and XElement objects.
 * Fixed crash when data files used in a type provider used on a fsx file changed.
 * Fixed problem parsing JSON values with keys with the double quote character.
+
+#### 2.0.7 - April 28 2014
+* Support for reading sample CSV, JSON, and XML from an embedded resource.
+* Fix wrong error messages being returned when sample files are not found.

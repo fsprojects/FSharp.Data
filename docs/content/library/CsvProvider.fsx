@@ -360,6 +360,7 @@ stocks.Take(10).Cache()
 (**
 ## Related articles
 
+ * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
  * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
    working with CSV documents dynamically.
  * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
