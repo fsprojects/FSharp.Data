@@ -24,6 +24,16 @@ class XmlProvider
 
 
 class XmlProvider+Authors : FDR.XmlElement
+    new : topic:string -> authors:XmlProvider+Author[] -> XmlProvider+Authors
+    XmlRuntime.CreateRecord("authors", 
+                            [| ("topic",
+                                (topic :> obj)) |], 
+                            [| ("author",
+                                (authors :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Authors
+    XmlElement.Create(xElement)
+
     member Authors: XmlProvider+Author[] with get
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
@@ -33,6 +43,17 @@ class XmlProvider+Authors : FDR.XmlElement
 
 
 class XmlProvider+Author : FDR.XmlElement
+    new : name:string -> born:int option -> XmlProvider+Author
+    XmlRuntime.CreateRecord("author", 
+                            [| ("name",
+                                (name :> obj))
+                               ("born",
+                                (born :> obj)) |], 
+                            [| |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Author
+    XmlElement.Create(xElement)
+
     member Born: int option with get
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetAttribute(this, "born"))
 

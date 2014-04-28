@@ -81,9 +81,13 @@ of MSFT stocks changes since the company was founded:
 open System
 open FSharp.Charting
 
+(*** define-output:chart1 ***)
+
 // Visualize the stock prices
 [ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
+
+(*** include-it:chart1 ***)
 
 (**
 As a one more example, we use the `Candlestick` chart to get a more detailed look at the
@@ -96,8 +100,12 @@ let recent =
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
+(*** define-output:chart2 ***)
+
 // Visualize prices using Candlestick chart
-Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
+Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+
+(*** include-it:chart2 ***)
 
 (**
 ## Using units of measure

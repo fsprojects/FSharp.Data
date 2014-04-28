@@ -20,7 +20,7 @@ open ProviderImplementation.ProvidedTypes
 
 /// A collection containing just one type
 let SimpleCollection typ = 
-  InferedType.Collection(Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
+  InferedType.Collection([ typeTag typ], Map.ofSeq [typeTag typ, (InferedMultiplicity.Multiple, typ)])
 
 let culture = TextRuntime.GetCulture ""
 
@@ -63,9 +63,10 @@ let ``Finds common subtype of numeric types (int64)``() =
 let ``Infers heterogeneous type of InferedType.Primitives``() =
   let source = JsonValue.Parse """[ 1,true ]"""
   let expected = 
-    [ InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false))
-      InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false)) ]
-    |> Map.ofSeq |> InferedType.Collection
+    InferedType.Collection
+        ([ InferedTypeTag.Number; InferedTypeTag.Boolean ],
+         [ InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false))
+           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false)) ] |> Map.ofList)
   let actual = JsonInference.inferType culture "" source
   actual |> shouldEqual expected
 
@@ -73,10 +74,11 @@ let ``Infers heterogeneous type of InferedType.Primitives``() =
 let ``Infers heterogeneous type of InferedType.Primitives and nulls``() =
   let source = JsonValue.Parse """[ 1,true,null ]"""
   let expected = 
-    [ InferedTypeTag.Null, (Single, InferedType.Null)
-      InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false))
-      InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false)) ]
-    |> Map.ofSeq |> InferedType.Collection
+    InferedType.Collection
+        ([ InferedTypeTag.Number; InferedTypeTag.Boolean; InferedTypeTag.Null ],
+         [ InferedTypeTag.Null, (Single, InferedType.Null)
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false))
+           InferedTypeTag.Boolean, (Single, InferedType.Primitive(typeof<bool>, None, false)) ] |> Map.ofList)
   let actual = JsonInference.inferType culture "" source
   actual |> shouldEqual expected
 
@@ -91,10 +93,11 @@ let ``Finds common subtype of numeric types (float)``() =
 let ``Infers heterogeneous type of InferedType.Primitives and records``() =
   let source = JsonValue.Parse """[ {"a":0}, 1,2 ]"""
   let expected = 
-    [ InferedTypeTag.Number, (Multiple, InferedType.Primitive(typeof<int>, None, false))
-      InferedTypeTag.Record None, 
-        (Single, toRecord [ { Name="a"; Type=InferedType.Primitive(typeof<Bit0>, None, false) } ]) ]
-    |> Map.ofSeq |> InferedType.Collection
+    InferedType.Collection
+        ([ InferedTypeTag.Record None; InferedTypeTag.Number ],
+         [ InferedTypeTag.Number, (Multiple, InferedType.Primitive(typeof<int>, None, false))
+           InferedTypeTag.Record None, 
+             (Single, toRecord [ { Name="a"; Type=InferedType.Primitive(typeof<Bit0>, None, false) } ]) ] |> Map.ofList)
   let actual = JsonInference.inferType culture "" source
   actual |> shouldEqual expected
 
@@ -188,9 +191,10 @@ let ``Inference of multiple nulls works``() =
   let source = JsonValue.Parse """[0, [{"a": null}, {"a":null}]]"""
   let prop = { Name = "a"; Type = InferedType.Null }
   let expected = 
-    [ InferedTypeTag.Collection, (Single, SimpleCollection(toRecord [prop]))
-      InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit0>, None, false)) ]
-    |> Map.ofSeq |> InferedType.Collection
+    InferedType.Collection
+        ([ InferedTypeTag.Number; InferedTypeTag.Collection ],
+         [ InferedTypeTag.Collection, (Single, SimpleCollection(toRecord [prop]))
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit0>, None, false)) ] |> Map.ofList)
   let actual = JsonInference.inferType culture "" source
   actual |> shouldEqual expected
 
@@ -360,9 +364,10 @@ let ``Doesn't infer 12-002 as a date``() =
   // a previous version inferred a IntOrStringOrDateTime
   let source = JsonValue.Parse """[ "12-002", "001", "2012-selfservice" ]"""
   let expected = 
-    [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None, false))
-      InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false)) ]
-    |> Map.ofSeq |> InferedType.Collection
+    InferedType.Collection
+        ([ InferedTypeTag.String; InferedTypeTag.Number],
+         [ InferedTypeTag.String, (Multiple, InferedType.Primitive(typeof<string>, None, false))
+           InferedTypeTag.Number, (Single, InferedType.Primitive(typeof<Bit1>, None, false)) ] |> Map.ofList)
   let actual = JsonInference.inferType culture "" source
   actual |> shouldEqual expected
 

@@ -9,21 +9,37 @@ F# Data ライブラリ (`FSharp.Data.dll`) にはF#アプリケーションや�
 また、JSONやCSVファイルを解析する機能や、
 HTTPリクエストを送信するための機能もあります。
 
-<div class="row">
-  <div class="span1"></div>
-  <div class="span6">
-    <div class="well well-small" id="nuget">
-      F# Data Libraryは <a href="https://nuget.org/packages/FSharp.Data">NuGetの
-      FSharp.Dataパッケージ</a>として公開されています。
-      ライブラリをインストールするには、
-      <a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">
-      パッケージ マネージャー コンソール</a>上から以下のコマンドを実行します：
-      <pre>PM> Install-Package FSharp.Data</pre>
-    </div>
-  </div>
-  <div class="span1"></div>
+<div class="container-fluid" style="margin:15px 0px 15px 0px;">
+    <div class="row-fluid">
+        <div class="span1"></div>
+        <div class="span10" id="anim-holder">
+            <div id="wbtn" style="right:10px">WorldBank</div>
+            <div id="jbtn" style="right:110px">JSON</div>
+            <div id="cbtn" style="right:210px">CSV</div>
+            <a id="lnk" href="../images/start.png"><img id="anim" src="../images/start.png" /></a>
+        </div>
+        <div class="span1"></div>
+    </div> 
 </div>
+<script type="text/javascript">
+$(function(){
+  var wi = new Image();
+  var ji = new Image();
+  var ci = new Image();
+  wi.src ='../images/wb.gif';
+  ji.src ='../images/json.gif';
+  ci.src ='../images/csv.gif';
+  $('#wbtn').click(function(){ $('#anim').attr('src',wi.src); $('#lnk').attr('href',wi.src); });
+  $('#jbtn').click(function(){ $('#anim').attr('src',ji.src); $('#lnk').attr('href',ji.src); });
+  $('#cbtn').click(function(){ $('#anim').attr('src',ci.src); $('#lnk').attr('href',ci.src); });
+});</script>
 
+F# Data Libraryは <a href="https://nuget.org/packages/FSharp.Data">NuGetの
+FSharp.Dataパッケージ</a>として公開されています。
+ライブラリをインストールするには、
+<a href="http://docs.nuget.org/docs/start-here/using-the-package-manager-console">
+パッケージ マネージャー コンソール</a>上から以下のコマンドを実行します：
+`Install-Package FSharp.Data`.
 あるいは [ソースコードをZIPファイルとしてダウンロード][source] したり、
 [コンパイル済みバイナリ][compiled] をZIPファイルとして
 ダウンロードすることもできます。

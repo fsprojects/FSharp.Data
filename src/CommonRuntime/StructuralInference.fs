@@ -124,7 +124,7 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
   | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Json(t1, o1), InferedType.Json(t2, o2) -> InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
-  | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowEmptyValues t1 t2)
+  | InferedType.Collection(o1, t1), InferedType.Collection(o2, t2) -> InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2)
   
   // Top type can be merged with anything else
   | t, InferedType.Top | InferedType.Top, t -> t
@@ -185,6 +185,9 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofList
 
+and unionCollectionOrder order1 order2 =
+    order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
+
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
@@ -206,12 +209,14 @@ and unionRecordTypes allowEmptyValues t1 t2 =
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
 let inferCollectionType allowEmptyValues types = 
-  types 
-  |> Seq.groupBy typeTag
-  |> Seq.map (fun (tag, types) ->
-      let multiple = if Seq.length types > 1 then Multiple else Single
-      tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types) )
-  |> Map.ofSeq |> InferedType.Collection
+  let groupedTypes =
+      types 
+      |> Seq.groupBy typeTag
+      |> Seq.map (fun (tag, types) ->
+          let multiple = if Seq.length types > 1 then Multiple else Single
+          tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types))
+      |> Seq.toList
+  InferedType.Collection (List.map fst groupedTypes, Map.ofList groupedTypes)
 
 [<AutoOpen>]
 module private Helpers =

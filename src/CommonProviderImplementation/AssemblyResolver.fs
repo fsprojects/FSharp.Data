@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Net
 open System.Reflection
+open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
 
@@ -131,11 +132,15 @@ type FSharpDataRuntimeVersion =
 
 let init (cfg : TypeProviderConfig) = 
 
-    if not initialized then
-        initialized <- true
+    let init (_:SaveOptions) = 
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false [])
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true [])
+
+    if not initialized then
+      initialized <- true
+      // the following parameter is just here to force System.Xml.Linq to load
+      init SaveOptions.None
     
     let useReflectionOnly = true
 
@@ -166,6 +171,7 @@ let init (cfg : TypeProviderConfig) =
                 match asmName.Name with
                 | "FSharp.Data" -> "FSharp.Data.DesignTime" // this applies when this code is being used by another assembly that depends on FSharp.Data, like ApiaryProvider
                 | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
+                | "System.Xml.XDocument" -> "System.Xml.Linq"
                 | asmName -> asmName
             designTimeAssemblies.TryFind designTimeAsmName
             |> Option.bind (fun designTimeAsm ->
@@ -188,8 +194,7 @@ let init (cfg : TypeProviderConfig) =
                         targetAsm
                     else
                         getAssembly asmName useReflectionOnly []
-                if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName ||
-                                            targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
+                if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName || targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
                     Some (designTimeAsm, targetAsm)
                 else None))
         |> Seq.toList

@@ -57,12 +57,12 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
-  | Primitive of typ:System.Type * unit:option<System.Type> * optional:bool
   | Constant of name:string * typ:System.Type * value:obj
+  | Primitive of typ:Type * unit:option<System.Type> * optional:bool
   | Record of name:string option * fields:InferedProperty list * optional:bool
   | Json of typ:InferedType * optional:bool
-  | Collection of Map<InferedTypeTag, InferedMultiplicity * InferedType>
-  | Heterogeneous of Map<InferedTypeTag, InferedType>
+  | Collection of order:InferedTypeTag list * types:Map<InferedTypeTag, InferedMultiplicity * InferedType>
+  | Heterogeneous of types:Map<InferedTypeTag, InferedType>
   | Null
   | Top
 
@@ -84,10 +84,8 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
     | Primitive(typ, unit, false) -> Primitive(typ, unit, true)
     | Record(name, props, false) -> Record(name, props, true)
     | Json(typ, false) -> Json(typ, true)
-    | Collection map ->
-         map 
-         |> Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ)
-         |> Collection
+    | Collection (order, types) ->
+         Collection (order, Map.map (fun _ (mult, typ) -> (if mult = Single then OptionalSingle else mult), typ) types)
     | Top -> failwith "EnsuresHandlesMissingValues: unexpected InferedType.Top"
 
   member x.DropOptionality() =
@@ -108,7 +106,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
       | Primitive(t1, ot1, b1), Primitive(t2, ot2, b2) -> t1 = t2 && ot1 = ot2 && b1 = b2
       | Record(s1, pl1, b1), Record(s2, pl2, b2) -> s1 = s2 && pl1 = pl2 && b1 = b2
       | Json(t1, o1), Json(t2, o2) -> t1 = t2 && o1 = o2
-      | Collection(m1), Collection(m2) -> m1 = m2
+      | Collection(o1, t1), Collection(o2, t2) -> o1 = o2 && t1 = t2
       | Heterogeneous(m1), Heterogeneous(m2) -> m1 = m2
       | Null, Null | Top, Top -> true
       | _ -> false

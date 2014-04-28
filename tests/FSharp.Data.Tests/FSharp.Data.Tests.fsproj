@@ -170,6 +170,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\shared.xsd">
+    <Content Include="Data/reddit.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="../Common/FsUnit.fs">
