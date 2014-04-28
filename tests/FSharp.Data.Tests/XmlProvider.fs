@@ -438,7 +438,7 @@ let ``Can construct elements with heterogeneous records with primitives``() =
                                  "source",
                                  "lange",
                                  AtomSearch.Author("name", "uri"))
-    entry.XElement.ToString() |> should equal """<entry xmlns="http://www.w3.org/2005/Atom">
+    entry.XElement.ToString() |> normalize |> should equal (normalize """<entry xmlns="http://www.w3.org/2005/Atom">
   <id>id</id>
   <published>02/02/2000 00:00:00</published>
   <title>title</title>
@@ -453,5 +453,5 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     <name>name</name>
     <uri>uri</uri>
   </author>
-</entry>"""
+</entry>""")
     AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())
