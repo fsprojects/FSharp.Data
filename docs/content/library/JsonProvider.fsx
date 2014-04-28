@@ -268,7 +268,7 @@ access the sample JSON. This works fine when the sample is specified inline, but
 the sample is specified as a local file (unless you distribute the samples with your library).
 
 For this reason, the JSON provider lets you specify samples as embedded resources using the 
-static parameter `EmbededResource`. If you are building a library `MyLib.dll`, you can write:
+static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
 
 *)
 type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldbank.json">
