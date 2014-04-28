@@ -195,7 +195,7 @@ module internal HtmlParser =
         member x.Pop(count) = 
             [|0..(count-1)|] |> Array.map (fun _ -> x.Reader.ReadChar())
             
-        member x.GetContent() = (!x.Content).ToString() 
+        member x.ContentLength = (!x.Content).Length
     
         member x.NewAttribute() = x.Attributes := (CharList.Empty, CharList.Empty) :: (!x.Attributes)
     
@@ -289,17 +289,17 @@ module internal HtmlParser =
         let rec data (state:HtmlState) =
             match state.Peek() with
             | '<' -> 
-                if state.GetContent().Length > 0
+                if state.ContentLength > 0
                 then state.Emit();
                 else state.Pop(); tagOpen state
             | TextParser.EndOfFile _ -> EOF
             | '&' ->
-                if state.GetContent().Length > 0
+                if state.ContentLength > 0
                 then state.Emit();
                 else
                     state.InsertionMode := CharRefMode
                     charRef state
-            | TextParser.Whitespace _ when state.GetContent().Length = 0 -> state.Pop(); data state
+            | TextParser.Whitespace _ when state.ContentLength = 0 -> state.Pop(); data state
             | _ ->
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
@@ -601,6 +601,8 @@ module internal HtmlParser =
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []
+        if List.isEmpty elements then
+            failwith "Invalid HTML" 
         docType, elements
 
     let parseDocument reader = 

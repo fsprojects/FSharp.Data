@@ -30,18 +30,18 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member Table0: HtmlProvider+Table0 with get
+    member Table1: HtmlProvider+Table1 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Savings", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table_0")
+    HtmlTable<_>.Create(rowConverter, this, "Table1")
 
 
-class HtmlProvider+Table0 : FDR.HtmlTable<HtmlProvider+Table0+Row>
+class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
 
-class HtmlProvider+Table0+Row : string * string
+class HtmlProvider+Table1+Row : string * string
     member Month: string with get
     (let t1,_ = this in t1)
 

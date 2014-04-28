@@ -9,6 +9,8 @@ open FSharp.Data.Runtime.StructuralTypes
 
 let inferRowType preferOptionals missingValues cultureInfo headers row = 
 
+    let makeUnique = NameUtils.uniqueGenerator id
+
     let getName headers index = 
         if Array.isEmpty headers || String.IsNullOrWhiteSpace headers.[index]
         then "Column" + (index+1).ToString()
@@ -24,7 +26,7 @@ let inferRowType preferOptionals missingValues cultureInfo headers row =
                 if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
             else getInferedTypeFromString cultureInfo value None
 
-        { Name = getName headers index
+        { Name = getName headers index |> makeUnique
           Type = inferedtype }
     
     InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)
@@ -59,7 +61,7 @@ let inferHeaders (rows : string [][]) =
         let computeRowType row = 
             inferRowType false TextConversions.DefaultMissingValues CultureInfo.InvariantCulture [||] row
         let headerRow = computeRowType rows.[0]
-        let dataRow =  rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
+        let dataRow = rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
         if headerRow = dataRow
         then 0, [||]
         else 1, rows.[0]

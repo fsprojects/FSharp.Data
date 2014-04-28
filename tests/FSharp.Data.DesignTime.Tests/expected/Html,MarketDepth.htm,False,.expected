@@ -30,7 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member Table0: HtmlProvider+Table0 with get
+    member Table1: HtmlProvider+Table1 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Settlement Day", TextRuntime.ConvertDateTime("", value), value),
@@ -46,25 +46,25 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[8]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[9]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[10]))))
-    HtmlTable<_>.Create(rowConverter, this, "Table_0")
+    HtmlTable<_>.Create(rowConverter, this, "Table1")
 
 
-class HtmlProvider+Table0 : FDR.HtmlTable<HtmlProvider+Table0+Row>
+class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
 
-class HtmlProvider+Table0+Row : System.DateTime * int * decimal * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal>
-    member Accepted Bid Vol: System.Nullable<decimal> with get
+class HtmlProvider+Table1+Row : System.DateTime * int * decimal * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal>
+    member ``Accepted Bid Vol``: System.Nullable<decimal> with get
     (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7)
 
-    member Accepted Offer Vol: System.Nullable<decimal> with get
+    member ``Accepted Offer Vol``: System.Nullable<decimal> with get
     (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6)
 
-    member Bid Volume: System.Nullable<decimal> with get
+    member ``Bid Volume``: System.Nullable<decimal> with get
     (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5)
 
     member IMBALNGC: decimal with get
     (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3)
 
-    member Offer Volume: System.Nullable<decimal> with get
+    member ``Offer Volume``: System.Nullable<decimal> with get
     (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4)
 
     member PABV: System.Nullable<decimal> with get
@@ -76,7 +76,7 @@ class HtmlProvider+Table0+Row : System.DateTime * int * decimal * System.Nullabl
     member Period: int with get
     (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2)
 
-    member Settlement Day: System.DateTime with get
+    member ``Settlement Day``: System.DateTime with get
     (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1)
 
     member UABV: System.Nullable<decimal> with get

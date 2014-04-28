@@ -65,44 +65,54 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText
 
-    let private parseTable (index, nameSet) (table:HtmlNode) = 
+    let private parseTable includeLayoutTables (index, nameSet) (table:HtmlNode) = 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
-        if rows.Length <= 1 
-        then None
-        else
-            let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> (i,e)))
-            let width = (cells |> List.maxBy (fun x -> x.Length)).Length
-            let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
-            for rowindex, _ in rows do
-                for colindex, cell in cells.[rowindex] do
-                    let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue(0,Int32.TryParse,"colspan"))) - 1
-                    let data =
-                        let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlNode) -> x.InnerText)).Trim()
-                        match cell with
-                        | HtmlElement(_,"td", _, contents) -> Cell (false, getContents contents)
-                        | HtmlElement(_,"th", _, contents) -> Cell (true, getContents contents)
-                        | _ -> Empty
-                    let col_i = ref colindex
-                    while res.[rowindex].[!col_i] <> Empty do incr(col_i)
-                    for j in [!col_i..(!col_i + colSpan)] do
-                        for i in [rowindex..(rowindex + rowSpan)] do
-                            if i < rows.Length && j < width
-                            then res.[i].[j] <- data
+        
+        if rows.Length <= 1 then None else
 
-            let (startIndex, headers) = 
-                if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-                then 1, res.[0] |> Array.map (fun x -> x.Data)
-                else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
+        let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> (i,e)))
+        let width = (cells |> List.maxBy (fun x -> x.Length)).Length
+        
+        if width <= 1 && not includeLayoutTables then None else
+
+        let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
+        for rowindex, _ in rows do
+            for colindex, cell in cells.[rowindex] do
+                let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue(0,Int32.TryParse,"colspan"))) - 1
+                let data =
+                    let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlNode) -> x.InnerText)).Trim()
+                    match cell with
+                    | HtmlElement(_,"td", _, contents) -> Cell (false, getContents contents)
+                    | HtmlElement(_,"th", _, contents) -> Cell (true, getContents contents)
+                    | _ -> Empty
+                let col_i = ref colindex
+                while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
+                for j in [!col_i..(!col_i + colSpan)] do
+                    for i in [rowindex..(rowindex + rowSpan)] do
+                        if i < rows.Length && j < width
+                        then res.[i].[j] <- data
+
+        let startIndex, headers = 
+            if res.[0] |> Array.forall (fun r -> r.IsHeader) 
+            then 1, res.[0] |> Array.map (fun x -> x.Data)
+            else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
             
-            let headers = 
-                if headers.Length = 0
-                then res.[0] |> Array.mapi (fun i _ -> "Column" + (string i))
-                else headers
-                       
+        let headers = 
+            if headers.Length = 0
+            then Array.zeroCreate res.[0].Length
+            else headers
 
-            { Name = (getTableName ("Table_" + (string index)) nameSet table)
-              Headers = headers
-              Rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data)) } |> Some
+        let headers = headers |> Array.mapi (fun i header -> 
+            if String.IsNullOrWhiteSpace header
+            then sprintf "Column%d" (i + 1)
+            else header)
+
+        let tableName = getTableName (sprintf "Table%d" (index + 1)) nameSet table
+        let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
+
+        Some { Name = tableName
+               Headers = headers
+               Rows = rows }
 
     let getTables includeLayoutTables (doc:HtmlDocument) =
         let tableElements = 
@@ -114,7 +124,7 @@ module HtmlRuntime =
         let (_,_,tables) =
             tableElements
             |> List.fold (fun (index,names,tables) node -> 
-                            match parseTable (index,names) node with
+                            match parseTable includeLayoutTables (index,names) node with
                             | Some(table) -> 
                                 (index + 1, Set.add table.Name names, table::tables)
                             | None -> (index + 1, names, tables)

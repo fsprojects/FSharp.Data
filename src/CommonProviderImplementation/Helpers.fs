@@ -163,8 +163,8 @@ module ProviderHelpers =
         match tryGetUri sampleOrSampleUri with
         | None -> 
     
-            try lazy (parseFunc "" sampleOrSampleUri), false, false
-            with e -> failwithf "The provided sample is neither a file, nor a well-formed %s: %s" formatName e.Message
+            try parseFunc "" sampleOrSampleUri, false, false
+            with e -> failwithf "The provided sample is neither a file, nor well-formed %s: %s" formatName e.Message
     
         | Some uri ->
     
@@ -192,19 +192,19 @@ module ProviderHelpers =
                             value, true
                     else readText(), false
                     
-                lazy (parseFunc (Path.GetExtension uri.OriginalString) sample), true, isWeb
+                parseFunc (Path.GetExtension uri.OriginalString) sample, true, isWeb
     
             with e ->
     
                 if not uri.IsAbsoluteUri then
                     // even if it's a valid uri, it could be sample text
                     try 
-                        lazy (parseFunc "" sampleOrSampleUri), false, false
+                        parseFunc "" sampleOrSampleUri, false, false
                     with _ -> 
                         // if not, return the first exception
-                        failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+                        failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
                 else
-                    failwithf "Cannot read sample %s from %s: %s" formatName sampleOrSampleUri e.Message
+                    failwithf "Cannot read sample %s from '%s': %s" formatName sampleOrSampleUri e.Message
     
     // carries part of the information needed by generateType
     type TypeProviderSpec = 
@@ -266,7 +266,7 @@ module ProviderHelpers =
         // Infer the schema from a specified uri or inline text
         let typedSamples, sampleIsUri, sampleIsWebUri = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder fullTypeName
         
-        let spec = getSpecFromSamples typedSamples.Value
+        let spec = getSpecFromSamples typedSamples
         
         let resultType = spec.RepresentationType
         let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime

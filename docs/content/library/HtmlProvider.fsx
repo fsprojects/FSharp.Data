@@ -46,7 +46,7 @@ The following sample calls the `Load` method with an URL that points to a live m
 *)
  
 // Download the latest market depth information
-let mrktDepth = MarketDepth().Tables.Table0
+let mrktDepth = MarketDepth().Tables.Table1
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'

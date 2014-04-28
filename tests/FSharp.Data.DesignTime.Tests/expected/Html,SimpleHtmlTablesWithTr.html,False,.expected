@@ -40,7 +40,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertDecimal("", value), value))
     HtmlTable<_>.Create(rowConverter, this, "myTable")
 
-    member Table1: HtmlProvider+Table1 with get
+    member Table2: HtmlProvider+Table2 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
@@ -48,12 +48,12 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("CptyId", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table_1")
+    HtmlTable<_>.Create(rowConverter, this, "Table2")
 
 
 class HtmlProvider+MyTable : FDR.HtmlTable<HtmlProvider+MyTable+Row>
 
-class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
+class HtmlProvider+Table2 : FDR.HtmlTable<HtmlProvider+Table2+Row>
 
 class HtmlProvider+MyTable+Row : bool * int * decimal
     member Column1: bool with get
@@ -66,7 +66,7 @@ class HtmlProvider+MyTable+Row : bool * int * decimal
     (let _,t2,_ = this in t2)
 
 
-class HtmlProvider+Table1+Row : System.DateTime * int * decimal
+class HtmlProvider+Table2+Row : System.DateTime * int * decimal
     member CptyId: int with get
     (let _,t2,_ = this in t2)
 

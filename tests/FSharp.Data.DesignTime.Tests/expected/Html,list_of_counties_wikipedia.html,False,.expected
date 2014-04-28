@@ -91,7 +91,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "References and Notes [ edit ]")
 
 
@@ -104,25 +104,25 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit : FDR.HtmlTable<Ht
 class HtmlProvider+ReferencesAndNotesEdit : FDR.HtmlTable<HtmlProvider+ReferencesAndNotesEdit+Row>
 
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
-    member Area (km�) [ 3 ]: decimal with get
+    member ``Area (km�) [ 3 ]``: decimal with get
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
-    member Built-up area [ 3 ]: string with get
+    member ``Built-up area [ 3 ]``: string with get
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
-    member Density (People/km�) [ 3 ]: decimal with get
+    member ``Density (People/km�) [ 3 ]``: decimal with get
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
-    member Major subdivisions [ 3 ]: string with get
+    member ``Major subdivisions [ 3 ]``: string with get
     (let _,_,_,_,_,t6,_,_ = this in t6)
 
-    member Metropolitan Area [ 4 ] [ 5 ]: string with get
+    member ``Metropolitan Area [ 4 ] [ 5 ]``: string with get
     (let _,_,_,_,_,_,t7,_ = this in t7)
 
-    member Notable changes between 2001 and 2011 censuses [ 6 ]: string with get
+    member ``Notable changes between 2001 and 2011 censuses [ 6 ]``: string with get
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
-    member Population (2011 Census) [ 3 ]: decimal with get
+    member ``Population (2011 Census) [ 3 ]``: decimal with get
     (let _,_,t3,_,_,_,_,_ = this in t3)
 
     member Rank: int with get
@@ -130,56 +130,56 @@ class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int
 
 
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int * string * decimal * decimal * decimal * string * string
-    member Area (km�): decimal with get
+    member ``Area (km�)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
 
-    member Density (People/km�): decimal with get
+    member ``Density (People/km�)``: decimal with get
     (let _,_,_,_,t5,_,_ = this in t5)
 
-    member Major subdivisions: string with get
+    member ``Major subdivisions``: string with get
     (let _,_,_,_,_,t6,_ = this in t6)
 
-    member Metropolitan Area [ 4 ] [ 5 ]: string with get
+    member ``Metropolitan Area [ 4 ] [ 5 ]``: string with get
     (let _,_,_,_,_,_,t7 = this in t7)
 
-    member Population (2001 Census): decimal with get
+    member ``Population (2001 Census)``: decimal with get
     (let _,_,t3,_,_,_,_ = this in t3)
 
     member Rank: int with get
     (let t1,_,_,_,_,_,_ = this in t1)
 
-    member Urban Area [ 9 ]: string with get
+    member ``Urban Area [ 9 ]``: string with get
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string * decimal * decimal * decimal * string * string
-    member Area (km�): decimal with get
+    member ``Area (km�)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
 
-    member Density (People/km�): decimal with get
+    member ``Density (People/km�)``: decimal with get
     (let _,_,_,_,t5,_,_ = this in t5)
 
-    member Major subdivisions: string with get
+    member ``Major subdivisions``: string with get
     (let _,_,_,_,_,t6,_ = this in t6)
 
-    member Metropolitan Area [ 4 ] [ 5 ]: string with get
+    member ``Metropolitan Area [ 4 ] [ 5 ]``: string with get
     (let _,_,_,_,_,_,t7 = this in t7)
 
-    member Population (2001 Census): decimal with get
+    member ``Population (2001 Census)``: decimal with get
     (let _,_,t3,_,_,_,_ = this in t3)
 
     member Rank: int with get
     (let t1,_,_,_,_,_,_ = this in t1)
 
-    member Urban Area [ 8 ]: string with get
+    member ``Urban Area [ 8 ]``: string with get
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
 class HtmlProvider+ReferencesAndNotesEdit+Row : string * string
-    member v t e List of settlements in the United Kingdom: string with get
+    member ``v t e List of settlements in the United Kingdom``: string with get
     (let t1,_ = this in t1)
 
-    member v t e List of settlements in the United Kingdom: string with get
+    member ``v t e List of settlements in the United Kingdom2``: string with get
     (let _,t2 = this in t2)
 
 

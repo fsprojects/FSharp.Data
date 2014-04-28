@@ -132,7 +132,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     let throw() = 
       let msg = 
         sprintf 
-          "Invalid Json starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
+          "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
           i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) (if jsonText.Length > 1000 then jsonText.Substring(0, 1000) else jsonText)
       failwith msg
     let ensure cond = 
