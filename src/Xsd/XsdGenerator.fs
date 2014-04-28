@@ -390,21 +390,7 @@ module XsdBuilder =
 
                              createConstant("TargetNamespace",typeDeclaration.Schema.TargetNamespace)
                              ::createConstant("TypeName", typeDeclaration.Name)
-                             ::elements 
-                             |> List.map (
-                                  fun element -> 
-                                    match element with
-                                    (InferedTypeTag.Record(Some name),
-                                         (InferedMultiplicity.Single,
-                                            (InferedType.Record(Some n,
-                                                                  [{Name = ""
-                                                                    Type = InferedType.Collection(props)}],o)))) ->
-                                       (InferedTypeTag.Record(Some name),
-                                         (InferedMultiplicity.Single,
-                                            (InferedType.Record(Some n,
-                                                                  [{Name = ""
-                                                                    Type = InferedType.Collection(props)}],o)))) 
-                                    | e -> e    )
+                             ::elements
                          else
                               elements
                       let attributes = 
@@ -429,7 +415,7 @@ module XsdBuilder =
                       InferedType.Record(
                           Some n,
                             {Name = "";
-                              Type = InferedType.Collection(elements |> Map.ofList)}::attributes,false)
+                              Type = InferedType.Collection(elements |> List.map fst, elements |> Map.ofList)}::attributes,false)
                       
                  | _ -> failwithf "unknown type definition %s %s" (typeDeclaration.Name.ToString()) (typeDeclaration.GetType().Name)
           try

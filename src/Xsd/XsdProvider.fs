@@ -78,7 +78,7 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
             match samples with
             StructuralTypes.InferedType.Record(_) as t -> t
             | StructuralTypes.InferedType.Heterogeneous cases ->
-                 let t = StructuralTypes.InferedType.Collection(cases |> Map.map (fun _ v -> (StructuralTypes.InferedMultiplicity.Single, v)))
+                 let t = StructuralTypes.InferedType.Collection(cases |> Map.toList |> List.map fst, cases |> Map.map (fun _ v -> (StructuralTypes.InferedMultiplicity.Single, v)))
                  //If there's no top level type then wrap the types in a parent, this type won't be used
                  //We'll create a parse method for each individual type that can be used
                  StructuralTypes.InferedType.Record(Some "Schema",[{Name = "";
