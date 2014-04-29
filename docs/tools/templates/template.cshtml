@@ -7,12 +7,14 @@
     <meta name="description" content="@Description">
     <meta name="author" content="@Properties["project-author"]">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="@Root/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="@Root/content/fsdata.css" />
     <script type="text/javascript" src="@Root/content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -22,13 +24,14 @@
   <body>
     <div class="container">
       <div class="masthead">
-          <ul class="nav nav-pills pull-right">
-              <li><a href="http://fsharp.org">fsharp.org</a></li>
-              <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
-              <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
-              <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> F# R Type Provider</a></li>
-          </ul>
-        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a> <a href="@Root/ja/index.html">(Ja)</a></h3>
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> FSharp.Data.Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -41,31 +44,46 @@
           </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">@Properties["project-name"]</li>
+
+            <li class="nav-header">
+              <a href="@Root/ja/index.html" class="nflag"><img src="@Root/images/ja.png" /></a>
+              <a href="@Root/index.html" class="nflag nflag2"><img src="@Root/images/en.png" /></a>
+              @Properties["project-name"]
+            </li>
+
             <li class="divider"></li>
-            <li><a href="@Properties["project-nuget"]">Get Library via NuGet</a></li>
+
+            <li><a href="@Properties["project-nuget"]">Get @Properties["project-name"] package via NuGet</a></li>
             <li><a href="@Properties["project-github"]">Source Code on GitHub</a></li>
             <li><a href="@Properties["project-github"]/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="@Properties["project-github"]/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
-            <li><a href="@Root/contributing.html">Contributing to F# Data</a></li>
+            <li><a href="@Properties["project-github"]/blob/master/CONTRIBUTING.md">Contributing to @Properties["project-name"]</a></li>
             
-            <li class="nav-header">F# Data Library</li>
-            <li><a href="@Root">Introduction</a></li>
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="@Root/index.html">Introduction</a></li>
+
             <li class="divider"></li>
+
             <li><a href="@Root/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="@Root/library/XmlProvider.html">XML Type Provider</a></li>
             <li><a href="@Root/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="@Root/library/WorldBank.html">WorldBank Provider</a></li>
             <li><a href="@Root/library/Freebase.html">Freebase Provider</a></li>
+
             <li class="divider"></li>
+
             <li><a href="@Root/library/JsonValue.html">JSON Parser and Reader</a></li>
             <li><a href="@Root/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="@Root/library/Http.html">HTTP Utilities</a></li>
+
             <li class="nav-header">Tutorials</li>
+
             <li><a href="@Root/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
             <li><a href="@Root/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
 
             <li class="nav-header">Reference</li>
+
             <li><a href="@Root/reference/index.html">API Reference</a></li>
           </ul>
         </div>

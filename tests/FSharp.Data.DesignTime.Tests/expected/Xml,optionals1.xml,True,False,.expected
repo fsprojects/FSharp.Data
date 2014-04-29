@@ -24,6 +24,17 @@ class XmlProvider
 
 
 class XmlProvider+Item : FDR.XmlElement
+    new : title:string -> description:string option -> XmlProvider+Item
+    XmlRuntime.CreateRecord("item", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj))
+                               ("description",
+                                (description :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Item
+    XmlElement.Create(xElement)
+
     member Description: string option with get
     XmlRuntime.ConvertOptional2(this, "description", new Func<_,_>(fun (t:XmlElement) -> TextRuntime.ConvertString(XmlRuntime.TryGetValue(t))))
 

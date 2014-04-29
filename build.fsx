@@ -97,6 +97,10 @@ Target "CleanInternetCaches" <| fun () ->
 
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
+#if MONO
+#else
+    ++ "FSharp.Data.Portable7.sln"
+#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -106,11 +110,11 @@ Target "BuildTests" <| fun () ->
     |> ignore
 
 Target "BuildConsoleTests" <| fun () ->
-#if MONO
-    !! "TestApps.Console.Mono.sln" // excludes PCL7
-#else
     !! "TestApps.Console.sln"
-#endif
+//#if MONO
+//#else
+//    ++ "TestApps.Console.Portable7.sln"
+//#endif
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
@@ -162,9 +166,9 @@ Target "SourceLink" <| fun () ->
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 

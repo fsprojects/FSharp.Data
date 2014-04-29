@@ -1226,10 +1226,10 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Armed forces personnel, total: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("MS.MIL.TOTL.P1")
 
-    member Arms exports (constant 1990 US$): FDR.WorldBank.Indicator async with get
+    member Arms exports (SIPRI trend indicator values): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("MS.MIL.XPRT.KD")
 
-    member Arms imports (constant 1990 US$): FDR.WorldBank.Indicator async with get
+    member Arms imports (SIPRI trend indicator values): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("MS.MIL.MPRT.KD")
 
     member Automated teller machines (ATMs) (per 100,000 adults): FDR.WorldBank.Indicator async with get
@@ -1273,9 +1273,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member Average maturity on new external debt commitments, private (years): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.MAT.PRVT")
-
-    member Average number of times firms spent in meetings with tax officials: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IC.TAX.METG")
 
     member Average precipitation in depth (mm per year): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("AG.LND.PRCP.MM")
@@ -1940,7 +1937,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Documents to import (number): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.IMP.DOCS")
 
-    member Domestic credit provided by banking sector (% of GDP): FDR.WorldBank.Indicator async with get
+    member Domestic credit provided by financial sector (% of GDP): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FS.AST.DOMS.GD.ZS")
 
     member Domestic credit to private sector (% of GDP): FDR.WorldBank.Indicator async with get
@@ -1948,6 +1945,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member Domestic credit to private sector (% of GDP): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.DI.14")
+
+    member Domestic credit to private sector by banks (% of GDP): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("FD.AST.PRVT.GD.ZS")
 
     member Droughts, floods, extreme temperatures (% of population, average 1990-2009): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CLC.MDAT.ZS")
@@ -2057,23 +2057,41 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Employment in services (% of total employment): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.SRV.EMPL.ZS")
 
-    member Employment to population ratio, 15+, female (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, 15+, female (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.FE.ZS")
 
-    member Employment to population ratio, 15+, male (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, 15+, female (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.FE.NE.ZS")
+
+    member Employment to population ratio, 15+, male (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.MA.ZS")
 
-    member Employment to population ratio, 15+, total (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, 15+, male (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.MA.NE.ZS")
+
+    member Employment to population ratio, 15+, total (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.ZS")
 
-    member Employment to population ratio, ages 15-24, female (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, 15+, total (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.TOTL.SP.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, female (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.FE.ZS")
 
-    member Employment to population ratio, ages 15-24, male (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, ages 15-24, female (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.FE.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, male (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.MA.ZS")
 
-    member Employment to population ratio, ages 15-24, total (%): FDR.WorldBank.Indicator async with get
+    member Employment to population ratio, ages 15-24, male (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.MA.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, total (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.ZS")
+
+    member Employment to population ratio, ages 15-24, total (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.EMP.1524.SP.NE.ZS")
 
     member Energy imports, net (% of energy use): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.IMP.CONS.ZS")
@@ -2741,9 +2759,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.TDS.DIMF.CD")
 
-    member ISO certification ownership (% of firms): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IC.FRM.ISOC.ZS")
-
     member Immunization, DPT (% of children ages 12-23 months): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.IMM.IDPT")
 
@@ -2969,6 +2984,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member International tourism, receipts for travel items (current US$): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("ST.INT.TVLR.CD")
 
+    member Internationally-recognized quality certification (% of firms): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IC.FRM.ISOC.ZS")
+
     member Internet users (per 100 people): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IT.NET.USER.P2")
 
@@ -2990,22 +3008,49 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Investments financed by equity or stock sales (%): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AM.04")
 
-    member Labor force participation rate, female (% of female population ages 15-24): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate for ages 15-24, female (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.FE.ZS")
 
-    member Labor force participation rate, female (% of female population ages 15-64): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.FE.ZS")
+    member Labor force participation rate for ages 15-24, female (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.FE.NE.ZS")
 
-    member Labor force participation rate, male (% of male population ages 15-24): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate for ages 15-24, male (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.MA.ZS")
 
-    member Labor force participation rate, male (% of male population ages 15-64): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.MA.ZS")
+    member Labor force participation rate for ages 15-24, male (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.MA.NE.ZS")
 
-    member Labor force participation rate, total (% of total population ages 15-24): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate for ages 15-24, total (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.ZS")
 
-    member Labor force participation rate, total (% of total population ages 15-64): FDR.WorldBank.Indicator async with get
+    member Labor force participation rate for ages 15-24, total (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.1524.NE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15+) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.FE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15+) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.FE.NE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15-64) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.FE.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15+) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.MA.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15+) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.MA.NE.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15-64) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.MA.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15+) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.NE.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15-64) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.ACTI.ZS")
 
     member Labor force with primary education (% of total): FDR.WorldBank.Indicator async with get
@@ -3040,15 +3085,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member Labor force, total: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.TOTL.IN")
-
-    member Labor participation rate, female (% of female population ages 15+): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.FE.ZS")
-
-    member Labor participation rate, male (% of male population ages 15+): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.MA.ZS")
-
-    member Labor participation rate, total (% of total population ages 15+): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.ZS")
 
     member Labor tax and contributions (% of commercial profits): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.TAX.LABR.CP.ZS")
@@ -3194,6 +3230,15 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Low-birthweight babies (% of births): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.BRTW.ZS")
 
+    member Lower secondary completion rate, female (% of relevant age group): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SE.SEC.CMPT.LO.FE.ZS")
+
+    member Lower secondary completion rate, male (% of relevant age group): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SE.SEC.CMPT.LO.MA.ZS")
+
+    member Lower secondary completion rate, total (% of relevant age group): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SE.SEC.CMPT.LO.ZS")
+
     member Machinery and transport equipment (% of value added in manufacturing): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NV.MNF.MTRN.ZS.UN")
 
@@ -3217,9 +3262,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member Mammal species, threatened: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.MAM.THRD.NO")
-
-    member Management time dealing with officials (% of management time): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IC.GOV.DURS.ZS")
 
     member Manufactures exports (% of merchandise exports): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("TX.VAL.MANF.ZS.UN")
@@ -3773,6 +3815,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Number of under-five deaths: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.DTH.MORT")
 
+    member Number of visits or required meetings with tax officials: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IC.TAX.METG")
+
     member Nurses and midwives (per 1,000 people): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.MED.NUMW.P3")
 
@@ -4289,6 +4334,15 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Prevalence of overweight, male (% of children under 5): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.OWGH.MA.ZS")
 
+    member Prevalence of severe wasting, weight for height (% of children under 5): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SH.SVR.WAST.ZS")
+
+    member Prevalence of severe wasting, weight for height, female (% of children under 5): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SH.SVR.WAST.FE.ZS")
+
+    member Prevalence of severe wasting, weight for height, male (% of children under 5): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SH.SVR.WAST.MA.ZS")
+
     member Prevalence of undernourishment (% of population): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SN.ITK.DEFC.ZS")
 
@@ -4451,8 +4505,11 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Railways, passengers carried (million passenger-km): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IS.RRS.PASG.KM")
 
-    member Ratio of female to male labor force participation rate (%): FDR.WorldBank.Indicator async with get
+    member Ratio of female to male labor force participation rate (%) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.FM.ZS")
+
+    member Ratio of female to male labor force participation rate (%) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.TLF.CACT.FM.NE.ZS")
 
     member Ratio of female to male primary enrollment (%): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.ENR.PRIM.FM.ZS")
@@ -4943,6 +5000,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Time required to start a business (days): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.REG.DURS")
 
+    member Time spent dealing with the requirements of government regulations (% of senior management time): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IC.GOV.DURS.ZS")
+
     member Time to export (days): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.EXP.DURS")
 
@@ -5084,23 +5144,41 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Unemployment with tertiary education, male (% of male unemployment): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.TERT.MA.ZS")
 
-    member Unemployment, female (% of female labor force): FDR.WorldBank.Indicator async with get
+    member Unemployment, female (% of female labor force) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.FE.ZS")
 
-    member Unemployment, male (% of male labor force): FDR.WorldBank.Indicator async with get
+    member Unemployment, female (% of female labor force) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.FE.NE.ZS")
+
+    member Unemployment, male (% of male labor force) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.MA.ZS")
 
-    member Unemployment, total (% of total labor force): FDR.WorldBank.Indicator async with get
+    member Unemployment, male (% of male labor force) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.MA.NE.ZS")
+
+    member Unemployment, total (% of total labor force) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.ZS")
 
-    member Unemployment, youth female (% of female labor force ages 15-24): FDR.WorldBank.Indicator async with get
+    member Unemployment, total (% of total labor force) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.TOTL.NE.ZS")
+
+    member Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.FE.ZS")
 
-    member Unemployment, youth male (% of male labor force ages 15-24): FDR.WorldBank.Indicator async with get
+    member Unemployment, youth female (% of female labor force ages 15-24) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.FE.NE.ZS")
+
+    member Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.MA.ZS")
 
-    member Unemployment, youth total (% of total labor force ages 15-24): FDR.WorldBank.Indicator async with get
+    member Unemployment, youth male (% of male labor force ages 15-24) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.MA.NE.ZS")
+
+    member Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.ZS")
+
+    member Unemployment, youth total (% of total labor force ages 15-24) (national estimate): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.1524.NE.ZS")
 
     member Unmet need for contraception (% of married women ages 15-49): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.UWT.TFRT")
@@ -5185,6 +5263,24 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member Wholesale price index (2005 = 100): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FP.WPI.TOTL")
+
+    member Women who believe a husband is justified in beating his wife (any of five reasons) (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.REAS.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she argues with him (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.ARGU.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she burns the food (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.BURN.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she goes out without telling him (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.GOES.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she neglects the children (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.NEGL.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she refuses sex with him (%): FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SG.VAW.REFU.ZS")
 
     member Women's share of population ages 15+ living with HIV (%): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.DYN.AIDS.FE.ZS")
@@ -5452,10 +5548,10 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Armed forces personnel, total: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("MS.MIL.TOTL.P1")
 
-    member Arms exports (constant 1990 US$): FDR.WorldBank.IndicatorDescription with get
+    member Arms exports (SIPRI trend indicator values): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("MS.MIL.XPRT.KD")
 
-    member Arms imports (constant 1990 US$): FDR.WorldBank.IndicatorDescription with get
+    member Arms imports (SIPRI trend indicator values): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("MS.MIL.MPRT.KD")
 
     member Automated teller machines (ATMs) (per 100,000 adults): FDR.WorldBank.IndicatorDescription with get
@@ -5499,9 +5595,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Average maturity on new external debt commitments, private (years): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.MAT.PRVT")
-
-    member Average number of times firms spent in meetings with tax officials: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IC.TAX.METG")
 
     member Average precipitation in depth (mm per year): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("AG.LND.PRCP.MM")
@@ -6166,7 +6259,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Documents to import (number): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.IMP.DOCS")
 
-    member Domestic credit provided by banking sector (% of GDP): FDR.WorldBank.IndicatorDescription with get
+    member Domestic credit provided by financial sector (% of GDP): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FS.AST.DOMS.GD.ZS")
 
     member Domestic credit to private sector (% of GDP): FDR.WorldBank.IndicatorDescription with get
@@ -6174,6 +6267,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Domestic credit to private sector (% of GDP): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.14")
+
+    member Domestic credit to private sector by banks (% of GDP): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("FD.AST.PRVT.GD.ZS")
 
     member Droughts, floods, extreme temperatures (% of population, average 1990-2009): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CLC.MDAT.ZS")
@@ -6283,23 +6379,41 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Employment in services (% of total employment): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.SRV.EMPL.ZS")
 
-    member Employment to population ratio, 15+, female (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, 15+, female (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.FE.ZS")
 
-    member Employment to population ratio, 15+, male (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, 15+, female (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.FE.NE.ZS")
+
+    member Employment to population ratio, 15+, male (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.MA.ZS")
 
-    member Employment to population ratio, 15+, total (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, 15+, male (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.MA.NE.ZS")
+
+    member Employment to population ratio, 15+, total (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.ZS")
 
-    member Employment to population ratio, ages 15-24, female (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, 15+, total (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.TOTL.SP.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, female (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.FE.ZS")
 
-    member Employment to population ratio, ages 15-24, male (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, ages 15-24, female (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.FE.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, male (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.MA.ZS")
 
-    member Employment to population ratio, ages 15-24, total (%): FDR.WorldBank.IndicatorDescription with get
+    member Employment to population ratio, ages 15-24, male (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.MA.NE.ZS")
+
+    member Employment to population ratio, ages 15-24, total (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.ZS")
+
+    member Employment to population ratio, ages 15-24, total (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.1524.SP.NE.ZS")
 
     member Energy imports, net (% of energy use): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.IMP.CONS.ZS")
@@ -6967,9 +7081,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member IMF repurchases and charges (TDS, current US$): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.TDS.DIMF.CD")
 
-    member ISO certification ownership (% of firms): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IC.FRM.ISOC.ZS")
-
     member Immunization, DPT (% of children ages 12-23 months): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.IMM.IDPT")
 
@@ -7195,6 +7306,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member International tourism, receipts for travel items (current US$): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("ST.INT.TVLR.CD")
 
+    member Internationally-recognized quality certification (% of firms): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IC.FRM.ISOC.ZS")
+
     member Internet users (per 100 people): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IT.NET.USER.P2")
 
@@ -7216,22 +7330,49 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Investments financed by equity or stock sales (%): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AM.04")
 
-    member Labor force participation rate, female (% of female population ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate for ages 15-24, female (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.FE.ZS")
 
-    member Labor force participation rate, female (% of female population ages 15-64): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.FE.ZS")
+    member Labor force participation rate for ages 15-24, female (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.FE.NE.ZS")
 
-    member Labor force participation rate, male (% of male population ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate for ages 15-24, male (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.MA.ZS")
 
-    member Labor force participation rate, male (% of male population ages 15-64): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.MA.ZS")
+    member Labor force participation rate for ages 15-24, male (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.MA.NE.ZS")
 
-    member Labor force participation rate, total (% of total population ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate for ages 15-24, total (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.ZS")
 
-    member Labor force participation rate, total (% of total population ages 15-64): FDR.WorldBank.IndicatorDescription with get
+    member Labor force participation rate for ages 15-24, total (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.1524.NE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15+) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.FE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15+) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.FE.NE.ZS")
+
+    member Labor force participation rate, female (% of female population ages 15-64) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.FE.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15+) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.MA.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15+) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.MA.NE.ZS")
+
+    member Labor force participation rate, male (% of male population ages 15-64) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.MA.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15+) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15+) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.NE.ZS")
+
+    member Labor force participation rate, total (% of total population ages 15-64) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.ACTI.ZS")
 
     member Labor force with primary education (% of total): FDR.WorldBank.IndicatorDescription with get
@@ -7266,15 +7407,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Labor force, total: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.TOTL.IN")
-
-    member Labor participation rate, female (% of female population ages 15+): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.FE.ZS")
-
-    member Labor participation rate, male (% of male population ages 15+): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.MA.ZS")
-
-    member Labor participation rate, total (% of total population ages 15+): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.ZS")
 
     member Labor tax and contributions (% of commercial profits): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.TAX.LABR.CP.ZS")
@@ -7420,6 +7552,15 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Low-birthweight babies (% of births): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BRTW.ZS")
 
+    member Lower secondary completion rate, female (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.CMPT.LO.FE.ZS")
+
+    member Lower secondary completion rate, male (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.CMPT.LO.MA.ZS")
+
+    member Lower secondary completion rate, total (% of relevant age group): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.CMPT.LO.ZS")
+
     member Machinery and transport equipment (% of value added in manufacturing): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NV.MNF.MTRN.ZS.UN")
 
@@ -7443,9 +7584,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Mammal species, threatened: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.MAM.THRD.NO")
-
-    member Management time dealing with officials (% of management time): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IC.GOV.DURS.ZS")
 
     member Manufactures exports (% of merchandise exports): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("TX.VAL.MANF.ZS.UN")
@@ -7999,6 +8137,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Number of under-five deaths: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.DTH.MORT")
 
+    member Number of visits or required meetings with tax officials: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IC.TAX.METG")
+
     member Nurses and midwives (per 1,000 people): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.MED.NUMW.P3")
 
@@ -8515,6 +8656,15 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Prevalence of overweight, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.OWGH.MA.ZS")
 
+    member Prevalence of severe wasting, weight for height (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SH.SVR.WAST.ZS")
+
+    member Prevalence of severe wasting, weight for height, female (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SH.SVR.WAST.FE.ZS")
+
+    member Prevalence of severe wasting, weight for height, male (% of children under 5): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SH.SVR.WAST.MA.ZS")
+
     member Prevalence of undernourishment (% of population): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SN.ITK.DEFC.ZS")
 
@@ -8677,8 +8827,11 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Railways, passengers carried (million passenger-km): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IS.RRS.PASG.KM")
 
-    member Ratio of female to male labor force participation rate (%): FDR.WorldBank.IndicatorDescription with get
+    member Ratio of female to male labor force participation rate (%) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.FM.ZS")
+
+    member Ratio of female to male labor force participation rate (%) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.CACT.FM.NE.ZS")
 
     member Ratio of female to male primary enrollment (%): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.ENR.PRIM.FM.ZS")
@@ -9169,6 +9322,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Time required to start a business (days): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.REG.DURS")
 
+    member Time spent dealing with the requirements of government regulations (% of senior management time): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IC.GOV.DURS.ZS")
+
     member Time to export (days): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.EXP.DURS")
 
@@ -9310,23 +9466,41 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member Unemployment with tertiary education, male (% of male unemployment): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TERT.MA.ZS")
 
-    member Unemployment, female (% of female labor force): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, female (% of female labor force) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.FE.ZS")
 
-    member Unemployment, male (% of male labor force): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, female (% of female labor force) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.FE.NE.ZS")
+
+    member Unemployment, male (% of male labor force) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.MA.ZS")
 
-    member Unemployment, total (% of total labor force): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, male (% of male labor force) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.MA.NE.ZS")
+
+    member Unemployment, total (% of total labor force) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.ZS")
 
-    member Unemployment, youth female (% of female labor force ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, total (% of total labor force) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.TOTL.NE.ZS")
+
+    member Unemployment, youth female (% of female labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.FE.ZS")
 
-    member Unemployment, youth male (% of male labor force ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, youth female (% of female labor force ages 15-24) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.FE.NE.ZS")
+
+    member Unemployment, youth male (% of male labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.MA.ZS")
 
-    member Unemployment, youth total (% of total labor force ages 15-24): FDR.WorldBank.IndicatorDescription with get
+    member Unemployment, youth male (% of male labor force ages 15-24) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.MA.NE.ZS")
+
+    member Unemployment, youth total (% of total labor force ages 15-24) (modeled ILO estimate): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.ZS")
+
+    member Unemployment, youth total (% of total labor force ages 15-24) (national estimate): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.1524.NE.ZS")
 
     member Unmet need for contraception (% of married women ages 15-49): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.UWT.TFRT")
@@ -9411,6 +9585,24 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Wholesale price index (2005 = 100): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FP.WPI.TOTL")
+
+    member Women who believe a husband is justified in beating his wife (any of five reasons) (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.REAS.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she argues with him (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.ARGU.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she burns the food (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.BURN.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she goes out without telling him (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.GOES.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she neglects the children (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.NEGL.ZS")
+
+    member Women who believe a husband is justified in beating his wife when she refuses sex with him (%): FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SG.VAW.REFU.ZS")
 
     member Women's share of population ages 15+ living with HIV (%): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.DYN.AIDS.FE.ZS")

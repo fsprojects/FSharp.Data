@@ -11,9 +11,6 @@ open System.IO
 open System.Net
 open ProviderImplementation
 
-//alow test cases that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-
 let (++) a b = Path.Combine(a, b)
 let resolutionFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.Tests" ++ "Data"
 let outputFolder = __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "expected"
@@ -30,25 +27,27 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
     inst.Dump resolutionFolder (if saveToFileSystem then outputFolder else "") runtimeAssembly signatureOnly ignoreOutput
     |> Console.WriteLine
 
-let dumpNet40 = dump false false Net40
-let dumpPortable47 = dump false false Portable47
+let dumpAll inst = 
+    dump false false Net40 false inst
+    dump false false Portable7 false inst
+    dump false false Portable47 false inst
 
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
        ResolutionFolder = "" }
-|> dumpPortable47 false
+|> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
       ResolutionFolder = "" }
-|> dumpPortable47 false
+|> dumpAll
 
 Csv { Sample = "AirQuality.csv"
-      Separator = ";" 
+      Separators = ";" 
       Culture = "" 
       InferRows = Int32.MaxValue
       Schema = ""
@@ -60,7 +59,7 @@ Csv { Sample = "AirQuality.csv"
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
       ResolutionFolder = "" }
-|> dumpPortable47 false
+|> dumpAll
 
 let testCases = 
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
@@ -68,4 +67,4 @@ let testCases =
     |> Array.map TypeProviderInstantiation.Parse
 
 for testCase in testCases do
-    dumpNet40 true testCase
+    dump false false Net40 true testCase

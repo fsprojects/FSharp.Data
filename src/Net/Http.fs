@@ -502,8 +502,8 @@ module private Helpers =
         memoryStream
 #endif
 
-    let toHttpResponse forceText responseUrl statusCode contentType contentEncoding
-                       characterSet responseEncodingOverride cookies headers stream = async {
+    let toHttpResponse forceText responseUrl statusCode contentType characterSet
+                       responseEncodingOverride cookies headers (memoryStream:MemoryStream) = async {
 
         let isText (mimeType:string) =
             let isText (mimeType:string) =
@@ -517,15 +517,6 @@ module private Helpers =
                 mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
-
-        use stream = stream
-        let! memoryStream = asyncRead stream
-
-        let memoryStream = 
-            // this only applies when automatic decompression is off
-            if contentEncoding = "gzip" then decompressGZip memoryStream
-            elif contentEncoding = "deflate" then decompressDeflate memoryStream
-            else memoryStream
 
         let respBody = 
             if forceText || isText contentType then
@@ -653,9 +644,17 @@ type Http private() =
                 then "" 
                 else defaultArg (Map.tryFind HttpResponseHeaders.ContentEncoding headers) ""
 
-            let stream = resp.GetResponseStream()
+            use stream = resp.GetResponseStream()
+            let! memoryStream = asyncRead stream
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            let memoryStream = 
+                // this only applies when automatic decompression is off
+                if contentEncoding = "gzip" then decompressGZip memoryStream
+                elif contentEncoding = "deflate" then decompressDeflate memoryStream
+                else memoryStream
+
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType characterSet
+                                   responseEncodingOverride cookies headers memoryStream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
@@ -687,19 +686,7 @@ type Http private() =
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
     static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
-        let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
-            let! stream = async {
-                // this only applies when automatic decompression is off
-                if contentEncoding = "gzip" then 
-                    use stream = stream
-                    let! memoryStream = asyncRead stream
-                    return decompressGZip memoryStream :> Stream
-                elif contentEncoding = "deflate" then 
-                    use stream = stream
-                    let! memoryStream = asyncRead stream
-                    return decompressDeflate memoryStream :> Stream
-                else
-                    return stream }
+        let toHttpResponse responseUrl statusCode _contentType _characterSet _responseEncodingOverride cookies headers stream = async {
             return { ResponseStream = stream
                      StatusCode = statusCode
                      ResponseUrl = responseUrl

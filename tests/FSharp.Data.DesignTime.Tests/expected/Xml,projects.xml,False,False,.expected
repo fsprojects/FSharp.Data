@@ -24,6 +24,17 @@ class XmlProvider
 
 
 class XmlProvider+Ordercontainer : FDR.XmlElement
+    new : backgrounds:XmlProvider+Backgrounds -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
+    XmlRuntime.CreateRecord("ordercontainer", 
+                            [| |], 
+                            [| ("backgrounds",
+                                (backgrounds :> obj))
+                               ("project",
+                                (project :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Ordercontainer
+    XmlElement.Create(xElement)
+
     member Backgrounds: XmlProvider+Backgrounds with get
     XmlRuntime.GetChild(this, "backgrounds")
 
@@ -32,17 +43,44 @@ class XmlProvider+Ordercontainer : FDR.XmlElement
 
 
 class XmlProvider+Backgrounds : FDR.XmlElement
+    new : background:XmlProvider+Background -> XmlProvider+Backgrounds
+    XmlRuntime.CreateRecord("backgrounds", 
+                            [| |], 
+                            [| ("background",
+                                (background :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Backgrounds
+    XmlElement.Create(xElement)
+
     member Background: XmlProvider+Background with get
     XmlRuntime.GetChild(this, "background")
 
 
 class XmlProvider+Project : FDR.XmlElement
+    new : title:string -> XmlProvider+Project
+    XmlRuntime.CreateRecord("project", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
+    XmlElement.Create(xElement)
+
     member Title: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
 class XmlProvider+Background : FDR.XmlElement
+    new : title:string -> XmlProvider+Background
+    XmlRuntime.CreateRecord("background", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Background
+    XmlElement.Create(xElement)
+
     member Title: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)

@@ -140,6 +140,14 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         | 'n' -> parseLiteral("null", JsonValue.Null)
         | _ -> throw()
 
+    and parseRootValue() =
+        skipWhitespace()
+        ensure(i < s.Length)
+        match s.[i] with
+        | '{' -> parseObject()
+        | '[' -> parseArray()
+        | _ -> throw()
+
     and parseString() =
         ensure(i < s.Length && s.[i] = '"')
         i <- i + 1
@@ -193,7 +201,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             | _ -> throw()
 
     and parsePair() =
-        let key = parseString().Trim('"')
+        let key = parseString()
         skipWhitespace()
         ensure(i < s.Length && s.[i] = ':')
         i <- i + 1
@@ -263,7 +271,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
 
     // Start by parsing the top-level value
     member x.Parse() = 
-        let value = parseValue()
+        let value = parseRootValue()
         skipWhitespace()
         if i <> s.Length then
             throw()
@@ -272,7 +280,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     member x.ParseMultiple() = 
         seq {
             while i <> s.Length do
-                yield parseValue()
+                yield parseRootValue()
                 skipWhitespace() 
         }
 

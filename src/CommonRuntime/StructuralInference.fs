@@ -9,7 +9,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
 /// [omit]
-module Seq = 
+module List = 
     /// Merge two sequences by pairing elements for which
     /// the specified predicate returns the same key
     ///
@@ -123,7 +123,7 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
   | InferedType.Record(n1, t1, o1), InferedType.Record(n2, t2, o2) when n1 = n2 -> InferedType.Record(n1, unionRecordTypes allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Json(t1, o1), InferedType.Json(t2, o2) -> InferedType.Json(subtypeInfered allowEmptyValues t1 t2, o1 || o2)
   | InferedType.Heterogeneous t1, InferedType.Heterogeneous t2 -> InferedType.Heterogeneous(unionHeterogeneousTypes allowEmptyValues t1 t2)
-  | InferedType.Collection t1, InferedType.Collection t2 -> InferedType.Collection(unionCollectionTypes allowEmptyValues t1 t2)
+  | InferedType.Collection(o1, t1), InferedType.Collection(o2, t2) -> InferedType.Collection(unionCollectionOrder o1 o2, unionCollectionTypes allowEmptyValues t1 t2)
   
   // Top type can be merged with anything else
   | t, InferedType.Top | InferedType.Top, t -> t
@@ -147,23 +147,23 @@ let rec subtypeInfered allowEmptyValues ot1 ot2 =
 /// Heterogeneous types already handle optionality on their own, so we drop
 /// optionality from all its inner types
 and private unionHeterogeneousTypes allowEmptyValues cases1 cases2 =
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, t)), None 
       | tag, None, Some (KeyValue(_, t)) -> tag, t.DropOptionality()
       | tag, Some (KeyValue(_, t1)), Some (KeyValue(_, t2)) -> 
           tag, (subtypeInfered allowEmptyValues t1 t2).DropOptionality()
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
 
 /// A collection can contain multiple types - in that case, we do keep 
 /// the multiplicity for each different type tag to generate better types
 /// (this is essentially the same as `unionHeterogeneousTypes`, but 
 /// it also handles the multiplicity)
 and private unionCollectionTypes allowEmptyValues cases1 cases2 = 
-  Seq.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
-  |> Seq.map (fun (tag, fst, snd) ->
+  List.pairBy (fun (KeyValue(k, _)) -> k) cases1 cases2 
+  |> List.map (fun (tag, fst, snd) ->
       match tag, fst, snd with
       | tag, Some (KeyValue(_, (m, t))), None 
       | tag, None, Some (KeyValue(_, (m, t))) -> 
@@ -182,14 +182,17 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
           let t = if m <> Single then t.DropOptionality() else t
           tag, (m, t)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
-  |> Map.ofSeq
+  |> Map.ofList
+
+and unionCollectionOrder order1 order2 =
+    order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
 
 /// Get the union of record types (merge their properties)
 /// This matches the corresponding members and marks them as `Optional`
 /// if one may be missing. It also returns subtype of their types.
 and unionRecordTypes allowEmptyValues t1 t2 =
-  Seq.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
-  |> Seq.map (fun (name, fst, snd) ->
+  List.pairBy (fun (p:InferedProperty) -> p.Name) t1 t2
+  |> List.map (fun (name, fst, snd) ->
       match fst, snd with
       // If one is missing, return the other, but optional
       | Some p, None | None, Some p -> { p with Type = subtypeInfered allowEmptyValues p.Type InferedType.Null }
@@ -201,17 +204,18 @@ and unionRecordTypes allowEmptyValues t1 t2 =
           { InferedProperty.Name = name
             Type = subtypeInfered allowEmptyValues p1.Type p2.Type }
       | _ -> failwith "unionRecordTypes: pairBy returned None, None")
-  |> List.ofSeq
 
 /// Infer the type of the collection based on multiple sample types
 /// (group the types by tag, count their multiplicity)
 let inferCollectionType allowEmptyValues types = 
-  types 
-  |> Seq.groupBy typeTag
-  |> Seq.map (fun (tag, types) ->
-      let multiple = if Seq.length types > 1 then Multiple else Single
-      tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types) )
-  |> Map.ofSeq |> InferedType.Collection
+  let groupedTypes =
+      types 
+      |> Seq.groupBy typeTag
+      |> Seq.map (fun (tag, types) ->
+          let multiple = if Seq.length types > 1 then Multiple else Single
+          tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types))
+      |> Seq.toList
+  InferedType.Collection (List.map fst groupedTypes, Map.ofList groupedTypes)
 
 [<AutoOpen>]
 module private Helpers =
