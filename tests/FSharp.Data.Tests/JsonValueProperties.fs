@@ -79,11 +79,22 @@ type Generators =
                 | _ -> Seq.empty }
      
 
-let parseStringified (json: JsonValue) = 
-    json.ToString(JsonSaveOptions.DisableFormatting)    
-    |> JsonValue.Parse = json
+[<TestFixtureSetUp>]
+let fixtureSetup() =
+    Arb.register<Generators>() |> ignore
 
 [<Test>]
 let  ``Parsing stringified JsonValue returns the same value`` () =
-    Arb.register<Generators>() |> ignore
+    let parseStringified (json: JsonValue) = 
+        json.ToString(JsonSaveOptions.DisableFormatting)    
+        |> JsonValue.Parse = json
     Check.QuickThrowOnFailure parseStringified
+
+[<Test>]
+let ``Stringifing parsed JsonValue string should return the same string`` () =
+    let stringifyParsed (s : string) =
+        match JsonValue.Parse <| s.Trim() with
+        | JsonValue.String _ as sv -> sv.ToString(JsonSaveOptions.DisableFormatting) = s
+        | _ -> false
+    let jsonStringArb = Arb.fromGen (Arb.generate<string> |> Gen.suchThat (Seq.toList >> isValidJsonString) |> Gen.map (sprintf "\"%A\""))
+    Check.QuickThrowOnFailure (Prop.forAll jsonStringArb stringifyParsed)
