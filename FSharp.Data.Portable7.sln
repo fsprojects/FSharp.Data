@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30324.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Portable7", "src\FSharp.Data.Portable7.fsproj", "{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37D0B998-66DF-42E4-942B-52FEE0C7A3ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

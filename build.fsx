@@ -97,6 +97,10 @@ Target "CleanInternetCaches" <| fun () ->
 
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
+#if MONO
+#else
+    ++ "FSharp.Data.Portable7.sln"
+#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -106,12 +110,11 @@ Target "BuildTests" <| fun () ->
     |> ignore
 
 Target "BuildConsoleTests" <| fun () ->
-#if MONO
-    !! "TestApps.Console.Mono.sln" // excludes PCL7
-#else
-    //!! "TestApps.Console.sln"
-    !! "TestApps.Console.Mono.sln" // excludes PCL7
-#endif
+    !! "TestApps.Console.sln"
+//#if MONO
+//#else
+//    ++ "TestApps.Console.Portable7.sln"
+//#endif
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
