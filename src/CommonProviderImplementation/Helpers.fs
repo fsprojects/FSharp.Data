@@ -169,13 +169,15 @@ module ProviderHelpers =
         static member ReadResource(referencedAssemblies, resourceName:string) =
             match resourceName.Split(',') with
             | [| asmName; name |] ->
-                let domain = AppDomain.CreateDomain "Embedded Resource Reader"
                 try 
-                    let reader = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location,
-                                                                    typeof<EmbeddedResourceReader>.FullName) :?> EmbeddedResourceReader
-                    reader.ReadResource(referencedAssemblies, asmName.Trim(), name.Trim())
-                finally
-                    AppDomain.Unload domain
+                    let domain = AppDomain.CreateDomain "Embedded Resource Reader"
+                    try
+                        let reader = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location,
+                                                                        typeof<EmbeddedResourceReader>.FullName) :?> EmbeddedResourceReader
+                        reader.ReadResource(referencedAssemblies, asmName.Trim(), name.Trim())
+                    finally
+                        AppDomain.Unload domain
+                with _ -> None
             | _ -> None
 
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
