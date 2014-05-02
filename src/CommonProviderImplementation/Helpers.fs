@@ -138,7 +138,7 @@ module ProviderHelpers =
     
     let(|Url|_|) str =
         match Uri.TryCreate(str, UriKind.Absolute) with
-        | (true, url) when url.Scheme = Uri.UriSchemeHttp || url.Scheme = Uri.UriSchemeHttps -> Some(url)
+        | (true, url) when url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) -> Some(url)
         | _ -> None
       
     let isValidUrl str = 

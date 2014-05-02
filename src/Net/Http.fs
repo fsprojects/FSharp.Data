@@ -15,6 +15,7 @@ open System.Runtime.CompilerServices
 open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 
+
 /// The method to use in an HTTP request
 module HttpMethod =
     /// Request information about the communication options available on the request/response chain identified by the URI
@@ -258,6 +259,11 @@ module HttpContentTypes =
     let [<Literal>] Csv = "text/csv"
 
 type private HeaderEnum = System.Net.HttpRequestHeader
+
+// This is used to collect and consolidate credential handling into one place.
+// Maybe there should be a well defined, public way to collect various credentials
+// for further consumption.
+type private Credential = { Uri:Uri; Type:String; Credentials:NetworkCredential }
 
 [<AutoOpen>]
 module private Helpers =
@@ -558,34 +564,68 @@ type Http private() =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
-    
+   
+        // Registers all authentication modules. Currently this re-registers Basic Auth so that it will use UTF-8 encoding
+        // instead of something defined in system page settings.
         registerAllAuthenticationModules()
 
-        // TODO: Doing this like here isn't ideal. Instead, it seems like an approach where the user/programmer defines which credentials should be added
-        // to the cache should be preferred. It could be in that case the type provider interface should expose a method to add directly credentials
-        // either implementing ICredential or inheriting from NetworkCredential.
-        let createCredentialCache(authUri, userName:string, password:SecureString) =             
-            // The given credentials will be added to the cache with both HTTP Basic Authentication and Digest methods
-            // and the the software stacks will negotiate the appropriate authorization method.
-            let cc = new CredentialCache()
-            cc.Add(authUri, "BASIC", new NetworkCredential(UserName = userName, SecurePassword = password))
-            cc.Add(authUri, "DIGEST", new NetworkCredential(UserName = userName, SecurePassword = password))
-            cc
-            
-        let createRequestWithCredentials(uri:Uri, credentials:CredentialCache) = 
-            // PreAuthenticate is set in order to reduce the number of authorization headers sent when making several requests to the same URI.
-            let client = WebRequest.Create(uri) :?> HttpWebRequest
-            client.Credentials <- credentials
-            client.PreAuthenticate <- true
-            client
+        // The idea is to collect the system and user supplied credentials here and process them accordingly.
+        let credentials = new ResizeArray<Credential>()
 
-        // do not use WebRequest.CreateHttp otherwise silverlight proxies don't work
-        let createRequest(uri:Uri) = 
-            match uri.UserInfo.Split([|':'|]) with
-            | [|userName; password|] -> createRequestWithCredentials(uri |> removeQueryPart, createCredentialCache(uri |> removeAuthorizationPart |> removeQueryPart, userName, password |> toSecureString))
-            | _ ->  WebRequest.Create(uri) :?> HttpWebRequest
+        // These are some helper methods that are also defined in UriUtils.fs. These ought to gathered into on place.
+        let(|Url|_|) str =
+            match Uri.TryCreate(str, UriKind.Absolute) with
+            | (true, url) when url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) -> Some(url)
+            | _ -> None
+      
+        let isValidUrl str = 
+            match str with
+            | Url _ -> true
+            | _ -> false
+
+        let hasAuthorizationPart url =
+            if isValidUrl url then
+                match(new Uri(url)).UserInfo.Split([|':'|]) with
+                | [|_; _|] -> true
+                | _ -> false
+            else
+                false      
     
-        let req = createRequest uri
+        let hasUrlAuthorizationPart = hasAuthorizationPart url
+        if hasUrlAuthorizationPart then
+            let authUrl = new Uri(url)
+            let authParts = authUrl.UserInfo.Split([|':'|])
+            credentials.Add({ Uri = authUrl; Type = AuthenticationUtils.BasicAuthType; Credentials = new NetworkCredential(authParts.[0], authParts.[1]) })
+            credentials.Add({ Uri = authUrl; Type = AuthenticationUtils.DigestAuthType; Credentials = new NetworkCredential(authParts.[0], authParts.[1]) })
+       
+        let applyAuthorizations(request:HttpWebRequest, credentials:seq<Credential>) =
+            if not (Seq.isEmpty credentials) then
+#if FX_NO_WEBREQUEST_AUTH
+                // Apparently there can be only one set of credentials enforced at a time in portable libraries.
+                // And there are also other inconsistencies regarding PreAuthenticate, for instance.
+                // Maybe the features are reachable via reflection as exempliefied at
+                // https://stackoverflow.com/questions/14531837/replacement-for-preauthenticate-in-portable-class-libraries .
+                request.Credentials <- (credentials |> Seq.head).Credentials
+                request.UseDefaultCredentials <- false
+#else
+                let credentialCache = new System.Net.CredentialCache()
+                credentials |> Seq.iter(fun c -> credentialCache.Add(c.Uri, c.Type, c.Credentials))
+                request.Credentials <- credentialCache
+#endif
+
+        let createRequestAndApplyCredentials(uri:Uri, credentials:seq<Credential>) = 
+            let request = WebRequest.Create(uri) :?> HttpWebRequest
+
+#if FX_NO_WEBREQUEST_AUTH
+#else
+            // TODO: Should these be exposed to users?
+            request.PreAuthenticate <- true
+            request.AllowAutoRedirect <- true
+#endif
+            applyAuthorizations(request, credentials)
+            request
+            
+        let req = createRequestAndApplyCredentials(uri, credentials)       
 
         // set method
         let defaultMethod = if body.IsSome then HttpMethod.Post else HttpMethod.Get
