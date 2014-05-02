@@ -10,6 +10,8 @@ open NUnit.Framework
 open FsUnit
 open FSharp.Data
 open FSharp.Data.Html
+open FSharp.Data.Html.HtmlDocument
+open FSharp.Data.Html.HtmlNode
 open FSharp.Data.Runtime
 
 type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
@@ -28,13 +30,13 @@ let ``Should substitute char references``(ref:string, result:string) =
     let html = sprintf """<html><body>%s</body></html>""" ref
     let parsed = HtmlDocument.Parse html
     let expected = 
-        doc "" 
+        createDoc "" 
          [
-           element "html" []
+           createElement "html" []
             [
-               element "body" []
+               createElement "body" []
                 [
-                   text result
+                   createText result
                 ]
             ]
          ]

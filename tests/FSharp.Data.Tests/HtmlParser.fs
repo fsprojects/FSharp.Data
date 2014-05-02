@@ -11,6 +11,8 @@ open FsUnit
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Html
+open FSharp.Data.Html.HtmlDocument
+open FSharp.Data.Html.HtmlNode
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
@@ -29,29 +31,29 @@ let ``Can handle unclosed tags correctly``() =
                     </html>"""
     let result = HtmlDocument.Parse simpleHtml
     let expected = 
-        doc "" 
+        createDoc "" 
          [
-           element "html" []
+           createElement "html" []
             [
-               element "head" [] 
+               createElement "head" [] 
                 [
-                    element "script" [
+                    createElement "script" [
                                       "language","JavaScript"
                                       "src","/bwx_generic.js"
                                      ] []
-                    element "link" [
+                    createElement "link" [
                                       "rel","stylesheet"
                                       "type","text/css"
                                       "href","/bwx_style.css"
                                    ][]
                 ]
-               element "body" []
+               createElement "body" []
                 [
-                    element "img" ["src", "myimg.jpg"] []
-                    element "table" ["title", "table"]
+                    createElement "img" ["src", "myimg.jpg"] []
+                    createElement "table" ["title", "table"]
                      [
-                        element "tr" [] [element "th" [] [text "Column 1"]; element "th" [] [text "Column 2"]]
-                        element "tr" [] [element "td" [] [text "1"]; element "td" [] [text "yes"]]
+                        createElement "tr" [] [createElement "th" [] [createText "Column 1"]; createElement "th" [] [createText "Column 2"]]
+                        createElement "tr" [] [createElement "td" [] [createText "1"]; createElement "td" [] [createText "yes"]]
                      ]    
                 ]
             ]
@@ -272,13 +274,13 @@ let ``Can handle html with doctype and xml namespaces``() =
     let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
     let htmlDoc = HtmlDocument.Parse html
     let expected = 
-            doc "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
+            createDoc "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
              [
-               element "html" ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"]
+               createElement "html" ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"]
                 [
-                   element "body" []
+                   createElement "body" []
                     [
-                       text "content"
+                       createText "content"
                     ]
                 ]
             ]

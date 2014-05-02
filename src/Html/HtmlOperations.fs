@@ -8,51 +8,6 @@ open FSharp.Data.Runtime
 
 module Html =
 
-    [<AutoOpen>]
-    module Dsl =
-        
-        /// <summary>
-        /// Creates a HtmlElement
-        /// </summary>
-        /// <param name="name">The name of the element</param>
-        /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-        /// <param name="children">The children elements of this element</param>
-        let element name attrs children =
-            (fun parent ->  
-                let this = ref None
-                let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
-                let e = HtmlElement(parent, name, attrs, children |> List.map (fun c -> c this))
-                this := Some e
-                e
-            )
-        
-        /// <summary>
-        /// Creates a text content element
-        /// </summary>
-        /// <param name="content">The actual content</param>
-        let text content = 
-            (fun parent -> 
-                HtmlText(parent, content)
-            )
-
-        /// <summary>
-        /// Creates a comment element
-        /// </summary>
-        /// <param name="content">The actual content</param>
-        let comment content = 
-            (fun parent -> 
-                HtmlComment(parent, content)
-            )
-        
-        /// <summary>
-        /// Creates a HtmlDocument
-        /// </summary>
-        /// <param name="docType">The document type specifier string</param>
-        /// <param name="children">The child elements of this document</param>
-        let doc docType children = 
-            let this = ref None
-            HtmlDocument(docType, children |> List.map (fun c -> c this))
-
     module HtmlAttribute = 
         ///<summary>
         ///Gets the name of the given attribute
@@ -111,6 +66,39 @@ module Html =
     
     module HtmlNode = 
         
+        /// <summary>
+        /// Creates a HtmlElement
+        /// </summary>
+        /// <param name="name">The name of the element</param>
+        /// <param name="attrs">The HtmlAttribute(s) of the element</param>
+        /// <param name="children">The children elements of this element</param>
+        let createElement name attrs children =
+            (fun parent ->  
+                let this = ref None
+                let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
+                let e = HtmlElement(parent, name, attrs, children |> List.map (fun c -> c this))
+                this := Some e
+                e
+            )
+        
+        /// <summary>
+        /// Creates a text content element
+        /// </summary>
+        /// <param name="content">The actual content</param>
+        let createText content = 
+            (fun parent -> 
+                HtmlText(parent, content)
+            )
+
+        /// <summary>
+        /// Creates a comment element
+        /// </summary>
+        /// <param name="content">The actual content</param>
+        let createComment content = 
+            (fun parent -> 
+                HtmlComment(parent, content)
+            )
+
         /// <summary>
         /// Gets the given nodes name
         /// </summary>
@@ -494,6 +482,15 @@ module Html =
     
     module HtmlDocument = 
         
+        /// <summary>
+        /// Creates a HtmlDocument
+        /// </summary>
+        /// <param name="docType">The document type specifier string</param>
+        /// <param name="children">The child elements of this document</param>
+        let createDoc docType children = 
+            let this = ref None
+            HtmlDocument(docType, children |> List.map (fun c -> c this))
+
         /// <summary>
         /// Returns the doctype of the document
         /// </summary>
