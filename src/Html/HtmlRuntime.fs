@@ -14,7 +14,6 @@ open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 
-/// [omit]
 type HtmlTableCell = 
     | Cell of bool * string
     | Empty
@@ -27,11 +26,26 @@ type HtmlTableCell =
         | Empty -> ""
         | Cell(_, d) -> d
 
-/// [omit]
 type HtmlTable = 
     { Name : string
       Headers : string []
-      Rows :  string [] [] }
+      Rows :  string [] []
+      Html : HtmlNode }
+    override x.ToString() =
+        let sb = StringBuilder()
+        use wr = new StringWriter(sb) 
+        wr.WriteLine(x.Name)
+        let data = array2D ((x.Headers |> List.ofArray) :: (x.Rows |> Array.map (List.ofArray) |> List.ofArray))    
+        let rows = data.GetLength(0)
+        let columns = data.GetLength(1)
+        let widths = Array.zeroCreate columns 
+        data |> Array2D.iteri (fun _ c cell ->
+            widths.[c] <- max (widths.[c]) (cell.Length))
+        for r in 0 .. rows - 1 do
+            for c in 0 .. columns - 1 do
+                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
+            wr.WriteLine()
+        sb.ToString()
 
 // --------------------------------------------------------------------------------------
 
@@ -109,7 +123,8 @@ module HtmlRuntime =
 
         Some { Name = tableName
                Headers = headers
-               Rows = rows }
+               Rows = rows 
+               Html = table }
 
     let getTables includeLayoutTables (doc:HtmlDocument) =
         let tableElements = 
@@ -128,49 +143,41 @@ module HtmlRuntime =
                          ) (0, Set.empty, [])
         tables |> List.rev
 
-    let formatTable (data:HtmlTable) =
-        let sb = StringBuilder()
-        use wr = new StringWriter(sb) 
-        let data = array2D ((data.Headers |> List.ofArray) :: (data.Rows |> Array.map (List.ofArray) |> List.ofArray))    
-        let rows = data.GetLength(0)
-        let columns = data.GetLength(1)
-        let widths = Array.zeroCreate columns 
-        data |> Array2D.iteri (fun _ c cell ->
-            widths.[c] <- max (widths.[c]) (cell.Length))
-        for r in 0 .. rows - 1 do
-            for c in 0 .. columns - 1 do
-                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
-            wr.WriteLine()
-        sb.ToString()
+type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
 
-/// [omit]
-type TypedHtmlDocument internal (tables:Map<string,HtmlTable>) =
+    member x.Html = doc
 
+    /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(includeLayoutTables:bool, reader:TextReader) =
-        let tables = 
+        let doc = 
             reader 
             |> HtmlDocument.Load
+        let tables = 
+            doc
             |> HtmlRuntime.getTables includeLayoutTables
             |> List.map (fun table -> table.Name, table) 
             |> Map.ofList
-        TypedHtmlDocument tables
+        TypedHtmlDocument(doc, tables)
 
+    /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member __.GetTable(id:string) = 
        tables |> Map.find id
 
-/// [omit]
-and HtmlTable<'rowType> internal (name:string, header:string[], values:'rowType[]) =
+and HtmlTable<'rowType> internal (name:string, header:string[], values:'rowType[], html:HtmlNode) =
 
-    member x.Name with get() = name
-    member x.Headers with get() = header
-    member x.Rows with get() = values
+    member x.Name = name
+    member x.Headers = header
+    member x.Rows = values
 
+    member x.Html = html
+
+    /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is not intended for use from F#.", 10001, IsHidden=true, IsError=false)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string) =
        let table = doc.GetTable id
-       HtmlTable<_>(table.Name, table.Headers, Array.map rowConverter.Invoke table.Rows) 
+       HtmlTable<_>(table.Name, table.Headers, Array.map rowConverter.Invoke table.Rows, table.Html)

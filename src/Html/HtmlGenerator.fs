@@ -70,7 +70,7 @@ module internal HtmlGenerator =
                 
                 let tableNiceName = uniqueNiceName tableName
             
-                let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow)
+                let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
                 tableType.AddMember rowType
                 htmlType.AddMember tableType
                 tableContainer.AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)              

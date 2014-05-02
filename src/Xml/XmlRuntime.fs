@@ -67,7 +67,7 @@ type XmlElement =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  override x.ToString() = x._Print
+  override x.ToString() = x.XElement.ToString()
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]

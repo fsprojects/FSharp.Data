@@ -3,6 +3,7 @@ namespace FSharp.Data
 
 open System
 open System.Collections.Generic
+open System.ComponentModel
 open System.IO
 open System.Text
 open FSharp.Data
@@ -14,10 +15,12 @@ type HtmlAttribute =
     | HtmlAttribute of name:string * value:string    
 
 [<CustomEquality; NoComparison>]
+[<StructuredFormatDisplay("{_Print}")>]
 type HtmlNode =
     | HtmlElement of parent:HtmlNode option ref * name:string * attributes:HtmlAttribute list * elements:HtmlNode list
     | HtmlText of parent:HtmlNode option ref * content:string
     | HtmlComment of parent:HtmlNode option ref * content:string
+    
     override x.Equals(y:obj) = 
         match y with
         | :? HtmlNode as y ->
@@ -27,11 +30,13 @@ type HtmlNode =
             | HtmlComment(_, content'), HtmlComment(_, content) -> content = content'
             | _, _ -> false 
         | _ -> false
+    
     override x.GetHashCode() = 
         match x with
         | HtmlElement(_, name, attrs, content) -> 397 ^^^ hash(name) ^^^ hash(attrs) ^^^ hash(content)
         | HtmlText(_, content) -> 397 ^^^ hash(127) ^^^ hash(content)
         | HtmlComment(_, comment) -> 397 ^^^ hash(143) ^^^ hash(comment)
+
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation html =
             let append (str:string) = sb.Append str |> ignore
@@ -69,14 +74,26 @@ type HtmlNode =
         serialize sb 0 x
         sb.ToString()
 
+    /// [omit]
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    member x._Print = x.ToString()
+
+[<StructuredFormatDisplay("{_Print}")>]
 type HtmlDocument = 
     | HtmlDocument of docType:string * elements:HtmlNode list
+  
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
             (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">\n")
             +
             (elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
+
+    /// [omit]
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    member x._Print = x.ToString()
 
 // --------------------------------------------------------------------------------------
 
