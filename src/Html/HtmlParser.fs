@@ -230,11 +230,14 @@ module internal HtmlParser =
             match !x.Attributes with
             | [] -> String.Empty
             | (h,_) :: _ -> h.ToString() 
-    
-        member x.ConsAttrValue() =
+
+        member private x.ConsAttrValue(c) =
             match !x.Attributes with
-            | [] -> x.NewAttribute(); x.ConsAttrValue()
-            | (_,h) :: _ -> h.Cons(x.Reader.ReadChar())
+            | [] -> x.NewAttribute(); x.ConsAttrValue(c)
+            | (_,h) :: _ -> h.Cons(c)
+
+        member x.ConsAttrValue() = 
+            x.ConsAttrValue(x.Reader.ReadChar())
     
         member x.GetAttributes() = 
             !x.Attributes 
@@ -274,16 +277,20 @@ module internal HtmlParser =
             x.Attributes := []
             result
     
+        member x.EmitToAttributeValue() =
+            assert (!x.InsertionMode = InsertionMode.CharRefMode)
+            let content = (!x.Content).ToString() |> HtmlCharRefs.substitute
+            for c in content.ToCharArray() do
+                x.ConsAttrValue c
+            x.Content := CharList.Empty
+            x.InsertionMode := DefaultMode
+
         member x.Emit() =
-            let substituteCharRef ref =
-                match HtmlCharRefs.substitute ref with
-                | Some(r) -> r
-                | None -> ref
             let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
                 | DefaultMode | ScriptMode -> Text content
-                | CharRefMode -> Text (substituteCharRef (content.Trim()))
+                | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
                 | CommentMode -> Comment content
                 | DocTypeMode -> DocType content
             x.Content := CharList.Empty
@@ -324,10 +331,9 @@ module internal HtmlParser =
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
                 | CommentMode -> comment state
-        and script state = 
-            match state.Peek() with
+        and script state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '<' -> state.Pop(); scriptLessThanSign state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); script state
         and scriptLessThanSign state =
             match state.Peek() with
@@ -342,12 +348,11 @@ module internal HtmlParser =
             match state.Peek() with
             | '-' -> state.Cons(); scriptDataEscapedDashDash state
             | _ -> script state
-        and scriptDataEscapedDashDash state = 
-            match state.Peek() with
+        and scriptDataEscapedDashDash state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataEscapedDashDash state
             | '<' -> state.Pop(); scriptDataEscapedLessThanSign state
             | '>' -> state.Cons(); script state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataEscaped state
         and scriptDataEscapedLessThanSign state =
             match state.Peek() with
@@ -359,17 +364,15 @@ module internal HtmlParser =
             | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.Cons(); scriptDataDoubleEscaped state
             | TextParser.Letter _ -> state.Cons(); scriptDataDoubleEscapeStart state
             | _ -> state.Cons(); scriptDataEscaped state
-        and scriptDataDoubleEscaped state = 
-            match state.Peek() with
+        and scriptDataDoubleEscaped state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataDoubleEscapedDash state
             | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataDoubleEscaped state
-        and scriptDataDoubleEscapedDash state = 
-            match state.Peek() with
+        and scriptDataDoubleEscapedDash state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataDoubleEscapedDashDash state
             | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataDoubleEscaped state
         and scriptDataDoubleEscapedLessThanSign state =
             match state.Peek() with
@@ -380,12 +383,11 @@ module internal HtmlParser =
             | TextParser.Whitespace _ | '/' | '>' when state.IsScriptTag -> state.Cons(); scriptDataDoubleEscaped state
             | TextParser.Letter _ -> state.Cons(); scriptDataDoubleEscapeEnd state
             | _ -> state.Cons(); scriptDataDoubleEscaped state
-        and scriptDataDoubleEscapedDashDash state =
-            match state.Peek() with
+        and scriptDataDoubleEscapedDashDash state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataDoubleEscapedDashDash state
             | '<' -> state.Cons(); scriptDataDoubleEscapedLessThanSign state
             | '>' -> state.Cons(); script state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataDoubleEscaped state
         and scriptDataEscapedEndTagOpen state = 
             match state.Peek() with
@@ -398,28 +400,23 @@ module internal HtmlParser =
             | '>' when state.IsScriptTag -> state.EmitTag(true)
             | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
             | _ -> state.Cons([|'<';'/'|]); state.Cons(); scriptDataEscaped state
-        and scriptDataEscaped state =
-            match state.Peek() with
+        and scriptDataEscaped state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataEscapedDash state
             | '<' -> scriptDataEscapedLessThanSign state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataEscaped state
-        and scriptDataEscapedDash state = 
-            match state.Peek() with
+        and scriptDataEscapedDash state =  ifEofThenDataElse state <| fun c ->
+            match c with
             | '-' -> state.Cons(); scriptDataEscapedDashDash state
             | '<' -> scriptDataEscapedLessThanSign state
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.Cons(); scriptDataEscaped state
         and scriptEndTagOpen state = 
             match state.Peek() with
             | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
             | _ -> script state
-        and scriptEndTagName state = 
-            match state.Peek() with
+        and scriptEndTagName state = ifNotClosingTagOrEof true state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | '>' -> state.Pop();  state.EmitTag(true); 
-            | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsTag(); scriptEndTagName state
         and charRef state = 
             match state.Peek() with
@@ -497,81 +494,84 @@ module internal HtmlParser =
                 state.InsertionMode := CommentMode 
                 state.Emit();
             | _ -> state.Cons(); comment state 
-        and tagName isEndTag state = 
-            match state.Peek() with
+        and tagName isEndTag state = ifNotClosingTagOrEof isEndTag state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | '>' -> state.Pop(); state.EmitTag(isEndTag)
-            | TextParser.EndOfFile _ -> data state
             | _ -> state.ConsTag(); tagName isEndTag state
-        and selfClosingStartTag state = 
-            match state.Peek() with
+        and selfClosingStartTag state = ifEofThenDataElse state <| fun c ->
+            match c with
             | '>' -> state.Pop(); state.EmitSelfClosingTag()
-            | TextParser.EndOfFile _ -> data state
             | _ -> beforeAttributeName state
-        and endTagOpen state = 
-            match state.Peek() with
+        and endTagOpen state = ifEofThenDataElse state <| fun c ->
+            match c with
             | TextParser.Letter _ -> state.ConsTag(); tagName true state
-            | TextParser.EndOfFile _ -> data state
             | '>' -> state.Pop(); data state
             | _ -> comment state
-        and beforeAttributeName state = 
-            match state.Peek() with
+        and beforeAttributeName state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | TextParser.EndOfFile _ -> data state
-            | '>' -> state.EmitTag(false)
             | _ -> attributeName state
-        and attributeName state =
-            match state.Peek() with
-            | '/' -> state.Pop(); selfClosingStartTag state
+        and attributeName state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | '=' -> state.Pop(); beforeAttributeValue state
-            | '>' -> state.Pop(); state.EmitTag(false)
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
             | TextParser.Whitespace _ -> state.ConsAttrName(); afterAttributeName state
-            | TextParser.EndOfFile _ -> data state;
             | _ -> state.ConsAttrName(); attributeName state
-        and afterAttributeName state = 
-            match state.Peek() with
+        and afterAttributeName state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); afterAttributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
             | '=' -> state.Pop(); beforeAttributeValue state
-            | '>' -> state.EmitTag(false)
-            | TextParser.EndOfFile _ -> data state;
             | _ -> attributeName state
-        and beforeAttributeValue state = 
-            match state.Peek() with
+        and beforeAttributeValue state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
-            | TextParser.EndOfFile _ -> data state;
-            | '"' -> state.Pop(); attributeValueQuoted state
-            | '&' -> state.Pop(); attributeValueUnquoted state
-            | '\'' -> state.Pop(); attributeValueSingleQuoted state
-            | '>' -> state.Pop(); state.EmitTag(false);
+            | '"' -> state.Pop(); attributeValueQuoted '"' state
+            | '\'' -> state.Pop(); attributeValueQuoted '\'' state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
-        and attributeValueUnquoted state = 
-            match state.Peek() with
+        and attributeValueUnquoted state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
-            | TextParser.EndOfFile _ -> data state;
-            | '>' -> state.Pop(); state.EmitTag(false)
+            | '&' -> 
+                assert (state.ContentLength = 0)
+                state.InsertionMode := InsertionMode.CharRefMode
+                attributeValueCharRef ['/'; '>'] attributeValueUnquoted state
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
-        and attributeValueSingleQuoted state = 
+        and attributeValueQuoted quote state = ifEofThenDataElse state <| fun c ->
+            match c with
+            | c when c = quote -> state.Pop(); afterAttributeValueQuoted state
+            | '&' -> 
+                assert (state.ContentLength = 0)
+                state.InsertionMode := InsertionMode.CharRefMode
+                attributeValueCharRef [quote] (attributeValueQuoted quote) state
+            | _ -> state.ConsAttrValue(); attributeValueQuoted quote state
+        and attributeValueCharRef stop continuation (state:HtmlState) = 
             match state.Peek() with
-            | TextParser.EndOfFile _ -> data state;
-            | '\'' -> state.Pop(); afterAttributeValueQuoted state
-            | '/' -> state.EmitSelfClosingTag()
-            | _ -> state.ConsAttrValue(); attributeValueSingleQuoted state
-        and attributeValueQuoted state = 
-            match state.Peek() with
-            | '"' -> state.Pop(); afterAttributeValueQuoted state
-            | TextParser.EndOfFile _ -> data state;
-            | _ -> state.ConsAttrValue(); attributeValueQuoted state
-        and afterAttributeValueQuoted state = 
-            match state.Peek() with
+            | ';' ->
+                state.Cons()
+                state.EmitToAttributeValue()
+                continuation state
+            | TextParser.EndOfFile _ ->
+                state.EmitToAttributeValue()
+                continuation state
+            | c when List.exists ((=) c) stop ->
+                state.EmitToAttributeValue()
+                continuation state
+            | _ ->
+                state.Cons()
+                attributeValueCharRef stop continuation state
+        and afterAttributeValueQuoted state = ifNotClosingTagOrEof false state <| fun c ->
+            match c with
             | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
-            | '/' -> state.Pop(); selfClosingStartTag state
-            | '>' -> state.Pop(); state.EmitTag(false)
-            | TextParser.EndOfFile _ -> data state
             | _ -> attributeName state
+        and ifNotClosingTagOrEof isEnd (state:HtmlState) f = ifEofThenDataElse state <| fun c ->
+            match c with
+            | '/' -> state.Pop(); selfClosingStartTag state
+            | '>' -> state.Pop(); state.EmitTag(isEnd)
+            | c -> f c
+        and ifEofThenDataElse (state:HtmlState) f =
+            match state.Peek() with
+            | TextParser.EndOfFile _ -> data state
+            | c -> f c
         [
            while state.Reader.Peek() <> -1 do
                yield data state
