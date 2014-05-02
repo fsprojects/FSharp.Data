@@ -53,8 +53,7 @@ let searchResults =
     links
     |> Seq.filter (fun (name, url) -> 
                     name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
-    |> Seq.map (fun (name, url) -> name.Replace("�", "·"),
-                                   url.Substring(0, url.IndexOf("&amp;sa=")).Replace("/url?q=", ""))
+    |> Seq.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&amp;sa=")).Replace("/url?q=", ""))
     |> Seq.toArray
 
 (** 
