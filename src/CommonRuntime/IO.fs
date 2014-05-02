@@ -196,7 +196,7 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncOpenStream (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) formatName (uri:Uri) =
+let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) formatName (uri:Uri) =
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
@@ -208,17 +208,19 @@ let internal asyncOpenStream (_tp:(IDisposableTypeProvider*string) option) (uriR
             | "JSON" -> HttpRequestHeaders.Accept HttpContentTypes.Json :: headers
             | "XML" -> HttpRequestHeaders.Accept HttpContentTypes.Xml :: headers
             | _ -> headers
-        let! response = Http.AsyncRequestStream(uri.OriginalString, headers = headers)
-        return response.ResponseStream
+        return! Http.AsyncRequestString(uri.OriginalString, headers = headers)
     }
   else
 #if FX_NO_LOCAL_FILESYSTEM
     failwith "Only web locations are supported"
 #else
     let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
-    let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite) :> Stream
-    _tp |> Option.iter (watchForChanges uri)
-    async.Return file
+    async {
+        use file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+        _tp |> Option.iter (watchForChanges uri)
+        use sr = new StreamReader(file)
+        return sr.ReadToEnd()
+    }
 #endif
 
 let private withUri uri f =
@@ -231,12 +233,17 @@ let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder forma
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
                                       defaultResolutionFolder, resolutionFolder)
-    async { let! stream = asyncOpenStream None resolver formatName uri
-            return new StreamReader(stream) :> TextReader }
+    async {
+        let! text = asyncReadText None resolver formatName uri
+        return new StringReader(text) :> TextReader
+    }
 
 /// Returns a TextReader for the uri using the designtime resolution rules
 let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName uri = 
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
-    async { let! stream = asyncOpenStream None resolver formatName uri
-            return new StreamReader(stream) :> TextReader }
+    async {
+        let! text = asyncReadText None resolver formatName uri
+        return new StringReader(text) :> TextReader
+    }
+
