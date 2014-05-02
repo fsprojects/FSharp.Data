@@ -2253,6 +2253,6 @@ module internal HtmlCharRefs =
 
     let substitute (ref:string) = 
         match ref with
-        | Hex(num) -> Some (Convert.ToChar(Int32.Parse(num, Globalization.NumberStyles.AllowHexSpecifier)).ToString())     
-        | Num(num) -> Some (Convert.ToChar(Int32.Parse(num)).ToString())
-        | Std(ref) -> refs.TryFind ref     
+        | Hex(num) -> Convert.ToChar(Int32.Parse(num, Globalization.NumberStyles.AllowHexSpecifier)).ToString()
+        | Num(num) -> Convert.ToChar(Int32.Parse(num)).ToString()
+        | Std(ref) -> defaultArg (refs.TryFind ref) ref
