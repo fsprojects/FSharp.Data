@@ -502,6 +502,9 @@ module private Helpers =
         memoryStream
 #endif
 
+    let requestDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
+    let responseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
+
     let toHttpResponse forceText responseUrl statusCode contentType characterSet
                        responseEncodingOverride cookies headers (memoryStream:MemoryStream) = async {
 
@@ -520,12 +523,12 @@ module private Helpers =
 
         let respBody = 
             if forceText || isText contentType then
-                use sr = 
+                let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
-                    | "", "" -> new StreamReader(memoryStream)
-                    | "", characterSet -> new StreamReader(memoryStream, Encoding.GetEncoding(characterSet))
-                    | responseEncodingOverride, _ -> new StreamReader(memoryStream, Encoding.GetEncoding(responseEncodingOverride))
-
+                    | "", "" -> responseDefaultEncoding
+                    | "", characterSet -> Encoding.GetEncoding(characterSet)
+                    | responseEncodingOverride, _ -> Encoding.GetEncoding(responseEncodingOverride)
+                use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
             else
                 memoryStream.ToArray() |> Binary
@@ -594,13 +597,13 @@ type Http private() =
 
             let defaultContentType, bytes =
                 match body with
-                | TextRequest text -> HttpContentTypes.Text, Encoding.UTF8.GetBytes(text)
+                | TextRequest text -> HttpContentTypes.Text, requestDefaultEncoding.GetBytes(text)
                 | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
                 | FormValues values -> 
                     let bytes = 
                         [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
                         |> String.concat "&"
-                        |> Encoding.UTF8.GetBytes
+                        |> requestDefaultEncoding.GetBytes
                     HttpContentTypes.FormValues, bytes
 
             // Set default content type if it is not specified by the user
