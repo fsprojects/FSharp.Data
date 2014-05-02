@@ -26,7 +26,7 @@ let inferRowType preferOptionals missingValues cultureInfo headers row =
                 if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
             else getInferedTypeFromString cultureInfo value None
 
-        { Name = getName headers index |> makeUnique
+        { InferedProperty.Name = getName headers index |> makeUnique
           Type = inferedtype }
     
     InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)

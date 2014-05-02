@@ -11,6 +11,7 @@ namespace FSharp.Data
 
 open System
 open System.IO
+open System.ComponentModel
 open System.Text
 open System.Globalization
 open FSharp.Data
@@ -29,6 +30,7 @@ type JsonSaveOptions =
 /// Decimal type are represented using the Float case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
 [<RequireQualifiedAccess>]
+[<StructuredFormatDisplay("{_Print}")>]
 type JsonValue =
   | String of string
   | Number of decimal
@@ -37,6 +39,11 @@ type JsonValue =
   | Array of elements:JsonValue[]
   | Boolean of bool
   | Null
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  member x._Print = x.ToString()
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 

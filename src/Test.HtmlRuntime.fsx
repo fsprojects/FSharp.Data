@@ -21,10 +21,10 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 let printTables includeLayout (url:string) = 
-    for table in HtmlRuntime.getTables includeLayout (HtmlDocument.Load url) do
-        printfn "%s" table.Name
-        printfn "%s" (table |> HtmlRuntime.formatTable)
-        printfn "+++++++++++++++++++++++++++++++++++++"
+    url
+    |> HtmlDocument.Load
+    |> HtmlRuntime.getTables includeLayout
+    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
 
 #if INTERACTIVE
 type PrintableContent =
@@ -56,4 +56,3 @@ printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1
 //Interesting table structure, with col and row spans.
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
  
-
