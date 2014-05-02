@@ -10,9 +10,8 @@ open NUnit.Framework
 open FsUnit
 open FSharp.Data
 open FSharp.Data.Runtime
-open FSharp.Data.Html
-open FSharp.Data.Html.HtmlDocument
-open FSharp.Data.Html.HtmlNode
+open FSharp.Data.HtmlDocument
+open FSharp.Data.HtmlNode
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
