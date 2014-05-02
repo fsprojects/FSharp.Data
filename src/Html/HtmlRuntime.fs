@@ -8,7 +8,6 @@ open System.Text
 open System.Text.RegularExpressions
 open System.Xml
 open FSharp.Data
-open FSharp.Data.Html
 open FSharp.Data.Runtime
 
 #nowarn "10001"
@@ -38,8 +37,6 @@ type HtmlTable =
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
-
-    open Html
 
     let private getTableName defaultName nameSet (element:HtmlNode) = 
         let tryGetName' choices =

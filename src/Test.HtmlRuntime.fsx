@@ -18,7 +18,6 @@ module internal Test.HtmlRuntime
 #endif
 
 open FSharp.Data
-open FSharp.Data.Html
 open FSharp.Data.Runtime
 
 let printTables includeLayout (url:string) = 

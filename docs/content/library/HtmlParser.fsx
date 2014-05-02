@@ -10,11 +10,11 @@ open FSharp.Data
 (**
 The HTML parser takes any fragment of HTML, uri or a stream and trys to parse it into a DOM. 
 The parser is based on the [HTML Living Standard](http://www.whatwg.org/specs/web-apps/current-work/multipage/index.html#contents)
-Once a document/fragment has been parsed the `FSharp.Data.Html` module provides a set of extension methods over the HTML Dom elements
-this then allows you to extract information from a web page independantly of the actual HTML Type provider. 
+Once a document/fragment has been parsed, a set of extension methods over the HTML Dom elements allow you to extract information from a web page
+independently of the actual HTML Type provider.
 *)
 
-open FSharp.Data.Html
+open FSharp.Data
 
 (**
 The following example uses google to search for `FSharp.Data` then parses the first set of
@@ -35,7 +35,7 @@ which in this case is the url that the search result is pointing to and addition
 we are looking at. 
 *)
 let links = 
-    results.Descendants((fun x -> x.Name = "a"), true)
+    results.Descendants ["a"]
     |> Seq.choose (fun x -> 
            x.TryGetAttribute("href")
            |> Option.map (fun a -> x.InnerText, a.Value())
