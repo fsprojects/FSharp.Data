@@ -8,28 +8,23 @@ open FSharp.Data.Runtime
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlAttribute = 
-    ///<summary>
-    ///Gets the name of the given attribute
-    /// </summary>
-    let name = function
+
+    /// Gets the name of the given attribute
+    let name attr = 
+        match attr with
         | HtmlAttribute(name = name) -> name
 
-    ///<summary>
-    ///Gets the values of the given attribute
-    /// </summary>
-    let value = function
+    /// Gets the value of the given attribute
+    let value attr = 
+        match attr with
         | HtmlAttribute(value = value) -> value   
 
-    ///<summary>
-    ///Parses the value of the attribute using the given function
-    /// </summary>
+    /// Parses the value of the attribute using the given function
     let parseValue parseF attr = 
         value attr |> parseF
 
-    ///<summary>
-    ///Attempts to parse the value of the attribute using the given function
-    ///if the parse functions fails the defaultValue is returned
-    /// </summary>
+    /// Attempts to parse the value of the attribute using the given function
+    /// if the parse functions fails the defaultValue is returned
     let tryParseValue defaultValue parseF attr = 
         match value attr |> parseF with
         | true, v -> v
@@ -39,14 +34,11 @@ module HtmlAttribute =
 module HtmlAttributeExtensions =
 
     type HtmlAttribute with
-        /// <summary>
-        /// Gets the name of the current attribute
-        /// </summary>
-        member x.Name with get() = HtmlAttribute.name x
 
-        /// <summary>
+        /// Gets the name of the current attribute
+        member x.Name = HtmlAttribute.name x
+
         /// Gets the value of the current attribute
-        /// </summary>
         member x.Value() = HtmlAttribute.value x
 
         /// <summary>
@@ -102,24 +94,21 @@ module HtmlNode =
             HtmlComment(parent, content)
         )
 
-    /// <summary>
     /// Gets the given nodes name
-    /// </summary>
-    let name = function
+    let name x =
+        match x with
         | HtmlElement(_, name, _, _) -> name.ToLowerInvariant()
         | _ -> String.Empty
         
-    /// <summary>
     /// Gets all of the nodes immediately under this node
-    /// </summary>
-    let children = function 
+    let children x =
+        match x with
         | HtmlElement(_, _, _, children) -> children
         | _ -> []
 
-    /// <summary>
     /// Gets the parent node of this node
-    /// </summary>
-    let parent = function
+    let parent x =
+        match x with
         | HtmlElement(parent = parent) -> !parent
         | HtmlText(parent = parent) -> !parent
         | HtmlComment(parent = parent) -> !parent
@@ -196,7 +185,8 @@ module HtmlNode =
     /// Trys to return an attribute that exists on the current node
     /// </summary>
     /// <param name="name">The name of the attribute to return.</param>
-    let tryGetAttribute (name:string) = function
+    let tryGetAttribute (name:string) x =
+        match x with
         | HtmlElement(_,_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
         | _ -> None   
     
@@ -223,25 +213,25 @@ module HtmlNode =
         | Some(v) -> v
         | None -> failwithf "Unable to find attribute (%s)" name
 
-    ///<summary>
-    ///Returns true id the current node has an attribute that
-    ///matches both the name and the value
-    ///</summary>
-    ///<param name="name">The name of the attribute</param>
-    ///<param name="value">The value of the attribute</param>
-    ///<param name="x">The given html node</param>
+    /// <summary>
+    /// Returns true id the current node has an attribute that
+    /// matches both the name and the value
+    /// </summary>
+    /// <param name="name">The name of the attribute</param>
+    /// <param name="value">The value of the attribute</param>
+    /// <param name="x">The given html node</param>
     let hasAttribute name (value:string) x = 
         tryGetAttribute name x
         |> function 
             | Some(attr) ->  attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
             | None -> false
 
-    ///<summary>
-    ///Returns the elements under the current node that mach the
-    ///given predicate
-    ///</summary>
-    ///<param name="f">The predicate to match the element</param>
-    ///<param name="x">The given html node</param>    
+    /// <summary>
+    /// Returns the elements under the current node that mach the
+    /// given predicate
+    /// </summary>
+    /// <param name="f">The predicate to match the element</param>
+    /// <param name="x">The given html node</param>    
     let elements f x = 
         [
             for element in children x do
@@ -250,13 +240,13 @@ module HtmlNode =
                 else ()
         ]
 
-    ///<summary>
-    ///Returns the elements under the current node that macht the
-    ///given predicate, this also returns the node aswell if it
-    ///matches the predicate
-    ///</summary>
-    ///<param name="f">The predicate to match the element</param>
-    ///<param name="x">The given html node</param>    
+    /// <summary>
+    /// Returns the elements under the current node that macht the
+    /// given predicate, this also returns the node aswell if it
+    /// matches the predicate
+    /// </summary>
+    /// <param name="f">The predicate to match the element</param>
+    /// <param name="x">The given html node</param>    
     let elementsAndSelf f x = 
         [
             if f x then yield x
@@ -354,20 +344,14 @@ module HtmlNodeExtensions =
 
     type HtmlNode with
                
-        /// <summary>
         /// Gets the given nodes name
-        /// </summary>
-        member x.Name with get() = HtmlNode.name x 
+        member x.Name = HtmlNode.name x 
         
-        /// <summary>
         /// Gets all of the nodes immediately under this node
-        /// </summary>           
-        member x.Children with get() = HtmlNode.children x
+        member x.Children = HtmlNode.children x
 
-        /// <summary>
         /// Gets the parent node of this node
-        /// </summary>
-        member x.Parent with get() = HtmlNode.parent x
+        member x.Parent = HtmlNode.parent x
 
         /// <summary>
         /// Gets all of the descendants of the current node
@@ -415,12 +399,12 @@ module HtmlNodeExtensions =
         /// <param name="name">The name of the attribute to select</param>
         member x.Attribute name = HtmlNode.attribute name x
 
-        ///<summary>
-        ///Returns true id the current node has an attribute that
-        ///matches both the name and the value
-        ///</summary>
-        ///<param name="name">The name of the attribute</param>
-        ///<param name="value">The value of the attribute</param>
+        /// <summary>
+        /// Returns true id the current node has an attribute that
+        /// matches both the name and the value
+        /// </summary>
+        /// <param name="name">The name of the attribute</param>
+        /// <param name="value">The value of the attribute</param>
         member x.HasAttribute (name,value:string) = HtmlNode.hasAttribute name value x
 
         /// <summary>
@@ -451,15 +435,11 @@ module HtmlNodeExtensions =
         /// <param name="names">The set of names to match</param>
         member x.HasElement (names:seq<string>) = HtmlNode.hasElements names x
 
-        /// <summary>
         /// Returns the sibilings of the current node
-        /// </summary>
         member x.Siblings() = HtmlNode.siblings x
 
-        /// <summary>
         /// Returns the inner text of the current node
-        /// </summary>
-        member x.InnerText with get() = HtmlNode.innerText x
+        member x.InnerText = HtmlNode.innerText x
 
         /// <summary>
         /// Trys to find a node that statifies the given function by walking backwards up the
@@ -469,16 +449,12 @@ module HtmlNodeExtensions =
         /// <param name="x">The given HTML node</param>
         member x.TryFindPrevious(f) = HtmlNode.tryFindPrevious f x
 
-        /// <summary>
         /// Parses the specified HTML string to a list of HTML nodes
-        /// </summary>
         static member Parse(text) = 
           use reader = new StringReader(text)
           HtmlParser.parseFragment reader (ref None)
 
-        /// <summary>
         /// Parses the specified HTML string to a list of HTML nodes
-        /// </summary>
         static member ParseRooted(rootName, text) = 
           use reader = new StringReader(text)
           let parent = ref None
@@ -498,10 +474,9 @@ module HtmlDocument =
         let this = ref None
         HtmlDocument(docType, children |> List.map (fun c -> c this))
 
-    /// <summary>
     /// Returns the doctype of the document
-    /// </summary>
-    let docType = function
+    let docType x =
+        match x with
         | HtmlDocument(docType = docType) -> docType 
     
     /// <summary>
@@ -509,7 +484,8 @@ module HtmlDocument =
     /// that match the given predicate
     /// </summary>
     /// <param name="f">The predicate used to match elements</param>
-    let elements f = function
+    let elements f x =
+        match x with
         | HtmlDocument(elements = elements) ->
             [
                 for e in elements do
@@ -592,15 +568,12 @@ module HtmlDocument =
 module HtmlDocumentExtensions =
 
     type HtmlDocument with
-        /// <summary>
+
         /// Finds the body element of the given document,
         /// this throws an exception if no body element exists.
-        /// </summary>
-        member x.Body with get() = HtmlDocument.body x
+        member x.Body = HtmlDocument.body x
 
-        /// <summary>
         /// Trys to find the body element of the given document.
-        /// </summary>
         member x.TryBody() = HtmlDocument.tryBody x
 
         /// <summary>
@@ -638,37 +611,27 @@ module HtmlDocumentExtensions =
         member x.Elements(names) = 
             HtmlDocument.elementsNamed names x
     
-        /// <summary>
         /// Parses the specified HTML string
-        /// </summary>
         static member Parse(text) = 
           use reader = new StringReader(text)
           HtmlParser.parseDocument reader
         
-        /// <summary>
         /// Loads HTML from the specified stream
-        /// </summary>
         static member Load(stream:Stream) = 
           use reader = new StreamReader(stream)
           HtmlParser.parseDocument reader
     
-        /// <summary>
         /// Loads HTML from the specified reader
-        /// </summary>
         static member Load(reader:TextReader) = 
           HtmlParser.parseDocument reader
         
-        /// <summary>
         /// Loads HTML from the specified uri asynchronously
-        /// </summary>
         static member AsyncLoad(uri:string) = async {
           let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" uri
           return HtmlParser.parseDocument reader
         }
     
-        /// <summary>
         /// Loads HTML from the specified uri
-        /// </summary>
         static member Load(uri:string) =
             HtmlDocument.AsyncLoad(uri)
             |> Async.RunSynchronously
