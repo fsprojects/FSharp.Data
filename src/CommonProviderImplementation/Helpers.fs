@@ -237,11 +237,8 @@ module ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                Async.RunSynchronously <| async {
-                    use! stream = asyncOpenStream (Some (tp, fullTypeName)) resolver formatName uri
-                    use reader = new StreamReader(stream)
-                    return reader.ReadToEnd()
-                } 
+                asyncReadText (Some (tp, fullTypeName)) resolver formatName uri
+                |> Async.RunSynchronously
     
             try
               
