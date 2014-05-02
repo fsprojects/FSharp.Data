@@ -6,8 +6,7 @@ open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
 
-module Html =
-
+    [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module HtmlAttribute = 
         ///<summary>
         ///Gets the name of the given attribute
@@ -36,6 +35,9 @@ module Html =
             | true, v -> v
             | false, _ -> defaultValue
     
+[<AutoOpen>]
+module HtmlAttributeExtensions =
+
     type HtmlAttribute with
         /// <summary>
         /// Gets the name of the current attribute
@@ -64,6 +66,7 @@ module Html =
         member x.Value<'a>(defaultValue, parseF : string -> (bool * 'a))= 
             HtmlAttribute.tryParseValue defaultValue parseF x
     
+    [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module HtmlNode = 
         
         /// <summary>
@@ -345,7 +348,10 @@ module Html =
                 | [] -> tryFindPrevious f p
                 | h :: _ -> Some h 
             | None -> None
-               
+
+[<AutoOpen>]
+module HtmlNodeExtensions =
+
     type HtmlNode with
                
         /// <summary>
@@ -480,6 +486,7 @@ module Html =
           parent := Some e
           e
     
+    [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module HtmlDocument = 
         
         /// <summary>
@@ -580,7 +587,10 @@ module Html =
             match descendantsNamed true ["body"] x with
             | [] -> None
             | h:: _ -> Some(h)
-    
+
+[<AutoOpen>]
+module HtmlDocumentExtensions =
+
     type HtmlDocument with
         /// <summary>
         /// Finds the body element of the given document,
