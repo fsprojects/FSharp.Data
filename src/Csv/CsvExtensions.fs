@@ -9,7 +9,7 @@ open FSharp.Data.Runtime
 open System.Runtime.CompilerServices
 
 [<Extension>]
-type StringExtensions =
+type CsvExtensions =
 
   [<Extension>]
   static member AsInteger(x:String, ?cultureInfo) = 
@@ -60,6 +60,7 @@ type StringExtensions =
     | Some g -> g
     | _ -> failwithf "Not a guid: %s" x
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module CsvExtensions =
   /// Get column of a CsvRow
   let (?) (csvRow:CsvRow) (columnName:string) = csvRow.[columnName]
