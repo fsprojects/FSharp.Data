@@ -8,17 +8,42 @@ namespace FSharp.Data.Tests.CSharp
     [TestFixture]
     public class JsonExtensionTests
     {
+        private const string TestJson = "{\"PropertyOne\": \"string value\"}";
+
         [Test]
         public void Properties_with_valid_JSON()
         {
-            const string jsonWithProps = "{\"PropertyOne\": \"string value\"}";
-            JsonValue jsonValue = JsonValue.Parse(jsonWithProps, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
             
             var properties = jsonValue.Properties();
             
             Assert.AreEqual(1, properties.Length);
             Assert.AreEqual("PropertyOne", properties[0].Item1);
             Assert.AreEqual("string value", properties[0].Item2.AsString());
+        }
+
+        [Test]
+        public void GetProperty_with_valid_JSON()
+        {
+            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            var property = jsonValue.GetProperty("PropertyOne");
+            Assert.AreEqual("string value", property.AsString());
+        }
+
+        [Test]
+        public void TryGetProperty_with_valid_JSON()
+        {
+            JsonValue jsonValue = JsonValue.Parse(TestJson, FSharpOption<CultureInfo>.Some(CultureInfo.CurrentCulture));
+            var property = jsonValue.TryGetProperty("PropertyTwo");
+            Assert.AreEqual(FSharpOption<JsonValue>.None, property);
+        }
+
+        [Test]
+        public void PropertyIndexer_with_valid_JSON()
+        {
+            var jsonValue = JsonValue.NewArray(new[] {JsonValue.NewNumber(1), JsonValue.NewNumber(2)});
+            var property = jsonValue.Item(0);
+            Assert.AreEqual(1, property.AsInteger());
         }
 
         [Test]
