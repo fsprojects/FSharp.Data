@@ -2,18 +2,6 @@
 // CSV type provider - runtime components (parsing and type representing CSV)
 // --------------------------------------------------------------------------------------
 
-#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
-
-namespace System.Runtime.InteropServices
-
-open System
-
-[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
-type OptionalAttribute() = 
-    inherit Attribute()
-
-#endif
-
 namespace FSharp.Data.Runtime
 
 open System

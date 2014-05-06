@@ -3,43 +3,46 @@
 // --------------------------------------------------------------------------------------
 namespace FSharp.Data
 
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open System.Xml.Linq
 
 [<AutoOpen>]
+[<Extension>]
 /// Extension methods for XElement. It is auto opened.
-module XElementExtensions = 
+type XElementExtensions = 
 
-    type XElement with
+    /// Sends the XML to the specified uri. Defaults to a POST request.
+    [<Extension>]
+    static member Request(x:XElement, uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers) =  
+      let httpMethod = defaultArg httpMethod HttpMethod.Post
+      let headers = defaultArg headers []
+      let headers =
+          if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+          then headers
+          else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
+      let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
+      Http.Request(
+        uri,
+        body = TextRequest (x.ToString(SaveOptions.DisableFormatting)),
+        headers = headers,
+        httpMethod = httpMethod)
 
-      /// Sends the XML to the specified uri. Defaults to a POST request.
-      member x.Request(uri:string, ?httpMethod, ?headers) =  
-        let httpMethod = defaultArg httpMethod HttpMethod.Post
-        let headers = defaultArg headers []
-        let headers =
-            if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
-            then headers
-            else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
-        let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
-        Http.Request(
-          uri,
-          body = TextRequest (x.ToString(SaveOptions.DisableFormatting)),
-          headers = headers,
-          httpMethod = httpMethod)
-
-      /// Sends the XML to the specified uri. Defaults to a POST request.
-      member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
-        let httpMethod = defaultArg httpMethod HttpMethod.Post
-        let headers = defaultArg headers []
-        let headers =
-            if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
-            then headers
-            else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
-        let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
-        Http.AsyncRequest(
-          uri,
-          body = TextRequest (x.ToString(SaveOptions.DisableFormatting)),
-          headers = headers,
-          httpMethod = httpMethod)
+    /// Asynchronously sends the XML to the specified uri. Defaults to a POST request.
+    [<Extension>]
+    static member RequestAsync(x:XElement, uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers) =
+      let httpMethod = defaultArg httpMethod HttpMethod.Post
+      let headers = defaultArg headers []
+      let headers =
+          if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+          then headers
+          else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
+      let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
+      Http.AsyncRequest(
+        uri,
+        body = TextRequest (x.ToString(SaveOptions.DisableFormatting)),
+        headers = headers,
+        httpMethod = httpMethod)
 
 namespace FSharp.Data.Runtime
 
