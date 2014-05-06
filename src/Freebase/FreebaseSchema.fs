@@ -43,7 +43,7 @@ module Utilities =
         | _ -> failwith (sprintf "unexpected structured JSON value %+A" jsonValue)
 
     /// Represents one object's values for all the properties of one type id.
-    let dictionaryFromJson (jsonValue:JsonValue) = jsonValue.Properties |> dict
+    let dictionaryFromJson (jsonValue:JsonValue) = JsonExtensions.Properties(jsonValue) |> dict
 
 type FreebaseId = 
     | FreebaseId of string
