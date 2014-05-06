@@ -21,16 +21,17 @@ open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open FSharp.Data
 open FSharp.Data.Runtime
+open Microsoft.FSharp.Core
 
 [<Extension>]
 type JsonExtensions =
 
   /// Get a sequence of key-value pairs representing the properties of an object
-  [<Extension>]
-  static member Properties(x) =
+  [<Extension;CompilerMessageAttribute("This method is intended for use from C# only.", 10001, IsHidden=true)>]
+  static member Properties(x:JsonValue) =
     match x with
-    | JsonValue.Record properties -> properties
-    | _ -> [| |]
+      | JsonValue.Record properties -> properties
+      | _ -> [| |]
 
   /// Get property of a JSON object. Fails if the value is not an object
   /// or if the property is not present
@@ -149,6 +150,12 @@ type JsonExtensions =
 module JsonExtensions =
   /// Get property of a JSON object (assuming that the value is an object)
   let (?) (jsonObject:JsonValue) propertyName = jsonObject.GetProperty(propertyName)
+
+  type JsonValue with
+    member x.Properties =
+      match x with
+      | JsonValue.Record properties -> properties
+      | _ -> [| |]
 
 // TODO: needs more consideration
 #if ENABLE_JSONEXTENSIONS_OPTIONS
