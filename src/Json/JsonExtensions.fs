@@ -1,5 +1,18 @@
 ﻿/// Extension methods that can be used to work with JsonValue in a less safe, but more convenient way.
 /// This module also provides the dynamic operator.
+
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+
+namespace System.Runtime.InteropServices
+
+open System
+
+[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
+type OptionalAttribute() = 
+    inherit Attribute()
+
+#endif
+
 namespace FSharp.Data
 
 open System
