@@ -305,6 +305,7 @@ let ``Can parse various JSON documents``() =
             """["Test\t"]"""                        , Some <| Array [|String "Test\t"|]
             """["\""]"""                            , Some <| Array [|String "\""|]
             """["\"\\\//\b\f\n\r\t\u2665"]"""       , Some <| Array [|String "\"\\//\b\f\n\r\t\u2665"|]
+            """["\ud83d\udc36"]"""                  , Some <| Array [|String "\ud83d\udc36"|]
             """[0]"""                               , Some <| Array [|Float 0.|]
             """[0.5]"""                             , Some <| Array [|Float 0.5|]
             """[1234]"""                            , Some <| Array [|Float 1234.|]
