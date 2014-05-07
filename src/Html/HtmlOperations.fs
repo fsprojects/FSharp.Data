@@ -305,6 +305,7 @@ module HtmlNode =
                                             match e with
                                             | HtmlText(_,text) -> yield text
                                             | HtmlComment(_,_) -> yield String.Empty
+                                            | HtmlElement(_,"br", _, _) -> yield Environment.NewLine
                                             | elem -> yield innerText' elem })
             | HtmlText(_,text) -> text
             | _ -> String.Empty
@@ -316,9 +317,9 @@ module HtmlNode =
     /// <param name="x">The given node</param>
     let siblings x =
         match parent x with
-        | Some(p) -> 
-           elements ((<>) x) p
+        | Some(p) -> elements ((<>) x) p
         | None -> []
+
 
     /// <summary>
     /// Trys to find a node that statifies the given function by walking backwards up the
