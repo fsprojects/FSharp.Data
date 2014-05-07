@@ -172,26 +172,22 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
         
     disposeFuncs.Add(firstResult.Reader.Dispose)
 
-    let mutable firstLine = firstResult.FirstLine
-    let mutable numberOfColumns = firstResult.ColumnCount
-    let mutable headers = firstResult.Headers
-    let mutable linesIterator = firstResult.LineIterator
-
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
-    let probablyTabSeparated = numberOfColumns < 2 && defaultSeparator = true && fst firstLine |> Seq.exists (fun c -> c.IndexOf("\t") > -1)
-    if probablyTabSeparated = true then
-      // Re-parse the first line using tab separator
-      separators <- "\t"
-      let firstResult = detectFirstLine(separators)
-      firstLine <- firstResult.FirstLine
-      numberOfColumns <- firstResult.ColumnCount
-      headers <- firstResult.Headers
-      linesIterator <- firstResult.LineIterator
+    let probablyTabSeparated =
+      firstResult.ColumnCount < 2 && defaultSeparator = true &&
+      fst firstResult.FirstLine |> Seq.exists (fun c -> c.IndexOf("\t") > -1)
 
-    new CsvFile<'RowType>(linesIterator, hasHeaders, firstLine, readerFunc, ignoreErrors, stringArrayToRow, rowToStringArray, disposer, headers, numberOfColumns, separators, quote)    
+    let finalResult =
+      if probablyTabSeparated then
+        separators <- "\t"
+        detectFirstLine(separators) // Re-parse the first line using tab separator
+      else firstResult
+
+    new CsvFile<'RowType>(finalResult, hasHeaders, readerFunc, ignoreErrors, stringArrayToRow, rowToStringArray, disposer, separators, quote)    
 
   /// [omit]
-  new ((linesIterator:IEnumerator<string[] * int>), hasHeaders, firstLine, (readerFunc:Func<TextReader>), ignoreErrors, stringArrayToRow, rowToStringArray, disposer, headers, numberOfColumns, separators, quote) as this =
+  private new (parsedFirstLine, hasHeaders, (readerFunc:Func<TextReader>), ignoreErrors, stringArrayToRow, rowToStringArray, disposer, separators, quote) as this =
+    let {LineIterator = linesIterator; FirstLine = firstLine; ColumnCount = numberOfColumns; Headers = headers} = parsedFirstLine
     // Create sequence that is exposed as 'Data' - on the first read, finish
     // reading the opened reader; on future reads, get a new reader (and skip headers)
     let firstData = seq {
