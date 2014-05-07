@@ -46,7 +46,7 @@ let ``Reading a required float that is not a valid float returns NaN`` () =
   prov.A |> should equal Double.NaN
 
 [<Test>]
-let ``Optional int correctly infered`` () = 
+let ``Optional int correctly inferred`` () = 
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
   let i = prov.[0].A
   i |> should equal (Some 123)
