@@ -217,3 +217,4 @@
 #### 2.0.8 - Unreleased
 * Prevent locking of dll's when reading samples from embedded resources.
 * Fixed wrong default encoding being used for HTTP requests and responses.
+* Fixed parsing of some unicode characters in JsonValue and JsonProvider.
