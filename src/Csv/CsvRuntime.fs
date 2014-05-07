@@ -6,6 +6,7 @@ namespace FSharp.Data.Runtime
 
 open System
 open System.ComponentModel
+open System.Collections.Generic
 open System.IO
 open System.Runtime.InteropServices
 open System.Text
@@ -99,6 +100,15 @@ type private ReentrantEnumerable<'T>(firstSeq:seq<'T>, nextSeq:unit -> seq<'T>) 
 // --------------------------------------------------------------------------------------
 
 /// [omit]
+type private parsedFirstLine = {
+    Reader: TextReader
+    FirstLine: string[] * int
+    Headers: string[] option
+    LineIterator: IEnumerator<string[] * int> 
+    ColumnCount: int
+  }
+
+/// [omit]
 type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
 
   /// The rows with data
@@ -124,37 +134,64 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
-  new (stringArrayToRow, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) as this =
-  
-    let separators = if String.IsNullOrEmpty separators then "," else separators
-  
-    // Call 'readerFunc' to get the first iterator and read the first line
-    let firstReader = readerFunc.Invoke()
-    let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
-    let firstLine = 
-      if linesIterator.MoveNext() then
-        linesIterator.Current
-      else
-        // If it does not have any lines, that's wrong...
-        linesIterator.Dispose()
-        if hasHeaders then failwithf "Invalid CSV file: header row not found" 
-        else failwithf "Invalid CSV file: no data rows found"
+  new (stringArrayToRow, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) =
 
-    // Get headers and count columns (if no headers, use the first line)
-    let headers = 
-      if not hasHeaders then None
-      else firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
-    let numberOfColumns =
-      let (Some headers, _ | _, (headers, _)) = headers, firstLine
-      headers |> Array.length
+    let defaultSeparator = String.IsNullOrEmpty separators
+    let mutable separators = if defaultSeparator then "," else separators
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
     let disposer = 
       { new IDisposable with
           member x.Dispose() = Seq.iter (fun f -> f()) disposeFuncs }
-    disposeFuncs.Add(firstReader.Dispose)
 
+    let detectFirstLine separators =
+      // Call 'readerFunc' to get the first iterator and read the first line
+      let firstReader = readerFunc.Invoke()
+      let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+      let firstLine = 
+        if linesIterator.MoveNext() then
+          linesIterator.Current
+        else
+          // If it does not have any lines, that's wrong...
+          linesIterator.Dispose()
+          if hasHeaders then failwithf "Invalid CSV file: header row not found" 
+          else failwithf "Invalid CSV file: no data rows found"
+
+      // Get headers and count columns (if no headers, use the first line)
+      let headers = 
+        if not hasHeaders then None
+        else firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
+      let numberOfColumns =
+        let (Some headers, _ | _, (headers, _)) = headers, firstLine
+        headers |> Array.length
+        
+      {Reader = firstReader; FirstLine = firstLine; Headers = headers; LineIterator = linesIterator; ColumnCount = numberOfColumns}
+
+    let firstResult = detectFirstLine(separators)
+        
+    disposeFuncs.Add(firstResult.Reader.Dispose)
+
+    let mutable firstLine = firstResult.FirstLine
+    let mutable numberOfColumns = firstResult.ColumnCount
+    let mutable headers = firstResult.Headers
+    let mutable linesIterator = firstResult.LineIterator
+
+    // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
+    let probablyTabSeparated = numberOfColumns < 2 && defaultSeparator = true && fst firstLine |> Seq.exists (fun c -> c.IndexOf("\t") > -1)
+    if probablyTabSeparated = true then
+      // Re-parse the first line using tab separator
+      separators <- "\t"
+      let firstResult = detectFirstLine(separators)
+      firstLine <- firstResult.FirstLine
+      numberOfColumns <- firstResult.ColumnCount
+      headers <- firstResult.Headers
+      linesIterator <- firstResult.LineIterator
+
+    new CsvFile<'RowType>(linesIterator, hasHeaders, firstLine, readerFunc, ignoreErrors, stringArrayToRow, rowToStringArray, disposer, headers, numberOfColumns, separators, quote)    
+
+  /// [omit]
+  new ((linesIterator:IEnumerator<string[] * int>), hasHeaders, firstLine, (readerFunc:Func<TextReader>), ignoreErrors, stringArrayToRow, rowToStringArray, disposer, headers, numberOfColumns, separators, quote) as this =
     // Create sequence that is exposed as 'Data' - on the first read, finish
     // reading the opened reader; on future reads, get a new reader (and skip headers)
     let firstData = seq {
