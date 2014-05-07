@@ -21,21 +21,21 @@ let [<Literal>] simpleCsv = """
 type SimpleCsv = CsvProvider<simpleCsv>
 
 [<Test>]
-let ``Bool column correctly infered and accessed`` () = 
+let ``Bool column correctly inferred and accessed`` () = 
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:bool = first.Column1
   actual |> should be True
 
 [<Test>]
-let ``Decimal column correctly infered and accessed`` () = 
+let ``Decimal column correctly inferred and accessed`` () = 
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:decimal = first.Column3
   actual |> should equal 3.0M
 
 [<Test>]
-let ``Guid column correctly infered and accessed`` () = 
+let ``Guid column correctly inferred and accessed`` () = 
   let csv = CsvProvider<"Data/LastFM.tsv", HasHeaders=false>.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:Guid option = first.Column3
