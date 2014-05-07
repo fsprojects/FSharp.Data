@@ -158,7 +158,7 @@ let ``XML elements with same name in different namespaces``() =
     ()
 
 [<Test>]
-let ``Optionality infered correctly for child elements``() =
+let ``Optionality inferred correctly for child elements``() =
 
     let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
     
