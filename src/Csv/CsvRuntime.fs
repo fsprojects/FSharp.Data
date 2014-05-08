@@ -175,7 +175,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
     let probablyTabSeparated =
       firstResult.ColumnCount < 2 && defaultSeparator = true &&
-      fst firstResult.FirstLine |> Seq.exists (fun c -> c.IndexOf("\t") > -1)
+      fst firstResult.FirstLine |> Seq.exists (fun c -> c.Contains("\t"))
 
     let finalResult =
       if probablyTabSeparated then
