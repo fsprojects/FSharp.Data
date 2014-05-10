@@ -35,7 +35,14 @@ let ``Decimal column correctly inferred and accessed`` () =
   actual |> should equal 3.0M
 
 [<Test>]
-let ``Guid column correctly inferred and accessed`` () = 
+let ``Guid column correctly inferred and accessed from mislabeled TSV`` () = 
+  let csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
+  let first = csv.Rows |> Seq.head
+  let actual:Guid option = first.Column3
+  actual |> should equal (Some (Guid.Parse("f1b1cf71-bd35-4e99-8624-24a6e15f133a")))
+
+[<Test>]
+let ``Guid column correctly infered and accessed`` () = 
   let csv = CsvProvider<"Data/LastFM.tsv", HasHeaders=false>.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:Guid option = first.Column3
