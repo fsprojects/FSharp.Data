@@ -74,39 +74,113 @@ module internal CsvReader =
 
 // --------------------------------------------------------------------------------------
 
+[<AutoOpen>]
 module private CsvHelpers = 
 
-  let inline tryConvert (stringArrayToRow:Func<obj, string[], 'RowType>) this row = 
-    try 
-      stringArrayToRow.Invoke(this, row) |> Choice1Of2 
-    with exn -> 
-      Choice2Of2 exn
+  type ParsedCsvLines = 
+    { FirstLine : string[] * int
+      Headers : string[] option
+      LineIterator : IEnumerator<string[] * int> 
+      ColumnCount : int
+      HasHeaders : bool
+      Separators : string
+      Quote : char }
+
+  /// An enumerable that will return elements from the 'firstSeq' first time it
+  /// is accessed and then will call 'nextSeq' each time for all future GetEnumerator calls
+  type private ReentrantEnumerable<'T>(firstSeq:seq<'T>, nextSeq:unit -> seq<'T>) =
+    let mutable first = true
+    interface seq<'T> with
+      member x.GetEnumerator() = 
+        if first then 
+          first <- false
+          firstSeq.GetEnumerator()
+        else nextSeq().GetEnumerator()
+    interface System.Collections.IEnumerable with
+      member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
+    
+  let parseIntoLines newReader separators quote hasHeaders =
+
+    // Get the first iterator and read the first line
+    let firstReader : TextReader = newReader()
+
+    let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+    let firstLine = 
+      if linesIterator.MoveNext() then
+        linesIterator.Current
+      else
+        // If it does not have any lines, that's wrong...
+        linesIterator.Dispose()
+        if hasHeaders then failwithf "Invalid CSV file: header row not found" 
+        else failwithf "Invalid CSV file: no data rows found"
+
+    let headers = 
+      if not hasHeaders then None
+      else firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
+
+    // If there are no headers, use the number of columns of the first line
+    let numberOfColumns =
+      match headers, firstLine with
+      | Some headers, _ -> headers.Length
+      | _, (columns, _) -> columns.Length
+      
+    { FirstLine = firstLine
+      Headers = headers
+      LineIterator = linesIterator
+      ColumnCount = numberOfColumns
+      HasHeaders = hasHeaders
+      Separators = separators
+      Quote = quote }
+
+  let parseIntoTypedRows newReader 
+                         ignoreErrors 
+                         stringArrayToRow
+                         { FirstLine = firstLine
+                           LineIterator = linesIterator
+                           ColumnCount = numberOfColumns 
+                           HasHeaders = hasHeaders
+                           Separators = separators
+                           Quote = quote } = 
+
+    // On the first read, finish reading the opened reader
+    // On future reads, get a new reader (and skip headers)
+    let firstSeq = seq {
+      use linesIterator = linesIterator
+      if not hasHeaders then yield firstLine
+      while linesIterator.MoveNext() do yield linesIterator.Current }
+
+    let nextSeq() = 
+      let reader : TextReader = newReader()
+      let csv = CsvReader.readCsvFile reader separators quote
+      if hasHeaders then Seq.skip 1 csv else csv
+
+    let untypedRows = ReentrantEnumerable<_>(firstSeq, nextSeq)
+    // Return data with parsed columns
+    seq {
+      for untypedRow, lineNumber in untypedRows do
+        if untypedRow.Length <> numberOfColumns then
+          // Ignore rows with different number of columns when ignoreErrors is set to true
+          if not ignoreErrors then
+            let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns untypedRow.Length
+        else
+          // Always ignore empty rows
+          if not (Array.forall String.IsNullOrWhiteSpace untypedRow) then
+            // Try to convert the untyped rows to 'RowType      
+            let convertedRow = 
+              try 
+                Choice1Of2 (stringArrayToRow untypedRow)
+              with exn -> 
+                Choice2Of2 exn
+            match convertedRow, ignoreErrors with
+            | Choice1Of2 convertedRow, _ -> yield convertedRow
+            | Choice2Of2 _, true -> ()
+            | Choice2Of2 exn, false -> 
+                let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
+                failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
+    }
 
 // --------------------------------------------------------------------------------------
-
-/// An enumerable that will return elements from the 'firstSeq' first time it
-/// is accessed and then will call 'nextSeq' each time for all future GetEnumerator calls
-type private ReentrantEnumerable<'T>(firstSeq:seq<'T>, nextSeq:unit -> seq<'T>) =
-  let mutable first = true
-  interface seq<'T> with
-    member x.GetEnumerator() = 
-      if first then 
-        first <- false
-        firstSeq.GetEnumerator()
-      else nextSeq().GetEnumerator()
-  interface System.Collections.IEnumerable with
-    member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
-
-// --------------------------------------------------------------------------------------
-
-/// [omit]
-type private parsedFirstLine = {
-    Reader: TextReader
-    FirstLine: string[] * int
-    Headers: string[] option
-    LineIterator: IEnumerator<string[] * int> 
-    ColumnCount: int
-  }
 
 /// [omit]
 type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
@@ -123,21 +197,17 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   member __.Quote = quote
   
   interface IDisposable with
-    member __.Dispose() = 
-      if disposer <> null then disposer.Dispose()
+    member __.Dispose() = disposer.Dispose()
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member CreateNonReentrant (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
+  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
     let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
-  new (stringArrayToRow, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) =
-
-    let defaultSeparator = String.IsNullOrEmpty separators
-    let mutable separators = if defaultSeparator then "," else separators
+  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) as this =
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
@@ -145,82 +215,37 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
       { new IDisposable with
           member x.Dispose() = Seq.iter (fun f -> f()) disposeFuncs }
 
-    let detectFirstLine separators =
-      // Call 'readerFunc' to get the first iterator and read the first line
-      let firstReader = readerFunc.Invoke()
-      let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
-      let firstLine = 
-        if linesIterator.MoveNext() then
-          linesIterator.Current
-        else
-          // If it does not have any lines, that's wrong...
-          linesIterator.Dispose()
-          if hasHeaders then failwithf "Invalid CSV file: header row not found" 
-          else failwithf "Invalid CSV file: no data rows found"
+    let newReader() =
+        let reader = readerFunc.Invoke()
+        disposeFuncs.Add reader.Dispose
+        reader
 
-      // Get headers and count columns (if no headers, use the first line)
-      let headers = 
-        if not hasHeaders then None
-        else firstLine |> fst |> Array.map (fun columnName -> columnName.Trim()) |> Some
-      let numberOfColumns =
-        let (Some headers, _ | _, (headers, _)) = headers, firstLine
-        headers |> Array.length
-        
-      {Reader = firstReader; FirstLine = firstLine; Headers = headers; LineIterator = linesIterator; ColumnCount = numberOfColumns}
+    let noSeparatorsSpecified = String.IsNullOrEmpty separators
+    let separators = if noSeparatorsSpecified then "," else separators
 
-    let firstResult = detectFirstLine(separators)
-        
-    disposeFuncs.Add(firstResult.Reader.Dispose)
+    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders
 
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
     let probablyTabSeparated =
-      firstResult.ColumnCount < 2 && defaultSeparator = true &&
-      fst firstResult.FirstLine |> Seq.exists (fun c -> c.Contains("\t"))
+      parsedCsvLines.ColumnCount < 2 && noSeparatorsSpecified &&
+      fst parsedCsvLines.FirstLine |> Array.exists (fun c -> c.Contains("\t"))
 
-    let finalResult =
-      if probablyTabSeparated then
-        separators <- "\t"
-        detectFirstLine(separators) // Re-parse the first line using tab separator
-      else firstResult
+    let parsedCsvLines =
+      if probablyTabSeparated
+      then parseIntoLines newReader "\t" quote hasHeaders
+      else parsedCsvLines
 
-    new CsvFile<'RowType>(finalResult, hasHeaders, readerFunc, ignoreErrors, stringArrayToRow, rowToStringArray, disposer, separators, quote)    
+    let rows = 
+      parsedCsvLines
+      |> parseIntoTypedRows newReader ignoreErrors (fun untypedRow -> stringArrayToRow.Invoke(this, untypedRow)) 
 
-  /// [omit]
-  private new (parsedFirstLine, hasHeaders, (readerFunc:Func<TextReader>), ignoreErrors, stringArrayToRow, rowToStringArray, disposer, separators, quote) as this =
-    let {LineIterator = linesIterator; FirstLine = firstLine; ColumnCount = numberOfColumns; Headers = headers} = parsedFirstLine
-    // Create sequence that is exposed as 'Data' - on the first read, finish
-    // reading the opened reader; on future reads, get a new reader (and skip headers)
-    let firstData = seq {
-      use ls = linesIterator
-      if not hasHeaders then yield firstLine
-      while ls.MoveNext() do yield ls.Current }
-    let nextData () = seq { 
-      let reader = readerFunc.Invoke()
-      let csv = CsvReader.readCsvFile reader separators quote
-      yield! if hasHeaders then Seq.skip 1 csv else csv }
-    let data = ReentrantEnumerable<_>(firstData, nextData)
-
-    // Return data with parsed columns
-    let data = seq {
-      for row, lineNumber in data do
-        if row.Length <> numberOfColumns then
-          // Ignore rows with different number of columns when ignoreErrors is set to true
-          if not ignoreErrors then
-            let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
-            failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns row.Length
-        else
-          // Always ignore empty rows
-          if not (Array.forall String.IsNullOrWhiteSpace row) then
-            // Try to convert rows to 'RowType      
-            let convertedRow = CsvHelpers.tryConvert stringArrayToRow this row
-            match convertedRow, ignoreErrors with
-            | Choice1Of2 convertedRow, _ -> yield convertedRow
-            | Choice2Of2 _, true -> ()
-            | Choice2Of2 exn, false -> 
-                let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
-                failwithf "Couldn't parse row %d according to schema: %s" lineNumber exn.Message
-    }
-    new CsvFile<'RowType>(rowToStringArray, disposer, data, headers, numberOfColumns, separators, quote)
+    new CsvFile<'RowType>(rowToStringArray,
+                          disposer, 
+                          rows, 
+                          parsedCsvLines.Headers, 
+                          parsedCsvLines.ColumnCount, 
+                          parsedCsvLines.Separators, 
+                          parsedCsvLines.Quote)
 
   /// Saves CSV to the specified writer
   member x.Save(writer:TextWriter, [<Optional>] ?separator, [<Optional>] ?quote) =

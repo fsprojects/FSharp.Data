@@ -3449,12 +3449,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member Mortality rate, infant, female (per 1,000 live births): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.FE.IN")
 
-    member Mortality rate, infant, female (per 1,000 live births): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member Mortality rate, infant, male (per 1,000 live births): FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.MA.IN")
-
     member Mortality rate, infant, male (per 1,000 live births): FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.MA.IN")
 
@@ -7776,12 +7770,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member Mortality rate, infant, female (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member Mortality rate, infant, female (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member Mortality rate, infant, male (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.MA.IN")
 
     member Mortality rate, infant, male (per 1,000 live births): FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.MA.IN")
