@@ -191,13 +191,11 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                         elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
                         elif d >= 'A' && d <= 'F' then int32 d - int32 'A' + 10
                         else failwith "hexdigit" 
-                    let unicodeGraphShort (s:string) =
-                        if s.Length <> 4 then failwith "unicodegraph";
-                        uint16 (hexdigit s.[0] * 4096 + hexdigit s.[1] * 256 + hexdigit s.[2] * 16 + hexdigit s.[3])
-                    let makeUnicodeChar (c:int) =  [| byte(c % 256); byte(c / 256) |]
-                    let bytes = makeUnicodeChar(int(unicodeGraphShort(s.Substring(i+2, 4))))
-                    let chars = UnicodeEncoding.Unicode.GetChars(bytes)
-                    buf.Append(chars) |> ignore
+                    let unicodeChar (s:string) =
+                        if s.Length <> 4 then failwith "unicodeChar";
+                        char (hexdigit s.[0] * 4096 + hexdigit s.[1] * 256 + hexdigit s.[2] * 16 + hexdigit s.[3])
+                    let ch = unicodeChar (s.Substring(i+2, 4))
+                    buf.Append(ch) |> ignore
                     i <- i + 4  // the \ and u will also be skipped past further below
                 | _ -> throw()
                 i <- i + 2  // skip past \ and next char

@@ -214,6 +214,8 @@
 * Support for reading sample CSV, JSON, and XML from an embedded resource.
 * Fix wrong error messages being returned when sample files are not found.
 
-#### 2.0.8 - Unreleased
+#### 2.0.8 - May 10 2014
 * Prevent locking of dll's when reading samples from embedded resources.
 * Fixed wrong default encoding being used for HTTP requests and responses.
+* Fixed parsing of some unicode characters in JsonValue and JsonProvider.
+* Auto-detect files with tab separators in CsvProvider.

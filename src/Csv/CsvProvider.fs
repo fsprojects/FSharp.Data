@@ -84,8 +84,8 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
           let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
           let body = 
-            csvErasedType?CreateNonReentrant () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
-                                                 separators, quote, hasHeaders, ignoreErrors, cacheRows)
+            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
+                                              separators, quote, hasHeaders, ignoreErrors, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 

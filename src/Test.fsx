@@ -32,26 +32,29 @@ let dumpAll inst =
     dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "list_of_counties_wikipedia.html"
+Html { Sample = "imdb_chart.htm"
        PreferOptionals = false
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,#N/A,:"
        Culture = "" 
-       ResolutionFolder = "" }
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
 |> dumpAll
 
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
-       ResolutionFolder = "" }
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
-      ResolutionFolder = "" }
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
@@ -66,7 +69,8 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
-      ResolutionFolder = "" }
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
 let testCases = 

@@ -1004,6 +1004,12 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``(%) Program participation - Unemp benefits and ALMP``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("lm_ub.cov_pop")
 
+    member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("PA.NUS.PPP.05")
+
+    member ``2005 PPP conversion factor, private consumption (LCU per international $)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("PA.NUS.PRVT.PP.05")
+
     member ``5-bank asset concentration``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.OI.06")
 
@@ -1400,11 +1406,11 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Business extent of disclosure index (0=less disclosure to 10=more disclosure)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.BUS.DISC.XQ")
 
-    member ``CO2 emissions (kg per 2005 PPP $ of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.PP.GD.KD")
-
     member ``CO2 emissions (kg per 2005 US$ of GDP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.KD.GD")
+
+    member ``CO2 emissions (kg per 2011 PPP $ of GDP)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.PP.GD.KD")
 
     member ``CO2 emissions (kg per PPP $ of GDP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.PP.GD")
@@ -2105,7 +2111,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Energy use (kg of oil equivalent per capita)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.PCAP.KG.OE")
 
-    member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2005 PPP)``: FDR.WorldBank.Indicator async with get
+    member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2011 PPP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.COMM.GD.PP.KD")
 
     member ``Energy use (kt of oil equivalent)``: FDR.WorldBank.Indicator async with get
@@ -2402,7 +2408,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``GDP per capita growth (annual %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.PCAP.KD.ZG")
 
-    member ``GDP per capita, PPP (constant 2005 international $)``: FDR.WorldBank.Indicator async with get
+    member ``GDP per capita, PPP (constant 2011 international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.PCAP.PP.KD")
 
     member ``GDP per capita, PPP (current international $)``: FDR.WorldBank.Indicator async with get
@@ -2414,10 +2420,10 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``GDP per unit of energy use (PPP $ per kg of oil equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.GDP.PUSE.KO.PP")
 
-    member ``GDP per unit of energy use (constant 2005 PPP $ per kg of oil equivalent)``: FDR.WorldBank.Indicator async with get
+    member ``GDP per unit of energy use (constant 2011 PPP $ per kg of oil equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.GDP.PUSE.KO.PP.KD")
 
-    member ``GDP, PPP (constant 2005 international $)``: FDR.WorldBank.Indicator async with get
+    member ``GDP, PPP (constant 2011 international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.MKTP.PP.KD")
 
     member ``GDP, PPP (current international $)``: FDR.WorldBank.Indicator async with get
@@ -2462,7 +2468,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``GNI per capita, Atlas method (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GNP.PCAP.CD")
 
-    member ``GNI per capita, PPP (constant 2005 international $)``: FDR.WorldBank.Indicator async with get
+    member ``GNI per capita, PPP (constant 2011 international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GNP.PCAP.PP.KD")
 
     member ``GNI per capita, PPP (current international $)``: FDR.WorldBank.Indicator async with get
@@ -2471,7 +2477,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``GNI, Atlas method (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GNP.ATLS.CD")
 
-    member ``GNI, PPP (constant 2005 international $)``: FDR.WorldBank.Indicator async with get
+    member ``GNI, PPP (constant 2011 international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GNP.MKTP.PP.KD")
 
     member ``GNI, PPP (current international $)``: FDR.WorldBank.Indicator async with get
@@ -2699,7 +2705,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Household final consumption expenditure per capita growth (annual %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NE.CON.PRVT.PC.KD.ZG")
 
-    member ``Household final consumption expenditure, PPP (constant 2005 international $)``: FDR.WorldBank.Indicator async with get
+    member ``Household final consumption expenditure, PPP (constant 2011 international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NE.CON.PRVT.PP.KD")
 
     member ``Household final consumption expenditure, PPP (current international $)``: FDR.WorldBank.Indicator async with get
@@ -3442,12 +3448,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Mortality rate, infant, female (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member ``Mortality rate, infant, female (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member ``Mortality rate, infant, male (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.MA.IN")
 
     member ``Mortality rate, infant, male (per 1,000 live births)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.IMRT.MA.IN")
@@ -5326,6 +5326,12 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``(%) Program participation - Unemp benefits and ALMP``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("lm_ub.cov_pop")
 
+    member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("PA.NUS.PPP.05")
+
+    member ``2005 PPP conversion factor, private consumption (LCU per international $)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("PA.NUS.PRVT.PP.05")
+
     member ``5-bank asset concentration``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.OI.06")
 
@@ -5722,11 +5728,11 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Business extent of disclosure index (0=less disclosure to 10=more disclosure)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.BUS.DISC.XQ")
 
-    member ``CO2 emissions (kg per 2005 PPP $ of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.PP.GD.KD")
-
     member ``CO2 emissions (kg per 2005 US$ of GDP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.KD.GD")
+
+    member ``CO2 emissions (kg per 2011 PPP $ of GDP)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.PP.GD.KD")
 
     member ``CO2 emissions (kg per PPP $ of GDP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.PP.GD")
@@ -6427,7 +6433,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Energy use (kg of oil equivalent per capita)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.PCAP.KG.OE")
 
-    member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2005 PPP)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2011 PPP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.COMM.GD.PP.KD")
 
     member ``Energy use (kt of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
@@ -6724,7 +6730,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``GDP per capita growth (annual %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.PCAP.KD.ZG")
 
-    member ``GDP per capita, PPP (constant 2005 international $)``: FDR.WorldBank.IndicatorDescription with get
+    member ``GDP per capita, PPP (constant 2011 international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.PCAP.PP.KD")
 
     member ``GDP per capita, PPP (current international $)``: FDR.WorldBank.IndicatorDescription with get
@@ -6736,10 +6742,10 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``GDP per unit of energy use (PPP $ per kg of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.GDP.PUSE.KO.PP")
 
-    member ``GDP per unit of energy use (constant 2005 PPP $ per kg of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
+    member ``GDP per unit of energy use (constant 2011 PPP $ per kg of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.GDP.PUSE.KO.PP.KD")
 
-    member ``GDP, PPP (constant 2005 international $)``: FDR.WorldBank.IndicatorDescription with get
+    member ``GDP, PPP (constant 2011 international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MKTP.PP.KD")
 
     member ``GDP, PPP (current international $)``: FDR.WorldBank.IndicatorDescription with get
@@ -6784,7 +6790,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``GNI per capita, Atlas method (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GNP.PCAP.CD")
 
-    member ``GNI per capita, PPP (constant 2005 international $)``: FDR.WorldBank.IndicatorDescription with get
+    member ``GNI per capita, PPP (constant 2011 international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GNP.PCAP.PP.KD")
 
     member ``GNI per capita, PPP (current international $)``: FDR.WorldBank.IndicatorDescription with get
@@ -6793,7 +6799,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``GNI, Atlas method (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GNP.ATLS.CD")
 
-    member ``GNI, PPP (constant 2005 international $)``: FDR.WorldBank.IndicatorDescription with get
+    member ``GNI, PPP (constant 2011 international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GNP.MKTP.PP.KD")
 
     member ``GNI, PPP (current international $)``: FDR.WorldBank.IndicatorDescription with get
@@ -7021,7 +7027,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Household final consumption expenditure per capita growth (annual %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NE.CON.PRVT.PC.KD.ZG")
 
-    member ``Household final consumption expenditure, PPP (constant 2005 international $)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Household final consumption expenditure, PPP (constant 2011 international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NE.CON.PRVT.PP.KD")
 
     member ``Household final consumption expenditure, PPP (current international $)``: FDR.WorldBank.IndicatorDescription with get
@@ -7764,12 +7770,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Mortality rate, infant, female (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member ``Mortality rate, infant, female (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.FE.IN")
-
-    member ``Mortality rate, infant, male (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.MA.IN")
 
     member ``Mortality rate, infant, male (per 1,000 live births)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.IMRT.MA.IN")
