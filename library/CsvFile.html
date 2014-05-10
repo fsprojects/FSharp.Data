@@ -175,7 +175,7 @@ that provides type-safe access to CSV data</li>
 <div class="tip" id="fs7">property Runtime.CsvFile.Rows: seq&lt;CsvRow&gt;</div>
 <div class="tip" id="fs8">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
 <div class="tip" id="fs9">member CsvRow.GetColumn : columnName:string -&gt; string<br />member CsvRow.GetColumn : index:int -&gt; string</div>
-<div class="tip" id="fs10">module CsvExtensions<br /><br />from FSharp.Data</div>
+<div class="tip" id="fs10">Multiple items<br />module CsvExtensions<br /><br />from FSharp.Data<br /><br />--------------------<br />type CsvExtensions =<br />&#160;&#160;static member AsBoolean : x:String * ?cultureInfo:CultureInfo -&gt; bool<br />&#160;&#160;static member AsDateTime : x:String * ?cultureInfo:CultureInfo -&gt; DateTime<br />&#160;&#160;static member AsDecimal : x:String * ?cultureInfo:CultureInfo -&gt; decimal<br />&#160;&#160;static member AsFloat : x:String * ?cultureInfo:CultureInfo * ?missingValues:string [] -&gt; float<br />&#160;&#160;static member AsGuid : x:String -&gt; Guid<br />&#160;&#160;static member AsInteger : x:String * ?cultureInfo:CultureInfo -&gt; int<br />&#160;&#160;static member AsInteger64 : x:String * ?cultureInfo:CultureInfo -&gt; int64<br /><br />Full name: FSharp.Data.CsvExtensions</div>
 <div class="tip" id="fs11">member Runtime.CsvFile.Filter : predicate:System.Func&lt;&#39;RowType,bool&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
 
         </div>

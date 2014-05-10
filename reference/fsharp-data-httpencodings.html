@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>FreebaseObject - F# Data</title>
+    <title>HttpEncodings - F# Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
@@ -40,47 +40,30 @@
 
 
 
-<h1>FreebaseObject</h1>
+<h1>HttpEncodings</h1>
 <div class="xmldoc">
-<p>Represents a single object drawn from Freebase.</p>
 </div>
-  <h3>Instance members</h3>
+
+<!-- Render nested types and modules, if there are any -->
+
+  <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Instance member</td><td>Description</td></tr>
+      <tr><td>Function or value</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
-            Blurb
+          <code onmouseout="hideTip(event, '117', 117)" onmouseover="showTip(event, '117', 117)">
+            PostDefaultEncoding 
           </code>
-          <div class="tip" id="205">
-            <strong>Signature:</strong> string list<br />
+          <div class="tip" id="117">
+            <strong>Signature:</strong> Encoding<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L304-304" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The Blurb text for this item, if any</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
-            DisplayText
-          </code>
-          <div class="tip" id="206">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L322-322" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L262-262" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -90,77 +73,19 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
-            GetImages()
+          <code onmouseout="hideTip(event, '118', 118)" onmouseover="showTip(event, '118', 118)">
+            ResponseDefaultEncoding 
           </code>
-          <div class="tip" id="207">
-            <strong>Signature:</strong> unit -&gt; seq&lt;string&gt;<br />
+          <div class="tip" id="118">
+            <strong>Signature:</strong> Encoding<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L289-289" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Net/Http.fs#L263-263" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Images associated with this item.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
-            Id
-          </code>
-          <div class="tip" id="208">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L292-292" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The ID of this item</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
-            MainImage
-          </code>
-          <div class="tip" id="209">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L309-309" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The main image associated with this item, if any</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
-            Name
-          </code>
-          <div class="tip" id="210">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Freebase/FreebaseRuntime.fs#L301-301" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The Name of this item</p>
-
+          
         </td>
       </tr>
     </tbody>

@@ -262,11 +262,11 @@ can be used to easily access data from the WorldBank</li>
 <div class="tip" id="fs3">val info : JsonValue<br /><br />Full name: JsonValue.info</div>
 <div class="tip" id="fs4">type JsonValue =<br />&#160;&#160;| String of string<br />&#160;&#160;| Number of decimal<br />&#160;&#160;| Float of float<br />&#160;&#160;| Record of properties: (string * JsonValue) []<br />&#160;&#160;| Array of elements: JsonValue []<br />&#160;&#160;| Boolean of bool<br />&#160;&#160;| Null<br />&#160;&#160;member Post : uri:string * ?headers:(string * string) list -&gt; HttpResponse<br />&#160;&#160;member Request : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; HttpResponse<br />&#160;&#160;member RequestAsync : uri:string * ?httpMethod:string * ?headers:(string * string) list -&gt; Async&lt;HttpResponse&gt;<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member ToString : saveOptions:JsonSaveOptions -&gt; string<br />&#160;&#160;static member AsyncLoad : uri:string * ?cultureInfo:CultureInfo -&gt; Async&lt;JsonValue&gt;<br />&#160;&#160;static member Load : uri:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : reader:TextReader * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Load : stream:Stream * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member Parse : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br />&#160;&#160;static member ParseMultiple : text:string * ?cultureInfo:CultureInfo -&gt; seq&lt;JsonValue&gt;<br />&#160;&#160;static member ParseSample : text:string * ?cultureInfo:CultureInfo -&gt; JsonValue<br /><br />Full name: FSharp.Data.JsonValue</div>
 <div class="tip" id="fs5">static member JsonValue.Parse : text:string * ?cultureInfo:System.Globalization.CultureInfo -&gt; JsonValue</div>
-<div class="tip" id="fs6">module JsonExtensions<br /><br />from FSharp.Data</div>
+<div class="tip" id="fs6">Multiple items<br />module JsonExtensions<br /><br />from FSharp.Data<br /><br />--------------------<br />type JsonExtensions =<br />&#160;&#160;static member AsArray : x:JsonValue -&gt; JsonValue []<br />&#160;&#160;static member AsBoolean : x:JsonValue * ?cultureInfo:CultureInfo -&gt; bool<br />&#160;&#160;static member AsDateTime : x:JsonValue * ?cultureInfo:CultureInfo -&gt; DateTime<br />&#160;&#160;static member AsDecimal : x:JsonValue * ?cultureInfo:CultureInfo -&gt; decimal<br />&#160;&#160;static member AsFloat : x:JsonValue * ?cultureInfo:CultureInfo * ?missingValues:string [] -&gt; float<br />&#160;&#160;static member AsGuid : x:JsonValue -&gt; Guid<br />&#160;&#160;static member AsInteger : x:JsonValue * ?cultureInfo:CultureInfo -&gt; int<br />&#160;&#160;static member AsInteger64 : x:JsonValue * ?cultureInfo:CultureInfo -&gt; int64<br />&#160;&#160;static member AsString : x:JsonValue * ?cultureInfo:CultureInfo -&gt; string<br />&#160;&#160;static member GetEnumerator : x:JsonValue -&gt; IEnumerator<br />&#160;&#160;...<br /><br />Full name: FSharp.Data.JsonExtensions</div>
 <div class="tip" id="fs7">val n : JsonValue<br /><br />Full name: JsonValue.n</div>
 <div class="tip" id="fs8">val printfn : format:Printf.TextWriterFormat&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.ExtraTopLevelOperators.printfn</div>
 <div class="tip" id="fs9">val sib : JsonValue</div>
-<div class="tip" id="fs10">member JsonValue.AsString : ?cultureInfo:System.Globalization.CultureInfo -&gt; string</div>
+<div class="tip" id="fs10">static member JsonExtensions.AsString : x:JsonValue * ?cultureInfo:System.Globalization.CultureInfo -&gt; string</div>
 <div class="tip" id="fs11">val value : JsonValue<br /><br />Full name: JsonValue.value</div>
 <div class="tip" id="fs12">static member JsonValue.Load : uri:string * ?cultureInfo:System.Globalization.CultureInfo -&gt; JsonValue<br />static member JsonValue.Load : reader:System.IO.TextReader * ?cultureInfo:System.Globalization.CultureInfo -&gt; JsonValue<br />static member JsonValue.Load : stream:System.IO.Stream * ?cultureInfo:System.Globalization.CultureInfo -&gt; JsonValue</div>
 <div class="tip" id="fs13">val valueAsync : Async&lt;JsonValue&gt;<br /><br />Full name: JsonValue.valueAsync</div>
@@ -277,10 +277,10 @@ can be used to easily access data from the WorldBank</li>
 <div class="tip" id="fs18">val page : JsonValue</div>
 <div class="tip" id="fs19">val pages : JsonValue</div>
 <div class="tip" id="fs20">val total : JsonValue</div>
-<div class="tip" id="fs21">member JsonValue.AsInteger : ?cultureInfo:System.Globalization.CultureInfo -&gt; int</div>
+<div class="tip" id="fs21">static member JsonExtensions.AsInteger : x:JsonValue * ?cultureInfo:System.Globalization.CultureInfo -&gt; int</div>
 <div class="tip" id="fs22">val record : JsonValue</div>
 <div class="tip" id="fs23">union case JsonValue.Null: JsonValue</div>
-<div class="tip" id="fs24">member JsonValue.AsFloat : ?cultureInfo:System.Globalization.CultureInfo * ?missingValues:string [] -&gt; float</div>
+<div class="tip" id="fs24">static member JsonExtensions.AsFloat : x:JsonValue * ?cultureInfo:System.Globalization.CultureInfo * ?missingValues:string [] -&gt; float</div>
 
         </div>
         <div class="span3">
