@@ -48,6 +48,7 @@ type HtmlProviderArgs =
       IncludeLayoutTables : bool
       MissingValues : string
       Culture : string
+      Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string }
 
@@ -119,6 +120,7 @@ type TypeProviderInstantiation =
                    box x.IncludeLayoutTables
                    box x.MissingValues
                    box x.Culture
+                   box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource |]
             | WorldBank x ->
@@ -236,6 +238,7 @@ type TypeProviderInstantiation =
                    IncludeLayoutTables = args.[3] |> bool.Parse
                    MissingValues = ""
                    Culture = args.[4] 
+                   Encoding = ""
                    ResolutionFolder = ""
                    EmbeddedResource = "" }
         | "WorldBank" ->
