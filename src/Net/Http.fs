@@ -262,6 +262,15 @@ module HttpEncodings =
     let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
     let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
 
+    let internal getEncoding (encodingStr:string) = 
+#if FX_NO_GETENCODING_BY_CODEPAGE
+        Encoding.GetEncoding encodingStr
+#else
+        match Int32.TryParse(encodingStr, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+        | true, codepage -> Encoding.GetEncoding codepage                
+        | _ -> Encoding.GetEncoding encodingStr
+#endif
+
 [<AutoOpen>]
 module private Helpers =
 
@@ -537,8 +546,8 @@ module private Helpers =
                 let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
                     | "", "" -> HttpEncodings.ResponseDefaultEncoding
-                    | "", characterSet -> Encoding.GetEncoding(characterSet)
-                    | responseEncodingOverride, _ -> Encoding.GetEncoding(responseEncodingOverride)
+                    | "", characterSet -> Encoding.GetEncoding characterSet
+                    | responseEncodingOverride, _ -> HttpEncodings.getEncoding responseEncodingOverride
                 use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
             else

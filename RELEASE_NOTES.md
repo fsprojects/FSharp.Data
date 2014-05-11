@@ -219,3 +219,6 @@
 * Fixed wrong default encoding being used for HTTP requests and responses.
 * Fixed parsing of some unicode characters in JsonValue and JsonProvider.
 * Auto-detect files with tab separators in CsvProvider.
+
+#### 2.0.9 - Unreleased
+* Support for non-UTF8 encodings in sample files for CsvProvider, JsonProvider, and XmlProvider.

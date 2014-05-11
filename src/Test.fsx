@@ -36,19 +36,22 @@ Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
-       ResolutionFolder = "" }
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
-      ResolutionFolder = "" }
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
       Separators = ";" 
-      Culture = "" 
       InferRows = Int32.MaxValue
       Schema = ""
       HasHeaders = true
@@ -58,7 +61,10 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
-      ResolutionFolder = "" }
+      Culture = "" 
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
 let testCases = 
