@@ -47,7 +47,6 @@
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\HttpUtils.fs" />
     <Compile Include="CommonRuntime\TextConversions.fs" />
     <Compile Include="CommonRuntime\TextRuntime.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />
