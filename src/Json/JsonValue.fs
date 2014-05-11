@@ -103,13 +103,13 @@ type JsonValue =
           (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
         else 
           match chars.[i] with
-          | '\b' -> (ensureBuilder i).Append '\b' |> ignore
-          | '\t' -> (ensureBuilder i).Append '\t' |> ignore
-          | '\n' -> (ensureBuilder i).Append '\n' |> ignore
-          | '\f' -> (ensureBuilder i).Append '\f' |> ignore
-          | '\r' -> (ensureBuilder i).Append '\r' |> ignore
-          | '"' -> (ensureBuilder i).Append '"' |> ignore
-          | '\\' -> (ensureBuilder i).Append '\\' |> ignore
+          | '\b' -> (ensureBuilder i).Append "\\b" |> ignore
+          | '\t' -> (ensureBuilder i).Append "\\t" |> ignore
+          | '\n' -> (ensureBuilder i).Append "\\n" |> ignore
+          | '\f' -> (ensureBuilder i).Append "\\f" |> ignore
+          | '\r' -> (ensureBuilder i).Append "\\r" |> ignore
+          | '"' -> (ensureBuilder i).Append "\\\"" |> ignore
+          | '\\' -> (ensureBuilder i).Append "\\\\" |> ignore
           | _ -> if !sb <> null then (!sb).Append(char c) |> ignore
       if !sb = null then value else
         (ensureBuilder chars.Length).ToString()
