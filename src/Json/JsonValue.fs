@@ -83,7 +83,7 @@ type JsonValue =
   // Encode characters that are not valid in JS string. The implementation is based
   // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
   // (but we use just a single iteration and create StringBuilder as needed)
-  static member JsonStringEncode (value : string) = 
+  static member internal JsonStringEncode (value : string) = 
     if String.IsNullOrEmpty value then "" else 
       let chars = value.ToCharArray() 
     
