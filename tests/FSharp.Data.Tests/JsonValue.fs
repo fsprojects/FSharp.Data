@@ -388,3 +388,24 @@ let ``Can parse various JSON documents``() =
 
     if failures.Length > 0 then
         Assert.Fail <| failures.ToString ()
+
+[<Test>]
+let ``Basic special characters encoded correctly`` () = 
+  let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
+  let actual = JsonValue.JsonStringEncode input
+  let expected = " \\\"quoted\\\" and 'quoted' and \\r\\n and \uABCD "
+  actual |> should equal expected
+
+[<Test>]
+let ``Encoding of simple string is valid JSON`` () = 
+  let input = "sample \"json\" with \t\r\n \' quotes etc."
+  let actual = JsonValue.JsonStringEncode input
+  let expected = "sample \\\"json\\\" with \\t\\r\\n ' quotes etc."
+  actual |> should equal expected
+
+[<Test>]
+let ``Encoding of markup is not overzealous`` () =
+  let input = "<SecurityLabel><MOD>ModelAdministrators</MOD></SecurityLabel>"
+  let actual = JsonValue.JsonStringEncode input
+  let expected = input // Should not escape </>
+  actual |> should equal expected

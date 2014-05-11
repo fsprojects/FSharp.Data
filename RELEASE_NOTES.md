@@ -222,3 +222,4 @@
 
 #### 2.0.9 - Unreleased
 * Support for non-UTF8 encodings in sample files for CsvProvider, JsonProvider, and XmlProvider.
+* Fixed unnecessary character escaping in JsonValue

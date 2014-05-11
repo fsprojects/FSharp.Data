@@ -15,7 +15,6 @@ open System.Text
 open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.HttpUtils
 open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
@@ -40,7 +39,7 @@ type JsonValue =
   | Null
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
-
+  
   member x.ToString saveOptions =
 
     let rec serialize (sb:StringBuilder) indentation json =
@@ -54,7 +53,7 @@ type JsonValue =
       | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
       | String s ->
-          sb.Append("\"" + JavaScriptStringEncode(s) + "\"")
+          sb.Append("\"" + JsonValue.JsonStringEncode(s) + "\"")
       | Record properties ->
           let isNotFirst = ref false
           sb.Append "{"  |> ignore
@@ -62,9 +61,9 @@ type JsonValue =
             if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
             newLine 2
             if saveOptions = JsonSaveOptions.None then
-              sb.AppendFormat("\"{0}\": ", JavaScriptStringEncode(k)) |> ignore
+              sb.AppendFormat("\"{0}\": ", JsonValue.JsonStringEncode(k)) |> ignore
             else
-              sb.AppendFormat("\"{0}\":", JavaScriptStringEncode(k)) |> ignore
+              sb.AppendFormat("\"{0}\":", JsonValue.JsonStringEncode(k)) |> ignore
             serialize sb (indentation + 2) v |> ignore
           newLine 0
           sb.Append "}"
@@ -80,6 +79,40 @@ type JsonValue =
           sb.Append "]"
 
     (serialize (new StringBuilder()) 0 x).ToString()
+
+  // Encode characters that are not valid in JS string. The implementation is based
+  // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+  // (but we use just a single iteration and create StringBuilder as needed)
+  static member internal JsonStringEncode (value : string) = 
+    if String.IsNullOrEmpty value then "" else 
+      let chars = value.ToCharArray() 
+    
+      // We only create StringBuilder when we find a character that 
+      // we actually need to encode (and then we copy all skipped chars)
+      let sb = ref null 
+      let inline ensureBuilder i = 
+        if !sb = null then 
+          sb := new StringBuilder(value.Length + 5)
+          (!sb).Append(value.Substring(0, i))
+        else !sb
+
+      // Iterate over characters and encode 
+      for i in 0 .. chars.Length - 1 do 
+        let c = int (chars.[i])
+        if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 then
+          (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
+        else 
+          match chars.[i] with
+          | '\b' -> (ensureBuilder i).Append "\\b" |> ignore
+          | '\t' -> (ensureBuilder i).Append "\\t" |> ignore
+          | '\n' -> (ensureBuilder i).Append "\\n" |> ignore
+          | '\f' -> (ensureBuilder i).Append "\\f" |> ignore
+          | '\r' -> (ensureBuilder i).Append "\\r" |> ignore
+          | '"' -> (ensureBuilder i).Append "\\\"" |> ignore
+          | '\\' -> (ensureBuilder i).Append "\\\\" |> ignore
+          | _ -> if !sb <> null then (!sb).Append(char c) |> ignore
+      if !sb = null then value else
+        (ensureBuilder chars.Length).ToString()
 
 /// [omit]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]

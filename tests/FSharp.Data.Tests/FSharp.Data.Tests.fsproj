@@ -182,7 +182,6 @@
       <Link>FsUnit.fs</Link>
     </Compile>
     <Compile Include="UriUtils.fs" />
-    <Compile Include="HttpUtils.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="MockServer.fs" />
     <Compile Include="HttpIntegrationTests.fs" />
