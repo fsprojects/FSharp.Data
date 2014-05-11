@@ -37,6 +37,7 @@ Html { Sample = "imdb_chart.htm"
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,#N/A,:"
        Culture = "" 
+       Encoding = ""
        ResolutionFolder = ""
        EmbeddedResource = "" }
 |> dumpAll
@@ -45,6 +46,7 @@ Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
+       Encoding = ""
        ResolutionFolder = ""
        EmbeddedResource = "" }
 |> dumpAll
@@ -53,13 +55,13 @@ Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
+      Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
       Separators = ";" 
-      Culture = "" 
       InferRows = Int32.MaxValue
       Schema = ""
       HasHeaders = true
@@ -69,9 +71,10 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
+      Culture = "" 
+      Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = "" }
-|> dumpAll
 
 let testCases = 
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"

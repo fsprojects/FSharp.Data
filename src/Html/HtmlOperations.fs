@@ -627,7 +627,7 @@ module HtmlDocumentExtensions =
         
         /// Loads HTML from the specified uri asynchronously
         static member AsyncLoad(uri:string) = async {
-          let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" uri
+          let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
           return HtmlParser.parseDocument reader
         }
     

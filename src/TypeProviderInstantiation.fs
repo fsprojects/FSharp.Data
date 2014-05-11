@@ -10,7 +10,6 @@ open FSharp.Data.Runtime.Freebase.FreebaseRequests
 type CsvProviderArgs = 
     { Sample : string
       Separators : string
-      Culture : string
       InferRows : int
       Schema : string
       HasHeaders : bool
@@ -20,6 +19,8 @@ type CsvProviderArgs =
       Quote : char
       MissingValues : string
       CacheRows : bool
+      Culture : string
+      Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string }
 
@@ -28,6 +29,7 @@ type XmlProviderArgs =
       SampleIsList : bool
       Global : bool
       Culture : string
+      Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string }
 
@@ -36,6 +38,7 @@ type JsonProviderArgs =
       SampleIsList : bool
       RootName : string
       Culture : string
+      Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string }
 
@@ -78,7 +81,6 @@ type TypeProviderInstantiation =
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.Separators
-                   box x.Culture
                    box x.InferRows
                    box x.Schema
                    box x.HasHeaders
@@ -88,6 +90,8 @@ type TypeProviderInstantiation =
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
+                   box x.Culture
+                   box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource |] 
             | Xml x ->
@@ -96,6 +100,7 @@ type TypeProviderInstantiation =
                    box x.SampleIsList
                    box x.Global
                    box x.Culture
+                   box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource |] 
             | Json x -> 
@@ -104,6 +109,7 @@ type TypeProviderInstantiation =
                    box x.SampleIsList
                    box x.RootName
                    box x.Culture
+                   box x.Encoding
                    box x.ResolutionFolder 
                    box x.EmbeddedResource |] 
             | Html x -> 
@@ -138,11 +144,13 @@ type TypeProviderInstantiation =
             ["Csv"
              x.Sample
              x.Separators
-             x.Culture
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
              x.AssumeMissingValues.ToString()
-             x.PreferOptionals.ToString()]
+             x.PreferOptionals.ToString()
+             x.MissingValues
+             x.Culture
+             x.Encoding ]
         | Xml x -> 
             ["Xml"
              x.Sample
@@ -193,15 +201,16 @@ type TypeProviderInstantiation =
         | "Csv" ->
             Csv { Sample = args.[1]
                   Separators = args.[2]
-                  Culture = args.[3]
                   InferRows = Int32.MaxValue
-                  Schema = args.[4].Replace(';', ',')
-                  HasHeaders = args.[5] |> bool.Parse
+                  Schema = args.[3].Replace(';', ',')
+                  HasHeaders = args.[4] |> bool.Parse
                   IgnoreErrors = false
-                  AssumeMissingValues = args.[6] |> bool.Parse
-                  PreferOptionals = args.[7] |> bool.Parse
+                  AssumeMissingValues = args.[5] |> bool.Parse
+                  PreferOptionals = args.[6] |> bool.Parse
                   Quote = '"'
-                  MissingValues = ""
+                  MissingValues = args.[7]
+                  Culture = args.[8]
+                  Encoding = args.[9]
                   CacheRows = false
                   ResolutionFolder = ""
                   EmbeddedResource = "" }
@@ -210,6 +219,7 @@ type TypeProviderInstantiation =
                   SampleIsList = args.[2] |> bool.Parse
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
+                  Encoding = ""
                   ResolutionFolder = ""
                   EmbeddedResource = "" }
         | "Json" ->
@@ -217,6 +227,7 @@ type TypeProviderInstantiation =
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 
+                   Encoding = ""
                    ResolutionFolder = ""
                    EmbeddedResource = "" }
         | "Html" ->

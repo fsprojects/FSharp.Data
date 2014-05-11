@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation 2005-2012.
-// This sample code is provided "as is" without warranty of any kind. 
-// We disclaim all warranties, either express or implied, including the 
-// warranties of merchantability and fitness for a particular purpose. 
+// This sample code is provided "as is" without warranty of any kind.
+// We disclaim all warranties, either express or implied, including the
+// warranties of merchantability and fitness for a particular purpose.
 //
 // A simple F# portable parser for JSON data
 // --------------------------------------------------------------------------------------
@@ -20,13 +20,13 @@ open FSharp.Data.Runtime.HttpUtils
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
-type JsonSaveOptions = 
+type JsonSaveOptions =
   /// Format (indent) the JsonValue
   | None = 0
   /// Print the JsonValue in one line in a compact way
   | DisableFormatting = 1
 
-/// Represents a JSON value. Large numbers that do not fit in the 
+/// Represents a JSON value. Large numbers that do not fit in the
 /// Decimal type are represented using the Float case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
 [<RequireQualifiedAccess>]
@@ -34,7 +34,7 @@ type JsonSaveOptions =
 type JsonValue =
   | String of string
   | Number of decimal
-  | Float of float 
+  | Float of float
   | Record of properties:(string * JsonValue)[]
   | Array of elements:JsonValue[]
   | Boolean of bool
@@ -47,7 +47,7 @@ type JsonValue =
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 
-  member x.ToString saveOptions = 
+  member x.ToString saveOptions =
 
     let rec serialize (sb:StringBuilder) indentation json =
       let append (str:string) = 
@@ -65,11 +65,11 @@ type JsonValue =
       | Boolean b -> append (if b then "true" else "false")
       | Number number -> append <| number.ToString(CultureInfo.InvariantCulture)
       | Float number -> append <| number.ToString(CultureInfo.InvariantCulture)
-      | String s -> 
+      | String s ->
           append "\""
           append <| JavaScriptStringEncode s
           append "\""
-      | Record properties -> 
+      | Record properties ->
           let isNotFirst = ref false
           append "{"
           for k, v in properties do
@@ -84,7 +84,7 @@ type JsonValue =
             serialize sb (indentation + 2) v
           newLine 0
           append "}"
-      | Array elements -> 
+      | Array elements ->
           let isNotFirst = ref false
           append "["
           for element in elements do
@@ -93,7 +93,7 @@ type JsonValue =
             else isNotFirst := true
             newLine 2
             serialize sb (indentation + 2) element
-          if elements.Length > 0 then 
+          if elements.Length > 0 then
             newLine 0
           append "]"
 
@@ -109,14 +109,14 @@ module JsonValue =
   /// backwards compatibility reaons
   [<Obsolete("Please use JsonValue.Record instead")>]
   let (|Object|_|) x =
-    match x with 
+    match x with
     | JsonValue.Record properties -> Map.ofArray properties |> Some
     | _ -> None
 
   /// Constructor to create a `JsonValue.Record of (string * JsonValue)[]` as a `JsonValue.Object of Map<string, JsonValue>` for
   /// backwards compatibility reaons
   [<Obsolete("Please use JsonValue.Record instead")>]
-  let Object = Map.toArray >> JsonValue.Record 
+  let Object = Map.toArray >> JsonValue.Record
 
 // --------------------------------------------------------------------------------------
 // JSON parser
@@ -134,16 +134,16 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
       while i < s.Length && Char.IsWhiteSpace s.[i] do
         i <- i + 1
     let decimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator.[0]
-    let isNumChar c = 
+    let isNumChar c =
       Char.IsDigit c || c=decimalSeparator || c='e' || c='E' || c='+' || c='-'
-    let throw() = 
-      let msg = 
-        sprintf 
+    let throw() =
+      let msg =
+        sprintf
           "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
           i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) (if jsonText.Length > 1000 then jsonText.Substring(0, 1000) else jsonText)
       failwith msg
-    let ensure cond = 
-      if not cond then throw()  
+    let ensure cond =
+      if not cond then throw()
 
     // Recursive descent parser for JSON that uses global mutable index
     let rec parseValue() =
@@ -186,11 +186,11 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                 | '"' -> buf.Append('"') |> ignore
                 | 'u' ->
                     ensure(i+5 < s.Length)
-                    let hexdigit d = 
+                    let hexdigit d =
                         if d >= '0' && d <= '9' then int32 d - int32 '0'
                         elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
                         elif d >= 'A' && d <= 'F' then int32 d - int32 'A' + 10
-                        else failwith "hexdigit" 
+                        else failwith "hexdigit"
                     let unicodeChar (s:string) =
                         if s.Length <> 4 then failwith "unicodeChar";
                         char (hexdigit s.[0] * 4096 + hexdigit s.[1] * 256 + hexdigit s.[2] * 16 + hexdigit s.[3])
@@ -211,10 +211,10 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         while i < s.Length && isNumChar(s.[i]) do
             i <- i + 1
         let len = i - start
-        match TextConversions.AsDecimal cultureInfo (s.Substring(start,len)) with  
+        match TextConversions.AsDecimal cultureInfo (s.Substring(start,len)) with
         | Some x -> JsonValue.Number x
-        | _ -> 
-            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo (s.Substring(start,len)) with  
+        | _ ->
+            match TextConversions.AsFloat [| |] (*useNoneForMissingValues*)false cultureInfo (s.Substring(start,len)) with
             | Some x -> JsonValue.Float x
             | _ -> throw()
 
@@ -288,40 +288,40 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
         r
 
     // Start by parsing the top-level value
-    member x.Parse() = 
+    member x.Parse() =
         let value = parseRootValue()
         skipWhitespace()
         if i <> s.Length then
             throw()
         value
 
-    member x.ParseMultiple() = 
+    member x.ParseMultiple() =
         seq {
             while i <> s.Length do
                 yield parseRootValue()
-                skipWhitespace() 
+                skipWhitespace()
         }
 
 type JsonValue with
 
   /// Parses the specified JSON string
-  static member Parse(text, ?cultureInfo) = 
+  static member Parse(text, ?cultureInfo) =
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified stream
-  static member Load(stream:Stream, ?cultureInfo) = 
+  static member Load(stream:Stream, ?cultureInfo) =
     use reader = new StreamReader(stream)
     let text = reader.ReadToEnd()
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified reader
-  static member Load(reader:TextReader, ?cultureInfo) = 
+  static member Load(reader:TextReader, ?cultureInfo) =
     let text = reader.ReadToEnd()
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" uri
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
@@ -340,7 +340,7 @@ type JsonValue with
     JsonParser(text, cultureInfo, false).ParseMultiple()
 
   /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, ?httpMethod, ?headers) =  
+  member x.Request(uri:string, ?httpMethod, ?headers) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg headers []
     let headers =
@@ -370,5 +370,5 @@ type JsonValue with
       httpMethod = httpMethod)
 
   [<Obsolete("Please use JsonValue.Request instead")>]
-  member x.Post(uri:string, ?headers) =  
+  member x.Post(uri:string, ?headers) =
     x.Request(uri, ?headers = headers)

@@ -114,7 +114,7 @@ let ``Infers type of an emtpy CSV file`` () =
 
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>.GetSample()
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="nb-NO">.GetSample()
   let row = csv.Rows |> Seq.head
   (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
 
@@ -242,6 +242,7 @@ let ``AssumeMissingValues works when inferRows limit is reached``() =
 
 type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
 
+[<Test>]
 let ``Sample which also is a valid filename``() = 
     let row = CsvWithSampleWhichIsAValidFilename.GetSample().Rows |> Seq.exactlyOne
     row.Column1 |> should equal 1
@@ -250,8 +251,24 @@ let ``Sample which also is a valid filename``() =
 
 type CsvWithoutSample = CsvProvider<Schema="category (string), id (string), timestamp (string)", HasHeaders=false>
 
+[<Test>]
 let ``Csv without sample``() = 
     let row = CsvWithoutSample.Parse("1,2,3").Rows |> Seq.exactlyOne
     row.category |> should equal "1"
     row.id |> should equal "2"
     row.timestamp |> should equal "3"
+
+type UTF8 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
+type CP932 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+
+[<Test>]
+let ``Uses UTF8 for sample file when encoding not specified``() =
+    let utf8 = UTF8.GetSample()
+    let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
+    row2 |> should equal (2, "NaN (�񐔒l)")
+
+[<Test>]
+let ``Respects encoding when specified``() =
+    let cp932 = CP932.GetSample()
+    let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
+    row2 |> should equal (2, Double.NaN)

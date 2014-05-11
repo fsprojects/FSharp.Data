@@ -195,7 +195,7 @@ module ProviderHelpers =
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
-                                      (cfg:TypeProviderConfig) resolutionFolder optResource fullTypeName =
+                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
@@ -237,7 +237,7 @@ module ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                asyncReadText (Some (tp, fullTypeName)) resolver formatName uri
+                asyncReadText (Some (tp, fullTypeName)) resolver formatName encodingStr uri
                 |> Async.RunSynchronously
     
             try
@@ -319,7 +319,7 @@ module ProviderHelpers =
     /// * typeName -> the full name of the type provider, this will be used for caching
     let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
-                     resolutionFolder optResource fullTypeName =
+                     encodingStr resolutionFolder optResource fullTypeName =
     
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
@@ -333,7 +333,7 @@ module ProviderHelpers =
         getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg resolutionFolder optResource fullTypeName
+        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName
         
         let spec = getSpecFromSamples parseResult.TypedSamples
         
@@ -372,7 +372,7 @@ module ProviderHelpers =
           let args = [ ProvidedParameter("uri", typeof<string>) ]
           let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
           m.InvokeCode <- fun (Singleton uri) -> 
-              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName %%uri) @>
+              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @>
               |> spec.CreateFromTextReader 
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
@@ -381,7 +381,7 @@ module ProviderHelpers =
           let args = [ ProvidedParameter("uri", typeof<string>) ]
           let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, IsStaticMethod = true)
           m.InvokeCode <- fun (Singleton uri) -> 
-              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName %%uri @>
+              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
               asyncMap replacer resultType readerAsync spec.CreateFromTextReader
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
@@ -402,7 +402,7 @@ module ProviderHelpers =
                       let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
                       m.InvokeCode <- fun _ -> 
                           if parseResult.SampleIsUri 
-                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri) @>
+                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
                           else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                           |> spec.CreateFromTextReaderForSampleList
                       yield m :> _
@@ -411,7 +411,7 @@ module ProviderHelpers =
                           // Generate static AsyncGetSamples method
                           let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
                           m.InvokeCode <- fun _ -> 
-                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri @>
+                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
                               asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
                           yield m :> _
               
@@ -421,7 +421,7 @@ module ProviderHelpers =
               
                 let getSampleCode = fun _ -> 
                     if parseResult.SampleIsUri  
-                    then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri) @>
+                    then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
                     else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                     |> spec.CreateFromTextReader
               
@@ -436,7 +436,7 @@ module ProviderHelpers =
                     // Generate static AsyncGetSample method
                     let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
                     m.InvokeCode <- fun _ -> 
-                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName sampleOrSampleUri @>
+                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
                         asyncMap replacer resultType readerAsync spec.CreateFromTextReader
                     yield m :> _
         
