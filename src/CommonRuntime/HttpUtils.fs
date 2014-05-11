@@ -28,7 +28,7 @@ let JavaScriptStringEncode (value : string) =
     // Iterate over characters and encode 
     for i in 0 .. chars.Length - 1 do 
       let c = int (chars.[i])
-      if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 38 || c = 39 || c = 60 || c = 62 || c = 133 || c = 8232 || c = 8233 then
+      if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 38 || c = 39 || c = 133 || c = 8232 || c = 8233 then
         (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
       else 
         match c with
