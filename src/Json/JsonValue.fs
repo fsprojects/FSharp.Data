@@ -99,17 +99,17 @@ type JsonValue =
       // Iterate over characters and encode 
       for i in 0 .. chars.Length - 1 do 
         let c = int (chars.[i])
-        if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 || c = 38 || c = 39 || c = 133 || c = 8232 || c = 8233 then
+        if c >= 0 && c <= 7 || c = 11 || c >= 14 && c <= 31 then
           (ensureBuilder i).AppendFormat("\\u{0:x4}", c) |> ignore
         else 
-          match c with
-          | 8 -> (ensureBuilder i).Append "\\b"|> ignore
-          | 9 -> (ensureBuilder i).Append "\\t"|> ignore
-          | 10 -> (ensureBuilder i).Append "\\n"|> ignore
-          | 12 -> (ensureBuilder i).Append "\\f"|> ignore
-          | 13 -> (ensureBuilder i).Append "\\r"|> ignore
-          | 34 -> (ensureBuilder i).Append "\\\""|> ignore
-          | 92 -> (ensureBuilder i).Append "\\\\" |> ignore
+          match chars.[i] with
+          | '\b' -> (ensureBuilder i).Append '\b' |> ignore
+          | '\t' -> (ensureBuilder i).Append '\t' |> ignore
+          | '\n' -> (ensureBuilder i).Append '\n' |> ignore
+          | '\f' -> (ensureBuilder i).Append '\f' |> ignore
+          | '\r' -> (ensureBuilder i).Append '\r' |> ignore
+          | '"' -> (ensureBuilder i).Append '"' |> ignore
+          | '\\' -> (ensureBuilder i).Append '\\' |> ignore
           | _ -> if !sb <> null then (!sb).Append(char c) |> ignore
       if !sb = null then value else
         (ensureBuilder chars.Length).ToString()
