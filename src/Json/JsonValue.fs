@@ -301,7 +301,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = asyncReadTextAtRuntime false "" "" "JSON" uri
+    let! reader = asyncReadTextAtRuntime false "" "" "JSON" "" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
