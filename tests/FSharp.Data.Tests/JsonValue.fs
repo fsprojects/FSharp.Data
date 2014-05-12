@@ -174,7 +174,7 @@ let ``Can parse array of numbers``() =
     j.[2] |> should equal (JsonValue.Number 3m)
 
 [<Test>]
-let ``Quotes in strings are property escaped``() =
+let ``Quotes in strings are properly escaped``() =
     let jsonStr = "{\"short_description\":\"This a string with \\\"quotes\\\"\"}"
     let j = JsonValue.Parse jsonStr
     j.ToString(JsonSaveOptions.DisableFormatting) |> should equal jsonStr
