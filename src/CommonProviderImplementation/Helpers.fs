@@ -10,6 +10,7 @@ open System.IO
 open System.Reflection
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
+open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.IO
 open FSharp.Data.Runtime.StructuralTypes
@@ -124,25 +125,7 @@ module ProviderHelpers =
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
     let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
-    
-    let(|Url|_|) str =
-        match Uri.TryCreate(str, UriKind.Absolute) with
-        | (true, url) when url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) -> Some(url)
-        | _ -> None
-      
-    let isValidUrl str = 
-        match str with
-        | Url _ -> true
-        | _ -> false
-
-    let hasAuthorizationPart url =
-        if isValidUrl url then
-            match(new Uri(url)).UserInfo.Split([|':'|]) with
-            | [|_; _|] -> true
-            | _ -> false
-        else
-            false
-
+        
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,

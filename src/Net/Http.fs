@@ -518,26 +518,7 @@ type Http private() =
 
         // The idea is to collect the system and user supplied credentials here and process them accordingly.
         let credentials = new ResizeArray<Credential>()
-
-        // These are some helper methods that are also defined in UriUtils.fs. These ought to gathered into on place.
-        let(|Url|_|) str =
-            match Uri.TryCreate(str, UriKind.Absolute) with
-            | (true, url) when url.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase) || url.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) -> Some(url)
-            | _ -> None
-      
-        let isValidUrl str = 
-            match str with
-            | Url _ -> true
-            | _ -> false
-
-        let hasAuthorizationPart url =
-            if isValidUrl url then
-                match(new Uri(url)).UserInfo.Split([|':'|]) with
-                | [|_; _|] -> true
-                | _ -> false
-            else
-                false      
-    
+           
         let hasUrlAuthorizationPart = hasAuthorizationPart url
         if hasUrlAuthorizationPart then
             let authUrl = new Uri(url)
