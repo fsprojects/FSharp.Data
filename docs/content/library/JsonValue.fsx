@@ -106,7 +106,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../data/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 
 (** Note that we can also load the data directly from the web, and there's an
 asynchronous version available too: *)

@@ -7,10 +7,11 @@
 module FSharp.Data.Tests.XmlProvider
 #endif
 
-open NUnit.Framework
-open FSharp.Data
-open FsUnit
+open System
 open System.Xml.Linq
+open NUnit.Framework
+open FsUnit
+open FSharp.Data
 
 type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
 
@@ -157,7 +158,7 @@ let ``XML elements with same name in different namespaces``() =
     ()
 
 [<Test>]
-let ``Optionality infered correctly for child elements``() =
+let ``Optionality inferred correctly for child elements``() =
 
     let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
     
@@ -242,15 +243,19 @@ let ``Optional value elements should work at runtime when element is missing 2``
     samples.[1].Channel.Items.[0].Title |> should equal None
     samples.[1].Channel.Items.[1].Title |> should equal (Some "B")
 
+type CollapsedCollections = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">
+
 [<Test>]
 let ``Collections are collapsed into just one element``() =
-    let x = XmlProvider<"<Root><Persons><Person>John</Person><Person>Doe</Person></Persons></Root>">.GetSample()
+    let x = CollapsedCollections.GetSample()
     x.Persons.[0] |> should equal "John"
     x.Persons.[1] |> should equal "Doe"
 
+type JsonInXml = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>
+
 [<Test>]
 let ``Json inside Xml``() =
-    let x = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>.GetSamples()
+    let x = JsonInXml.GetSamples()
 
     x.[0].BlahDataArray.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
     x.[0].BlahDataArray.BlahDataSomethingFoos.[0].Results.Query |> should equal None
@@ -280,3 +285,173 @@ let ``Json inside Xml``() =
     x.[1].BlahDataArray.BlahDataSomethingFoo2.Number |> should equal (Some 2)
     x.[1].BlahDataArray.BlahDataSomethingFoo3.Size |> should equal 5
     x.[1].BlahDataArray.BlahDataSomethingFoo4.IsSome |> should equal false
+
+let normalize (str:string) =
+  str.Replace("\r\n", "\n")
+     .Replace("\r", "\n")
+
+type Customer = XmlProvider<"""
+  <Customer name="ACME">
+    <Order Number="A012345">
+      <OrderLine Item="widget">
+          <Quantity>2</Quantity>
+      </OrderLine>
+    </Order>
+    <Order>
+      <OrderLine Item="5" />
+    </Order>
+    <Order />
+    <x y="">foo</x>
+    <z>1</z>
+    <z>a</z>
+    <z>b</z>
+    <w>a</w>
+    <w>b</w>
+  </Customer>
+""">
+
+[<Test>]
+let ``Can construct complex objects``() =
+    let customer = 
+        Customer.Customer(
+            "ACME", 
+            [| Customer.Order(Some "A012345", None)
+               Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice(2), None)))
+               Customer.Order(None, Some (Customer.OrderLine(Customer.ItemChoice("xpto"), Some 2))) |],
+            Customer.X("a", "b"),
+            [| Customer.Z(2); Customer.Z("foo") |],
+            [| "d"; "e" |])
+
+    customer.ToString() |> normalize |> should equal (normalize """<Customer name="ACME">
+  <Order Number="A012345" />
+  <Order>
+    <OrderLine Item="2" />
+  </Order>
+  <Order>
+    <OrderLine Item="xpto">
+      <Quantity>2</Quantity>
+    </OrderLine>
+  </Order>
+  <x y="a">b</x>
+  <z>2</z>
+  <z>foo</z>
+  <w>d</w>
+  <w>e</w>
+</Customer>""")
+
+[<Test>]
+let ``Can construct collapsed primitive collections``() =
+    let c = CollapsedCollections.Root [| "John"; "Doe" |]
+    c.ToString() |> normalize |> should equal (normalize """<Root>
+  <Persons>
+    <Person>John</Person>
+    <Person>Doe</Person>
+  </Persons>
+</Root>""")
+
+[<Test>]
+let ``Can construct collapsed non-primitive collections and elements with json``() =
+    let pb = 
+        JsonInXml.PropertyBag(
+            JsonInXml.BlahDataArray(
+                [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
+                null, 
+                null, 
+                None))
+    pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
+  <BlahDataArray>
+    <BlahData>
+      <BlahDataSomethingFoo>{
+  "Something.Schema": "schema",
+  "results": {
+    "Something.Schema": "schema2",
+    "Query": "query"
+  }
+}</BlahDataSomethingFoo>
+    </BlahData>
+  </BlahDataArray>
+</PropertyBag>""")
+
+[<Test>]
+let ``Can construct elements with namespaces and heterogeneous records``() =
+    let rss = AnyFeed.Choice(AnyFeed.Rss(1.0M, AnyFeed.Channel("title", "link", "description", [| |])))
+    rss.ToString() |> normalize |> should equal (normalize """<rss version="1.0">
+  <channel>
+    <title>title</title>
+    <link>link</link>
+    <description>description</description>
+  </channel>
+</rss>""")
+
+    let atom = 
+        AnyFeed.Choice(
+            AnyFeed.Feed("title", 
+                         "subtitle", 
+                         [| |], 
+                         "id", 
+                         DateTime(2014, 04, 27), 
+                         AnyFeed.Entry("title2", 
+                                       [| |],
+                                       "id2",
+                                       DateTime(2014, 04, 28),
+                                       "summary",
+                                       AnyFeed.Author("name", "email"))))
+    atom.ToString() |> normalize |> should equal (normalize """<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>title</title>
+  <subtitle>subtitle</subtitle>
+  <id>id</id>
+  <updated>04/27/2014 00:00:00</updated>
+  <entry>
+    <title>title2</title>
+    <id>id2</id>
+    <updated>04/28/2014 00:00:00</updated>
+    <summary>summary</summary>
+    <author>
+      <name>name</name>
+      <email>email</email>
+    </author>
+  </entry>
+</feed>""")
+
+type AtomSearch = XmlProvider<"Data/search.atom.xml", SampleIsList=true>
+
+[<Test>]
+let ``Can construct elements with heterogeneous records with primitives``() =
+    let id = AtomSearch.Choice(id = "id")
+    id.XElement.ToString() |> should equal """<id xmlns="http://www.w3.org/2005/Atom">id</id>"""
+    let link = AtomSearch.Choice(AtomSearch.Link2("type", "href", "rel"))
+    link.XElement.ToString() |> should equal """<link type="type" href="href" rel="rel" xmlns="http://www.w3.org/2005/Atom" />"""
+    let title = AtomSearch.Choice(title = "title")
+    title.XElement.ToString() |> should equal """<title xmlns="http://www.w3.org/2005/Atom">title</title>"""
+    let updated = AtomSearch.Choice(updated = DateTime(2000, 1, 1))
+    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">01/01/2000 00:00:00</updated>"""
+    let itemsPerPage = AtomSearch.Choice(2)
+    itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
+    let entry = AtomSearch.Entry("id", 
+                                 DateTime(2000, 2, 2), 
+                                 [| |], 
+                                 "title", 
+                                 AtomSearch.Content("type", "value"),
+                                 DateTime(2000, 3, 3),
+                                 null,
+                                 AtomSearch.Metadata("resultType"),
+                                 "source",
+                                 "lange",
+                                 AtomSearch.Author("name", "uri"))
+    entry.XElement.ToString() |> normalize |> should equal (normalize """<entry xmlns="http://www.w3.org/2005/Atom">
+  <id>id</id>
+  <published>02/02/2000 00:00:00</published>
+  <title>title</title>
+  <content type="type">value</content>
+  <updated>03/03/2000 00:00:00</updated>
+  <metadata xmlns="http://api.twitter.com/">
+    <result_type>resultType</result_type>
+  </metadata>
+  <source xmlns="http://api.twitter.com/">source</source>
+  <lang xmlns="http://api.twitter.com/">lange</lang>
+  <author>
+    <name>name</name>
+    <uri>uri</uri>
+  </author>
+</entry>""")
+    AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())

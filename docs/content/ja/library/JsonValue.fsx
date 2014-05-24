@@ -115,7 +115,7 @@ WorldBankにアクセスすることもできます)。
 このドキュメントは以下のようにして読み取りおよびパースできます：
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../../data/WorldBank.json")
 
 (**
 なおWeb上から直接データを読み取ることもできます。
@@ -167,4 +167,7 @@ match value with
  * [F# Data: WorldBank プロバイダー](WorldBank.html) -
    WorldBank 型プロバイダーを使うとWorldBankから受け取ったデータを
    簡単に処理出来るようになります。
+ * [API リファレンス: JsonValue 判別共用体](../../reference/fsharp-data-jsonvalue.html)
+ * [API リファレンス: JsonExtensions モジュール](../../reference/fsharp-data-jsonextensions.html)
+
 *)

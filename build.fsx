@@ -97,11 +97,24 @@ Target "CleanInternetCaches" <| fun () ->
 
 Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
+#if MONO
+#else
+    ++ "FSharp.Data.Portable7.sln"
+#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
+    |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
+    |> ignore
+
+Target "BuildConsoleTests" <| fun () ->
+    !! "TestApps.Console.sln"
+//#if MONO
+//#else
+//    ++ "TestApps.Console.Portable7.sln"
+//#endif
     |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
@@ -118,12 +131,17 @@ let runTestTask name =
                 DisableShadowCopy = true
                 TimeOut = TimeSpan.FromMinutes 20.
                 Framework = "4.0"
-                Domain = "Multiple"
+                Domain = MultipleDomainModel
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
+
+// Run the console tests
+Target "RunConsoleTests" (fun _ ->
+    [ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest, "" ]
+    |> ProcessTestRunner.RunConsoleTests (fun p -> { p with TimeOut = TimeSpan.FromMinutes 1. } ))
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
@@ -148,9 +166,9 @@ Target "SourceLink" <| fun () ->
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 
@@ -220,8 +238,10 @@ Target "Help" <| fun () ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
+    printfn "  * BuildConsoleTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 3)"
+    printfn "  * RunConsoleTests"
+    printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
@@ -243,6 +263,8 @@ Target "All" DoNothing
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
+"BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
+"RunConsoleTests" ==> "All"
 
 RunTargetOrDefault "Help"

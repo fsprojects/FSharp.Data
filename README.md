@@ -2,7 +2,7 @@
 
 The F# Data library (`FSharp.Data.dll`) implements everything you need to access data in your F# applications 
 and scripts. It implements F# type providers for working with structured file formats (CSV, JSON and XML) and 
-for accessing the WorldBank and Freebase data. It also includes helpers for parsing JSON files and for sending HTTP requests.
+for accessing the WorldBank and Freebase services. It also includes helpers for parsing JSON files and for sending HTTP requests.
 
 We're open to contributions from anyone. If you want to help out but don't know where to start, you can take one of the [Up-For-Grabs](https://github.com/fsharp/FSharp.Data/issues?labels=up-for-grabs&state=open) issues, or help to improve the [documentation][3].
 
@@ -28,12 +28,10 @@ You can see the version history [here](RELEASE_NOTES.md).
 - VS2013 compiling to FSharp.Core 4.3.1.0
 - VS2013 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - VS2013 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
-- VS2013 compiling to FSharp.Core 3.3.1.0 (PCL profile 7) - __currently not working correctly__
 - Mono F# 3.1 compiling to FSharp.Core 4.3.0.0
 - Mono F# 3.1 compiling to FSharp.Core 4.3.1.0
 - Mono F# 3.1 compiling to FSharp.Core 2.3.5.0 (PCL profile 47)
 - Mono F# 3.1 compiling to FSharp.Core 2.3.6.0 (PCL profile 47)
-- Mono F# 3.1 compiling to FSharp.Core 3.3.1.0 (PCL profile 7) - __currently not working correctly__
 
 ## Documentation 
 

@@ -146,7 +146,7 @@ file and loads it:
 *)
 
 type WorldBank = JsonProvider<"../data/WorldBank.json">
-let doc = WorldBank.Load("../data/WorldBank.json")
+let doc = WorldBank.GetSample()
 
 (** Note that we can also load the data directly from the web both in the `Load` method and in
 the type provider sample parameter, and there's an asynchronous `AsyncLoad` method available too: *)
@@ -245,6 +245,8 @@ create an instance, and send a POST request:
 
 *)
 
+(*** do-not-eval ***)
+
 type GitHubIssue = JsonProvider<issueSample, RootName="issue">
 
 let newIssue = GitHubIssue.Issue("Test issue",
@@ -255,6 +257,29 @@ let newIssue = GitHubIssue.Issue("Test issue",
 newIssue.JsonValue.Request "https://api.github.com/repos/fsharp/FSharp.Data/issues"
 
 (**
+<a name="jsonlib"></a>
+## Using JSON provider in a library
+
+You can use the types created by JSON type provider in a public API of a library that you are building,
+but there is one important thing to keep in mind - when the user references your library, the type
+provider will be loaded and the types will be generated at that time (the JSON provider is not
+currently a _generative_ type provider). This means that the type provider will need to be able to
+access the sample JSON. This works fine when the sample is specified inline, but it won't work when
+the sample is specified as a local file (unless you distribute the samples with your library).
+
+For this reason, the JSON provider lets you specify samples as embedded resources using the 
+static parameter `EmbeddedResource`. If you are building a library `MyLib.dll`, you can write:
+
+*)
+type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldbank.json">
+
+(**
+You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 
+When a user of your library references `MyLib.dll` later, the JSON type provider will be able
+to load `MyLib.dll` and locate the sample `worldbank.json` as a resource of the library. When
+this succeeds, it does not attempt to find the local file and so your library can be used
+without providing a local copy of the sample JSON files.
+
 ## Related articles
 
  * [F# Data: JSON Parser and Reader](JsonValue.html) - provides more information about 

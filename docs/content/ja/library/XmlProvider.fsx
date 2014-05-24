@@ -258,7 +258,7 @@ for item in blog.Channel.Items do
 
 ## 関連する記事
 
- * [F# Data: 型プロバイダー](../fsharpdata.html) -
-   `FSharp.Data` パッケージ内にある
-   その他の型プロバイダーに関する情報があります。
+ * [API リファレンス: XmlProvider 型プロバイダー](../..reference/fsharp-data-xmlprovider.html)
+ * [API リファレンス: XElementExtensions モジュール](../../reference/fsharp-data-xelementextensions.html)
+
 *)

@@ -1,14 +1,14 @@
 class JsonProvider
     static member AsyncGetSample: () -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "DoubleNested.json"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "" "DoubleNested.json"), f)
 
     static member AsyncLoad: uri:string -> JsonProvider+Root async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonDocument.Create(t, ""))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)
 
     static member GetSample: () -> JsonProvider+Root
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "DoubleNested.json")), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "JSON" "" "DoubleNested.json")), "")
 
     static member Load: stream:System.IO.Stream -> JsonProvider+Root
     JsonDocument.Create(((new StreamReader(stream)) :> TextReader), "")
@@ -17,7 +17,7 @@ class JsonProvider
     JsonDocument.Create(reader, "")
 
     static member Load: uri:string -> JsonProvider+Root
-    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" uri)), "")
+    JsonDocument.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" "" uri)), "")
 
     static member Parse: text:string -> JsonProvider+Root
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
@@ -27,6 +27,9 @@ class JsonProvider+Root : FDR.IJsonDocument
     new : main:JsonProvider+Main -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("main",
                                  (main :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Root
+    JsonDocument.Create(jsonValue, "")
 
     member Main: JsonProvider+Main with get
     JsonRuntime.GetPropertyPacked(this, "main")
@@ -38,6 +41,9 @@ class JsonProvider+Main : FDR.IJsonDocument
                                  (title :> obj))
                                 ("nested",
                                  (nested :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Main
+    JsonDocument.Create(jsonValue, "")
 
     member Nested: JsonProvider+Nested with get
     JsonRuntime.GetPropertyPacked(this, "nested")
@@ -51,6 +57,9 @@ class JsonProvider+Nested : FDR.IJsonDocument
     new : nestedTitle:string -> JsonProvider+Nested
     JsonRuntime.CreateRecord([| ("nestedTitle",
                                  (nestedTitle :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> JsonProvider+Nested
+    JsonDocument.Create(jsonValue, "")
 
     member NestedTitle: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "nestedTitle")
