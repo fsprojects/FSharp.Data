@@ -52,14 +52,6 @@ specifies the GET method, but it will be set automatically for you if you omit i
 
 Http.RequestString("http://httpbin.org/get", query=["test", "foo"], httpMethod="GET")
 
-(**
-Authorization by username as defined in the [URI scheme](http://en.wikipedia.org/wiki/URI_scheme) is also supported
-for HTTP basic access authentication and Digest access authentication. Before making the call the URL is stripped
-from the query part and the userinfo is removed. The password is stored in [SecureString](http://msdn.microsoft.com/en-us/library/system.security.securestring.aspx).
-*)
-
-Http.RequestString("https://user:passwd@httpbin.org/basic-auth/user/passwd")
-
 (** 
 Additional headers are specified similarly - using an optional parameter `headers`.
 The collection can contain custom headers, but also standard headers such as the 
@@ -207,6 +199,20 @@ match Http.Request(logoUrl).Body with
     printfn "Got text content: %s" text
 | Binary bytes -> 
     printfn "Got %d bytes of binary content" bytes.Length
+
+(**
+## Authorization
+
+Currently authorization is explicitly supported by HTTP basic access authentication (HTTP Basic auth) and Digest access authentication (Digest)
+by applying the [URI scheme](http://en.wikipedia.org/wiki/URI_scheme) encoding. As for an example:
+*)
+
+Http.RequestString("https://userX:passwd123@httpbin.org/basic-auth/userX/passwd123")
+Http.RequestString("https://userX:passwd123@httpbin.org/digest-auth/userX/passwd123")
+
+(**
+The password is encoded by using [System.Text.Encoding.UTF8](http://msdn.microsoft.com/en-us/library/system.text.encoding.utf8.aspx).
+*)
 
 (**
 ## Customizing the HTTP request

@@ -154,14 +154,6 @@ the type provider sample parameter, and there's an asynchronous `AsyncLoad` meth
 let docAsync = WorldBank.AsyncLoad("http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json")
 
 (**
-Authorization by username as defined in the [URI scheme](http://en.wikipedia.org/wiki/URI_scheme) is also supported
-for HTTP basic access authentication and Digest access authentication. Before making the call the URL is stripped
-from the query part and the userinfo is removed. The password is stored in [SecureString](http://msdn.microsoft.com/en-us/library/system.security.securestring.aspx).
-*)
-type BasicAuth = JsonProvider<"https://user:passwd@httpbin.org/basic-auth/user/passwd">
-let basicAuthAsync = BasicAuth.AsyncLoad("https://user:passwd@httpbin.org/basic-auth/user/passwd")
-
-(**
 The `doc` is an array of heterogeneous types, so the provider generates a type
 that can be used to get the record and the array, respectively. Note that the 
 provider infers that there is only one record and one array. We can print the data set as follows:
