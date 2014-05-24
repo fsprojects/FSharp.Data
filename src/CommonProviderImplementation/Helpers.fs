@@ -136,9 +136,6 @@ module ProviderHelpers =
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
     let private webUrisCache, _ = createInternetFileCache "DesignTimeURIs" cacheDuration
-<<<<<<< HEAD
-        
-=======
     
     type private ParseTextResult<'T> =
         { TypedSamples : 'T []
@@ -184,7 +181,6 @@ module ProviderHelpers =
                 with _ -> None
             | _ -> None
 
->>>>>>> remotes/upstream/master
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
     /// Samples from the filesystem are read using shared read, so it works when the file is locked by Excel or similar tools,
@@ -391,13 +387,9 @@ module ProviderHelpers =
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
           
-<<<<<<< HEAD
-          if sampleOrSampleUri <> "" && (runtimeVersion.SupportsLocalFileSystem || not sampleIsUri || sampleIsWebUri && not (hasAuthorizationPart sampleOrSampleUri)) then
-=======
           if sampleOrSampleUri <> "" && 
              not (parseResult.SampleIsResource) && 
-             (runtimeVersion.SupportsLocalFileSystem || not parseResult.SampleIsUri || parseResult.SampleIsWebUri) then
->>>>>>> remotes/upstream/master
+             (runtimeVersion.SupportsLocalFileSystem || not parseResult.SampleIsUri || parseResult.SampleIsWebUri && not (hasAuthorizationPart sampleOrSampleUri)) then
         
               if sampleIsList then
               

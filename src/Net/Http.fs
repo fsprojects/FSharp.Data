@@ -11,6 +11,7 @@ open System.Security
 open System.Net
 open System.Text
 open System.Reflection
+open System.Runtime.CompilerServices
 open FSharp.Data.Authentication
 open FSharp.Data.Runtime
 
@@ -258,6 +259,11 @@ module HttpContentTypes =
     let [<Literal>] Csv = "text/csv"
 
 type private HeaderEnum = System.Net.HttpRequestHeader
+
+// This is used to collect and consolidate credential handling into one place.
+// Maybe there should be a well defined, public way to collect various credentials
+// for further consumption.
+type private Credential = { Uri:Uri; Type:String; Credentials:NetworkCredential }
 
 module HttpEncodings = 
 

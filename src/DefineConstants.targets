@@ -17,11 +17,8 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_RANGE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
-<<<<<<< HEAD
 	<DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTH</DefineConstants>
-=======
     <DefineConstants>$(DefineConstants);FX_NO_GETENCODING_BY_CODEPAGE</DefineConstants>
->>>>>>> remotes/upstream/master
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>
