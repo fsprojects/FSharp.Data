@@ -32,6 +32,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member American Samoa: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("ASM", "American Samoa")
 
+    member Andean Region: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("ANR", "Andean Region")
+
     member Andorra: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("AND", "Andorra")
 
@@ -386,6 +389,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member Latin America & Caribbean (developing only): WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("LAC", "Latin America & Caribbean (developing only)")
 
+    member Latin America and the Caribbean: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("LCR", "Latin America and the Caribbean")
+
     member Latin America and the Caribbean (IFC classification): WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("CLA", "Latin America and the Caribbean (IFC classification)")
 
@@ -460,6 +466,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
 
     member Mexico: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("MEX", "Mexico")
+
+    member Mexico and Central America: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("MCA", "Mexico and Central America")
 
     member Micronesia, Fed. Sts.: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("FSM", "Micronesia, Fed. Sts.")
@@ -647,6 +656,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member South Sudan: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("SSD", "South Sudan")
 
+    member Southern Cone Extended: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("SCE", "Southern Cone Extended")
+
     member Spain: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("ESP", "Spain")
 
@@ -790,6 +802,9 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     member Africa: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("AFR")
 
+    member Andean Region: WorldBankDataProvider+ServiceTypes+Region with get
+    (this :> IRegionCollection).GetRegion("ANR")
+
     member Arab World: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("ARB")
 
@@ -826,11 +841,17 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     member Latin America & Caribbean (developing only): WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("LAC")
 
+    member Latin America and the Caribbean: WorldBankDataProvider+ServiceTypes+Region with get
+    (this :> IRegionCollection).GetRegion("LCR")
+
     member Latin America and the Caribbean (IFC classification): WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("CLA")
 
     member Least developed countries: UN classification: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("LDC")
+
+    member Mexico and Central America: WorldBankDataProvider+ServiceTypes+Region with get
+    (this :> IRegionCollection).GetRegion("MCA")
 
     member Middle East & North Africa (all income levels): WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("MEA")
@@ -864,6 +885,9 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
 
     member South Asia (IFC classification): WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("CSA")
+
+    member Southern Cone Extended: WorldBankDataProvider+ServiceTypes+Region with get
+    (this :> IRegionCollection).GetRegion("SCE")
 
     member Sub-Saharan Africa (IFC classification): WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("CAA")
