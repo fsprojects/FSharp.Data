@@ -329,6 +329,7 @@ type ProvidedParameter(name:string,parameterType:Type,?isOut:bool,?optionalValue
     override this.Attributes = (base.Attributes ||| (if isOut then ParameterAttributes.Out else enum 0)
                                                 ||| (match optionalValue with None -> enum 0 | Some _ -> ParameterAttributes.Optional ||| ParameterAttributes.HasDefault))
     override this.RawDefaultValue = defaultArg optionalValue null
+    member this.HasDefaultParameterValue = Option.isSome optionalValue
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
 #if FX_NO_CUSTOMATTRIBUTEDATA
 #else
@@ -1559,8 +1560,19 @@ type AssemblyGenerator(assemblyFileName) =
                 match minfo with 
                 | :? ProvidedMethod as pminfo when not (methMap.ContainsKey pminfo)  -> 
                     let mb = tb.DefineMethod(minfo.Name, minfo.Attributes, convType minfo.ReturnType, [| for p in minfo.GetParameters() -> convType p.ParameterType |])
-                    for (i,p) in minfo.GetParameters() |> Seq.mapi (fun i x -> (i,x)) do
-                        mb.DefineParameter(i+1, ParameterAttributes.None, p.Name) |> ignore
+                    for (i,(:? ProvidedParameter as p)) in minfo.GetParameters() |> Seq.mapi (fun i x -> (i,x)) do
+                        let pb = mb.DefineParameter(i+1, ParameterAttributes.None, p.Name)
+                        if p.HasDefaultParameterValue then 
+                            pb.SetConstant p.RawDefaultValue
+                            do
+                                let ctor = typeof<System.Runtime.InteropServices.DefaultParameterValueAttribute>.GetConstructor([|typeof<obj>|])
+                                let builder = new CustomAttributeBuilder(ctor, [|p.RawDefaultValue|])
+                                pb.SetCustomAttribute builder
+                            do
+                                let ctor = typeof<System.Runtime.InteropServices.OptionalAttribute>.GetConstructor([||])
+                                let builder = new CustomAttributeBuilder(ctor, [||])
+                                pb.SetCustomAttribute builder
+                            pb.SetConstant p.RawDefaultValue
                     methMap.[pminfo] <- mb
                 | _ -> () 
 
