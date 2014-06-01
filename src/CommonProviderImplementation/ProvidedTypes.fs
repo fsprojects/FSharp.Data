@@ -26,7 +26,11 @@ type internal ExpectedStackState =
 
 [<AutoOpen>]
 module internal Misc =
-    let TypeBuilderInstantiationType = typeof<TypeBuilder>.Assembly.GetType("System.Reflection.Emit.TypeBuilderInstantiation")
+    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+    let TypeBuilderInstantiationType = 
+        if runningOnMono
+        then typeof<TypeBuilder>.Assembly.GetType("System.Reflection.MonoGenericClass")
+        else typeof<TypeBuilder>.Assembly.GetType("System.Reflection.Emit.TypeBuilderInstantiation")
     let GetTypeFromHandleMethod = typeof<Type>.GetMethod("GetTypeFromHandle")
     let LanguagePrimitivesType = typedefof<list<_>>.Assembly.GetType("Microsoft.FSharp.Core.LanguagePrimitives")
     let ParseInt32Method = LanguagePrimitivesType.GetMethod "ParseInt32"
