@@ -220,6 +220,7 @@
 * Fixed parsing of some unicode characters in JsonValue and JsonProvider.
 * Auto-detect files with tab separators in CsvProvider.
 
-#### 2.0.9 - Unreleased
+#### 2.0.9 - June 15 2014
 * Support for non-UTF8 encodings in sample files for CsvProvider, JsonProvider, and XmlProvider.
-* Fixed unnecessary character escaping in JsonValue
+* Fixed unnecessary character escaping in JsonValue.
+* Be more relaxed about mixing different versions on FSharp.Data.
