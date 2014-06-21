@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#r "../../packages/FsCheck.0.9.4.0/lib/net40-Client/FsCheck.dll"
+#r "../../packages/FsCheck.0.9.2.0/lib/net40-Client/FsCheck.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonParserProperties
