@@ -36,78 +36,83 @@ type JsonValue =
   | Record of properties:(string * JsonValue)[]
   | Array of elements:JsonValue[]
   | Boolean of bool
-  | Null
-
-  override x.ToString() = x.ToString(JsonSaveOptions.None)
+  | Null  
   
-  member x.ToString saveOptions =
+  /// Serializes the JsonValue to the specified System.IO.TextWriter.
+  member x.WriteTo (w:TextWriter, saveOptions) =
 
-    let rec serialize (sb:StringBuilder) indentation json =
-      let newLine plus =
-        if saveOptions = JsonSaveOptions.None then
-          sb.AppendLine() |> ignore
-          System.String(' ', indentation + plus) |> sb.Append |> ignore
-      match json with
-      | Null -> sb.Append "null"
-      | Boolean b -> sb.Append(if b then "true" else "false")
-      | Number number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
-      | Float number -> sb.Append(number.ToString(CultureInfo.InvariantCulture))
+    let newLine =
+      if saveOptions = JsonSaveOptions.None then
+        fun indentation plus ->
+          w.WriteLine()
+          System.String(' ', indentation + plus) |> w.Write
+      else
+        fun _ _ -> ()
+
+    let propSep =
+      if saveOptions = JsonSaveOptions.None then "\": "
+      else "\":"
+
+    let rec serialize indentation = function
+      | Null -> w.Write "null"
+      | Boolean b -> w.Write(if b then "true" else "false")
+      | Number number -> w.Write number
+      | Float number -> w.Write number
       | String s ->
-          sb.Append("\"") |> ignore
-          JsonValue.JsonStringEncodeTo sb s
-          sb.Append("\"")
+          w.Write "\""
+          JsonValue.JsonStringEncodeTo w s
+          w.Write "\""
       | Record properties ->
-          let isNotFirst = ref false
-          sb.Append "{"  |> ignore
-          for k, v in properties do
-            if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
-            newLine 2            
-            if saveOptions = JsonSaveOptions.None then
-              sb.Append("\"") |> ignore
-              JsonValue.JsonStringEncodeTo sb k
-              sb.Append("\": ") |> ignore
-            else
-              sb.Append("\"") |> ignore
-              JsonValue.JsonStringEncodeTo sb k
-              sb.Append("\":") |> ignore
-            serialize sb (indentation + 2) v |> ignore
-          newLine 0
-          sb.Append "}"
+          w.Write "{"                      
+          for i = 0 to properties.Length - 1 do
+            let k,v = properties.[i]
+            if i > 0 then w.Write ","
+            newLine indentation 2            
+            w.Write "\""
+            JsonValue.JsonStringEncodeTo w k
+            w.Write propSep
+            serialize (indentation + 2) v
+          newLine indentation 0
+          w.Write "}"
       | Array elements ->
-          let isNotFirst = ref false
-          sb.Append "[" |> ignore
-          for element in elements do
-            if !isNotFirst then sb.Append "," |> ignore else isNotFirst := true
-            newLine 2
-            serialize sb (indentation + 2) element |> ignore
+          w.Write "["
+          for i = 0 to elements.Length - 1 do
+            if i > 0 then w.Write ","
+            newLine indentation 2
+            serialize (indentation + 2) elements.[i]
           if elements.Length > 0 then
-            newLine 0
-          sb.Append "]"
-
-    (serialize (new StringBuilder()) 0 x).ToString()
+            newLine indentation 0
+          w.Write "]"
+  
+    serialize 0 x 
 
   // Encode characters that are not valid in JS string. The implementation is based
   // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
-  // (but we use just a single iteration and create StringBuilder as needed)    
-  static member internal JsonStringEncodeTo (sb:StringBuilder) (value:string) =
+  static member internal JsonStringEncodeTo (w:TextWriter) (value:string) =
     if String.IsNullOrEmpty value then ()
     else 
       for i = 0 to value.Length - 1 do
         let c = value.[i]
         let ci = int c
         if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
-          sb.AppendFormat("\\u{0:x4}", ci) |> ignore
+          w.Write("\\u{0:x4}", ci) |> ignore
         else 
           match c with
-          | '\b' -> sb.Append "\\b" |> ignore
-          | '\t' -> sb.Append "\\t" |> ignore
-          | '\n' -> sb.Append "\\n" |> ignore
-          | '\f' -> sb.Append "\\f" |> ignore
-          | '\r' -> sb.Append "\\r" |> ignore
-          | '"'  -> sb.Append "\\\"" |> ignore
-          | '\\' -> sb.Append "\\\\" |> ignore
-          | _    -> sb.Append c |> ignore
-      ()
+          | '\b' -> w.Write "\\b"
+          | '\t' -> w.Write "\\t"
+          | '\n' -> w.Write "\\n"
+          | '\f' -> w.Write "\\f"
+          | '\r' -> w.Write "\\r"
+          | '"'  -> w.Write "\\\""
+          | '\\' -> w.Write "\\\\"
+          | _    -> w.Write c
+
+  member x.ToString saveOptions =
+    let w = new StringWriter(CultureInfo.InvariantCulture)
+    x.WriteTo(w, saveOptions)
+    w.GetStringBuilder().ToString()
+
+  override x.ToString() = x.ToString(JsonSaveOptions.None)
 
 
 
