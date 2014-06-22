@@ -224,3 +224,6 @@
 * Support for non-UTF8 encodings in sample files for CsvProvider, JsonProvider, and XmlProvider.
 * Fixed unnecessary character escaping in JsonValue.
 * Be more relaxed about mixing different versions on FSharp.Data.
+
+#### 2.0.10 - Unreleased
+* Improved performance of JsonValue.ToString().
