@@ -188,7 +188,7 @@
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue.fs" />
-    <Compile Include="JsonValueProperties.fs" />
+    <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvProvider.fs" />
