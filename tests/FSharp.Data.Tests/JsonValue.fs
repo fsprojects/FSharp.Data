@@ -392,23 +392,23 @@ let ``Can parse various JSON documents``() =
 [<Test>]
 let ``Basic special characters encoded correctly`` () = 
   let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
-  let sb = new Text.StringBuilder()
-  JsonValue.JsonStringEncodeTo sb input
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
   let expected = " \\\"quoted\\\" and 'quoted' and \\r\\n and \uABCD "
-  (sb.ToString()) |> should equal expected
+  (w.GetStringBuilder().ToString()) |> should equal expected
 
 [<Test>]
 let ``Encoding of simple string is valid JSON`` () = 
   let input = "sample \"json\" with \t\r\n \' quotes etc."
-  let sb = new Text.StringBuilder()
-  JsonValue.JsonStringEncodeTo sb input
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
   let expected = "sample \\\"json\\\" with \\t\\r\\n ' quotes etc."
-  (sb.ToString()) |> should equal expected
+  (w.GetStringBuilder().ToString()) |> should equal expected
 
 [<Test>]
 let ``Encoding of markup is not overzealous`` () =
   let input = "<SecurityLabel><MOD>ModelAdministrators</MOD></SecurityLabel>"
-  let sb = new Text.StringBuilder()
-  JsonValue.JsonStringEncodeTo sb input
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
   let expected = input // Should not escape </>
-  (sb.ToString()) |> should equal expected
+  (w.GetStringBuilder().ToString()) |> should equal expected
