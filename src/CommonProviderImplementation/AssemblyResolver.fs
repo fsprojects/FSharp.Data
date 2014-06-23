@@ -149,10 +149,6 @@ let init (cfg : TypeProviderConfig) =
         else Assembly.LoadFrom cfg.RuntimeAssembly
 
     let runtimeAssemblyName = runtimeAssembly.GetName()
-    let designtimeAssemblyName = Assembly.GetCallingAssembly().GetName()
-
-    if designtimeAssemblyName.Name <> "FSI-ASSEMBLY" && designtimeAssemblyName.Version <> new Version(runtimeAssemblyName.Version.Major, runtimeAssemblyName.Version.Minor, runtimeAssemblyName.Version.Build, 0) then
-        failwithf "Unexpected version of %s.dll: %O [Looking for %O]" runtimeAssemblyName.Name runtimeAssemblyName.Version designtimeAssemblyName.Version
 
     let runtimeVersion =
         match runtimeAssemblyName.Version.Revision with
@@ -186,12 +182,28 @@ let init (cfg : TypeProviderConfig) =
                                                                             sprintf "FSharp.Data.%d.%d.%d" asmName.Version.Major
                                                                                                            asmName.Version.Minor
                                                                                                            asmName.Version.Build) ]
-                        let targetAsm = getAssembly asmName useReflectionOnly fsharpDataPaths
-                        let expectedVersion = Version(asmName.Version.Major, asmName.Version.Minor, asmName.Version.Build, runtimeAssemblyName.Version.Revision)
-                        let obtainedVersion = targetAsm.GetName().Version
-                        if obtainedVersion <> expectedVersion then
-                            failwithf "Unexpected version of FSharp.Data.dll: %O [Looking for %O]" obtainedVersion expectedVersion
-                        targetAsm
+                        // for cases when there is a version mismatch
+                        let alternativeFsharpDataPaths = 
+                            let mutable packagesFolder = runtimeAssemblyPath
+                            let suffixes = ResizeArray<_>()
+                            while packagesFolder <> null && not ("packages".Equals(DirectoryInfo(packagesFolder).Name, StringComparison.OrdinalIgnoreCase)) do
+                                suffixes.Add (DirectoryInfo packagesFolder).Name
+                                let parent = Directory.GetParent packagesFolder
+                                packagesFolder <- if parent = null then null else parent.FullName
+                            if packagesFolder = null then [] 
+                            else
+                                let suffix = 
+                                    suffixes 
+                                    |> Seq.truncate (suffixes.Count - 1)
+                                    |> Seq.toArray
+                                    |> Array.rev 
+                                    |> String.concat (string Path.DirectorySeparatorChar)
+                                Directory.GetDirectories(packagesFolder, "FSharp.Data.*")
+                                |> Array.sort 
+                                |> Array.rev
+                                |> Array.map (fun fsharpDataFolder -> Path.Combine(fsharpDataFolder, suffix))
+                                |> Array.toList
+                        getAssembly asmName useReflectionOnly (fsharpDataPaths @ alternativeFsharpDataPaths)
                     else
                         getAssembly asmName useReflectionOnly []
                 if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName || targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 

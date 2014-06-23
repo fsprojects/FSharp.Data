@@ -16,7 +16,6 @@ open System.Text
 open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.HttpUtils
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
@@ -38,68 +37,88 @@ type JsonValue =
   | Record of properties:(string * JsonValue)[]
   | Array of elements:JsonValue[]
   | Boolean of bool
-  | Null
+  | Null  
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   member x._Print = x.ToString()
 
-  override x.ToString() = x.ToString(JsonSaveOptions.None)
+  /// Serializes the JsonValue to the specified System.IO.TextWriter.
+  member x.WriteTo (w:TextWriter, saveOptions) =
+
+    let newLine =
+      if saveOptions = JsonSaveOptions.None then
+        fun indentation plus ->
+          w.WriteLine()
+          System.String(' ', indentation + plus) |> w.Write
+      else
+        fun _ _ -> ()
+
+    let propSep =
+      if saveOptions = JsonSaveOptions.None then "\": "
+      else "\":"
+
+    let rec serialize indentation = function
+      | Null -> w.Write "null"
+      | Boolean b -> w.Write(if b then "true" else "false")
+      | Number number -> w.Write number
+      | Float number -> w.Write number
+      | String s ->
+          w.Write "\""
+          JsonValue.JsonStringEncodeTo w s
+          w.Write "\""
+      | Record properties ->
+          w.Write "{"                      
+          for i = 0 to properties.Length - 1 do
+            let k,v = properties.[i]
+            if i > 0 then w.Write ","
+            newLine indentation 2            
+            w.Write "\""
+            JsonValue.JsonStringEncodeTo w k
+            w.Write propSep
+            serialize (indentation + 2) v
+          newLine indentation 0
+          w.Write "}"
+      | Array elements ->
+          w.Write "["
+          for i = 0 to elements.Length - 1 do
+            if i > 0 then w.Write ","
+            newLine indentation 2
+            serialize (indentation + 2) elements.[i]
+          if elements.Length > 0 then
+            newLine indentation 0
+          w.Write "]"
+  
+    serialize 0 x 
+
+  // Encode characters that are not valid in JS string. The implementation is based
+  // on https://github.com/mono/mono/blob/master/mcs/class/System.Web/System.Web/HttpUtility.cs
+  static member internal JsonStringEncodeTo (w:TextWriter) (value:string) =
+    if String.IsNullOrEmpty value then ()
+    else 
+      for i = 0 to value.Length - 1 do
+        let c = value.[i]
+        let ci = int c
+        if ci >= 0 && ci <= 7 || ci = 11 || ci >= 14 && ci <= 31 then
+          w.Write("\\u{0:x4}", ci) |> ignore
+        else 
+          match c with
+          | '\b' -> w.Write "\\b"
+          | '\t' -> w.Write "\\t"
+          | '\n' -> w.Write "\\n"
+          | '\f' -> w.Write "\\f"
+          | '\r' -> w.Write "\\r"
+          | '"'  -> w.Write "\\\""
+          | '\\' -> w.Write "\\\\"
+          | _    -> w.Write c
 
   member x.ToString saveOptions =
+    let w = new StringWriter(CultureInfo.InvariantCulture)
+    x.WriteTo(w, saveOptions)
+    w.GetStringBuilder().ToString()
 
-    let rec serialize (sb:StringBuilder) indentation json =
-      let append (str:string) = 
-        sb.Append str 
-        |> ignore
-      let appendFormat (format:string) (str:string) = 
-        sb.AppendFormat(format, str) 
-        |> ignore
-      let newLine plus =
-        if saveOptions = JsonSaveOptions.None then
-          sb.AppendLine() |> ignore
-          System.String(' ', indentation + plus) |> append
-      match json with
-      | Null -> append "null"
-      | Boolean b -> append (if b then "true" else "false")
-      | Number number -> append <| number.ToString(CultureInfo.InvariantCulture)
-      | Float number -> append <| number.ToString(CultureInfo.InvariantCulture)
-      | String s ->
-          append "\""
-          append <| JavaScriptStringEncode s
-          append "\""
-      | Record properties ->
-          let isNotFirst = ref false
-          append "{"
-          for k, v in properties do
-            if !isNotFirst 
-            then append "," 
-            else isNotFirst := true
-            newLine 2
-            if saveOptions = JsonSaveOptions.None then
-              appendFormat "\"{0}\": " (JavaScriptStringEncode k)
-            else
-              appendFormat "\"{0}\":" (JavaScriptStringEncode k)
-            serialize sb (indentation + 2) v
-          newLine 0
-          append "}"
-      | Array elements ->
-          let isNotFirst = ref false
-          append "["
-          for element in elements do
-            if !isNotFirst 
-            then append ","
-            else isNotFirst := true
-            newLine 2
-            serialize sb (indentation + 2) element
-          if elements.Length > 0 then
-            newLine 0
-          append "]"
-
-    let sb = StringBuilder()
-    serialize sb 0 x
-    sb.ToString()
+  override x.ToString() = x.ToString(JsonSaveOptions.None)
 
 /// [omit]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
