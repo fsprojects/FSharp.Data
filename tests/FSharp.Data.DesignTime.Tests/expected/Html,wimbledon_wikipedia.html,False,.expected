@@ -42,24 +42,6 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Score", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Current champions [ edit ]")
 
-    member ExternalLinksEdit: HtmlProvider+ExternalLinksEdit with get
-    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
-                                        let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
-                                        let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertInteger("", value), value),
-                                        let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertInteger("", value), value),
-                                        let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertInteger("", value), value),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[4]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[5]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[6]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[7]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[8]))),
-                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[9]))))
-    HtmlTable<_>.Create(rowConverter, this, "External links [ edit ]")
-
     member RankingPointsEdit: HtmlProvider+RankingPointsEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -92,7 +74,15 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "See also [ edit ]")
 
-    member Table32: HtmlProvider+Table32 with get
+    member Table14: HtmlProvider+Table14 with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon2", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Table14")
+
+    member Table35: HtmlProvider+Table35 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
@@ -108,9 +98,27 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[7]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[8]))),
                                         TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[9]))))
-    HtmlTable<_>.Create(rowConverter, this, "Table32")
+    HtmlTable<_>.Create(rowConverter, this, "Table35")
 
     member Table36: HtmlProvider+Table36 with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertInteger("", value), value),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[4]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[5]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[6]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[7]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[8]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertInteger("", TextConversions.AsString(row.[9]))))
+    HtmlTable<_>.Create(rowConverter, this, "Table36")
+
+    member Table38: HtmlProvider+Table38 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertString(value), value),
@@ -118,7 +126,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("v t e Tennis2", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("v t e Tennis3", TextRuntime.ConvertFloat("", "", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table36")
+    HtmlTable<_>.Create(rowConverter, this, "Table38")
 
     member Table44: HtmlProvider+Table44 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -127,14 +135,6 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("v t e All England Lawn Tennis and Croquet Club2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table44")
-
-    member TheChampionshipsWimbledon: HtmlProvider+TheChampionshipsWimbledon with get
-    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
-                                        let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon", TextRuntime.ConvertString(value), value),
-                                        let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("The Championships, Wimbledon2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "The Championships, Wimbledon")
 
     member TrophiesAndPrizeMoneyEdit: HtmlProvider+TrophiesAndPrizeMoneyEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -149,21 +149,21 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
 
 class HtmlProvider+CurrentChampionsEdit : FDR.HtmlTable<HtmlProvider+CurrentChampionsEdit+Row>
 
-class HtmlProvider+ExternalLinksEdit : FDR.HtmlTable<HtmlProvider+ExternalLinksEdit+Row>
-
 class HtmlProvider+RankingPointsEdit : FDR.HtmlTable<HtmlProvider+RankingPointsEdit+Row>
 
 class HtmlProvider+RecordsEdit : FDR.HtmlTable<HtmlProvider+RecordsEdit+Row>
 
 class HtmlProvider+SeeAlsoEdit : FDR.HtmlTable<HtmlProvider+SeeAlsoEdit+Row>
 
-class HtmlProvider+Table32 : FDR.HtmlTable<HtmlProvider+Table32+Row>
+class HtmlProvider+Table14 : FDR.HtmlTable<HtmlProvider+Table14+Row>
+
+class HtmlProvider+Table35 : FDR.HtmlTable<HtmlProvider+Table35+Row>
 
 class HtmlProvider+Table36 : FDR.HtmlTable<HtmlProvider+Table36+Row>
 
-class HtmlProvider+Table44 : FDR.HtmlTable<HtmlProvider+Table44+Row>
+class HtmlProvider+Table38 : FDR.HtmlTable<HtmlProvider+Table38+Row>
 
-class HtmlProvider+TheChampionshipsWimbledon : FDR.HtmlTable<HtmlProvider+TheChampionshipsWimbledon+Row>
+class HtmlProvider+Table44 : FDR.HtmlTable<HtmlProvider+Table44+Row>
 
 class HtmlProvider+TrophiesAndPrizeMoneyEdit : FDR.HtmlTable<HtmlProvider+TrophiesAndPrizeMoneyEdit+Row>
 
@@ -179,38 +179,6 @@ class HtmlProvider+CurrentChampionsEdit+Row : string * string * string * string
 
     member Score: string with get
     (let _,_,_,t4 = this in t4)
-
-
-class HtmlProvider+ExternalLinksEdit+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
-    member 1968: System.Nullable<int> with get
-    (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
-
-    member 1969: System.Nullable<int> with get
-    (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
-
-    member Column1: int with get
-    (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
-
-    member Column2: int with get
-    (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
-
-    member Column3: int with get
-    (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
-
-    member Column4: int with get
-    (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
-
-    member Column5: System.Nullable<int> with get
-    (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
-
-    member Column6: System.Nullable<int> with get
-    (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
-
-    member Column7: System.Nullable<int> with get
-    (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
-
-    member Column8: System.Nullable<int> with get
-    (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
 class HtmlProvider+RankingPointsEdit+Row : string * int * int
@@ -249,7 +217,15 @@ class HtmlProvider+SeeAlsoEdit+Row : float * string
     (let _,t2 = this in t2)
 
 
-class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
+class HtmlProvider+Table14+Row : string * string
+    member ``The Championships, Wimbledon``: string with get
+    (let t1,_ = this in t1)
+
+    member ``The Championships, Wimbledon2``: string with get
+    (let _,t2 = this in t2)
+
+
+class HtmlProvider+Table35+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
@@ -281,7 +257,39 @@ class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * 
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
-class HtmlProvider+Table36+Row : string * string * float
+class HtmlProvider+Table36+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
+    member 1968: System.Nullable<int> with get
+    (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
+
+    member 1969: System.Nullable<int> with get
+    (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
+
+    member Column1: int with get
+    (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
+
+    member Column2: int with get
+    (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
+
+    member Column3: int with get
+    (let _,_,t3,_,_,_,_,_,_,_ = this in t3)
+
+    member Column4: int with get
+    (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
+
+    member Column5: System.Nullable<int> with get
+    (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
+
+    member Column6: System.Nullable<int> with get
+    (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
+
+    member Column7: System.Nullable<int> with get
+    (let _,_,_,_,_,_,t7,_,_,_ = this in t7)
+
+    member Column8: System.Nullable<int> with get
+    (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
+
+
+class HtmlProvider+Table38+Row : string * string * float
     member ``v t e Tennis``: string with get
     (let t1,_,_ = this in t1)
 
@@ -297,14 +305,6 @@ class HtmlProvider+Table44+Row : string * string
     (let t1,_ = this in t1)
 
     member ``v t e All England Lawn Tennis and Croquet Club2``: string with get
-    (let _,t2 = this in t2)
-
-
-class HtmlProvider+TheChampionshipsWimbledon+Row : string * string
-    member ``The Championships, Wimbledon``: string with get
-    (let t1,_ = this in t1)
-
-    member ``The Championships, Wimbledon2``: string with get
     (let _,t2 = this in t2)
 
 
