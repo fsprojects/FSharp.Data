@@ -2233,6 +2233,8 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 
     let invalidateE = new Event<EventHandler,EventArgs>()    
 
+    let disposing = Event<EventHandler,EventArgs>()
+
 #if FX_NO_LOCAL_FILESYSTEM
 #else
     let probingFolders = ResizeArray()
@@ -2243,9 +2245,13 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
     new (namespaceName:string,types:list<ProvidedTypeDefinition>) = new TypeProviderForNamespaces([(namespaceName,types)])
     new () = new TypeProviderForNamespaces([])
 
+    [<CLIEvent>]
+    member this.Disposing = disposing.Publish
+
 #if FX_NO_LOCAL_FILESYSTEM
     interface System.IDisposable with 
-        member x.Dispose() = ()
+        member x.Dispose() =
+            disposing.Trigger(x, EventArgs.Empty)
 #else
     abstract member ResolveAssembly : args : System.ResolveEventArgs -> Assembly
     default this.ResolveAssembly(args) = 
@@ -2267,7 +2273,9 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
         |> IO.Path.GetDirectoryName
         |> this.RegisterProbingFolder
     interface System.IDisposable with 
-        member x.Dispose() = AppDomain.CurrentDomain.remove_AssemblyResolve handler
+        member x.Dispose() = 
+            disposing.Trigger(x, EventArgs.Empty)
+            AppDomain.CurrentDomain.remove_AssemblyResolve handler
 #endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
