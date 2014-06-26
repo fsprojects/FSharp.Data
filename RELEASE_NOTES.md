@@ -227,3 +227,5 @@
 
 #### 2.0.10 - Unreleased
 * Improved performance of JsonValue.ToString().
+* Allow to serialize a JsonValue to a TextWriter.
+* Fixed possible memory leak.
