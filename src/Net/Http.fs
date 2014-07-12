@@ -224,6 +224,8 @@ type HttpResponseWithStream =
 
 /// Constants for common HTTP content types
 module HttpContentTypes =
+    /// */*
+    let [<Literal>] Any = "*/*"
     /// plain/text
     let [<Literal>] Text = "plain/text"
     /// application/octet-stream

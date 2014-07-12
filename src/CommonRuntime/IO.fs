@@ -201,13 +201,15 @@ let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriRes
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
-        let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") ]
-        let headers = 
+        let contentTypes =
             match formatName with
-            | "JSON" -> HttpRequestHeaders.Accept HttpContentTypes.Json :: headers
-            | "XML" -> HttpRequestHeaders.Accept HttpContentTypes.Xml :: headers
-            | "CSV" -> HttpRequestHeaders.Accept HttpContentTypes.Csv :: headers 
-            | _ -> headers
+            | "JSON" -> [ HttpContentTypes.Json ]
+            | "XML" -> [ HttpContentTypes.Xml ]
+            | "CSV" -> [ HttpContentTypes.Csv ]
+            | _ -> []
+            @ [ HttpContentTypes.Any ]
+        let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") 
+                        HttpRequestHeaders.Accept (String.concat ", " contentTypes) ]
         return! Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)
     }
   else
