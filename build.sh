@@ -5,4 +5,4 @@ fi
 #if [ ! -f packages/SourceLink.Fake/tools/Fake.fsx ]; then
 #  mono --runtime=v4.0 .nuget/NuGet.exe install SourceLink.Fake -OutputDirectory packages -ExcludeVersion
 #fi
-mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx -d:MONO $@
+mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx $@ --fsiargs -d:MONO
