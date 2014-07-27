@@ -59,6 +59,7 @@
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
     <Compile Include="CommonProviderImplementation\Debug.fs" />
+    <Compile Include="Bson\BsonValue.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
