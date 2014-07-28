@@ -574,7 +574,7 @@ type Http private() =
         | query ->
             url
             + if url.Contains "?" then "&" else "?"
-            + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + Uri.EscapeUriString v ]
+            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
                                        ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) =
