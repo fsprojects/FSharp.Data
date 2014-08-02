@@ -12,17 +12,18 @@ open FSharp.Data.Runtime.StructuralTypes
 /// Infer the type of a BSON value.
 let rec inferType parentName bson =
     match bson with
-    | BsonType.Null -> InferedType.Null
-    | BsonType.Boolean -> InferedType.Primitive (typeof<bool>, None, false)
-    | BsonType.Int32 -> InferedType.Primitive (typeof<int>, None, false)
-    | BsonType.Int64 -> InferedType.Primitive (typeof<int64>, None, false)
-    | BsonType.Double -> InferedType.Primitive (typeof<float>, None, false)
-    | BsonType.String -> InferedType.Primitive (typeof<string>, None, false)
-    | BsonType.DateTime -> InferedType.Primitive (typeof<DateTime>, None, false)
+    | BsonValue.Null -> InferedType.Null
+    | BsonValue.Boolean _ -> InferedType.Primitive (typeof<bool>, None, false)
+    | BsonValue.Int32 _ -> InferedType.Primitive (typeof<int>, None, false)
+    | BsonValue.Int64 _ -> InferedType.Primitive (typeof<int64>, None, false)
+    | BsonValue.Double _ -> InferedType.Primitive (typeof<float>, None, false)
+    | BsonValue.String _ -> InferedType.Primitive (typeof<string>, None, false)
+    | BsonValue.DateTime _ -> InferedType.Primitive (typeof<DateTime>, None, false)
 
-    | BsonType.ObjectId -> failwith "not implemented yet"
+    | BsonValue.Binary _ -> failwith "not implemented yet"
+    | BsonValue.ObjectId _ -> failwith "not implemented yet"
 
-    | BsonType.Array elems ->
+    | BsonValue.Array elems ->
         let elemName = NameUtils.singularize parentName
         let allowEmptyValues = false
 
@@ -30,7 +31,7 @@ let rec inferType parentName bson =
         |> Seq.map (inferType elemName)
         |> StructuralInference.inferCollectionType allowEmptyValues
 
-    | BsonType.Document elems ->
+    | BsonValue.Document elems ->
         let recordName =
             if String.IsNullOrEmpty parentName
             then None

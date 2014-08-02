@@ -9,22 +9,22 @@ open System.Text
 
 /// Represents the type of a BSON value.
 [<RequireQualifiedAccess>]
-type BsonType =
-   | Double
-   | String
-   | Document of elements : (string * BsonType) list
-   | Array of elements : BsonType list
-   // | Binary of subtype : byte
-   | ObjectId
-   | Boolean
-   | DateTime
+type BsonValue =
+   | Double of value : float
+   | String of value : string
+   | Document of elements : (string * BsonValue) list
+   | Array of elements : BsonValue list
+   | Binary of subtype : byte * value : byte[]
+   | ObjectId of value : byte[]
+   | Boolean of value : bool
+   | DateTime of value : DateTime
    | Null
    // | Regex
    // | JavaScript
    // | JavaScriptWithScope
-   | Int32
+   | Int32 of value : int
    // | Timestamp
-   | Int64
+   | Int64 of value : int64
    // | MinKey
    // | MaxKey
 
@@ -57,6 +57,8 @@ type private BsonElementType =
 
 type private BsonParser(bson : byte[]) =
 
+    static let UnixEpoch = DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+
     let mutable i = 0
 
     let readCString() =
@@ -64,13 +66,27 @@ type private BsonParser(bson : byte[]) =
         let length = bson |> Seq.ofArray |> Seq.skip i |> Seq.findIndex ((=) 0uy)
         let value = Encoding.UTF8.GetString(bson, i, length)
         i <- i + length + sizeof<byte> // for the null-terminator
-
         value
 
     let readInt32() =
         let value = BitConverter.ToInt32(bson, i)
         i <- i + sizeof<int>
+        value
 
+    let readInt64() =
+        let value = BitConverter.ToInt64(bson, i)
+        i <- i + sizeof<int64>
+        value
+
+    let readDouble() =
+        let value = BitConverter.ToDouble(bson, i)
+        i <- i + sizeof<float>
+        value
+
+    let readString() =
+        let length = readInt32()
+        let value = Encoding.UTF8.GetString(bson, i, length - 1)
+        i <- i + length
         value
 
     let rec parseDocument() =
@@ -84,40 +100,59 @@ type private BsonParser(bson : byte[]) =
 
                 let key = readCString()
 
-                let (typ, inc) =
+                let typ =
                     match elemType |> enum<BsonElementType> with
-                    | BsonElementType.Double -> (BsonType.Double, sizeof<float>)
-                    | BsonElementType.String -> (BsonType.String, readInt32())
-                    | BsonElementType.Document -> (parseDocument(), 0)
+                    | BsonElementType.Double -> readDouble() |> BsonValue.Double
+                    | BsonElementType.String -> readString() |> BsonValue.String
+
+                    | BsonElementType.Document -> parseDocument()
 
                     | BsonElementType.Array ->
                         match parseDocument() with
-                        | BsonType.Document elems -> (List.map snd elems |> BsonType.Array, 0)
-                        | _ -> failwith "expected parseDocument() to return a BsonType.Document"
+                        | BsonValue.Document elems -> List.map snd elems |> BsonValue.Array
+                        | _ -> failwith "expected parseDocument() to return a BsonValue.Document"
 
-                    // | BsonElementType.Binary ->
-                    //     let length = readInt32()
-                    //     (BsonType.Binary bson.[i], length + sizeof<byte>)
+                    | BsonElementType.Binary ->
+                        let length = readInt32()
+                        let subtype = bson.[i]
+                        let value = Array.sub bson (i + 1) length
+                        i <- i + length + sizeof<byte>
+                        BsonValue.Binary (subtype, value)
 
-                    | BsonElementType.ObjectId -> (BsonType.ObjectId, 12 * sizeof<byte>)
-                    | BsonElementType.Boolean -> (BsonType.Boolean, sizeof<byte>)
-                    | BsonElementType.DateTime -> (BsonType.DateTime, sizeof<int64>)
-                    | BsonElementType.Null -> (BsonType.Null, 0)
+                    | BsonElementType.ObjectId ->
+                        let length = 12
+                        let value = Array.sub bson i length
+                        i <- i + length * sizeof<byte>
+                        BsonValue.ObjectId value
+
+                    | BsonElementType.Boolean ->
+                        let value =
+                            if bson.[i] = 0uy then false
+                            else if bson.[i] = 1uy then true
+                            else failwith "expected either 0 or 1 for Boolean literal"
+                        i <- i + sizeof<byte>
+                        BsonValue.Boolean value
+
+                    | BsonElementType.DateTime ->
+                        readInt64() * 10000L
+                        |> UnixEpoch.AddTicks
+                        |> BsonValue.DateTime
+
+                    | BsonElementType.Null -> BsonValue.Null
 
                     // ...
 
-                    | BsonElementType.Int32 -> (BsonType.Int32, sizeof<int>)
-                    | BsonElementType.Int64 -> (BsonType.Int64, sizeof<int64>)
+                    | BsonElementType.Int32 -> readInt32() |> BsonValue.Int32
+                    | BsonElementType.Int64 -> readInt64() |> BsonValue.Int64
 
                     // ...
 
                     | _ -> failwithf "unsupported BSON element type %d" elemType
 
-                i <- i + inc
                 yield (key, typ)
         }
 
-        let value = BsonType.Document <| Seq.toList elems
+        let value = BsonValue.Document <| Seq.toList elems
         i <- i + sizeof<byte>
 
         value
@@ -131,7 +166,7 @@ type private BsonParser(bson : byte[]) =
                 yield parseDocument()
         }
 
-type BsonType with
+type BsonValue with
 
     static member Parse (text : string) =
         let bytes = Encoding.UTF8.GetBytes( text)
