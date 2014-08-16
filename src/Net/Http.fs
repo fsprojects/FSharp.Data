@@ -635,15 +635,15 @@ type Http private() =
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
-   
-            match body with
-            | Some body -> do! writeBody req body
-            | None -> ()
 
             let req = 
                 match customizeHttpRequest with
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
+   
+            match body with
+            | Some body -> do! writeBody req body
+            | None -> ()
 
             let! resp = getResponse req silentHttpErrors
 
