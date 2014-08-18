@@ -86,13 +86,13 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Metropolitan Area [ 4 ] [ 5 ]", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Scotland [ edit ]")
 
-    member ReferencesAndNotesEdit: HtmlProvider+ReferencesAndNotesEdit with get
+    member Table5: HtmlProvider+Table5 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("v t e List of settlements in the United Kingdom2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "References and Notes [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "Table5")
 
 
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row>
@@ -101,7 +101,7 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit : FDR.HtmlT
 
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row>
 
-class HtmlProvider+ReferencesAndNotesEdit : FDR.HtmlTable<HtmlProvider+ReferencesAndNotesEdit+Row>
+class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
 
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
     member ``Area (km�) [ 3 ]``: decimal with get
@@ -175,7 +175,7 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
-class HtmlProvider+ReferencesAndNotesEdit+Row : string * string
+class HtmlProvider+Table5+Row : string * string
     member ``v t e List of settlements in the United Kingdom``: string with get
     (let t1,_ = this in t1)
 

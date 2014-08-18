@@ -20,20 +20,6 @@ module internal Test.HtmlRuntime
 open FSharp.Data
 open FSharp.Data.Runtime
 
-#if INTERACTIVE
-type PrintableContent =
-    | Element of string * HtmlAttribute list * (PrintableContent list)
-    | Text of string
-    | Comment of string
-    static member ofHtmlNode(x) =
-        match x with
-        | HtmlElement(_, name, attrs, content) -> Element(name, attrs, content |> List.map PrintableContent.ofHtmlNode)
-        | HtmlText(_,content) -> Text(content)
-        | HtmlComment(_, content) -> Comment(content)
-
-fsi.AddPrintTransformer(PrintableContent.ofHtmlNode >> box)
-#endif
-
 let printParsed (html:string) = 
     html
     |> HtmlDocument.Parse

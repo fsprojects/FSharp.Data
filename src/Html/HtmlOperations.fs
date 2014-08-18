@@ -68,51 +68,33 @@ module HtmlNode =
     /// <param name="attrs">The HtmlAttribute(s) of the element</param>
     /// <param name="children">The children elements of this element</param>
     let createElement name attrs children =
-        (fun parent ->  
-            let this = ref None
-            let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
-            let e = HtmlElement(parent, name, attrs, children |> List.map (fun c -> c this))
-            this := Some e
-            e
-        )
+        let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
+        HtmlElement(name, attrs, children)
     
     /// <summary>
     /// Creates a text content element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createText content = 
-        (fun parent -> 
-            HtmlText(parent, content)
-        )
+    let createText content = HtmlText(content)
 
     /// <summary>
     /// Creates a comment element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createComment content = 
-        (fun parent -> 
-            HtmlComment(parent, content)
-        )
+    let createComment content = HtmlComment(content)
 
     /// Gets the given nodes name
     let name x =
         match x with
-        | HtmlElement(_, name, _, _) -> name.ToLowerInvariant()
+        | HtmlElement(name = name) -> name.ToLowerInvariant()
         | _ -> String.Empty
         
     /// Gets all of the nodes immediately under this node
     let children x =
         match x with
-        | HtmlElement(_, _, _, children) -> children
+        | HtmlElement(elements = children) -> children
         | _ -> []
 
-    /// Gets the parent node of this node
-    let parent x =
-        match x with
-        | HtmlElement(parent = parent) -> !parent
-        | HtmlText(parent = parent) -> !parent
-        | HtmlComment(parent = parent) -> !parent
-    
     /// <summary>
     /// Gets all of the descendants of this node that statisfy the given predicate
     /// the current node is also considered in the comparison
@@ -187,7 +169,7 @@ module HtmlNode =
     /// <param name="name">The name of the attribute to return.</param>
     let tryGetAttribute (name:string) x =
         match x with
-        | HtmlElement(_,_,attr,_) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
+        | HtmlElement(attributes = attr) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
         | _ -> None   
     
     /// <summary>
@@ -223,7 +205,7 @@ module HtmlNode =
     let hasAttribute name (value:string) x = 
         tryGetAttribute name x
         |> function 
-            | Some(attr) ->  attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
+            | Some(attr) -> attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
             | None -> false
 
     /// <summary>
@@ -300,44 +282,15 @@ module HtmlNode =
     /// <param name="x">The current node</param>
     let innerText x = 
         let rec innerText' = function
-            | HtmlElement(_,name,_, content) when name <> "style" && name <> "script" ->
+            | HtmlElement(name, _, content) when name <> "style" && name <> "script" ->
                 String.Join(" ", seq { for e in content do
                                             match e with
-                                            | HtmlText(_,text) -> yield text
-                                            | HtmlComment(_,_) -> yield String.Empty
+                                            | HtmlText(text) -> yield text
+                                            | HtmlComment(_) -> yield String.Empty
                                             | elem -> yield innerText' elem })
-            | HtmlText(_,text) -> text
+            | HtmlText(text) -> text
             | _ -> String.Empty
-        innerText' x
-    
-    /// <summary>
-    /// Returns the siblings of the current node, not including the given node
-    /// </summary>
-    /// <param name="x">The given node</param>
-    let siblings x =
-        match parent x with
-        | Some(p) -> 
-           elements ((<>) x) p
-        | None -> []
-
-    /// <summary>
-    /// Trys to find a node that statifies the given function by walking backwards up the
-    /// tree 
-    /// </summary>
-    /// <param name="f">The predicate to statisfy</param>
-    /// <param name="x">The given HTML node</param>
-    let rec tryFindPrevious f (x:HtmlNode) = 
-        match parent x with
-        | Some(p) ->
-            let nearest = 
-                descendants true (fun _ -> true) p 
-                |> Seq.takeWhile ((<>) x) 
-                |> Seq.filter f
-                |> Seq.toList |> List.rev
-            match nearest with
-            | [] -> tryFindPrevious f p
-            | h :: _ -> Some h 
-        | None -> None
+        innerText' x    
 
 [<AutoOpen>]
 module HtmlNodeExtensions =
@@ -349,9 +302,6 @@ module HtmlNodeExtensions =
         
         /// Gets all of the nodes immediately under this node
         member x.Children = HtmlNode.children x
-
-        /// Gets the parent node of this node
-        member x.Parent = HtmlNode.parent x
 
         /// <summary>
         /// Gets all of the descendants of the current node
@@ -435,32 +385,18 @@ module HtmlNodeExtensions =
         /// <param name="names">The set of names to match</param>
         member x.HasElement (names:seq<string>) = HtmlNode.hasElements names x
 
-        /// Returns the sibilings of the current node
-        member x.Siblings() = HtmlNode.siblings x
-
         /// Returns the inner text of the current node
         member x.InnerText = HtmlNode.innerText x
-
-        /// <summary>
-        /// Trys to find a node that statifies the given function by walking backwards up the
-        /// tree 
-        /// </summary>
-        /// <param name="f">The predicate to statisfy</param>
-        /// <param name="x">The given HTML node</param>
-        member x.TryFindPrevious(f) = HtmlNode.tryFindPrevious f x
 
         /// Parses the specified HTML string to a list of HTML nodes
         static member Parse(text) = 
           use reader = new StringReader(text)
-          HtmlParser.parseFragment reader (ref None)
+          HtmlParser.parseFragment reader
 
         /// Parses the specified HTML string to a list of HTML nodes
         static member ParseRooted(rootName, text) = 
           use reader = new StringReader(text)
-          let parent = ref None
-          let e = HtmlElement(ref None, rootName, [], HtmlParser.parseFragment reader parent)
-          parent := Some e
-          e
+          HtmlElement(rootName, [], HtmlParser.parseFragment reader)
     
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlDocument = 
@@ -471,8 +407,7 @@ module HtmlDocument =
     /// <param name="docType">The document type specifier string</param>
     /// <param name="children">The child elements of this document</param>
     let createDoc docType children = 
-        let this = ref None
-        HtmlDocument(docType, children |> List.map (fun c -> c this))
+        HtmlDocument(docType, children)
 
     /// Returns the doctype of the document
     let docType x =

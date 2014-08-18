@@ -43,7 +43,7 @@ let ``If tryParse HtmlAttribute failes it should return the defaultValue``() =
 let htmlFragment = 
     createElement "div" ["id", "my_div"; "class", "my_class"] [
         createText "Hello World!"
-    ] (ref None)
+    ]
 
 [<Test>]
 let ``Can get the name of a HtmlElement``() =
@@ -51,20 +51,15 @@ let ``Can get the name of a HtmlElement``() =
 
 [<Test>]
 let ``Name of a content element is an Empty string``() = 
-    HtmlNode.name (createText "Hello" (ref None)) |> should equal String.Empty
+    HtmlNode.name (createText "Hello") |> should equal String.Empty
 
 [<Test>]
 let ``The children of a content node is an empty list``() =
-    HtmlNode.children (createText "Hello" (ref None)) |> should equal []
+    HtmlNode.children (createText "Hello") |> should equal []
 
 [<Test>]
 let ``Can get the children of a node``() =
-    HtmlNode.children htmlFragment |> should equal [createText "Hello World!" (ref None)]
-
-[<Test>]
-let ``Can get the parent of a node``() =
-    let child = HtmlNode.children htmlFragment |> List.head
-    HtmlNode.parent child |> should equal (Some htmlFragment)
+    HtmlNode.children htmlFragment |> should equal [createText "Hello World!"]
 
 let doc = 
     """<html>
@@ -87,13 +82,13 @@ let doc =
 [<Test>]
 let ``Can get descendants of a node that matches a predicate``() =
     let result = doc |> HtmlNode.descendants false (HtmlNode.name >> (=) "link")
-    let expected = createElement "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] [] (ref None)
+    let expected = createElement "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] []
     result |> should equal [expected]
 
 [<Test>]
 let ``Can get all of the descendants that match the given set of names``() =
     let result = doc |> HtmlNode.descendantsNamed false ["link"]
-    let expected = createElement "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] [] (ref None)
+    let expected = createElement "link" ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"] []
     result |> should equal [expected]
 
 [<Test>]
@@ -114,7 +109,7 @@ let ``Can get all elements of a node that matches a predicate``() =
         |> HtmlNode.Parse
         |> List.head
         |> HtmlNode.elements (HtmlNode.name >> (=) "img")
-    let expected = createElement "img" ["src", "myimg.jpg"] [] (ref None)
+    let expected = createElement "img" ["src", "myimg.jpg"] []
     result |> should equal [expected]
 
 [<Test>]
@@ -132,8 +127,8 @@ let ``Can get all elements of a node that matches a set of names``() =
         |> List.head
         |> HtmlNode.elementsNamed ["img"; "div"]
     let expected = [
-            createElement "img" ["src", "myimg.jpg"] [] (ref None)
-            createElement "div" [] [createText "Hello World"] (ref None)
+            createElement "img" ["src", "myimg.jpg"] []
+            createElement "div" [] [createText "Hello World"]
         ]
     result |> should equal expected
 
@@ -163,42 +158,15 @@ let ``Can extract the inner text from a node``() =
 
 [<Test>]
 let ``Inner text on a comment should be String.Empty``() = 
-    let comment = createComment "Hello World" (ref None)
+    let comment = createComment "Hello World"
     HtmlNode.innerText comment |> should equal String.Empty
 
 [<Test>]
 let ``Inner text on a style should be String.Empty``() = 
-    let comment = createElement "style" [] [createText "Hello World"] (ref None)
+    let comment = createElement "style" [] [createText "Hello World"]
     HtmlNode.innerText comment |> should equal String.Empty
 
 [<Test>]
 let ``Inner text on a script should be String.Empty``() = 
-    let comment = createElement "script" [] [createText "Hello World"] (ref None)
+    let comment = createElement "script" [] [createText "Hello World"]
     HtmlNode.innerText comment |> should equal String.Empty
-
-[<Test>]
-let ``Can get to siblings of a node``() =
-    let result = 
-        doc.Descendants(["table"]) 
-        |> List.head
-        |> HtmlNode.siblings
-    let expected = createElement "img" ["src", "myimg.jpg"] [] (ref None)
-    result |> should equal [expected]
-
-[<Test>]
-let ``Can find the nearest node that matches a predicate before the current node``() =
-    let doc = 
-        HtmlNode.ParseRooted("html", """<body>
-                <div>
-                    <h3>Heading</h3>
-                </div>
-                <div>
-                    <table title="table">
-                        <tr><th>Column 1</th><th>Column 2</th></tr>
-                        <tr><td>1</td><td>yes</td></tr>
-                    </table>
-                </div>
-            </body>""")
-    let table = HtmlNode.descendantsNamed false ["table"] doc |> List.head
-    let result = HtmlNode.tryFindPrevious (HtmlNode.name >> (=) "h3") table
-    result |> should equal (Some (createElement "h3" [] [createText "Heading"] (ref None)))
