@@ -32,31 +32,36 @@ let dumpAll inst =
     dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "list_of_counties_wikipedia.html"
+Html { Sample = "imdb_chart.htm"
        PreferOptionals = false
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,#N/A,:"
        Culture = "" 
-       ResolutionFolder = "" }
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
 |> dumpAll
 
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
-       ResolutionFolder = "" }
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
-      ResolutionFolder = "" }
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
       Separators = ";" 
-      Culture = "" 
       InferRows = Int32.MaxValue
       Schema = ""
       HasHeaders = true
@@ -66,8 +71,10 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
-      ResolutionFolder = "" }
-|> dumpAll
+      Culture = "" 
+      Encoding = ""
+      ResolutionFolder = ""
+      EmbeddedResource = "" }
 
 let testCases = 
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"

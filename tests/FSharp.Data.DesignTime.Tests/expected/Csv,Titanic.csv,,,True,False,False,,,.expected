@@ -38,7 +38,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "Titanic.csv")), ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "Titanic.csv")), ",", '"', true, false, false)
 
     static member AsyncGetSample: () -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -80,8 +80,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-                             CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "Titanic.csv"), f)
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "Titanic.csv"), f)
 
     static member AsyncLoad: uri:string -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -123,8 +123,8 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-                             CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" uri), f)
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri), f)
 
     static member GetSample: () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -165,7 +165,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "Titanic.csv")), ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "Titanic.csv")), ",", '"', true, false, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -206,7 +206,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), ",", '"', true, false, false)
 
     static member Load: reader:System.IO.TextReader -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -247,7 +247,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, reader, ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, reader, ",", '"', true, false, false)
 
     static member Load: uri:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -288,7 +288,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" uri)), ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, false)
 
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -329,7 +329,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
-    CsvFile<_>.CreateNonReentrant(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
 
 
 class CsvProvider+Row : int * bool * int * string * string * float * int * int * string * decimal * string * string

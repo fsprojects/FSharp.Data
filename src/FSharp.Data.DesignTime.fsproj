@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -47,7 +47,6 @@
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\HttpUtils.fs" />
     <Compile Include="CommonRuntime\TextConversions.fs" />
     <Compile Include="CommonRuntime\TextRuntime.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />

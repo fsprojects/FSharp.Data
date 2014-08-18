@@ -67,6 +67,9 @@
     <Content Include="Data/LastFM.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/TabSeparated.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/banklist.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -74,6 +77,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/Adwords.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data/cp932.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data/AnyFeed.xml">
@@ -255,14 +261,13 @@
       <Link>FsUnit.fs</Link>
     </Compile>
     <Compile Include="UriUtils.fs" />
-    <Compile Include="HttpUtils.fs" />
     <Compile Include="Http.fs" />
     <Compile Include="MockServer.fs" />
     <Compile Include="HttpIntegrationTests.fs" />
     <Compile Include="NameUtils.fs" />
     <Compile Include="TextConversions.fs" />
     <Compile Include="JsonValue.fs" />
-    <Compile Include="JsonValueProperties.fs" />
+    <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
     <Compile Include="CsvProvider.fs" />

@@ -87,7 +87,7 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
     let separators = 
         if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase) 
         then "\t" else separators
-    let readerFunc = Func<_>(fun () -> asyncReadTextAtRuntime false "" "" "CSV" uri |> Async.RunSynchronously)
+    let readerFunc = Func<_>(fun () -> asyncReadTextAtRuntime false "" "" "CSV" "" uri |> Async.RunSynchronously)
     new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
 
   /// Loads CSV from the specified uri asynchronously
@@ -96,11 +96,11 @@ and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeade
     let separators = 
         if String.IsNullOrEmpty separators && uri.EndsWith(".tsv" , StringComparison.OrdinalIgnoreCase)
         then "\t" else separators
-    let! reader = asyncReadTextAtRuntime false "" "" "CSV" uri
+    let! reader = asyncReadTextAtRuntime false "" "" "CSV" "" uri
     let firstTime = ref true
     let readerFunc = Func<_>(fun () ->  
       if firstTime.Value then firstTime := false; reader
-      else asyncReadTextAtRuntime false "" "" "CSV" uri |> Async.RunSynchronously)
+      else asyncReadTextAtRuntime false "" "" "CSV" "" uri |> Async.RunSynchronously)
     return new CsvFile(readerFunc, separators, ?quote=quote, ?hasHeaders=hasHeaders, ?ignoreErrors=ignoreErrors)
   }
 

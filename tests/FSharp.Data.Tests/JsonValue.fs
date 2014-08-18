@@ -174,7 +174,7 @@ let ``Can parse array of numbers``() =
     j.[2] |> should equal (JsonValue.Number 3m)
 
 [<Test>]
-let ``Quotes in strings are property escaped``() =
+let ``Quotes in strings are properly escaped``() =
     let jsonStr = "{\"short_description\":\"This a string with \\\"quotes\\\"\"}"
     let j = JsonValue.Parse jsonStr
     j.ToString(JsonSaveOptions.DisableFormatting) |> should equal jsonStr
@@ -305,6 +305,7 @@ let ``Can parse various JSON documents``() =
             """["Test\t"]"""                        , Some <| Array [|String "Test\t"|]
             """["\""]"""                            , Some <| Array [|String "\""|]
             """["\"\\\//\b\f\n\r\t\u2665"]"""       , Some <| Array [|String "\"\\//\b\f\n\r\t\u2665"|]
+            """["\ud83d\udc36"]"""                  , Some <| Array [|String "\ud83d\udc36"|]
             """[0]"""                               , Some <| Array [|Float 0.|]
             """[0.5]"""                             , Some <| Array [|Float 0.5|]
             """[1234]"""                            , Some <| Array [|Float 1234.|]
@@ -387,3 +388,27 @@ let ``Can parse various JSON documents``() =
 
     if failures.Length > 0 then
         Assert.Fail <| failures.ToString ()
+
+[<Test>]
+let ``Basic special characters encoded correctly`` () = 
+  let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = " \\\"quoted\\\" and 'quoted' and \\r\\n and \uABCD "
+  (w.GetStringBuilder().ToString()) |> should equal expected
+
+[<Test>]
+let ``Encoding of simple string is valid JSON`` () = 
+  let input = "sample \"json\" with \t\r\n \' quotes etc."
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = "sample \\\"json\\\" with \\t\\r\\n ' quotes etc."
+  (w.GetStringBuilder().ToString()) |> should equal expected
+
+[<Test>]
+let ``Encoding of markup is not overzealous`` () =
+  let input = "<SecurityLabel><MOD>ModelAdministrators</MOD></SecurityLabel>"
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = input // Should not escape </>
+  (w.GetStringBuilder().ToString()) |> should equal expected
