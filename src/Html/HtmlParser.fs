@@ -14,29 +14,12 @@ open FSharp.Data.Runtime
 type HtmlAttribute = 
     | HtmlAttribute of name:string * value:string    
 
-[<CustomEquality; NoComparison>]
 [<StructuredFormatDisplay("{_Print}")>]
 type HtmlNode =
-    | HtmlElement of parent:HtmlNode option ref * name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-    | HtmlText of parent:HtmlNode option ref * content:string
-    | HtmlComment of parent:HtmlNode option ref * content:string
+    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+    | HtmlText of content:string
+    | HtmlComment of content:string
     
-    override x.Equals(y:obj) = 
-        match y with
-        | :? HtmlNode as y ->
-            match x, y with
-            | HtmlElement(_, name', attributes', content'), HtmlElement(_, name, attributes, content) -> name' = name && attributes = attributes' && content = content'
-            | HtmlText(_, content'), HtmlText(_, content) -> content = content'
-            | HtmlComment(_, content'), HtmlComment(_, content) -> content = content'
-            | _, _ -> false 
-        | _ -> false
-    
-    override x.GetHashCode() = 
-        match x with
-        | HtmlElement(_, name, attrs, content) -> 397 ^^^ hash(name) ^^^ hash(attrs) ^^^ hash(content)
-        | HtmlText(_, content) -> 397 ^^^ hash(127) ^^^ hash(content)
-        | HtmlComment(_, comment) -> 397 ^^^ hash(143) ^^^ hash(comment)
-
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation html =
             let append (str:string) = sb.Append str |> ignore
@@ -44,7 +27,7 @@ type HtmlNode =
                 sb.AppendLine() |> ignore
                 System.String(' ', indentation + plus) |> append
             match html with
-            | HtmlElement(_, name, attributes, elements) ->
+            | HtmlElement(name, attributes, elements) ->
                 append "<"
                 append name
                 for HtmlAttribute(name, value) in attributes do
@@ -64,8 +47,8 @@ type HtmlNode =
                     append "</"
                     append name
                     append ">"
-            | HtmlText(_, str) -> append str
-            | HtmlComment(_, str) -> 
+            | HtmlText( str) -> append str
+            | HtmlComment(str) -> 
                     append "<!-- "
                     append str
                     append " -->"
@@ -577,8 +560,7 @@ module internal HtmlParser =
                yield data state
         ]
     
-    let private parse parent reader =
-        let parentStack = new Stack<HtmlNode option ref>([parent])
+    let private parse reader =
         let isVoid (name:string) = 
             match name with
             | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
@@ -588,33 +570,28 @@ module internal HtmlParser =
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements rest
             | Tag(true, name, attributes) :: TagEnd(endName) :: rest when name = endName ->
-               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) rest
             | Tag(false, name, attributes) :: (Tag(_, nextName, _) as next) :: rest when (name <> nextName) && (isVoid name) ->
-               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) (next :: rest)  
             | Tag(false, name, attributes) :: (TagEnd(nextName) as next) :: rest when (name <> nextName) && (isVoid name) ->
-               let e = HtmlElement(parentStack.Peek(), name.ToLower(), attributes, [])
+               let e = HtmlElement(name.ToLower(), attributes, [])
                parse' docType (e :: elements) (next :: rest)  
             | Tag(_, name, attributes) :: rest ->
-                let refCell = ref None
-                let currentParent = parentStack.Peek()
-                parentStack.Push(refCell);
                 let dt, tokens, content = parse' docType [] rest
-                let e = HtmlElement(currentParent, name.ToLower(), attributes, content)
-                refCell := Some e
+                let e = HtmlElement(name.ToLower(), attributes, content)
                 parse' dt (e :: elements) tokens
             | TagEnd _ :: rest -> 
-                parentStack.Pop() |> ignore;
                 docType, rest, (elements |> List.rev)
             | Text cont :: rest ->
                 if cont <> " " && (String.IsNullOrWhiteSpace cont)
                 then parse' docType elements rest
-                else parse' docType (HtmlText(parentStack.Peek(), cont.Trim()) :: elements) rest
-            | Comment(cont) :: rest -> parse' docType (HtmlComment(parentStack.Peek(), cont.Trim()) :: elements) rest
+                else parse' docType (HtmlText(cont.Trim()) :: elements) rest
+            | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
             | EOF :: _ -> docType, [], (elements |> List.rev)
             | [] -> docType, [], (elements |> List.rev)
         let docType, _, elements = tokenise reader |> parse' "" []
@@ -623,7 +600,7 @@ module internal HtmlParser =
         docType, elements
 
     let parseDocument reader = 
-        HtmlDocument(parse (ref None) reader)
+        HtmlDocument(parse reader)
 
-    let parseFragment reader parent = 
-        parse parent reader |> snd
+    let parseFragment reader = 
+        parse reader |> snd

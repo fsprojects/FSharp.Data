@@ -1706,7 +1706,10 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member ``Bravo November``: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Bravo November Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/07s4xq_")
 
-    member Breitling Orbiter 3: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Breitling Orbiter 3 Item with get
+    member ``Brazilian Air Force One``: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Brazilian Air Force One Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/026k9s4")
+
+    member ``Breitling Orbiter 3``: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Breitling Orbiter 3 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/09kr0z")
 
     member ``Bristol Belle``: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Bristol Belle Item with get
