@@ -224,6 +224,8 @@ type HttpResponseWithStream =
 
 /// Constants for common HTTP content types
 module HttpContentTypes =
+    /// */*
+    let [<Literal>] Any = "*/*"
     /// plain/text
     let [<Literal>] Text = "plain/text"
     /// application/octet-stream
@@ -572,7 +574,7 @@ type Http private() =
         | query ->
             url
             + if url.Contains "?" then "&" else "?"
-            + String.concat "&" [ for k, v in query -> Uri.EscapeUriString k + "=" + Uri.EscapeUriString v ]
+            + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
                                        ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) =
@@ -633,15 +635,15 @@ type Http private() =
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
-   
-            match body with
-            | Some body -> do! writeBody req body
-            | None -> ()
 
             let req = 
                 match customizeHttpRequest with
                 | Some customizeHttpRequest -> customizeHttpRequest req
                 | None -> req
+   
+            match body with
+            | Some body -> do! writeBody req body
+            | None -> ()
 
             let! resp = getResponse req silentHttpErrors
 

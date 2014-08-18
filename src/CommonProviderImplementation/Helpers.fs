@@ -102,8 +102,8 @@ type DisposableTypeProviderForNamespaces() as x =
         for typeName in Seq.toArray disposeActionsByTypeName.Keys do
             dispose typeName
 
-    interface IDisposable with 
-        member __.Dispose() = disposeAll()
+    do
+        x.Disposing.Add(fun _ -> disposeAll())
               
     interface IDisposableTypeProvider with
         member __.Invalidate typeName = dispose typeName; ``base``.Invalidate()
