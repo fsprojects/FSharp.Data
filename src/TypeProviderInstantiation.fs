@@ -31,7 +31,8 @@ type XmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type JsonProviderArgs = 
     { Sample : string
@@ -40,7 +41,8 @@ type JsonProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type WorldBankProviderArgs =
     { Sources : string
@@ -92,7 +94,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |] 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -101,7 +104,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |] 
+                   box x.EmbeddedResource 
+                   box x.InferTypesFromValues |] 
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -137,13 +141,15 @@ type TypeProviderInstantiation =
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | Json x -> 
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -197,7 +203,8 @@ type TypeProviderInstantiation =
                   Culture = args.[4]
                   Encoding = ""
                   ResolutionFolder = ""
-                  EmbeddedResource = "" }
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -205,7 +212,8 @@ type TypeProviderInstantiation =
                    Culture = args.[4] 
                    Encoding = ""
                    ResolutionFolder = ""
-                   EmbeddedResource = "" }
+                   EmbeddedResource = "" 
+                   InferTypesFromValues = args.[5] |> bool.Parse }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }

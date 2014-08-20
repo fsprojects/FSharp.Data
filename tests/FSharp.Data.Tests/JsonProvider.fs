@@ -46,6 +46,28 @@ let ``Reading a required float that is not a valid float returns NaN`` () =
   prov.A |> should equal Double.NaN
 
 [<Test>]
+let ``Can control type inference`` () =
+  let inferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=true>.GetSamples().[0]
+
+  let intLike   : int  = inferred.IntLike
+  let boolLike1 : bool = inferred.BoolLike1
+  let boolLike2 : bool = inferred.BoolLike2
+
+  intLike   |> should equal 123
+  boolLike1 |> should equal false
+  boolLike2 |> should equal true
+
+  let notInferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=false>.GetSamples().[0]
+
+  let intLike   : string    = notInferred.IntLike
+  let boolLike1 : decimal   = notInferred.BoolLike1
+  let boolLike2 : string    = notInferred.BoolLike2
+
+  intLike   |> should equal "123"
+  boolLike1 |> should equal 0M
+  boolLike2 |> should equal "1"
+
+[<Test>]
 let ``Optional int correctly inferred`` () = 
   let prov = JsonProvider<""" [ {"a":123}, {"a":null} ] """>.GetSamples()
   let i = prov.[0].A

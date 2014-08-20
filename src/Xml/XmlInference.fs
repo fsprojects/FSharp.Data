@@ -18,21 +18,27 @@ open FSharp.Data.Runtime.StructuralTypes
 // (of other records etc.) or a primitive with the type of the content
 
 /// Generates record fields for all attributes
-let private getAttributes cultureInfo (element:XElement) =
+
+let private getAttributes inferTypesFromValues cultureInfo (element:XElement) =
   [ for attr in element.Attributes() do
       if attr.Name.Namespace.NamespaceName <> "http://www.w3.org/2000/xmlns/" && attr.Name.ToString() <> "xmlns" then
         yield { Name = attr.Name.ToString()
-                Type = getInferedTypeFromString cultureInfo attr.Value None } ]
+                Type =
+                    if inferTypesFromValues then
+                        getInferedTypeFromString cultureInfo attr.Value None
+                    else
+                        InferedType.Primitive(typeof<string>, None, false)
+              } ]
 
-let getInferedTypeFromValue cultureInfo (element:XElement) =
+let getInferedTypeFromValue inferTypesFromValues cultureInfo (element:XElement) =
     let value = element.Value
     let typ = getInferedTypeFromString cultureInfo value None
     match typ with
-    | InferedType.Primitive(t, _, optional) when t = typeof<string> && value.TrimStart().StartsWith "{" ->
+    | InferedType.Primitive(t, _, optional) when inferTypesFromValues && t = typeof<string> && value.TrimStart().StartsWith "{" ->
         try        
             match JsonValue.Parse value with
             | JsonValue.Record _ as json -> 
-                let jsonType = json |> JsonInference.inferType cultureInfo element.Name.LocalName
+                let jsonType = json |> JsonInference.inferType inferTypesFromValues cultureInfo element.Name.LocalName
                 InferedType.Json(jsonType, optional)
             | _ -> typ
         with _ -> typ
@@ -41,7 +47,7 @@ let getInferedTypeFromValue cultureInfo (element:XElement) =
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
+let inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues (element:XElement) =
 
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
@@ -52,14 +58,14 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
         // Get attributes for all `name` named elements 
         let attributes =
           elements
-          |> Seq.map (getAttributes cultureInfo)
+          |> Seq.map (getAttributes inferTypesFromValues cultureInfo)
           |> Seq.reduce (unionRecordTypes allowEmptyValues)
 
         // Get type of body based on primitive values only
         let bodyType = 
           [ for e in elements do
               if not e.HasElements && not (String.IsNullOrEmpty(e.Value)) then
-                yield getInferedTypeFromValue cultureInfo e ]
+                yield getInferedTypeFromValue inferTypesFromValues cultureInfo e ]
           |> Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top
         let body = { Name = ""
                      Type = bodyType }
@@ -93,21 +99,21 @@ let inferGlobalType cultureInfo allowEmptyValues (element:XElement) =
 
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
-let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) = 
+let rec inferLocalType inferTypesFromValues cultureInfo allowEmptyValues (element:XElement) =
   let props = 
     [ // Generate record fields for attributes
-      yield! getAttributes cultureInfo element
+      yield! getAttributes inferTypesFromValues cultureInfo element
       
       // If it has children, add collection content
       let children = element.Elements()
       if Seq.length children > 0 then
-        let collection = inferCollectionType allowEmptyValues (Seq.map (inferLocalType cultureInfo allowEmptyValues) children)
+        let collection = inferCollectionType allowEmptyValues (Seq.map (inferLocalType inferTypesFromValues cultureInfo allowEmptyValues) children)
         yield { Name = ""
                 Type = collection } 
 
       // If it has value, add primitive content
       elif not (String.IsNullOrEmpty element.Value) then
-        let primitive = getInferedTypeFromValue cultureInfo element
+        let primitive = getInferedTypeFromValue inferTypesFromValues cultureInfo element
         yield { Name = ""
                 Type = primitive } ]
 
@@ -116,6 +122,6 @@ let rec inferLocalType cultureInfo allowEmptyValues (element:XElement) =
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType cultureInfo allowEmptyValues globalInference (element:XElement) = 
-  if globalInference then inferGlobalType cultureInfo allowEmptyValues element
-  else inferLocalType cultureInfo allowEmptyValues element
+let inferType inferTypesFromValues cultureInfo allowEmptyValues globalInference (element:XElement) =
+  if globalInference then inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues element
+  else inferLocalType inferTypesFromValues cultureInfo allowEmptyValues element

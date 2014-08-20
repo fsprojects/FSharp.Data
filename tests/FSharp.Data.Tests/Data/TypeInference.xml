@@ -1,0 +1,4 @@
+<XS>
+    <X intLike="123" boolLike="0">{"a":1}</X>
+    <X intLike="321" boolLike="1">{"a":3}</X>
+</XS>
