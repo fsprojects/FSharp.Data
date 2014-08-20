@@ -232,3 +232,4 @@
 * Accept any MIME type in HTTP requests made by CsvProvider, JsonProvider, and XmlProvider (but still issue a preference).
 * Fix usage of customizeHttpRequest on POST requests.
 * Fixed problem on url creation when ampersands are used in query parameter values.
+* Added InferTypesFromValues parameter to XmlProvider and JsonProvider to allow disabling infering booleans and numbers from strings.
