@@ -1,0 +1,12 @@
+﻿[
+    {
+        "intLike"   : "123" ,
+        "boolLike1" : 0     ,
+        "boolLike2" : "1"
+    },
+    {
+        "intLike"   : "321" ,
+        "boolLike1" : 1     ,
+        "boolLike2" : "0"
+    }
+]

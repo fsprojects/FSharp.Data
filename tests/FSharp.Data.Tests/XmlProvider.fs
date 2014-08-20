@@ -13,6 +13,28 @@ open NUnit.Framework
 open FsUnit
 open FSharp.Data
 
+[<Test>]
+let ``Can control type inference`` () =
+  let inferred = XmlProvider<"Data/TypeInference.xml", InferTypesFromValues=true>.GetSample().Xs.[0]
+
+  let intLike   : int       = inferred.IntLike
+  let boolLike  : bool      = inferred.BoolLike
+  let jsonValue : JsonValue = inferred.Value.JsonValue
+
+  intLike   |> should equal 123
+  boolLike  |> should equal false
+  jsonValue |> should equal (JsonValue.Record [|"a",(JsonValue.Number 1.0M)|])
+
+  let notInferred = XmlProvider<"Data/TypeInference.xml", InferTypesFromValues=false>.GetSample().Xs.[0]
+
+  let intLike   : string    = notInferred.IntLike
+  let boolLike  : string    = notInferred.BoolLike
+  let jsonValue : string    = notInferred.Value
+
+  intLike   |> should equal "123"
+  boolLike  |> should equal "0"
+  jsonValue |> should equal """{"a":1}"""
+
 type PersonXml = XmlProvider<"""<authors><author name="Ludwig" surname="Wittgenstein" age="29" /></authors>""">
 
 let newXml = """<authors><author name="Jane" surname="Doe" age="23" /></authors>"""
