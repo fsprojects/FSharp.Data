@@ -183,11 +183,7 @@ let ``tvrage_id is not unique in mql query``() =
         select (p.Name, p.``Date of birth``)
     } 
     |> Seq.head
-#if TEAM_CITY
     |> should equal ("Jack Abramoff", "1958-02-28")
-#else
-    |> should equal ("Jack Abramoffa", "1958-02-28")
-#endif
 
 #if TEAM_CITY
 // US
