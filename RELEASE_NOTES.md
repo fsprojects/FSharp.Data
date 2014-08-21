@@ -225,7 +225,7 @@
 * Fixed unnecessary character escaping in JsonValue.
 * Be more relaxed about mixing different versions on FSharp.Data.
 
-#### 2.0.10 - Unreleased
+#### 2.0.10 - August 21 2014
 * Improved performance of JsonValue.ToString().
 * Allow to serialize a JsonValue to a TextWriter.
 * Fixed possible memory leak.
