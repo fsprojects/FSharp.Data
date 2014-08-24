@@ -89,21 +89,21 @@ JSONの配列やレコードは無名です(ただしレコードには
 名前のつけられたフィールドがあります)。
 たとえば以下のようなXMLがあるとします：</p>
 
-<pre lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
+<table class="pre"><tr><td><pre lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">title</span> <span class="o">text</span><span class="k">="Sample input"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="First"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="Second"</span> <span class="k">/&gt;</span>
-<span class="k">&lt;/</span><span class="i">channel</span><span class="k">&gt;</span></pre>
+<span class="k">&lt;/</span><span class="i">channel</span><span class="k">&gt;</span></pre></td></tr></table>
 
 <p>これに対して生成するJSONではトップレベルの要素名( <code>channel</code> )が無視されます。
 生成されるJSONデータはレコード型で、
 各属性および子要素に対してユニークなフィールドが含まれます。
 ある要素が繰り返し現れる場合には配列へと変換されます：</p>
 
-<pre lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
+<table class="pre"><tr><td><pre lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
   <span class="s">"title"</span>: { <span class="s">"text"</span>: <span class="s">"Sample input"</span> },
   <span class="s">"items"</span>: [ { <span class="s">"value"</span>: <span class="s">"First"</span> }, 
-             { <span class="s">"value"</span>: <span class="s">"Second"</span> } ]  }</pre>
+             { <span class="s">"value"</span>: <span class="s">"Second"</span> } ]  }</pre></td></tr></table>
 
 <p>このように、 <code>item</code> 要素は自動的に <code>items</code> という複数形に変換されて、
 <code>value</code> 属性の値に関連づけられた2つのレコード値が
@@ -184,9 +184,9 @@ JSONの配列やレコードは無名です(ただしレコードには
 <p>JSONからXMLへ変換する場合、同じようなミスマッチが起こります。
 たとえば以下のようなJSONデータがあるとします：</p>
 
-<pre lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
+<table class="pre"><tr><td><pre lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
   <span class="s">"paging"</span> : { <span class="s">"current"</span>: 1 },
-  <span class="s">"items"</span> : [ <span class="s">"First"</span>, <span class="s">"Second"</span> ] }</pre>
+  <span class="s">"items"</span> : [ <span class="s">"First"</span>, <span class="s">"Second"</span> ] }</pre></td></tr></table>
 
 <p>トップレベルのレコードには名前がないため、
 今回の変換機能では(ルート名を指定することになる)ユーザー側で
@@ -195,13 +195,13 @@ JSONの配列やレコードは無名です(ただしレコードには
 レコード内にあるプリミティブな値のフィールドは属性になり、
 (配列やレコードのような)複雑な値はオブジェクトになります：</p>
 
-<pre lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
+<table class="pre"><tr><td><pre lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">items</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>First<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>Second<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
   <span class="k">&lt;/</span><span class="i">items</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">paging</span> <span class="o">current</span><span class="k">="1"</span> <span class="k">/&gt;</span>
-<span class="k">&lt;/</span><span class="i">root</span><span class="k">&gt;</span></pre>
+<span class="k">&lt;/</span><span class="i">root</span><span class="k">&gt;</span></pre></td></tr></table>
 
 <p>変換関数はやはり再帰関数になります。
 今回はパターンマッチを使って <code>JsonValue</code> のそれぞれ取り得るケースを区別します。
