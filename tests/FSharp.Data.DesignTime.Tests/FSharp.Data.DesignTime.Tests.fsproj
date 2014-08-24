@@ -69,6 +69,10 @@
       <HintPath>..\..\packages\FSharp.Formatting.2.4.21\lib\net40\FSharp.CodeFormat.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="FSharp.Compiler.Interactive.Settings">
+      <HintPath>..\..\lib\FSharp.Compiler.Interactive.Settings.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FSharp.Compiler.Service">
       <HintPath>..\..\packages\FSharp.Compiler.Service.0.0.59\lib\net40\FSharp.Compiler.Service.dll</HintPath>
       <Private>True</Private>
