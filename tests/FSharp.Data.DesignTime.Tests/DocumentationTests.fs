@@ -40,9 +40,13 @@ let processFile file =
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
   let evaluationErrors = ResizeArray()
+#if INTERACTIVE
   let fsiEvaluator = FsiEvaluator()
   fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
+#else
+  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
+#endif
   Seq.append
     (literateDoc.Errors 
      |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
