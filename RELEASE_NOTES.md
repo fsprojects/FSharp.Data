@@ -233,3 +233,6 @@
 * Fix usage of customizeHttpRequest on POST requests.
 * Fixed problem on url creation when ampersands are used in query parameter values.
 * Added InferTypesFromValues parameter to XmlProvider and JsonProvider to allow disabling infering booleans and numbers from strings.
+
+#### 2.0.11 - August 27 2014
+* Fixed HTTP decompression throwing AccessViolationException's on Windows Phone.
