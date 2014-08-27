@@ -294,9 +294,9 @@ module private Helpers =
         return output 
     }
 
-    let (?) obj prop =
+    let getProperty (typ:Type) obj prop =
 #if FX_NET_CORE_REFLECTION
-        let prop = obj.GetType().GetRuntimeProperty(prop)
+        let prop = typ.GetRuntimeProperty(prop)
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj) |> unbox |> Some
@@ -305,7 +305,7 @@ module private Helpers =
         else
             None
 #else
-        let prop = obj.GetType().GetProperty(prop)
+        let prop = typ.GetProperty(prop)
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj, [| |]) |> unbox |> Some
@@ -314,6 +314,9 @@ module private Helpers =
         else
             None
 #endif
+
+    let (?) obj prop =
+        getProperty (obj.GetType()) obj prop
 
     let (?<-) obj prop value =
 #if FX_NET_CORE_REFLECTION
@@ -570,20 +573,14 @@ type Http private() =
 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
     static let isWindowsPhone =
-        let osVersionProp = typeof<Environment>.GetProperty("OSVersion")
-        if osVersionProp <> null then
-            let osVersion = osVersionProp.GetValue(null, [| |])
-            if osVersion <> null then
-                let version = osVersion?Version
-                match version with
-                | Some (version:Version) ->
-                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
-                    version.Major >= 8
-                | _ -> false
-            else
-                false
-        else
-            false  
+        match getProperty typeof<Environment> null "OSVersion" with
+        | Some osVersion ->
+            match osVersion?Version with
+            | Some (version:Version) ->
+                // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
+                version.Major >= 8
+            | _ -> false
+        | _ -> false
 #endif
 
     /// Appends the query parameters to the url, taking care of proper escaping
