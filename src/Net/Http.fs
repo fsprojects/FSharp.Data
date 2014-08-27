@@ -567,6 +567,25 @@ module private Helpers =
 [<AbstractClass>]
 type Http private() = 
 
+
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+    static let isWindowsPhone =
+        let osVersionProp = typeof<Environment>.GetProperty("OSVersion")
+        if osVersionProp <> null then
+            let osVersion = osVersionProp.GetValue(null, [| |])
+            if osVersion <> null then
+                let version = osVersion?Version
+                match version with
+                | Some (version:Version) ->
+                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
+                    version.Major >= 8
+                | _ -> false
+            else
+                false
+        else
+            false  
+#endif
+
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
         match query with
@@ -595,7 +614,7 @@ type Http private() =
         let nativeAutomaticDecompression = ref true
 
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        if not (req?AutomaticDecompression <- 3) then 
+        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then 
             nativeAutomaticDecompression := false
             req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
