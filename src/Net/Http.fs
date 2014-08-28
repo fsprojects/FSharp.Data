@@ -565,14 +565,8 @@ module private Helpers =
                  Cookies = cookies }
     }
 
-/// Utilities for working with network via HTTP. Includes methods for downloading 
-/// resources with specified headers, query parameters and HTTP body
-[<AbstractClass>]
-type Http private() = 
-
-
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-    static let isWindowsPhone =
+    let isWindowsPhone =
         let runningOnMono = Type.GetType("Mono.Runtime") <> null
         if runningOnMono then
             false
@@ -586,6 +580,54 @@ type Http private() =
                 | _ -> false
             | _ -> false
 #endif
+
+    // .NET has trouble parsing some cookies. See http://stackoverflow.com/a/22098131/165633
+    let getAllCookiesFromHeader (header:string) host (cookieContainer:CookieContainer) =
+        let rawCookies = header.Replace("\r", "").Replace("\n", "").Split(',')
+        let cookies = ResizeArray()
+        let mutable i = 0
+        while i < rawCookies.Length do
+            if rawCookies.[i].IndexOf("expires=", StringComparison.OrdinalIgnoreCase) > 0 then
+                cookies.Add(rawCookies.[i] + "," + rawCookies.[i + 1])
+                i <- i + 1
+            else
+                cookies.Add(rawCookies.[i])
+            i <- i + 1
+        for cookieStr in cookies do
+            let cookie = new Cookie()
+            cookieStr.Split ';'
+            |> Array.iteri (fun i cookiePart ->
+                if i = 0 then
+                    if cookiePart <> "" then
+                        let firstEqual = cookiePart.IndexOf "="
+                        let firstName = cookiePart.Substring(0, firstEqual)
+                        let allValue = cookiePart.Substring(firstEqual + 1, cookiePart.Length - (firstEqual + 1))
+                        cookie.Name <- firstName
+                        cookie.Value <- allValue
+                elif cookiePart.IndexOf("path", StringComparison.OrdinalIgnoreCase) >= 0 then
+                    let kvp = cookiePart.Split '='
+                    if kvp.[1] <> "" then
+                        cookie.Path <- kvp.[1]
+                    else
+                        cookie.Path <- "/"
+                elif cookiePart.IndexOf("domain", StringComparison.OrdinalIgnoreCase) >= 0 then
+                        let kvp = cookiePart.Split '='
+                        if kvp.[1] <> "" then
+                            cookie.Domain <- kvp.[1]
+                        else
+                            cookie.Domain <- host
+            )
+
+            if cookie.Path = "" then
+                cookie.Path <- "/"
+            if cookie.Domain = "" then
+                cookie.Domain <- host
+            cookieContainer.Add(Uri(host), cookie)
+
+/// Utilities for working with network via HTTP. Includes methods for downloading 
+/// resources with specified headers, query parameters and HTTP body
+[<AbstractClass>]
+type Http private() = 
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -667,12 +709,16 @@ type Http private() =
 
             let! resp = getResponse req silentHttpErrors
 
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
-
             let headers = 
                 [ for header in resp.Headers.AllKeys do 
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
+                
+            match headers.TryFind HttpResponseHeaders.SetCookie with
+            | Some cookieHeader -> getAllCookiesFromHeader cookieHeader resp.ResponseUri.OriginalString cookieContainer
+            | None -> ()
+
+            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
             let statusCode, characterSet = 
                 match resp with

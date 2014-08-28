@@ -239,3 +239,6 @@
 
 #### 2.0.12 - August 28 2014
 * Fixed crash on HTTP requests that return 0 bytes.
+
+#### 2.0.13 - August 29 2014
+* Fixed handling of HTTP response cookies on some corner cases that .NET doesn't natively support.
