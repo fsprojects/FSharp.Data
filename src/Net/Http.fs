@@ -573,14 +573,18 @@ type Http private() =
 
 #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
     static let isWindowsPhone =
-        match getProperty typeof<Environment> null "OSVersion" with
-        | Some osVersion ->
-            match osVersion?Version with
-            | Some (version:Version) ->
-                // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
-                version.Major >= 8
+        let runningOnMono = Type.GetType("Mono.Runtime") <> null
+        if runningOnMono then
+            false
+        else
+            match getProperty typeof<Environment> null "OSVersion" with
+            | Some osVersion ->
+                match osVersion?Version with
+                | Some (version:Version) ->
+                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
+                    version.Major >= 8
+                | _ -> false
             | _ -> false
-        | _ -> false
 #endif
 
     /// Appends the query parameters to the url, taking care of proper escaping
@@ -679,6 +683,8 @@ type Http private() =
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
+
+            let characterSet = if characterSet = null then "" else characterSet
 
             let contentEncoding = 
                 // .NET removes the gzip/deflate from the content encoding header when it handles the decompression itself, but Mono doesn't, so we clear it explicitely
