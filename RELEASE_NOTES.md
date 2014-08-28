@@ -236,3 +236,6 @@
 
 #### 2.0.11 - August 27 2014
 * Fixed HTTP decompression throwing AccessViolationException's on Windows Phone.
+
+#### 2.0.12 - August 28 2014
+* Fixed crash on HTTP requests that return 0 bytes.
