@@ -77,8 +77,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Zlib.Portable">
-      <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\Zlib.Portable.1.10.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup>
