@@ -12,12 +12,8 @@ open System
 open FSharp.Data
 open FsCheck
 
-[<TestFixtureSetUp>]
-let fixtureSetup() = 
-    Runner.init.Force() |> ignore
-
 #if INTERACTIVE
-fixtureSetup()
+Runner.init.Force()
 #endif
 
 let escaped = Set(['t';'r';'b';'n';'f';'\\';'"'])
@@ -41,6 +37,42 @@ let validJsonStringGen =
     Arb.generate<string> 
     |> Gen.suchThat ((<>) null)
     |> Gen.suchThat (Seq.toList >> isValidJsonString)
+
+let jsonValueGen : Gen<JsonValue> =  
+
+    let stringValGen = Gen.map JsonValue.String validJsonStringGen
+    let booleanValGen = Gen.map JsonValue.Boolean Arb.generate<bool>
+    let nullValGen = Gen.constant JsonValue.Null
+    let numberValGen = Gen.map JsonValue.Number Arb.generate<decimal>
+
+    let recordGen record =
+        record
+        ||> Gen.map2 (fun x y -> (x,y)) 
+        |> Gen.listOf
+        |> Gen.map List.toArray
+        |> Gen.map JsonValue.Record
+    
+    let rec tree() =
+        let tree' s =
+            match s with
+            | 0 -> Gen.oneof [ booleanValGen; stringValGen; nullValGen; numberValGen ]
+            | n when n>0 -> 
+                let subtree = 
+                    (validJsonStringGen, tree()) 
+                    |> recordGen
+                    |> Gen.resize (s|>float|>sqrt|>int) 
+                let arrayGen =
+                    tree()
+                    |> Gen.listOf
+                    |> Gen.map List.toArray
+                    |> Gen.map JsonValue.Array
+                    |> Gen.resize (s|>float|>sqrt|>int) 
+                Gen.oneof [ subtree; arrayGen; booleanValGen; stringValGen; nullValGen; numberValGen ]
+            | _ -> invalidArg "s" "Only positive arguments are allowed"
+        Gen.sized tree'
+
+    (validJsonStringGen, tree())
+    |> recordGen
 
 let jsonStringGen : Gen<string> =
  
@@ -77,6 +109,34 @@ let jsonStringGen : Gen<string> =
 
     (validJsonStringGen', tree())
     |> recordGen
+
+type Generators = 
+    static member JsonValue() =
+         {new Arbitrary<JsonValue>() with
+            override x.Generator = jsonValueGen
+            override x.Shrinker j = 
+                match j with
+                | JsonValue.Array elems -> elems :> seq<JsonValue>
+                | JsonValue.Record [|prop|] -> Seq.singleton (prop |> snd)
+                | JsonValue.Record props -> seq {for n in props -> JsonValue.Record([|n|])}
+                | _ -> Seq.empty }
+
+[<TestFixtureSetUp>]
+let fixtureSetup() =
+    Arb.register<Generators>() |> ignore
+
+#if INTERACTIVE
+fixtureSetup()
+#endif
+
+[<Test>]
+let  ``Parsing stringified JsonValue returns the same JsonValue`` () =
+    let parseStringified (json: JsonValue) = 
+        json.ToString(JsonSaveOptions.DisableFormatting)
+        |> JsonValue.Parse = json
+
+    Check.One ({Config.QuickThrowOnFailure with MaxTest = 1000},
+               parseStringified)
 
 [<Test>]
 let ``Stringifing parsed string returns the same string`` () =
