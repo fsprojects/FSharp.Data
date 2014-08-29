@@ -46,7 +46,7 @@ type internal UriResolver =
       if uri.IsAbsoluteUri then uri, isWeb uri
       else
 #if FX_NO_LOCAL_FILESYSTEM
-        failwith "Only web locations are supported"
+        failwith "Only web locations are supported on the PCL versions of F# Data. Please use the full .NET version instead."
 #else
         let root = 
           match x.ResolutionType with
