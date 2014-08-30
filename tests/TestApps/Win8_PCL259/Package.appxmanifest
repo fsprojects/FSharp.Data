@@ -6,7 +6,7 @@
             Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Win8_PCL7_3310</DisplayName>
+    <DisplayName>Win8_PCL259</DisplayName>
     <PublisherDisplayName>gusta_000</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -23,12 +23,12 @@
   <Applications>
     <Application Id="App"
         Executable="$targetnametoken$.exe"
-        EntryPoint="Win8_PCL7_3310.App">
+        EntryPoint="Win8_PCL259.App">
         <m2:VisualElements
-            DisplayName="Win8_PCL7_3310"
+            DisplayName="Win8_PCL259"
             Square150x150Logo="Assets\Logo.png"
             Square30x30Logo="Assets\SmallLogo.png"
-            Description="Win8_PCL7_3310"
+            Description="Win8_PCL259"
             ForegroundText="light"
             BackgroundColor="#464646">
             <m2:SplashScreen Image="Assets\SplashScreen.png" />

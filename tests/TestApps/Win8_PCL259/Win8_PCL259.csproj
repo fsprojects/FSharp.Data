@@ -7,14 +7,14 @@
     <ProjectGuid>{49A1DB5B-27EF-4691-ACB1-5851D7A8F7E8}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Win8_PCL7_3310</RootNamespace>
-    <AssemblyName>Win8_PCL7_3310</AssemblyName>
+    <RootNamespace>Win8_PCL259</RootNamespace>
+    <AssemblyName>Win8_PCL259</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>Win8_PCL7_3310_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Win8_PCL259_TemporaryKey.pfx</PackageCertificateKeyFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -105,9 +105,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <ProjectReference Include="..\PCL7_3310\PCL7_3310.fsproj">
+    <ProjectReference Include="..\PCL259\PCL259.fsproj">
       <Project>{1b9b6630-f731-4f5f-ae8c-3972e7b32ed9}</Project>
-      <Name>PCL7_3310</Name>
+      <Name>PCL259</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -124,7 +124,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="paket.references" />
-    <None Include="Win8_PCL7_3310_TemporaryKey.pfx" />
+    <None Include="Win8_PCL259_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.scale-100.png" />
@@ -141,6 +141,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Zlib.Portable">
+      <HintPath>..\..\..\packages\Zlib.Portable.1.10.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <BaseOutputPath>bin\portable7\</BaseOutputPath>
-    <BaseIntermediateOutputPath>obj\portable7\</BaseIntermediateOutputPath>
-    <TargetFSharpCoreVersion>3.3.1.0</TargetFSharpCoreVersion>
+    <BaseOutputPath>bin\portable259\</BaseOutputPath>
+    <BaseIntermediateOutputPath>obj\portable259\</BaseIntermediateOutputPath>
+    <TargetFSharpCoreVersion>3.259.3.1</TargetFSharpCoreVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -17,29 +17,29 @@
     <RootNamespace>FSharp.Data</RootNamespace>
     <AssemblyName>FSharp.Data</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <TargetProfile>netcore</TargetProfile>
-    <Name>FSharp.Data.Portable7</Name>
+    <Name>FSharp.Data.Portable259</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\portable7\Debug</OutputPath>
+    <OutputPath>bin\portable259\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\portable7\Debug\FSharp.Data.xml</DocumentationFile>
+    <DocumentationFile>bin\portable259\Debug\FSharp.Data.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <OutputPath>bin\portable7\Release</OutputPath>
+    <OutputPath>bin\portable259\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\portable7\Release\FSharp.Data.xml</DocumentationFile>
+    <DocumentationFile>bin\portable259\Release\FSharp.Data.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
@@ -69,8 +69,8 @@
     <Compile Include="Html\HtmlInference.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
-    <Compile Include="AssemblyInfo.Portable7.fs" />
     <None Include="paket.references" />
+    <Compile Include="AssemblyInfo.Portable259.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core">
@@ -82,15 +82,16 @@
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">12</MinimumVisualStudioVersion>
   </PropertyGroup>
+  <Import Project="DefineConstants.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target> -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable7" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable7" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable7" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable259" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable259" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable259" />
   </Target>
   <Import Project="$(SolutionDir)\.paket\paket.targets" />
   <Choose>

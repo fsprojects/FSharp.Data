@@ -8,11 +8,11 @@
     <ProjectGuid>{d96a5016-bb2d-408f-8c53-f65024b04bfb}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>ConsoleApp_4300_Library_4300</RootNamespace>
-    <AssemblyName>ConsoleApp_4310_PCL7_3310</AssemblyName>
+    <AssemblyName>ConsoleApp_4310_PCL259</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>ConsoleApp_4310_PCL7_3310</Name>
+    <Name>ConsoleApp_4310_PCL259</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,8 +69,8 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PCL7_3310\PCL7_3310.fsproj">
-      <Name>PCL7_3310</Name>
+    <ProjectReference Include="..\PCL259\PCL259.fsproj">
+      <Name>PCL259</Name>
       <Project>{1b9b6630-f731-4f5f-ae8c-3972e7b32ed9}</Project>
       <Private>True</Private>
     </ProjectReference>

@@ -4,7 +4,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace Win8_PCL7_3310
+namespace Win8_PCL259
 {
     public sealed partial class MainPage : Page
     {

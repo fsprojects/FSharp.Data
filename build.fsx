@@ -60,11 +60,11 @@ Target "AssemblyInfo" <| fun () ->
         let title = 
             Path.GetFileNameWithoutExtension file
             |> replace ".Portable47" ""
-            |> replace ".Portable7" ""
+            |> replace ".Portable259" ""
             |> replace "AssemblyInfo" "FSharp.Data"
         let versionSuffix =
             if file.Contains ".Portable47" then ".47"
-            elif file.Contains ".Portable7" then ".7"
+            elif file.Contains ".Portable259" then ".259"
             else ".0"
         let version = release.AssemblyVersion + versionSuffix
         CreateFSharpAssemblyInfo file
@@ -97,7 +97,7 @@ Target "Build" <| fun () ->
     !! "FSharp.Data.sln"
 #if MONO
 #else
-    ++ "FSharp.Data.Portable7.sln"
+    ++ "FSharp.Data.Portable259.sln"
 #endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
@@ -109,10 +109,10 @@ Target "BuildTests" <| fun () ->
 
 Target "BuildConsoleTests" <| fun () ->
     !! "TestApps.Console.sln"
-//#if MONO
-//#else
-//    ++ "TestApps.Console.Portable7.sln"
-//#endif
+#if MONO
+#else
+    ++ "TestApps.Console.Portable259.sln"
+#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -163,8 +163,8 @@ Target "SourceLink" <| fun () ->
         proj.CreateSrcSrv (sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName) repo.Revision (repo.Paths files)
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
+    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")
+    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
     CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
