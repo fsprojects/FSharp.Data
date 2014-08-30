@@ -622,7 +622,7 @@ module private Helpers =
             if cookie.Domain = "" then
                 cookie.Domain <- responseUri.Host
 
-            let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.'))
+            let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path)
             cookieContainer.Add(uri, cookie)
 
 /// Utilities for working with network via HTTP. Includes methods for downloading 
