@@ -185,7 +185,7 @@ module internal XmlTypeBuilder =
         | HeterogeneousRecords cases ->
        
             // Generate new choice type for the element
-            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true)
+            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<XmlElement>), HideObjectMethods = true, NonNullable = true)
             ctx.TypeProviderType.AddMember objectTy
        
             // to nameclash property names
@@ -239,7 +239,7 @@ module internal XmlTypeBuilder =
 
             let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName names.[0],
                                                   Some(ctx.Replacer.ToRuntime typeof<XmlElement>), 
-                                                  HideObjectMethods = true)
+                                                  HideObjectMethods = true, NonNullable = true)
             ctx.TypeProviderType.AddMember objectTy
        
             // If we unify types globally, then save type for this record
@@ -280,7 +280,7 @@ module internal XmlTypeBuilder =
                         // If the attribute has multiple possible type (e.g. "bool|int") then we generate
                         // a choice type that is erased to 'option<string>' (for simplicity, assuming that
                         // the attribute is always optional)
-                        let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(ctx.Replacer.ToRuntime typeof<option<string>>), HideObjectMethods = true)
+                        let choiceTy = ProvidedTypeDefinition(ctx.UniqueNiceName (name + "Choice"), Some(ctx.Replacer.ToRuntime typeof<option<string>>), HideObjectMethods = true, NonNullable = true)
                         ctx.TypeProviderType.AddMember choiceTy
                 
                         for KeyValue(tag, typ) in types do 
