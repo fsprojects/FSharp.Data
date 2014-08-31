@@ -211,9 +211,6 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.Fre
     member Library: FreebaseDataProvider+ServiceTypes+DomainObjects+LibraryDomain with get
     this.GetDomainById("/library")
 
-    member Lightweight: <NULL> with get
-    this.GetDomainById("/base/lightweight")
-
     member Location: FreebaseDataProvider+ServiceTypes+DomainObjects+LocationDomain with get
     this.GetDomainById("/location")
 

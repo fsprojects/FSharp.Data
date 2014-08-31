@@ -71,74 +71,70 @@ module Debug =
 
         let rec toString useFullName (t: Type) =
 
-            if t = null then
-                "<NULL>" // happens in the Freebase provider
+            let hasUnitOfMeasure = t.Name.Contains("[")
+
+            let innerToString (t: Type) =
+                match t with
+                | t when t = typeof<bool> -> "bool"
+                | t when t = typeof<obj> -> "obj"
+                | t when t = typeof<int> -> "int"
+                | t when t = typeof<int64> -> "int64"
+                | t when t = typeof<float> -> "float"
+                | t when t = typeof<float32> -> "float32"
+                | t when t = typeof<decimal> -> "decimal"
+                | t when t = typeof<string> -> "string"
+                | t when t = typeof<Void> -> "()"
+                | t when t = typeof<unit> -> "()"
+                | t when t.IsArray -> (t.GetElementType() |> toString useFullName) + "[]"
+                | :? ProvidedTypeDefinition as t ->
+                    add t
+                    t.Name.Split(',').[0]
+                | t when t.IsGenericType ->
+                    let args =
+                        if useFullName then
+                            t.GetGenericArguments() 
+                            |> Seq.map (if hasUnitOfMeasure then (fun t -> t.Name) else toString useFullName)
+                        else
+                            t.GetGenericArguments() 
+                            |> Seq.map (fun _ -> "_")
+                    if FSharpType.IsTuple t then
+                        separatedBy " * " args
+                    elif t.Name.StartsWith "FSharpFunc`" then
+                        "(" + separatedBy " -> " args + ")"
+                    else 
+                        let args = separatedBy "," args
+                        let name, reverse = 
+                            match t with
+                            | t when hasUnitOfMeasure -> toString useFullName t.UnderlyingSystemType, false
+                            | t when t.GetGenericTypeDefinition().Name = typeof<int seq>.GetGenericTypeDefinition().Name -> "seq", true
+                            | t when t.GetGenericTypeDefinition().Name = typeof<int list>.GetGenericTypeDefinition().Name -> "list", true
+                            | t when t.GetGenericTypeDefinition().Name = typeof<int option>.GetGenericTypeDefinition().Name -> "option", true
+                            | t when t.GetGenericTypeDefinition().Name = typeof<int ref>.GetGenericTypeDefinition().Name -> "ref", true
+                            | t when t.Name = "FSharpAsync`1" -> "async", true
+                            | t when ns.Contains t.Namespace -> t.Name, false
+                            | t -> (if useFullName then fullName t else t.Name), false
+                        let name = name.Split('`').[0]
+                        if reverse then
+                            args + " " + name 
+                        else
+                            name + "<" + args + ">"
+                | t when ns.Contains t.Namespace -> t.Name
+                | t when t.IsGenericParameter -> t.Name
+                | t -> if useFullName then fullName t else t.Name
+
+            let rec warnIfWrongAssembly (t:Type) =
+                match t with
+                | :? ProvidedTypeDefinition -> ""
+                | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
+                | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
+                | t -> if not t.IsGenericParameter && t.Assembly.FullName.Contains "DesignTime" then " [DESIGNTIME]" else ""
+
+            if ignoreOutput then
+                ""
+            elif hasUnitOfMeasure || t.IsGenericParameter || t.DeclaringType = null then
+                innerToString t + (warnIfWrongAssembly t)
             else
-
-                let hasUnitOfMeasure = t.Name.Contains("[")
-
-                let innerToString (t: Type) =
-                    match t with
-                    | t when t = typeof<bool> -> "bool"
-                    | t when t = typeof<obj> -> "obj"
-                    | t when t = typeof<int> -> "int"
-                    | t when t = typeof<int64> -> "int64"
-                    | t when t = typeof<float> -> "float"
-                    | t when t = typeof<float32> -> "float32"
-                    | t when t = typeof<decimal> -> "decimal"
-                    | t when t = typeof<string> -> "string"
-                    | t when t = typeof<Void> -> "()"
-                    | t when t = typeof<unit> -> "()"
-                    | t when t.IsArray -> (t.GetElementType() |> toString useFullName) + "[]"
-                    | :? ProvidedTypeDefinition as t ->
-                        add t
-                        t.Name.Split(',').[0]
-                    | t when t.IsGenericType ->            
-                        let args =                 
-                            if useFullName then
-                                t.GetGenericArguments() 
-                                |> Seq.map (if hasUnitOfMeasure then (fun t -> t.Name) else toString useFullName)
-                            else
-                                t.GetGenericArguments() 
-                                |> Seq.map (fun _ -> "_")
-                        if FSharpType.IsTuple t then
-                            separatedBy " * " args
-                        elif t.Name.StartsWith "FSharpFunc`" then
-                            "(" + separatedBy " -> " args + ")"
-                        else 
-                          let args = separatedBy "," args
-                          let name, reverse = 
-                              match t with
-                              | t when hasUnitOfMeasure -> toString useFullName t.UnderlyingSystemType, false
-                              | t when t.GetGenericTypeDefinition().Name = typeof<int seq>.GetGenericTypeDefinition().Name -> "seq", true
-                              | t when t.GetGenericTypeDefinition().Name = typeof<int list>.GetGenericTypeDefinition().Name -> "list", true
-                              | t when t.GetGenericTypeDefinition().Name = typeof<int option>.GetGenericTypeDefinition().Name -> "option", true
-                              | t when t.GetGenericTypeDefinition().Name = typeof<int ref>.GetGenericTypeDefinition().Name -> "ref", true
-                              | t when t.Name = "FSharpAsync`1" -> "async", true
-                              | t when ns.Contains t.Namespace -> t.Name, false
-                              | t -> (if useFullName then fullName t else t.Name), false
-                          let name = name.Split('`').[0]
-                          if reverse then
-                              args + " " + name 
-                          else
-                              name + "<" + args + ">"
-                    | t when ns.Contains t.Namespace -> t.Name
-                    | t when t.IsGenericParameter -> t.Name
-                    | t -> if useFullName then fullName t else t.Name
-
-                let rec warnIfWrongAssembly (t:Type) =
-                    match t with
-                    | :? ProvidedTypeDefinition -> ""
-                    | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
-                    | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
-                    | t -> if not t.IsGenericParameter && t.Assembly.FullName.Contains "DesignTime" then " [DESIGNTIME]" else ""
-
-                if ignoreOutput then
-                    ""
-                elif hasUnitOfMeasure || t.IsGenericParameter || t.DeclaringType = null then
-                    innerToString t + (warnIfWrongAssembly t)
-                else
-                    (toString useFullName t.DeclaringType) + "+" + (innerToString t) + (warnIfWrongAssembly t)
+                (toString useFullName t.DeclaringType) + "+" + (innerToString t) + (warnIfWrongAssembly t)
 
         let toSignature (parameters: ParameterInfo[]) =
             if parameters.Length = 0 then
