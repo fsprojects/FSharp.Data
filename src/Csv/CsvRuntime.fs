@@ -211,11 +211,17 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
+    let disposed = ref false
     let disposer = 
       { new IDisposable with
-          member x.Dispose() = Seq.iter (fun f -> f()) disposeFuncs }
+          member x.Dispose() = 
+            if not !disposed then
+                Seq.iter (fun f -> f()) disposeFuncs
+                disposed := true }
 
     let newReader() =
+        if !disposed then
+            raise <| ObjectDisposedException(this.GetType().Name)
         let reader = readerFunc.Invoke()
         disposeFuncs.Add reader.Dispose
         reader
@@ -296,7 +302,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      writer.ToString()
 
   member inline private x.map f =
-    new CsvFile<'RowType>(rowToStringArray, null, f x.Rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+    new CsvFile<'RowType>(rowToStringArray, disposer, f x.Rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
 
   /// Returns a new csv with the same rows as the original but which guarantees
   /// that each row will be only be read and parsed from the input at most once.

@@ -245,3 +245,6 @@
 
 #### 2.0.14 - August 30 2014
 * Fixed handling of HTTP response cookies on some corner cases that .NET doesn't natively support.
+
+#### 2.0.15 - Unreleased
+* Fixed crash when disposing CsvProvider instances.
