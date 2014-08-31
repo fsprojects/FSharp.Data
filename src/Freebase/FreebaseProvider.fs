@@ -504,11 +504,12 @@ type public FreebaseTypeProvider(config : TypeProviderConfig) as this =
                                   let domainName = domainInfo.DomainName
                                   let domainTypeName = typeNameForDomainObjects domainName
                                   let domainType = theDomainObjectsClass.GetNestedType (domainTypeName, BindingFlags.Public ||| BindingFlags.NonPublic)
-                                  let propertyName = tidyName domainName
-                                  let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
-                                                            GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
-                                  pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
-                                  yield pi]) 
+                                  if domainType <> null then
+                                    let propertyName = tidyName domainName
+                                    let pi = ProvidedProperty(propertyName, domainType, IsStatic=false, 
+                                                              GetterCode = (fun args -> Expr.Call(args.[0], getDomainById,[Expr.Value(domainInfo.DomainId.Id)])))
+                                    pi.AddXmlDocDelayed (fun () -> blurbOfId domainInfo.DomainId |> xmlDoc)
+                                    yield pi]) 
                         theDomainObjectsClass.AddMember t
                         let p = ProvidedProperty(domainCategoryName, t, IsStatic=false, 
                                                  GetterCode = (fun args -> Expr.Call(args.[0], getDomainCategoryById,[Expr.Value(domainCategory.DomainCategoryId.Id)])))
