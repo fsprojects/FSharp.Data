@@ -23,6 +23,8 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Div : FDR.XmlElement
     new : id:string -> span:string -> divs:XmlProvider+Div2[] -> XmlProvider+Div
     XmlRuntime.CreateRecord("div", 
@@ -48,6 +50,8 @@ class XmlProvider+Div : FDR.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Div2 : FDR.XmlElement
     new : id:string -> spans:string[] -> div:string option -> XmlProvider+Div2
     XmlRuntime.CreateRecord("div", 

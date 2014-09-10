@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : () -> JsonProvider+Root
     JsonRuntime.CreateRecord([| |], "")

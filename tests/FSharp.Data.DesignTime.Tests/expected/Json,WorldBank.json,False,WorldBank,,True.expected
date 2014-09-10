@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+WorldBank : FDR.IJsonDocument
     new : array:JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
     JsonRuntime.CreateArray([| (array :> obj)
@@ -38,6 +40,8 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
     JsonRuntime.GetArrayChildByTypeTag(this, "", "Record")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Record : FDR.IJsonDocument
     new : indicator:JsonProvider+Indicator -> country:JsonProvider+Indicator -> value:decimal option -> decimal:int -> date:int -> JsonProvider+Record
     JsonRuntime.CreateRecord([| ("indicator",
@@ -72,6 +76,8 @@ class JsonProvider+Record : FDR.IJsonDocument
     JsonRuntime.ConvertDecimal("", JsonRuntime.TryGetPropertyUnpacked(this, "value"))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Record2 : FDR.IJsonDocument
     new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
     JsonRuntime.CreateRecord([| ("page",
@@ -103,6 +109,8 @@ class JsonProvider+Record2 : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Indicator : FDR.IJsonDocument
     new : id:string -> value:string -> JsonProvider+Indicator
     JsonRuntime.CreateRecord([| ("id",

@@ -23,6 +23,8 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Authors : FDR.XmlElement
     new : topic:string -> authors:XmlProvider+Author[] -> XmlProvider+Authors
     XmlRuntime.CreateRecord("authors", 
@@ -42,6 +44,8 @@ class XmlProvider+Authors : FDR.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute topic", TextRuntime.ConvertString(value), value)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Author : FDR.XmlElement
     new : name:string -> born:int option -> XmlProvider+Author
     XmlRuntime.CreateRecord("author", 

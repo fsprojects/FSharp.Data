@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : recordProperty:JsonProvider+RecordProperty -> nullProperty:JsonValue -> emptyStringProperty:JsonValue -> emptyArrayProperty:JsonValue[] -> oneElementArrayProperty:int[] -> multipleElementsArrayProperty:int[] -> arrayOfObjects:JsonProvider+ArrayOfObject[] -> optionalPrimitives:JsonProvider+OptionalPrimitive[] -> optionalRecords:JsonProvider+OptionalRecord[] -> heterogeneousArray:JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray -> heterogeneousRecords:JsonProvider+HeterogeneousRecord[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("recordProperty",
@@ -85,6 +87,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "recordProperty")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+ArrayOfObject : FDR.IJsonDocument
     new : heterogeneousArrayProperty:JsonProvider+NumbersOrBooleanOrString -> heterogeneousProperty:JsonProvider+IntOrBooleanOrDateTime -> heterogeneousOptionalProperty:JsonProvider+IntOrBoolean -> JsonProvider+ArrayOfObject
     JsonRuntime.CreateRecord([| ("heterogeneousArrayProperty",
@@ -107,6 +111,8 @@ class JsonProvider+ArrayOfObject : FDR.IJsonDocument
     JsonRuntime.GetPropertyPackedOrNull(this, "heterogeneousProperty")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+HeterogeneousRecord : FDR.IJsonDocument
     new : b:JsonProvider+IntOrBooleanOrArrayOrB -> JsonProvider+HeterogeneousRecord
     JsonRuntime.CreateRecord([| ("b",
@@ -119,6 +125,8 @@ class JsonProvider+HeterogeneousRecord : FDR.IJsonDocument
     JsonRuntime.GetPropertyPackedOrNull(this, "b")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.IJsonDocument
     new : number:int -> boolean:bool -> arrays:JsonProvider+NumbersOrBooleanOrHeterogeneousArray[] -> record:JsonProvider+OptionalBecauseMissing -> JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray
     JsonRuntime.CreateArray([| (number :> obj)
@@ -144,6 +152,8 @@ class JsonProvider+IntOrBooleanOrArraysOrHeterogeneousArray : FDR.IJsonDocument
     JsonRuntime.GetArrayChildByTypeTag(this, "", "Record@heterogeneousArray")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+OptionalPrimitive : FDR.IJsonDocument
     new : optionalBecauseMissing:int option -> optionalBecauseNull:int option -> optionalBecauseEmptyString:int option -> notOptional:int -> nullNotOptional:JsonValue -> JsonProvider+OptionalPrimitive
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
@@ -177,6 +187,8 @@ class JsonProvider+OptionalPrimitive : FDR.IJsonDocument
     JsonRuntime.ConvertInteger("", JsonRuntime.TryGetPropertyUnpacked(this, "optionalBecauseNull"))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+OptionalRecord : FDR.IJsonDocument
     new : optionalBecauseMissing:JsonProvider+OptionalBecauseMissing option -> optionalBecauseNull:JsonProvider+OptionalBecauseMissing option -> optionalBecauseEmptyString:JsonProvider+OptionalBecauseMissing option -> notOptional:JsonProvider+OptionalBecauseMissing -> JsonProvider+OptionalRecord
     JsonRuntime.CreateRecord([| ("optionalBecauseMissing",
@@ -204,6 +216,8 @@ class JsonProvider+OptionalRecord : FDR.IJsonDocument
     JsonRuntime.TryGetPropertyPacked(this, "optionalBecauseNull")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+RecordProperty : FDR.IJsonDocument
     new : stringProperty:string -> intProperty:int -> int64Property:int64 -> decimalProperty:decimal -> floatProperty:float -> boolProperty:bool -> dateProperty:System.DateTime -> guidProperty:System.Guid -> JsonProvider+RecordProperty
     JsonRuntime.CreateRecord([| ("stringProperty",
@@ -259,6 +273,8 @@ class JsonProvider+RecordProperty : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+IntOrBoolean : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrBoolean
     JsonRuntime.CreateValue((number :> obj), "")
@@ -279,6 +295,8 @@ class JsonProvider+IntOrBoolean : FDR.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+IntOrBooleanOrArrayOrB : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrBooleanOrArrayOrB
     JsonRuntime.CreateValue((number :> obj), "")
@@ -311,6 +329,8 @@ class JsonProvider+IntOrBooleanOrArrayOrB : FDR.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "Record@b", new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+IntOrBooleanOrDateTime : FDR.IJsonDocument
     new : number:int -> JsonProvider+IntOrBooleanOrDateTime
     JsonRuntime.CreateValue((number :> obj), "")
@@ -337,6 +357,8 @@ class JsonProvider+IntOrBooleanOrDateTime : FDR.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "Number", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertInteger("", Some t.JsonValue), Some t.JsonValue)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrHeterogeneousArray
     JsonRuntime.CreateArray([| (numbers :> obj)
@@ -356,6 +378,8 @@ class JsonProvider+NumbersOrBooleanOrHeterogeneousArray : FDR.IJsonDocument
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "Record@heterogeneousArray", new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
     new : numbers:int[] -> boolean:bool -> string:string option -> JsonProvider+NumbersOrBooleanOrString
     JsonRuntime.CreateArray([| (numbers :> obj)
@@ -376,6 +400,8 @@ class JsonProvider+NumbersOrBooleanOrString : FDR.IJsonDocument
     JsonRuntime.TryGetArrayChildByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+OptionalBecauseMissing : FDR.IJsonDocument
     new : a:int -> JsonProvider+OptionalBecauseMissing
     JsonRuntime.CreateRecord([| ("a",
@@ -389,6 +415,8 @@ class JsonProvider+OptionalBecauseMissing : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+NumbersOrBooleanOrB : FDR.IJsonDocument
     new : numbers:int[] -> boolean:bool option -> record:JsonProvider+OptionalBecauseMissing option -> JsonProvider+NumbersOrBooleanOrB
     JsonRuntime.CreateArray([| (numbers :> obj)

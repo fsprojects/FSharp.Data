@@ -1,8 +1,12 @@
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Typed representation of Freebase data. See http://www.freebase.com for terms and conditions.</summary>")]>]
 class FreebaseDataProvider
     static member GetDataContext: () -> FreebaseDataProvider+ServiceTypes+FreebaseService
     FreebaseDataContext._Create("", "https://www.googleapis.com/freebase/v1", true, "", true, true)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("Represents the information available in the web data store. See www.freebase.com for terms and conditions.")]>]
 class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseDataContext
     member Arts and Entertainment: FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment with get
     this.GetDomainCategoryById("/en/arts_entertainment")
@@ -35,8 +39,12 @@ class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseD
     this.GetDomainCategoryById("/m/0cnr02s")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Contains the types defined in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Arts &amp;amp; Entertainment&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment : FDR.Freebase.FreebaseDomainCategory
     member Books: FreebaseDataProvider+ServiceTypes+DomainObjects+BooksDomain with get
     this.GetDomainById("/book")
@@ -84,6 +92,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment : F
     this.GetDomainById("/visual_art")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Commons&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.FreebaseDomainCategory
     member American football: FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain with get
     this.GetDomainById("/american_football")
@@ -320,8 +330,12 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.Fre
     this.GetDomainById("/zoos")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Contains the domains of the domain categories defined in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Products &amp;amp; Services&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Products and Services : FDR.Freebase.FreebaseDomainCategory
     member Automotive: FreebaseDataProvider+ServiceTypes+DomainObjects+AutomotiveDomain with get
     this.GetDomainById("/automotive")
@@ -336,6 +350,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Products and Services : FD
     this.GetDomainById("/food")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Science &amp;amp; Technology&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Science and Technology : FDR.Freebase.FreebaseDomainCategory
     member Astronomy: FreebaseDataProvider+ServiceTypes+DomainObjects+AstronomyDomain with get
     this.GetDomainById("/astronomy")
@@ -371,6 +387,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Science and Technology : F
     this.GetDomainById("/spaceflight")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Society&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Society : FDR.Freebase.FreebaseDomainCategory
     member Awards: FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain with get
     this.GetDomainById("/award")
@@ -415,6 +433,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Society : FDR.Freebase.Fre
     this.GetDomainById("/royalty")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Special Interests&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Special Interests : FDR.Freebase.FreebaseDomainCategory
     member Amusement Parks: FreebaseDataProvider+ServiceTypes+DomainObjects+Amusement Parks Domain with get
     this.GetDomainById("/amusement_parks")
@@ -441,6 +461,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Special Interests : FDR.Fr
     this.GetDomainById("/zoos")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Sports&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Sports : FDR.Freebase.FreebaseDomainCategory
     member American football: FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain with get
     this.GetDomainById("/american_football")
@@ -479,6 +501,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Sports : FDR.Freebase.Free
     this.GetDomainById("/tennis")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;System&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+System : FDR.Freebase.FreebaseDomainCategory
     member Common: FreebaseDataProvider+ServiceTypes+DomainObjects+CommonDomain with get
     this.GetDomainById("/common")
@@ -493,6 +517,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+System : FDR.Freebase.Free
     this.GetDomainById("/type")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the objects of the domain category &apos;Time &amp;amp; Space&apos; defined in the web data store organized by type</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Time and Space : FDR.Freebase.FreebaseDomainCategory
     member Event: FreebaseDataProvider+ServiceTypes+DomainObjects+EventDomain with get
     this.GetDomainById("/event")
@@ -513,6 +539,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Time and Space : FDR.Freeb
     this.GetDomainById("/time")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>  American Football types pertain to the sport of Football in the style played primarily in North America, as distinct from Soccer (commonly referred to outside the U.S. as Football).Currently the emphasis of this data set is on players, teams and coaches from the National Football league. However, college athletes could be added as well.Football team, player and coach are all mass typed.  However, there aren&apos;t many properties defined or populated for any of them yet. </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain : FDR.Freebase.FreebaseDomain
     member American football coach positions: FreebaseDataProvider+ServiceTypes+American_football+American_football+Football_coach_positionDataCollection with get
     this.GetObjectsOfTypeId("/american_football/football_coach_position")
@@ -548,6 +576,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain :
     this.GetObjectsOfTypeId("/american_football/super_bowl")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary></summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Amusement Parks Domain : FDR.Freebase.FreebaseDomain
     member Amusement Park Areas: FreebaseDataProvider+ServiceTypes+Amusement_parks+Amusement_parks+Amusement_park_areaDataCollection with get
     this.GetObjectsOfTypeId("/amusement_parks/amusement_park_area")
@@ -589,6 +619,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Amusement Parks Domain : F
     this.GetObjectsOfTypeId("/amusement_parks/roller_coaster")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>This is the domain for Architecture and the Built Environment. The key type is &quot;Structure&quot; which encompasses all built things: from houses to skyscrapers. ArchiPortal (generation 2) is a google map mashup: a window into the freebase architecture data.We encourage you to add data!  </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+ArchitectureDomain : FDR.Freebase.FreebaseDomain
     member Architects: FreebaseDataProvider+ServiceTypes+Architecture+Architecture+ArchitectDataCollection with get
     this.GetObjectsOfTypeId("/architecture/architect")
@@ -684,6 +716,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+ArchitectureDomain : FDR.F
     this.GetObjectsOfTypeId("/architecture/venue")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>The Astronomy domain holds information on all celestial objects and phenomena, including the astronomers and the science and equipment used to document these findings. </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+AstronomyDomain : FDR.Freebase.FreebaseDomain
     member Asterisms: FreebaseDataProvider+ServiceTypes+Astronomy+Astronomy+AsterismDataCollection with get
     this.GetObjectsOfTypeId("/astronomy/asterism")
@@ -851,6 +885,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AstronomyDomain : FDR.Free
     this.GetObjectsOfTypeId("/astronomy/type_of_planetographic_feature")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Welcome to the Automotive domain. Here you&apos;ll find anything and everything about cars.Contribute your favorite makes and models. Get down to the details by contributing yearly exterior colors, interior colors and option packages.The general type hierarchy is as follows:Automobile Company (Ford Motor Company)  Make (Ford)  Model (Ford Mustang)  Generation (First Generation Ford Mustang)  Model Year (1964 Ford Mustang)  Body Style (1964-1966 Ford Mustang Convertible)Once you enter the basics for a make and model add your own personal vehicle as an example using the Privately Owned Vehicle type.Pleasepost your questions and comments along the way! </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+AutomotiveDomain : FDR.Freebase.FreebaseDomain
     member Automobile Companies: FreebaseDataProvider+ServiceTypes+Automotive+Automotive+CompanyDataCollection with get
     this.GetObjectsOfTypeId("/automotive/company")
@@ -922,6 +958,11 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AutomotiveDomain : FDR.Fre
     this.GetObjectsOfTypeId("/automotive/truck_trim_level")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>
+The aviation domain currently has a lot of schemas, but very few instances.  Very soon, we will do a mass typing to fill these out so autocompletion will work better.  In the meantime, please fill out your favorite aircraft, and the airports you know (such as the one from your hometown.)
+
+ </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+AviationDomain : FDR.Freebase.FreebaseDomain
     member Aircraft: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataCollection with get
     this.GetObjectsOfTypeId("/aviation/aircraft")
@@ -987,6 +1028,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AviationDomain : FDR.Freeb
     this.GetObjectsOfTypeId("/aviation/waypoint_type")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Welcome to the award domain. This domain aims to capture data for all types of awards -- the winners, nominees, and organizations that present them.For information on entering awards data, see the help topicEntering
+Award Information. </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebase.FreebaseDomain
     member Award Judges: FreebaseDataProvider+ServiceTypes+Award+Award+Award_judgeDataCollection with get
     this.GetObjectsOfTypeId("/award/award_judge")
@@ -1070,6 +1114,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebas
     this.GetObjectsOfTypeId("/award/recurring_competition")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Baseball types pertain to the sport of baseball played worldwide. Initial loads will likely focus on Major League Baseball in the United States but these types should apply to baseball played professionally internationally. These types are currently stubs. We hope to create properties and populate these types soon. </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+BaseballDomain : FDR.Freebase.FreebaseDomain
     member Baseball Coaches: FreebaseDataProvider+ServiceTypes+Baseball+Baseball+Baseball_coachDataCollection with get
     this.GetObjectsOfTypeId("/baseball/baseball_coach")
@@ -1096,6 +1142,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+BaseballDomain : FDR.Freeb
     this.GetObjectsOfTypeId("/baseball/baseball_team")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>                        This commons is intended to capture all data relevant to basketball teams and players - primarily at the professional and collegiate level. Currently the data is focused on the NBA, but ultimately international, collegiate, men&apos;s and women&apos;s basketball information should be captured here.                          </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+BasketballDomain : FDR.Freebase.FreebaseDomain
     member Basketball Coaches: FreebaseDataProvider+ServiceTypes+Basketball+Basketball+Basketball_coachDataCollection with get
     this.GetObjectsOfTypeId("/basketball/basketball_coach")
@@ -1116,6 +1164,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+BasketballDomain : FDR.Fre
     this.GetObjectsOfTypeId("/basketball/basketball_team")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Welcome to Bicycles, a shared, online source of facts and information built by fans, enthusiasts and experts around the world. Join us and be a part of building and improving it! </summary>")]>]
 class FreebaseDataProvider+ServiceTypes+DomainObjects+BicyclesDomain : FDR.Freebase.FreebaseDomain
     member Bicycle manufacturers: FreebaseDataProvider+ServiceTypes+Bicycles+Bicycles+Bicycle_manufacturerDataCollection with get
     this.GetObjectsOfTypeId("/bicycles/bicycle_manufacturer")
@@ -1127,6 +1177,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+BicyclesDomain : FDR.Freeb
     this.GetObjectsOfTypeId("/bicycles/bicycle_type")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft accident type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1141,6 +1193,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataColle
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1155,6 +1209,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataCollection
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft designer&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1169,6 +1225,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataC
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft Engine Type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_engine_typeDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_engine_typeDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1183,6 +1241,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_engine_typeDa
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft Line&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_lineDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_lineDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1197,6 +1257,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_lineDataColle
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft manufacturer&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_manufacturerDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_manufacturerDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1211,6 +1273,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_manufacturerD
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft model&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_modelDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_modelDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1225,6 +1289,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_modelDataColl
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft Owner&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_ownerDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_ownerDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1239,6 +1305,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_ownerDataColl
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Aircraft type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_typeDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_typeDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1253,6 +1321,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_typeDataColle
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents the collection of all individuals of type &apos;Airline&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AirlineDataCollection
     member Individuals: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AirlineDataIndividuals with get
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
@@ -1267,6 +1337,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AirlineDataCollection
     FreebaseIndividuals._GetIndividualsObject((this :> obj))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a sample set of specific named individuals of type &apos;Aircraft accident type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals : FDR.Freebase.FreebaseIndividuals
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
@@ -1284,6 +1356,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     this.GetIndividualById("/aviation/accident_type", "/m/0795q")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a 10x larger sample of specific named individuals of type &apos;Aircraft accident type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
@@ -1358,6 +1432,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     this.GetIndividualById("/aviation/accident_type", "/m/01gmh2")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a 100x larger sample of specific named individuals of type &apos;Aircraft accident type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100 : FDR.Freebase.FreebaseIndividuals
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
@@ -1432,6 +1508,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     this.GetIndividualById("/aviation/accident_type", "/m/01gmh2")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents an indexing of specific named individuals of type &apos;Aircraft accident type&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividualsAZ : FDR.Freebase.FreebaseIndividuals
     member A: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividualsAZ+Accident_typeDataIndividualsIndexedA with get
     this
@@ -1512,6 +1590,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a sample set of specific named individuals of type &apos;Aircraft&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals : FDR.Freebase.FreebaseIndividuals
     member Autogyro: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals+Autogyro Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0gy9p")
@@ -1529,6 +1609,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     this.GetIndividualById("/aviation/aircraft", "/m/01n6mw")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a 10x larger sample of specific named individuals of type &apos;Aircraft&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
     member 1942 KNILM Douglas DC-3 shootdown: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals10+1942 KNILM Douglas DC-3 shootdown Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0dvf3h")
@@ -1681,12 +1763,17 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     this.GetIndividualById("/aviation/aircraft", "/m/026lt_")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a 100x larger sample of specific named individuals of type &apos;Aircraft&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100 : FDR.Freebase.FreebaseIndividuals
     member 1942 KNILM Douglas DC-3 shootdown: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+1942 KNILM Douglas DC-3 shootdown Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0dvf3h")
 
     member 2006 Mexico DC-9 drug bust: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+2006 Mexico DC-9 drug bust Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0cp7gx")
+
+    member AHRLAC Holdings Ahrlac: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+AHRLAC Holdings Ahrlac Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0h7lzhg")
 
     member Aero-X: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Aero-X Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0ll4xyc")
@@ -2034,6 +2121,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     this.GetIndividualById("/aviation/aircraft", "/m/026lt_")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents an indexing of specific named individuals of type &apos;Aircraft&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividualsAZ : FDR.Freebase.FreebaseIndividuals
     member A: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividualsAZ+AircraftDataIndividualsIndexedA with get
     this
@@ -2114,6 +2203,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a sample set of specific named individuals of type &apos;Aircraft designer&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals : FDR.Freebase.FreebaseIndividuals
     member Alexander Graham Bell: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals+Alexander Graham Bell Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/0k70")
@@ -2131,6 +2222,8 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
     this.GetIndividualById("/aviation/aircraft_designer", "/m/09qws")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[TypeProviderXmlDoc("<summary>Represents a 10x larger sample of specific named individuals of type &apos;Aircraft designer&apos; in the web data store</summary>")]>]
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
     member ATR: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+ATR Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01l2_v")

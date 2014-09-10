@@ -81,14 +81,14 @@ module internal Misc =
             member __.ConstructorArguments = upcast [| |]
             member __.NamedArguments = upcast [| |] }
 
-    let mkAllowNullLiteralCustomAttributeData() =
+    let mkAllowNullLiteralCustomAttributeData value =
 #if FX_NO_CUSTOMATTRIBUTEDATA
         { new IProvidedCustomAttributeData with 
 #else
         { new CustomAttributeData() with 
 #endif 
-            member __.Constructor =  typeof<AllowNullLiteralAttribute>.GetConstructors().[0]
-            member __.ConstructorArguments = upcast [| CustomAttributeTypedArgument(typeof<bool>, false) |]
+            member __.Constructor = typeof<AllowNullLiteralAttribute>.GetConstructors().[0]
+            member __.ConstructorArguments = upcast [| CustomAttributeTypedArgument(typeof<bool>, value) |]
             member __.NamedArguments = upcast [| |] }
     /// This makes an xml doc attribute w.r.t. an amortized computation of an xml doc string.
     /// It is important that the text of the xml doc only get forced when poking on the ConstructorArguments
@@ -147,7 +147,7 @@ module internal Misc =
         let customAttributesOnce = 
             lazy 
                [| if hideObjectMethods then yield mkEditorHideMethodsCustomAttributeData() 
-                  if nonNullable then yield mkAllowNullLiteralCustomAttributeData() 
+                  if nonNullable then yield mkAllowNullLiteralCustomAttributeData false
                   match xmlDocDelayed with None -> () | Some _ -> customAttributes.Add(mkXmlDocCustomAttributeDataLazy xmlDocDelayedText) 
                   match obsoleteMessage with None -> () | Some s -> customAttributes.Add(mkObsoleteAttributeCustomAttributeData s) 
                   if hasParamArray then yield mkParamArrayCustomAttributeData()

@@ -23,6 +23,8 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Xs : FDR.XmlElement
     new : xs:XmlProvider+X[] -> XmlProvider+Xs
     XmlRuntime.CreateRecord("XS", 
@@ -37,6 +39,8 @@ class XmlProvider+Xs : FDR.XmlElement
     XmlRuntime.ConvertArray(this, "X", new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+X : FDR.XmlElement
     new : intLike:int -> boolLike:bool -> value:XmlProvider+X2 -> XmlProvider+X
     XmlRuntime.CreateRecord("X", 
@@ -62,6 +66,8 @@ class XmlProvider+X : FDR.XmlElement
     XmlRuntime.GetJsonValue(this, "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+X2 : FDR.IJsonDocument
     new : a:int -> XmlProvider+X2
     JsonRuntime.CreateRecord([| ("a",

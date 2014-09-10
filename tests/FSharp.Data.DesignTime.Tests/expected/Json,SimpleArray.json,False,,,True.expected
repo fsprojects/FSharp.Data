@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : items:JsonProvider+Item[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("items",
@@ -35,6 +37,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "items"), new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Item : FDR.IJsonDocument
     new : id:string -> JsonProvider+Item
     JsonRuntime.CreateRecord([| ("id",

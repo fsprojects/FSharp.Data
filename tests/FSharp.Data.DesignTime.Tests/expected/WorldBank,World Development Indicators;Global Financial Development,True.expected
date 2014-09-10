@@ -1,10 +1,13 @@
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider
     static member GetDataContext: () -> WorldBankDataProvider+ServiceTypes+WorldBankDataService
     (new WorldBankData("http://api.worldbank.org", "World Development Indicators;Global Financial Development"))
 
 
+[<[TypeProviderXmlDoc("<summary>Contains the types that describe the data service</summary>")]>]
 class WorldBankDataProvider+ServiceTypes
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.WorldBankData
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
     (this :> IWorldBankData).GetCountries()
@@ -16,6 +19,7 @@ class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.Wo
     (this :> IWorldBankData).GetTopics()
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollection<T><Country>
     member Afghanistan: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("AFG", "Afghanistan")
@@ -804,6 +808,7 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     (this :> ICountryCollection).GetCountry("ZWE", "Zimbabwe")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollection<T><Region>
     member Africa: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("AFR")
@@ -920,6 +925,7 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     (this :> IRegionCollection).GetRegion("WLD")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<T><Topic>
     member Agriculture & Rural Development: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("1")
@@ -985,11 +991,13 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
     (this :> ITopicCollection).GetTopic("16")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Country : FDR.WorldBank.Country
     member Indicators: WorldBankDataProvider+ServiceTypes+Indicators with get
     (this :> ICountry).GetIndicators()
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Region : FDR.WorldBank.Region
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
     (this :> IRegion).GetCountries()
@@ -998,11 +1006,13 @@ class WorldBankDataProvider+ServiceTypes+Region : FDR.WorldBank.Region
     (this :> IRegion).GetIndicators()
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Topic : FDR.WorldBank.Topic
     member Indicators: WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions with get
     (this :> ITopic).GetIndicators()
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member (%) Benefits held by 1st 20% population - All Social Insurance: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("allsi.bi_q1")
@@ -5328,6 +5338,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.35")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.IndicatorsDescriptions
     member (%) Benefits held by 1st 20% population - All Social Insurance: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("allsi.bi_q1")

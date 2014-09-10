@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("game",
@@ -58,6 +60,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Game : FDR.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
     JsonRuntime.CreateRecord([| ("id",
@@ -99,6 +103,8 @@ class JsonProvider+Game : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Hero : FDR.IJsonDocument
     new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
     JsonRuntime.CreateRecord([| ("id",
@@ -164,6 +170,8 @@ class JsonProvider+Hero : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Board : FDR.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
     JsonRuntime.CreateRecord([| ("size",
@@ -183,6 +191,8 @@ class JsonProvider+Board : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Pos : FDR.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
     JsonRuntime.CreateRecord([| ("x",

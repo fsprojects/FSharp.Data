@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : authors:JsonProvider+Author[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("authors",
@@ -35,6 +37,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "authors"), new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Author : FDR.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
     JsonRuntime.CreateRecord([| ("name",
