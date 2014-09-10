@@ -23,6 +23,8 @@ class JsonProvider
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : intLike:int -> boolLike1:bool -> boolLike2:bool -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("intLike",

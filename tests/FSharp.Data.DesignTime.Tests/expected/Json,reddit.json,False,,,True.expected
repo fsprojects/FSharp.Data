@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : kind:string -> data:JsonProvider+Data -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("kind",
@@ -41,6 +43,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Data : FDR.IJsonDocument
     new : modhash:JsonValue -> children:JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
     JsonRuntime.CreateRecord([| ("modhash",
@@ -69,6 +73,8 @@ class JsonProvider+Data : FDR.IJsonDocument
     JsonRuntime.GetPropertyPackedOrNull(this, "modhash")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Child : FDR.IJsonDocument
     new : kind:string -> data:JsonProvider+Data2 -> JsonProvider+Child
     JsonRuntime.CreateRecord([| ("kind",
@@ -87,6 +93,8 @@ class JsonProvider+Child : FDR.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Data2 : FDR.IJsonDocument
     new : subredditId:string -> linkTitle:string -> bannedBy:JsonValue -> subreddit:string -> linkAuthor:string -> likes:JsonValue -> replies:JsonValue -> saved:bool -> id:string -> gilded:int -> author:string -> parentId:string -> approvedBy:JsonValue -> body:string -> edited:bool -> authorFlairCssClass:JsonValue -> downs:int -> bodyHtml:string -> linkId:string -> scoreHidden:bool -> name:string -> created:int -> authorFlairText:JsonValue -> linkUrl:string -> createdUtc:int -> ups:int -> numReports:JsonValue -> distinguished:JsonValue -> JsonProvider+Data2
     JsonRuntime.CreateRecord([| ("subreddit_id",

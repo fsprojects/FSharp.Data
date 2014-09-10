@@ -156,7 +156,7 @@ module JsonTypeBuilder =
         |> ctx.UniqueNiceName
 
     // Generate new type for the heterogeneous type
-    let objectTy = ProvidedTypeDefinition(typeName, Some(ctx.IJsonDocumentType), HideObjectMethods = true)
+    let objectTy = ProvidedTypeDefinition(typeName, Some(ctx.IJsonDocumentType), HideObjectMethods = true, NonNullable = true)
     ctx.TypeProviderType.AddMember objectTy
 
     // to nameclash property names
@@ -280,7 +280,8 @@ module JsonTypeBuilder =
             |> ctx.UniqueNiceName
 
         // Generate new type for the record
-        let objectTy = ProvidedTypeDefinition(name, Some(ctx.IJsonDocumentType), HideObjectMethods = true)
+        let objectTy = ProvidedTypeDefinition(name, Some(ctx.IJsonDocumentType), HideObjectMethods = true, NonNullable = true)
+
         ctx.TypeProviderType.AddMember(objectTy)
 
         // to nameclash property names

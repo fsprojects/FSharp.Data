@@ -23,6 +23,8 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Foo : FDR.XmlElement
     new : a:string -> XmlProvider+Foo
     XmlRuntime.CreateRecord("foo", 

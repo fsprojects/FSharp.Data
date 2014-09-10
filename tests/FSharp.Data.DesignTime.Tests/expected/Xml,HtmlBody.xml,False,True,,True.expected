@@ -23,6 +23,8 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Div : FDR.XmlElement
     new : id:string option -> value:string option -> spans:string[] -> divs:XmlProvider+Div[] -> XmlProvider+Div
     XmlRuntime.CreateRecord("div", 

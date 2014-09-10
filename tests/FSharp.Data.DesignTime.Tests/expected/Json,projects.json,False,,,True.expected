@@ -23,6 +23,8 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.IJsonDocument
     new : ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("ordercontainer",
@@ -35,6 +37,8 @@ class JsonProvider+Root : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "ordercontainer")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Ordercontainer : FDR.IJsonDocument
     new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
     JsonRuntime.CreateRecord([| ("backgrounds",
@@ -52,6 +56,8 @@ class JsonProvider+Ordercontainer : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "project")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Background : FDR.IJsonDocument
     new : title:JsonProvider+Title -> JsonProvider+Background
     JsonRuntime.CreateRecord([| ("title",
@@ -64,6 +70,8 @@ class JsonProvider+Background : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "title")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Backgrounds : FDR.IJsonDocument
     new : background:JsonProvider+Background -> JsonProvider+Backgrounds
     JsonRuntime.CreateRecord([| ("background",
@@ -76,6 +84,8 @@ class JsonProvider+Backgrounds : FDR.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "background")
 
 
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Title : FDR.IJsonDocument
     new : text:string -> JsonProvider+Title
     JsonRuntime.CreateRecord([| ("text",
