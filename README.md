@@ -10,7 +10,7 @@ You can see the version history [here](RELEASE_NOTES.md).
 
 ## Building
 
-- Simply build FSharp.Data.sln in Visual Studio, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
+- Simply build FSharp.Data.sln in Visual Studio 2013, Mono Develop, or Xamarin Studio. You can also use the FAKE script:
 
   * Windows: Run *build.cmd* 
     * [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/vlw9avsb91rjfy39)](https://ci.appveyor.com/project/ovatsus/fsharp-data)
