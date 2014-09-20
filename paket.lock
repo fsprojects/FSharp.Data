@@ -1,0 +1,21 @@
+NUGET
+  remote: http://nuget.org/api/v2
+  specs:
+    FAKE (3.5.1)
+    FsCheck (0.9.2.0)
+    FSharp.Charting (0.90.6)
+    FSharp.Compiler.Service (0.0.59)
+    FSharp.Formatting (2.4.21)
+      Microsoft.AspNet.Razor (>= 2.0.30506.0)
+      RazorEngine (>= 3.3.0)
+      FSharp.Compiler.Service (>= 0.0.59)
+    Microsoft.AspNet.Razor (2.0.30506.0)
+    Nancy (0.20.0)
+    Nancy.Hosting.Self (0.20.0)
+      Nancy (>= 0.20.0)
+    NUnit (2.6.3)
+    NUnit.Runners (2.6.3)
+    RazorEngine (3.3.0)
+      Microsoft.AspNet.Razor (>= 2.0.30506.0)
+    SourceLink.Fake (0.3.4)
+    Zlib.Portable (1.10.0)
