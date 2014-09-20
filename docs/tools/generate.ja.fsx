@@ -18,11 +18,11 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Charting.0.90.6/lib/net40"
-#I "../../packages/FSharp.Compiler.Service.0.0.59/lib/net40"
-#I "../../packages/FSharp.Formatting.2.4.21/lib/net40"
-#I "../../packages/RazorEngine.3.3.0/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
+#I "../../packages/FSharp.Charting/lib/net40"
+#I "../../packages/FSharp.Compiler.Service/lib/net40"
+#I "../../packages/FSharp.Formatting/lib/net40"
+#I "../../packages/RazorEngine/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
 #r "../../packages/FAKE/tools/FakeLib.dll"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
@@ -58,7 +58,7 @@ let outputJa   = __SOURCE_DIRECTORY__ @@ "../output/ja"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
 let templates  = __SOURCE_DIRECTORY__ @@ "templates/ja"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.21/"
+let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)
