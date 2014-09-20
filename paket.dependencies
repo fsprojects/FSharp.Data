@@ -1,12 +1,12 @@
 source http://nuget.org/api/v2
 
-nuget Zlib.Portable 1.10.0
-nuget FSharp.Charting 0.90.6
-nuget FSharp.Compiler.Service 0.0.59
+nuget Zlib.Portable
+nuget FSharp.Charting
+nuget FSharp.Compiler.Service
 nuget FSharp.Formatting 2.4.21
 nuget Microsoft.AspNet.Razor 2.0.30506.0
-nuget NUnit 2.6.3
-nuget NUnit.Runners 2.6.3
+nuget NUnit
+nuget NUnit.Runners
 nuget RazorEngine 3.3.0
 nuget FsCheck 0.9.2.0
 nuget Nancy 0.20.0
