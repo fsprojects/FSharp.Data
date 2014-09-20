@@ -44,7 +44,7 @@ solution before trying out the samples to ensure that all needed packages are in
 ## Support and community
 
  - If you have a question about `FSharp.Data`, ask at StackOverflow and [mark your question with the `f#-data` tag](http://stackoverflow.com/questions/tagged/f%23-data). 
- - If you want to submit a bug, a feature request or help witht fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to F# Data](http://fsharp.github.io/FSharp.Data/contributing.html).
+ - If you want to submit a bug, a feature request or help witht fixing bugs then look at [issues](https://github.com/fsharp/FSharp.Data/issues) and read [contributing to F# Data](https://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md).
  - To discuss more general issues about F# Data, its goals and other open-source F# projects, join the [fsharp-opensource mailing list](http://groups.google.com/group/fsharp-opensource)
 
 ## Library license
