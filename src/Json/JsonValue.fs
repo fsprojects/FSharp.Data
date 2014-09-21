@@ -200,7 +200,6 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                 | '/' -> buf.Append('/') |> ignore
                 | '"' -> buf.Append('"') |> ignore
                 | 'u' ->
-                    ensure(i+5 < s.Length)
                     let hexdigit d =
                         if d >= '0' && d <= '9' then int32 d - int32 '0'
                         elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
@@ -209,9 +208,31 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
                     let unicodeChar (s:string) =
                         if s.Length <> 4 then failwith "unicodeChar";
                         char (hexdigit s.[0] * 4096 + hexdigit s.[1] * 256 + hexdigit s.[2] * 16 + hexdigit s.[3])
+                    ensure(i+5 < s.Length)
                     let ch = unicodeChar (s.Substring(i+2, 4))
                     buf.Append(ch) |> ignore
                     i <- i + 4  // the \ and u will also be skipped past further below
+                | 'U' ->
+                    let hexdigit d =
+                        if d >= '0' && d <= '9' then int32 d - int32 '0'
+                        elif d >= 'a' && d <= 'f' then int32 d - int32 'a' + 10
+                        elif d >= 'A' && d <= 'F' then int32 d - int32 'A' + 10
+                        else failwith "hexdigit"
+                    let unicodeChar (s:string) =
+                        if s.Length <> 8 then failwith "unicodeChar";
+                        System.Char.ConvertFromUtf32
+                             (hexdigit s.[0] * 268435456 + 
+                              hexdigit s.[1] * 16777216 + 
+                              hexdigit s.[2] * 1048576 + 
+                              hexdigit s.[3] * 65536 + 
+                              hexdigit s.[4] * 4096 + 
+                              hexdigit s.[5] * 256 + 
+                              hexdigit s.[6] * 16 + 
+                              hexdigit s.[7])
+                    ensure(i+9 < s.Length)
+                    let ch = unicodeChar (s.Substring(i+2, 8))
+                    buf.Append(ch) |> ignore
+                    i <- i + 8  // the \ and u will also be skipped past further below
                 | _ -> throw()
                 i <- i + 2  // skip past \ and next char
             else
