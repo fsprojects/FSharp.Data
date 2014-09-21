@@ -1,7 +1,4 @@
 FSharp.Charting
-FSharp.Compiler.Service
 FSharp.Formatting
-Microsoft.AspNet.Razor
 NUnit
 NUnit.Runners
-RazorEngine
