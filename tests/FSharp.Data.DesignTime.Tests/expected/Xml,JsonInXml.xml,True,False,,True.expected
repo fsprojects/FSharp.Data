@@ -26,24 +26,24 @@ class XmlProvider
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+PropertyBag : FDR.XmlElement
-    new : blahDataArray:XmlProvider+BlahDataArray -> XmlProvider+PropertyBag
+    new : blahData:XmlProvider+BlahData -> XmlProvider+PropertyBag
     XmlRuntime.CreateRecord("PropertyBag", 
                             [| |], 
                             [| ("BlahDataArray|BlahData",
-                                (blahDataArray :> obj)) |], "")
+                                (blahData :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+PropertyBag
     XmlElement.Create(xElement)
 
-    member BlahDataArray: XmlProvider+BlahDataArray with get
+    member BlahData: XmlProvider+BlahData with get
     XmlRuntime.GetChild(this, "BlahDataArray|BlahData")
 
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+BlahDataArray : FDR.XmlElement
-    new : blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahDataArray
-    XmlRuntime.CreateRecord("BlahDataArray|BlahData", 
+class XmlProvider+BlahData : FDR.XmlElement
+    new : blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
+    XmlRuntime.CreateRecord("BlahData", 
                             [| |], 
                             [| ("BlahDataSomethingFoo",
                                 (blahDataSomethingFoos :> obj))
@@ -54,7 +54,7 @@ class XmlProvider+BlahDataArray : FDR.XmlElement
                                ("BlahDataSomethingFoo4",
                                 (blahDataSomethingFoo4 :> obj)) |], "")
 
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahDataArray
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+BlahData
     XmlElement.Create(xElement)
 
     member BlahDataSomethingFoo2: XmlProvider+BlahDataSomethingFoo2 with get
