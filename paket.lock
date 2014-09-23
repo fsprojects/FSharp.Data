@@ -1,7 +1,7 @@
 NUGET
   remote: http://nuget.org/api/v2
   specs:
-    FAKE (3.5.2)
+    FAKE (3.5.4)
     FsCheck (0.9.2.0)
     FSharp.Charting (0.90.7)
     FSharp.Compiler.Service (0.0.59)
@@ -13,6 +13,7 @@ NUGET
     Nancy (0.23.2)
     Nancy.Hosting.Self (0.23.2)
       Nancy (>= 0.23.2)
+    NuGet.CommandLine (2.8.2)
     NUnit (2.6.3)
     NUnit.Runners (2.6.3)
     RazorEngine (3.3.0)
