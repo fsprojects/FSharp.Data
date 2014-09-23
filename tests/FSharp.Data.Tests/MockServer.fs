@@ -41,17 +41,16 @@ type FakeServer() as self =
 
         self.Get.["GotBody"] <- 
             fun _ -> 
-                "Check out my sexy body" :> obj
+                "My body" :> obj
 
         self.Get.["AllTheThings"] <- 
             fun _ -> 
                 let response = "Some JSON or whatever" |> Nancy.Response.op_Implicit 
-                response.StatusCode <- HttpStatusCode.ImATeapot
-                response.AddCookie("cookie1", "chocolate chip") |> ignore
-                response.AddCookie("cookie2", "smarties") |> ignore
-                response.Headers.Add("Content-Encoding", "xpto")
-                response.Headers.Add("X-New-Fangled-Header", "some value")
-                response :> obj
+                response.WithStatusCode(HttpStatusCode.ImATeapot)
+                        .WithCookie("cookie1", "chocolate chip")
+                        .WithCookie("cookie2", "smarties")
+                        .WithHeader("Content-Encoding", "xpto")
+                        .WithHeader("X-New-Fangled-Header", "some value") :> obj
 
         self.Get.["MoonLanguageCorrectEncoding"] <- 
             fun _ -> 
@@ -112,10 +111,9 @@ type FakeServer() as self =
         self.Get.["CookieRedirect"] <- 
             fun _ -> 
                 let response = "body" |> Nancy.Response.op_Implicit
-                response.AddCookie("cookie1", "baboon") |> ignore
-                response.Headers.Add("Location", "http://localhost:1235/TestServer/NoCookies")
-                response.StatusCode <- HttpStatusCode.TemporaryRedirect
-                response :> obj
+                response.WithCookie("cookie1", "baboon")
+                        .WithHeader("Location", "http://localhost:1235/TestServer/NoCookies")
+                        .WithStatusCode(HttpStatusCode.TemporaryRedirect) :> obj
 
         self.Get.["NoCookies"] <- 
             fun _ -> 

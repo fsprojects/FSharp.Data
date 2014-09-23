@@ -56,7 +56,7 @@ let ``should return the http status code for all response types`` () =
 
 [<Test>]
 let ``should return the entity body as a string`` () =
-    Http.RequestString "http://localhost:1235/TestServer/GotBody" |> should equal "Check out my sexy body"
+    Http.RequestString "http://localhost:1235/TestServer/GotBody" |> should equal "My body"
 
 [<Test>]
 let ``should return an empty string when there is no body`` () =
