@@ -249,3 +249,4 @@
 #### 2.0.15 - Unreleased
 * Fixed crash when disposing CsvProvider instances.
 * Add support for UTF-32 characters in JsonValue and JsonProvider.
+* Simplify generated API for collections in XmlProvider.

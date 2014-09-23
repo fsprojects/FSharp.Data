@@ -251,10 +251,14 @@ type XmlRuntime =
                     let v = 
                         (v, Seq.skip 1 parentNames)
                         ||> Seq.fold (fun element nameWithNS -> 
-                            let element = element.Parent
-                            if element.Name.ToString() <> nameWithNS then
-                                failwithf "Unexpected element: %O" v
-                            element)
+                            if element.Parent = null then 
+                                let parent = createElement null nameWithNS 
+                                parent.Add element
+                                parent
+                            else 
+                                if element.Parent.Name.ToString() <> nameWithNS then
+                                    failwithf "Unexpected element: %O" v
+                                element.Parent)
                     element.Add v
                 | :? string as v -> 
                     let child = createElement element nameWithNS 

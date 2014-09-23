@@ -26,55 +26,22 @@ class XmlProvider
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Ordercontainer : FDR.XmlElement
-    new : backgrounds:XmlProvider+Backgrounds -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
+    new : background:XmlProvider+Background -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
     XmlRuntime.CreateRecord("ordercontainer", 
                             [| |], 
-                            [| ("backgrounds",
-                                (backgrounds :> obj))
+                            [| ("backgrounds|background",
+                                (background :> obj))
                                ("project",
                                 (project :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Ordercontainer
     XmlElement.Create(xElement)
 
-    member Backgrounds: XmlProvider+Backgrounds with get
-    XmlRuntime.GetChild(this, "backgrounds")
+    member Background: XmlProvider+Background with get
+    XmlRuntime.GetChild(this, "backgrounds|background")
 
     member Project: XmlProvider+Project with get
     XmlRuntime.GetChild(this, "project")
-
-
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Backgrounds : FDR.XmlElement
-    new : background:XmlProvider+Background -> XmlProvider+Backgrounds
-    XmlRuntime.CreateRecord("backgrounds", 
-                            [| |], 
-                            [| ("background",
-                                (background :> obj)) |], "")
-
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Backgrounds
-    XmlElement.Create(xElement)
-
-    member Background: XmlProvider+Background with get
-    XmlRuntime.GetChild(this, "background")
-
-
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Project : FDR.XmlElement
-    new : title:string -> XmlProvider+Project
-    XmlRuntime.CreateRecord("project", 
-                            [| |], 
-                            [| ("title",
-                                (title :> obj)) |], "")
-
-    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
-    XmlElement.Create(xElement)
-
-    member Title: string with get
-    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
 [<[TypeProviderEditorHideMethods()]>]
@@ -87,6 +54,23 @@ class XmlProvider+Background : FDR.XmlElement
                                 (title :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+Background
+    XmlElement.Create(xElement)
+
+    member Title: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "title"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+[<[TypeProviderEditorHideMethods()]>]
+[<[AllowNullLiteral((Boolean)False)]>]
+class XmlProvider+Project : FDR.XmlElement
+    new : title:string -> XmlProvider+Project
+    XmlRuntime.CreateRecord("project", 
+                            [| |], 
+                            [| ("title",
+                                (title :> obj)) |], "")
+
+    new : xElement:System.Xml.Linq.XElement -> XmlProvider+Project
     XmlElement.Create(xElement)
 
     member Title: string with get
