@@ -246,7 +246,7 @@
 #### 2.0.14 - August 30 2014
 * Fixed handling of HTTP response cookies on some corner cases that .NET doesn't natively support.
 
-#### 2.0.15 - Unreleased
+#### 2.0.15 - September 23 2014
 * Fixed crash when disposing CsvProvider instances.
 * Add support for UTF-32 characters in JsonValue and JsonProvider.
 * Simplify generated API for collections in XmlProvider.
