@@ -42,6 +42,7 @@
 
 <h1>WorldBankDataProvider</h1>
 <div class="xmldoc">
+<p>Typed representation of WorldBank data with additional configuration parameters. See <a href="http://www.worldbank.org">http://www.worldbank.org</a> for terms and conditions.</p>
 </div>
   <h3>Static parameters</h3>
   <table class="table table-bordered member-list">
@@ -52,10 +53,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
+          <code onmouseout="hideTip(event, '245', 245)" onmouseover="showTip(event, '245', 245)">
             Sources
           </code>
-          <div class="tip" id="182">
+          <div class="tip" id="245">
             <strong>Signature:</strong> string (optional, default = &quot;World Development Indicators;Global Financial Development&quot;)<br />
                       </div>
         </td>
@@ -64,16 +65,18 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>The World Bank data sources to include, separated by semicolons. Defaults to <code>World Development Indicators;Global Financial Development</code>.
+                        If an empty string is specified, includes all data sources.</p>
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
+          <code onmouseout="hideTip(event, '246', 246)" onmouseover="showTip(event, '246', 246)">
             Asynchronous
           </code>
-          <div class="tip" id="183">
+          <div class="tip" id="246">
             <strong>Signature:</strong> bool (optional, default = false)<br />
                       </div>
         </td>
@@ -82,7 +85,8 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          
+          <p>Generate asynchronous calls. Defaults to false.</p>
+
         </td>
       </tr>
     </tbody>
