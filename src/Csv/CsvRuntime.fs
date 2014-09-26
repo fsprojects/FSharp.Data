@@ -241,6 +241,29 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
       then parseIntoLines newReader "\t" quote hasHeaders
       else parsedCsvLines
 
+    // Detect header that has empty trailing column name that doesn't correspond to a column in
+    // the following data lines.  This is checked if headers exist and the last column in the header
+    // is empty.  
+    let parsedCsvLines =
+      match parsedCsvLines.Headers with
+      | None -> parsedCsvLines
+      | Some headers -> let columnCount = parsedCsvLines.ColumnCount
+                        if headers.[columnCount-1].Length = 0
+                        then let probe = parsedCsvLines.LineIterator.MoveNext()
+                             // If TSV auto-detection occurred, need to set the separators to "\t"
+                             let separators = if probablyTabSeparated then "\t" else separators
+                             // Since we looked ahead by one line to check the number of columns in the row
+                             // immediately following the header, a new parsedCsvLines should be created so
+                             // that the LineIterator is where it is expected to be.
+                             let freshCsvLines = parseIntoLines newReader separators quote hasHeaders
+                             if probe then let firstNonHeader = fst parsedCsvLines.LineIterator.Current
+                                           if firstNonHeader.Length = columnCount-1
+                                           then { freshCsvLines with ColumnCount = columnCount - 1;
+                                                                     Headers = Some headers.[..columnCount-2]}
+                                           else freshCsvLines
+                                      else freshCsvLines
+                        else parsedCsvLines
+
     let rows = 
       parsedCsvLines
       |> parseIntoTypedRows newReader ignoreErrors (fun untypedRow -> stringArrayToRow.Invoke(this, untypedRow)) 
