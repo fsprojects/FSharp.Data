@@ -149,6 +149,8 @@ let ``Header with trailing empty column that doesn't appear in data rows``()=
   let csv = CsvProvider<csvWithSpuriousTrailingEmptyHeaderColumn>.GetSample()
   let row = csv.Rows |> Seq.head
   row |> should equal (1,2,3)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (4,5,6)
 
 [<Literal>]
 let csvWithLegitimateTrailingEmptyColumn = """A,B,C,
@@ -160,6 +162,8 @@ let ``Header with trailing empty column that does appear in data rows``() =
   let csv = CsvProvider<csvWithLegitimateTrailingEmptyColumn>.GetSample()
   let row = csv.Rows |> Seq.head
   row |> should equal (1,2,3,4)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (5,6,7,8)
   
 let [<Literal>] simpleCsvNoHeaders = """
 TRUE,no,3
