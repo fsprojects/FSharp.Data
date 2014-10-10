@@ -11,11 +11,11 @@ namespace FSharp.Data
 
 open System
 open System.IO
+open System.ComponentModel
 open System.Text
 open System.Globalization
 open FSharp.Data
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.IO
 
 /// Specifies the formatting behaviour of JSON values
 [<RequireQualifiedAccess>]
@@ -29,6 +29,7 @@ type JsonSaveOptions =
 /// Decimal type are represented using the Float case, while
 /// smaller numbers are represented as decimals to avoid precision loss.
 [<RequireQualifiedAccess>]
+[<StructuredFormatDisplay("{_Print}")>]
 type JsonValue =
   | String of string
   | Number of decimal
@@ -37,7 +38,12 @@ type JsonValue =
   | Array of elements:JsonValue[]
   | Boolean of bool
   | Null  
-  
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  member x._Print = x.ToString()
+
   /// Serializes the JsonValue to the specified System.IO.TextWriter.
   member x.WriteTo (w:TextWriter, saveOptions) =
 
@@ -114,8 +120,6 @@ type JsonValue =
 
   override x.ToString() = x.ToString(JsonSaveOptions.None)
 
-
-
 /// [omit]
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonValue =
@@ -154,7 +158,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
     let throw() =
       let msg =
         sprintf
-          "Invalid Json starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------"
+          "Invalid JSON starting at character %d, snippet = \n----\n%s\n-----\njson = \n------\n%s\n-------" 
           i (jsonText.[(max 0 (i-10))..(min (jsonText.Length-1) (i+10))]) (if jsonText.Length > 1000 then jsonText.Substring(0, 1000) else jsonText)
       failwith msg
     let ensure cond =
@@ -354,7 +358,7 @@ type JsonValue with
 
   /// Loads JSON from the specified uri asynchronously
   static member AsyncLoad(uri:string, ?cultureInfo) = async {
-    let! reader = asyncReadTextAtRuntime false "" "" "JSON" "" uri
+    let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }

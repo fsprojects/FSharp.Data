@@ -203,9 +203,10 @@ let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriRes
     async {
         let contentTypes =
             match formatName with
+            | "CSV" -> [ HttpContentTypes.Csv ]
+            | "HTML" -> [ HttpContentTypes.Html ]
             | "JSON" -> [ HttpContentTypes.Json ]
             | "XML" -> [ HttpContentTypes.Xml ]
-            | "CSV" -> [ HttpContentTypes.Csv ]
             | _ -> []
             @ [ HttpContentTypes.Any ]
         let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") 

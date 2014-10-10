@@ -44,6 +44,16 @@ type JsonProviderArgs =
       EmbeddedResource : string 
       InferTypesFromValues : bool }
 
+type HtmlProviderArgs = 
+    { Sample : string
+      PreferOptionals : bool
+      IncludeLayoutTables : bool
+      MissingValues : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string }
+
 type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
@@ -63,6 +73,7 @@ type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
+    | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs
 
@@ -104,8 +115,18 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource 
+                   box x.EmbeddedResource
                    box x.InferTypesFromValues |] 
+            | Html x -> 
+                (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.PreferOptionals
+                   box x.IncludeLayoutTables
+                   box x.MissingValues
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -150,6 +171,11 @@ type TypeProviderInstantiation =
              x.RootName
              x.Culture
              x.InferTypesFromValues.ToString() ]
+        | Html x -> 
+            ["Html"
+             x.Sample
+             x.PreferOptionals.ToString()
+             x.Culture]
         | WorldBank x -> 
             ["WorldBank"
              x.Sources
@@ -214,6 +240,15 @@ type TypeProviderInstantiation =
                    ResolutionFolder = ""
                    EmbeddedResource = "" 
                    InferTypesFromValues = args.[5] |> bool.Parse }
+        | "Html" ->
+            Html { Sample = args.[1]
+                   PreferOptionals = args.[2] |> bool.Parse
+                   IncludeLayoutTables = args.[3] |> bool.Parse
+                   MissingValues = ""
+                   Culture = args.[4] 
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }

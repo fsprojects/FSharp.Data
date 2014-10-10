@@ -11,13 +11,13 @@ open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 
-type private FieldInfo = 
-  { TypeForTuple : Type
-    Property : ProvidedProperty
-    Convert: Expr -> Expr
-    ConvertBack: Expr -> Expr }
-
 module internal CsvTypeBuilder =
+
+  type private FieldInfo = 
+    { TypeForTuple : Type
+      Property : ProvidedProperty
+      Convert: Expr -> Expr
+      ConvertBack: Expr -> Expr }
 
   let generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer inferredFields =
     

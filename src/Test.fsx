@@ -32,6 +32,16 @@ let dumpAll inst =
     dump false false Portable7 false inst
     dump false false Portable47 false inst
 
+Html { Sample = "imdb_chart.htm"
+       PreferOptionals = false
+       IncludeLayoutTables = false
+       MissingValues = "NaN,NA,#N/A,:"
+       Culture = "" 
+       Encoding = ""
+       ResolutionFolder = ""
+       EmbeddedResource = "" }
+|> dumpAll
+
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""

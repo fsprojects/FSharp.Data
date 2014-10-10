@@ -1,0 +1,65 @@
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider : FDR.TypedHtmlDocument
+    new : () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
+
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm"), f)
+
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    TypedHtmlDocument.Create(false, reader)
+
+    static member Load: uri:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+
+    member Tables: HtmlProvider+TableContainer with get
+    this
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
+    member Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve: HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertFloat("", "", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Volkswagen Bora se 1.9 tdi 2001,   ***OFFERS*** Mileage: 150,000", TextRuntime.ConvertFloat("", "", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("£999.00  Postage not specified  32 Watchers Buy it now or Best Offer", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "rover 25 1.4 tax and mot spares and repairs drive it away no reserve")
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve : FDR.HtmlTable<HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve+Row : float * float * string * string
+    member Column1: float with get
+    (let t1,_,_,_ = this in t1)
+
+    member Column3: string with get
+    (let _,_,t3,_ = this in t3)
+
+    member ``Volkswagen Bora se 1.9 tdi 2001,   ***OFFERS*** Mileage: 150,000``: float with get
+    (let _,t2,_,_ = this in t2)
+
+    member ``£999.00  Postage not specified  32 Watchers Buy it now or Best Offer``: string with get
+    (let _,_,_,t4 = this in t4)
+
+

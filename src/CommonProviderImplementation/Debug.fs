@@ -436,6 +436,12 @@ module Debug =
                 else 
                     sprintf "\n%O\n" x
 
+            let getName (m:MemberInfo) = 
+                if memberInfo.Name.Contains(" ") then
+                    "``" + m.Name + "``"
+                else
+                    m.Name
+
             match memberInfo with
 
             | :? ProvidedConstructor as cons -> 
@@ -451,14 +457,14 @@ module Debug =
                     if signatureOnly then ""
                     else field.GetRawConstantValue() |> printObj
                 if not ignoreOutput then
-                    print <| "val " + field.Name + ": " + 
+                    print <| "val " + (getName field) + ": " + 
                              (toString true field.FieldType) + 
                              value
                          
             | :? ProvidedProperty as prop -> 
                 if not ignoreOutput then
                     print <| (if prop.IsStatic then "static " else "") + "member " + 
-                             prop.Name + ": " + (toString true prop.PropertyType) + 
+                             (getName prop) + ": " + (toString true prop.PropertyType) + 
                              " with " + (if prop.CanRead && prop.CanWrite then "get, set" else if prop.CanRead then "get" else "set")
                 if not signatureOnly then
                     if prop.CanRead then
@@ -470,7 +476,7 @@ module Debug =
                 if m.Attributes &&& MethodAttributes.SpecialName <> MethodAttributes.SpecialName then
                     if not ignoreOutput then
                         print <| (if m.IsStatic then "static " else "") + "member " + 
-                        m.Name + ": " + (toSignature <| m.GetParameters()) + 
+                        (getName m) + ": " + (toSignature <| m.GetParameters()) + 
                         " -> " + (toString true m.ReturnType)
                     if not signatureOnly then
                         m |> getMethodBody |> printExpr

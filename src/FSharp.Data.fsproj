@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -65,8 +65,14 @@
     <Compile Include="Freebase\FreebaseSchema.fs" />
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlCharRefs.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlOperations.fs" />
+    <Compile Include="Html\HtmlInference.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.fs" />
+    <None Include="Test.HtmlRuntime.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

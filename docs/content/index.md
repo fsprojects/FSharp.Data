@@ -3,9 +3,9 @@ F# Data: Library for Data Access
 
 The F# Data library implements everything you need to 
 access data in your F# applications and scripts. It contains F# type 
-providers for working with structured file formats (CSV, JSON and XML) 
+providers for working with structured file formats (CSV, HTML, JSON and XML) 
 and for accessing the WorldBank and Freebase services. It also includes helpers for parsing 
-JSON and CSV files and for sending HTTP requests.
+CSV, HTML and JSON files and for sending HTTP requests.
 
 This library focuses on providing a simple, mostly read-only, access to the structured documents 
 and other data sources. It does not aim to be a comprehensive collection of F# type providers 
@@ -62,9 +62,10 @@ The library also implements a type provider for accessing data from
 [the WorldBank](http://data.worldbank.org/) and [Freebase graph database](http://www.freebase.com/).
 
 
- * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
- * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
  * [CSV Type Provider](library/CsvProvider.html) - discusses the `CsvProvider<..>` type
+ * [HTML Type Provider](library/HtmlProvider.html) - discusses the `HtmlProvider<...>` type
+ * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
+ * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
  * [WorldBank Provider](library/WorldBank.html) - discusses the `WorldBankData` type 
    and the `WorldBankDataProvider<..>` type
  * [Freebase Provider](library/Freebase.html) - discusses the `FreebaseData` type 

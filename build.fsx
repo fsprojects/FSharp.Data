@@ -29,9 +29,9 @@ let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
   in your F# applications and scripts. It implements F# type providers for working with
-  structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase
-  data. It also includes helpers for parsing JSON and CSV files and for sending HTTP requests."""
-let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
+  structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank and Freebase
+  data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
+let tags = "F# fsharp data typeprovider WorldBank Freebase CSV HTML JSON XML HTTP"
 
 let gitHome = "https://github.com/fsharp"
 let gitName = "FSharp.Data"
