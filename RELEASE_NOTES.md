@@ -1,3 +1,6 @@
+#### 2.1.0 - Unreleased
+* Added HTML parser and HtmlProvider.
+
 #### 2.0.15 - September 23 2014
 * Fixed crash when disposing CsvProvider instances.
 * Add support for UTF-32 characters in JsonValue and JsonProvider.
