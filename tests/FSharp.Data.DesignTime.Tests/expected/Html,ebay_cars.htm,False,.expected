@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve: HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -43,8 +45,10 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "rover 25 1.4 tax and mot spares and repairs drive it away no reserve")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve : FDR.HtmlTable<HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Rover2514TaxAndMotSparesAndRepairsDriveItAwayNoReserve+Row : float * float * string * string
     member Column1: float with get
     (let t1,_,_,_ = this in t1)

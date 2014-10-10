@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "NuGet.html")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member VersionHistory: HtmlProvider+VersionHistory with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -41,8 +43,10 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Version History")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+VersionHistory : FDR.HtmlTable<HtmlProvider+VersionHistory+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+VersionHistory+Row : string * int * System.DateTime
     member Downloads: int with get
     (let _,t2,_ = this in t2)

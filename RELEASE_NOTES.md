@@ -198,7 +198,7 @@
 
 #### 2.0.5 - March 29 2014
 * Added - to the list of default missing values.
-* Re-added support for specifying known HTTP headers in the wrong case.
+* Re-added support for specifying known HTTP headers in the wrong casing.
 * Fixed sending of HTTP requests when using a portable class library version of FSharp.Data in the full .NET version.
 
 #### 2.0.6 - April 28 2014
@@ -225,10 +225,28 @@
 * Fixed unnecessary character escaping in JsonValue.
 * Be more relaxed about mixing different versions on FSharp.Data.
 
-#### 2.0.10 - Unreleased
+#### 2.0.10 - August 21 2014
 * Improved performance of JsonValue.ToString().
 * Allow to serialize a JsonValue to a TextWriter.
 * Fixed possible memory leak.
 * Accept any MIME type in HTTP requests made by CsvProvider, JsonProvider, and XmlProvider (but still issue a preference).
 * Fix usage of customizeHttpRequest on POST requests.
 * Fixed problem on url creation when ampersands are used in query parameter values.
+* Added InferTypesFromValues parameter to XmlProvider and JsonProvider to allow disabling infering booleans and numbers from strings.
+
+#### 2.0.11 - August 27 2014
+* Fixed HTTP decompression throwing AccessViolationException's on Windows Phone.
+
+#### 2.0.12 - August 28 2014
+* Fixed crash on HTTP requests that return 0 bytes.
+
+#### 2.0.13 - August 29 2014
+* Fixed handling of HTTP response cookies on some corner cases that .NET doesn't natively support.
+
+#### 2.0.14 - August 30 2014
+* Fixed handling of HTTP response cookies on some corner cases that .NET doesn't natively support.
+
+#### 2.0.15 - September 23 2014
+* Fixed crash when disposing CsvProvider instances.
+* Add support for UTF-32 characters in JsonValue and JsonProvider.
+* Simplify generated API for collections in XmlProvider.

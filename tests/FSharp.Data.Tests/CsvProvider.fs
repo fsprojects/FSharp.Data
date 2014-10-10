@@ -2,7 +2,7 @@
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #endif
 
@@ -272,3 +272,10 @@ let ``Respects encoding when specified``() =
     let cp932 = CP932.GetSample()
     let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
     row2 |> should equal (2, Double.NaN)
+
+[<Test>]
+let ``Disposing CsvProvider shouldn't throw``() =
+    let csv = 
+        use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
+        csv.Rows |> Seq.iter (fun x -> ())
+    ()

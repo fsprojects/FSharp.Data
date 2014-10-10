@@ -211,6 +211,7 @@ type HttpResponse =
   { Body : HttpResponseBody
     StatusCode: int
     ResponseUrl : string
+    /// If the same header is present multiple times, the values will be concatenated with comma as the separator
     Headers : Map<string,string>
     Cookies : Map<string,string> }
 
@@ -219,6 +220,7 @@ type HttpResponseWithStream =
   { ResponseStream : Stream
     StatusCode: int
     ResponseUrl : string
+    /// If the same header is present multiple times, the values will be concatenated with comma as the separator
     Headers : Map<string,string>
     Cookies : Map<string,string> }
 
@@ -294,9 +296,9 @@ module private Helpers =
         return output 
     }
 
-    let (?) obj prop =
+    let getProperty (typ:Type) obj prop =
 #if FX_NET_CORE_REFLECTION
-        let prop = obj.GetType().GetRuntimeProperty(prop)
+        let prop = typ.GetRuntimeProperty(prop)
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj) |> unbox |> Some
@@ -305,7 +307,7 @@ module private Helpers =
         else
             None
 #else
-        let prop = obj.GetType().GetProperty(prop)
+        let prop = typ.GetProperty(prop)
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj, [| |]) |> unbox |> Some
@@ -314,6 +316,9 @@ module private Helpers =
         else
             None
 #endif
+
+    let (?) obj prop =
+        getProperty (obj.GetType()) obj prop
 
     let (?<-) obj prop value =
 #if FX_NET_CORE_REFLECTION
@@ -562,6 +567,64 @@ module private Helpers =
                  Cookies = cookies }
     }
 
+#if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
+    let isWindowsPhone =
+        let runningOnMono = Type.GetType("Mono.Runtime") <> null
+        if runningOnMono then
+            false
+        else
+            match getProperty typeof<Environment> null "OSVersion" with
+            | Some osVersion ->
+                match osVersion?Version with
+                | Some (version:Version) ->
+                    // Latest Windows is 6.x, so OS >= 8 will be Windows Phone
+                    version.Major >= 8
+                | _ -> false
+            | _ -> false
+#endif
+
+    // .NET has trouble parsing some cookies. See http://stackoverflow.com/a/22098131/165633
+    let getAllCookiesFromHeader (header:string) (responseUri:Uri) (cookieContainer:CookieContainer) =
+        let cookiesWithWrongSplit = header.Replace("\r", "").Replace("\n", "").Split(',')
+        let cookies = ResizeArray()
+        let mutable i = 0
+        while i < cookiesWithWrongSplit.Length do
+            // the next command is not a new cookie but part of the current one
+            if cookiesWithWrongSplit.[i].IndexOf("expires=", StringComparison.OrdinalIgnoreCase) > 0 then
+                cookies.Add(cookiesWithWrongSplit.[i] + "," + cookiesWithWrongSplit.[i + 1])
+                i <- i + 1
+            else
+                cookies.Add(cookiesWithWrongSplit.[i])
+            i <- i + 1
+        for cookieStr in cookies do
+            let cookie = new Cookie()
+            cookieStr.Split ';'
+            |> Array.iteri (fun i cookiePart ->
+                let cookiePart = cookiePart.Trim()
+                if i = 0 then
+                    let firstEqual = cookiePart.IndexOf "="
+                    cookie.Name <- cookiePart.Substring(0, firstEqual)
+                    cookie.Value <- cookiePart.Substring(firstEqual + 1)
+                elif cookiePart.IndexOf("path", StringComparison.OrdinalIgnoreCase) = 0 then
+                    let kvp = cookiePart.Split '='
+                    if kvp.[1] <> "" && kvp.[1] <> "/" then
+                        cookie.Path <- kvp.[1]
+                elif cookiePart.IndexOf("domain", StringComparison.OrdinalIgnoreCase) = 0 then
+                    let kvp = cookiePart.Split '='
+                    if kvp.[1] <> "" then
+                        cookie.Domain <- kvp.[1]
+                elif cookiePart.Equals("secure", StringComparison.OrdinalIgnoreCase) then
+                    cookie.Secure <- true
+                elif cookiePart.Equals("httponly", StringComparison.OrdinalIgnoreCase) then
+                    cookie.HttpOnly <- true
+            )
+
+            if cookie.Domain = "" then
+                cookie.Domain <- responseUri.Host
+
+            let uri = Uri((if cookie.Secure then "https://" else "http://") + cookie.Domain.TrimStart('.') + cookie.Path)
+            cookieContainer.Add(uri, cookie)
+
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
@@ -595,7 +658,7 @@ type Http private() =
         let nativeAutomaticDecompression = ref true
 
     #if FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION
-        if not (req?AutomaticDecompression <- 3) then 
+        if isWindowsPhone || not (req?AutomaticDecompression <- 3) then 
             nativeAutomaticDecompression := false
             req.Headers.[HeaderEnum.AcceptEncoding] <- "gzip,deflate"
     #else
@@ -647,12 +710,16 @@ type Http private() =
 
             let! resp = getResponse req silentHttpErrors
 
-            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
-
             let headers = 
                 [ for header in resp.Headers.AllKeys do 
                     yield header, resp.Headers.[header] ]
                 |> Map.ofList
+                
+            match headers.TryFind HttpResponseHeaders.SetCookie with
+            | Some cookieHeader -> getAllCookiesFromHeader cookieHeader resp.ResponseUri cookieContainer
+            | None -> ()
+
+            let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
             let statusCode, characterSet = 
                 match resp with
@@ -663,6 +730,8 @@ type Http private() =
                     int resp.StatusCode, resp.CharacterSet
 #endif
                 | _ -> 0, ""
+
+            let characterSet = if characterSet = null then "" else characterSet
 
             let contentEncoding = 
                 // .NET removes the gzip/deflate from the content encoding header when it handles the decompression itself, but Mono doesn't, so we clear it explicitely

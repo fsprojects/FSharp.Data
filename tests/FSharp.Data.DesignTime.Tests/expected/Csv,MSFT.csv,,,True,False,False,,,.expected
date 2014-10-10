@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -212,6 +213,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, false)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal
     member ``Adj Close``: decimal with get
     (let _,_,_,_,_,_,t7 = this in t7)

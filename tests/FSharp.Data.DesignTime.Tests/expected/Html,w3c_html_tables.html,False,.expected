@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member AddingSomeMoreFeatures: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -67,12 +69,16 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "The most basic table")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther : FDR.HtmlTable<HtmlProvider+StructuringTheTableFurther+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable : FDR.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
@@ -87,6 +93,7 @@ class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * strin
     (let t1,_,_,_ = this in t1)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
@@ -101,6 +108,7 @@ class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * s
     (let t1,_,_,_ = this in t1)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)

@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member MyTable: HtmlProvider+MyTable with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -51,10 +53,13 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table2")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+MyTable : FDR.HtmlTable<HtmlProvider+MyTable+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table2 : FDR.HtmlTable<HtmlProvider+Table2+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+MyTable+Row : bool * int * decimal
     member Column1: bool with get
     (let t1,_,_ = this in t1)
@@ -66,6 +71,7 @@ class HtmlProvider+MyTable+Row : bool * int * decimal
     (let _,t2,_ = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table2+Row : System.DateTime * int * decimal
     member CptyId: int with get
     (let _,t2,_ = this in t2)

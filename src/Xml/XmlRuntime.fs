@@ -67,7 +67,7 @@ type XmlElement =
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  override x.ToString() = x.XElement.ToString()
+  override x.ToString() = x._Print
 
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -251,10 +251,14 @@ type XmlRuntime =
                     let v = 
                         (v, Seq.skip 1 parentNames)
                         ||> Seq.fold (fun element nameWithNS -> 
-                            let element = element.Parent
-                            if element.Name.ToString() <> nameWithNS then
-                                failwithf "Unexpected element: %O" v
-                            element)
+                            if element.Parent = null then 
+                                let parent = createElement null nameWithNS 
+                                parent.Add element
+                                parent
+                            else 
+                                if element.Parent.Name.ToString() <> nameWithNS then
+                                    failwithf "Unexpected element: %O" v
+                                element.Parent)
                     element.Add v
                 | :? string as v -> 
                     let child = createElement element nameWithNS 

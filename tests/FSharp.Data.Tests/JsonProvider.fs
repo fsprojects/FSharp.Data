@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonProvider
@@ -44,6 +44,28 @@ let ``Reading a required decimal that is not a valid decimal throws an exception
 let ``Reading a required float that is not a valid float returns NaN`` () = 
   let prov = DecimalFields.Parse(""" {"a":"hello", "b":123} """)
   prov.A |> should equal Double.NaN
+
+[<Test>]
+let ``Can control type inference`` () =
+  let inferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=true>.GetSamples().[0]
+
+  let intLike   : int  = inferred.IntLike
+  let boolLike1 : bool = inferred.BoolLike1
+  let boolLike2 : bool = inferred.BoolLike2
+
+  intLike   |> should equal 123
+  boolLike1 |> should equal false
+  boolLike2 |> should equal true
+
+  let notInferred = JsonProvider<"Data/TypeInference.json", InferTypesFromValues=false>.GetSamples().[0]
+
+  let intLike   : string    = notInferred.IntLike
+  let boolLike1 : decimal   = notInferred.BoolLike1
+  let boolLike2 : string    = notInferred.BoolLike2
+
+  intLike   |> should equal "123"
+  boolLike1 |> should equal 0M
+  boolLike2 |> should equal "1"
 
 [<Test>]
 let ``Optional int correctly inferred`` () = 

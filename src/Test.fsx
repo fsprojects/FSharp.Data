@@ -19,15 +19,15 @@ let assemblyName = "FSharp.Data.dll"
 type Platform = Net40 | Portable7 | Portable47
 
 let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProviderInstantiation) =
-    let runtimeAssembly = 
+    let runtimeAssembly =
         match platform with
         | Net40 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ assemblyName
         | Portable7 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
-        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName    
+        | Portable47 -> __SOURCE_DIRECTORY__ ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
     inst.Dump resolutionFolder (if saveToFileSystem then outputFolder else "") runtimeAssembly signatureOnly ignoreOutput
     |> Console.WriteLine
 
-let dumpAll inst = 
+let dumpAll inst =
     dump false false Net40 false inst
     dump false false Portable7 false inst
     dump false false Portable47 false inst
@@ -45,23 +45,25 @@ Html { Sample = "imdb_chart.htm"
 Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
-       Culture = "" 
+       Culture = ""
        Encoding = ""
        ResolutionFolder = ""
-       EmbeddedResource = "" }
+       EmbeddedResource = ""
+       InferTypesFromValues = true }
 |> dumpAll
 
 Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
-      Culture = "" 
+      Culture = ""
       Encoding = ""
       ResolutionFolder = ""
-      EmbeddedResource = "" }
+      EmbeddedResource = ""
+      InferTypesFromValues = true }
 |> dumpAll
 
 Csv { Sample = "AirQuality.csv"
-      Separators = ";" 
+      Separators = ";"
       InferRows = Int32.MaxValue
       Schema = ""
       HasHeaders = true
@@ -71,12 +73,13 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
-      Culture = "" 
+      Culture = ""
       Encoding = ""
       ResolutionFolder = ""
       EmbeddedResource = "" }
+|> dumpAll
 
-let testCases = 
+let testCases =
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse

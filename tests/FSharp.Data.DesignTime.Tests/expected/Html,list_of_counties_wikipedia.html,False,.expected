@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit: HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -95,14 +97,19 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table5")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
     member ``Area (km�) [ 3 ]``: decimal with get
     (let _,_,_,t4,_,_,_,_ = this in t4)
@@ -129,6 +136,7 @@ class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int * string * decimal * decimal * decimal * string * string
     member ``Area (km�)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
@@ -152,6 +160,7 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int *
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string * decimal * decimal * decimal * string * string
     member ``Area (km�)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
@@ -175,6 +184,7 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table5+Row : string * string
     member ``v t e List of settlements in the United Kingdom``: string with get
     (let t1,_ = this in t1)

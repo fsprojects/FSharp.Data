@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.FreebaseProvider
@@ -183,11 +183,7 @@ let ``tvrage_id is not unique in mql query``() =
         select (p.Name, p.``Date of birth``)
     } 
     |> Seq.head
-#if TEAM_CITY
     |> should equal ("Jack Abramoff", "1958-02-28")
-#else
-    |> should equal ("Jack Abramoffa", "1958-02-28")
-#endif
 
 #if TEAM_CITY
 // US

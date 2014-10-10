@@ -56,7 +56,7 @@ let ``should return the http status code for all response types`` () =
 
 [<Test>]
 let ``should return the entity body as a string`` () =
-    Http.RequestString "http://localhost:1235/TestServer/GotBody" |> should equal "Check out my sexy body"
+    Http.RequestString "http://localhost:1235/TestServer/GotBody" |> should equal "My body"
 
 [<Test>]
 let ``should return an empty string when there is no body`` () =
@@ -67,8 +67,8 @@ let ``all details of the response should be available`` () =
     let response = Http.Request("http://localhost:1235/TestServer/AllTheThings", silentHttpErrors=true)
     response.StatusCode |> should equal 418
     response.Body |> should equal (Text "Some JSON or whatever")
-//    response.Cookies.["cookie1"] |> should equal "chocolate+chip" // cookies get encoded
-//    response.Cookies.["cookie2"] |> should equal "smarties"
+    response.Cookies.["cookie1"] |> should equal "chocolate+chip" // cookies get encoded
+    response.Cookies.["cookie2"] |> should equal "smarties"
     response.Headers.[HttpResponseHeaders.ContentEncoding] |> should equal "xpto"
     response.Headers.["X-New-Fangled-Header"] |> should equal "some value"
 

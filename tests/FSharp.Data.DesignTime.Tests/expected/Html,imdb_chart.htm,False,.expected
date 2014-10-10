@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Top250: HtmlProvider+Top250 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -45,8 +47,10 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Top 250")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.HtmlTable<HtmlProvider+Top250+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250+Row : float * string * decimal * string * float
     member Column1: float with get
     (let t1,_,_,_,_ = this in t1)

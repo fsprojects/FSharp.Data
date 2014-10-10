@@ -1,3 +1,4 @@
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
     TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
@@ -29,6 +30,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
     this
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member ListOfPresidents: HtmlProvider+ListOfPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -89,16 +91,22 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table12")
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfPresidents : FDR.HtmlTable<HtmlProvider+ListOfPresidents+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+LivingFormerPresidents : FDR.HtmlTable<HtmlProvider+LivingFormerPresidents+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10 : FDR.HtmlTable<HtmlProvider+Table10+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table11 : FDR.HtmlTable<HtmlProvider+Table11+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table12 : FDR.HtmlTable<HtmlProvider+Table12+Row>
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfPresidents+Row : string * string * string * string * string * string * string * string * string * string
     member ``Left office``: string with get
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
@@ -131,6 +139,7 @@ class HtmlProvider+ListOfPresidents+Row : string * string * string * string * st
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+LivingFormerPresidents+Row : string * string * string
     member ``Date of birth``: string with get
     (let _,_,t3 = this in t3)
@@ -142,6 +151,7 @@ class HtmlProvider+LivingFormerPresidents+Row : string * string * string
     (let _,t2,_ = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10+Row : string * string
     member ``v t e Chief executives of the United States``: string with get
     (let t1,_ = this in t1)
@@ -150,6 +160,7 @@ class HtmlProvider+Table10+Row : string * string
     (let _,t2 = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table11+Row : string * string
     member ``v t e Presidents of the United States``: string with get
     (let t1,_ = this in t1)
@@ -158,6 +169,7 @@ class HtmlProvider+Table11+Row : string * string
     (let _,t2 = this in t2)
 
 
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table12+Row : string * string
     member ``v t e Lists related to the Presidents and Vice Presidents of the United States``: string with get
     (let t1,_ = this in t1)

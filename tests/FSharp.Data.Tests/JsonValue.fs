@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonValue
@@ -93,6 +93,11 @@ let ``Can parse completely invalid, but close, date as string``() =
     let j = JsonValue.Parse "{\"anniversary\": \"2010-02-18T16.5:23.35:4\"}"
     (fun () -> j?anniversary.AsDateTime() |> ignore) |> should throw typeof<Exception>
     j?anniversary.AsString() |> should equal "2010-02-18T16.5:23.35:4"
+
+[<Test>]
+let ``Can parse UTF-32 unicode characters`` () = 
+  let j = JsonValue.Parse """{ "value": "\U00010343\U00010330\U0001033F\U00010339\U0001033B" }"""
+  j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"
 
 [<Test>]
 [<SetCulture("pt-PT")>]

@@ -31,7 +31,8 @@ type XmlProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type JsonProviderArgs = 
     { Sample : string
@@ -40,7 +41,8 @@ type JsonProviderArgs =
       Culture : string
       Encoding : string
       ResolutionFolder : string
-      EmbeddedResource : string }
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type HtmlProviderArgs = 
     { Sample : string
@@ -103,7 +105,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |] 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -112,7 +115,8 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.Encoding
                    box x.ResolutionFolder 
-                   box x.EmbeddedResource |] 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
             | Html x -> 
                 (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -158,13 +162,15 @@ type TypeProviderInstantiation =
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | Json x -> 
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | Html x -> 
             ["Html"
              x.Sample
@@ -223,7 +229,8 @@ type TypeProviderInstantiation =
                   Culture = args.[4]
                   Encoding = ""
                   ResolutionFolder = ""
-                  EmbeddedResource = "" }
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
@@ -231,7 +238,8 @@ type TypeProviderInstantiation =
                    Culture = args.[4] 
                    Encoding = ""
                    ResolutionFolder = ""
-                   EmbeddedResource = "" }
+                   EmbeddedResource = "" 
+                   InferTypesFromValues = args.[5] |> bool.Parse }
         | "Html" ->
             Html { Sample = args.[1]
                    PreferOptionals = args.[2] |> bool.Parse
