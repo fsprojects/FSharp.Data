@@ -1,5 +1,6 @@
 #### 2.1.0-beta - Unreleased
 * Added HTML parser and HtmlProvider.
+* Detect and ignore trailing empty header columns in CSV/TSV files. 
 
 #### 2.0.15 - September 23 2014
 * Fixed crash when disposing CsvProvider instances.
