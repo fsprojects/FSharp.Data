@@ -79,6 +79,7 @@ module private CsvHelpers =
 
   type ParsedCsvLines = 
     { FirstLine : string[] * int
+      SecondLine : (string[] * int) option
       Headers : string[] option
       LineIterator : IEnumerator<string[] * int> 
       ColumnCount : int
@@ -125,6 +126,7 @@ module private CsvHelpers =
       | _, (columns, _) -> columns.Length
       
     { FirstLine = firstLine
+      SecondLine = None
       Headers = headers
       LineIterator = linesIterator
       ColumnCount = numberOfColumns
@@ -136,6 +138,7 @@ module private CsvHelpers =
                          ignoreErrors 
                          stringArrayToRow
                          { FirstLine = firstLine
+                           SecondLine = secondLine
                            LineIterator = linesIterator
                            ColumnCount = numberOfColumns 
                            HasHeaders = hasHeaders
@@ -147,6 +150,9 @@ module private CsvHelpers =
     let firstSeq = seq {
       use linesIterator = linesIterator
       if not hasHeaders then yield firstLine
+      match secondLine with
+      | Some line -> yield line
+      | None -> ()
       while linesIterator.MoveNext() do yield linesIterator.Current }
 
     let nextSeq() = 
@@ -240,6 +246,29 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
       if probablyTabSeparated
       then parseIntoLines newReader "\t" quote hasHeaders
       else parsedCsvLines
+
+    // Detect header that has empty trailing column name that doesn't correspond to a column in
+    // the following data lines.  This is checked if headers exist and the last column in the header
+    // is empty.  The secondLine field of the parsedCsvLines record is used to store the second line
+    // that is read when testing the length of the first data row following the header.
+    let parsedCsvLines =
+      match parsedCsvLines.Headers with
+      | None -> parsedCsvLines
+      | Some headers -> let columnCount = parsedCsvLines.ColumnCount
+                        if String.IsNullOrWhiteSpace headers.[columnCount-1]
+                        then let secondline = if parsedCsvLines.LineIterator.MoveNext() then
+                                                Some (parsedCsvLines.LineIterator.Current)
+                                              else
+                                                None
+                             match secondline with
+                             | Some line -> let linecontents = fst line
+                                            if linecontents.Length = columnCount - 1
+                                            then { parsedCsvLines with SecondLine = secondline;
+                                                                       ColumnCount = columnCount - 1;
+                                                                       Headers = Some headers.[..columnCount-2] }
+                                            else { parsedCsvLines with SecondLine = secondline }
+                             | None -> parsedCsvLines
+                        else parsedCsvLines
 
     let rows = 
       parsedCsvLines

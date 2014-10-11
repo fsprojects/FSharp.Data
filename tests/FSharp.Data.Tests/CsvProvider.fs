@@ -138,6 +138,32 @@ let ``Repeated and empty column names``() =
   row.Foo4.GetType() |> should equal typeof<int>
   row.Bar.GetType() |> should equal typeof<int>
   row.Column4.GetType() |> should equal typeof<string>  
+
+[<Literal>]
+let csvWithSpuriousTrailingEmptyHeaderColumn = """A,B,C,
+1,2,3
+4,5,6"""
+
+[<Test>]
+let ``Header with trailing empty column that doesn't appear in data rows``()=
+  let csv = CsvProvider<csvWithSpuriousTrailingEmptyHeaderColumn>.GetSample()
+  let row = csv.Rows |> Seq.head
+  row |> should equal (1,2,3)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (4,5,6)
+
+[<Literal>]
+let csvWithLegitimateTrailingEmptyColumn = """A,B,C,
+1,2,3,4
+5,6,7,8"""
+
+[<Test>]
+let ``Header with trailing empty column that does appear in data rows``() =
+  let csv = CsvProvider<csvWithLegitimateTrailingEmptyColumn>.GetSample()
+  let row = csv.Rows |> Seq.head
+  row |> should equal (1,2,3,4)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (5,6,7,8)
   
 let [<Literal>] simpleCsvNoHeaders = """
 TRUE,no,3
