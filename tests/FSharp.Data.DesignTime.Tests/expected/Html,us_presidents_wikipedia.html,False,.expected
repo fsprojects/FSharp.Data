@@ -35,9 +35,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member ListOfPresidents: HtmlProvider+ListOfPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("№", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("№", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("President", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("President", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("President2", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
@@ -107,14 +107,14 @@ class HtmlProvider+Table11 : FDR.HtmlTable<HtmlProvider+Table11+Row>
 class HtmlProvider+Table12 : FDR.HtmlTable<HtmlProvider+Table12+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfPresidents+Row : string * string * string * string * string * string * string * string * string * string
+class HtmlProvider+ListOfPresidents+Row : int * float * string * string * string * string * string * string * string * string
     member ``Left office``: string with get
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
     member Party: string with get
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
-    member President: string with get
+    member President: float with get
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
     member President2: string with get
@@ -135,7 +135,7 @@ class HtmlProvider+ListOfPresidents+Row : string * string * string * string * st
     member ``Vice President2``: string with get
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
-    member №: string with get
+    member №: int with get
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
 

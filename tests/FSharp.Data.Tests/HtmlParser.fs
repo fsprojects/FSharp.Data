@@ -315,3 +315,31 @@ let ``Can parse tables ebay cars``() =
 let ``Does not crash when parsing us presidents``() =
     let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> HtmlRuntime.getTables false
     true |> should equal true
+
+[<Test>]
+let ``Ignores spurious closing tags``() =
+    let html = 
+        """<li class="even"><a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep"><span class="time em">21:36<br /><small>On time</small></span></span><span class="station">Brighton (East Sussex)</span><span class="platform"><small>Platform</small><br />17</span></a></li>"""
+    let expected = """<li class="even">
+  <a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep">
+    <span class="time em">
+      21:36<br />
+      <small>
+        On time
+      </small>
+    </span><span class="station">
+      Brighton (East Sussex)
+    </span><span class="platform">
+      <small>
+        Platform
+      </small><br />
+      17
+    </span>
+  </a>
+</li>"""
+    (HtmlDocument.Parse html).ToString() |> shouldEqual expected
+
+[<Test>]
+let ``Can parse national rail mobile site correctly``() =
+    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed true ["li"] |> List.length |> should equal 68
+    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed true ["li"] |> List.length |> should equal 23
