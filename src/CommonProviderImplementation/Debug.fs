@@ -17,9 +17,6 @@ open ProviderImplementation.ProvidedTypes
 
 module Debug = 
 
-    /// Converts a sequence of strings to a single string separated with the delimiters
-    let inline private separatedBy delimiter (items: string seq) = String.Join(delimiter, Array.ofSeq items)
-
     /// Simulates a real instance of TypeProviderConfig and then creates an instance of the last
     /// type provider added to a namespace by the type provider constructor
     let generate (resolutionFolder: string) (runtimeAssembly: string) typeProviderForNamespacesConstructor args =
@@ -98,11 +95,11 @@ module Debug =
                             t.GetGenericArguments() 
                             |> Seq.map (fun _ -> "_")
                     if FSharpType.IsTuple t then
-                        separatedBy " * " args
+                        String.concat " * " args
                     elif t.Name.StartsWith "FSharpFunc`" then
-                        "(" + separatedBy " -> " args + ")"
+                        "(" + (String.concat " -> " args) + ")"
                     else 
-                        let args = separatedBy "," args
+                        let args = String.concat "," args
                         let name, reverse = 
                             match t with
                             | t when hasUnitOfMeasure -> toString useFullName t.UnderlyingSystemType, false
@@ -142,7 +139,7 @@ module Debug =
             else
                 parameters 
                 |> Seq.map (fun p -> p.Name + ":" + (toString true p.ParameterType))
-                |> separatedBy " -> "
+                |> String.concat " -> "
 
         let printExpr expr =
 

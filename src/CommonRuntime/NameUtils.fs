@@ -53,7 +53,7 @@ let nicePascalName (s:string) =
           let sub = s.Substring(i1, i2 - i1) 
           if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
             yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1) }
-  |> String.concat ""
+  |> String.Concat
 
 /// Turns a given non-empty string into a nice 'camelCase' identifier
 let niceCamelName (s:string) = 

@@ -153,7 +153,7 @@ let ``Can extract the inner text from a node``() =
     let result = doc.Descendants(["tr"]) |> List.map (HtmlNode.innerText)
     result |> should equal [
         "Column 1Column 2"
-        "1 yes"
+        "1yes"
     ]
 
 [<Test>]

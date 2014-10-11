@@ -306,7 +306,7 @@ type FreebaseSchemaConnection(fb:FreebaseQueries) =
                 | _ -> 
                     yield ", '" + p.PropertyId.Id + "' : [ ]" ]
                     //yield ", '" + p.Id + "' : [ {  'type': [], 'limit': 1 } ]" ]
-            |> String.concat ""
+            |> String.Concat
 
         let query = sprintf "{ '/type/object/mid' : '" + fbObjId.MId + "'  " + fields  + " }"   
 

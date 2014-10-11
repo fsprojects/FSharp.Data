@@ -42,7 +42,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Runner-up", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Score", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Current champions [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "Current champions[edit]")
 
     member RankingPointsEdit: HtmlProvider+RankingPointsEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -52,7 +52,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("ATP", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("WTA", TextRuntime.ConvertInteger("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Ranking points [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "Ranking points[edit]")
 
     member RecordsEdit: HtmlProvider+RecordsEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -66,7 +66,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Count", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Winning years", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Records [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "Records[edit]")
 
     member SeeAlsoEdit: HtmlProvider+SeeAlsoEdit with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -74,7 +74,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "See also [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "See also[edit]")
 
     member Table1: HtmlProvider+Table1 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -123,19 +123,19 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table38: HtmlProvider+Table38 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Tennis", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis2", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Tennis2", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("v t e Tennis3", TextRuntime.ConvertFloat("", "", value), value))
+                                        TextRuntime.GetNonOptionalValue("Tennis3", TextRuntime.ConvertFloat("", "", value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table38")
 
     member Table44: HtmlProvider+Table44 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("v t e All England Lawn Tennis and Croquet Club", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("All England Lawn Tennis and Croquet Club", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("v t e All England Lawn Tennis and Croquet Club2", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("All England Lawn Tennis and Croquet Club2", TextRuntime.ConvertFloat("", "", value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table44")
 
     member TrophiesAndPrizeMoneyEdit: HtmlProvider+TrophiesAndPrizeMoneyEdit with get
@@ -146,7 +146,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Prize money", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Increase from 2012", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Trophies and prize money [ edit ]")
+    HtmlTable<_>.Create(rowConverter, this, "Trophies and prize money[edit]")
 
 
 [<[TypeProviderEditorHideMethods()]>]
@@ -309,23 +309,23 @@ class HtmlProvider+Table36+Row : int * int * int * int * System.Nullable<int> * 
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table38+Row : string * string * float
-    member ``v t e Tennis``: string with get
+class HtmlProvider+Table38+Row : string * float * float
+    member Tennis: string with get
     (let t1,_,_ = this in t1)
 
-    member ``v t e Tennis2``: string with get
+    member Tennis2: float with get
     (let _,t2,_ = this in t2)
 
-    member ``v t e Tennis3``: float with get
+    member Tennis3: float with get
     (let _,_,t3 = this in t3)
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table44+Row : string * string
-    member ``v t e All England Lawn Tennis and Croquet Club``: string with get
+class HtmlProvider+Table44+Row : string * float
+    member ``All England Lawn Tennis and Croquet Club``: string with get
     (let t1,_ = this in t1)
 
-    member ``v t e All England Lawn Tennis and Croquet Club2``: string with get
+    member ``All England Lawn Tennis and Croquet Club2``: float with get
     (let _,t2 = this in t2)
 
 

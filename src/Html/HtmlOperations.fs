@@ -278,22 +278,25 @@ module HtmlNode =
     let hasElements names x = 
         elementsNamed names x |> List.isEmpty |> not
 
+    let internal innerTextExcluding exclusions x = 
+        let exclusions = "style" :: "script" :: exclusions
+        let rec innerText' = function
+            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) ->
+                seq { for e in content do
+                        match e with
+                        | HtmlText(text) -> yield text
+                        | HtmlComment(_) -> yield String.Empty
+                        | elem -> yield innerText' elem }
+                |> String.Concat
+            | HtmlText(text) -> text
+            | _ -> String.Empty
+        innerText' x    
+
     /// <summary>
     /// Returns the inner text of the current node
     /// </summary>
     /// <param name="x">The current node</param>
-    let innerText x = 
-        let rec innerText' = function
-            | HtmlElement(name, _, content) when name <> "style" && name <> "script" ->
-                String.Join("", seq { for e in content do
-                                            match e with
-                                            | HtmlText(text) -> yield text
-                                            | HtmlComment(_) -> yield String.Empty
-                                            | HtmlElement("br", [], []) -> yield Environment.NewLine
-                                            | elem -> yield innerText' elem })
-            | HtmlText(text) -> text
-            | _ -> String.Empty
-        innerText' x    
+    let innerText x = innerTextExcluding [] x
 
 [<AutoOpen>]
 module HtmlNodeExtensions =

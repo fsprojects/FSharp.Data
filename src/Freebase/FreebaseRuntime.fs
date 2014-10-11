@@ -72,7 +72,7 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
                    | Some _, true -> yield sprintf ", '%s' : null" p.PropertyId.Id
                    // Non-compund: eagerly loaded as field
                    | None, _ -> () ]
-         |> String.concat ""
+         |> String.Concat
 
     member __.GetInitialDataForObjects (query, explicitLimit) =
         seq { for obj in fb.QuerySequence<IDictionary<string,JsonValue> >(query, dictionaryFromJson, explicitLimit) do
@@ -81,7 +81,7 @@ type internal FreebaseDataConnection (fb:FreebaseQueries, fbSchema: FreebaseSche
     /// Get property bags for all the objects of the given type, at the given type
     member fbDataConn.GetInitialDataForObjectsFromQueryText(queryConstraints:(string * string) list, typeId:FreebaseId, objectLimit) =
         let fields = fbDataConn.QueryFragmentsOfPropertiesOfAllIncludedTypes (typeId, queryConstraints)
-        let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
+        let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.Concat
         let limitText, explicitLimit = getLimitText objectLimit queryConstraints
         let query = sprintf "[{ '/type/object/type' : '%s' %s %s , '/type/object/mid' : null, '/type/object/name' : null %s}]" typeId.Id queryText fields  limitText
         fbDataConn.GetInitialDataForObjects (query, explicitLimit)
@@ -835,7 +835,7 @@ module internal QueryImplementation =
                     let queryData = source.FreebaseQueryData
                     let extraConstraint = [ ("return", quote (if meth.Name = "Count" then "count" else "estimate-count"))  ]
                     let queryConstraints = formatQueryData source.FreebaseDataConnection queryData @ extraConstraint
-                    let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.concat ""
+                    let queryText = queryConstraints |> List.map (fun (k,v) -> sprintf ", '%s' : %s" k (match v with null -> "null" | s -> s)) |> String.Concat
                     let typeId = getBaseTypeId queryData
                     let query = sprintf "{ '/type/object/type' : '%s' %s }" typeId.Id queryText 
                     let count = source.FreebaseDataConnection.Connection.Query<int>(query, fun j -> j.AsInteger())

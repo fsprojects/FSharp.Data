@@ -305,7 +305,6 @@ let ``Can parse tables imdb chart``() =
     tables.[0].Name |> should equal "Top 250"
     tables.[0].Rows.Length |> should equal 250
 
-
 [<Test>]
 let ``Can parse tables ebay cars``() = 
     let ebay = HtmlDocument.Load "data/ebay_cars.htm"
@@ -317,27 +316,30 @@ let ``Does not crash when parsing us presidents``() =
     true |> should equal true
 
 [<Test>]
+let ``Can parse non-self-closing tags of elements that can't have children when followed by comments``() =
+    let html = """<hr class="hr4"><!--comment1--><!--comment2--><hr class="hr5" />"""
+    let expected = """<hr class="hr4" /><!--comment1--><!--comment2--><hr class="hr5" />"""
+    let result = (HtmlDocument.Parse html).ToString()
+    result |> shouldEqual expected
+
+[<Test>]
 let ``Ignores spurious closing tags``() =
     let html = 
         """<li class="even"><a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep"><span class="time em">21:36<br /><small>On time</small></span></span><span class="station">Brighton (East Sussex)</span><span class="platform"><small>Platform</small><br />17</span></a></li>"""
     let expected = """<li class="even">
   <a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep">
     <span class="time em">
-      21:36<br />
-      <small>
-        On time
-      </small>
-    </span><span class="station">
-      Brighton (East Sussex)
-    </span><span class="platform">
-      <small>
-        Platform
-      </small><br />
-      17
+      21:36
+<small>On time</small>
+    </span><span class="station">Brighton (East Sussex)</span>
+    <span class="platform">
+      <small>Platform</small>
+17
     </span>
   </a>
 </li>"""
-    (HtmlDocument.Parse html).ToString() |> shouldEqual expected
+    let result = (HtmlDocument.Parse html).ToString()
+    result |> shouldEqual expected
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() =
