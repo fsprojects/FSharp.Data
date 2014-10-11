@@ -152,7 +152,7 @@ let ``Can test to see if an element is a member of this node``() =
 let ``Can extract the inner text from a node``() = 
     let result = doc.Descendants(["tr"]) |> List.map (HtmlNode.innerText)
     result |> should equal [
-        "Column 1 Column 2"
+        "Column 1Column 2"
         "1 yes"
     ]
 

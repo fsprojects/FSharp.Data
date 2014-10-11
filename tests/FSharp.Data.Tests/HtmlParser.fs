@@ -63,7 +63,7 @@ let ``Can handle unclosed tags correctly``() =
 let ``Can handle multiple char refs in a text run``() = 
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
     let result = html.Head.InnerText 
-    result |> should equal "\" Foo \""
+    result |> should equal "\"Foo\""
 
 [<Test>]
 let ``Can parse tables from a simple html``() = 
@@ -293,9 +293,9 @@ let ``Can find header when nested in a div``() =
         |> List.map (fun t -> t.Name, t)
         |> Map.ofList
     
-    Map.containsKey "Ranking points [ edit ]" tables |> should equal true
-    Map.containsKey "Records [ edit ]" tables |> should equal true
-    Map.containsKey "Current champions [ edit ]" tables |> should equal true
+    Map.containsKey "Ranking points[edit]" tables |> should equal true
+    Map.containsKey "Records[edit]" tables |> should equal true
+    Map.containsKey "Current champions[edit]" tables |> should equal true
 
 [<Test>]
 let ``Can parse tables imdb chart``() = 

@@ -285,7 +285,7 @@ module HtmlNode =
     let innerText x = 
         let rec innerText' = function
             | HtmlElement(name, _, content) when name <> "style" && name <> "script" ->
-                String.Join(" ", seq { for e in content do
+                String.Join("", seq { for e in content do
                                             match e with
                                             | HtmlText(text) -> yield text
                                             | HtmlComment(_) -> yield String.Empty
