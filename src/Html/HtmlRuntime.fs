@@ -126,7 +126,7 @@ module HtmlRuntime =
         let startIndex, headers = 
             if res.[0] |> Array.forall (fun r -> r.IsHeader) 
             then 1, res.[0] |> Array.map (fun x -> x.Data)
-            else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
+            else res |> Array.map (Array.map (fun x -> x.Data)) |> HtmlInference.inferHeaders
             
         let headers = 
             if headers.Length = 0

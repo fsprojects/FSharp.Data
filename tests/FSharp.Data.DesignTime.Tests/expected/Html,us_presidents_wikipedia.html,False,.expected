@@ -37,7 +37,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("№", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("President", TextRuntime.ConvertFloat("", "", value), value),
+                                        TextRuntime.GetNonOptionalValue("President", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("President2", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
@@ -79,7 +79,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States2", TextRuntime.ConvertFloat("", "", value), value))
+                                        TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table12")
 
 
@@ -96,14 +96,14 @@ class HtmlProvider+Table10 : FDR.HtmlTable<HtmlProvider+Table10+Row>
 class HtmlProvider+Table12 : FDR.HtmlTable<HtmlProvider+Table12+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfPresidents+Row : int * float * string * string * string * string * string * string * string * string
+class HtmlProvider+ListOfPresidents+Row : int * string * string * string * string * string * string * string * string * string
     member ``Left office``: string with get
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
 
     member Party: string with get
     (let _,_,_,_,_,t6,_,_,_,_ = this in t6)
 
-    member President: float with get
+    member President: string with get
     (let _,t2,_,_,_,_,_,_,_,_ = this in t2)
 
     member President2: string with get
@@ -150,11 +150,11 @@ class HtmlProvider+Table10+Row : string * string
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table12+Row : string * float
+class HtmlProvider+Table12+Row : string * string
     member ``Lists related to the Presidents and Vice Presidents of the United States``: string with get
     (let t1,_ = this in t1)
 
-    member ``Lists related to the Presidents and Vice Presidents of the United States2``: float with get
+    member ``Lists related to the Presidents and Vice Presidents of the United States2``: string with get
     (let _,t2 = this in t2)
 
 

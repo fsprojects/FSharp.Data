@@ -18,16 +18,11 @@ let inferRowType preferOptionals missingValues cultureInfo headers row =
 
     let inferProperty index value =
         
-        let inferedtype = 
-            // If there's only whitespace, treat it as a missing value and not as a string
-            if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
-            // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
-            elif Array.exists ((=) <| value.Trim()) missingValues then 
-                if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
-            else getInferedTypeFromString cultureInfo value None
+        let name = getName headers index |> makeUnique
+        let typ = CsvInference.inferCellType preferOptionals missingValues cultureInfo value None
 
-        { InferedProperty.Name = getName headers index |> makeUnique
-          Type = inferedtype }
+        { Name = name
+          Type = typ }
     
     InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)
 
@@ -41,7 +36,6 @@ let inferColumns preferOptionals missingValues cultureInfo headers rows =
                 then if preferOptionals then TypeWrapper.Option else TypeWrapper.Nullable
                 else TypeWrapper.None
             PrimitiveInferedProperty.Create(name, typ, wrapper, unit)
-        | InferedType.Null -> PrimitiveInferedProperty.Create(name, typeof<float>, false, None)
         | _ -> PrimitiveInferedProperty.Create(name, typeof<string>, preferOptionals, None)
     
     let inferedType =

@@ -133,6 +133,14 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
   | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
+let inferCellType preferOptionals missingValues cultureInfo value unit = 
+ // If there's only whitespace between commas, treat it as a missing value and not as a string
+    if String.IsNullOrWhiteSpace value then InferedType.Null
+    // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+    elif Array.exists ((=) <| value.Trim()) missingValues then 
+        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit, false)
+    else getInferedTypeFromString cultureInfo value unit
+
 /// Infers the type of a CSV file using the specified number of rows
 /// (This handles units in the same way as the original MiniCSV provider)
 let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo schema assumeMissingValues preferOptionals =
@@ -242,13 +250,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
               let typ = 
                 match schema.[index] with
                 | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                | None ->
-                    // If there's only whitespace between commas, treat it as a missing value and not as a string
-                    if String.IsNullOrWhiteSpace value then InferedType.Null
-                    // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
-                    elif Array.exists ((=) <| value.Trim()) missingValues then 
-                        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit, false)
-                    else getInferedTypeFromString cultureInfo value unit
+                | None -> inferCellType preferOptionals missingValues cultureInfo value unit
               { Name = name
                 Type = typ } ]
         InferedType.Record(None, fields, false) ]
