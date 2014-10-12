@@ -7,6 +7,7 @@ module internal Test
 #endif
 
 open System
+open System.Globalization
 open System.IO
 open ProviderImplementation
 open FSharp.Data
@@ -33,7 +34,7 @@ let dumpAll inst =
     dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "us_presidents_wikipedia.html"
+Html { Sample = "list_of_counties_wikipedia.html"
        PreferOptionals = false
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,#N/A,:"
@@ -98,7 +99,7 @@ printParsed """<a href="/url?q=http://fsharp.github.io/FSharp.Data/&amp;sa=U&amp
 let printTables includeLayout (url:string) = 
     url
     |> HtmlDocument.Load
-    |> HtmlRuntime.getTables includeLayout
+    |> HtmlRuntime.getTables includeLayout TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some ProviderHelpers.unitsOfMeasureProvider)
     |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
 
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"

@@ -74,16 +74,18 @@ The library also implements a type provider for accessing data from
 ### Data access tools
  
 In addition to the F# type providers, the library also defines several types that 
-simplify data access. In particular, it includes tools for HTTP web requests and a 
-JSON and CSV parsers with simple dynamic API. For more information about these types, see the 
+simplify data access. In particular, it includes tools for HTTP web requests and 
+CSV, HTML, and JSON parsers with simple dynamic API. For more information about these types, see the 
 following topics:
 
- * [JSON Parser and Reader](library/JsonValue.html) - introduces the JSON parser 
-   (without using the type provider)
- * [CSV Parser and Reader](library/CsvFile.html) - introduces the CSV parser 
-   (without using the type provider)
  * [HTTP Utilities](library/Http.html) - discusses the `Http` type that can be used
    to send HTTP web requests.
+ * [CSV Parser](library/CsvFile.html) - introduces the CSV parser 
+   (without using the type provider)
+ * [HTML Parser](library/HtmlParser.html) - introduces the HTML parser 
+   (without using the type provider)
+ * [JSON Parser](library/JsonValue.html) - introduces the JSON parser 
+   (without using the type provider)
 
 ### Tutorials
 

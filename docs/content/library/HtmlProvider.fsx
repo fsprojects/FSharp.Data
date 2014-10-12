@@ -117,7 +117,7 @@ Chart.Bar stats
 
  * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
    type providers in the `FSharp.Data` package.
- * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
-   working with CSV documents dynamically.
+ * [F# Data: HTML Parser](HtmlParser.html) - provides more information about 
+   working with HTML documents dynamically.
 
 *)

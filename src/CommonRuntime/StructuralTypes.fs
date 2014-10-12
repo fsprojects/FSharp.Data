@@ -1,8 +1,6 @@
 ﻿namespace FSharp.Data.Runtime.StructuralTypes
 
 open System
-open System.Diagnostics
-open System.Collections.Generic
 open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------

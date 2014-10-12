@@ -118,7 +118,13 @@ module ProviderHelpers =
     open Microsoft.FSharp.Reflection
     open FSharp.Data.Runtime.Caching
     open FSharp.Data.Runtime.IO
-    
+
+    let unitsOfMeasureProvider = 
+        { new StructuralInference.IUnitsOfMeasureProvider with
+            member x.SI(str) = ProvidedMeasureBuilder.Default.SI str
+            member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Default.Product(measure1, measure2)
+            member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Default.Inverse(denominator) }
+
     let asyncMap (replacer:AssemblyReplacer) (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
         let (?) = ProviderImplementation.QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      

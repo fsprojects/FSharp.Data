@@ -70,7 +70,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   
       let inferredFields = using (IO.logTime "Inference" sample) <| fun _ ->
         sampleCsv.InferColumnTypes(inferRows, TextRuntime.GetMissingValues missingValuesStr, TextRuntime.GetCulture cultureStr, schema,
-                                   assumeMissingValues, preferOptionals, ProvidedMeasureBuilder.Default.SI)
+                                   assumeMissingValues, preferOptionals, ProviderHelpers.unitsOfMeasureProvider)
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 

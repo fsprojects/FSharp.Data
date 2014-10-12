@@ -92,7 +92,7 @@ printfn "%O" anonymizedJson
 
 ## Related articles
 
- * [F# Data: JSON Parser and Reader](../library/JsonValue.html) - a tutorial that introduces
+ * [F# Data: JSON Parser](../library/JsonValue.html) - a tutorial that introduces
    `JsonValue` for working with JSON values dynamically.
  * [F# Data: JSON Type Provider](../library/JsonProvider.html) - discusses F# type provider
    that provides type-safe access to JSON data.

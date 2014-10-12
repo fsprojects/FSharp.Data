@@ -6,12 +6,16 @@
 module FSharp.Data.Tests.HtmlParser
 #endif
 
+open System.Globalization
 open NUnit.Framework
 open FsUnit
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
+
+let getTables includeLayoutTables = 
+    HtmlRuntime.getTables includeLayoutTables TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some StructuralInference.defaultUnitsOfMeasureProvider)
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
@@ -75,7 +79,7 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -93,7 +97,7 @@ let ``Can parse tables from a simple html table but infer headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -108,7 +112,7 @@ let ``Ignores empty tables``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 0
 
@@ -123,7 +127,7 @@ let ``Can parse tables with no headers``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -140,7 +144,7 @@ let ``Can parse tables with no headers and only 2 rows``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -157,7 +161,7 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -172,7 +176,7 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -187,7 +191,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_id"
@@ -202,7 +206,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_name"
@@ -217,7 +221,7 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
     tables.Length |> should equal 1
 
 [<Test>]
@@ -242,7 +246,7 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
@@ -260,7 +264,7 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+    let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Table1"
@@ -289,7 +293,7 @@ let ``Can handle html with doctype and xml namespaces``() =
 let ``Can find header when nested in a div``() = 
     let tables = 
         HtmlDocument.Load "data/wimbledon_wikipedia.html" 
-        |> HtmlRuntime.getTables false
+        |> getTables false
         |> List.map (fun t -> t.Name, t)
         |> Map.ofList
     
@@ -300,7 +304,7 @@ let ``Can find header when nested in a div``() =
 [<Test>]
 let ``Can parse tables imdb chart``() = 
     let imdb = HtmlDocument.Load "data/imdb_chart.htm"
-    let tables = imdb |> HtmlRuntime.getTables false
+    let tables = imdb |> getTables false
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Top 250"
     tables.[0].Rows.Length |> should equal 250
@@ -312,7 +316,7 @@ let ``Can parse tables ebay cars``() =
 
 [<Test>]
 let ``Does not crash when parsing us presidents``() =
-    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> HtmlRuntime.getTables false
+    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> getTables false
     true |> should equal true
 
 [<Test>]
