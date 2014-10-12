@@ -17,7 +17,7 @@ type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
 
 let charRefsTestCases =
     CharRefs.GetSample().Items
-    |> Array.filter (fun x -> x.Characters <> "")
+    |> Array.filter (fun x -> x.Characters <> " ")
     |> Array.map (fun x -> [| x.Key; x.Characters |])
 
 ///When using `data\charrefs-full.json` there seems to be some encoding problems

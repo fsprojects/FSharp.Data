@@ -305,3 +305,19 @@ let ``Disposing CsvProvider shouldn't throw``() =
         use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
         csv.Rows |> Seq.iter (fun x -> ())
     ()
+
+[<Test>]
+let ``Whitespace is considered null, not string``() =
+    let rows = CsvProvider<"  ,2.3  \n 1,\t", HasHeaders=false>.GetSample().Rows |> Seq.toArray
+    rows.[0].Column1 |> should equal null
+    rows.[1].Column1 |> should equal (Nullable 1)
+    rows.[0].Column2 |> should equal 2.3M
+    rows.[1].Column2 |> should equal (Double.NaN)
+
+[<Test>]
+let ``Extra whitespace is not removed``() =
+    let rows = CsvProvider<" a ,2.3  \n 1,\tb", HasHeaders=false>.GetSample().Rows |> Seq.toArray
+    rows.[0].Column1 |> should equal " a "
+    rows.[1].Column1 |> should equal " 1"
+    rows.[0].Column2 |> should equal "2.3  "
+    rows.[1].Column2 |> should equal "\tb"

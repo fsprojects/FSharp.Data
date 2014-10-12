@@ -11,12 +11,12 @@ open FSharp.Data.Runtime
 /// Conversions from JsonValue to string/int/int64/decimal/float/boolean/datetime/guid options
 type JsonConversions =
 
-  static member AsString useNoneForNullOrWhiteSpace (cultureInfo:IFormatProvider) = function
-    | JsonValue.String s -> if useNoneForNullOrWhiteSpace then TextConversions.AsString s else Some s
+  static member AsString useNoneForNullOrEmpty (cultureInfo:IFormatProvider) = function
+    | JsonValue.String s -> if useNoneForNullOrEmpty && String.IsNullOrEmpty s then None else Some s
     | JsonValue.Boolean b -> Some <| if b then "true" else "false"
     | JsonValue.Number n -> Some <| n.ToString cultureInfo
     | JsonValue.Float f -> Some <| f.ToString cultureInfo
-    | JsonValue.Null when not useNoneForNullOrWhiteSpace -> Some ""
+    | JsonValue.Null when not useNoneForNullOrEmpty -> Some ""
     | _ -> None
 
   static member AsInteger cultureInfo = function

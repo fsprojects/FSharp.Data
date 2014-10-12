@@ -78,7 +78,7 @@ type JsonExtensions =
   [<Extension>] 
   static member AsString(x, [<Optional>] ?cultureInfo) =
     let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
-    match JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false cultureInfo x with
+    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x with
     | Some s -> s
     | _ -> failwithf "Not a string: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)  
 
@@ -142,7 +142,7 @@ type JsonExtensions =
   /// Get inner text of an element
   [<Extension>]
   static member InnerText(x) = 
-    match JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false CultureInfo.InvariantCulture x with
+    match JsonConversions.AsString (*useNoneForNullOrEmpty*)false CultureInfo.InvariantCulture x with
     | Some str -> str
     | None -> JsonExtensions.AsArray(x) |> Array.map (fun e -> JsonExtensions.InnerText(e)) |> String.Concat
 
@@ -202,7 +202,7 @@ module Options =
     /// Get the string value of an element (assuming that the value is a scalar)
     member x.AsString(?cultureInfo) =
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
-      JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false cultureInfo x
+      JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo x
   
     /// Get a number as an integer (assuming that the value fits in integer)
     member x.AsInteger(?cultureInfo) = 
@@ -291,7 +291,7 @@ module Options =
     [<Extension>] 
     static member AsString(x, ?cultureInfo) =
       let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
-      x |> Option.bind (JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false cultureInfo)
+      x |> Option.bind (JsonConversions.AsString (*useNoneForNullOrEmpty*)false cultureInfo)
   
     /// Get a number as an integer (assuming that the value fits in integer)
     [<Extension>] 

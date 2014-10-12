@@ -616,3 +616,8 @@ let ``Weird UnitSystem case``() =
     let comments = JsonProvider<"data/reddit.json">.GetSample()
     let data = comments.Data.Children.[0].Data
     data.LinkId |> shouldEqual "t3_2424px"
+
+[<Test>]
+let ``Whitespace is preserved``() =
+    let j = JsonProvider<"""{ "s": " "}""">.GetSample()
+    j.S |> should equal " "
