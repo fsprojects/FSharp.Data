@@ -1,10 +1,10 @@
 (** 
-# F# Data: Html Type Provider
+# F# Data: HTML Type Provider
 
-This article demonstrates how to use the Html type provider to read Html tables files
+This article demonstrates how to use the HTML type provider to read HTML tables files
 in a statically typed way. 
 
-The Html type provider takes a sample Html document as input and generates a type based on the data
+The HTML type provider takes a sample HTML document as input and generates a type based on the data
 present on the columns of that sample. The column names are obtained from the first (header) row.
 
 ## Introducing the provider
@@ -115,8 +115,6 @@ Chart.Bar stats
 (**
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
  * [F# Data: HTML Parser](HtmlParser.html) - provides more information about 
    working with HTML documents dynamically.
 

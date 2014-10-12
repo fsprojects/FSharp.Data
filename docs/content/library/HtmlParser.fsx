@@ -5,7 +5,7 @@ This article demonstrates how to use the HTML Parser to parse HTML files.
 
 The HTML parser takes any fragment of HTML, uri or a stream and trys to parse it into a DOM. 
 The parser is based on the [HTML Living Standard](http://www.whatwg.org/specs/web-apps/current-work/multipage/index.html#contents)
-Once a document/fragment has been parsed, a set of extension methods over the HTML Dom elements allow you to extract information from a web page
+Once a document/fragment has been parsed, a set of extension methods over the HTML DOM elements allow you to extract information from a web page
 independently of the actual HTML Type provider.
 *)
 
