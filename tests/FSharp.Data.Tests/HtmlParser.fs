@@ -343,5 +343,7 @@ let ``Ignores spurious closing tags``() =
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() =
-    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed true ["li"] |> List.length |> should equal 68
-    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed true ["li"] |> List.length |> should equal 23
+    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed false ["li"] |> List.length |> should equal 68
+    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"] |> List.length |> should equal 23
+    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 69
+    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 27
