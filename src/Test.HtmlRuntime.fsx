@@ -48,4 +48,25 @@ printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1
 
 //Interesting table structure, with col and row spans.
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
+
+let parseLists (doc:HtmlDocument) =
+    let lists = 
+        doc.Descendants ["ol"; "ul"; "dl"]
+        |> List.mapi (fun i listNode -> 
+            "List_" + (string i), listNode, listNode.Descendants ["li"; "dt"; "dd"]
+        )
+    lists 
+    |> List.map (fun (name, listnode, rows) ->
+             { Name = name
+               Headers = [|"List Value"|]
+               Rows = rows |> List.map (fun r -> [| r.InnerText |]) |> List.toArray
+               Html = listnode })
+    
+let chemicals = 
+    HtmlDocument.Load "http://en.wikipedia.org/wiki/List_of_commonly_available_chemicals"
+    |> parseLists
+
+
+chemicals |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
+
  

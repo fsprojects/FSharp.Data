@@ -171,6 +171,19 @@ module HtmlRuntime =
                          ) (0, Set.empty, [])
         tables |> List.rev
 
+    let getLists (doc:HtmlDocument) =
+        let lists = 
+            doc.Descendants ["ol"; "ul"; "dl"]
+            |> List.mapi (fun i listNode -> 
+                sprintf "List%d" (i + 1), listNode, listNode.Descendants ["li"; "dt"; "dd"]
+            )
+        lists 
+        |> List.map (fun (name, listnode, rows) ->
+                 { Name = name
+                   Headers = [|"List Value"|]
+                   Rows = rows |> List.map (fun r -> [| r.InnerText |]) |> List.toArray
+                   Html = listnode })
+
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
 
     member x.Html = doc
