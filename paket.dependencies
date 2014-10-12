@@ -10,3 +10,5 @@ nuget Nancy.Hosting.Self
 nuget FAKE
 nuget SourceLink.Fake 
 nuget Nuget.CommandLine
+
+github fsharp/FAKE modules/Octokit/Octokit.fsx
