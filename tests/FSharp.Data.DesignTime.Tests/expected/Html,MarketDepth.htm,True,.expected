@@ -40,22 +40,14 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Period", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("IMBALNGC", TextRuntime.ConvertDecimal("", value), value),
-                                        let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Offer Volume", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[4])
-                                        TextRuntime.GetNonOptionalValue("Bid Volume", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[5])
-                                        TextRuntime.GetNonOptionalValue("Accepted Offer Vol", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[6])
-                                        TextRuntime.GetNonOptionalValue("Accepted Bid Vol", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[7])
-                                        TextRuntime.GetNonOptionalValue("UAOV", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[8])
-                                        TextRuntime.GetNonOptionalValue("UABV", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[9])
-                                        TextRuntime.GetNonOptionalValue("PAOV", TextRuntime.ConvertFloat("", "", value), value),
-                                        let value = TextConversions.AsString(row.[10])
-                                        TextRuntime.GetNonOptionalValue("PABV", TextRuntime.ConvertFloat("", "", value), value))
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[3])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[4])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[5])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[6])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[7])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[8])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[9])),
+                                        TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[10])))
     HtmlTable<_>.Create(rowConverter, this, "Table1")
 
 
@@ -63,26 +55,26 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
 class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table1+Row : System.DateTime * int * decimal * float * float * float * float * float * float * float * float
-    member ``Accepted Bid Vol``: float with get
+class HtmlProvider+Table1+Row : System.DateTime * int * decimal * decimal option * decimal option * decimal option * decimal option * decimal option * decimal option * decimal option * decimal option
+    member ``Accepted Bid Vol``: decimal option with get
     (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7)
 
-    member ``Accepted Offer Vol``: float with get
+    member ``Accepted Offer Vol``: decimal option with get
     (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6)
 
-    member ``Bid Volume``: float with get
+    member ``Bid Volume``: decimal option with get
     (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5)
 
     member IMBALNGC: decimal with get
     (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3)
 
-    member ``Offer Volume``: float with get
+    member ``Offer Volume``: decimal option with get
     (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4)
 
-    member PABV: float with get
+    member PABV: decimal option with get
     (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
 
-    member PAOV: float with get
+    member PAOV: decimal option with get
     (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10)
 
     member Period: int with get
@@ -91,10 +83,10 @@ class HtmlProvider+Table1+Row : System.DateTime * int * decimal * float * float 
     member ``Settlement Day``: System.DateTime with get
     (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1)
 
-    member UABV: float with get
+    member UABV: decimal option with get
     (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9)
 
-    member UAOV: float with get
+    member UAOV: decimal option with get
     (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8)
 
 

@@ -9,10 +9,10 @@ module FSharp.Data.DesignTime.Tests.InferenceTests
 open FsUnit
 open System
 open System.Globalization
-open System.IO
 open NUnit.Framework
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.CsvInference
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
@@ -24,7 +24,9 @@ let SimpleCollection typ =
 
 let culture = TextRuntime.GetCulture ""
 
-let inferType = CsvInference.inferType ProvidedMeasureBuilder.Default.SI
+let inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
+    let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema (Some ProviderHelpers.unitsOfMeasureProvider)
+    inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues cultureInfo assumeMissingValues preferOptionals
 
 let toRecord fields = InferedType.Record(None, fields, false)
 

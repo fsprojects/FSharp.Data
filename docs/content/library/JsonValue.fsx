@@ -1,5 +1,5 @@
 ﻿(**
-# F# Data: JSON Parser and Reader
+# F# Data: JSON Parser
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
 in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 

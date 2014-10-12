@@ -1,19 +1,15 @@
 ﻿(** 
-# F# Data: Html Parser
+# F# Data: HTML Parser
 
 This article demonstrates how to use the HTML Parser to parse HTML files.
-*)
 
-#r "../../../bin/FSharp.Data.dll"
-open FSharp.Data
-
-(**
 The HTML parser takes any fragment of HTML, uri or a stream and trys to parse it into a DOM. 
 The parser is based on the [HTML Living Standard](http://www.whatwg.org/specs/web-apps/current-work/multipage/index.html#contents)
 Once a document/fragment has been parsed, a set of extension methods over the HTML Dom elements allow you to extract information from a web page
 independently of the actual HTML Type provider.
 *)
 
+#r "../../../bin/FSharp.Data.dll"
 open FSharp.Data
 
 (**
@@ -53,7 +49,7 @@ let searchResults =
     links
     |> Seq.filter (fun (name, url) -> 
                     name <> "Cached" && name <> "Similar" && url.StartsWith("/url?"))
-    |> Seq.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&amp;sa=")).Replace("/url?q=", ""))
+    |> Seq.map (fun (name, url) -> name, url.Substring(0, url.IndexOf("&sa=")).Replace("/url?q=", ""))
     |> Seq.toArray
 
 (** 

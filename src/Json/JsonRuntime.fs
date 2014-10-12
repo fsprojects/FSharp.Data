@@ -88,7 +88,7 @@ type JsonRuntime =
   // json option -> type
 
   static member ConvertString(cultureStr, json) = 
-    json |> Option.bind (JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)true (TextRuntime.GetCulture cultureStr))
+    json |> Option.bind (JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr))
   
   static member ConvertInteger(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsInteger (TextRuntime.GetCulture cultureStr))
@@ -184,7 +184,7 @@ type JsonRuntime =
         JsonConversions.AsBoolean (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.String -> 
-        JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)true (TextRuntime.GetCulture cultureStr)
+        JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr)
         >> Option.isSome
     | InferedTypeTag.DateTime -> 
         JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr)

@@ -1,30 +1,30 @@
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
+    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
+    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, "", "", ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    TypedHtmlDocument.Create(false, "", "", reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, "", "", ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
@@ -35,7 +35,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Top250: HtmlProvider+Top250 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertFloat("", "", value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Rank & Title", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
@@ -43,7 +43,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Your Rating", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
-                                        TextRuntime.GetNonOptionalValue("Column5", TextRuntime.ConvertFloat("", "", value), value))
+                                        TextRuntime.GetNonOptionalValue("Column5", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Top 250")
 
 
@@ -51,11 +51,11 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
 class HtmlProvider+Top250 : FDR.HtmlTable<HtmlProvider+Top250+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Top250+Row : float * string * decimal * string * float
-    member Column1: float with get
+class HtmlProvider+Top250+Row : string * string * decimal * string * string
+    member Column1: string with get
     (let t1,_,_,_,_ = this in t1)
 
-    member Column5: float with get
+    member Column5: string with get
     (let _,_,_,_,t5 = this in t5)
 
     member ``IMDb Rating``: decimal with get
