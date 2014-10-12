@@ -338,8 +338,8 @@ let ``Ignores spurious closing tags``() =
     </span>
   </a>
 </li>"""
-    let result = (HtmlDocument.Parse html).ToString()
-    result |> shouldEqual expected
+    let result = (HtmlDocument.Parse html).ToString().Replace("\r", null)
+    result |> shouldEqual <| expected.Replace("\r", null)
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() =
