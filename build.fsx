@@ -29,9 +29,9 @@ let summary = "Library of F# type providers and data access tools"
 let description = """
   The F# Data library (FSharp.Data.dll) implements everything you need to access data
   in your F# applications and scripts. It implements F# type providers for working with
-  structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase
-  data. It also includes helpers for parsing JSON and CSV files and for sending HTTP requests."""
-let tags = "F# fsharp data typeprovider WorldBank Freebase CSV XML JSON HTTP"
+  structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank and Freebase
+  data. It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
+let tags = "F# fsharp data typeprovider WorldBank Freebase CSV HTML JSON XML HTTP"
 
 let gitHome = "https://github.com/fsharp"
 let gitName = "FSharp.Data"
@@ -95,19 +95,27 @@ Target "CleanInternetCaches" <| fun () ->
 // --------------------------------------------------------------------------------------
 // Build library & test projects
 
-let runningOnMono = Type.GetType("Mono.Runtime") <> null
-let runningOnTeamCity = buildServer = TeamCity
-
 Target "Build" <| fun () ->
-    (if runningOnMono then (!! "FSharp.Data.sln") else (!! "FSharp.Data.sln" ++ "FSharp.Data.ExtraPlatforms.sln"))
+    !! "FSharp.Data.sln"
+#if MONO
+#else
+    ++ "FSharp.Data.Portable7.sln"
+#endif
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" (if runningOnMono then ["DefineConstants","MONO"]
-                             elif runningOnTeamCity then ["DefineConstants","TEAM_CITY"]
-                             else []) "Rebuild"
+    |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
+    |> ignore
+
+Target "BuildConsoleTests" <| fun () ->
+    !! "TestApps.Console.sln"
+//#if MONO
+//#else
+//    ++ "TestApps.Console.Portable7.sln"
+//#endif
+    |> MSBuildReleaseExt "" (if buildServer = TeamCity then ["DefineConstants","TEAM_CITY"] else []) "Rebuild"
     |> ignore
 
 // --------------------------------------------------------------------------------------
@@ -123,12 +131,17 @@ let runTestTask name =
                 DisableShadowCopy = true
                 TimeOut = TimeSpan.FromMinutes 20.
                 Framework = "4.0"
-                Domain = "Multiple"
+                Domain = MultipleDomainModel
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore
 
 ["FSharp.Data.Tests";"FSharp.Data.DesignTime.Tests"]
 |> List.iter runTestTask
+
+// Run the console tests
+Target "RunConsoleTests" (fun _ ->
+    [ for consoleTest in !! "tests/TestApps/*/bin/Release/*.exe" -> consoleTest, "" ]
+    |> ProcessTestRunner.RunConsoleTests (fun p -> { p with TimeOut = TimeSpan.FromMinutes 1. } ))
 
 // --------------------------------------------------------------------------------------
 // Source link the pdb files
@@ -153,9 +166,9 @@ Target "SourceLink" <| fun () ->
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
-    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
-    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.*.DesignTime.*")
+    CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 
@@ -225,8 +238,10 @@ Target "Help" <| fun () ->
     printfn "  Targets for building:"
     printfn "  * Build"
     printfn "  * BuildTests"
+    printfn "  * BuildConsoleTests"
     printfn "  * RunTests"
-    printfn "  * All (calls previous 3)"
+    printfn "  * RunConsoleTests"
+    printfn "  * All (calls previous 5)"
     printfn ""
     printfn "  Targets for releasing (requires write access to the 'https://github.com/fsharp/FSharp.Data.git' repository):"
     printfn "  * GenerateDocs"
@@ -248,6 +263,8 @@ Target "All" DoNothing
 "Clean" ==> "AssemblyInfo" ==> "Build"
 "Build" ==> "All"
 "BuildTests" ==> "All"
+"BuildConsoleTests" ==> "All"
 "RunTests" ==> "All"
+"RunConsoleTests" ==> "All"
 
 RunTargetOrDefault "Help"

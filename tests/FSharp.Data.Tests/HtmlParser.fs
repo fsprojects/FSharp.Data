@@ -1,21 +1,17 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
-#r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.HtmlParser
 #endif
 
 open NUnit.Framework
-open FSharp.Data
 open FsUnit
-open System.Xml
-open System.Xml.Linq
-open System.Text
-open System.IO
+open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.HtmlDocument
+open FSharp.Data.HtmlNode
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
@@ -32,29 +28,42 @@ let ``Can handle unclosed tags correctly``() =
                             </table>
                         </body>
                     </html>"""
-    let result = HtmlParser.parse simpleHtml |> Option.get
+    let result = HtmlDocument.Parse simpleHtml
     let expected = 
-        HtmlDocument("", 
+        createDoc "" 
          [
-           HtmlElement("html", [] ,
+           createElement "html" []
             [
-               HtmlElement("head", [], 
+               createElement "head" [] 
                 [
-                    HtmlElement("script", [HtmlAttribute("src","/bwx_generic.js");HtmlAttribute("language","JavaScript")], [])
-                    HtmlElement("link", [HtmlAttribute("href","/bwx_style.css");HtmlAttribute("type","text/css");HtmlAttribute("rel","stylesheet")], [])
-                ])
-               HtmlElement("body", [],
+                    createElement "script" [
+                                      "language","JavaScript"
+                                      "src","/bwx_generic.js"
+                                     ] []
+                    createElement "link" [
+                                      "rel","stylesheet"
+                                      "type","text/css"
+                                      "href","/bwx_style.css"
+                                   ][]
+                ]
+               createElement "body" []
                 [
-                    HtmlElement("img", [HtmlAttribute("src", "myimg.jpg")], [])
-                    HtmlElement("table", [HtmlAttribute("title", "table")],
+                    createElement "img" ["src", "myimg.jpg"] []
+                    createElement "table" ["title", "table"]
                      [
-                        HtmlElement("tr", [], [HtmlElement("th", [],[HtmlText("Column 1")]); HtmlElement("th", [], [HtmlText("Column 2")])])
-                        HtmlElement("tr", [], [HtmlElement("td", [],[HtmlText("1")]); HtmlElement("td", [], [HtmlText("yes")])])
-                     ])    
-                ])
-            ])
-        ])
+                        createElement "tr" [] [createElement "th" [] [createText "Column 1"]; createElement "th" [] [createText "Column 2"]]
+                        createElement "tr" [] [createElement "td" [] [createText "1"]; createElement "td" [] [createText "yes"]]
+                     ]    
+                ]
+            ]
+        ]
     result |> should equal expected
+
+[<Test>]
+let ``Can handle multiple char refs in a text run``() = 
+    let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
+    let result = html.Head.InnerText 
+    result |> should equal "\"Foo\""
 
 [<Test>]
 let ``Can parse tables from a simple html``() = 
@@ -66,7 +75,7 @@ let ``Can parse tables from a simple html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -74,21 +83,69 @@ let ``Can parse tables from a simple html``() =
     (tables.[0].Rows.[0]) |> should equal ["1"]
 
 [<Test>]
-let ``Can parse tables from a simple html table with no defined headers``() = 
+let ``Can parse tables from a simple html table but infer headers``() = 
     let html = """<html>
                     <body>
                         <table id="table">
                             <tr><td>Column 1</td></tr>
                             <tr><td>1</td></tr>
+                            <tr><td>2</td></tr>
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+[<Test>]
+let ``Ignores empty tables``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+
+    tables.Length |> should equal 0
+
+[<Test>]
+let ``Can parse tables with no headers``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                            <tr><td>2</td></tr>
+                            <tr><td>1</td></tr>
+                            <tr><td>3</td></tr>
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "table"
+    tables.[0].Headers |> should equal ["Column1"]
+    (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
+
+[<Test>]
+let ``Can parse tables with no headers and only 2 rows``() = 
+    let html = """<html>
+                    <body>
+                        <table id="table">
+                            <tr><td>1</td></tr>
+                            <tr><td>3</td></tr>
+                        </table>
+                    </body>
+                </html>"""
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
+
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "table"
+    tables.[0].Headers |> should equal ["Column1"]
+    (tables.[0].Rows) |> should equal [["1"]; ["3"]]
 
 [<Test>]
 let ``Extracts table when title attribute is set``() = 
@@ -100,7 +157,7 @@ let ``Extracts table when title attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html) |> Seq.toList
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -115,7 +172,7 @@ let ``Extracts table when name attribute is set``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html) |> Seq.toList
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
@@ -130,7 +187,7 @@ let ``When mutiple identifying attributes are set the id attribute is selected``
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_id"
@@ -145,7 +202,7 @@ let ``When mutiple identifying attributes are set but not the id attribute is th
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table_name"
@@ -160,7 +217,7 @@ let ``Extracts tables without an id title or name attribute``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
     tables.Length |> should equal 1
 
 [<Test>]
@@ -185,7 +242,7 @@ let ``Extracts data and headers with thead and tbody``() =
                       </tr>
                     </tbody>
                   </table>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
     tables.[0].Headers |> should equal ["Month";"Savings"]
@@ -203,9 +260,90 @@ let ``Extracts tables in malformed html``() =
                         </table>
                     </body>
                 </html>"""
-    let tables = (Html.Table.parse html)
+    let tables = html |> HtmlDocument.Parse |> HtmlRuntime.getTables true
 
     tables.Length |> should equal 1
-    tables.[0].Name |> should equal "Table_0"
+    tables.[0].Name |> should equal "Table1"
     tables.[0].Headers |> should equal ["Column 1"]
     (tables.[0].Rows.[0]) |> should equal ["1"]
+
+
+[<Test>]
+let ``Can handle html with doctype and xml namespaces``() = 
+    let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
+    let htmlDoc = HtmlDocument.Parse html
+    let expected = 
+            createDoc "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
+             [
+               createElement "html" ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"]
+                [
+                   createElement "body" []
+                    [
+                       createText "content"
+                    ]
+                ]
+            ]
+    expected |> should equal htmlDoc
+
+[<Test>]
+let ``Can find header when nested in a div``() = 
+    let tables = 
+        HtmlDocument.Load "data/wimbledon_wikipedia.html" 
+        |> HtmlRuntime.getTables false
+        |> List.map (fun t -> t.Name, t)
+        |> Map.ofList
+    
+    Map.containsKey "Ranking points[edit]" tables |> should equal true
+    Map.containsKey "Records[edit]" tables |> should equal true
+    Map.containsKey "Current champions[edit]" tables |> should equal true
+
+[<Test>]
+let ``Can parse tables imdb chart``() = 
+    let imdb = HtmlDocument.Load "data/imdb_chart.htm"
+    let tables = imdb |> HtmlRuntime.getTables false
+    tables.Length |> should equal 1
+    tables.[0].Name |> should equal "Top 250"
+    tables.[0].Rows.Length |> should equal 250
+
+[<Test>]
+let ``Can parse tables ebay cars``() = 
+    let ebay = HtmlDocument.Load "data/ebay_cars.htm"
+    true |> should equal true
+
+[<Test>]
+let ``Does not crash when parsing us presidents``() =
+    let table = HtmlDocument.Load "data/us_presidents_wikipedia.html" |> HtmlRuntime.getTables false
+    true |> should equal true
+
+[<Test>]
+let ``Can parse non-self-closing tags of elements that can't have children when followed by comments``() =
+    let html = """<hr class="hr4"><!--comment1--><!--comment2--><hr class="hr5" />"""
+    let expected = """<hr class="hr4" /><!--comment1--><!--comment2--><hr class="hr5" />"""
+    let result = (HtmlDocument.Parse html).ToString()
+    result |> shouldEqual expected
+
+[<Test>]
+let ``Ignores spurious closing tags``() =
+    let html = 
+        """<li class="even"><a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep"><span class="time em">21:36<br /><small>On time</small></span></span><span class="station">Brighton (East Sussex)</span><span class="platform"><small>Platform</small><br />17</span></a></li>"""
+    let expected = """<li class="even">
+  <a class="clr" href="/pj/ldbdetails/kEW6eAApVxWdogIXhoHAew%3D%3D/?board=dep">
+    <span class="time em">
+      21:36
+<small>On time</small>
+    </span><span class="station">Brighton (East Sussex)</span>
+    <span class="platform">
+      <small>Platform</small>
+17
+    </span>
+  </a>
+</li>"""
+    let result = (HtmlDocument.Parse html).ToString().Replace("\r", null)
+    result |> shouldEqual <| expected.Replace("\r", null)
+
+[<Test>]
+let ``Can parse national rail mobile site correctly``() =
+    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed false ["li"] |> List.length |> should equal 68
+    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"] |> List.length |> should equal 23
+    HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 69
+    HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 27

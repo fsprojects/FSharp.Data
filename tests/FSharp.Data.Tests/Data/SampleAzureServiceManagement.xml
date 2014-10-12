@@ -1,0 +1,45 @@
+<Locations xmlns="http://schemas.microsoft.com/windowsazure" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Location>
+        <Name>South Central US</Name>
+        <DisplayName>South Central US</DisplayName>
+        <AvailableServices>
+            <AvailableService>Compute</AvailableService>
+            <AvailableService>Storage</AvailableService>
+        </AvailableServices>
+        <ComputeCapabilities>
+            <WebWorkerRoleSizes>
+                <RoleSize>A5</RoleSize>
+                <RoleSize>A6</RoleSize>
+                <RoleSize>Standard_D3</RoleSize>
+                <RoleSize>Standard_D4</RoleSize>
+            </WebWorkerRoleSizes>
+            <VirtualMachinesRoleSizes>
+                <RoleSize>A5</RoleSize>
+                <RoleSize>A6</RoleSize>
+                <RoleSize>Standard_D3</RoleSize>
+                <RoleSize>Standard_D4</RoleSize>
+            </VirtualMachinesRoleSizes>
+        </ComputeCapabilities>
+    </Location>
+    <Location>
+        <Name>Central US</Name>
+        <DisplayName>Central US</DisplayName>
+        <AvailableServices>
+            <AvailableService>Compute</AvailableService>
+            <AvailableService>Storage</AvailableService>
+            <AvailableService>PersistentVMRole</AvailableService>
+            <AvailableService>HighMemory</AvailableService>
+        </AvailableServices>
+        <ComputeCapabilities>
+            <WebWorkerRoleSizes>
+                <RoleSize>A5</RoleSize>
+                <RoleSize>A6</RoleSize>
+                <RoleSize>A7</RoleSize>
+            </WebWorkerRoleSizes>
+            <VirtualMachinesRoleSizes>
+                <RoleSize>A5</RoleSize>
+                <RoleSize>A6</RoleSize>
+            </VirtualMachinesRoleSizes>
+        </ComputeCapabilities>
+    </Location>
+</Locations>

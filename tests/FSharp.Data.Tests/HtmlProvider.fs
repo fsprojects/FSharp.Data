@@ -1,6 +1,5 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../bin/FSharp.Data.Experimental.dll"
 #r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
@@ -9,13 +8,9 @@ module FSharp.Data.Tests.HtmlProvider
 #endif
 
 open NUnit.Framework
-open FSharp.Data
 open FsUnit
-open System.Xml
-open System.Xml.Linq
-open System.Text
-open System.IO
-open FSharp.Data.Runtime
+open System
+open FSharp.Data
 
 [<Literal>]
 let simpleHtml = """<html>
@@ -30,43 +25,81 @@ let simpleHtml = """<html>
                     </body>
                 </html>"""
 
-type SimpleHtml = HtmlTableProvider<simpleHtml, PreferOptionals=true>
+type SimpleHtml = HtmlProvider<simpleHtml, PreferOptionals=true>
 
 [<Test>]
 let ``SimpleHtml infers date type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].Date |> should equal (System.DateTime(2013, 01, 01, 12, 00, 00))
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].Date |> should equal (DateTime(2013, 01, 01, 12, 00, 00))
 
 [<Test>]
 let ``SimpleHtml infers int type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 1`` |> should equal 1
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].``Column 1`` |> should equal 1
 
 [<Test>]
 let ``SimpleHtml infers bool type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 2`` |> should equal true
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].``Column 2`` |> should equal true
 
 [<Test>]
 let ``SimpleHtml infers decimal type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 3`` |> should equal 2M
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
 let ``SimpleHtml infers as optional fail through type correctly ``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 4`` |> should equal (Some 2M)
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].``Column 4`` |> should equal (Some 2M)
 
 [<Test>]
 let ``Can create type for simple table``() = 
-    let html = SimpleHtml.Tables.table.Load(simpleHtml)
-    html.Data.[0].``Column 1`` |> should equal 1
+    let table = SimpleHtml().Tables.Table
+    table.Rows.[0].``Column 1`` |> should equal 1
 
-
-type MarketDepth = HtmlTableProvider<"data/marketdepth.htm">
+type MarketDepth = HtmlProvider<"data/marketdepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
-    let table = MarketDepth.Tables.Table_2.Load("file://data/marketdepth.htm")
-    table.Data.[0].``Settlement Day`` |> should equal (System.DateTime(2014, 1, 14, 0, 0,0))
-    table.Data.[0].Period |> should equal 1
+    let table = MarketDepth().Tables.Table1
+    table.Rows.[0].``Settlement Day`` |> should equal (DateTime(2014, 1, 14, 0, 0,0))
+    table.Rows.[0].Period |> should equal 1
+
+[<Test>]
+let ``NuGet table gets all rows``() =
+    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.VersionHistory
+    table.Rows.Length |> should equal 35
+
+[<Test>]
+let ``Should find the table as a header``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <div>
+                            <h2>Example Table</h2>
+                        </div>
+                        <table>
+                            <tr><th>Date</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Column 4</th></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td><td>2</td></tr>
+                        </table>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().Tables.ExampleTable
+    table.Rows.[0].``Column 3`` |> should equal 2M
+
+[<Test>]
+let ``Should find the table as a header when nested deeper``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <div>
+                            <h2>
+                                <a href="/I/go/somewhere/">
+                                Example Table
+                                </a>
+                            </h2>
+                        </div>
+                        <table>
+                            <tr><th>Date</th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Column 4</th></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td><td>2</td></tr>
+                        </table>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().Tables.ExampleTable
+    table.Rows.[0].``Column 3`` |> should equal 2M

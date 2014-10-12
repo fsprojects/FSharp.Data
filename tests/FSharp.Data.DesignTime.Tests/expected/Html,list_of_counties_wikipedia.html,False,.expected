@@ -1,0 +1,195 @@
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider : FDR.TypedHtmlDocument
+    new : () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html"), f)
+
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    TypedHtmlDocument.Create(false, reader)
+
+    static member Load: uri:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+
+    member Tables: HtmlProvider+TableContainer with get
+    this
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
+    member ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit: HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Rank", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Built-up area[3]", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Population (2011 Census)[3]", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Area (km�)[3]", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[4])
+                                        TextRuntime.GetNonOptionalValue("Density (People/km�)[3]", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[5])
+                                        TextRuntime.GetNonOptionalValue("Major subdivisions[3]", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[6])
+                                        TextRuntime.GetNonOptionalValue("Metropolitan Area[4][5]", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[7])
+                                        TextRuntime.GetNonOptionalValue("Notable changes between 2001 and 2011 censuses [6]", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous built-up areas in England and Wales[edit]")
+
+    member ListOfMostPopulousUrbanAreasInNorthernIrelandEdit: HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Rank", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Urban Area[9]", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Population (2001 Census)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Area (km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[4])
+                                        TextRuntime.GetNonOptionalValue("Density (People/km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[5])
+                                        TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[6])
+                                        TextRuntime.GetNonOptionalValue("Metropolitan Area[4][5]", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Northern Ireland[edit]")
+
+    member ListOfMostPopulousUrbanAreasInScotlandEdit: HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Rank", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Urban Area[8]", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Population (2001 Census)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Area (km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[4])
+                                        TextRuntime.GetNonOptionalValue("Density (People/km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        let value = TextConversions.AsString(row.[5])
+                                        TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[6])
+                                        TextRuntime.GetNonOptionalValue("Metropolitan Area[4][5]", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Scotland[edit]")
+
+    member Table5: HtmlProvider+Table5 with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("List of settlements in the United Kingdom2", TextRuntime.ConvertFloat("", "", value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Table5")
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
+    member ``Area (km�)[3]``: decimal with get
+    (let _,_,_,t4,_,_,_,_ = this in t4)
+
+    member ``Built-up area[3]``: string with get
+    (let _,t2,_,_,_,_,_,_ = this in t2)
+
+    member ``Density (People/km�)[3]``: decimal with get
+    (let _,_,_,_,t5,_,_,_ = this in t5)
+
+    member ``Major subdivisions[3]``: string with get
+    (let _,_,_,_,_,t6,_,_ = this in t6)
+
+    member ``Metropolitan Area[4][5]``: string with get
+    (let _,_,_,_,_,_,t7,_ = this in t7)
+
+    member ``Notable changes between 2001 and 2011 censuses [6]``: string with get
+    (let _,_,_,_,_,_,_,t8 = this in t8)
+
+    member ``Population (2011 Census)[3]``: decimal with get
+    (let _,_,t3,_,_,_,_,_ = this in t3)
+
+    member Rank: int with get
+    (let t1,_,_,_,_,_,_,_ = this in t1)
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int * string * decimal * decimal * decimal * string * string
+    member ``Area (km�)``: decimal with get
+    (let _,_,_,t4,_,_,_ = this in t4)
+
+    member ``Density (People/km�)``: decimal with get
+    (let _,_,_,_,t5,_,_ = this in t5)
+
+    member ``Major subdivisions``: string with get
+    (let _,_,_,_,_,t6,_ = this in t6)
+
+    member ``Metropolitan Area[4][5]``: string with get
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member ``Population (2001 Census)``: decimal with get
+    (let _,_,t3,_,_,_,_ = this in t3)
+
+    member Rank: int with get
+    (let t1,_,_,_,_,_,_ = this in t1)
+
+    member ``Urban Area[9]``: string with get
+    (let _,t2,_,_,_,_,_ = this in t2)
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string * decimal * decimal * decimal * string * string
+    member ``Area (km�)``: decimal with get
+    (let _,_,_,t4,_,_,_ = this in t4)
+
+    member ``Density (People/km�)``: decimal with get
+    (let _,_,_,_,t5,_,_ = this in t5)
+
+    member ``Major subdivisions``: string with get
+    (let _,_,_,_,_,t6,_ = this in t6)
+
+    member ``Metropolitan Area[4][5]``: string with get
+    (let _,_,_,_,_,_,t7 = this in t7)
+
+    member ``Population (2001 Census)``: decimal with get
+    (let _,_,t3,_,_,_,_ = this in t3)
+
+    member Rank: int with get
+    (let t1,_,_,_,_,_,_ = this in t1)
+
+    member ``Urban Area[8]``: string with get
+    (let _,t2,_,_,_,_,_ = this in t2)
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Table5+Row : string * float
+    member ``List of settlements in the United Kingdom``: string with get
+    (let t1,_ = this in t1)
+
+    member ``List of settlements in the United Kingdom2``: float with get
+    (let _,t2 = this in t2)
+
+

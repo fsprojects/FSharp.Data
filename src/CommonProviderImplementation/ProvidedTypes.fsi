@@ -53,7 +53,7 @@ type ProvidedConstructor =
     /// Set a flag indicating that the constructor acts like an F# implicit constructor, so the
     /// parameters of the constructor become fields and can be accessed using Expr.GlobalVar with the
     /// same name.
-    member IsImplicitCtor : bool with set
+    member IsImplicitCtor : bool with get,set
 
     /// Add definition location information to the provided constructor.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
@@ -96,6 +96,9 @@ type ProvidedMethod =
     /// Add definition location information to the provided type definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
 
+    /// Add a custom attribute to the provided method definition.
+    member AddCustomAttribute : CustomAttributeData -> unit
+
 
 
 /// Represents an erased provided property.
@@ -130,6 +133,9 @@ type ProvidedProperty =
 
     /// Add definition location information to the provided type definition.
     member AddDefinitionLocation : line:int * column:int * filePath:string -> unit
+
+    /// Add a custom attribute to the provided property definition.
+    member AddCustomAttribute : CustomAttributeData -> unit
 
 /// Represents an erased provided property.
 type ProvidedEvent =
@@ -346,6 +352,9 @@ type ProvidedTypeDefinition =
     /// Suppress System.Object entries in intellisense menus in instances of this provided type 
     member HideObjectMethods  : bool with set
 
+    /// Disallows the use of the null literal. 
+    member NonNullable : bool with set
+
     /// Get or set a flag indicating if the ProvidedTypeDefinition is erased
     member IsErased : bool  with get,set
 
@@ -355,6 +364,9 @@ type ProvidedTypeDefinition =
 
     /// FSharp.Data addition: this method is used by Debug.fs
     member MakeParametricType : name:string * args:obj[] -> ProvidedTypeDefinition
+
+    /// Add a custom attribute to the provided type definition.
+    member AddCustomAttribute : CustomAttributeData -> unit
 
     /// FSharp.Data addition: this method is used by Debug.fs and QuotationBuilder.fs
     /// Emulate the F# type provider type erasure mechanism to get the 
@@ -417,5 +429,8 @@ type TypeProviderForNamespaces =
     /// Registers location of RuntimeAssembly (from TypeProviderConfig) as probing folder
     member RegisterRuntimeAssemblyLocationAsProbingFolder : cfg : Core.CompilerServices.TypeProviderConfig -> unit
 #endif
+
+    [<CLIEvent>]
+    member Disposing : IEvent<EventHandler,EventArgs>
 
     interface ITypeProvider

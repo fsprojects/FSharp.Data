@@ -1,20 +1,15 @@
 ﻿#if INTERACTIVE
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.DesignTime.Tests.SignatureTests
 #endif
 
-open System
 open System.IO
-open System.Net
 open FsUnit
 open NUnit.Framework
 open ProviderImplementation
-
-//alow tests that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 let (++) a b = Path.Combine(a, b)
 
@@ -62,7 +57,6 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 47 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump resolutionFolder "" portable47RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
 

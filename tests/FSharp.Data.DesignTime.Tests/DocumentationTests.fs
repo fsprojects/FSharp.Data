@@ -1,13 +1,13 @@
 ﻿#if INTERACTIVE
-#I "../../packages/FSharp.Formatting.2.4.0/lib/net40"
-#I "../../packages/RazorEngine.3.3.0/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FSharp.Compiler.Service.0.0.20/lib/net40/FSharp.Compiler.Service.dll"
+#I "../../packages/FSharp.Formatting/lib/net40"
+#I "../../packages/RazorEngine/lib/net40/"
+#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
+#r "../../packages/FSharp.Compiler.Service/lib/net40/FSharp.Compiler.Service.dll"
 #r "RazorEngine.dll"
 #r "FSharp.Literate.dll"
 #r "FSharp.CodeFormat.dll"
 #r "FSharp.MetadataFormat.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.DesignTime.Tests.DocumentationTests
@@ -15,15 +15,9 @@ module FSharp.Data.DesignTime.Tests.DocumentationTests
 
 open FsUnit
 open NUnit.Framework
-open System
 open System.IO
-open System.Net
-open System.Reflection
 open FSharp.Literate
 open FSharp.CodeFormat
-
-// Alow tests that access the network to work when you're behind a proxy
-WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
 
 // Initialization of the test - lookup the documentation files,
 // create temp folder for the output and load the F# compiler DLL
@@ -45,12 +39,21 @@ let processFile file =
   let dir = Path.GetDirectoryName(Path.Combine(output, file))
   if not (Directory.Exists(dir)) then Directory.CreateDirectory(dir) |> ignore
 
+  let evaluationErrors = ResizeArray()
+#if INTERACTIVE
+  let fsiEvaluator = FsiEvaluator()
+  fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
+  let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
+#else
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
-  literateDoc.Errors 
-  |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
-    if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
-      Some <| sprintf "%A %s (%s)" (startl, endl) msg file
-    else None)
+#endif
+  Seq.append
+    (literateDoc.Errors 
+     |> Seq.choose (fun (SourceError(startl, endl, kind, msg)) ->
+       if msg <> "Multiple references to 'mscorlib.dll' are not permitted" then
+         Some <| sprintf "%A %s (%s)" (startl, endl) msg file
+       else None))
+    (evaluationErrors |> Seq.map (fun x -> x.ToString()))
   |> String.concat "\n"
 
 // ------------------------------------------------------------------------------------

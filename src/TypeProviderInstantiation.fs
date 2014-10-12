@@ -9,8 +9,7 @@ open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
 type CsvProviderArgs = 
     { Sample : string
-      Separator : string
-      Culture : string
+      Separators : string
       InferRows : int
       Schema : string
       HasHeaders : bool
@@ -20,21 +19,40 @@ type CsvProviderArgs =
       Quote : char
       MissingValues : string
       CacheRows : bool
-      ResolutionFolder : string }
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type XmlProviderArgs = 
     { Sample : string
       SampleIsList : bool
       Global : bool
       Culture : string
-      ResolutionFolder : string }
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
 
 type JsonProviderArgs = 
     { Sample : string
       SampleIsList : bool
       RootName : string
       Culture : string
-      ResolutionFolder : string }
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string 
+      InferTypesFromValues : bool }
+
+type HtmlProviderArgs = 
+    { Sample : string
+      PreferOptionals : bool
+      IncludeLayoutTables : bool
+      MissingValues : string
+      Culture : string
+      Encoding : string
+      ResolutionFolder : string
+      EmbeddedResource : string }
 
 type WorldBankProviderArgs =
     { Sources : string
@@ -55,6 +73,7 @@ type TypeProviderInstantiation =
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
+    | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs
 
@@ -64,8 +83,7 @@ type TypeProviderInstantiation =
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
-                   box x.Separator
-                   box x.Culture
+                   box x.Separators
                    box x.InferRows
                    box x.Schema
                    box x.HasHeaders
@@ -75,21 +93,40 @@ type TypeProviderInstantiation =
                    box x.Quote
                    box x.MissingValues
                    box x.CacheRows
-                   box x.ResolutionFolder |] 
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |] 
             | Xml x ->
                 (fun cfg -> new XmlProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.Global
                    box x.Culture
-                   box x.ResolutionFolder |] 
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
                    box x.SampleIsList
                    box x.RootName
                    box x.Culture
-                   box x.ResolutionFolder|] 
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource
+                   box x.InferTypesFromValues |] 
+            | Html x -> 
+                (fun cfg -> new HtmlProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.Sample
+                   box x.PreferOptionals
+                   box x.IncludeLayoutTables
+                   box x.MissingValues
+                   box x.Culture
+                   box x.Encoding
+                   box x.ResolutionFolder 
+                   box x.EmbeddedResource |]
             | WorldBank x ->
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
@@ -112,23 +149,32 @@ type TypeProviderInstantiation =
         | Csv x -> 
             ["Csv"
              x.Sample
-             x.Separator
-             x.Culture
+             x.Separators
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
              x.AssumeMissingValues.ToString()
-             x.PreferOptionals.ToString()]
+             x.PreferOptionals.ToString()
+             x.MissingValues
+             x.Culture
+             x.Encoding ]
         | Xml x -> 
             ["Xml"
              x.Sample
              x.SampleIsList.ToString()
              x.Global.ToString()
-             x.Culture]
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
         | Json x -> 
             ["Json"
              x.Sample
              x.SampleIsList.ToString()
              x.RootName
+             x.Culture
+             x.InferTypesFromValues.ToString() ]
+        | Html x -> 
+            ["Html"
+             x.Sample
+             x.PreferOptionals.ToString()
              x.Culture]
         | WorldBank x -> 
             ["WorldBank"
@@ -162,30 +208,47 @@ type TypeProviderInstantiation =
         match args.[0] with
         | "Csv" ->
             Csv { Sample = args.[1]
-                  Separator = args.[2]
-                  Culture = args.[3]
+                  Separators = args.[2]
                   InferRows = Int32.MaxValue
-                  Schema = args.[4].Replace(';', ',')
-                  HasHeaders = args.[5] |> bool.Parse
+                  Schema = args.[3].Replace(';', ',')
+                  HasHeaders = args.[4] |> bool.Parse
                   IgnoreErrors = false
-                  AssumeMissingValues = args.[6] |> bool.Parse
-                  PreferOptionals = args.[7] |> bool.Parse
+                  AssumeMissingValues = args.[5] |> bool.Parse
+                  PreferOptionals = args.[6] |> bool.Parse
                   Quote = '"'
-                  MissingValues = String.Join(",", TextConversions.DefaultMissingValues)
+                  MissingValues = args.[7]
+                  Culture = args.[8]
+                  Encoding = args.[9]
                   CacheRows = false
-                  ResolutionFolder = "" }
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" }
         | "Xml" ->
             Xml { Sample = args.[1]
                   SampleIsList = args.[2] |> bool.Parse
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
-                  ResolutionFolder = "" }
+                  Encoding = ""
+                  ResolutionFolder = ""
+                  EmbeddedResource = "" 
+                  InferTypesFromValues = args.[5] |> bool.Parse }
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse
                    RootName = args.[3]
                    Culture = args.[4] 
-                   ResolutionFolder = ""}
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" 
+                   InferTypesFromValues = args.[5] |> bool.Parse }
+        | "Html" ->
+            Html { Sample = args.[1]
+                   PreferOptionals = args.[2] |> bool.Parse
+                   IncludeLayoutTables = args.[3] |> bool.Parse
+                   MissingValues = ""
+                   Culture = args.[4] 
+                   Encoding = ""
+                   ResolutionFolder = ""
+                   EmbeddedResource = "" }
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }

@@ -77,13 +77,17 @@ of MSFT stocks changes since the company was founded:
 *)
 
 // Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
+
+(*** define-output:chart1 ***)
 
 // Visualize the stock prices
 [ for row in msft.Rows -> row.Date, row.Open ]
 |> Chart.FastLine
+
+(*** include-it:chart1 ***)
 
 (**
 As a one more example, we use the `Candlestick` chart to get a more detailed look at the
@@ -96,8 +100,12 @@ let recent =
       if row.Date > DateTime.Now.AddDays(-30.0) then
         yield row.Date, row.High, row.Low, row.Open, row.Close ]
 
+(*** define-output:chart2 ***)
+
 // Visualize prices using Candlestick chart
-Chart.Candlestick(recent).WithYAxis(Min = 30.0, Max = 40.0)
+Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+
+(*** include-it:chart2 ***)
 
 (**
 ## Using units of measure
@@ -340,7 +348,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 ## Handling big datasets
 
 By default, the rows are cached so you can iterate over the `Rows` property multiple times without worrying.
-But if you will only iterate once, you can disable caching by settting the `CacheRows` static parameter of `CsvProvider`
+But if you will only iterate once, you can disable caching by setting the `CacheRows` static parameter of `CsvProvider`
 to `false` . If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
@@ -352,9 +360,9 @@ stocks.Take(10).Cache()
 (**
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
+ * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
  * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
    working with CSV documents dynamically.
+ * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 
 *)

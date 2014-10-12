@@ -7,12 +7,14 @@
     <meta name="description" content="@Description">
     <meta name="author" content="@Properties["project-author"]">
 
-    <script src="http://code.jquery.com/jquery-1.8.0.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
-    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <link type="text/css" rel="stylesheet" href="@Root/../content/style.css" />
+    <link type="text/css" rel="stylesheet" href="@Root/../content/fsdata.css" />
     <script type="text/javascript" src="@Root/../content/tips.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -24,10 +26,12 @@
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="http://fsharp.org">fsharp.org</a></li>
-          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png"/> F# Charting</a></li>
-          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png"/> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
         </ul>
-        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a> <a href="@Root/../index.html">(En)</a></h3>
+        <h3 class="muted"><a href="@Root/index.html">@Properties["project-name"]</a></h3>
       </div>
       <hr />
       <div class="row">
@@ -40,7 +44,11 @@
           </a>
 
           <ul class="nav nav-list" id="menu">
-            <li class="nav-header">@Properties["project-name"]</li>
+            <li class="nav-header">
+              <a href="@Root/index.html" class="nflag"><img src="@Root/../images/ja.png" /></a>
+              <a href="@Root/../index.html" class="nflag nflag2"><img src="@Root/../images/en.png" /></a>
+              @Properties["project-name"]
+            </li>
             <li class="divider"></li>
             <li><a href="@Properties["project-nuget"]">NuGet経由でライブラリを取得</a></li>
             <li><a href="@Properties["project-github"]">GitHub上のソースコード</a></li>
@@ -48,13 +56,13 @@
             <li><a href="@Properties["project-github"]/blob/master/RELEASE_NOTES.md">リリースノート</a></li>
             <li><span>
                 <a href="@Root/contributing.html">F# Dataに貢献する</a>
-                (<a href="@Root/../contributing.html">En</a>)
+                (<a href="@Properties["project-github"]/blob/master/CONTRIBUTING.md">En</a>)
                 </span></li>
             
             <li class="nav-header">F# Data ライブラリ</li>
             <li><span>
-                <a href="@Root/fsharpdata.html">はじめに</a>
-                (<a href="@Root/../fsharpdata.html">En</a>)
+                <a href="@Root/index.html">はじめに</a>
+                (<a href="@Root/../index.html">En</a>)
                 </span></li>
             <li class="divider"></li>
             <li><span>
@@ -95,6 +103,11 @@
             <li><span>
                 <a href="@Root/tutorials/JsonToXml.html">JSONとXMLの相互変換</a>
                 (<a href="@Root/../tutorials/JsonToXml.html">En</a>)
+                </span></li>
+
+            <li><span>
+                <a href="@Root/tutorials/JsonAnonymizer.html">JSONの匿名化</a>
+                (<a href="@Root/../tutorials/JsonAnonymizer.html">En</a>)
                 </span></li>
 
             <li class="nav-header">リファレンス</li>

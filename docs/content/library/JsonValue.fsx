@@ -106,7 +106,7 @@ and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)
 
-let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../data/WorldBank.json")
+let value = JsonValue.Load(__SOURCE_DIRECTORY__ + "../../data/WorldBank.json")
 
 (** Note that we can also load the data directly from the web, and there's an
 asynchronous version available too: *)
@@ -150,4 +150,7 @@ as possible when parsing the file.
    that provides type-safe access to JSON data
  * [F# Data: WorldBank Provider](WorldBank.html) - the WorldBank type provider
    can be used to easily access data from the WorldBank
+ * [API Reference: JsonValue discriminated union](../reference/fsharp-data-jsonvalue.html)
+ * [API Reference: JsonExtensions module](../reference/fsharp-data-jsonextensions.html)
+
 *)

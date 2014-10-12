@@ -1,0 +1,92 @@
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider : FDR.TypedHtmlDocument
+    new : () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "MarketDepth.htm")))
+
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "MarketDepth.htm"), f)
+
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "MarketDepth.htm")))
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    TypedHtmlDocument.Create(false, reader)
+
+    static member Load: uri:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+
+    member Tables: HtmlProvider+TableContainer with get
+    this
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
+    member Table1: HtmlProvider+Table1 with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Settlement Day", TextRuntime.ConvertDateTime("", value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Period", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("IMBALNGC", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[3]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[4]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[5]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[6]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[7]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[8]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[9]))),
+                                        TextRuntime.OptionToNullable(TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[10]))))
+    HtmlTable<_>.Create(rowConverter, this, "Table1")
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Table1+Row : System.DateTime * int * decimal * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal> * System.Nullable<decimal>
+    member ``Accepted Bid Vol``: System.Nullable<decimal> with get
+    (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7)
+
+    member ``Accepted Offer Vol``: System.Nullable<decimal> with get
+    (let _,_,_,_,_,t6,_,_,_,_,_ = this in t6)
+
+    member ``Bid Volume``: System.Nullable<decimal> with get
+    (let _,_,_,_,t5,_,_,_,_,_,_ = this in t5)
+
+    member IMBALNGC: decimal with get
+    (let _,_,t3,_,_,_,_,_,_,_,_ = this in t3)
+
+    member ``Offer Volume``: System.Nullable<decimal> with get
+    (let _,_,_,t4,_,_,_,_,_,_,_ = this in t4)
+
+    member PABV: System.Nullable<decimal> with get
+    (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
+
+    member PAOV: System.Nullable<decimal> with get
+    (let _,_,_,_,_,_,_,_,_,t10,_ = this in t10)
+
+    member Period: int with get
+    (let _,t2,_,_,_,_,_,_,_,_,_ = this in t2)
+
+    member ``Settlement Day``: System.DateTime with get
+    (let t1,_,_,_,_,_,_,_,_,_,_ = this in t1)
+
+    member UABV: System.Nullable<decimal> with get
+    (let _,_,_,_,_,_,_,_,t9,_,_ = this in t9)
+
+    member UAOV: System.Nullable<decimal> with get
+    (let _,_,_,_,_,_,_,t8,_,_,_ = this in t8)
+
+

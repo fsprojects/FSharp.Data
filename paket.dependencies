@@ -1,0 +1,12 @@
+source http://nuget.org/api/v2
+
+nuget Zlib.Portable
+nuget FSharp.Charting
+nuget FSharp.Formatting
+nuget NUnit
+nuget NUnit.Runners
+nuget FsCheck 0.9.2.0
+nuget Nancy.Hosting.Self
+nuget FAKE
+nuget SourceLink.Fake 
+nuget Nuget.CommandLine

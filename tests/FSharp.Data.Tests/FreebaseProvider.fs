@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.FreebaseProvider
@@ -96,7 +96,11 @@ let ``Can access the webpages for music composers``() =
         |> Seq.map (fun composer -> String.concat "\n" composer.``Topical webpage``)
         |> Seq.find (not << String.IsNullOrWhiteSpace)
 
+#if TEAM_CITY
     webPage.Split('\n').[0] |> should equal "http://www.discogs.com/artist/John+Barry"
+#else
+    webPage.Split('\n').[0] |> should equal "http://www.quantz.info/"
+#endif
 
 [<Test>]
 let ``Can access the webpages of stock exchanges``() =
@@ -177,27 +181,37 @@ let ``tvrage_id is not unique in mql query``() =
     query {
         for p in data.Commons.People.Persons do
         select (p.Name, p.``Date of birth``)
-    } |> Seq.head |> should equal ("Jack Abramoff", "1958-02-28")
+    } 
+    |> Seq.head
+    |> should equal ("Jack Abramoff", "1958-02-28")
+
+#if TEAM_CITY
+// US
+let ghanaCodes = [|"GHA"; "GH"|]
+#else
+// Everywhere else
+let ghanaCodes = [|"GHA"|]
+#endif
 
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
 
 [<Test>]
 let ``Check Individuals10 works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
 
 [<Test>]
 let ``Check Individuals100 works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
 
 [<Test>]
 let ``Check IndividualsAZ works for small collection``() =
     let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"; "GH"|]
+    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
 
 [<Test>]
 let ``Check IndividualsAZ good for large collections``() =

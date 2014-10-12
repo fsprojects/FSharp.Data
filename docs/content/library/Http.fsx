@@ -62,6 +62,8 @@ to search for the word "batman". To run the sample, you'll need to register and
 provide your API key:
 *)
 
+(*** do-not-eval ***)
+
 // API key for http://www.themoviedb.org
 let apiKey = "<please register to get a key>"
 
@@ -79,7 +81,10 @@ use the full name `HttpRequestHeaders.Accept`, or open the module and use just t
 `Accept` as in the following example. Similarly, the `HttpContentTypes` enumeration provides
 well known content types:
 *)
+
 open FSharp.Data.HttpRequestHeaders
+
+(*** do-not-eval ***)
 
 // Run the HTTP web request
 Http.RequestString
@@ -87,7 +92,8 @@ Http.RequestString
     query   = [ "api_key", apiKey; "query", "batman" ],
     headers = [ Accept HttpContentTypes.Json ])
 
-(** ## Getting extra information
+(**
+## Getting extra information
 
 Note that in the previous snippet, if you don't specify a valid API key, you'll get a (401) Unathorized error,
 and that will throw an exception. Unlike when using `WebRequest` directly, the exception message will still include
@@ -96,8 +102,12 @@ the response content, so it's easier to debug in F# interactive when the server 
 You can also opt out of the exception by specifying the `silentHttpErrors` parameter:
 *)
 
+(*** define-output:request ***)
+
 Http.RequestString("http://api.themoviedb.org/3/search/movie", silentHttpErrors = true)
-// returns {"status_code":7,"status_message":"Invalid API key - You must be granted a valid key"}
+
+(** This returns the following: *)
+(*** include-it:request ***)
 
 (** In this case, you might want to look at the HTTP status code so you don't confuse an error message for an actual response.
 If you want to see more information about the response, including the status code, the response 
@@ -200,14 +210,19 @@ match Http.Request(logoUrl).Body with
     printfn "Got %d bytes of binary content" bytes.Length
 
 (**
-## Sending a client certificate
+## Customizing the HTTP request
 
-If you want to add a client certificate to your requests, then you can use the 
-optional parameter `certificate` and pass the `X509ClientCertificate` value as
-an argument. To do that, you need to open the `X509Certificates` namespace from 
-`System.Security.Cryptography`. Assuming the certificate is stored in `myCertificate.pfx`,
-you can write:
+For the cases where you need something not natively provided by the library, you can use the
+`customizeHttpRequest` parameter, which expects a function that transforms an `HttpWebRequest`.
+
+As an example, let's say you want to add a client certificate to your request. To do that,
+you need to open the `X509Certificates` namespace from  `System.Security.Cryptography`,
+create a `X509ClientCertificate2` value, and add it to the `ClientCertificates` list of the request.
+
+Assuming the certificate is stored in `myCertificate.pfx`:
 *)
+
+(*** do-not-eval ***)
 
 open System.Security.Cryptography.X509Certificates
 
@@ -218,4 +233,19 @@ let clientCert =
 // Send the request with certificate
 Http.Request
   ( "http://yourprotectedresouce.com/data",
-    certificate = clientCert)
+    customizeHttpRequest = fun req -> req.ClientCertificates.Add(clientCert) |> ignore; req)
+
+(**
+## Related articles
+
+ * [API Reference: HTTP class](../reference/fsharp-data-http.html)
+ * [API Reference: HttpMethod module](../reference/fsharp-data-httpmethod.html)
+ * [API Reference: HttpRequestHeaders module](../reference/fsharp-data-httprequestheaders.html)
+ * [API Reference: HttpResponseHeaders module](../reference/fsharp-data-httpresponseheaders.html)
+ * [API Reference: HttpContentTypes module](../reference/fsharp-data-httpcontenttypes.html)
+ * [API Reference: HttpRequestBody discriminated union](../reference/fsharp-data-httprequestbody.html)
+ * [API Reference: HttpResponse record](../reference/fsharp-data-httpresponse.html)
+ * [API Reference: HttpResponseBody discriminated union](../reference/fsharp-data-httpresponsebody.html)
+ * [API Reference: HttpResponseWithStream record](../reference/fsharp-data-httpresponsewithstream.html)
+
+ *)

@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{7E48C05A-8C42-4871-A618-180BEEF696AA}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\contributing.md = docs\content\contributing.md
-		docs\content\fsharpdata.md = docs\content\fsharpdata.md
 		docs\content\index.md = docs\content\index.md
 	EndProjectSection
 EndProject
@@ -25,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{EF9F7922
 	ProjectSection(SolutionItems) = preProject
 		docs\tools\generate.fsx = docs\tools\generate.fsx
 		docs\tools\generate.ja.fsx = docs\tools\generate.ja.fsx
+		performanceAnalysis.fsx = performanceAnalysis.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{839C977B-55D4-4EFC-8B81-290357C836D3}"
@@ -37,6 +36,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{5F82
 		docs\content\library\CsvFile.fsx = docs\content\library\CsvFile.fsx
 		docs\content\library\CsvProvider.fsx = docs\content\library\CsvProvider.fsx
 		docs\content\library\Freebase.fsx = docs\content\library\Freebase.fsx
+		docs\content\library\HtmlParser.fsx = docs\content\library\HtmlParser.fsx
+		docs\content\library\HtmlProvider.fsx = docs\content\library\HtmlProvider.fsx
 		docs\content\library\Http.fsx = docs\content\library\Http.fsx
 		docs\content\library\JsonProvider.fsx = docs\content\library\JsonProvider.fsx
 		docs\content\library\JsonValue.fsx = docs\content\library\JsonValue.fsx
@@ -83,6 +84,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.Tests", "tests\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Data.DesignTime.Tests", "tests\FSharp.Data.DesignTime.Tests\FSharp.Data.DesignTime.Tests.fsproj", "{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharp.Data.Tests.CSharp", "tests\FSharp.Data.Tests.CSharp\FSharp.Data.Tests.CSharp.csproj", "{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +118,16 @@ Global
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|ARM.ActiveCfg = Release|Any CPU
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|x64.ActiveCfg = Release|Any CPU
 		{3BDCF70A-8366-42CB-AD84-2F8AD03C99D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Release|ARM.ActiveCfg = Release|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Release|x64.ActiveCfg = Release|Any CPU
+		{DEC71973-F2FE-4349-A80D-F0E6B5BD109D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,3 +11,6 @@ packages
 TestResult.xml
 *.VisualState.xml
 *.userprefs
+log.csv
+log.txt
+.paket/paket.exe

@@ -46,8 +46,10 @@ We can easily see how the university enrollment changes over time by using the
 
 *)
 
-#load "../../../packages/FSharp.Charting.0.90.5/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
+
+(*** define-output:chart1 ***)
 
 data.Countries.``United Kingdom``
     .Indicators.``School enrollment, tertiary (% gross)``
@@ -58,6 +60,11 @@ The `Chart.Line` function takes a sequence of pairs containing X and Y values, s
 can call it directly with the World Bank data set using the year as the X value and the
 value as a Y value.
 
+*)
+
+(*** include-it:chart1 ***)
+
+(**
 ## Using World Bank data asynchronously
 
 If you need to download large amount of data or if you need to run the operation without
@@ -111,6 +118,8 @@ computations, compose them using `Async.Parallel` and then run the (single) obta
 computation to perform all the downloads:
 *)
 
+(*** define-output:chart2 ***)
+
 [ for c in countries ->
     c.Indicators.``School enrollment, tertiary (% gross)`` ]
 |> Async.Parallel
@@ -123,10 +132,15 @@ The above snippet does not just download the data using `Async.RunSynchronously`
 it also turns every single downloaded data set into a line chart (using `Chart.Line`) 
 and then creates a single composed chart using `Chart.Combine`.
 
+*)
+
+(*** include-it:chart2 ***)
+
+(**
 ## Related articles
 
- * [F# Data: Type Providers](../fsharpdata.html) - gives more information about other
-   type providers in the `FSharp.Data` package.
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) - The Data Science
    tutorial on Try F# uses the WorldBank type provider in numerous examples.
+ * [API Reference: WorldBankDataProvider type provider](../reference/fsharp-data-worldbankdataprovider.html)
+
 *)

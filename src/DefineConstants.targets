@@ -7,7 +7,6 @@
     <DefineConstants>$(DefineConstants);FX_NO_URI_WORKAROUND</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_REFERER</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_HOST</DefineConstants>
-    <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CLIENTCERTIFICATES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_CONTENTLENGTH</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_USERAGENT</DefineConstants>
@@ -18,6 +17,7 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBREQUEST_RANGE</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
+    <DefineConstants>$(DefineConstants);FX_NO_GETENCODING_BY_CODEPAGE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>

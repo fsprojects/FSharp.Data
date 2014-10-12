@@ -2,7 +2,7 @@
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #endif
 
@@ -21,18 +21,25 @@ let [<Literal>] simpleCsv = """
 type SimpleCsv = CsvProvider<simpleCsv>
 
 [<Test>]
-let ``Bool column correctly infered and accessed`` () = 
+let ``Bool column correctly inferred and accessed`` () = 
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:bool = first.Column1
   actual |> should be True
 
 [<Test>]
-let ``Decimal column correctly infered and accessed`` () = 
+let ``Decimal column correctly inferred and accessed`` () = 
   let csv = SimpleCsv.GetSample()
   let first = csv.Rows |> Seq.head
   let actual:decimal = first.Column3
   actual |> should equal 3.0M
+
+[<Test>]
+let ``Guid column correctly inferred and accessed from mislabeled TSV`` () = 
+  let csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
+  let first = csv.Rows |> Seq.head
+  let actual:Guid option = first.Column3
+  actual |> should equal (Some (Guid.Parse("f1b1cf71-bd35-4e99-8624-24a6e15f133a")))
 
 [<Test>]
 let ``Guid column correctly infered and accessed`` () = 
@@ -107,7 +114,7 @@ let ``Infers type of an emtpy CSV file`` () =
 
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", "nb-NO", 10>.GetSample()
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="nb-NO">.GetSample()
   let row = csv.Rows |> Seq.head
   (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
 
@@ -131,6 +138,32 @@ let ``Repeated and empty column names``() =
   row.Foo4.GetType() |> should equal typeof<int>
   row.Bar.GetType() |> should equal typeof<int>
   row.Column4.GetType() |> should equal typeof<string>  
+
+[<Literal>]
+let csvWithSpuriousTrailingEmptyHeaderColumn = """A,B,C,
+1,2,3
+4,5,6"""
+
+[<Test>]
+let ``Header with trailing empty column that doesn't appear in data rows``()=
+  let csv = CsvProvider<csvWithSpuriousTrailingEmptyHeaderColumn>.GetSample()
+  let row = csv.Rows |> Seq.head
+  row |> should equal (1,2,3)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (4,5,6)
+
+[<Literal>]
+let csvWithLegitimateTrailingEmptyColumn = """A,B,C,
+1,2,3,4
+5,6,7,8"""
+
+[<Test>]
+let ``Header with trailing empty column that does appear in data rows``() =
+  let csv = CsvProvider<csvWithLegitimateTrailingEmptyColumn>.GetSample()
+  let row = csv.Rows |> Seq.head
+  row |> should equal (1,2,3,4)
+  let row = csv.Rows |> Seq.skip 1 |> Seq.head
+  row |> should equal (5,6,7,8)
   
 let [<Literal>] simpleCsvNoHeaders = """
 TRUE,no,3
@@ -235,6 +268,7 @@ let ``AssumeMissingValues works when inferRows limit is reached``() =
 
 type CsvWithSampleWhichIsAValidFilename = CsvProvider<Sample="1;2;3", HasHeaders=false, Separators=";">
 
+[<Test>]
 let ``Sample which also is a valid filename``() = 
     let row = CsvWithSampleWhichIsAValidFilename.GetSample().Rows |> Seq.exactlyOne
     row.Column1 |> should equal 1
@@ -243,8 +277,31 @@ let ``Sample which also is a valid filename``() =
 
 type CsvWithoutSample = CsvProvider<Schema="category (string), id (string), timestamp (string)", HasHeaders=false>
 
+[<Test>]
 let ``Csv without sample``() = 
     let row = CsvWithoutSample.Parse("1,2,3").Rows |> Seq.exactlyOne
     row.category |> should equal "1"
     row.id |> should equal "2"
     row.timestamp |> should equal "3"
+
+type UTF8 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
+type CP932 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+
+[<Test>]
+let ``Uses UTF8 for sample file when encoding not specified``() =
+    let utf8 = UTF8.GetSample()
+    let row2 = utf8.Rows |> Seq.skip 1 |> Seq.head
+    row2 |> should equal (2, "NaN (�񐔒l)")
+
+[<Test>]
+let ``Respects encoding when specified``() =
+    let cp932 = CP932.GetSample()
+    let row2 = cp932.Rows |> Seq.skip 1 |> Seq.head
+    row2 |> should equal (2, Double.NaN)
+
+[<Test>]
+let ``Disposing CsvProvider shouldn't throw``() =
+    let csv = 
+        use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
+        csv.Rows |> Seq.iter (fun x -> ())
+    ()

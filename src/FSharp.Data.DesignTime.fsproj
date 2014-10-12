@@ -13,14 +13,12 @@
     <Name>FSharp.Data.DesignTime</Name>
     <TargetFrameworkProfile />
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -47,14 +45,12 @@
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\HttpUtils.fs" />
     <Compile Include="CommonRuntime\TextConversions.fs" />
     <Compile Include="CommonRuntime\TextRuntime.fs" />
-    <Compile Include="CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="CommonRuntime\StructuralInference.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />
     <Compile Include="CommonRuntime\NameUtils.fs" />
-    <Compile Include="CommonRuntime\HtmlParser.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
@@ -88,8 +84,13 @@
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseProvider.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlCharRefs.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlOperations.fs" />
+    <Compile Include="Html\HtmlInference.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
-    <Compile Include="Html\HtmlTableProvider.fs" />
+    <Compile Include="Html\HtmlGenerator.fs" />
+    <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
     <None Include="Test.fsx" />
@@ -130,5 +131,4 @@
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

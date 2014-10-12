@@ -44,9 +44,9 @@ let private regexOptions =
 #else
   RegexOptions.Compiled ||| RegexOptions.RightToLeft
 #endif
-let private nameAndTypeRegex = new Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
-let private typeAndUnitRegex = new Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
-let private overrideByNameRegex = new Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
+let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
+let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
+let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
@@ -61,7 +61,7 @@ let private asOption = function true, x -> Some x | false, _ -> None
 /// Parses type specification in the schema for a single column. 
 /// This can be of the form: type|measure|type<measure>
 let private parseTypeAndUnit tryGetUnit str = 
-  let m = typeAndUnitRegex.Match(str)
+  let m = typeAndUnitRegex.Value.Match(str)
   if m.Success then
     // type<unit> case, both type and unit have to be valid
     let typ = m.Groups.["type"].Value.TrimEnd().ToLowerInvariant() |> nameToType.TryGetValue |> asOption
@@ -94,7 +94,7 @@ let private parseTypeAndUnit tryGetUnit str =
 /// override the header name)
 let private parseSchemaItem tryGetUnit str forSchemaOverride =     
   let name, typ, unit, isOverrideByName, originalName = 
-    let m = overrideByNameRegex.Match str
+    let m = overrideByNameRegex.Value.Match str
     if m.Success && forSchemaOverride then
       // name=type|type<measure>
       let originalName = m.Groups.["name"].Value.TrimEnd()
@@ -105,7 +105,7 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
         failwithf "Invalid type: %s" typeAndUnit
       newName, typ, unit, true, originalName
     else
-      let m = nameAndTypeRegex.Match(str)
+      let m = nameAndTypeRegex.Value.Match(str)
       if m.Success then
         // name (type|measure|type<measure>)
         let name = m.Groups.["name"].Value.TrimEnd()
@@ -254,9 +254,9 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
         InferedType.Record(None, fields, false) ]
 
   let inferedType = 
-    if schema |> Seq.forall Option.isSome then
+    if schema |> Array.forall Option.isSome then
         // all the columns types are already set, so all the rows will be the same
-        types |> Seq.head
+        types |> List.head
     else
         List.reduce (StructuralInference.subtypeInfered ((*allowEmptyValues*)not preferOptionals)) types
   

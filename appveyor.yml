@@ -1,3 +1,5 @@
+init:
+  - git config --global core.autocrlf input
 build_script:
   - cmd: build.cmd CleanInternetCaches
   - cmd: build.cmd AppVeyorBuildVersion
@@ -9,3 +11,7 @@ artifacts:
   - path: bin\*.nupkg
 environment:
   FREEBASE_API_KEY: AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
+branches:
+  except:
+    - gh-pages
+    - release

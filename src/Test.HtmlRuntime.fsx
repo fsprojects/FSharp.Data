@@ -1,45 +1,51 @@
-﻿#load "Net/Http.fs"
+﻿#if INTERACTIVE
+#load "Net/UriUtils.fs"
+#load "Net/Http.fs"
 #load "CommonRuntime/IO.fs"
 #load "CommonRuntime/TextConversions.fs"
 #load "CommonRuntime/TextRuntime.fs"
-#load "CommonRuntime/HtmlParser.fs"
-#load "html/HtmlRuntime.fs"
+#load "CommonRuntime/Pluralizer.fs"
+#load "CommonRuntime/NameUtils.fs"
+#load "CommonRuntime/StructuralTypes.fs"
+#load "CommonRuntime/StructuralInference.fs"
+#load "Html/HtmlCharRefs.fs"
+#load "Html/HtmlParser.fs"
+#load "Html/HtmlOperations.fs"
+#load "Html/HtmlInference.fs"
+#load "Html/HtmlRuntime.fs"
+#else
+module internal Test.HtmlRuntime
+#endif
 
-open System
+open FSharp.Data
 open FSharp.Data.Runtime
 
-type TableCell = {
-    IsHeader : bool
-    RowSpan : int
-    ColSpan : int
-    Value : string list
-}
+let printParsed (html:string) = 
+    html
+    |> HtmlDocument.Parse
+    |> printfn "%A"
 
-let wimbledonFile = """D:\Appdev\FSharp.Data\tests\FSharp.Data.Tests\Data\wimbledon_wikipedia.html"""
+printParsed """<a href="/url?q=http://fsharp.github.io/FSharp.Data/&amp;sa=U&amp;ei=sv1jU_3bMMmk0QX33YGQBw&amp;ved=0CB4QFjAA&amp;usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"><b>F# Data</b>: Library for Data Access - F# Open Source Group @ GitHub</a>"""
 
-let wimbledon = HtmlParser.parse wimbledonFile |> Option.get
+let printTables includeLayout (url:string) = 
+    url
+    |> HtmlDocument.Load
+    |> HtmlRuntime.getTables includeLayout
+    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
 
-let getTables (HtmlDocument(_, es)) =
-    List.collect (Html.getElementsNamed ["table"]) es
+//Working sensibly
+printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
+printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"
+printTables false "http://en.wikipedia.org/wiki/Athletics_at_the_2012_Summer_Olympics_%E2%80%93_Women's_heptathlon"
+printTables false "http://www.imdb.com/chart/top?sort=ir,desc"
+printTables false "https://www.nuget.org/packages/FSharp.Data"
+printTables false "http://www.rottentomatoes.com"
+printTables false "http://www.orbitz.com/shop/home?airDA=true&ar.rt.leaveSlice.dest.dl=LGW_AIRPORT&search=Continue&ar.rt.carriers%5B1%5D=&ar.rt.narrowSel=0&type=air&ar.rt.returnSlice.time=Anytime&ar.rt.leaveSlice.originRadius=0&ar.rt.flexAirSearch=0&ar.rt.numAdult=1&ar.rt.numChild=0&ar.rt.child%5B4%5D=&ar.rt.leaveSlice.orig.key=SFO&ar.rt.child%5B2%5D=&strm=true&ar.rt.child%5B0%5D=&ar.rt.leaveSlice.time=Anytime&ar.rt.child%5B6%5D=&ar.rt.carriers%5B0%5D=&ar.rt.numSenior=0&ar.rt.returnSlice.date=05%2F28%2F14&ar.rt.narrow=airlines&ar.rt.carriers%5B2%5D=&ar.rt.leaveSlice.dest.key=LONDON&ar.rt.leaveSlice.date=04%2F22%2F14&ar.rt.nonStop=0&ar.rt.cabin=C&ar.rt.leaveSlice.destinationRadius=0&ar.type=roundTrip&ar.rt.child%5B3%5D=&ar.rt.child%5B5%5D=&ar.rt.child%5B7%5D=&ar.rt.child%5B1%5D="
+printTables false "http://www.sherdog.com/stats/fightfinder?SearchTxt=silva"
+printTables false "http://www.ebay.com/sch/i.html?_nkw=cars"
+printTables false "http://www.ebay.com/sch/i.html?_nkw=cars&_sacat=0&_from=R40"
+printTables false "http://www.ebay.com/sch/i.html?_trksid=p2050601.m570.l1311.R1.TR11.TRC1.A0.H0.Xcar&_nkw=cars&_sacat=0&_from=R40"
 
-let getAttributeAsInt name (e:HtmlElement) = 
-    match Html.tryGetAttribute name e with
-    | Some(HtmlAttribute(_, colspan)) -> Int32.Parse(colspan)
-    | None -> 0
-
-let getRows (table:HtmlElement) = 
-    Html.getElementsNamed ["tr"] table
-
-let getHeadersAndData (row:HtmlElement) = 
-    Html.getElementsNamed ["th"; "td"] row
-    |> List.map (fun element ->
-                     let rspan, cspan = (getAttributeAsInt "colspan" element), (getAttributeAsInt "rowSpan" element)
-                     match element with
-                     | HtmlElement("th", _, content) -> { IsHeader = true; RowSpan = rspan; ColSpan = cspan; Value = List.map Html.getValue content }
-                     | HtmlElement("td", _, content) -> { IsHeader = false; RowSpan = rspan; ColSpan = cspan; Value = List.map Html.getValue content }
-                     | _ -> failwith "Only expected th, td elements")
-
-let parse tables = 
-    getTables tables
-    |> List.map (getRows >> List.map getHeadersAndData)
-
+//Interesting table structure, with col and row spans.
+printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
+ 
