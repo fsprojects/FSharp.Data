@@ -41,9 +41,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Population (2011 Census)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Area (km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Area (km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[4])
-                                        TextRuntime.GetNonOptionalValue("Density (People/km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Density (People/km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
@@ -61,9 +61,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Population (2001 Census)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Area (km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Area (km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[4])
-                                        TextRuntime.GetNonOptionalValue("Density (People/km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Density (People/km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
@@ -79,9 +79,9 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Population (2001 Census)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Area (km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Area (km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[4])
-                                        TextRuntime.GetNonOptionalValue("Density (People/km�)", TextRuntime.ConvertDecimal("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Density (People/km²)", TextRuntime.ConvertDecimal("", value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
@@ -111,13 +111,13 @@ class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int * string * decimal * decimal * decimal * string * string * string
-    member ``Area (km�)``: decimal with get
+    member ``Area (km²)``: decimal with get
     (let _,_,_,t4,_,_,_,_ = this in t4)
 
     member ``Built-up area``: string with get
     (let _,t2,_,_,_,_,_,_ = this in t2)
 
-    member ``Density (People/km�)``: decimal with get
+    member ``Density (People/km²)``: decimal with get
     (let _,_,_,_,t5,_,_,_ = this in t5)
 
     member ``Major subdivisions``: string with get
@@ -138,10 +138,10 @@ class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWalesEdit+Row : int
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int * string * decimal * decimal * decimal * string * string
-    member ``Area (km�)``: decimal with get
+    member ``Area (km²)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
 
-    member ``Density (People/km�)``: decimal with get
+    member ``Density (People/km²)``: decimal with get
     (let _,_,_,_,t5,_,_ = this in t5)
 
     member ``Major subdivisions``: string with get
@@ -162,10 +162,10 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIrelandEdit+Row : int *
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotlandEdit+Row : int * string * decimal * decimal * decimal * string * string
-    member ``Area (km�)``: decimal with get
+    member ``Area (km²)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
 
-    member ``Density (People/km�)``: decimal with get
+    member ``Density (People/km²)``: decimal with get
     (let _,_,_,_,t5,_,_ = this in t5)
 
     member ``Major subdivisions``: string with get
