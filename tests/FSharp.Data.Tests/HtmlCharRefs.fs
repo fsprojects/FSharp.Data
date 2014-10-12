@@ -11,14 +11,12 @@ open FsUnit
 open FSharp.Data
 open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
-open FSharp.Data.Runtime
-
-type CharRefs = FSharp.Data.JsonProvider<"data/charrefs.json">
+open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
-    CharRefs.GetSample().Items
-    |> Array.filter (fun x -> x.Characters <> " ")
-    |> Array.map (fun x -> [| x.Key; x.Characters |])
+    JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
+    |> Array.filter (fun x -> x?characters.AsString() <> " ")
+    |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 ///When using `data\charrefs-full.json` there seems to be some encoding problems
 ///and equality issues on these characters however this gives a resonable 

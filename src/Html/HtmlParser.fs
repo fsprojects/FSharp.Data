@@ -108,7 +108,7 @@ module internal HtmlParser =
 #else
         RegexOptions.Compiled
 #endif
-    let wsRegex = lazy Regex("\\s+", regexOptions)
+    let private wsRegex = lazy Regex("\\s+", regexOptions)
 
     type HtmlToken =
         | DocType of string
