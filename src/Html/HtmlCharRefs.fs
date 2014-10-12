@@ -2242,12 +2242,12 @@ module internal HtmlCharRefs =
     let (|Hex|Num|Std|) (ref:string) =
         if ref.Length > 2
         then
-            let (delimeters, discriminator) = ref.ToLower() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
+            let (delimeters, discriminator) = ref.ToLowerInvariant() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
             match delimeters with
             | ("&#", ';') when discriminator <> 'x' -> Num(ref.Substring(2, ref.Length - 3))
             | ("&#", _) when discriminator <> 'x' -> Num(ref.Substring(2, ref.Length - 2))
-            | ("&x", ';') when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
-            | ("&x", _) when Char.IsNumber(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
+            | ("&x", ';') when Char.IsDigit(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
+            | ("&x", _) when Char.IsDigit(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
             | _ -> Std(ref) 
         else Std(ref)
 

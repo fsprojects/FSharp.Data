@@ -144,7 +144,7 @@ type JsonExtensions =
   static member InnerText(x) = 
     match JsonConversions.AsString (*useNoneForNullOrWhiteSpace*)false CultureInfo.InvariantCulture x with
     | Some str -> str
-    | None -> JsonExtensions.AsArray(x) |> Array.map (fun e -> JsonExtensions.InnerText(e)) |> String.concat ""
+    | None -> JsonExtensions.AsArray(x) |> Array.map (fun e -> JsonExtensions.InnerText(e)) |> String.Concat
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module JsonExtensions =
@@ -244,7 +244,7 @@ module Options =
     member x.InnerText =     
       match x.AsString() with
       | Some str -> str
-      | None -> x.AsArray() |> Array.map (fun e -> e.InnerText) |> String.concat ""
+      | None -> x.AsArray() |> Array.map (fun e -> e.InnerText) |> String.Concat
   
   [<Extension>] 
   [<AbstractClass>]
@@ -341,7 +341,7 @@ module Options =
     static member InnerText(x) =
       match JsonValueOptionExtensions.AsString(x) with
       | Some str -> str
-      | None -> JsonValueOptionExtensions.AsArray(x) |> Array.map (fun e -> e.InnerText) |> String.concat ""
+      | None -> JsonValueOptionExtensions.AsArray(x) |> Array.map (fun e -> e.InnerText) |> String.Concat
   
   /// [omit]
   type JsonValueOverloads = JsonValueOverloads with

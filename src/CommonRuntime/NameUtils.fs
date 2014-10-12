@@ -20,7 +20,7 @@ let private (|Lower|_|) = sat Char.IsLower
 
 /// Turns a given non-empty string into a nice 'PascalCase' identifier
 let nicePascalName (s:string) = 
-  if s.Length = 1 then s.ToUpper() else
+  if s.Length = 1 then s.ToUpperInvariant() else
   // Starting to parse a new segment 
   let rec restart i = seq {
     match tryAt s i with 
@@ -52,8 +52,8 @@ let nicePascalName (s:string) =
   seq { for i1, i2 in restart 0 do 
           let sub = s.Substring(i1, i2 - i1) 
           if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-            yield sub.[0].ToString().ToUpper() + sub.ToLower().Substring(1) }
-  |> String.concat ""
+            yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1) }
+  |> String.Concat
 
 /// Turns a given non-empty string into a nice 'camelCase' identifier
 let niceCamelName (s:string) = 

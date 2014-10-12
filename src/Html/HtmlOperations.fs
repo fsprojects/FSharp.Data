@@ -63,13 +63,14 @@ module HtmlNode =
     
     /// <summary>
     /// Creates a HtmlElement
+    /// All attribute names and tag names will be normalized to lowercase
     /// </summary>
     /// <param name="name">The name of the element</param>
     /// <param name="attrs">The HtmlAttribute(s) of the element</param>
     /// <param name="children">The children elements of this element</param>
-    let createElement name attrs children =
-        let attrs = Seq.map HtmlAttribute attrs |> Seq.toList
-        HtmlElement(name, attrs, children)
+    let createElement (name:string) attrs children =
+        let attrs = Seq.map (fun (name:string, value) -> HtmlAttribute(name.ToLowerInvariant(), value)) attrs |> Seq.toList
+        HtmlElement(name.ToLowerInvariant(), attrs, children)
     
     /// <summary>
     /// Creates a text content element
@@ -86,7 +87,7 @@ module HtmlNode =
     /// Gets the given nodes name
     let name x =
         match x with
-        | HtmlElement(name = name) -> name.ToLowerInvariant()
+        | HtmlElement(name = name) -> name
         | _ -> String.Empty
         
     /// Gets all of the nodes immediately under this node
@@ -168,8 +169,9 @@ module HtmlNode =
     /// </summary>
     /// <param name="name">The name of the attribute to return.</param>
     let tryGetAttribute (name:string) x =
+        let name = name.ToLowerInvariant()
         match x with
-        | HtmlElement(attributes = attr) -> attr |> List.tryFind (fun a -> a.Name.ToLowerInvariant() = (name.ToLowerInvariant()))
+        | HtmlElement(attributes = attr) -> attr |> List.tryFind (fun a -> a.Name = name)
         | _ -> None   
     
     /// <summary>
@@ -186,7 +188,7 @@ module HtmlNode =
     
     /// <summary>
     /// Returns the attribute with the given name. If the
-    /// attribute does not exist then this will thorw an exception
+    /// attribute does not exist then this will throw an exception
     /// </summary>
     /// <param name="name">The name of the attribute to select</param>
     /// <param name="x">The current node</param>
@@ -205,7 +207,7 @@ module HtmlNode =
     let hasAttribute name (value:string) x = 
         tryGetAttribute name x
         |> function 
-            | Some(attr) -> attr.Value().ToLowerInvariant() = (value.ToLowerInvariant())
+            | Some(attr) -> attr.Value().ToLowerInvariant() = value.ToLowerInvariant()
             | None -> false
 
     /// <summary>
@@ -276,21 +278,25 @@ module HtmlNode =
     let hasElements names x = 
         elementsNamed names x |> List.isEmpty |> not
 
+    let internal innerTextExcluding exclusions x = 
+        let exclusions = "style" :: "script" :: exclusions
+        let rec innerText' = function
+            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) ->
+                seq { for e in content do
+                        match e with
+                        | HtmlText(text) -> yield text
+                        | HtmlComment(_) -> yield String.Empty
+                        | elem -> yield innerText' elem }
+                |> String.Concat
+            | HtmlText(text) -> text
+            | _ -> String.Empty
+        innerText' x    
+
     /// <summary>
     /// Returns the inner text of the current node
     /// </summary>
     /// <param name="x">The current node</param>
-    let innerText x = 
-        let rec innerText' = function
-            | HtmlElement(name, _, content) when name <> "style" && name <> "script" ->
-                String.Join(" ", seq { for e in content do
-                                            match e with
-                                            | HtmlText(text) -> yield text
-                                            | HtmlComment(_) -> yield String.Empty
-                                            | elem -> yield innerText' elem })
-            | HtmlText(text) -> text
-            | _ -> String.Empty
-        innerText' x    
+    let innerText x = innerTextExcluding [] x
 
 [<AutoOpen>]
 module HtmlNodeExtensions =
@@ -344,7 +350,7 @@ module HtmlNodeExtensions =
 
         /// <summary>
         /// Returns the attribute with the given name. If the
-        /// attribute does not exist then this will thorw an exception
+        /// attribute does not exist then this will throw an exception
         /// </summary>
         /// <param name="name">The name of the attribute to select</param>
         member x.Attribute name = HtmlNode.attribute name x

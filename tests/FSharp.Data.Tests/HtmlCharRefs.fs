@@ -60,5 +60,5 @@ let ``Should substitute char references in attribute``() =
     parsed |> should equal expected
 
 [<Test>]
-let ``Should handle interderimanent CharRefs``() =
+let ``Should handle indeterminate CharRefs``() =
     HtmlCharRefs.substitute "&#xD;" |> should equal "&#xD;"

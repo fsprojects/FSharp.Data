@@ -2,12 +2,11 @@
 namespace FSharp.Data
 
 open System
-open System.Collections.Generic
 open System.ComponentModel
 open System.IO
 open System.Text
+open System.Text.RegularExpressions
 open FSharp.Data
-open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 
@@ -21,13 +20,16 @@ type HtmlNode =
     | HtmlComment of content:string
     
     override x.ToString() =
-        let rec serialize (sb:StringBuilder) indentation html =
+        let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
             let append (str:string) = sb.Append str |> ignore
             let newLine plus =
                 sb.AppendLine() |> ignore
-                System.String(' ', indentation + plus) |> append
+                String(' ', indentation + plus) |> append
             match html with
             | HtmlElement(name, attributes, elements) ->
+                let onlyText = elements |> List.forall (function HtmlText _ -> true | _ -> false)
+                if canAddNewLine && not onlyText then
+                    newLine 0
                 append "<"
                 append name
                 for HtmlAttribute(name, value) in attributes do
@@ -36,25 +38,29 @@ type HtmlNode =
                     append "=\""
                     append value
                     append "\""
-                if elements.IsEmpty
-                then append " />"; newLine 0
+                if elements.IsEmpty then 
+                    append " />"
                 else
                     append ">"
-                    newLine 2
+                    if not onlyText then
+                        newLine 2
+                    let mutable canAddNewLine = false
                     for element in elements do
-                        serialize sb (indentation + 2) element
-                    newLine 0
+                        serialize sb (indentation + 2) canAddNewLine element
+                        canAddNewLine <- true
+                    if not onlyText then
+                        newLine 0
                     append "</"
                     append name
                     append ">"
-            | HtmlText( str) -> append str
-            | HtmlComment(str) -> 
-                    append "<!-- "
+            | HtmlText str -> append str
+            | HtmlComment str -> 
+                    append "<!--"
                     append str
-                    append " -->"
+                    append "-->"
         
         let sb = StringBuilder()
-        serialize sb 0 x
+        serialize sb 0 false x |> ignore
         sb.ToString()
 
     /// [omit]
@@ -69,9 +75,9 @@ type HtmlDocument =
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
-            (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">\n")
+            (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">" + Environment.NewLine)
             +
-            (elements |> List.map (fun x -> x.ToString()) |> String.concat "\n")
+            (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -84,46 +90,25 @@ module private TextParser =
 
     let toPattern f c = if f c then Some c else None
 
-    let (|Parse|_|) func value = func value
-
-    let (|NullChar|_|) (c : char) =
-        if (c |> int) = 0 then Some c else None
-
     let (|EndOfFile|_|) (c : char) =
         let value = c |> int
         if (value = -1 || value = 65535) then Some c else None
 
-    let (|UpperAtoZ|_|) = toPattern Char.IsUpper
-
-    let (|LowerAtoZ|_|) = toPattern Char.IsLower
-
-    let (|Number|_|) = toPattern Char.IsNumber
-
-    let (|Symbol|_|) = toPattern Char.IsPunctuation
-
     let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
-
-    let (|LetterDigit|_|) = function
-        | LowerAtoZ c -> Some c
-        | Number c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower c)
-        | _ -> None
-
-    let (|Letter|_|) = function
-        | LowerAtoZ c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower c)
-        | _ -> None
-
-    let (|LetterDigitSymbol|_|) = function
-        | LowerAtoZ c -> Some c
-        | Number c -> Some c
-        | UpperAtoZ c -> Some (Char.ToLower c)
-        | Symbol c -> Some c
-        | _ -> None
+    let (|LetterDigit|_|) = toPattern Char.IsLetterOrDigit
+    let (|Letter|_|) = toPattern Char.IsLetter
 
 // --------------------------------------------------------------------------------------
 
 module internal HtmlParser =
+
+    let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+        RegexOptions.None
+#else
+        RegexOptions.Compiled
+#endif
+    let wsRegex = lazy Regex("\\s+", regexOptions)
 
     type HtmlToken =
         | DocType of string
@@ -147,7 +132,6 @@ module internal HtmlParser =
 
     type TextReader with
        
-        static member NullChar = Convert.ToChar(0x0)
         member x.PeekChar() = x.Peek() |> char
         member x.ReadChar() = x.Read() |> char
         member x.ReadNChar(n) = 
@@ -202,7 +186,7 @@ module internal HtmlParser =
         member x.ConsAttrName() =
             match !x.Attributes with
             | [] -> x.NewAttribute(); x.ConsAttrName()
-            | (h,_) :: _ -> h.Cons(x.Reader.ReadChar())
+            | (h,_) :: _ -> h.Cons(Char.ToLowerInvariant(x.Reader.ReadChar()))
     
         member x.CurrentTagName() = 
             match (!(!x.CurrentTag).Contents) with
@@ -231,7 +215,7 @@ module internal HtmlParser =
             |> List.rev
     
         member x.EmitSelfClosingTag() = 
-            let name = (!x.CurrentTag).ToString()
+            let name = (!x.CurrentTag).ToString().Trim()
             let result = Tag(true, name, x.GetAttributes()) 
             x.CurrentTag := CharList.Empty
             x.InsertionMode := DefaultMode
@@ -245,7 +229,7 @@ module internal HtmlParser =
                | _ -> false
 
         member x.EmitTag(isEnd) =
-            let name = (!x.CurrentTag).ToString().Trim().ToLower()
+            let name = (!x.CurrentTag).ToString().Trim()
             let result = 
                 if isEnd
                 then TagEnd(name)
@@ -272,7 +256,10 @@ module internal HtmlParser =
             let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
-                | DefaultMode | ScriptMode -> Text content
+                | DefaultMode -> 
+                    let normalizedContent = wsRegex.Value.Replace(content, " ")
+                    if normalizedContent = " " then Text "" else Text normalizedContent
+                | ScriptMode -> content |> Text
                 | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
                 | CommentMode -> Comment content
                 | DocTypeMode -> DocType content
@@ -286,7 +273,7 @@ module internal HtmlParser =
         member x.ConsTag() = 
             match x.Reader.ReadChar() with
             | TextParser.Whitespace _ -> ()
-            | a -> (!x.CurrentTag).Cons(Char.ToLower a)
+            | a -> (!x.CurrentTag).Cons(Char.ToLowerInvariant a)
         member x.ClearContent() = 
             (!x.Content).Clear()
 
@@ -306,7 +293,6 @@ module internal HtmlParser =
                 else
                     state.InsertionMode := CharRefMode
                     charRef state
-            | TextParser.Whitespace _ when state.ContentLength = 0 -> state.Pop(); data state
             | _ ->
                 match !state.InsertionMode with
                 | DefaultMode -> state.Cons(); data state
@@ -561,46 +547,60 @@ module internal HtmlParser =
         ]
     
     let private parse reader =
-        let isVoid (name:string) = 
+        let canNotHaveChildren (name:string) = 
             match name with
             | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
             | "source" | "track" | "wbr" -> true
             | _ -> false
-        let rec parse' docType elements (tokens:HtmlToken list) =
+        let rec parse' docType elements expectedTagEnd (tokens:HtmlToken list) =
             match tokens with
-            | DocType dt :: rest -> parse' (dt.Trim()) elements rest
-            | Tag(true, name, attributes) :: TagEnd(endName) :: rest when name = endName ->
-               let e = HtmlElement(name.ToLower(), attributes, [])
-               parse' docType (e :: elements) rest
+            | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd rest
+            | Tag(_, "br", []) :: rest ->
+                let t = HtmlText Environment.NewLine
+                parse' docType (t :: elements) expectedTagEnd rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(name.ToLower(), attributes, [])
-               parse' docType (e :: elements) rest
-            | Tag(false, name, attributes) :: (Tag(_, nextName, _) as next) :: rest when (name <> nextName) && (isVoid name) ->
-               let e = HtmlElement(name.ToLower(), attributes, [])
-               parse' docType (e :: elements) (next :: rest)  
-            | Tag(false, name, attributes) :: (TagEnd(nextName) as next) :: rest when (name <> nextName) && (isVoid name) ->
-               let e = HtmlElement(name.ToLower(), attributes, [])
-               parse' docType (e :: elements) (next :: rest)  
+               let e = HtmlElement(name, attributes, [])
+               parse' docType (e :: elements) expectedTagEnd rest
+            | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
+               let e = HtmlElement(name, attributes, [])
+               parse' docType (e :: elements) expectedTagEnd rest
             | Tag(_, name, attributes) :: rest ->
-                let dt, tokens, content = parse' docType [] rest
-                let e = HtmlElement(name.ToLower(), attributes, content)
-                parse' dt (e :: elements) tokens
+                let dt, tokens, content = parse' docType [] name rest
+                let e = HtmlElement(name, attributes, content)
+                parse' dt (e :: elements) expectedTagEnd tokens
+            | TagEnd name :: rest when name <> expectedTagEnd -> 
+                // ignore this token
+                parse' docType elements expectedTagEnd rest
             | TagEnd _ :: rest -> 
-                docType, rest, (elements |> List.rev)
+                docType, rest, List.rev elements
             | Text cont :: rest ->
-                if cont <> " " && (String.IsNullOrWhiteSpace cont)
-                then parse' docType elements rest
-                else parse' docType (HtmlText(cont.Trim()) :: elements) rest
-            | Comment(cont) :: rest -> parse' docType (HtmlComment(cont.Trim()) :: elements) rest
-            | EOF :: _ -> docType, [], (elements |> List.rev)
-            | [] -> docType, [], (elements |> List.rev)
-        let docType, _, elements = tokenise reader |> parse' "" []
+                if cont = "" then
+                    // ignore this token
+                    parse' docType elements expectedTagEnd rest
+                else
+                    let t = HtmlText cont
+                    parse' docType (t :: elements) expectedTagEnd rest
+            | Comment cont :: rest -> 
+                let c = HtmlComment cont
+                parse' docType (c :: elements) expectedTagEnd rest
+            | EOF :: _ -> docType, [], List.rev elements
+            | [] -> docType, [], List.rev elements
+        let tokens = tokenise reader 
+        let docType, _, elements = tokens |> parse' "" [] ""
         if List.isEmpty elements then
             failwith "Invalid HTML" 
         docType, elements
 
+    /// All attribute names and tag names will be normalized to lowercase
+    /// All html entities will be replaced by the corresponding characters
+    /// All the consecutive whitespace (except for `&nbsp;`) will be collapsed to a single space
+    /// All br tags will be replaced by newlines
     let parseDocument reader = 
         HtmlDocument(parse reader)
 
+    /// All attribute names and tag names will be normalized to lowercase
+    /// All html entities will be replaced by the corresponding characters
+    /// All the consecutive whitespace (except for `&nbsp;`) will be collapsed to a single space
+    /// All br tags will be replaced by newlines
     let parseFragment reader = 
         parse reader |> snd

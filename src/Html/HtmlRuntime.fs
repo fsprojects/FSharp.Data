@@ -97,17 +97,21 @@ module HtmlRuntime =
         
         if rows.Length <= 1 then None else
 
-        let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> (i,e)))
-        let width = (cells |> List.maxBy (fun x -> x.Length)).Length
+        let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
+        let rowLengths = cells |> List.map (fun x -> x.Length)
+        let width = List.max rowLengths
         
-        if width <= 1 && not includeLayoutTables then None else
+        if not includeLayoutTables && (rowLengths |> List.filter (fun x -> x > 1) |> List.length <= 1) then None else
 
         let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
-                let rowSpan, colSpan = (max 1 (cell.GetAttributeValue(0,Int32.TryParse,"rowspan"))) - 1,(max 1 (cell.GetAttributeValue(0,Int32.TryParse,"colspan"))) - 1
+                let rowSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "rowspan")) - 1
+                let colSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "colspan")) - 1
+
                 let data =
-                    let getContents contents = String.Join(" ", contents |> List.map (fun (x:HtmlNode) -> x.InnerText)).Trim()
+                    let getContents contents = 
+                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "li"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
                     match cell with
                     | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
                     | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
@@ -160,11 +164,10 @@ module HtmlRuntime =
                 )
         let (_,_,tables) =
             tableElements
-            |> List.fold (fun (index,names,tables) (table, parents) -> 
-                            match parseTable includeLayoutTables (index,names) table parents with
-                            | Some(table) -> 
-                                (index + 1, Set.add table.Name names, table::tables)
-                            | None -> (index + 1, names, tables)
+            |> List.fold (fun (index, names, tables) (table, parents) -> 
+                            match parseTable includeLayoutTables (index, names) table parents with
+                            | Some(table) -> index + 1, Set.add table.Name names, table::tables
+                            | None -> index + 1, names, tables
                          ) (0, Set.empty, [])
         tables |> List.rev
 
