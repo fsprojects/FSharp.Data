@@ -2,6 +2,7 @@
 * New logo.
 * Added HTML parser and HtmlProvider.
 * Detect and ignore trailing empty header columns in CSV/TSV files. 
+* Fixed strings with only whitespace being lost in JsonProvider.
 
 #### 2.0.15 - September 23 2014
 * Fixed crash when disposing CsvProvider instances.
