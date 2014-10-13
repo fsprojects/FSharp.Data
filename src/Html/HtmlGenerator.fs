@@ -8,6 +8,7 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open FSharp.Data
 open FSharp.Data.Runtime
 
 module internal HtmlGenerator =
@@ -27,9 +28,11 @@ module internal HtmlGenerator =
             htmlType.AddMember <| ProvidedProperty("Tables", tableContainer, GetterCode = fun (Singleton doc) -> doc)
             htmlType.AddMember tableContainer
             
-            let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-            
-            for tableName, columns in columnsPerTable do
+            let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                |> NameUtils.nicePascalName
+
+            for (tableName : string), columns in columnsPerTable do
             
                 let fields = columns |> List.mapi (fun index field ->
                     let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
@@ -68,11 +71,12 @@ module internal HtmlGenerator =
                     let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, tableName)
                     Expr.Let(rowConverterVar, rowConverter, body)
                 
-                let tableNiceName = uniqueNiceName tableName
-            
-                let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+                let propertyName = NameUtils.capitalizeFirstLetter tableName
+                let typeName = uniqueNiceName tableName
+
+                let tableType = ProvidedTypeDefinition(typeName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
                 tableType.AddMember rowType
                 htmlType.AddMember tableType
-                tableContainer.AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)              
+                tableContainer.AddMember <| ProvidedProperty(propertyName, tableType, GetterCode = fun (Singleton doc) -> create doc)              
 
         htmlType

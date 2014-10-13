@@ -32,7 +32,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member Top250: HtmlProvider+Top250 with get
+    member ``Top 250``: HtmlProvider+Top250 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),

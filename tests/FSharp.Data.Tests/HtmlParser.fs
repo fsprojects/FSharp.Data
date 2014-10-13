@@ -297,9 +297,9 @@ let ``Can find header when nested in a div``() =
         |> List.map (fun t -> t.Name, t)
         |> Map.ofList
     
-    Map.containsKey "Ranking points[edit]" tables |> should equal true
-    Map.containsKey "Records[edit]" tables |> should equal true
-    Map.containsKey "Current champions[edit]" tables |> should equal true
+    Map.containsKey "Ranking points" tables |> should equal true
+    Map.containsKey "Records" tables |> should equal true
+    Map.containsKey "Current champions" tables |> should equal true
 
 [<Test>]
 let ``Can parse tables imdb chart``() = 

@@ -59,7 +59,7 @@ type HtmlTable =
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
 
-    let private getTableName defaultName nameSet (element:HtmlNode) (parents:HtmlNode list) = 
+    let private getTableName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let tryGetName choices =
             choices
@@ -88,17 +88,20 @@ module HtmlRuntime =
                 Regex.IsMatch(name, """h\d""")
             tryFindPrevious isHeading element parents            
 
+        let cleanup (str:String) =
+            HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
+
         match deriveFromSibling element parents with
-        | Some(e) when not(Set.contains e.InnerText nameSet) -> e.InnerText
+        | Some e -> cleanup e.InnerText
         | _ ->
                 match element.Descendants ["caption"] with
                 | [] ->
-                     match tryGetName [ "id"; "name"; "title"; "summary"] with
-                     | Some(name) when not(Set.contains name nameSet) -> name
+                     match tryGetName ["id"; "name"; "title"; "summary"] with
+                     | Some name -> cleanup name
                      | _ -> defaultName
                 | h :: _ -> h.InnerText
                 
-    let private parseTable includeLayoutTables (index, nameSet) (table:HtmlNode) (parents:HtmlNode list) missingValues cultureInfo unitsOfMeasureProvider = 
+    let private parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider makeUnique index (table:HtmlNode, parents:HtmlNode list)= 
 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         
@@ -137,7 +140,7 @@ module HtmlRuntime =
             
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider
 
-        let tableName = getTableName (sprintf "Table%d" (index + 1)) nameSet table parents
+        let tableName = makeUnique (getTableName (sprintf "Table%d" (index + 1)) table parents)
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
@@ -146,6 +149,7 @@ module HtmlRuntime =
                Html = table }
 
     let getTables includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (doc:HtmlDocument) =
+
         let tableElements = 
             [ doc.Elements ["table"]
               |> List.map (fun table -> table, [])
@@ -161,14 +165,10 @@ module HtmlRuntime =
                          then x 
                          else x |> List.filter (fun (e,_) -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)
                 )
-        let (_,_,tables) =
-            tableElements
-            |> List.fold (fun (index, names, tables) (table, parents) -> 
-                            match parseTable includeLayoutTables (index, names) table parents missingValues cultureInfo unitsOfMeasureProvider with
-                            | Some(table) -> index + 1, Set.add table.Name names, table::tables
-                            | None -> index + 1, names, tables
-                         ) (0, Set.empty, [])
-        tables |> List.rev
+        
+        tableElements
+        |> List.mapi (parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (NameUtils.uniqueGenerator id))
+        |> List.choose id
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
 

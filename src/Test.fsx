@@ -34,7 +34,7 @@ let dumpAll inst =
     dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "list_of_counties_wikipedia.html"
+Html { Sample = "doctor_who.html"
        PreferOptionals = false
        IncludeLayoutTables = false
        MissingValues = "NaN,NA,#N/A,:"

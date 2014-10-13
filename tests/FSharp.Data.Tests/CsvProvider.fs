@@ -223,9 +223,9 @@ let ``Columns explicitly overrided to string option should return None when empt
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
     let row2 = rows.[1]
-    row1.a |> should equal ""
-    row1.b |> should equal None
-    row1.c |> should equal (Some 1)
+    row1.A |> should equal ""
+    row1.B |> should equal None
+    row1.C |> should equal (Some 1)
     row2 |> should equal ("a", Some "b", Some 2)
 
 [<Test>]
@@ -234,10 +234,10 @@ let ``NaN's should work correctly when using option types`` () =
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
     let row2 = rows.[1]
-    row1.a |> should equal (Some 1.0)
-    row1.b |> should equal None
-    row2.a |> should equal None
-    row2.b |> should equal (Some 1.0)
+    row1.A |> should equal (Some 1.0)
+    row1.B |> should equal None
+    row2.A |> should equal None
+    row2.B |> should equal (Some 1.0)
     
 [<Test>]
 let ``Currency symbols on decimal columns should work``() =
@@ -280,9 +280,9 @@ type CsvWithoutSample = CsvProvider<Schema="category (string), id (string), time
 [<Test>]
 let ``Csv without sample``() = 
     let row = CsvWithoutSample.Parse("1,2,3").Rows |> Seq.exactlyOne
-    row.category |> should equal "1"
-    row.id |> should equal "2"
-    row.timestamp |> should equal "3"
+    row.Category |> should equal "1"
+    row.Id |> should equal "2"
+    row.Timestamp |> should equal "3"
 
 type UTF8 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
 type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">

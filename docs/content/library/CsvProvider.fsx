@@ -297,7 +297,7 @@ and still have the provider infer the type for you. Example:
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
 for row in csv.Rows do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.Foo (defaultArg row.Column3 1.0)
 
 (**
 

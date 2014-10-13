@@ -102,13 +102,14 @@ module private TextParser =
 
 module internal HtmlParser =
 
-    let regexOptions = 
+    let private regexOptions = 
 #if FX_NO_REGEX_COMPILATION
         RegexOptions.None
 #else
         RegexOptions.Compiled
 #endif
-    let private wsRegex = lazy Regex("\\s+", regexOptions)
+    let wsRegex = lazy Regex("\\s+", regexOptions)
+    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
 
     type HtmlToken =
         | DocType of string
