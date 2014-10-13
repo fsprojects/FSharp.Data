@@ -69,7 +69,7 @@ let ``Jim should have an age of 24``() =
 
 [<Test>]
 let ``Type of attribute with empty value is string`` = 
-  XmlProvider<"data/emptyValue.xml">.GetSample().A |> shouldEqual ""
+  XmlProvider<"Data/emptyValue.xml">.GetSample().A |> shouldEqual ""
 
 [<Test>]
 let ``Xml with namespaces``() = 
@@ -79,7 +79,7 @@ let ``Xml with namespaces``() =
 
 [<Test>]
 let ``Can read config with heterogeneous attribute types``() =
-  let config = XmlProvider<"data/heterogeneous.xml">.GetSample()
+  let config = XmlProvider<"Data/heterogeneous.xml">.GetSample()
   let opts = 
     [ for opt in config.Options -> 
         let set = opt.Node.Set in set.Boolean, set.Number, set.String ]
@@ -182,7 +182,7 @@ let ``XML elements with same name in different namespaces``() =
 [<Test>]
 let ``Optionality inferred correctly for child elements``() =
 
-    let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
+    let items = XmlProvider<"Data/missingInnerValue.xml", SampleIsList=true>.GetSamples()
     
     items.Length |> should equal 2
     let child1 = items.[0]
@@ -201,7 +201,7 @@ let ``Optionality inferred correctly for child elements``() =
 [<Test>]
 let ``Global inference with empty elements doesn't crash``() =
 
-    let items = XmlProvider<"data/missingInnerValue.xml", SampleIsList=true, Global=true>.GetSamples()
+    let items = XmlProvider<"Data/missingInnerValue.xml", SampleIsList=true, Global=true>.GetSamples()
     
     items.Length |> should equal 2
     let child1 = items.[0]
@@ -246,21 +246,21 @@ let ``Infers type and reads mixed RSS/Atom feed document`` () =
 
 [<Test>]
 let ``Optional value elements should work at runtime when attribute is missing`` () =
-    let samples = XmlProvider<"data/optionals1.xml", SampleIsList=true>.GetSamples()
+    let samples = XmlProvider<"Data/optionals1.xml", SampleIsList=true>.GetSamples()
     samples.[0].Description |> should equal (Some "B")
     samples.[1].Description |> should equal None
     samples.[2].Description |> should equal None
 
 [<Test>]
 let ``Optional value elements should work at runtime when element is missing`` () =
-    let samples = XmlProvider<"data/optionals2.xml", SampleIsList=true>.GetSamples()
+    let samples = XmlProvider<"Data/optionals2.xml", SampleIsList=true>.GetSamples()
     samples.[0].Channel.Items.[0].Description |> should equal None
     samples.[0].Channel.Items.[1].Description |> should equal (Some "A")
     samples.[1].Channel.Items.[0].Description |> should equal None
 
 [<Test>]
 let ``Optional value elements should work at runtime when element is missing 2`` () =
-    let samples = XmlProvider<"data/optionals3.xml", SampleIsList=true>.GetSamples()
+    let samples = XmlProvider<"Data/optionals3.xml", SampleIsList=true>.GetSamples()
     samples.[0].Channel.Items.[0].Title |> should equal (Some "A")
     samples.[1].Channel.Items.[0].Title |> should equal None
     samples.[1].Channel.Items.[1].Title |> should equal (Some "B")
@@ -281,7 +281,7 @@ let ``Collections are collapsed into just one element 2``() =
     x.Locations.[0].AvailableServices |> should equal ["Compute"; "Storage"]
     x.Locations.[1].AvailableServices |> should equal ["Compute"; "Storage"; "PersistentVMRole"; "HighMemory"]
 
-type JsonInXml = XmlProvider<"data/JsonInXml.xml", SampleIsList=true>
+type JsonInXml = XmlProvider<"Data/JsonInXml.xml", SampleIsList=true>
 
 [<Test>]
 let ``Json inside Xml``() =
