@@ -118,7 +118,7 @@ let recent =
 (*** define-output:chart2 ***)
 
 // ローソクチャートを使って株価をビジュアル化
-Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+Chart.Candlestick(recent).WithYAxis(Min = 40.0, Max = 50.0)
 
 (*** include-it:chart2 ***)
 
