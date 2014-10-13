@@ -32,10 +32,10 @@ The Elexon - BM Reports website provides market data about the U.K's current pow
 
 
 Usually with HTML files headers are demarked by using the <th> tag, however in this file this is not the case, so the provider assumes that the
-first row is headers. (This behaviour is likely to get smarer in later releases). But it highlights a general problem about HTML's strictness. 
+first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness. 
 *)
 
-type MarketDepth = HtmlProvider<"http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet">
+type MarketDepth = HtmlProvider<"../data/MarketDepth.htm">
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
@@ -46,7 +46,7 @@ The following sample calls the `Load` method with an URL that points to a live m
 *)
  
 // Download the latest market depth information
-let mrktDepth = MarketDepth().Tables.Table1
+let mrktDepth = MarketDepth.Load("http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet").Tables.Table1
 
 // Look at the most recent row. Note the 'Date' property
 // is of type 'DateTime' and 'Open' has a type 'decimal'
@@ -75,25 +75,11 @@ be parsed as dates) while other columns are inferred as `decimal` or `float`.
 ### Parsing Nuget package stats
 
 This small sample shows how the HTML type provider can be used to scrape data from a website. In this case we analyze the download counts of the FSharp.Data package on nuget.
+Note that we're using the live url as the sample, so we can just use the default constructor as the runtime data will be the same as the compile time data.
 
 *)
 
 (*** define-output:nugetChart ***)
-
-open System
-
-// helper function to analyze version numbers from nuget
-let getMinorVersion (v:string) =
-  try
-      let parts' = v.Replace("(this version)","").Split([|' '|], StringSplitOptions.RemoveEmptyEntries)
-      let parts = parts' |> Seq.last |> fun x -> x.Split([|'.'|])
-      parts.[0] + "." + parts.[1]
-  with 
-  | exn -> v
-
-// Load the FSharp.Charting library
-#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
-open FSharp.Charting
 
 // Configure the type provider
 type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
@@ -101,16 +87,44 @@ type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 // load the live package stats for FSharp.Data
 let rawStats = NugetStats().Tables.VersionHistory
 
+// helper function to analyze version numbers from nuget
+let getMinorVersion (v:string) =  System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
+
 // group by minor version and calculate download count
 let stats = 
     rawStats.Rows
     |> Seq.groupBy (fun r -> getMinorVersion r.Version)
-    |> Seq.map (fun (k,xs) -> k,xs |> Seq.sumBy (fun x -> x.Downloads))
+    |> Seq.map (fun (k, xs) -> k, xs |> Seq.sumBy (fun x -> x.Downloads))
+
+// Load the FSharp.Charting library
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+open FSharp.Charting
 
 // Visualize the package stats
 Chart.Bar stats
 
 (*** include-it:nugetChart ***)
+
+(**
+
+### Getting statistics on Doctor Who 
+
+*)
+
+(*** define-output:doctorWhoChart ***)
+
+let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials">()
+
+// Get the average number of viewers for each doctor
+let viewersByDoctor = 
+    doctorWho.Tables.OverviewOfSeasonsAndSeries.Rows 
+    |> Seq.groupBy (fun season -> season.Doctor)
+    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Average viewers (in millions)``))
+
+// Visualize it
+(Chart.Column viewersByDoctor).WithYAxis(Title = "Millions")
+
+(*** include-it:doctorWhoChart ***)
 
 (**
 ## Related articles
