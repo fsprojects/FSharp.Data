@@ -32,7 +32,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member AddingSomeMoreFeatures: HtmlProvider+AddingSomeMoreFeatures with get
+    member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -44,7 +44,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Adding some more features")
 
-    member StructuringTheTableFurther: HtmlProvider+StructuringTheTableFurther with get
+    member ``Structuring the table further``: HtmlProvider+StructuringTheTableFurther with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
@@ -56,7 +56,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Structuring the table further")
 
-    member TheMostBasicTable: HtmlProvider+TheMostBasicTable with get
+    member ``The most basic table``: HtmlProvider+TheMostBasicTable with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),

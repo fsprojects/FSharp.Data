@@ -81,7 +81,10 @@ let uniqueGenerator niceName =
       while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
         lastLetterPos <- lastLetterPos - 1
       if lastLetterPos = name.Length - 1 then
-        name <- name + "2"
+        if name.Contains " " then
+            name <- name + " 2"
+        else
+            name <- name + "2"
       elif lastLetterPos = 0 && name.Length = 1 then
         name <- (UInt64.Parse name + 1UL).ToString()
       else
@@ -89,6 +92,9 @@ let uniqueGenerator niceName =
         name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
     set.Add name |> ignore
     name
+
+let capitalizeFirstLetter (s:string) =
+    (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive 

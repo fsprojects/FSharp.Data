@@ -1,5 +1,6 @@
 #### 2.1.0-beta2 - Unreleased
 * Added TBA and TBD to list of default missing values.
+* Improve generated table names in HtmlProvider.
 
 #### 2.1.0-beta - October 12 2014
 * New logo.

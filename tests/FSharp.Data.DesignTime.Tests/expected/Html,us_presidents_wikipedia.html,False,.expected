@@ -32,7 +32,7 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member ListOfPresidents: HtmlProvider+ListOfPresidents with get
+    member ``List of presidents``: HtmlProvider+ListOfPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("№", TextRuntime.ConvertInteger("", value), value),
@@ -53,10 +53,10 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[8])
                                         TextRuntime.GetNonOptionalValue("Vice President", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[9])
-                                        TextRuntime.GetNonOptionalValue("Vice President2", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Vice President 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "List of presidents")
 
-    member LivingFormerPresidents: HtmlProvider+LivingFormerPresidents with get
+    member ``Living former presidents``: HtmlProvider+LivingFormerPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("President", TextRuntime.ConvertString(value), value),
@@ -71,7 +71,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Chief executives of the United States", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Chief executives of the United States2", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Chief executives of the United States 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table10")
 
     member Table12: HtmlProvider+Table12 with get
@@ -79,7 +79,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States2", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Lists related to the Presidents and Vice Presidents of the United States 2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table12")
 
 
@@ -121,7 +121,7 @@ class HtmlProvider+ListOfPresidents+Row : int * string * string * string * strin
     member ``Vice President``: string with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
 
-    member ``Vice President2``: string with get
+    member ``Vice President 2``: string with get
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
 
     member №: int with get
@@ -145,7 +145,7 @@ class HtmlProvider+Table10+Row : string * string
     member ``Chief executives of the United States``: string with get
     (let t1,_ = this in t1)
 
-    member ``Chief executives of the United States2``: string with get
+    member ``Chief executives of the United States 2``: string with get
     (let _,t2 = this in t2)
 
 
@@ -154,7 +154,7 @@ class HtmlProvider+Table12+Row : string * string
     member ``Lists related to the Presidents and Vice Presidents of the United States``: string with get
     (let t1,_ = this in t1)
 
-    member ``Lists related to the Presidents and Vice Presidents of the United States2``: string with get
+    member ``Lists related to the Presidents and Vice Presidents of the United States 2``: string with get
     (let _,t2 = this in t2)
 
 

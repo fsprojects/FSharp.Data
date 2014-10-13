@@ -85,7 +85,7 @@ Note that we're using the live url as the sample, so we can just use the default
 type NugetStats = HtmlProvider<"https://www.nuget.org/packages/FSharp.Data">
 
 // load the live package stats for FSharp.Data
-let rawStats = NugetStats().Tables.VersionHistory
+let rawStats = NugetStats().Tables.``Version History``
 
 // helper function to analyze version numbers from nuget
 let getMinorVersion (v:string) =  System.Text.RegularExpressions.Regex(@"\d.\d").Match(v).Value
@@ -117,7 +117,7 @@ let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Wh
 
 // Get the average number of viewers for each doctor
 let viewersByDoctor = 
-    doctorWho.Tables.OverviewOfSeasonsAndSeries.Rows 
+    doctorWho.Tables.``Overview of seasons and series``.Rows 
     |> Seq.groupBy (fun season -> season.Doctor)
     |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Average viewers (in millions)``))
 
