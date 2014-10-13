@@ -249,7 +249,7 @@ let ``Currency symbols on decimal columns should work``() =
 let ``AssumeMissingValues works when inferRows limit is reached``() = 
     let errorMessage =
         try
-            (CsvProvider<"Data/AdWords.csv", InferRows=4>.GetSample().Rows
+            (CsvProvider<"Data/Adwords.csv", InferRows=4>.GetSample().Rows
              |> Seq.skip 4 |> Seq.head).``Parent ID``.ToString()
         with e -> e.Message
     errorMessage |> should equal "Couldn't parse row 5 according to schema: Parent ID is missing"
@@ -284,8 +284,8 @@ let ``Csv without sample``() =
     row.id |> should equal "2"
     row.timestamp |> should equal "3"
 
-type UTF8 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
-type CP932 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+type UTF8 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
+type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
 [<Test>]
 let ``Uses UTF8 for sample file when encoding not specified``() =
