@@ -16,12 +16,12 @@ module private Helpers =
   /// Convert the result of TryParse to option type
   let asOption = function true, v -> Some v | _ -> None
 
-  let (|StringEquals|_|) (s1:string) s2 = 
+  let (|StringEqualsIgnoreCase|_|) (s1:string) s2 = 
     if s1.Equals(s2, StringComparison.OrdinalIgnoreCase) 
       then Some () else None
 
-  let (|OneOf|_|) set str = 
-    if Array.exists ((=) str) set then Some() else None
+  let (|OneOfIgnoreCase|_|) set str = 
+    if Array.exists (fun s -> StringComparer.OrdinalIgnoreCase.Compare(s, str) = 0) set then Some() else None
 
   let regexOptions = 
 #if FX_NO_REGEX_COMPILATION
@@ -38,7 +38,7 @@ module private Helpers =
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions = 
 
-  static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"; "-"|]
+  static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD"|]
 
   /// Turns empty or null string value into None, otherwise returns Some
   static member AsString str =
@@ -56,7 +56,7 @@ type TextConversions =
   /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
   static member AsFloat missingValues useNoneForMissingValues cultureInfo (text:string) = 
     match text.Trim() with
-    | OneOf missingValues -> if useNoneForMissingValues then None else Some Double.NaN
+    | OneOfIgnoreCase missingValues -> if useNoneForMissingValues then None else Some Double.NaN
     | _ -> Double.TryParse(text, NumberStyles.Float, cultureInfo)
            |> asOption
            |> Option.bind (fun f -> if useNoneForMissingValues && Double.IsNaN f then None else Some f)
@@ -64,8 +64,8 @@ type TextConversions =
   // cultureInfo is ignored for now, but might not be in the future, so we're keeping in in the API
   static member AsBoolean (_cultureInfo:IFormatProvider) (text:string) =     
     match text.Trim() with
-    | StringEquals "true" | StringEquals "yes" | StringEquals "1" -> Some true
-    | StringEquals "false" | StringEquals "no" | StringEquals "0" -> Some false
+    | StringEqualsIgnoreCase "true" | StringEqualsIgnoreCase "yes" | StringEqualsIgnoreCase "1" -> Some true
+    | StringEqualsIgnoreCase "false" | StringEqualsIgnoreCase "no" | StringEqualsIgnoreCase "0" -> Some false
     | _ -> None
 
   /// Parse date time using either the JSON milliseconds format or using ISO 8601
