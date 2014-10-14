@@ -2,6 +2,18 @@
 // Utilities for working with network, downloading resources with specified headers etc.
 // --------------------------------------------------------------------------------------
 
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+
+namespace System.Runtime.InteropServices
+
+open System
+
+[<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
+type OptionalAttribute() = 
+    inherit Attribute()
+
+#endif
+
 namespace FSharp.Data
 
 open System
@@ -11,6 +23,7 @@ open System.Net
 open System.Text
 open System.Reflection
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
@@ -403,8 +416,8 @@ module private Helpers =
 
     let setHeaders headers (req:HttpWebRequest) =
         let hasContentType = ref false
-        headers |> Option.iter (checkForRepeatedHeaders [])
-        headers |> Option.iter (List.iter (fun (header:string, value) ->
+        checkForRepeatedHeaders [] headers
+        headers |> List.iter (fun (header:string, value) ->
             match header.ToLowerInvariant() with
             | "accept" -> req.Accept <- value
             | "accept-charset" -> req.Headers.[HeaderEnum.AcceptCharset] <- value
@@ -484,7 +497,8 @@ module private Helpers =
 #endif
             | "via" -> req.Headers.[HeaderEnum.Via] <- value
             | "warning" -> req.Headers.[HeaderEnum.Warning] <- value
-            | _ -> req.Headers.[header] <- value))
+            | _ -> req.Headers.[header] <- value
+        )
         hasContentType.Value
 
     let getResponse (req:HttpWebRequest) silentHttpErrors =
@@ -639,8 +653,8 @@ type Http private() =
             + if url.Contains "?" then "&" else "?"
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
-    static member private InnerRequest(url:string, toHttpResponse, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, 
-                                       ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) =
+    static member private InnerRequest(url:string, toHttpResponse, [<Optional>] ?query, [<Optional>] ?headers:seq<_>, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies:seq<_>, [<Optional>] ?cookieContainer, 
+                                       ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes
@@ -653,6 +667,7 @@ type Http private() =
         req.Method <- (defaultArg httpMethod defaultMethod).ToString()
 
         // set headers
+        let headers = defaultArg (Option.map List.ofSeq headers) []
         let hasContentType = setHeaders headers req
 
         let nativeAutomaticDecompression = ref true
@@ -670,7 +685,7 @@ type Http private() =
 
         match cookies with
         | None -> ()
-        | Some cookies -> cookies |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
+        | Some cookies -> cookies |> List.ofSeq |> List.iter (fun (name, value) -> cookieContainer.Add(req.RequestUri, Cookie(name, value)))
         try
             req.CookieContainer <- cookieContainer
         with :? NotImplementedException ->
@@ -748,7 +763,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequest(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member AsyncRequest(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.InnerRequest(url, toHttpResponse (*forceText*)false, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
 
@@ -757,7 +772,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = async {
+    static member AsyncRequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = async {
         let! response = Http.InnerRequest(url, toHttpResponse (*forceText*)true, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
         return
@@ -771,7 +786,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member AsyncRequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) =
+    static member AsyncRequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) =
         let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             let! stream = async {
                 // this only applies when automatic decompression is off
@@ -799,7 +814,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member Request(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member Request(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequest(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                           ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
         |> Async.RunSynchronously
@@ -809,7 +824,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member RequestString(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?responseEncodingOverride, ?customizeHttpRequest) = 
+    static member RequestString(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequestString(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?silentHttpErrors=silentHttpErrors, ?responseEncodingOverride=responseEncodingOverride, ?customizeHttpRequest=customizeHttpRequest)
         |> Async.RunSynchronously
@@ -819,7 +834,7 @@ type Http private() =
     /// headers that have to be handled specially - such as Accept, Content-Type & Referer)
     /// The body for POST request can be specified either as text or as a list of parameters
     /// that will be encoded, and the method will automatically be set if not specified
-    static member RequestStream(url, ?query, ?headers, ?httpMethod, ?body, ?cookies, ?cookieContainer, ?silentHttpErrors, ?customizeHttpRequest) = 
+    static member RequestStream(url, [<Optional>] ?query, [<Optional>] ?headers, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies, [<Optional>] ?cookieContainer, [<Optional>] ?silentHttpErrors, [<Optional>] ?customizeHttpRequest) = 
         Http.AsyncRequestStream(url, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
                                 ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
         |> Async.RunSynchronously

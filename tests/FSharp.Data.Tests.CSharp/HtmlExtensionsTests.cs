@@ -11,14 +11,14 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void HtmlAttribute_Name_with_valid_attribute()
         {
-            var attr = HtmlAttribute.NewHtmlAttribute("id", "table_1");
+            var attr = HtmlAttribute.New("id", "table_1");
             Assert.AreEqual("id", attr.Name());
         }
 
         [Test]
         public void HtmlAttribute_Value_with_valid_attribute()
         {
-            var attr = HtmlAttribute.NewHtmlAttribute("id", "table_1");
+            var attr = HtmlAttribute.New("id", "table_1");
             Assert.AreEqual("table_1", attr.Value());
         }
 
@@ -32,7 +32,7 @@ namespace FSharp.Data.Tests.CSharp
         [Test]
         public void HtmlNode_Child_no_children_with_text_element()
         {
-            var node = HtmlNode.NewHtmlText("Hello");
+            var node = HtmlNode.NewText("Hello");
             Assert.AreEqual(0, node.Children().Length);
         }
 
@@ -40,15 +40,22 @@ namespace FSharp.Data.Tests.CSharp
         public void HtmlElement_TryGetAttribute_none_with_bad_attribute()
         {
             var node = CreateDivElement();
-            Assert.AreEqual(Microsoft.FSharp.Core.FSharpOption<string>.None, node.TryGetAttribute("bad"));
+            Assert.AreEqual(null, node.TryGetAttribute("bad"));
+        }
+
+        [Test]
+        public void HtmlElement_Elements_none_with_bad_attribute()
+        {
+            var node = CreateDivElement();
+            Assert.IsTrue(node.Elements(new[] { "bad" }).IsEmpty);
         }
 
         private static HtmlNode CreateDivElement()
         {
-            var node = HtmlNode.NewHtmlElement(
+            var node = HtmlNode.NewElement(
                 "div",
-                ListModule.OfSeq(new[] { HtmlAttribute.NewHtmlAttribute("id", "my_div"), HtmlAttribute.NewHtmlAttribute("class", "my_class") }),
-                FSharpList<HtmlNode>.Empty);
+                new[] { Tuple.Create("id", "my_div"), Tuple.Create("class", "my_class") },
+                new HtmlNode[0]);
             return node;
         }
     }
