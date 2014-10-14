@@ -3,6 +3,7 @@ module FSharp.Data.Runtime.CsvInference
 
 open System
 open System.IO
+open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
@@ -334,7 +335,7 @@ type CsvFile with
     /// * assumeMissingValues - Assumes all columns can have missing values
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
     /// * unitsOfMeasureProvider - optional function to resolve Units of Measure
-    member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, ?unitsOfMeasureProvider) =
+    member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, [<Optional>] ?unitsOfMeasureProvider) =
         let headerNamesAndUnits, schema = parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
         inferColumnTypes headerNamesAndUnits
                          schema

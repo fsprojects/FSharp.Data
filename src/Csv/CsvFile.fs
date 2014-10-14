@@ -34,7 +34,7 @@ type CsvRow(parent:CsvFile, columns:string[]) =
 /// If `hasHeaders` is true (the default), the first line read by `reader` will not be considered part of data.
 /// If `ignoreErrors` is true (the default is false), rows with a different number of columns from the header row
 /// (or the first row if headers are not present) will be ignored.
-and CsvFile private (readerFunc:Func<TextReader>, ?separators, ?quote, ?hasHeaders, ?ignoreErrors) as this =
+and CsvFile private (readerFunc:Func<TextReader>, [<Optional>] ?separators, [<Optional>] ?quote, [<Optional>] ?hasHeaders, [<Optional>] ?ignoreErrors) as this =
   inherit CsvFile<CsvRow>(
     Func<_,_,_>(fun this columns -> CsvRow(this :?> CsvFile, columns)),
     Func<_,_>(fun row -> row.Columns),

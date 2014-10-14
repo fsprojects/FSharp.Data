@@ -5,9 +5,18 @@ open System.IO
 open FSharp.Data
 open FSharp.Data.Runtime
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlAttribute = 
+
+    /// <summary>
+    /// Creates an html attribute
+    /// </summary>
+    /// <param name="name">The name of the attribute</param>
+    /// <param name="value">The value of the attribute</param>
+    let createAttr name value =
+        HtmlAttribute.New(name, value)
 
     /// Gets the name of the given attribute
     let name attr = 
@@ -64,27 +73,27 @@ type HtmlAttributeExtensions =
 module HtmlNode = 
     
     /// <summary>
-    /// Creates a HtmlElement
-    /// All attribute names and tag names will be normalized to lowercase
+    /// Creates an html element
     /// </summary>
     /// <param name="name">The name of the element</param>
     /// <param name="attrs">The HtmlAttribute(s) of the element</param>
     /// <param name="children">The children elements of this element</param>
     let createElement (name:string) attrs children =
-        let attrs = Seq.map (fun (name:string, value) -> HtmlAttribute(name.ToLowerInvariant(), value)) attrs |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, children)
+        HtmlNode.NewElement(name, attrs, children)
     
     /// <summary>
     /// Creates a text content element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createText content = HtmlText(content)
+    let createText content = 
+        HtmlNode.NewText(content)
 
     /// <summary>
     /// Creates a comment element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createComment content = HtmlComment(content)
+    let createComment content = 
+        HtmlNode.NewComment(content)
 
     /// Gets the given nodes name
     let name x =
@@ -318,7 +327,7 @@ type HtmlNodeExtensions =
     /// <param name="f">The predicate for which descendants to return</param>
     /// <param name="includeSelf">include the current node</param>
     [<Extension>]
-    static member Descendants(n:HtmlNode, ?f, ?includeSelf, ?recurseOnMatch) = 
+    static member Descendants(n:HtmlNode, [<Optional>] ?f, [<Optional>] ?includeSelf, [<Optional>] ?recurseOnMatch) = 
         let f = defaultArg f (fun _ -> true)
         let recurseOnMatch = defaultArg recurseOnMatch true
         if (defaultArg includeSelf false)
@@ -332,7 +341,7 @@ type HtmlNodeExtensions =
     /// <param name="names">The set of names by which to map the descendants</param>
     /// <param name="includeSelf">include the current node</param>
     [<Extension>]
-    static member Descendants(n:HtmlNode, names:seq<string>, ?includeSelf, ?recurseOnMatch) = 
+    static member Descendants(n:HtmlNode, names:seq<string>, [<Optional>] ?includeSelf, [<Optional>] ?recurseOnMatch) = 
         let recurseOnMatch = defaultArg recurseOnMatch true
         if (defaultArg includeSelf false)
         then HtmlNode.descendantsAndSelfNamed recurseOnMatch names n
@@ -343,7 +352,7 @@ type HtmlNodeExtensions =
     /// </summary>
     /// <param name="name">The name of the attribute to select</param>
     [<Extension>]
-    static member TryGetAttribute(n:HtmlNode, name : string) = HtmlNode.tryGetAttribute name n
+    static member TryGetAttribute(n:HtmlNode, name:string) = HtmlNode.tryGetAttribute name n
 
     /// <summary>
     /// Trys to return a parsed value of the named attribute.
@@ -378,7 +387,7 @@ type HtmlNodeExtensions =
     /// <param name="f">The predicate by which to match nodes</param>
     /// <param name="includeSelf">include the current node</param>
     [<Extension>]
-    static member Elements(n:HtmlNode, ?f, ?includeSelf) = 
+    static member Elements(n:HtmlNode, [<Optional>] ?f, [<Optional>] ?includeSelf) = 
         let f = defaultArg f (fun _ -> true)
         if (defaultArg includeSelf false)
         then HtmlNode.elementsAndSelf f n
@@ -390,7 +399,7 @@ type HtmlNodeExtensions =
     /// <param name="names">The set of names by which to map the elements</param>
     /// <param name="includeSelf">include the current node</param>
     [<Extension>]
-    static member Elements(n:HtmlNode, names:seq<string>, ?includeSelf) = 
+    static member Elements(n:HtmlNode, names:seq<string>, [<Optional>] ?includeSelf) = 
         if (defaultArg includeSelf false)
         then HtmlNode.elementsAndSelfNamed names n
         else HtmlNode.elementsNamed names n
@@ -426,12 +435,12 @@ module HtmlNodeExtensions =
 module HtmlDocument = 
     
     /// <summary>
-    /// Creates a HtmlDocument
+    /// Creates an html document
     /// </summary>
     /// <param name="docType">The document type specifier string</param>
     /// <param name="children">The child elements of this document</param>
     let createDoc docType children = 
-        HtmlDocument(docType, children)
+        HtmlDocument.New(docType, children)
 
     /// Returns the doctype of the document
     let docType x =
@@ -541,7 +550,7 @@ type HtmlDocumentExtensions =
     /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
     /// <param name="f">The predicate by which to match the nodes to return</param>
     [<Extension>]
-    static member Descendants(d:HtmlDocument, ?f, ?recurseOnMatch) = 
+    static member Descendants(d:HtmlDocument, [<Optional>] ?f, [<Optional>] ?recurseOnMatch) = 
         let f = defaultArg f (fun _ -> true)
         let recurseOnMatch = defaultArg recurseOnMatch true
         HtmlDocument.descendants recurseOnMatch f d
@@ -552,7 +561,7 @@ type HtmlDocumentExtensions =
     /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
     /// <param name="names">The set of names to match</param>
     [<Extension>]
-    static member Descendants(d:HtmlDocument, names, ?recurseOnMatch) =
+    static member Descendants(d:HtmlDocument, names:seq<string>, [<Optional>] ?recurseOnMatch) =
         let recurseOnMatch = defaultArg recurseOnMatch true
         HtmlDocument.descendantsNamed recurseOnMatch names d
 
@@ -562,7 +571,7 @@ type HtmlDocumentExtensions =
     /// </summary>
     /// <param name="f">The predicate used to match elements</param>
     [<Extension>]
-    static member Elements(d:HtmlDocument, ?f) = 
+    static member Elements(d:HtmlDocument, [<Optional>] ?f) = 
         let f = defaultArg f (fun _ -> true)
         HtmlDocument.elements f d
 
@@ -571,7 +580,7 @@ type HtmlDocumentExtensions =
     /// </summary>
     /// <param name="names">The set of names to match</param>
     [<Extension>]
-    static member Elements(d:HtmlDocument, names) = 
+    static member Elements(d:HtmlDocument, names:seq<string>) = 
         HtmlDocument.elementsNamed names d
 
 [<AutoOpen>]
