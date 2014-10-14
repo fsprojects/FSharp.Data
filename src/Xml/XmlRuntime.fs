@@ -31,7 +31,7 @@ module XElementExtensions =
           httpMethod = httpMethod)
 
       /// Sends the XML to the specified uri. Defaults to a POST request.
-      member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
+      member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
         let httpMethod = defaultArg httpMethod HttpMethod.Post
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
