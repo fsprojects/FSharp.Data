@@ -66,7 +66,7 @@ let ``Can handle unclosed tags correctly``() =
 [<Test>]
 let ``Can handle multiple char refs in a text run``() = 
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
-    let result = html.Head.InnerText 
+    let result = html.Head.InnerText()
     result |> should equal "\"Foo\""
 
 [<Test>]
