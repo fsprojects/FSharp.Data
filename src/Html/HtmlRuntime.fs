@@ -92,14 +92,14 @@ module HtmlRuntime =
             HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
 
         match deriveFromSibling element parents with
-        | Some e -> cleanup e.InnerText
+        | Some e -> cleanup(e.InnerText())
         | _ ->
                 match element.Descendants ["caption"] with
                 | [] ->
                      match tryGetName ["id"; "name"; "title"; "summary"] with
                      | Some name -> cleanup name
                      | _ -> defaultName
-                | h :: _ -> h.InnerText
+                | h :: _ -> h.InnerText()
                 
     let private parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider makeUnique index (table:HtmlNode, parents:HtmlNode list)= 
 
