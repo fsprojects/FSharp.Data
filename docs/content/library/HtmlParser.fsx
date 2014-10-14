@@ -34,7 +34,7 @@ let links =
     results.Descendants ["a"]
     |> Seq.choose (fun x -> 
            x.TryGetAttribute("href")
-           |> Option.map (fun a -> x.InnerText, a.Value())
+           |> Option.map (fun a -> x.InnerText(), a.Value())
     )
 
 (**

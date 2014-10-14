@@ -57,8 +57,8 @@ namespace. Once opened, we can write:
  * `[ for v in value -> v ]` treats `value` as a collection and iterates over it;
    alternatively, it is possible to cobtain all elements as an array using 
    `value.AsArray()`.
- * `value.Properties` returns a list of all properties of a record node
- * `value.InnerText` concatenates all text or text in an array 
+ * `value.Properties()` returns a list of all properties of a record node
+ * `value.InnerText()` concatenates all text or text in an array 
    (representing e.g. multi-line string)
 
 Methods that may need to parse a numeric value or date (such as `AsFloat` and
