@@ -4,8 +4,8 @@
 This article demonstrates how to use the HTML type provider to read HTML tables files
 in a statically typed way. 
 
-The HTML type provider takes a sample HTML document as input and generates a type based on the data
-present on the columns of that sample. The column names are obtained from the first (header) row.
+The HTML Type Provider takes a sample HTML document as input and generates a type based on the data
+present in the columns of that sample. The column names are obtained from the first (header) row.
 
 ## Introducing the provider
 
@@ -20,8 +20,8 @@ open FSharp.Data
 
 ### Parsing Power Market Data
 
-The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicty an example of this data below is shown in a CSV format,
- (you can see an example of the raw html document this data was extracted from in [`data/MarketDepth.htm`](../data/MarketDepth.htm)):
+The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format,
+ (you can see an example of the raw HTML document this data was extracted from in [`data/MarketDepth.htm`](../data/MarketDepth.htm)):
 
     [lang=text]
     Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
@@ -39,9 +39,9 @@ type MarketDepth = HtmlProvider<"../data/MarketDepth.htm">
 
 (**
 The generated type provides a type space of tables that it has managed to parse out of the given HTML Document.
-Each types name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
-entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML doc if all of the tables were flatterned out into a list.
-The `Load` method allows reading the data from a file or from a web resource. We could also have used a web url instead of a local file in the sample parameter of the type provider.
+Each type's name is derived from either the id, title, name, summary or caption attributes/tags provided. If none of these 
+entities exist then the table will simply be named `Tablexx` where xx is the position in the HTML document if all of the tables were flatterned out into a list.
+The `Load` method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live market depth servlet on the BM Reports website.
 *)
  
@@ -74,8 +74,8 @@ be parsed as dates) while other columns are inferred as `decimal` or `float`.
 
 ### Parsing Nuget package stats
 
-This small sample shows how the HTML type provider can be used to scrape data from a website. In this case we analyze the download counts of the FSharp.Data package on nuget.
-Note that we're using the live url as the sample, so we can just use the default constructor as the runtime data will be the same as the compile time data.
+This small sample shows how the HTML Type Provider can be used to scrape data from a website. In this example we analyze the download counts of the FSharp.Data package on NuGet.
+Note that we're using the live URL as the sample, so we can just use the default constructor as the runtime data will be the same as the compile time data.
 
 *)
 
