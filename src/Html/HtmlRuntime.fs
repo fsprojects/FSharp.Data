@@ -52,7 +52,7 @@ type HtmlTable =
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
 
-    let private getTableName defaultName nameSet (element:HtmlNode) (parents:HtmlNode list) = 
+    let private getName defaultName nameSet (element:HtmlNode) (parents:HtmlNode list) = 
 
         let tryGetName choices =
             choices
@@ -138,7 +138,7 @@ module HtmlRuntime =
             then sprintf "Column%d" (i + 1)
             else header)
 
-        let tableName = getTableName (sprintf "Table%d" (index + 1)) nameSet table parents
+        let tableName = getName (sprintf "Table%d" (index + 1)) nameSet table parents
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
@@ -172,17 +172,36 @@ module HtmlRuntime =
         tables |> List.rev
 
     let getLists (doc:HtmlDocument) =
-        let lists = 
-            doc.Descendants ["ol"; "ul"; "dl"]
-            |> List.mapi (fun i listNode -> 
-                sprintf "List%d" (i + 1), listNode, listNode.Descendants ["li"; "dt"; "dd"]
-            )
-        lists 
-        |> List.map (fun (name, listnode, rows) ->
-                 { Name = name
-                   Headers = [|"List Value"|]
-                   Rows = rows |> List.map (fun r -> [| r.InnerText |]) |> List.toArray
-                   Html = listnode })
+        let listElements = 
+            [ doc.Elements ["ol"; "ul"; "dl"]
+              |> List.map (fun table -> table, [])
+              
+              doc.Elements(fun x -> x.Elements ["ol"; "ul"; "dl"] <> [])
+              |> List.collect (fun parent -> parent.Elements ["ol"; "ul"; "dl"] |> List.map (fun table -> table, [parent]))
+              
+              doc.Descendants(fun x -> x.Elements(fun x -> x.Elements ["ol"; "ul"; "dl"] <> []) <> [])
+              |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements ["ol"; "ul"; "dl"] |> List.map (fun table -> table, [parent; grandParent])))
+            ]
+            |> List.concat
+        let (_, _, lists) = 
+            listElements
+            |> List.fold (fun (index, names, lists) (list, parents) -> 
+                let name = getName (sprintf "List%d" index) names list parents
+                let rows = (list.Descendants ["li"; "dt"; "dd"]) |> List.map (fun r -> [| r.InnerText |]) |> List.toArray
+                let list =
+                    { Name = name; 
+                      Headers = [|"Value"|]
+                      Rows = rows
+                      Html = list }
+                ((index + 1), (Set.add name names), list::lists)
+            ) (0, Set.empty, [])
+        lists |> List.rev
+
+    let getHtmlElements includeLayoutTables (doc:HtmlDocument) = 
+        [
+            "Tables", getTables includeLayoutTables doc
+            "Lists", getLists doc
+        ]
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
 

@@ -33,19 +33,25 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let resource = args.[7] :?> string
 
         let getSpecFromSamples samples = 
-      
-            let tables : HtmlTable list = Seq.exactlyOne samples
+            
+            let samples = Seq.exactlyOne samples
 
-            let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
-                tables 
-                |> List.filter (fun table -> table.Headers.Length > 0)
-                |> List.map (fun table -> table.Name,
-                                          HtmlInference.inferColumns preferOptionals 
-                                                                     (TextRuntime.GetMissingValues missingValuesStr)
-                                                                     (TextRuntime.GetCulture cultureStr)
-                                                                     table.Headers 
-                                                                     table.Rows)
-                |> HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer
+            let htmlType = using (IO.logTime "Inference" sample) <| fun _ -> 
+                let t =
+                    samples
+                    |> List.map (fun (group, tables) -> 
+                            group, 
+                            (tables
+                             |> List.filter (fun table -> table.Headers.Length > 0)
+                             |> List.map (fun table -> 
+                                    (table.Name,
+                                            HtmlInference.inferColumns preferOptionals 
+                                                                       (TextRuntime.GetMissingValues missingValuesStr)
+                                                                       (TextRuntime.GetCulture cultureStr)
+                                                                       table.Headers 
+                                                                       table.Rows)))
+                    )
+                HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer t
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
@@ -54,7 +60,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse >> HtmlRuntime.getTables includeLayoutTables) (fun _ _ -> failwith "Not Applicable")
+        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse >> HtmlRuntime.getHtmlElements includeLayoutTables) (fun _ _ -> failwith "Not Applicable")
                      getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName
 
     // Add static parameter that specifies the API we want to get (compile-time) 
