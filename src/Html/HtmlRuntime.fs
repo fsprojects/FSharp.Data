@@ -47,10 +47,47 @@ type HtmlTable =
             wr.WriteLine()
         sb.ToString()
 
+type HtmlList = 
+    {
+        Name : string
+        Values : string []
+        Html : HtmlNode
+    }
+
+type HtmlDefinitionList = 
+    {
+       Name : string
+       Definitions : HtmlList list
+       Html : HtmlNode
+    }
+
+type HtmlObject = 
+    | Table of HtmlTable
+    | List of HtmlList
+    | DefinitionList of HtmlDefinitionList
+    with 
+        member x.Name
+            with get() = 
+                match x with
+                | Table(t) -> t.Name
+                | List(l) -> l.Name
+                | DefinitionList(dl) -> dl.Name
 // --------------------------------------------------------------------------------------
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
+    
+    let private findElementWithRelations (names:seq<string>) (doc:HtmlDocument) =
+        [ doc.Elements names
+          |> List.map (fun table -> table, [])
+          
+          doc.Elements(fun x -> x.Elements names <> [])
+          |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent]))
+          
+          doc.Descendants(fun x -> x.Elements(fun x -> x.Elements names <> []) <> [])
+          |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent; grandParent])))
+        ]
+        |> List.concat
 
     let private getName defaultName nameSet (element:HtmlNode) (parents:HtmlNode list) = 
 
@@ -148,16 +185,7 @@ module HtmlRuntime =
 
     let getTables includeLayoutTables (doc:HtmlDocument) =
         let tableElements = 
-            [ doc.Elements ["table"]
-              |> List.map (fun table -> table, [])
-              
-              doc.Elements(fun x -> x.Elements ["table"] <> [])
-              |> List.collect (fun parent -> parent.Elements ["table"] |> List.map (fun table -> table, [parent]))
-              
-              doc.Descendants(fun x -> x.Elements(fun x -> x.Elements ["table"] <> []) <> [])
-              |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements ["table"] |> List.map (fun table -> table, [parent; grandParent])))
-            ]
-            |> List.concat
+            findElementWithRelations ["table"] doc
             |> (fun x -> if includeLayoutTables 
                          then x 
                          else x |> List.filter (fun (e,_) -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)
@@ -172,38 +200,61 @@ module HtmlRuntime =
         tables |> List.rev
 
     let getLists (doc:HtmlDocument) =
-        let listElements = 
-            [ doc.Elements ["ol"; "ul"; "dl"]
-              |> List.map (fun table -> table, [])
-              
-              doc.Elements(fun x -> x.Elements ["ol"; "ul"; "dl"] <> [])
-              |> List.collect (fun parent -> parent.Elements ["ol"; "ul"; "dl"] |> List.map (fun table -> table, [parent]))
-              
-              doc.Descendants(fun x -> x.Elements(fun x -> x.Elements ["ol"; "ul"; "dl"] <> []) <> [])
-              |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements ["ol"; "ul"; "dl"] |> List.map (fun table -> table, [parent; grandParent])))
-            ]
-            |> List.concat
-        let (_, _, lists) = 
-            listElements
-            |> List.fold (fun (index, names, lists) (list, parents) -> 
-                let name = getName (sprintf "List%d" index) names list parents
-                let rows = (list.Descendants ["li"; "dt"; "dd"]) |> List.map (fun r -> [| r.InnerText |]) |> List.toArray
-                let list =
-                    { Name = name; 
-                      Headers = [|"Value"|]
-                      Rows = rows
-                      Html = list }
-                ((index + 1), (Set.add name names), list::lists)
-            ) (0, Set.empty, [])
-        lists |> List.rev
+        let getList listType = findElementWithRelations listType doc
+
+        let (count, nonDefinitionLists) =
+            let (count, _, lists) = 
+                getList ["ol"; "ul"]
+                |> List.fold (fun (index, names, lists) (list, parents) -> 
+                    let name = getName (sprintf "List%d" index) names list parents
+                    let rows = (list.Descendants ["li"]) |> List.map (fun r -> r.InnerText) |> List.toArray
+                    let list =
+                        { Name = name; 
+                          Values = rows
+                          Html = list } |> List
+                    ((index + 1), (Set.add name names), list::lists)
+                ) (0, Set.empty, [])
+            (count, lists |> List.rev)
+
+        let definitionLists =
+            let rec createDefinitionGroups (nodes:HtmlNode list) =
+                let rec loop state ((groupName,_,elements) as currentGroup) (nodes:HtmlNode list) =
+                    match nodes with
+                    | [] -> (currentGroup :: state) |> List.rev
+                    | h::t when h.Name = "dt" ->
+                        loop (currentGroup :: state) (NameUtils.nicePascalName h.InnerText, h, []) t
+                    | h::t ->
+                        loop state (groupName, h, (h.InnerText :: elements)) t
+                match nodes with
+                | [] -> []
+                | h :: t when h.Name = "dt" -> loop [] (NameUtils.nicePascalName h.InnerText, h, []) t
+                | h :: t -> loop [] ("Undefined", h, []) t
+ 
+            let (_, _, lists) = 
+                getList ["dl"]
+                |> List.fold (fun (index, names, lists) (list, parents) -> 
+                    let name = getName (sprintf "List%d" index) names list parents
+                    let data =
+                        list.Descendants ["dt"; "dd"]
+                        |> createDefinitionGroups
+                        |> List.map (fun (group,node,values) -> { Name = group; Values = values |> List.toArray; Html = node })
+                    let list =
+                        { Name = name; 
+                          Definitions = data
+                          Html = list } |> DefinitionList
+                    ((index + 1), (Set.add name names), list::lists)
+                ) (count, Set.empty, [])
+            lists |> List.rev
+
+        nonDefinitionLists @ definitionLists
 
     let getHtmlElements includeLayoutTables (doc:HtmlDocument) = 
         [
-            "Tables", getTables includeLayoutTables doc
+            "Tables", getTables includeLayoutTables doc |> List.map Table
             "Lists", getLists doc
         ]
 
-type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
+type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>) =
 
     member x.Html = doc
 
@@ -214,30 +265,37 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>)
         let doc = 
             reader 
             |> HtmlDocument.Load
-        let tables = 
+        let htmlObjects = 
             doc
-            |> HtmlRuntime.getTables includeLayoutTables
-            |> List.map (fun table -> table.Name, table) 
+            |> HtmlRuntime.getHtmlElements includeLayoutTables
+            |> List.collect (fun (_,table) -> table |> List.map (fun table -> table.Name, table)) 
             |> Map.ofList
-        TypedHtmlDocument(doc, tables)
+        TypedHtmlDocument(doc, htmlObjects)
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member __.GetTable(id:string) = 
+    member __.GetObject(id:string) = 
        tables |> Map.find id
 
-and HtmlTable<'rowType> internal (name:string, header:string[], values:'rowType[], html:HtmlNode) =
+and HtmlObject<'rowType> internal (htmlObj:HtmlObject, values:'rowType[]) =
 
-    member x.Name = name
-    member x.Headers = header
+    member x.Name = htmlObj.Name
+    member x.Headers =
+        match htmlObj with
+        | List(l) -> [|"Value"|]
+        | DefinitionList(dl) -> dl.Definitions |> List.map (fun l -> l.Name) |> List.toArray
+        | Table(t) -> t.Headers
     member x.Rows = values
-
-    member x.Html = html
+    member x.Html =
+        match htmlObj with
+        | List(l) -> l.Html
+        | DefinitionList(dl) -> dl.Html
+        | Table(t) -> t.Html
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string) =
-       let table = doc.GetTable id
-       HtmlTable<_>(table.Name, table.Headers, Array.map rowConverter.Invoke table.Rows, table.Html)
+       let table = doc.GetObject id
+       HtmlObject<_>(table, Array.map rowConverter.Invoke table.Rows)
