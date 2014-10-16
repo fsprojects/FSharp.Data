@@ -42,11 +42,17 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 doc
                 |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)
                 |> List.map (fun table -> table.Name,
-                                          HtmlInference.inferColumns preferOptionals 
-                                                                     missingValues
-                                                                     cultureInfo
-                                                                     table.HeaderNamesAndUnits
-                                                                     table.Rows)
+                                          match table.InferedType with //Type may already be inferred
+                                          | Some typ -> CsvInference.getFields
+                                                                    preferOptionals
+                                                                    typ
+                                                                    (Array.init table.HeaderNamesAndUnits.Length (fun _ -> None))
+                                          | None -> HtmlInference.inferColumns
+                                                                    preferOptionals 
+                                                                    missingValues
+                                                                    cultureInfo
+                                                                    table.HeaderNamesAndUnits
+                                                                    table.Rows)
                 |> HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->

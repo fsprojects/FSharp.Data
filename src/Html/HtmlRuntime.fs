@@ -9,6 +9,7 @@ open System.Text.RegularExpressions
 open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.StructuralTypes
 
 #nowarn "10001"
 
@@ -29,6 +30,7 @@ type HtmlTableCell =
 type HtmlTable = 
     { Name : string
       HeaderNamesAndUnits : (string * Type option)[]
+      InferedType : InferedType option
       Rows :  string [] []
       Html : HtmlNode }
     member x.Headers = Array.map fst x.HeaderNamesAndUnits
@@ -133,9 +135,9 @@ module HtmlRuntime =
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
-        let startIndex, headers = 
+        let startIndex, headers, inferedType = 
             if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-            then 1, res.[0] |> Array.map (fun x -> x.Data) |> Some
+            then 1, res.[0] |> Array.map (fun x -> x.Data) |> Some, None
             else res |> Array.map (Array.map (fun x -> x.Data)) |> HtmlInference.inferHeaders missingValues cultureInfo
             
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider
@@ -145,6 +147,7 @@ module HtmlRuntime =
 
         Some { Name = tableName
                HeaderNamesAndUnits = headerNamesAndUnits
+               InferedType = inferedType
                Rows = rows 
                Html = table }
 

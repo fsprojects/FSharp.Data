@@ -15,18 +15,25 @@ let inferColumns preferOptionals missingValues cultureInfo (headerNamesAndUnits:
 
 let inferHeaders missingValues cultureInfo (rows : string [][]) =
     if rows.Length <= 2
-    then 0, None //Not enough info to infer anything, assume first row data
+    then 0, None, None //Not enough info to infer anything, assume first row data
     else
       let preferOptionals = false // it's irrelevant for this step
       let computeRowType row = 
-          let props =
-              row 
-              |> Array.map (CsvInference.inferCellType preferOptionals missingValues cultureInfo None)
-              |> Array.map (fun typ -> { Name = ""; Type = typ })
-              |> List.ofArray
+          let cellTypes =
+            row
+            |> Array.map (CsvInference.inferCellType preferOptionals missingValues cultureInfo None)
+          let props = // Zip headers and types to build properly named InferedTypes
+            Array.zip rows.[0] cellTypes 
+            |> Array.map (fun p -> {Name = fst p; Type = snd p})
+            |> List.ofArray
           InferedType.Record(None, props, false)
+
+      //Check if header types are different than rest of rows
       let headerRow = computeRowType rows.[0]
-      let dataRow = rows.[1..] |> Array.map computeRowType |> Array.reduce (subtypeInfered false)
+      let dataRow =
+        rows.[1..]
+        |> Array.map computeRowType
+        |> Array.reduce (subtypeInfered preferOptionals)
       if headerRow = dataRow
-      then 0, None
-      else 1, Some rows.[0]
+      then 0, None, Some dataRow
+      else 1, Some rows.[0], Some dataRow
