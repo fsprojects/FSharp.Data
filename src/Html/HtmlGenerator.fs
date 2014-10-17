@@ -67,6 +67,61 @@ module internal HtmlGenerator =
         tableType.AddMember rowType
         tableNiceName, create, tableType
 
+    let private createListType (replacer:AssemblyReplacer) uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
+        let columns = 
+            HtmlInference.inferRowType 
+                preferOptionals 
+                (TextRuntime.GetMissingValues missingValuesStr) 
+                (TextRuntime.GetCulture cultureStr) [|"Values"|] htmlList.Values
+
+        let fields =
+            match columns with
+            | StructuralTypes.InferedType.Record(_, fields, _) -> 
+                fields 
+                |> List.map (fun p ->
+                             match p.Type with
+                             | StructuralTypes.InferedType.Primitive(t,_,_) -> t
+                             | _ -> typeof<string>
+                            )
+                |> List.toArray    
+            | _ -> failwith "Expecting record type"
+        
+        // The erased row type will be a tuple of all the field types (without the units of measure)
+        let rowErasedType = 
+            FSharpType.MakeTupleType(fields)
+            |> replacer.ToRuntime
+        
+        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
+        
+        // Each property of the generated row type will simply be a tuple get
+        for field in fields do
+            rowType.AddMember field
+        
+        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowErasedType)
+        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowType)
+        
+        let rowConverter =
+            let rowVar = Var("row", typeof<string[]>)
+            let rowVarExpr = Expr.Var rowVar
+            let body = 
+              Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
+              |> replacer.ToRuntime
+        
+            let delegateType = 
+              typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
+        
+            Expr.NewDelegate(delegateType, [rowVar], body)
+        
+        let create (htmlDoc:Expr) =
+            let rowConverterVar = Var("rowConverter", rowConverter.Type)
+            let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name)
+            Expr.Let(rowConverterVar, rowConverter, body)      
+        let listNiceName = uniqueNiceName htmlList.Name
+        
+        let listType = ProvidedTypeDefinition(listNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        listType.AddMember rowType
+        listNiceName, create, listType
+
     let generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) (objects:HtmlObject list) =
 
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
@@ -88,7 +143,11 @@ module internal HtmlGenerator =
                  let (tableNiceName, create, tableType) = createTableType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr table
                  htmlType.AddMember tableType
                  containerTypes.["Tables"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
-            | List(l) ->   ()
+            | List(l) ->
+                let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
+                let (tableNiceName, create, tableType) = createListType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr l
+                htmlType.AddMember tableType
+                containerTypes.["Lists"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | DefinitionList(dl) -> ()           
 
         htmlType
