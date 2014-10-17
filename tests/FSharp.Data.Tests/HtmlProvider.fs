@@ -127,6 +127,7 @@ let ``Should parse units from inferred table headers``() =
                         <table>
                             <tr><td>Date</td><td>Distance (m)</td><td>Time (s)</td><td>Column 3</td><td>Column 4</td></tr>
                             <tr><td>01/01/2013 12:00</td><td>1.5</td><td>30.5</td><td>2</td><td>2</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1.5</td><td>30.5</td><td>2</td><td>2</td></tr>
                         </table>
                     </body>
                 </html>""">.GetSample().Tables.Table1

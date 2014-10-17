@@ -40,7 +40,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 let missingValues = TextRuntime.GetMissingValues missingValuesStr
                 let cultureInfo = TextRuntime.GetCulture cultureStr
                 doc
-                |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)
+                |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider) preferOptionals
                 |> List.map (fun table -> table.Name,
                                           match table.InferedType with //Type may already be inferred
                                           | Some typ -> CsvInference.getFields
@@ -59,7 +59,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, %reader) @@>                    
+              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, preferOptionals, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
