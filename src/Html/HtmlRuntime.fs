@@ -72,7 +72,26 @@ type HtmlObject =
                 | Table(t) -> t.Name
                 | List(l) -> l.Name
                 | DefinitionList(dl) -> dl.Name
-// --------------------------------------------------------------------------------------
+        member x.Headers
+            with get() = 
+                match x with
+                | Table(t) -> t.Headers
+                | List(_) -> [|"Value"|]
+                | DefinitionList(dl) -> dl.Definitions |> List.map (fun l -> l.Name) |> List.toArray
+        member x.Values
+             with get() = 
+                 match x with
+                 | Table(t) -> t.Rows
+                 | List(t) -> [|t.Values|]
+                 | DefinitionList(dl) ->  dl.Definitions |> List.map (fun l -> l.Values) |> List.toArray
+        member x.Html
+            with get() = 
+                match x with
+                | List(l) -> l.Html
+                | DefinitionList(dl) -> dl.Html
+                | Table(t) -> t.Html
+                     
+ // --------------------------------------------------------------------------------------
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
@@ -175,7 +194,7 @@ module HtmlRuntime =
             then sprintf "Column%d" (i + 1)
             else header)
 
-        let tableName = getName (sprintf "Table%d" (index + 1)) nameSet table parents
+        let tableName = getName (sprintf "Table%d" index) nameSet table parents
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
@@ -249,10 +268,7 @@ module HtmlRuntime =
         nonDefinitionLists @ definitionLists
 
     let getHtmlElements includeLayoutTables (doc:HtmlDocument) = 
-        [
-            "Tables", getTables includeLayoutTables doc |> List.map Table
-            "Lists", getLists doc
-        ]
+        (getTables includeLayoutTables doc |> List.map Table) @ getLists doc
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>) =
 
@@ -268,7 +284,7 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>
         let htmlObjects = 
             doc
             |> HtmlRuntime.getHtmlElements includeLayoutTables
-            |> List.collect (fun (_,table) -> table |> List.map (fun table -> table.Name, table)) 
+            |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
         TypedHtmlDocument(doc, htmlObjects)
 
@@ -281,21 +297,14 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>
 and HtmlObject<'rowType> internal (htmlObj:HtmlObject, values:'rowType[]) =
 
     member x.Name = htmlObj.Name
-    member x.Headers =
-        match htmlObj with
-        | List(l) -> [|"Value"|]
-        | DefinitionList(dl) -> dl.Definitions |> List.map (fun l -> l.Name) |> List.toArray
-        | Table(t) -> t.Headers
+    member x.Headers = htmlObj.Headers
     member x.Rows = values
-    member x.Html =
-        match htmlObj with
-        | List(l) -> l.Html
-        | DefinitionList(dl) -> dl.Html
-        | Table(t) -> t.Html
+    member x.Html = htmlObj.Html
+
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string) =
        let table = doc.GetObject id
-       HtmlObject<_>(table, Array.map rowConverter.Invoke table.Rows)
+       HtmlObject<_>(table, Array.map rowConverter.Invoke table.Values)

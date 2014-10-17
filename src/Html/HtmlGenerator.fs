@@ -16,65 +16,79 @@ module internal HtmlGenerator =
       { TypeForTuple : Type
         Property : ProvidedProperty
         Convert: Expr -> Expr }
+    
+    let private createTableType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlTable : HtmlTable) = 
+        let columns = 
+            HtmlInference.inferColumns 
+                preferOptionals 
+                (TextRuntime.GetMissingValues missingValuesStr) 
+                (TextRuntime.GetCulture cultureStr) htmlTable.Headers htmlTable.Rows
 
-    let generateTypes asm ns typeName (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) columnsPerTable =
+        let fields = columns |> List.mapi (fun index field ->
+            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
+            { TypeForTuple = typWithoutMeasure
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
+              Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )
+        
+        // The erased row type will be a tuple of all the field types (without the units of measure)
+        let rowErasedType = 
+            FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
+            |> replacer.ToRuntime
+        
+        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
+        
+        // Each property of the generated row type will simply be a tuple get
+        for field in fields do
+            rowType.AddMember field.Property
+        
+        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowErasedType)
+        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowType)
+        
+        let rowConverter =
+            let rowVar = Var("row", typeof<string[]>)
+            let rowVarExpr = Expr.Var rowVar
+            let body = 
+              Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
+              |> replacer.ToRuntime
+        
+            let delegateType = 
+              typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
+        
+            Expr.NewDelegate(delegateType, [rowVar], body)
+        
+        let create (htmlDoc:Expr) =
+            let rowConverterVar = Var("rowConverter", rowConverter.Type)
+            let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlTable.Name)
+            Expr.Let(rowConverterVar, rowConverter, body)
+        
+        let tableNiceName = uniqueNiceName htmlTable.Name
+        
+        let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        tableType.AddMember rowType
+        tableNiceName, create, tableType
+
+    let generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) (objects:HtmlObject list) =
 
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
         
-        for (groupName, tables) in columnsPerTable do
+        let createContainer name = 
+             let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+             htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
+             htmlType.AddMember containerType
+             containerType
 
-            if not (List.isEmpty tables) then
+        let containerTypes = 
+            Map [ "Tables", (createContainer "Tables")
+                  "Lists",  (createContainer "Lists") ]
 
-                let tableContainer = ProvidedTypeDefinition(groupName + "Container", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
-                htmlType.AddMember <| ProvidedProperty(groupName, tableContainer, GetterCode = fun (Singleton doc) -> doc)
-                htmlType.AddMember tableContainer
-                
-                let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-                
-                for tableName, columns in tables do
-                
-                    let fields = columns |> List.mapi (fun index field ->
-                        let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
-                        { TypeForTuple = typWithoutMeasure
-                          Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
-                          Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )
-                    
-                    // The erased row type will be a tuple of all the field types (without the units of measure)
-                    let rowErasedType = 
-                        FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
-                        |> replacer.ToRuntime
-                    
-                    let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
-                    
-                    // Each property of the generated row type will simply be a tuple get
-                    for field in fields do
-                        rowType.AddMember field.Property
-                
-                    let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowErasedType)
-                    let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
-                
-                    let rowConverter =
-                        let rowVar = Var("row", typeof<string[]>)
-                        let rowVarExpr = Expr.Var rowVar
-                        let body = 
-                          Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
-                          |> replacer.ToRuntime
-                    
-                        let delegateType = 
-                          typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
-                    
-                        Expr.NewDelegate(delegateType, [rowVar], body)
-                    
-                    let create (htmlDoc:Expr) =
-                        let rowConverterVar = Var("rowConverter", rowConverter.Type)
-                        let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, tableName)
-                        Expr.Let(rowConverterVar, rowConverter, body)
-                    
-                    let tableNiceName = uniqueNiceName tableName
-                
-                    let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
-                    tableType.AddMember rowType
-                    htmlType.AddMember tableType
-                    tableContainer.AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)              
+        for htmlObj in objects do
+            match htmlObj with
+            | Table(table) -> 
+                 let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
+                 let (tableNiceName, create, tableType) = createTableType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr table
+                 htmlType.AddMember tableType
+                 containerTypes.["Tables"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+            | List(l) ->   ()
+            | DefinitionList(dl) -> ()           
 
         htmlType

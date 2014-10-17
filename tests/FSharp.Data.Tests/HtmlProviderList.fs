@@ -40,7 +40,7 @@ let ``Handles definition list correctly``() =
                         </dl>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List0
-    list.Rows. |> should equal 1
+    list.Rows.[0].Authors |> should equal 1
 
 [<Test>]
 let ``Should find the list as a header``() = 

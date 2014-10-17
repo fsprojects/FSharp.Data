@@ -34,24 +34,10 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpecFromSamples samples = 
             
-            let samples = Seq.exactlyOne samples
+            let samples : HtmlObject list = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ -> 
-                let t =
-                    samples
-                    |> List.map (fun (group, tables) -> 
-                            group, 
-                            (tables
-                             |> List.filter (fun table -> table.Headers.Length > 0)
-                             |> List.map (fun table -> 
-                                    (table.Name,
-                                            HtmlInference.inferColumns preferOptionals 
-                                                                       (TextRuntime.GetMissingValues missingValuesStr)
-                                                                       (TextRuntime.GetCulture cultureStr)
-                                                                       table.Headers 
-                                                                       table.Rows)))
-                    )
-                HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer t
+                HtmlGenerator.generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) replacer samples
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
