@@ -1,14 +1,14 @@
 ﻿(** 
 # F# Data: JSON Type Provider
 
-This article demonstrates how to use the JSON type provider to access JSON files
-in a statically typed way. We first look how the structure is inferred and then 
+This article demonstrates how to use the JSON Type Provider to access JSON files
+in a statically typed way. We first look at how the structure is inferred and then 
 demonstrate the provider by parsing data from WorldBank and Twitter.
 
-The JSON type provider provides a statically typed access to JSON documents.
+The JSON Type Provider provides statically typed access to JSON documents.
 It takes a sample document as an input (or a document containing a JSON array of samples).
 The generated type can then be used to read files with the same structure. If the 
-loaded file does not match the structure of the sample, an runtime error may occur 
+loaded file does not match the structure of the sample, a runtime error may occur 
 (but only when accessing e.g. non-existing element).
 
 ## Introducing the provider
@@ -23,10 +23,10 @@ open FSharp.Data
 ### Inferring types from the sample
 
 The `JsonProvider<...>` takes one static parameter of type `string`. The parameter can 
-be _either_ a sample string _or_ a sample file (relatively to the current folder or online 
+be _either_ a sample string _or_ a sample file (relative to the current folder or online 
 accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
 
-The following sample passes small JSON string to the provider:
+The following sample passes a small JSON string to the provider:
 *)
 
 type Simple = JsonProvider<""" { "name":"John", "age":94 } """>
@@ -44,7 +44,7 @@ fields as properties (with PascalCase name to follow standard naming conventions
 
 In the previous case, the sample document simply contained an integer and so the provider
 inferred the type `int`. Sometimes, the types in the sample document (or a list of samples) 
-may not exactly match. For example, a list may mix integers and floats:
+may not match exactly. For example, a list may mix integers and floats:
 *)
 
 type Numbers = JsonProvider<""" [1, 2, 3, 3.14] """>
@@ -69,15 +69,15 @@ mixed.Numbers |> Seq.sum
 mixed.Strings |> String.concat ", "
 
 (**
-As you can see, the `Mixed` type has property `Numbers` and `Strings` that 
-return only `int` and `string` values from the collection. This means that we get a nice
+As you can see, the `Mixed` type has properties `Numbers` and `Strings` that 
+return only `int` and `string` values from the collection. This means that we get 
 type-safe access to the values, but not in the original order (if order matters, then
 you can use the `mixed.JsonValue` property to get the underlying `JsonValue` and 
 process it dynamically as described in [the documentation for `JsonValue`](JsonValue.html).
 
 ### Inferring record types
 
-Now, let's look at a sample JSON document that contains a list of records. The
+Now let's look at a sample JSON document that contains a list of records. The
 following example uses two records - one with `name` and `age` and the second with just
 `name`. If a property is missing, then the provider infers it as optional.
 
@@ -97,7 +97,7 @@ has properties `Name` and `Age`. As `Age` is not available for all records in th
 data set, it is inferred as `option<int>`. The above sample uses `Option.iter` to print
 the value only when it is available.
 
-In the previous case, the values of individual properties had common type - `string` 
+In the previous case, the values of individual properties had common types - `string` 
 for the `Name` property and numeric type for `Age`. However, what if the property of
 a record can have multiple different types? In that case, the type provider behaves
 as follows: 
@@ -117,12 +117,12 @@ a type that has an optional property for each possible option, so we can use
 simple pattern matching on `option<int>` and `option<string>` values to distinguish
 between the two options. This is similar to the handling of heterogeneous arrays.
 
-Note that we have a `GetSamples` method because the sample is a json list. If it was a json
+Note that we have a `GetSamples` method because the sample is a JSON list. If it was a JSON
 object, we would have a `GetSample` method instead.
 
 ## Loading WorldBank data
 
-Let's now use the type provider to process some real data. We use a data set returned by 
+Now let's use the type provider to process some real data. We use a data set returned by 
 [the WorldBank](http://data.worldbank.org), which has (roughly) the following structure:
 
     [lang=js]
@@ -275,7 +275,7 @@ type WB = JsonProvider<"../data/WorldBank.json", EmbeddedResource="MyLib, worldb
 
 (**
 You still need to specify the local path, but this is only used when compiling `MyLib.dll`. 
-When a user of your library references `MyLib.dll` later, the JSON type provider will be able
+When a user of your library references `MyLib.dll` later, the JSON Type Provider will be able
 to load `MyLib.dll` and locate the sample `worldbank.json` as a resource of the library. When
 this succeeds, it does not attempt to find the local file and so your library can be used
 without providing a local copy of the sample JSON files.
