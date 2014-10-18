@@ -97,7 +97,7 @@ module HtmlRuntime =
         ]
         |> List.concat
 
-    let private getName defaultName nameSet (element:HtmlNode) (parents:HtmlNode list) = 
+    let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let tryGetName choices =
             choices
@@ -178,7 +178,7 @@ module HtmlRuntime =
             
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider
 
-        let tableName = makeUnique (getName (sprintf "Table%d" (index + 1)) nameSet table parents)
+        let tableName = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
@@ -203,17 +203,17 @@ module HtmlRuntime =
         let getList listType = findElementWithRelations listType doc
 
         let (count, nonDefinitionLists) =
-            let (count, _, lists) = 
+            let (count, lists) = 
                 getList ["ol"; "ul"]
-                |> List.fold (fun (index, names, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" (index + 1)) names list parents
-                    let rows = (list.Descendants ["li"]) |> List.map (fun r -> r.InnerText) |> List.toArray
+                |> List.fold (fun (index, lists) (list, parents) -> 
+                    let name = getName (sprintf "List%d" (index + 1)) list parents
+                    let rows = (list.Descendants(["li"])) |> List.map (HtmlNode.innerText) |> List.toArray
                     let list =
                         { Name = name; 
                           Values = rows
                           Html = list } |> List
-                    ((index + 1), (Set.add name names), list::lists)
-                ) (0, Set.empty, [])
+                    ((index + 1), list::lists)
+                ) (0, [])
             (count, lists |> List.rev)
 
         let definitionLists =
@@ -221,19 +221,19 @@ module HtmlRuntime =
                 let rec loop state ((groupName,_,elements) as currentGroup) (nodes:HtmlNode list) =
                     match nodes with
                     | [] -> (currentGroup :: state) |> List.rev
-                    | h::t when h.Name = "dt" ->
-                        loop (currentGroup :: state) (NameUtils.nicePascalName h.InnerText, h, []) t
+                    | h::t when HtmlNode.name h = "dt" ->
+                        loop (currentGroup :: state) (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
                     | h::t ->
-                        loop state (groupName, h, (h.InnerText :: elements)) t
+                        loop state (groupName, h, ((HtmlNode.innerText h) :: elements)) t
                 match nodes with
                 | [] -> []
-                | h :: t when h.Name = "dt" -> loop [] (NameUtils.nicePascalName h.InnerText, h, []) t
+                | h :: t when HtmlNode.name h = "dt" -> loop [] (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
                 | h :: t -> loop [] ("Undefined", h, []) t
  
-            let (_, _, lists) = 
+            let (_, lists) = 
                 getList ["dl"]
-                |> List.fold (fun (index, names, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" (index + 1)) names list parents
+                |> List.fold (fun (index, lists) (list, parents) -> 
+                    let name = getName (sprintf "List%d" (index + 1)) list parents
                     let data =
                         list.Descendants ["dt"; "dd"]
                         |> createDefinitionGroups
@@ -242,14 +242,15 @@ module HtmlRuntime =
                         { Name = name; 
                           Definitions = data
                           Html = list } |> DefinitionList
-                    ((index + 1), (Set.add name names), list::lists)
-                ) (count, Set.empty, [])
+                    ((index + 1), list::lists)
+                ) (count, [])
             lists |> List.rev
 
         nonDefinitionLists @ definitionLists
 
-    let getHtmlElements includeLayoutTables (doc:HtmlDocument) = 
-        (getTables includeLayoutTables doc |> List.map Table) @ getLists doc
+    let getHtmlElements includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (doc:HtmlDocument) = 
+        (getTables includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider doc |> List.map Table) 
+        @ getLists doc
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>) =
 
@@ -266,7 +267,7 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>
             |> HtmlDocument.Load
         let htmlObjects = 
             doc
-            |> HtmlRuntime.getHtmlElements includeLayoutTables
+            |> HtmlRuntime.getHtmlElements includeLayoutTables missingValues cultureInfo None
             |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
         TypedHtmlDocument(doc, htmlObjects)

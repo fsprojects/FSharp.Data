@@ -67,7 +67,7 @@ let ``Can infer tables out of the market depth file``() =
 
 [<Test>]
 let ``NuGet table gets all rows``() =
-    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.``Version History``
+    let table = HtmlProvider<"data/NuGet.html">.GetSample().Tables.VersionHistory
     table.Rows.Length |> should equal 35
 
 [<Test>]
@@ -82,7 +82,7 @@ let ``Should find the table as a header``() =
                             <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td><td>2</td></tr>
                         </table>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().Tables.``Example Table``
+                </html>""", PreferOptionals=true>.GetSample().Tables.ExampleTable
     table.Rows.[0].``Column 3`` |> should equal 2M
 
 [<Test>]
@@ -101,5 +101,5 @@ let ``Should find the table as a header when nested deeper``() =
                             <tr><td>01/01/2013 12:00</td><td>1</td><td>yes</td><td>2</td><td>2</td></tr>
                         </table>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().Tables.``Example Table``
+                </html>""", PreferOptionals=true>.GetSample().Tables.ExampleTable
     table.Rows.[0].``Column 3`` |> should equal 2M

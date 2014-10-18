@@ -37,6 +37,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             let doc : HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ -> 
+                let missingValues = TextRuntime.GetMissingValues missingValuesStr
+                let cultureInfo = TextRuntime.GetCulture cultureStr
                 let samples =
                    doc
                    |> HtmlRuntime.getHtmlElements includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)

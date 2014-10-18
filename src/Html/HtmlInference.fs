@@ -1,6 +1,7 @@
 ﻿/// Structural inference for HTML tables
 module FSharp.Data.Runtime.HtmlInference
 
+open System
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
@@ -10,20 +11,6 @@ let inferColumns preferOptionals missingValues cultureInfo (headerNamesAndUnits:
     let inferRows = 0
     let schema = Array.init headerNamesAndUnits.Length (fun _ -> None)
     let assumeMissingValues = false
-let inferListType preferOptionals missingValues cultureInfo values = 
-
-    let inferedtype value = 
-        // If there's only whitespace, treat it as a missing value and not as a string
-        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
-        // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
-        elif Array.exists ((=) <| value.Trim()) missingValues then 
-            if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
-        else getInferedTypeFromString cultureInfo value None
-
-    values
-    |> Seq.map inferedtype
-    |> Seq.reduce (subtypeInfered (not preferOptionals))
-
 
     CsvInference.inferColumnTypes headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals
 
@@ -44,3 +31,17 @@ let inferHeaders missingValues cultureInfo (rows : string [][]) =
       if headerRow = dataRow
       then 0, None
       else 1, Some rows.[0]
+
+let inferListType preferOptionals missingValues cultureInfo values = 
+
+    let inferedtype value = 
+        // If there's only whitespace, treat it as a missing value and not as a string
+        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
+        // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+        elif Array.exists ((=) <| value.Trim()) missingValues then 
+            if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
+        else getInferedTypeFromString cultureInfo value None
+
+    values
+    |> Seq.map inferedtype
+    |> Seq.reduce (subtypeInfered (not preferOptionals))

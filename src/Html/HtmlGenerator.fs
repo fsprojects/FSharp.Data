@@ -18,12 +18,13 @@ module internal HtmlGenerator =
         Property : ProvidedProperty
         Convert: Expr -> Expr }
     
-    let private createTableType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlTable : HtmlTable) = 
+    let private createTableType replacer preferOptionals missingValuesStr cultureStr (htmlTable : HtmlTable) = 
         let columns = 
             HtmlInference.inferColumns 
                 preferOptionals 
                 (TextRuntime.GetMissingValues missingValuesStr) 
-                (TextRuntime.GetCulture cultureStr) htmlTable.Headers htmlTable.Rows
+                (TextRuntime.GetCulture cultureStr) htmlTable.HeaderNamesAndUnits htmlTable.Rows
+
         let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
                 HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
                 |> NameUtils.nicePascalName
@@ -65,19 +66,23 @@ module internal HtmlGenerator =
             let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlTable.Name)
             Expr.Let(rowConverterVar, rowConverter, body)
         
+        let tableName = uniqueNiceName htmlTable.Name
         let propertyName = NameUtils.capitalizeFirstLetter tableName
-        let typeName = uniqueNiceName tableName
 
-        let tableType = ProvidedTypeDefinition(typeName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        let tableType = ProvidedTypeDefinition(tableName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
         tableType.AddMember rowType
         propertyName, create, tableType
 
-    let private createListType (replacer:AssemblyReplacer) uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
+    let private createListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
         let columns = 
             HtmlInference.inferListType 
                 preferOptionals 
                 (TextRuntime.GetMissingValues missingValuesStr) 
                 (TextRuntime.GetCulture cultureStr) htmlList.Values
+
+        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                |> NameUtils.nicePascalName
 
         let listItemType, conv =
             match columns with
@@ -130,15 +135,13 @@ module internal HtmlGenerator =
         for htmlObj in objects do
             match htmlObj with
             | Table(table) -> 
-                 let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-                 let (tableNiceName, create, tableType) = createTableType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr table
+                 let (tableNiceName, create, tableType) = createTableType replacer preferOptionals missingValuesStr cultureStr table
                  htmlType.AddMember tableType
                  containerTypes.["Tables"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List(l) ->
-                let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
-                let (tableNiceName, create, tableType) = createListType replacer uniqueNiceName preferOptionals missingValuesStr cultureStr l
+                let (listName, create, tableType) = createListType replacer preferOptionals missingValuesStr cultureStr l
                 htmlType.AddMember tableType
-                containerTypes.["Lists"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                containerTypes.["Lists"].AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | DefinitionList(dl) -> ()           
 
         htmlType
