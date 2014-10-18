@@ -4,6 +4,7 @@
 namespace ProviderImplementation
 
 open System
+open System.Collections.Generic
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
@@ -118,30 +119,99 @@ module internal HtmlGenerator =
         let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
         listNiceName, create, listType
 
+    let private createDefinitionListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr (htmlList : HtmlDefinitionList) =
+
+        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                |> NameUtils.nicePascalName
+
+        let createListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr index (l : HtmlList) =
+            let columns = 
+                HtmlInference.inferListType 
+                    preferOptionals 
+                    (TextRuntime.GetMissingValues missingValuesStr) 
+                    (TextRuntime.GetCulture cultureStr) l.Values
+
+            let listItemType, conv =
+                match columns with
+                | StructuralTypes.InferedType.Primitive(typ,_, optional) -> 
+                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
+                    typ, conv
+                | _ -> 
+                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
+                    typ, conv
+                        
+            let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
+
+            let rowConverter =
+                
+                let rowVar = Var("row", typeof<string>)
+                let rowVarExpr = Expr.Var rowVar
+                let body = 
+                  conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
+                  |> replacer.ToRuntime
+            
+                let delegateType = 
+                  typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
+            
+                Expr.NewDelegate(delegateType, [rowVar], body)
+            
+            let create (htmlDoc:Expr) =
+                let rowConverterVar = Var("rowConverter", rowConverter.Type)
+                let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name, index)
+                Expr.Let(rowConverterVar, rowConverter, body) 
+                       
+            let listNiceName = uniqueNiceName l.Name
+            
+            let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
+            listNiceName, create, listType
+
+        let listNiceName = uniqueNiceName htmlList.Name
+
+        let definitionListType = ProvidedTypeDefinition(listNiceName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+        
+        let lists = 
+            htmlList.Definitions
+            |> List.mapi(createListType replacer preferOptionals missingValuesStr cultureStr)
+
+        for (listName, create, listType) in lists do
+            definitionListType.AddMember(listType)
+            let prop = ProvidedProperty(listName, listType, GetterCode = fun (Singleton doc) -> create doc)
+            definitionListType.AddMember(prop)
+
+        listNiceName, definitionListType
+
     let generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) (objects:HtmlObject list) =
 
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
         
-        let createContainer name = 
-             let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
-             htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
-             htmlType.AddMember containerType
-             containerType
+        let containerTypes = new Dictionary<string, ProvidedTypeDefinition>()
 
-        let containerTypes = 
-            Map [ "Tables", (createContainer "Tables")
-                  "Lists",  (createContainer "Lists") ]
+        let getOrCreateContainer name = 
+             match containerTypes.TryGetValue(name) with
+             | true, t -> t
+             | false, _ ->
+                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+                htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
+                htmlType.AddMember containerType
+                containerTypes.Add(name, containerType)
+                containerType
 
         for htmlObj in objects do
             match htmlObj with
-            | Table(table) -> 
+            | Table(table) ->
+                 let containerType = getOrCreateContainer "Tables"
                  let (tableNiceName, create, tableType) = createTableType replacer preferOptionals missingValuesStr cultureStr table
                  htmlType.AddMember tableType
-                 containerTypes.["Tables"].AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                 containerType.AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List(l) ->
+                let containerType = getOrCreateContainer "Lists"
                 let (listName, create, tableType) = createListType replacer preferOptionals missingValuesStr cultureStr l
                 htmlType.AddMember tableType
-                containerTypes.["Lists"].AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> create doc)
-            | DefinitionList(dl) -> ()           
-
+                containerType.AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+            | DefinitionList(dl) ->
+                let containerType = getOrCreateContainer "DefinitionLists"       
+                let (listName, tableType) = createDefinitionListType replacer preferOptionals missingValuesStr cultureStr dl
+                htmlType.AddMember tableType
+                containerType.AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> doc)
         htmlType

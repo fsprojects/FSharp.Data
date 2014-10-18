@@ -199,58 +199,56 @@ module HtmlRuntime =
         |> List.mapi (parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (NameUtils.uniqueGenerator id))
         |> List.choose id
 
+    let private getList listType doc = findElementWithRelations listType doc
+
     let getLists (doc:HtmlDocument) =
-        let getList listType = findElementWithRelations listType doc
+        let (count, lists) = 
+            getList ["ol"; "ul"] doc
+            |> List.fold (fun (index, lists) (list, parents) -> 
+                let name = getName (sprintf "List%d" (index + 1)) list parents
+                let rows = (list.Descendants(["li"])) |> List.map (HtmlNode.innerText) |> List.toArray
+                let list =
+                    { Name = name; 
+                      Values = rows
+                      Html = list } |> List
+                ((index + 1), list::lists)
+            ) (0, [])
+        lists |> List.rev
 
-        let (count, nonDefinitionLists) =
-            let (count, lists) = 
-                getList ["ol"; "ul"]
-                |> List.fold (fun (index, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" (index + 1)) list parents
-                    let rows = (list.Descendants(["li"])) |> List.map (HtmlNode.innerText) |> List.toArray
-                    let list =
-                        { Name = name; 
-                          Values = rows
-                          Html = list } |> List
-                    ((index + 1), list::lists)
-                ) (0, [])
-            (count, lists |> List.rev)
-
-        let definitionLists =
-            let rec createDefinitionGroups (nodes:HtmlNode list) =
-                let rec loop state ((groupName,_,elements) as currentGroup) (nodes:HtmlNode list) =
-                    match nodes with
-                    | [] -> (currentGroup :: state) |> List.rev
-                    | h::t when HtmlNode.name h = "dt" ->
-                        loop (currentGroup :: state) (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
-                    | h::t ->
-                        loop state (groupName, h, ((HtmlNode.innerText h) :: elements)) t
+    let getDefinitionLists (doc:HtmlDocument) =
+        let rec createDefinitionGroups (nodes:HtmlNode list) =
+            let rec loop state ((groupName,_,elements) as currentGroup) (nodes:HtmlNode list) =
                 match nodes with
-                | [] -> []
-                | h :: t when HtmlNode.name h = "dt" -> loop [] (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
-                | h :: t -> loop [] ("Undefined", h, []) t
+                | [] -> (currentGroup :: state) |> List.rev
+                | h::t when HtmlNode.name h = "dt" ->
+                    loop (currentGroup :: state) (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
+                | h::t ->
+                    loop state (groupName, h, ((HtmlNode.innerText h) :: elements)) t
+            match nodes with
+            | [] -> []
+            | h :: t when HtmlNode.name h = "dt" -> loop [] (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
+            | h :: t -> loop [] ("Undefined", h, []) t
  
-            let (_, lists) = 
-                getList ["dl"]
-                |> List.fold (fun (index, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" (index + 1)) list parents
-                    let data =
-                        list.Descendants ["dt"; "dd"]
-                        |> createDefinitionGroups
-                        |> List.map (fun (group,node,values) -> { Name = group; Values = values |> List.toArray; Html = node })
-                    let list =
-                        { Name = name; 
-                          Definitions = data
-                          Html = list } |> DefinitionList
-                    ((index + 1), list::lists)
-                ) (count, [])
-            lists |> List.rev
-
-        nonDefinitionLists @ definitionLists
+        let (_, lists) = 
+            getList ["dl"] doc
+            |> List.fold (fun (index, lists) (list, parents) -> 
+                let name = getName (sprintf "DefinitionList%d" (index + 1)) list parents
+                let data =
+                    list.Descendants ["dt"; "dd"]
+                    |> createDefinitionGroups
+                    |> List.map (fun (group,node,values) -> { Name = group; Values = values |> List.rev |> List.toArray; Html = node })
+                let list =
+                    { Name = name; 
+                      Definitions = data
+                      Html = list } |> DefinitionList
+                ((index + 1), list::lists)
+            ) (0, [])
+        lists |> List.rev
 
     let getHtmlElements includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (doc:HtmlDocument) = 
         (getTables includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider doc |> List.map Table) 
         @ getLists doc
+        @ getDefinitionLists doc
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>) =
 
@@ -307,4 +305,14 @@ and HtmlList<'itemType> internal (name:string, values:'itemType[], html) =
        match list with
        | List(l) -> HtmlList<_>(l.Name, Array.map rowConverter.Invoke l.Values, l.Html)
        | _ -> failwithf "Element %s is not a list" id
-       
+
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    static member CreateNested(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string, index:int) =
+       let list = doc.GetObject id
+       match list with
+       | List(l) -> HtmlList<_>(l.Name, Array.map rowConverter.Invoke l.Values, l.Html)
+       | DefinitionList(dl) -> 
+            let l = dl.Definitions.[index]
+            HtmlList<_>(l.Name, Array.map rowConverter.Invoke l.Values, l.Html)
+       | _ -> failwithf "Element %s is not a list" id

@@ -25,19 +25,18 @@ let ``Simple List infers int type correctly ``() =
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
     list.Values |> should equal [1;2;3]
 
-//TODO: Missing list items are not infered as optional. :S
-//[<Test>]
-//let ``Simple List handles missing values``() = 
-//    let list = HtmlProvider<"""<html>
-//                    <body>
-//                        <ul>
-//                            <li>1</li>
-//                            <li>2</li>
-//                            <li>&nbsp;</li>
-//                        </ul>
-//                    </body>
-//                </html>""", PreferOptionals=true>.GetSample().Lists.List1
-//    list.Values |> should equal [Some 1;Some 2; None]
+[<Test>]
+let ``Simple List handles missing values``() = 
+    let list = HtmlProvider<"""<html>
+                    <body>
+                        <ul>
+                            <li>1</li>
+                            <li>2</li>
+                            <li>&nbsp;</li>
+                        </ul>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().Lists.List1
+    list.Values |> should equal [Some 1;Some 2; None]
 
 [<Test>]
 let ``Simple List infers decimal type correctly ``() = 
@@ -114,19 +113,46 @@ let ``Should find the table as a header when nested deeper``() =
                 </html>""", PreferOptionals=true>.GetSample().Lists.ExampleList
     table.Values |> should equal [1;2;3]
 
-//[<Test>]
-//let ``Handles definition list correctly``() = 
-//    let list = HtmlProvider<"""<html>
-//                    <body>
-//                        <dl>
-//                          <dt>Authors:</dt>
-//                          <dd>Remy Sharp</dd>
-//                          <dd>Rich Clark</dd>
-//                          <dt>Editor:</dt>
-//                          <dd>Brandan Lennox</dd>
-//                          <dt>Category:</dt>
-//                          <dd>Comment</dd>
-//                        </dl>
-//                    </body>
-//                </html>""", PreferOptionals=true>.GetSample().Lists.List0
-//    list.Rows.[0].Authors |> should equal 1
+[<Test>]
+let ``Handles simple definition list``() = 
+    let list = HtmlProvider<"""<html>
+                    <body>
+                        <dl>
+                          <dt>Count</dt>
+                          <dd>1</dd>
+                          <dd>2</dd>
+                          <dt>Dates</dt>
+                          <dd>01/01/2014</dd>
+                          <dd>02/02/2014</dd>
+                          <dt>Decimals</dt>
+                          <dd>1.23</dd>
+                          <dd>2.23</dd>
+                          <dt>Missing</dt>
+                          <dd>Foobar</dd>
+                          <dd></dd>
+                        </dl>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
+    list.Count.Values |> should equal [1;2]
+    list.Dates.Values |> should equal [DateTime(2014,1,1); DateTime(2014, 2,2)]
+    list.Decimals.Values |> should equal [1.23M; 2.23M]
+    list.Missing.Values |> should equal [Some "Foobar"; None]
+
+[<Test>]
+let ``Handles definition list correctly``() = 
+    let list = HtmlProvider<"""<html>
+                    <body>
+                        <dl>
+                          <dt>Authors:</dt>
+                          <dd>Remy Sharp</dd>
+                          <dd>Rich Clark</dd>
+                          <dt>Editor:</dt>
+                          <dd>Brandan Lennox</dd>
+                          <dt>Category:</dt>
+                          <dd>Comment</dd>
+                        </dl>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
+    list.Authors.Values |> should equal ["Remy Sharp"; "Rich Clark"]
+    list.Category.Values |> should equal ["Comment"]
+    list.Editor.Values |> should equal ["Brandan Lennox"]
