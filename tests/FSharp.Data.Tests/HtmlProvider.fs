@@ -11,6 +11,7 @@ open NUnit.Framework
 open FsUnit
 open System
 open FSharp.Data
+open Microsoft.FSharp.Data.UnitSystems.SI.UnitNames
 
 [<Literal>]
 let simpleHtml = """<html>
@@ -103,3 +104,34 @@ let ``Should find the table as a header when nested deeper``() =
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Tables.``Example Table``
     table.Rows.[0].``Column 3`` |> should equal 2M
+
+[<Test>]
+let ``Should parse units from table headers``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <tr><th>Date</th><th>Distance (m)</th><th>Time (s)</th><th>Column 3</th><th>Column 4</th></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1.5</td><td>30.5</td><td>2</td><td>2</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let distance = table.Rows.[0].Distance
+    distance |> should equal 1.5<metre>
+    let time = table.Rows.[0].Time
+    time |> should equal 30.5<second>
+
+[<Test>]
+let ``Should parse units from inferred table headers``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <tr><td>Date</td><td>Distance (m)</td><td>Time (s)</td><td>Column 3</td><td>Column 4</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1.5</td><td>30.5</td><td>2</td><td>2</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>1.5</td><td>30.5</td><td>2</td><td>2</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let distance = table.Rows.[0].Distance
+    distance |> should equal 1.5<metre>
+    let time = table.Rows.[0].Time
+    time |> should equal 30.5<second>

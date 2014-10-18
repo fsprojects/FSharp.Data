@@ -15,7 +15,7 @@ open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
 
 let getTables includeLayoutTables = 
-    HtmlRuntime.getTables includeLayoutTables TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some StructuralInference.defaultUnitsOfMeasureProvider)
+    HtmlRuntime.getTables includeLayoutTables TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some StructuralInference.defaultUnitsOfMeasureProvider) false
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 

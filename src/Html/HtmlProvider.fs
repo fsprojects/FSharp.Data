@@ -40,20 +40,26 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 let missingValues = TextRuntime.GetMissingValues missingValuesStr
                 let cultureInfo = TextRuntime.GetCulture cultureStr
                 doc
-                |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)
+                |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider) preferOptionals
                 |> List.map (fun table -> table.Name,
-                                          HtmlInference.inferColumns preferOptionals 
-                                                                     missingValues
-                                                                     cultureInfo
-                                                                     table.HeaderNamesAndUnits
-                                                                     table.Rows)
+                                          match table.InferedType with //Type may already be inferred
+                                          | Some typ -> CsvInference.getFields
+                                                                    preferOptionals
+                                                                    typ
+                                                                    (Array.init table.HeaderNamesAndUnits.Length (fun _ -> None))
+                                          | None -> HtmlInference.inferColumns
+                                                                    preferOptionals 
+                                                                    missingValues
+                                                                    cultureInfo
+                                                                    table.HeaderNamesAndUnits
+                                                                    table.Rows)
                 |> HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, %reader) @@>                    
+              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, preferOptionals, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
