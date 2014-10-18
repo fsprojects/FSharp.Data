@@ -15,7 +15,12 @@ open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
 
 let getTables includeLayoutTables = 
-    HtmlRuntime.getTables includeLayoutTables TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some StructuralInference.defaultUnitsOfMeasureProvider) false
+    let parameters : HtmlInference.Parameters = 
+        { MissingValues = TextConversions.DefaultMissingValues
+          CultureInfo = CultureInfo.InvariantCulture
+          UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
+          PreferOptionals = false }
+    HtmlRuntime.getTables (Some parameters) includeLayoutTables
 
 [<Test>]
 let ``Can handle unclosed tags correctly``() = 
@@ -82,9 +87,9 @@ let ``Can parse tables from a simple html``() =
     let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
+    tables.[0].HasHeaders |> should equal (Some true)
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column 1"]
-    (tables.[0].Rows.[0]) |> should equal ["1"]
+    tables.[0].Rows |> should equal [["Column 1"]; ["1"]]
 
 [<Test>]
 let ``Can parse tables from a simple html table but infer headers``() = 
@@ -100,9 +105,9 @@ let ``Can parse tables from a simple html table but infer headers``() =
     let tables = html |> HtmlDocument.Parse |> getTables true
 
     tables.Length |> should equal 1
+    tables.[0].HasHeaders |> should equal (Some true)
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column 1"]
-    (tables.[0].Rows.[0]) |> should equal ["1"]
+    tables.[0].Rows |> should equal [["Column 1"]; ["1"]; ["2"]]
 
 [<Test>]
 let ``Ignores empty tables``() = 
@@ -131,8 +136,8 @@ let ``Can parse tables with no headers``() =
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column1"]
-    (tables.[0].Rows) |> should equal [["2"]; ["1"]; ["3"]]
+    tables.[0].HasHeaders |> should equal (Some false)
+    tables.[0].Rows |> should equal [["2"]; ["1"]; ["3"]]
 
 [<Test>]
 let ``Can parse tables with no headers and only 2 rows``() = 
@@ -148,8 +153,8 @@ let ``Can parse tables with no headers and only 2 rows``() =
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "table"
-    tables.[0].Headers |> should equal ["Column1"]
-    (tables.[0].Rows) |> should equal [["1"]; ["3"]]
+    tables.[0].HasHeaders |> should equal (Some false)
+    tables.[0].Rows |> should equal [["1"]; ["3"]]
 
 [<Test>]
 let ``Extracts table when title attribute is set``() = 
@@ -249,9 +254,8 @@ let ``Extracts data and headers with thead and tbody``() =
     let tables = html |> HtmlDocument.Parse |> getTables true
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
-    tables.[0].Headers |> should equal ["Month";"Savings"]
-    (tables.[0].Rows.[0]) |> should equal ["Sum"; "$180"]
-    (tables.[0].Rows.[1]) |> should equal ["January"; "$100"]
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [["Month";"Savings"]; ["Sum"; "$180"]; ["January"; "$100"]; ["February"; "$80"]]
 
 [<Test>]
 let ``Extracts tables in malformed html``() = 
@@ -268,8 +272,8 @@ let ``Extracts tables in malformed html``() =
 
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Table1"
-    tables.[0].Headers |> should equal ["Column 1"]
-    (tables.[0].Rows.[0]) |> should equal ["1"]
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows |> should equal [["Column 1"]; ["1"]]
 
 
 [<Test>]
@@ -307,7 +311,8 @@ let ``Can parse tables imdb chart``() =
     let tables = imdb |> getTables false
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "Top 250"
-    tables.[0].Rows.Length |> should equal 250
+    tables.[0].HasHeaders |> should equal (Some true)
+    tables.[0].Rows.Length |> should equal 251
 
 [<Test>]
 let ``Can parse tables ebay cars``() = 

@@ -96,10 +96,16 @@ let printParsed (html:string) =
 
 printParsed """<a href="/url?q=http://fsharp.github.io/FSharp.Data/&amp;sa=U&amp;ei=sv1jU_3bMMmk0QX33YGQBw&amp;ved=0CB4QFjAA&amp;usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"><b>F# Data</b>: Library for Data Access - F# Open Source Group @ GitHub</a>"""
 
+let parameters : HtmlInference.Parameters = 
+    { MissingValues = TextConversions.DefaultMissingValues
+      CultureInfo = CultureInfo.InvariantCulture
+      UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider
+      PreferOptionals = false }
+
 let printTables includeLayout (url:string) = 
     url
     |> HtmlDocument.Load
-    |> HtmlRuntime.getTables includeLayout TextConversions.DefaultMissingValues CultureInfo.InvariantCulture (Some ProviderHelpers.unitsOfMeasureProvider) false
+    |> HtmlRuntime.getTables (Some parameters) includeLayout
     |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
 
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"

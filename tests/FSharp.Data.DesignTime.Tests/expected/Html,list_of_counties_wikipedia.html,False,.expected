@@ -1,30 +1,30 @@
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, ((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, reader)
+    TypedHtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, ((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
@@ -50,7 +50,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Metropolitan Area", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[7])
                                         TextRuntime.GetNonOptionalValue("Notable changes between 2001 and 2011 censuses", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "List of most populous built-up areas in England and Wales")
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous built-up areas in England and Wales", true)
 
     member ``List of most populous urban areas in Northern Ireland``: HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -68,7 +68,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Metropolitan Area", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Northern Ireland")
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Northern Ireland", true)
 
     member ``List of most populous urban areas in Scotland``: HtmlProvider+ListOfMostPopulousUrbanAreasInScotland with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -86,7 +86,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Major subdivisions", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Metropolitan Area", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Scotland")
+    HtmlTable<_>.Create(rowConverter, this, "List of most populous urban areas in Scotland", true)
 
     member Table5: HtmlProvider+Table5 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -94,7 +94,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("List of settlements in the United Kingdom", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("List of settlements in the United Kingdom 2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table5")
+    HtmlTable<_>.Create(rowConverter, this, "Table5", true)
 
 
 [<[TypeProviderEditorHideMethods()]>]

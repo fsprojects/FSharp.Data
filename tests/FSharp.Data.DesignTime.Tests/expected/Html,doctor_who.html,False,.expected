@@ -1,30 +1,30 @@
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, ((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, reader)
+    TypedHtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", false, ((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
@@ -44,7 +44,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Reader / Starring", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdates", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "50th Anniversary")
+    HtmlTable<_>.Create(rowConverter, this, "50th Anniversary", true)
 
     member ``Audiobook readings``: HtmlProvider+AudiobookReadings with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -58,7 +58,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Reader", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdates", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Audiobook readings")
+    HtmlTable<_>.Create(rowConverter, this, "Audiobook readings", true)
 
     member ``Home video releases``: HtmlProvider+HomeVideoReleases with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -72,7 +72,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Release date", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Home video releases")
+    HtmlTable<_>.Create(rowConverter, this, "Home video releases", true)
 
     member ``Overview of seasons and series``: HtmlProvider+OverviewOfSeasonsAndSeries with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -96,7 +96,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Finale viewers (in millions)", TextRuntime.ConvertFloat("", "", value), value),
                                         let value = TextConversions.AsString(row.[9])
                                         TextRuntime.GetNonOptionalValue("Average viewers (in millions)", TextRuntime.ConvertFloat("", "", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Overview of seasons and series")
+    HtmlTable<_>.Create(rowConverter, this, "Overview of seasons and series", true)
 
     member ``Radio broadcasts``: HtmlProvider+RadioBroadcasts with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -110,7 +110,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director/Producer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts")
+    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts", true)
 
     member ``Radio broadcasts 2``: HtmlProvider+RadioBroadcasts2 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -124,7 +124,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director/Producer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 2")
+    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 2", true)
 
     member ``Radio broadcasts 3``: HtmlProvider+RadioBroadcasts3 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -138,7 +138,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director/Producer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 3")
+    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 3", true)
 
     member ``Radio broadcasts 4``: HtmlProvider+RadioBroadcasts4 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -152,7 +152,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director/Producer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 4")
+    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 4", true)
 
     member ``Radio broadcasts 5``: HtmlProvider+RadioBroadcasts5 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -166,7 +166,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director/Producer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 5")
+    HtmlTable<_>.Create(rowConverter, this, "Radio broadcasts 5", true)
 
     member ``Season 1 (1963-64)``: HtmlProvider+Season1196364 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -184,7 +184,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 1 (1963-64)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 1 (1963-64)", true)
 
     member ``Season 10 (1972-73)``: HtmlProvider+Season10197273 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -202,7 +202,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 10 (1972-73)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 10 (1972-73)", true)
 
     member ``Season 11 (1973-74)``: HtmlProvider+Season11197374 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -220,7 +220,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 11 (1973-74)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 11 (1973-74)", true)
 
     member ``Season 12 (1974-75)``: HtmlProvider+Season12197475 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -238,7 +238,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 12 (1974-75)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 12 (1974-75)", true)
 
     member ``Season 13 (1975-76)``: HtmlProvider+Season13197576 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -256,7 +256,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 13 (1975-76)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 13 (1975-76)", true)
 
     member ``Season 14 (1976-77)``: HtmlProvider+Season14197677 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -274,7 +274,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 14 (1976-77)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 14 (1976-77)", true)
 
     member ``Season 15 (1977-78)``: HtmlProvider+Season15197778 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -292,7 +292,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 15 (1977-78)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 15 (1977-78)", true)
 
     member ``Season 16 (1978-79)``: HtmlProvider+Season16197879 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -310,7 +310,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 16 (1978-79)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 16 (1978-79)", true)
 
     member ``Season 17 (1979-80)``: HtmlProvider+Season17197980 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -328,7 +328,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 17 (1979-80)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 17 (1979-80)", true)
 
     member ``Season 18 (1980-81)``: HtmlProvider+Season18198081 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -346,7 +346,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 18 (1980-81)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 18 (1980-81)", true)
 
     member ``Season 19 (1982)``: HtmlProvider+Season191982 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -364,7 +364,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 19 (1982)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 19 (1982)", true)
 
     member ``Season 2 (1964-65)``: HtmlProvider+Season2196465 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -382,7 +382,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 2 (1964-65)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 2 (1964-65)", true)
 
     member ``Season 20 (1983)``: HtmlProvider+Season201983 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -400,7 +400,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 20 (1983)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 20 (1983)", true)
 
     member ``Season 21 (1984)``: HtmlProvider+Season211984 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -418,7 +418,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984)", true)
 
     member ``Season 21 (1984) continued``: HtmlProvider+Season211984Continued with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -436,7 +436,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984) continued")
+    HtmlTable<_>.Create(rowConverter, this, "Season 21 (1984) continued", true)
 
     member ``Season 22 (1985)``: HtmlProvider+Season221985 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -454,7 +454,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 22 (1985)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 22 (1985)", true)
 
     member ``Season 23 (1986)``: HtmlProvider+Season231986 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -472,7 +472,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 23 (1986)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 23 (1986)", true)
 
     member ``Season 24 (1987)``: HtmlProvider+Season241987 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -490,7 +490,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 24 (1987)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 24 (1987)", true)
 
     member ``Season 25 (1988-89)``: HtmlProvider+Season25198889 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -508,7 +508,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 25 (1988-89)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 25 (1988-89)", true)
 
     member ``Season 26 (1989)``: HtmlProvider+Season261989 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -526,7 +526,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 26 (1989)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 26 (1989)", true)
 
     member ``Season 3 (1965-66)``: HtmlProvider+Season3196566 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -544,7 +544,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 3 (1965-66)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 3 (1965-66)", true)
 
     member ``Season 4 (1966-67)``: HtmlProvider+Season4196667 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -562,7 +562,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67)", true)
 
     member ``Season 4 (1966-67) continued``: HtmlProvider+Season4196667Continued with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -580,7 +580,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67) continued")
+    HtmlTable<_>.Create(rowConverter, this, "Season 4 (1966-67) continued", true)
 
     member ``Season 5 (1967-68)``: HtmlProvider+Season5196768 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -598,7 +598,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 5 (1967-68)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 5 (1967-68)", true)
 
     member ``Season 6 (1968-69)``: HtmlProvider+Season6196869 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -616,7 +616,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 6 (1968-69)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 6 (1968-69)", true)
 
     member ``Season 7 (1970)``: HtmlProvider+Season71970 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -634,7 +634,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 7 (1970)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 7 (1970)", true)
 
     member ``Season 8 (1971)``: HtmlProvider+Season81971 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -652,7 +652,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 8 (1971)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 8 (1971)", true)
 
     member ``Season 9 (1972)``: HtmlProvider+Season91972 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -670,7 +670,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Season 9 (1972)")
+    HtmlTable<_>.Create(rowConverter, this, "Season 9 (1972)", true)
 
     member ``See also``: HtmlProvider+SeeAlso with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -678,7 +678,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "See also")
+    HtmlTable<_>.Create(rowConverter, this, "See also", false)
 
     member ``Series 1``: HtmlProvider+Series1 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -690,7 +690,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Writer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Original release", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 1")
+    HtmlTable<_>.Create(rowConverter, this, "Series 1", true)
 
     member ``Series 1 (2005)``: HtmlProvider+Series12005 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -708,7 +708,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 1 (2005)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 1 (2005)", true)
 
     member ``Series 2``: HtmlProvider+Series2 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -720,7 +720,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Writer", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Original release", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 2")
+    HtmlTable<_>.Create(rowConverter, this, "Series 2", true)
 
     member ``Series 2 (2006)``: HtmlProvider+Series22006 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -738,7 +738,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 2 (2006)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 2 (2006)", true)
 
     member ``Series 3 (2007)``: HtmlProvider+Series32007 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -756,7 +756,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 3 (2007)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 3 (2007)", true)
 
     member ``Series 4 (2008)``: HtmlProvider+Series42008 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -774,7 +774,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 4 (2008)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 4 (2008)", true)
 
     member ``Series 5 (2010)``: HtmlProvider+Series52010 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -792,7 +792,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 5 (2010)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 5 (2010)", true)
 
     member ``Series 6 (2011)``: HtmlProvider+Series62011 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -810,7 +810,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 6 (2011)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 6 (2011)", true)
 
     member ``Series 7 (2012-13)``: HtmlProvider+Series7201213 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -826,7 +826,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 7 (2012-13)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 7 (2012-13)", true)
 
     member ``Series 7 (2012-13) continued``: HtmlProvider+Series7201213Continued with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -842,7 +842,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 7 (2012-13) continued")
+    HtmlTable<_>.Create(rowConverter, this, "Series 7 (2012-13) continued", true)
 
     member ``Series 8 (2014)``: HtmlProvider+Series82014 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -858,7 +858,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Series 8 (2014)")
+    HtmlTable<_>.Create(rowConverter, this, "Series 8 (2014)", true)
 
     member ``Special (1983)``: HtmlProvider+Special1983 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -876,7 +876,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Special (1983)")
+    HtmlTable<_>.Create(rowConverter, this, "Special (1983)", true)
 
     member ``Special (2006)``: HtmlProvider+Special2006 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -894,7 +894,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Special (2006)")
+    HtmlTable<_>.Create(rowConverter, this, "Special (2006)", true)
 
     member ``Special (2014)``: HtmlProvider+Special2014 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -910,7 +910,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Special (2014)")
+    HtmlTable<_>.Create(rowConverter, this, "Special (2014)", true)
 
     member Specials: HtmlProvider+Specials with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -926,7 +926,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Finale Date (UK)", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Average viewers (in millions)", TextRuntime.ConvertFloat("", "", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials")
+    HtmlTable<_>.Create(rowConverter, this, "Specials", true)
 
     member ``Specials (2005)``: HtmlProvider+Specials2005 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -944,7 +944,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2005)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2005)", true)
 
     member ``Specials (2007)``: HtmlProvider+Specials2007 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -962,7 +962,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2007)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2007)", true)
 
     member ``Specials (2008-10)``: HtmlProvider+Specials200810 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -980,7 +980,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2008-10)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2008-10)", true)
 
     member ``Specials (2010-11)``: HtmlProvider+Specials201011 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -998,7 +998,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertDateTime("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2010-11)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2010-11)", true)
 
     member ``Specials (2011-12)``: HtmlProvider+Specials201112 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1016,7 +1016,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2011-12)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2011-12)", true)
 
     member ``Specials (2012)``: HtmlProvider+Specials2012 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1032,7 +1032,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2012)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2012)", true)
 
     member ``Specials (2013)``: HtmlProvider+Specials2013 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1048,7 +1048,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[5])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Specials (2013)")
+    HtmlTable<_>.Create(rowConverter, this, "Specials (2013)", true)
 
     member Table66: HtmlProvider+Table66 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1056,7 +1056,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Doctor Who", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Doctor Who 2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table66")
+    HtmlTable<_>.Create(rowConverter, this, "Table66", true)
 
     member Table67: HtmlProvider+Table67 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1064,7 +1064,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table67")
+    HtmlTable<_>.Create(rowConverter, this, "Table67", false)
 
     member Table68: HtmlProvider+Table68 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1072,7 +1072,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table68")
+    HtmlTable<_>.Create(rowConverter, this, "Table68", false)
 
     member Table69: HtmlProvider+Table69 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1080,7 +1080,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table69")
+    HtmlTable<_>.Create(rowConverter, this, "Table69", false)
 
     member Table70: HtmlProvider+Table70 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1088,7 +1088,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table70")
+    HtmlTable<_>.Create(rowConverter, this, "Table70", false)
 
     member Table71: HtmlProvider+Table71 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1096,7 +1096,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table71")
+    HtmlTable<_>.Create(rowConverter, this, "Table71", false)
 
     member ``Television broadcasts``: HtmlProvider+TelevisionBroadcasts with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1110,7 +1110,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Television broadcasts")
+    HtmlTable<_>.Create(rowConverter, this, "Television broadcasts", true)
 
     member ``Television movie (1996)``: HtmlProvider+TelevisionMovie1996 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1128,7 +1128,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[6])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Television movie (1996)")
+    HtmlTable<_>.Create(rowConverter, this, "Television movie (1996)", true)
 
     member Webcasts: HtmlProvider+Webcasts with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1142,7 +1142,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Director", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
                                         TextRuntime.GetNonOptionalValue("Original airdate", TextRuntime.ConvertString(value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Webcasts")
+    HtmlTable<_>.Create(rowConverter, this, "Webcasts", true)
 
 
 [<[TypeProviderEditorHideMethods()]>]

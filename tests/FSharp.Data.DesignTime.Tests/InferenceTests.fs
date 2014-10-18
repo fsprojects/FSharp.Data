@@ -16,7 +16,6 @@ open FSharp.Data.Runtime.CsvInference
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
-open ProviderImplementation.ProvidedTypes
 
 /// A collection containing just one type
 let SimpleCollection typ = 
@@ -25,7 +24,7 @@ let SimpleCollection typ =
 let culture = TextRuntime.GetCulture ""
 
 let inferType (csv:CsvFile) inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals =
-    let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema (Some ProviderHelpers.unitsOfMeasureProvider)
+    let headerNamesAndUnits, schema = parseHeaders csv.Headers csv.NumberOfColumns schema ProviderHelpers.unitsOfMeasureProvider
     inferType headerNamesAndUnits schema (csv.Rows |> Seq.map (fun x -> x.Columns)) inferRows missingValues cultureInfo assumeMissingValues preferOptionals
 
 let toRecord fields = InferedType.Record(None, fields, false)

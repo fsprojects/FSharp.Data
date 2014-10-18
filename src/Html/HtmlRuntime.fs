@@ -2,11 +2,9 @@
 
 open System
 open System.ComponentModel
-open System.Globalization
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
-open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
@@ -29,22 +27,16 @@ type HtmlTableCell =
 
 type HtmlTable = 
     { Name : string
-      HeaderNamesAndUnits : (string * Type option)[]
-      InferedProperties : PrimitiveInferedProperty list option
+      HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
+      InferedProperties : PrimitiveInferedProperty list option // sometimes set at designtime, never at runtime
+      HasHeaders: bool option // always set at designtime, never at runtime
       Rows :  string [] []
       Html : HtmlNode }
-    member x.Headers = Array.map fst x.HeaderNamesAndUnits
     override x.ToString() =
         let sb = StringBuilder()
         use wr = new StringWriter(sb) 
         wr.WriteLine(x.Name)
-        let headers = 
-            x.HeaderNamesAndUnits 
-            |> Array.map (fun (header, unit) ->
-                match unit with
-                | None -> header
-                | Some unit -> header + " (" + unit.Name + ")")
-        let data = array2D <| List.ofArray headers :: (x.Rows |> Array.map (List.ofArray) |> List.ofArray)
+        let data = array2D x.Rows
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
         let widths = Array.zeroCreate columns 
@@ -103,7 +95,7 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
                 
-    let private parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider preferOptionals makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+    let private parseTable parameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         
@@ -117,7 +109,7 @@ module HtmlRuntime =
 
         let tableName = makeUnique (getTableName (sprintf "Table%d" (index + 1)) table parents)
 
-        let res = Array.init rows.Length  (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
+        let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
                 let rowSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "rowspan")) - 1
@@ -137,28 +129,35 @@ module HtmlRuntime =
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
-        let startIndex, headerNames, units, inferedProperties = 
-            if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-            then 1, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
-            else res
-                  |> Array.map (Array.map (fun x -> x.Data))
-                  |> HtmlInference.inferHeaders missingValues cultureInfo unitsOfMeasureProvider preferOptionals
+        let hasHeaders, headerNamesAndUnits, inferedProperties = 
+            match parameters with
+            | None -> None, None, None
+            | Some parameters ->
+                let hasHeaders, headerNames, units, inferedProperties = 
+                    if res.[0] |> Array.forall (fun r -> r.IsHeader) 
+                    then true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
+                    else res
+                          |> Array.map (Array.map (fun x -> x.Data))
+                          |> HtmlInference.inferHeaders parameters
         
-        // headers and units may already be parsed in inferHeaders
-        let headerNamesAndUnits =
-          match headerNames, units with
-          | Some headerNames, Some units -> Array.zip headerNames units
-          | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" unitsOfMeasureProvider |> fst
+                // headers and units may already be parsed in inferHeaders
+                let headerNamesAndUnits =
+                  match headerNames, units with
+                  | Some headerNames, Some units -> Array.zip headerNames units
+                  | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" parameters.UnitsOfMeasureProvider |> fst
 
-        let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
+                Some hasHeaders, Some headerNamesAndUnits, inferedProperties
+
+        let rows = res |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
                HeaderNamesAndUnits = headerNamesAndUnits
                InferedProperties = inferedProperties
+               HasHeaders = hasHeaders
                Rows = rows 
                Html = table }
 
-    let getTables includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider preferOptionals (doc:HtmlDocument) =
+    let getTables parameters includeLayoutTables (doc:HtmlDocument) =
 
         let tableElements = 
             [ doc.Elements ["table"]
@@ -177,7 +176,7 @@ module HtmlRuntime =
                 )
         
         tableElements
-        |> List.mapi (parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider preferOptionals (NameUtils.uniqueGenerator id))
+        |> List.mapi (parseTable parameters includeLayoutTables (NameUtils.uniqueGenerator id))
         |> List.choose id
 
 type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
@@ -187,15 +186,13 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>)
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(includeLayoutTables, missingValuesStr, cultureStr, preferOptionals, reader:TextReader) =
-        let missingValues = TextRuntime.GetMissingValues missingValuesStr
-        let cultureInfo = TextRuntime.GetCulture cultureStr
+    static member Create(includeLayoutTables, reader:TextReader) =
         let doc = 
             reader 
             |> HtmlDocument.Load
         let tables = 
             doc
-            |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo None preferOptionals
+            |> HtmlRuntime.getTables None includeLayoutTables
             |> List.map (fun table -> table.Name, table) 
             |> Map.ofList
         TypedHtmlDocument(doc, tables)
@@ -206,17 +203,22 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>)
     member __.GetTable(id:string) = 
        tables |> Map.find id
 
-and HtmlTable<'rowType> internal (name:string, headers, values:'rowType[], html:HtmlNode) =
+and HtmlTable<'rowType> internal (name:string, headers:string[] option, values:'rowType[], html:HtmlNode) =
 
-    member x.Name = name
-    member x.Headers = headers
-    member x.Rows = values
+    member __.Name = name
+    member __.Headers = headers
+    member __.Rows = values
 
-    member x.Html = html
+    member __.Html = html
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string) =
+    static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string, hasHeaders:bool) =
        let table = doc.GetTable id
-       HtmlTable<_>(table.Name, table.Headers, Array.map rowConverter.Invoke table.Rows, table.Html)
+       let headers, rows = 
+          if hasHeaders then
+              Some table.Rows.[0], table.Rows.[1..]
+          else
+              None, table.Rows
+       HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)

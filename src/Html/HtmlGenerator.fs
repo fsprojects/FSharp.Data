@@ -18,11 +18,11 @@ module internal HtmlGenerator =
         Property : ProvidedProperty
         Convert: Expr -> Expr }
 
-    let generateTypes asm ns typeName (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) columnsPerTable =
+    let generateTypes asm ns typeName (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) tableInfo =
         
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
     
-        if not (List.isEmpty columnsPerTable) then
+        if not (List.isEmpty tableInfo) then
 
             let tableContainer = ProvidedTypeDefinition("TableContainer", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
             htmlType.AddMember <| ProvidedProperty("Tables", tableContainer, GetterCode = fun (Singleton doc) -> doc)
@@ -32,7 +32,7 @@ module internal HtmlGenerator =
                 HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
                 |> NameUtils.nicePascalName
 
-            for (tableName : string), columns in columnsPerTable do
+            for tableName, hasHeaders, columns in tableInfo do
             
                 let fields = columns |> List.mapi (fun index field ->
                     let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
@@ -68,7 +68,7 @@ module internal HtmlGenerator =
                 
                 let create (htmlDoc:Expr) =
                     let rowConverterVar = Var("rowConverter", rowConverter.Type)
-                    let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, tableName)
+                    let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, tableName, hasHeaders)
                     Expr.Let(rowConverterVar, rowConverter, body)
                 
                 let propertyName = NameUtils.capitalizeFirstLetter tableName
