@@ -31,7 +31,7 @@ let data = FreebaseData.GetDataContext()
 ### Exploring Freebase data
 
 Now you can explore the Freebase data schema by typing `data.` and exploring the
-available data sources in the autocomplete. For example, the following snippet
+available data sources using autocomplete. For example, the following snippet
 retrieves the Chemical Elements and then looks at the details of Hydrogen:
 *)
 
@@ -167,7 +167,7 @@ topBooksWithNameContaining "1984" |> Seq.toList
 ### Units of Measure
 
 Units of measure are supported. For example, the `Atomic mass` property of chemical elements
-is automatically converted to SI units and it is exposed in Kilograms. This is statically
+is automatically converted to SI units and exposed in Kilograms. This is statically
 tracked in the F# type system using units of measure. 
 
 Here is an example from data about cyclones and hurricanes:
@@ -196,18 +196,18 @@ introduction to discuss all of them. Some of the aspects were already demonstrat
 documentation can be found in the articles linked in the introduction. To give a brief 
 summary, here is a list of features:
 
-* Many queries are translated efficiently into the MQL language. Those that can't 
-  execute on the client side by default.
+* Many queries are translated efficiently into the MQL language. Those that can't are
+  executed on the client side by default.
 * A selection of sample individuals is given under the `Individuals` entry for each collection 
   of objects. This allows you to program against strongly named individual such as 
   `Hydrogen` or `Bob Dylan`.
-* Custom Freebase operators such as approximate counts and approximate string matching are supported
+* Custom Freebase operators such as approximate counts and approximate string matching are supported.
 * Image URLs are provided via the `GetImages()` method, and the first image is provided using the 
   `MainImage` property
 * Snapshot dates for Freebase are supported. This means that you can view the state of the
   Freebase database on a specific date (also meaning that your application will not break
   when the schema changes).
-* Optional client-side caching of schema information makes type checking quick and efficient
+* Optional client-side caching of schema information makes type checking quick and efficient.
 * If you want to query larger amount of Freebase data, you can register at Google and
   obtain a custom API key. The key can be passed as a static parameter to the type provider.
 
@@ -232,7 +232,7 @@ let FreebaseApiKey = "<enter your freebase-enabled google API key here>"
 ### Further Individuals
 
 As you saw above, individual entities can be addressed through the ``Individuals`` property.
-By default the first 1000 individuals are returned by Freebase. Three other versions of individuals exist - 
+By default the first 1,000 individuals are returned by Freebase. Three other versions of individuals exist - 
 ``Individuals10`` (containing 10,000 individuals), ``Individuals100`` (containing 100,000 individuals) and
 ``IndividualsAZ`` (containing individuals bucketed by first letter of their name, with each bucket containing 
 up to 10,000 individuals). Together these help provide alternative, more stable ways of scaling to larger tables, 
@@ -262,7 +262,7 @@ data.``Arts and Entertainment``.Books.Books.IndividualsAZ.T.``The Bible``
 (**
 ### Debugging MQL queries
 
-If you want to understand how the Freebase type provider work, or if you want to debug a 
+If you want to understand how the Freebase type provider works, or if you want to debug a 
 performance issue, it might be useful to see the requests that the provider sends to 
 Freebase. This can be done by subscribing to the `SendingQuery` and `SendingRequest` events.
 The former triggers for overall Freebase MQL queries and can be run in the [Freebase query editor](http://www.freebase.com/query).

@@ -43,7 +43,7 @@ type Stocks = CsvProvider<"../data/MSFT.csv">
 The generated type provides two static methods for loading data. The `Parse` method can be
 used if we have the data in a `string` value. The `Load` method allows reading the data from
 a file or from a web resource (and there's also an asynchronous `AsyncLoad` version). We could also
-have used a web url instead of a local file in the sample parameter of the type provider.
+have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the `Load` method with an URL that points to a live CSV file on the Yahoo finance web site:
 *)
  
@@ -90,7 +90,7 @@ open FSharp.Charting
 (*** include-it:chart1 ***)
 
 (**
-As a one more example, we use the `Candlestick` chart to get a more detailed look at the
+As one more example, we use the `Candlestick` chart to get a more detailed look at the
 data over the last month:
 *)
 
@@ -137,7 +137,7 @@ We can also use the default constructor instead of the `GetSample` static method
 let small2 = new CsvProvider<"../data/SmallTest.csv">()
 
 (**
-but the VisualStudio intellisense for the type provider parameters doesn't work when we use a default
+but the VisualStudio IntelliSense for the type provider parameters doesn't work when we use a default
 constructor for a type provider, so we'll keep using `GetSample` instead.
 
 As in the previous example, the `small` value exposes the rows using the `Rows` property.
@@ -154,7 +154,7 @@ for row in small.Rows do
 
 (**
 The numerical values of `Distance` and `Time` are both inferred as `decimal` (because they
-are small enough). Thus the type of `speed` becomes `decimal<meter/second>`. The compiler
+are small enough). Thus the type of `speed` becomes `decimal<metre/second>`. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometres per hour.
 
@@ -210,8 +210,8 @@ rows separated by either semicolon or a colon. You can use:
 
 It is quite common in statistical datasets for some values to be missing. If
 you open the [`data/AirQuality.csv`](../data/AirQuality.csv) file you will see
-that some values for the Ozone observations are marked `#N/A`. Such values are
-parsed as float and will in F# be marked with `Double.NaN`. The values `#N/A`, `NA`,
+that some values for the ozone observations are marked `#N/A`. Such values are
+parsed as float and will be marked with `Double.NaN` in F#. The values `#N/A`, `NA`,
 and `:` are recognized as missing values by default, but you can customize it by specifying
 the `MissingValues` static parameter of `CsvProvider`.
 
@@ -240,7 +240,7 @@ it by specifying the `InferRows` static parameter of `CsvProvider`. If you speci
 Columns with only `0`, `1`, `Yes`, `No`, `True`, or `False` will be set to `bool`. Columns with numerical values
 will be set to either `int`, `int64`, `decimal`, or `float`, in that order of preference.
 
-If in any row a value is missing, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
+If a value is missing in any row, by default the CSV type provider will infer a nullable (for `int` and `int64`) or an optional
 (for `bool`, `DateTime` and `Guid`). When a `decimal` would be inferred but there are missing values, we will infer a
 `float` instead, and use `Double.NaN` to represent those missing values. The `string` type is already inherently nullable,
 so by default we won't generate a `string option`. If you prefer to use optionals in all cases, you can set the static parameter
@@ -349,7 +349,7 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
 
 By default, the rows are cached so you can iterate over the `Rows` property multiple times without worrying.
 But if you will only iterate once, you can disable caching by setting the `CacheRows` static parameter of `CsvProvider`
-to `false` . If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
+to `false`. If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
 You can still cache the data at some point by using the `Cache` method, but only do that if you have already
 transformed the dataset to be smaller:
 *)

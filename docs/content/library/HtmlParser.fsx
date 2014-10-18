@@ -13,20 +13,20 @@ independently of the actual HTML Type provider.
 open FSharp.Data
 
 (**
-The following example uses google to search for `FSharp.Data` then parses the first set of
-search results from the page, extracting the URL and the Title of the link.
+The following example uses Google to search for `FSharp.Data` then parses the first set of
+search results from the page, extracting the URL and Title of the link.
 
-To acheive this we must first parse the webpage into our DOM. We can do this using
+To achieve this we must first parse the webpage into our DOM. We can do this using
 the `HtmlDocument.Load` method. This method will take a URL and make a synchronous web call
 to extract the data from the page. Note: an asynchronous variant `HtmlDocument.AsyncLoad` is also available  
 *)
 let results = HtmlDocument.Load("http://www.google.co.uk/search?q=FSharp.Data")
 
 (**
-Now we have a loaded HTML document we can begin to extract data from it. 
-Firstly we want to extract all of the anchor tags `a` out of the document then
-inspect the links to see if it has a `href` attribute, if it does extract the value
-which in this case is the url that the search result is pointing to and additionally the 
+Now that we have a loaded HTML document we can begin to extract data from it. 
+Firstly we want to extract all of the anchor tags `a` out of the document, then
+inspect the links to see if it has a `href` attribute. If it does, extract the value,
+which in this case is the url that the search result is pointing to, and additionally the 
 `InnerText` of the anchor tag to provide the name of the web page for the search result
 we are looking at. 
 *)
@@ -38,11 +38,11 @@ let links =
     )
 
 (**
-Now we have extracted our search results you will notice that there lots of
-other links to various google services and cached/similar results ideally we would 
+Now that we have extracted our search results you will notice that there are lots of
+other links to various Google services and cached/similar results. Ideally we would 
 like to filter these results as we are probably not interested in them.
-At this point we simply have a sequence of Tuples so F# makes this trivial, using `Seq.filter`
-and `Seq.map` 
+At this point we simply have a sequence of Tuples, so F# makes this trivial using `Seq.filter`
+and `Seq.map`.
 *)
 
 let searchResults =
