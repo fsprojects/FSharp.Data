@@ -103,7 +103,7 @@ let recent =
 (*** define-output:chart2 ***)
 
 // Visualize prices using Candlestick chart
-Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+Chart.Candlestick(recent).WithYAxis(Min = 40.0, Max = 50.0)
 
 (*** include-it:chart2 ***)
 
@@ -297,7 +297,7 @@ and still have the provider infer the type for you. Example:
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
 for row in csv.Rows do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.Foo (defaultArg row.Column3 1.0)
 
 (**
 
@@ -361,7 +361,7 @@ stocks.Take(10).Cache()
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider
- * [F# Data: CSV Parser and Reader](CsvFile.html) - provides more information about 
+ * [F# Data: CSV Parser](CsvFile.html) - provides more information about 
    working with CSV documents dynamically.
  * [API Reference: CsvProvider type provider](../reference/fsharp-data-csvprovider.html)
 

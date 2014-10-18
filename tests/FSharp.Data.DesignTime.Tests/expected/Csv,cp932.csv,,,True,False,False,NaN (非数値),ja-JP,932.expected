@@ -95,10 +95,10 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class CsvProvider+Row : int * float
-    member id: int with get
+    member Id: int with get
     (let t1,_ = this in t1)
 
-    member value: float with get
+    member Value: float with get
     (let _,t2 = this in t2)
 
 

@@ -521,7 +521,7 @@ let normalize (str:string) =
   str.Replace("\r\n", "\n")
      .Replace("\r", "\n")
 
-type GitHub = JsonProvider<"Data/github.json", RootName="Issue">
+type GitHub = JsonProvider<"Data/GitHub.json", RootName="Issue">
 
 [<Test>]
 let ``Can construct complex objects``() =
@@ -613,6 +613,11 @@ let ``Can construct heterogeneous arrays with optionals``() =
 
 [<Test>]
 let ``Weird UnitSystem case``() =
-    let comments = JsonProvider<"data/reddit.json">.GetSample()
+    let comments = JsonProvider<"Data/reddit.json">.GetSample()
     let data = comments.Data.Children.[0].Data
     data.LinkId |> shouldEqual "t3_2424px"
+
+[<Test>]
+let ``Whitespace is preserved``() =
+    let j = JsonProvider<"""{ "s": " "}""">.GetSample()
+    j.S |> should equal " "

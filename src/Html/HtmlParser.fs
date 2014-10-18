@@ -11,14 +11,46 @@ open FSharp.Data
 // --------------------------------------------------------------------------------------
 
 type HtmlAttribute = 
-    | HtmlAttribute of name:string * value:string    
+
+    private | HtmlAttribute of name:string * value:string    
+
+    /// <summary>
+    /// Creates an html attribute
+    /// </summary>
+    /// <param name="name">The name of the attribute</param>
+    /// <param name="value">The value of the attribute</param>
+    static member New(name:string, value:string) =
+        HtmlAttribute(name.ToLowerInvariant(), value)
 
 [<StructuredFormatDisplay("{_Print}")>]
 type HtmlNode =
-    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-    | HtmlText of content:string
-    | HtmlComment of content:string
+
+    private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+            | HtmlText of content:string
+            | HtmlComment of content:string
     
+    /// <summary>
+    /// Creates an html element
+    /// </summary>
+    /// <param name="name">The name of the element</param>
+    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
+    /// <param name="children">The children elements of this element</param>
+    static member NewElement(name:string, attrs:seq<_>, children:seq<_>) =
+        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList 
+        HtmlElement(name.ToLowerInvariant(), attrs, List.ofSeq children)
+    
+    /// <summary>
+    /// Creates a text content element
+    /// </summary>
+    /// <param name="content">The actual content</param>
+    static member NewText content = HtmlText(content)
+
+    /// <summary>
+    /// Creates a comment element
+    /// </summary>
+    /// <param name="content">The actual content</param>
+    static member NewComment content = HtmlComment(content)
+
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
             let append (str:string) = sb.Append str |> ignore
@@ -70,8 +102,16 @@ type HtmlNode =
 
 [<StructuredFormatDisplay("{_Print}")>]
 type HtmlDocument = 
-    | HtmlDocument of docType:string * elements:HtmlNode list
+    private | HtmlDocument of docType:string * elements:HtmlNode list
   
+    /// <summary>
+    /// Creates an html document
+    /// </summary>
+    /// <param name="docType">The document type specifier string</param>
+    /// <param name="children">The child elements of this document</param>
+    static member New(docType, children:seq<_>) = 
+        HtmlDocument(docType, List.ofSeq children)
+
     override x.ToString() =
         match x with
         | HtmlDocument(docType, elements) ->
@@ -102,13 +142,14 @@ module private TextParser =
 
 module internal HtmlParser =
 
-    let regexOptions = 
+    let private regexOptions = 
 #if FX_NO_REGEX_COMPILATION
         RegexOptions.None
 #else
         RegexOptions.Compiled
 #endif
     let wsRegex = lazy Regex("\\s+", regexOptions)
+    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
 
     type HtmlToken =
         | DocType of string

@@ -34,19 +34,23 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpecFromSamples samples = 
             
-            let samples : HtmlObject list = Seq.exactlyOne samples
+            let doc : HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ -> 
+                let samples =
+                   doc
+                   |> HtmlRuntime.getHtmlElements includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)
                 HtmlGenerator.generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) replacer samples
+                
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
-        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse >> HtmlRuntime.getHtmlElements includeLayoutTables) (fun _ _ -> failwith "Not Applicable")
+        generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
                      getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName
 
     // Add static parameter that specifies the API we want to get (compile-time) 

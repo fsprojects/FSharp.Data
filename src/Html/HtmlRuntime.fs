@@ -28,14 +28,21 @@ type HtmlTableCell =
 
 type HtmlTable = 
     { Name : string
-      Headers : string []
+      HeaderNamesAndUnits : (string * Type option)[]
       Rows :  string [] []
       Html : HtmlNode }
+    member x.Headers = Array.map fst x.HeaderNamesAndUnits
     override x.ToString() =
         let sb = StringBuilder()
         use wr = new StringWriter(sb) 
         wr.WriteLine(x.Name)
-        let data = array2D ((x.Headers |> List.ofArray) :: (x.Rows |> Array.map (List.ofArray) |> List.ofArray))    
+        let headers = 
+            x.HeaderNamesAndUnits 
+            |> Array.map (fun (header, unit) ->
+                match unit with
+                | None -> header
+                | Some unit -> header + " (" + unit.Name + ")")
+        let data = array2D <| List.ofArray headers :: (x.Rows |> Array.map (List.ofArray) |> List.ofArray)
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
         let widths = Array.zeroCreate columns 
@@ -119,17 +126,20 @@ module HtmlRuntime =
                 Regex.IsMatch(name, """h\d""")
             tryFindPrevious isHeading element parents            
 
+        let cleanup (str:String) =
+            HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
+
         match deriveFromSibling element parents with
-        | Some(e) when not(Set.contains e.InnerText nameSet) -> e.InnerText
+        | Some e -> cleanup(e.InnerText())
         | _ ->
                 match element.Descendants ["caption"] with
                 | [] ->
-                     match tryGetName [ "id"; "name"; "title"; "summary"] with
-                     | Some(name) when not(Set.contains name nameSet) -> name
+                     match tryGetName ["id"; "name"; "title"; "summary"] with
+                     | Some name -> cleanup name
                      | _ -> defaultName
-                | h :: _ -> h.InnerText
+                | h :: _ -> h.InnerText()
                 
-    let private parseTable includeLayoutTables (index, nameSet) (table:HtmlNode) (parents:HtmlNode list) = 
+    let private parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider makeUnique index (table:HtmlNode, parents:HtmlNode list)= 
 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         
@@ -137,11 +147,11 @@ module HtmlRuntime =
 
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
         let rowLengths = cells |> List.map (fun x -> x.Length)
-        let width = List.max rowLengths
+        let numberOfColumns = List.max rowLengths
         
         if not includeLayoutTables && (rowLengths |> List.filter (fun x -> x > 1) |> List.length <= 1) then None else
 
-        let res = Array.init rows.Length  (fun _ -> Array.init width (fun _ -> Empty))
+        let res = Array.init rows.Length  (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
                 let rowSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "rowspan")) - 1
@@ -149,7 +159,7 @@ module HtmlRuntime =
 
                 let data =
                     let getContents contents = 
-                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "li"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
+                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
                     match cell with
                     | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
                     | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
@@ -158,47 +168,36 @@ module HtmlRuntime =
                 while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
                 for j in [!col_i..(!col_i + colSpan)] do
                     for i in [rowindex..(rowindex + rowSpan)] do
-                        if i < rows.Length && j < width
+                        if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
         let startIndex, headers = 
             if res.[0] |> Array.forall (fun r -> r.IsHeader) 
-            then 1, res.[0] |> Array.map (fun x -> x.Data)
-            else HtmlInference.inferHeaders (res |> Array.map (Array.map (fun x -> x.Data)))
+            then 1, res.[0] |> Array.map (fun x -> x.Data) |> Some
+            else res |> Array.map (Array.map (fun x -> x.Data)) |> HtmlInference.inferHeaders missingValues cultureInfo
             
-        let headers = 
-            if headers.Length = 0
-            then Array.zeroCreate res.[0].Length
-            else headers
+        let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider
 
-        let headers = headers |> Array.mapi (fun i header -> 
-            if String.IsNullOrWhiteSpace header
-            then sprintf "Column%d" (i + 1)
-            else header)
-
-        let tableName = getName (sprintf "Table%d" (index + 1)) nameSet table parents
+        let tableName = makeUnique (getName (sprintf "Table%d" (index + 1)) nameSet table parents)
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
-               Headers = headers
+               HeaderNamesAndUnits = headerNamesAndUnits
                Rows = rows 
                Html = table }
 
-    let getTables includeLayoutTables (doc:HtmlDocument) =
+    let getTables includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (doc:HtmlDocument) =
+
         let tableElements = 
             findElementWithRelations ["table"] doc
             |> (fun x -> if includeLayoutTables 
                          then x 
                          else x |> List.filter (fun (e,_) -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)
                 )
-        let (_,_,tables) =
-            tableElements
-            |> List.fold (fun (index, names, tables) (table, parents) -> 
-                            match parseTable includeLayoutTables (index, names) table parents with
-                            | Some(table) -> index + 1, Set.add table.Name names, table::tables
-                            | None -> index + 1, names, tables
-                         ) (0, Set.empty, [])
-        tables |> List.rev
+        
+        tableElements
+        |> List.mapi (parseTable includeLayoutTables missingValues cultureInfo unitsOfMeasureProvider (NameUtils.uniqueGenerator id))
+        |> List.choose id
 
     let getLists (doc:HtmlDocument) =
         let getList listType = findElementWithRelations listType doc
@@ -259,7 +258,9 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(includeLayoutTables:bool, reader:TextReader) =
+    static member Create(includeLayoutTables, missingValuesStr, cultureStr, reader:TextReader) =
+        let missingValues = TextRuntime.GetMissingValues missingValuesStr
+        let cultureInfo = TextRuntime.GetCulture cultureStr
         let doc = 
             reader 
             |> HtmlDocument.Load

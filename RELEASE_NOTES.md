@@ -1,7 +1,13 @@
-#### 2.1.0-beta - Unreleased
+#### 2.1.0-beta2 - Unreleased
+* Added TBA and TBD to list of default missing values.
+* Improve generated table names in HtmlProvider.
+* Make HTML API more C# friendly.
+
+#### 2.1.0-beta - October 12 2014
 * New logo.
 * Added HTML parser and HtmlProvider.
 * Detect and ignore trailing empty header columns in CSV/TSV files. 
+* Fixed strings with only whitespace being lost in JsonProvider.
 
 #### 2.0.15 - September 23 2014
 * Fixed crash when disposing CsvProvider instances.

@@ -1,5 +1,5 @@
 ﻿(**
-# F# Data: CSV Parser and Reader
+# F# Data: CSV Parser
 
 The F# [CSV Type Provider](CsvProvider.html) is built on top of an efficient CSV parser written
 in F#. There's also a simple API that can be used to access values dynamically.

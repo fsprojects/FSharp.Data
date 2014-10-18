@@ -72,7 +72,6 @@
     <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />
     <Compile Include="AssemblyInfo.fs" />
-    <None Include="Test.HtmlRuntime.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

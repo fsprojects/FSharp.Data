@@ -793,7 +793,7 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
         | SymbolKind.Array _,[arg] -> arg.Name + "[*]" 
         | SymbolKind.Pointer,[arg] -> arg.Name + "*" 
         | SymbolKind.ByRef,[arg] -> arg.Name + "&"
-        | SymbolKind.Generic gty, args -> gty.FullName + args.ToString()
+        | SymbolKind.Generic gty, args -> gty.Name + (sprintf "%A" args)
         | SymbolKind.FSharpTypeAbbreviation (_,_,path),_ -> path.[path.Length-1]
         | _ -> failwith "unreachable"
 

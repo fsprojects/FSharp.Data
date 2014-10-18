@@ -4,7 +4,11 @@
 namespace FSharp.Data
 
 open System.Xml.Linq
+open System.Runtime.InteropServices
 
+// XElementExtensions is not a static class with C#-style extension methods because that would
+// force to reference System.Xml.Linq.dll everytime you reference FSharp.Data, even when not using
+// any of the XML parts
 [<AutoOpen>]
 /// Extension methods for XElement. It is auto opened.
 module XElementExtensions = 
@@ -12,9 +16,9 @@ module XElementExtensions =
     type XElement with
 
       /// Sends the XML to the specified uri. Defaults to a POST request.
-      member x.Request(uri:string, ?httpMethod, ?headers) =  
+      member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =  
         let httpMethod = defaultArg httpMethod HttpMethod.Post
-        let headers = defaultArg headers []
+        let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
             if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
             then headers
@@ -27,9 +31,9 @@ module XElementExtensions =
           httpMethod = httpMethod)
 
       /// Sends the XML to the specified uri. Defaults to a POST request.
-      member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
+      member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
         let httpMethod = defaultArg httpMethod HttpMethod.Post
-        let headers = defaultArg headers []
+        let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
             if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
             then headers
@@ -46,7 +50,6 @@ namespace FSharp.Data.Runtime
 open System
 open System.ComponentModel
 open System.IO
-open System.Globalization
 open System.Xml.Linq
 
 #nowarn "10001"

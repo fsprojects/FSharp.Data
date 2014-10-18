@@ -223,9 +223,9 @@ let ``Columns explicitly overrided to string option should return None when empt
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
     let row2 = rows.[1]
-    row1.a |> should equal ""
-    row1.b |> should equal None
-    row1.c |> should equal (Some 1)
+    row1.A |> should equal ""
+    row1.B |> should equal None
+    row1.C |> should equal (Some 1)
     row2 |> should equal ("a", Some "b", Some 2)
 
 [<Test>]
@@ -234,10 +234,10 @@ let ``NaN's should work correctly when using option types`` () =
     let rows = csv.Rows |> Seq.toArray
     let row1 = rows.[0]
     let row2 = rows.[1]
-    row1.a |> should equal (Some 1.0)
-    row1.b |> should equal None
-    row2.a |> should equal None
-    row2.b |> should equal (Some 1.0)
+    row1.A |> should equal (Some 1.0)
+    row1.B |> should equal None
+    row2.A |> should equal None
+    row2.B |> should equal (Some 1.0)
     
 [<Test>]
 let ``Currency symbols on decimal columns should work``() =
@@ -249,7 +249,7 @@ let ``Currency symbols on decimal columns should work``() =
 let ``AssumeMissingValues works when inferRows limit is reached``() = 
     let errorMessage =
         try
-            (CsvProvider<"Data/AdWords.csv", InferRows=4>.GetSample().Rows
+            (CsvProvider<"Data/Adwords.csv", InferRows=4>.GetSample().Rows
              |> Seq.skip 4 |> Seq.head).``Parent ID``.ToString()
         with e -> e.Message
     errorMessage |> should equal "Couldn't parse row 5 according to schema: Parent ID is missing"
@@ -280,12 +280,12 @@ type CsvWithoutSample = CsvProvider<Schema="category (string), id (string), time
 [<Test>]
 let ``Csv without sample``() = 
     let row = CsvWithoutSample.Parse("1,2,3").Rows |> Seq.exactlyOne
-    row.category |> should equal "1"
-    row.id |> should equal "2"
-    row.timestamp |> should equal "3"
+    row.Category |> should equal "1"
+    row.Id |> should equal "2"
+    row.Timestamp |> should equal "3"
 
-type UTF8 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
-type CP932 = CsvProvider<"data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
+type UTF8 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", HasHeaders = true, MissingValues = "NaN (非数値)">
+type CP932 = CsvProvider<"Data/cp932.csv", Culture = "ja-JP", Encoding = "932", HasHeaders = true, MissingValues = "NaN (非数値)">
 
 [<Test>]
 let ``Uses UTF8 for sample file when encoding not specified``() =
@@ -305,3 +305,19 @@ let ``Disposing CsvProvider shouldn't throw``() =
         use csv = CsvProvider<"Data/TabSeparated.csv", HasHeaders=false>.GetSample()
         csv.Rows |> Seq.iter (fun x -> ())
     ()
+
+[<Test>]
+let ``Whitespace is considered null, not string``() =
+    let rows = CsvProvider<"  ,2.3  \n 1,\t", HasHeaders=false>.GetSample().Rows |> Seq.toArray
+    rows.[0].Column1 |> should equal null
+    rows.[1].Column1 |> should equal (Nullable 1)
+    rows.[0].Column2 |> should equal 2.3M
+    rows.[1].Column2 |> should equal (Double.NaN)
+
+[<Test>]
+let ``Extra whitespace is not removed``() =
+    let rows = CsvProvider<" a ,2.3  \n 1,\tb", HasHeaders=false>.GetSample().Rows |> Seq.toArray
+    rows.[0].Column1 |> should equal " a "
+    rows.[1].Column1 |> should equal " 1"
+    rows.[0].Column2 |> should equal "2.3  "
+    rows.[1].Column2 |> should equal "\tb"

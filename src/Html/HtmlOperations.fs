@@ -2,12 +2,21 @@
 
 open System
 open System.IO
-open System.Xml
 open FSharp.Data
 open FSharp.Data.Runtime
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlAttribute = 
+
+    /// <summary>
+    /// Creates an html attribute
+    /// </summary>
+    /// <param name="name">The name of the attribute</param>
+    /// <param name="value">The value of the attribute</param>
+    let createAttr name value =
+        HtmlAttribute.New(name, value)
 
     /// Gets the name of the given attribute
     let name attr = 
@@ -30,59 +39,61 @@ module HtmlAttribute =
         | true, v -> v
         | false, _ -> defaultValue
     
-[<AutoOpen>]
-module HtmlAttributeExtensions =
+[<Extension>]
+type HtmlAttributeExtensions =
 
-    type HtmlAttribute with
+    /// Gets the name of the current attribute
+    [<Extension>]
+    static member Name(attr:HtmlAttribute) = HtmlAttribute.name attr
 
-        /// Gets the name of the current attribute
-        member x.Name = HtmlAttribute.name x
+    /// Gets the value of the current attribute
+    [<Extension>]
+    static member Value(attr:HtmlAttribute) = HtmlAttribute.value attr
 
-        /// Gets the value of the current attribute
-        member x.Value() = HtmlAttribute.value x
+    /// <summary>
+    /// Gets the value of the current attribute and parses the value
+    /// using the function supplied by parseF
+    /// </summary>
+    /// <param name="parseF">The function to parse the attribute value</param>
+    [<Extension>]
+    static member Value<'a>(attr:HtmlAttribute, parseF : string -> 'a) = 
+        HtmlAttribute.parseValue parseF attr
 
-        /// <summary>
-        /// Gets the value of the current attribute and parses the value
-        /// using the function supplied by parseF
-        /// </summary>
-        /// <param name="parseF">The function to parse the attribute value</param>
-        member x.Value<'a>(parseF : string -> 'a)= 
-            HtmlAttribute.parseValue parseF x
-
-        /// <summary>
-        /// Attempts to parse the attribute value using the given function
-        /// if the parse function returns false then the defaultValue is used
-        /// </summary>
-        /// <param name="defaultValue">Value to return if the parse function fails</param>
-        /// <param name="parseF">Function to parse the attribute value</param>
-        member x.Value<'a>(defaultValue, parseF : string -> (bool * 'a))= 
-            HtmlAttribute.tryParseValue defaultValue parseF x
+    /// <summary>
+    /// Attempts to parse the attribute value using the given function
+    /// if the parse function returns false then the defaultValue is used
+    /// </summary>
+    /// <param name="defaultValue">Value to return if the parse function fails</param>
+    /// <param name="parseF">Function to parse the attribute value</param>
+    [<Extension>]
+    static member Value<'a>(attr:HtmlAttribute, defaultValue, parseF : string -> (bool * 'a)) = 
+        HtmlAttribute.tryParseValue defaultValue parseF attr
     
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlNode = 
     
     /// <summary>
-    /// Creates a HtmlElement
-    /// All attribute names and tag names will be normalized to lowercase
+    /// Creates an html element
     /// </summary>
     /// <param name="name">The name of the element</param>
     /// <param name="attrs">The HtmlAttribute(s) of the element</param>
     /// <param name="children">The children elements of this element</param>
     let createElement (name:string) attrs children =
-        let attrs = Seq.map (fun (name:string, value) -> HtmlAttribute(name.ToLowerInvariant(), value)) attrs |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, children)
+        HtmlNode.NewElement(name, attrs, children)
     
     /// <summary>
     /// Creates a text content element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createText content = HtmlText(content)
+    let createText content = 
+        HtmlNode.NewText(content)
 
     /// <summary>
     /// Creates a comment element
     /// </summary>
     /// <param name="content">The actual content</param>
-    let createComment content = HtmlComment(content)
+    let createComment content = 
+        HtmlNode.NewComment(content)
 
     /// Gets the given nodes name
     let name x =
@@ -171,7 +182,7 @@ module HtmlNode =
     let tryGetAttribute (name:string) x =
         let name = name.ToLowerInvariant()
         match x with
-        | HtmlElement(attributes = attr) -> attr |> List.tryFind (fun a -> a.Name = name)
+        | HtmlElement(attributes = attr) -> attr |> List.tryFind (fun a -> a.Name() = name)
         | _ -> None   
     
     /// <summary>
@@ -298,122 +309,138 @@ module HtmlNode =
     /// <param name="x">The current node</param>
     let innerText x = innerTextExcluding [] x
 
+[<Extension>]
+type HtmlNodeExtensions =
+               
+    /// Gets the given nodes name
+    [<Extension>]
+    static member Name(n:HtmlNode) = HtmlNode.name n
+        
+    /// Gets all of the nodes immediately under this node
+    [<Extension>]
+    static member Children(n:HtmlNode) = HtmlNode.children n
+
+    /// <summary>
+    /// Gets all of the descendants of the current node
+    /// </summary>
+    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// <param name="f">The predicate for which descendants to return</param>
+    /// <param name="includeSelf">include the current node</param>
+    [<Extension>]
+    static member Descendants(n:HtmlNode, [<Optional>] ?f, [<Optional>] ?includeSelf, [<Optional>] ?recurseOnMatch) = 
+        let f = defaultArg f (fun _ -> true)
+        let recurseOnMatch = defaultArg recurseOnMatch true
+        if (defaultArg includeSelf false)
+        then HtmlNode.descendantsAndSelf recurseOnMatch f n
+        else HtmlNode.descendants recurseOnMatch f n
+
+    /// <summary>
+    /// Gets all of the descendants of the current node, which match the given set of names
+    /// </summary>
+    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// <param name="names">The set of names by which to map the descendants</param>
+    /// <param name="includeSelf">include the current node</param>
+    [<Extension>]
+    static member Descendants(n:HtmlNode, names:seq<string>, [<Optional>] ?includeSelf, [<Optional>] ?recurseOnMatch) = 
+        let recurseOnMatch = defaultArg recurseOnMatch true
+        if (defaultArg includeSelf false)
+        then HtmlNode.descendantsAndSelfNamed recurseOnMatch names n
+        else HtmlNode.descendantsNamed recurseOnMatch names n
+
+    /// <summary>
+    /// Trys to select an attribute with the given name from the current node.
+    /// </summary>
+    /// <param name="name">The name of the attribute to select</param>
+    [<Extension>]
+    static member TryGetAttribute(n:HtmlNode, name:string) = HtmlNode.tryGetAttribute name n
+
+    /// <summary>
+    /// Trys to return a parsed value of the named attribute.
+    /// </summary>
+    /// <param name="defaultValue">The default value to return if the attribute does not exist or the parsing fails</param>
+    /// <param name="parseF">The function to parse the value</param>
+    /// <param name="name">The name of the attribute to get the value from</param>
+    [<Extension>]
+    static member GetAttributeValue(n:HtmlNode, defaultValue, parseF, name) =
+      HtmlNode.getAttributeValue defaultValue parseF name n
+
+    /// <summary>
+    /// Returns the attribute with the given name. If the
+    /// attribute does not exist then this will throw an exception
+    /// </summary>
+    /// <param name="name">The name of the attribute to select</param>
+    [<Extension>]
+    static member Attribute(n:HtmlNode, name) = HtmlNode.attribute name n
+
+    /// <summary>
+    /// Returns true id the current node has an attribute that
+    /// matches both the name and the value
+    /// </summary>
+    /// <param name="name">The name of the attribute</param>
+    /// <param name="value">The value of the attribute</param>
+    [<Extension>]
+    static member HasAttribute(n:HtmlNode, name, value:string) = HtmlNode.hasAttribute name value n
+
+    /// <summary>
+    /// Gets all of the element of the current node, which match the given predicate
+    /// </summary>
+    /// <param name="f">The predicate by which to match nodes</param>
+    /// <param name="includeSelf">include the current node</param>
+    [<Extension>]
+    static member Elements(n:HtmlNode, [<Optional>] ?f, [<Optional>] ?includeSelf) = 
+        let f = defaultArg f (fun _ -> true)
+        if (defaultArg includeSelf false)
+        then HtmlNode.elementsAndSelf f n
+        else HtmlNode.elements f n
+
+    /// <summary>
+    /// Gets all of the elements of the current node, which match the given set of names
+    /// </summary>
+    /// <param name="names">The set of names by which to map the elements</param>
+    /// <param name="includeSelf">include the current node</param>
+    [<Extension>]
+    static member Elements(n:HtmlNode, names:seq<string>, [<Optional>] ?includeSelf) = 
+        if (defaultArg includeSelf false)
+        then HtmlNode.elementsAndSelfNamed names n
+        else HtmlNode.elementsNamed names n
+        
+    /// <summary>
+    /// Returns true if the current node contains an element that matches any of the
+    /// names in the given set
+    /// </summary>
+    /// <param name="names">The set of names to match</param>
+    [<Extension>]
+    static member HasElement(n:HtmlNode, names:seq<string>) = HtmlNode.hasElements names n
+
+    /// Returns the inner text of the current node
+    [<Extension>]
+    static member InnerText(n:HtmlNode) = HtmlNode.innerText n
+
 [<AutoOpen>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlNodeExtensions =
 
     type HtmlNode with
-               
-        /// Gets the given nodes name
-        member x.Name = HtmlNode.name x 
-        
-        /// Gets all of the nodes immediately under this node
-        member x.Children = HtmlNode.children x
+      /// Parses the specified HTML string to a list of HTML nodes
+      static member Parse(text) = 
+        use reader = new StringReader(text)
+        HtmlParser.parseFragment reader
 
-        /// <summary>
-        /// Gets all of the descendants of the current node
-        /// </summary>
-        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-        /// <param name="f">The predicate for which descendants to return</param>
-        /// <param name="includeSelf">include the current node</param>
-        member x.Descendants(?f, ?includeSelf, ?recurseOnMatch) = 
-            let f = defaultArg f (fun _ -> true)
-            let recurseOnMatch = defaultArg recurseOnMatch true
-            if (defaultArg includeSelf false)
-            then HtmlNode.descendantsAndSelf recurseOnMatch f x
-            else HtmlNode.descendants recurseOnMatch f x
-
-        /// <summary>
-        /// Gets all of the descendants of the current node, which match the given set of names
-        /// </summary>
-        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-        /// <param name="names">The set of names by which to map the descendants</param>
-        /// <param name="includeSelf">include the current node</param>
-        member x.Descendants(names:seq<string>, ?includeSelf, ?recurseOnMatch) = 
-            let recurseOnMatch = defaultArg recurseOnMatch true
-            if (defaultArg includeSelf false)
-            then HtmlNode.descendantsAndSelfNamed recurseOnMatch names x
-            else HtmlNode.descendantsNamed recurseOnMatch names x
-
-        /// <summary>
-        /// Trys to select an attribute with the given name from the current node.
-        /// </summary>
-        /// <param name="name">The name of the attribute to select</param>
-        member x.TryGetAttribute (name : string) = HtmlNode.tryGetAttribute name x
-
-        /// <summary>
-        /// Trys to return a parsed value of the named attribute.
-        /// </summary>
-        /// <param name="defaultValue">The default value to return if the attribute does not exist or the parsing fails</param>
-        /// <param name="parseF">The function to parse the value</param>
-        /// <param name="name">The name of the attribute to get the value from</param>
-        member x.GetAttributeValue (defaultValue,parseF,name) = HtmlNode.getAttributeValue defaultValue parseF name x
-
-        /// <summary>
-        /// Returns the attribute with the given name. If the
-        /// attribute does not exist then this will throw an exception
-        /// </summary>
-        /// <param name="name">The name of the attribute to select</param>
-        member x.Attribute name = HtmlNode.attribute name x
-
-        /// <summary>
-        /// Returns true id the current node has an attribute that
-        /// matches both the name and the value
-        /// </summary>
-        /// <param name="name">The name of the attribute</param>
-        /// <param name="value">The value of the attribute</param>
-        member x.HasAttribute (name,value:string) = HtmlNode.hasAttribute name value x
-
-        /// <summary>
-        /// Gets all of the element of the current node, which match the given predicate
-        /// </summary>
-        /// <param name="f">The predicate by which to match nodes</param>
-        /// <param name="includeSelf">include the current node</param>
-        member x.Elements(?f, ?includeSelf) = 
-            let f = defaultArg f (fun _ -> true)
-            if (defaultArg includeSelf false)
-            then HtmlNode.elementsAndSelf f x
-            else HtmlNode.elements f x 
-
-        /// <summary>
-        /// Gets all of the elements of the current node, which match the given set of names
-        /// </summary>
-        /// <param name="names">The set of names by which to map the elements</param>
-        /// <param name="includeSelf">include the current node</param>
-        member x.Elements(names:seq<string>, ?includeSelf) = 
-            if (defaultArg includeSelf false)
-            then HtmlNode.elementsAndSelfNamed names x
-            else HtmlNode.elementsNamed names x 
-        
-        /// <summary>
-        /// Returns true if the current node contains an element that matches any of the
-        /// names in the given set
-        /// </summary>
-        /// <param name="names">The set of names to match</param>
-        member x.HasElement (names:seq<string>) = HtmlNode.hasElements names x
-
-        /// Returns the inner text of the current node
-        member x.InnerText = HtmlNode.innerText x
-
-        /// Parses the specified HTML string to a list of HTML nodes
-        static member Parse(text) = 
-          use reader = new StringReader(text)
-          HtmlParser.parseFragment reader
-
-        /// Parses the specified HTML string to a list of HTML nodes
-        static member ParseRooted(rootName, text) = 
-          use reader = new StringReader(text)
-          HtmlElement(rootName, [], HtmlParser.parseFragment reader)
+      /// Parses the specified HTML string to a list of HTML nodes
+      static member ParseRooted(rootName, text) = 
+        use reader = new StringReader(text)
+        HtmlElement(rootName, [], HtmlParser.parseFragment reader)
     
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlDocument = 
     
     /// <summary>
-    /// Creates a HtmlDocument
+    /// Creates an html document
     /// </summary>
     /// <param name="docType">The document type specifier string</param>
     /// <param name="children">The child elements of this document</param>
     let createDoc docType children = 
-        HtmlDocument(docType, children)
+        HtmlDocument.New(docType, children)
 
     /// Returns the doctype of the document
     let docType x =
@@ -505,76 +532,83 @@ module HtmlDocument =
         | [] -> None
         | h:: _ -> Some(h)
 
+[<Extension>]
+type HtmlDocumentExtensions =
+
+    /// Finds the body element of the given document,
+    /// this throws an exception if no body element exists.
+    [<Extension>]
+    static member Body(d:HtmlDocument) = HtmlDocument.body d
+
+    /// Trys to find the body element of the given document.
+    [<Extension>]
+    static member TryBody(d:HtmlDocument) = HtmlDocument.tryBody d
+
+    /// <summary>
+    /// Gets all of the descendants of this document that statisfy the given predicate
+    /// </summary>
+    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// <param name="f">The predicate by which to match the nodes to return</param>
+    [<Extension>]
+    static member Descendants(d:HtmlDocument, [<Optional>] ?f, [<Optional>] ?recurseOnMatch) = 
+        let f = defaultArg f (fun _ -> true)
+        let recurseOnMatch = defaultArg recurseOnMatch true
+        HtmlDocument.descendants recurseOnMatch f d
+
+    /// <summary>
+    /// Finds all of the descendant nodes of this document that match the given set of names
+    /// </summary>
+    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// <param name="names">The set of names to match</param>
+    [<Extension>]
+    static member Descendants(d:HtmlDocument, names:seq<string>, [<Optional>] ?recurseOnMatch) =
+        let recurseOnMatch = defaultArg recurseOnMatch true
+        HtmlDocument.descendantsNamed recurseOnMatch names d
+
+    /// <summary>
+    /// Returns all of the elements of the current document
+    /// that match the given predicate
+    /// </summary>
+    /// <param name="f">The predicate used to match elements</param>
+    [<Extension>]
+    static member Elements(d:HtmlDocument, [<Optional>] ?f) = 
+        let f = defaultArg f (fun _ -> true)
+        HtmlDocument.elements f d
+
+    /// <summary>
+    /// Returns all of the elements in the current document that match the set of names
+    /// </summary>
+    /// <param name="names">The set of names to match</param>
+    [<Extension>]
+    static member Elements(d:HtmlDocument, names:seq<string>) = 
+        HtmlDocument.elementsNamed names d
+
 [<AutoOpen>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module HtmlDocumentExtensions =
-
+    
     type HtmlDocument with
-
-        /// Finds the body element of the given document,
-        /// this throws an exception if no body element exists.
-        member x.Body = HtmlDocument.body x
-
-        /// Trys to find the body element of the given document.
-        member x.TryBody() = HtmlDocument.tryBody x
-
-        /// <summary>
-        /// Gets all of the descendants of this document that statisfy the given predicate
-        /// </summary>
-        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-        /// <param name="f">The predicate by which to match the nodes to return</param>
-        member x.Descendants(?f, ?recurseOnMatch) = 
-            let f = defaultArg f (fun _ -> true)
-            let recurseOnMatch = defaultArg recurseOnMatch true
-            HtmlDocument.descendants recurseOnMatch f x
-
-        /// <summary>
-        /// Finds all of the descendant nodes of this document that match the given set of names
-        /// </summary>
-        /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-        /// <param name="names">The set of names to match</param>
-        member x.Descendants(names, ?recurseOnMatch) =
-            let recurseOnMatch = defaultArg recurseOnMatch true
-            HtmlDocument.descendantsNamed recurseOnMatch names x
-
-        /// <summary>
-        /// Returns all of the elements of the current document
-        /// that match the given predicate
-        /// </summary>
-        /// <param name="f">The predicate used to match elements</param>
-        member x.Elements(?f) = 
-            let f = defaultArg f (fun _ -> true)
-            HtmlDocument.elements f x
-
-        /// <summary>
-        /// Returns all of the elements in the current document that match the set of names
-        /// </summary>
-        /// <param name="names">The set of names to match</param>
-        member x.Elements(names) = 
-            HtmlDocument.elementsNamed names x
-    
-        /// Parses the specified HTML string
-        static member Parse(text) = 
-          use reader = new StringReader(text)
-          HtmlParser.parseDocument reader
+      /// Parses the specified HTML string
+      static member Parse(text) = 
+        use reader = new StringReader(text)
+        HtmlParser.parseDocument reader
         
-        /// Loads HTML from the specified stream
-        static member Load(stream:Stream) = 
-          use reader = new StreamReader(stream)
-          HtmlParser.parseDocument reader
+      /// Loads HTML from the specified stream
+      static member Load(stream:Stream) = 
+        use reader = new StreamReader(stream)
+        HtmlParser.parseDocument reader
     
-        /// Loads HTML from the specified reader
-        static member Load(reader:TextReader) = 
-          HtmlParser.parseDocument reader
+      /// Loads HTML from the specified reader
+      static member Load(reader:TextReader) = 
+        HtmlParser.parseDocument reader
         
-        /// Loads HTML from the specified uri asynchronously
-        static member AsyncLoad(uri:string) = async {
-          let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
-          return HtmlParser.parseDocument reader
-        }
+      /// Loads HTML from the specified uri asynchronously
+      static member AsyncLoad(uri:string) = async {
+        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+        return HtmlParser.parseDocument reader
+      }
     
-        /// Loads HTML from the specified uri
-        static member Load(uri:string) =
-            HtmlDocument.AsyncLoad(uri)
-            |> Async.RunSynchronously
-    
-
+      /// Loads HTML from the specified uri
+      static member Load(uri:string) =
+          HtmlDocument.AsyncLoad(uri)
+          |> Async.RunSynchronously

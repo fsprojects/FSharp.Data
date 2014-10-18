@@ -199,9 +199,6 @@ Target "NuGet" <| fun () ->
 Target "GenerateDocs" <| fun () ->
     executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"] [] |> ignore
 
-Target "GenerateDocsJa" <| fun () ->
-    executeFSIWithArgs "docs/tools" "generate.ja.fsx" ["--define:RELEASE"] [] |> ignore
-
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
@@ -223,7 +220,7 @@ Target "ReleaseBinaries" <| fun () ->
 
 Target "Release" DoNothing
 
-"CleanDocs" ==> "GenerateDocsJa" ==> "GenerateDocs" ==> "ReleaseDocs"
+"CleanDocs" ==> "GenerateDocs" ==> "ReleaseDocs"
 "ReleaseDocs" ==> "Release"
 "ReleaseBinaries" ==> "Release"
 "NuGet" ==> "Release"

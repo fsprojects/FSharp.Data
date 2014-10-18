@@ -12,8 +12,9 @@ namespace FSharp.Data
 open System
 open System.IO
 open System.ComponentModel
-open System.Text
 open System.Globalization
+open System.Runtime.InteropServices
+open System.Text
 open FSharp.Data
 open FSharp.Data.Runtime
 
@@ -342,44 +343,44 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
 type JsonValue with
 
   /// Parses the specified JSON string
-  static member Parse(text, ?cultureInfo) =
+  static member Parse(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified stream
-  static member Load(stream:Stream, ?cultureInfo) =
+  static member Load(stream:Stream, [<Optional>] ?cultureInfo) =
     use reader = new StreamReader(stream)
     let text = reader.ReadToEnd()
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified reader
-  static member Load(reader:TextReader, ?cultureInfo) =
+  static member Load(reader:TextReader, [<Optional>] ?cultureInfo) =
     let text = reader.ReadToEnd()
     JsonParser(text, cultureInfo, false).Parse()
 
   /// Loads JSON from the specified uri asynchronously
-  static member AsyncLoad(uri:string, ?cultureInfo) = async {
+  static member AsyncLoad(uri:string, [<Optional>] ?cultureInfo) = async {
     let! reader = IO.asyncReadTextAtRuntime false "" "" "JSON" "" uri
     let text = reader.ReadToEnd()
     return JsonParser(text, cultureInfo, false).Parse()
   }
 
   /// Loads JSON from the specified uri
-  static member Load(uri:string, ?cultureInfo) =
+  static member Load(uri:string, [<Optional>] ?cultureInfo) =
     JsonValue.AsyncLoad(uri, ?cultureInfo=cultureInfo)
     |> Async.RunSynchronously
 
   /// Parses the specified JSON string, tolerating invalid errors like trailing commans, and ignore content with elipsis ... or {...}
-  static member ParseSample(text, ?cultureInfo) =
+  static member ParseSample(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, true).Parse()
 
   /// Parses the specified string into multiple JSON values
-  static member ParseMultiple(text, ?cultureInfo) =
+  static member ParseMultiple(text, [<Optional>] ?cultureInfo) =
     JsonParser(text, cultureInfo, false).ParseMultiple()
 
   /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.Request(uri:string, ?httpMethod, ?headers) =
+  member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
-    let headers = defaultArg headers []
+    let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
         if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
         then headers
@@ -392,9 +393,9 @@ type JsonValue with
       httpMethod = httpMethod)
 
   /// Sends the JSON to the specified uri. Defaults to a POST request.
-  member x.RequestAsync(uri:string, ?httpMethod, ?headers) =
+  member x.RequestAsync(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =
     let httpMethod = defaultArg httpMethod HttpMethod.Post
-    let headers = defaultArg headers []
+    let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
         if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
         then headers
@@ -407,5 +408,5 @@ type JsonValue with
       httpMethod = httpMethod)
 
   [<Obsolete("Please use JsonValue.Request instead")>]
-  member x.Post(uri:string, ?headers) =
+  member x.Post(uri:string, [<Optional>] ?headers) =
     x.Request(uri, ?headers = headers)

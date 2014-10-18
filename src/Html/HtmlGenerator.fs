@@ -8,6 +8,7 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
+open FSharp.Data
 open FSharp.Data.Runtime
 
 module internal HtmlGenerator =
@@ -23,6 +24,9 @@ module internal HtmlGenerator =
                 preferOptionals 
                 (TextRuntime.GetMissingValues missingValuesStr) 
                 (TextRuntime.GetCulture cultureStr) htmlTable.Headers htmlTable.Rows
+        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                |> NameUtils.nicePascalName
 
         let fields = columns |> List.mapi (fun index field ->
             let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
@@ -61,11 +65,12 @@ module internal HtmlGenerator =
             let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlTable.Name)
             Expr.Let(rowConverterVar, rowConverter, body)
         
-        let tableNiceName = uniqueNiceName htmlTable.Name
-        
-        let tableType = ProvidedTypeDefinition(tableNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        let propertyName = NameUtils.capitalizeFirstLetter tableName
+        let typeName = uniqueNiceName tableName
+
+        let tableType = ProvidedTypeDefinition(typeName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
         tableType.AddMember rowType
-        tableNiceName, create, tableType
+        propertyName, create, tableType
 
     let private createListType (replacer:AssemblyReplacer) uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
         let columns = 
