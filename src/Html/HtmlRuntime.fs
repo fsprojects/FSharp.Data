@@ -65,31 +65,13 @@ type HtmlObject =
     | Table of HtmlTable
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
-    with 
+    with
         member x.Name
             with get() = 
                 match x with
                 | Table(t) -> t.Name
                 | List(l) -> l.Name
-                | DefinitionList(dl) -> dl.Name
-        member x.Headers
-            with get() = 
-                match x with
-                | Table(t) -> t.Headers
-                | List(_) -> [|"Value"|]
-                | DefinitionList(dl) -> dl.Definitions |> List.map (fun l -> l.Name) |> List.toArray
-        member x.Values
-             with get() = 
-                 match x with
-                 | Table(t) -> t.Rows
-                 | List(t) -> [|t.Values|]
-                 | DefinitionList(dl) ->  dl.Definitions |> List.map (fun l -> l.Values) |> List.toArray
-        member x.Html
-            with get() = 
-                match x with
-                | List(l) -> l.Html
-                | DefinitionList(dl) -> dl.Html
-                | Table(t) -> t.Html
+                | DefinitionList(l) -> l.Name
                      
  // --------------------------------------------------------------------------------------
 
@@ -194,7 +176,7 @@ module HtmlRuntime =
             then sprintf "Column%d" (i + 1)
             else header)
 
-        let tableName = getName (sprintf "Table%d" index) nameSet table parents
+        let tableName = getName (sprintf "Table%d" (index + 1)) nameSet table parents
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
@@ -225,7 +207,7 @@ module HtmlRuntime =
             let (count, _, lists) = 
                 getList ["ol"; "ul"]
                 |> List.fold (fun (index, names, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" index) names list parents
+                    let name = getName (sprintf "List%d" (index + 1)) names list parents
                     let rows = (list.Descendants ["li"]) |> List.map (fun r -> r.InnerText) |> List.toArray
                     let list =
                         { Name = name; 
@@ -252,7 +234,7 @@ module HtmlRuntime =
             let (_, _, lists) = 
                 getList ["dl"]
                 |> List.fold (fun (index, names, lists) (list, parents) -> 
-                    let name = getName (sprintf "List%d" index) names list parents
+                    let name = getName (sprintf "List%d" (index + 1)) names list parents
                     let data =
                         list.Descendants ["dt"; "dd"]
                         |> createDefinitionGroups
@@ -294,17 +276,33 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlObject>
     member __.GetObject(id:string) = 
        tables |> Map.find id
 
-and HtmlObject<'rowType> internal (htmlObj:HtmlObject, values:'rowType[]) =
+and HtmlTable<'rowType> internal (name:string, values:'rowType[], headers:string[], html) =
 
-    member x.Name = htmlObj.Name
-    member x.Headers = htmlObj.Headers
+    member x.Name = name
+    member x.Headers = headers
     member x.Rows = values
-    member x.Html = htmlObj.Html
-
+    member x.Html = html
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string) =
        let table = doc.GetObject id
-       HtmlObject<_>(table, Array.map rowConverter.Invoke table.Values)
+       match table with
+       | Table(t) -> HtmlTable<_>(t.Name, Array.map rowConverter.Invoke t.Rows, t.Headers, t.Html)
+       | _ -> failwithf "Element %s is not a table" id
+
+and HtmlList<'itemType> internal (name:string, values:'itemType[], html) = 
+    
+    member x.Name = name
+    member x.Values = values
+    member x.Html = html
+
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    static member Create(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string) =
+       let list = doc.GetObject id
+       match list with
+       | List(l) -> HtmlList<_>(l.Name, Array.map rowConverter.Invoke l.Values, l.Html)
+       | _ -> failwithf "Element %s is not a list" id
+       

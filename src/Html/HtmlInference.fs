@@ -31,6 +31,20 @@ let inferRowType preferOptionals missingValues cultureInfo headers row =
     
     InferedType.Record(None, row |> Array.mapi inferProperty |> Seq.toList, false)
 
+let inferListType preferOptionals missingValues cultureInfo values = 
+
+    let inferedtype value = 
+        // If there's only whitespace, treat it as a missing value and not as a string
+        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
+        // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+        elif Array.exists ((=) <| value.Trim()) missingValues then 
+            if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
+        else getInferedTypeFromString cultureInfo value None
+
+    values
+    |> Seq.map inferedtype
+    |> Seq.reduce (subtypeInfered (not preferOptionals))
+
 let inferColumns preferOptionals missingValues cultureInfo headers rows = 
 
     let rec inferedTypeToProperty name typ =

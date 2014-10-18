@@ -41,8 +41,8 @@ module internal HtmlGenerator =
         for field in fields do
             rowType.AddMember field.Property
         
-        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowErasedType)
-        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowType)
+        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowErasedType)
+        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
         
         let rowConverter =
             let rowVar = Var("row", typeof<string[]>)
@@ -69,57 +69,39 @@ module internal HtmlGenerator =
 
     let private createListType (replacer:AssemblyReplacer) uniqueNiceName preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
         let columns = 
-            HtmlInference.inferRowType 
+            HtmlInference.inferListType 
                 preferOptionals 
                 (TextRuntime.GetMissingValues missingValuesStr) 
-                (TextRuntime.GetCulture cultureStr) [|"Values"|] htmlList.Values
+                (TextRuntime.GetCulture cultureStr) htmlList.Values
 
-        let fields =
+        let listItemType =
             match columns with
-            | StructuralTypes.InferedType.Record(_, fields, _) -> 
-                fields 
-                |> List.map (fun p ->
-                             match p.Type with
-                             | StructuralTypes.InferedType.Primitive(t,_,_) -> t
-                             | _ -> typeof<string>
-                            )
-                |> List.toArray    
-            | _ -> failwith "Expecting record type"
-        
-        // The erased row type will be a tuple of all the field types (without the units of measure)
-        let rowErasedType = 
-            FSharpType.MakeTupleType(fields)
-            |> replacer.ToRuntime
-        
-        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
-        
-        // Each property of the generated row type will simply be a tuple get
-        for field in fields do
-            rowType.AddMember field
-        
-        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowErasedType)
-        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlObject<_>>).MakeGenericType(rowType)
+            | StructuralTypes.InferedType.Primitive(typ,_, _) -> typ
+            | _ -> typeof<string>
+                        
+        let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
         
         let rowConverter =
-            let rowVar = Var("row", typeof<string[]>)
+            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", listItemType, false, None))
+            let rowVar = Var("row", typeof<string>)
             let rowVarExpr = Expr.Var rowVar
             let body = 
-              Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
+              conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
               |> replacer.ToRuntime
         
             let delegateType = 
-              typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
+              typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
         
             Expr.NewDelegate(delegateType, [rowVar], body)
         
         let create (htmlDoc:Expr) =
             let rowConverterVar = Var("rowConverter", rowConverter.Type)
-            let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name)
-            Expr.Let(rowConverterVar, rowConverter, body)      
+            let body = listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name)
+            Expr.Let(rowConverterVar, rowConverter, body)
+
         let listNiceName = uniqueNiceName htmlList.Name
         
-        let listType = ProvidedTypeDefinition(listNiceName, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
-        listType.AddMember rowType
+        let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
         listNiceName, create, listType
 
     let generateTypes asm ns typeName preferOptionals (missingValuesStr, cultureStr) (replacer:AssemblyReplacer) (objects:HtmlObject list) =
