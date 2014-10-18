@@ -142,8 +142,6 @@ let internal inferCellType preferOptionals missingValues cultureInfo unit value 
 
 let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
 
-  let unitsOfMeasureProvider = defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
-
   let makeUnique = NameUtils.uniqueGenerator id
 
   // If we do not have header names, then automatically generate names
@@ -336,6 +334,7 @@ type CsvFile with
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
     /// * unitsOfMeasureProvider - optional function to resolve Units of Measure
     member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, [<Optional>] ?unitsOfMeasureProvider) =
+        let unitsOfMeasureProvider = defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
         let headerNamesAndUnits, schema = parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
         inferColumnTypes headerNamesAndUnits
                          schema

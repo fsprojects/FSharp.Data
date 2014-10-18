@@ -1,30 +1,30 @@
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.TypedHtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, "", "", t))
+    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "SimpleHtmlTablesWithTr.html")))
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", ((new StreamReader(stream)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", reader)
+    TypedHtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, "", "", ((new StringReader(text)) :> TextReader))
+    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TableContainer with get
     this
@@ -40,7 +40,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertDecimal("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "myTable")
+    HtmlTable<_>.Create(rowConverter, this, "myTable", true)
 
     member Table2: HtmlProvider+Table2 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -50,7 +50,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("CptyId", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[2])
                                         TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("", value), value))
-    HtmlTable<_>.Create(rowConverter, this, "Table2")
+    HtmlTable<_>.Create(rowConverter, this, "Table2", true)
 
 
 [<[TypeProviderEditorHideMethods()]>]

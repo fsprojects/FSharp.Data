@@ -37,23 +37,25 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             let doc : HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
-                let missingValues = TextRuntime.GetMissingValues missingValuesStr
-                let cultureInfo = TextRuntime.GetCulture cultureStr
+                let inferenceParameters : HtmlInference.Parameters = 
+                    { MissingValues = TextRuntime.GetMissingValues missingValuesStr
+                      CultureInfo = TextRuntime.GetCulture cultureStr
+                      UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
+                      PreferOptionals  = preferOptionals }
                 doc
-                |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider)
+                |> HtmlRuntime.getTables (Some inferenceParameters) includeLayoutTables
                 |> List.map (fun table -> table.Name,
-                                          HtmlInference.inferColumns preferOptionals 
-                                                                     missingValues
-                                                                     cultureInfo
-                                                                     table.HeaderNamesAndUnits
-                                                                     table.Rows)
+                                          table.HasHeaders.Value,
+                                          match table.InferedProperties with //Type may already be inferred
+                                          | Some inferedProperties -> inferedProperties
+                                          | None -> HtmlInference.inferColumns inferenceParameters table.HeaderNamesAndUnits.Value (if table.HasHeaders.Value then table.Rows.[1..] else table.Rows))
                 |> HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, missingValuesStr, cultureStr, %reader) @@>                    
+              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
