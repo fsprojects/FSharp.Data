@@ -2,8 +2,6 @@
 module FSharp.Data.Runtime.HtmlInference
 
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.StructuralInference
-open FSharp.Data.Runtime.StructuralTypes
 
 let inferColumns preferOptionals missingValues cultureInfo (headerNamesAndUnits:_[]) rows = 
 
@@ -14,31 +12,16 @@ let inferColumns preferOptionals missingValues cultureInfo (headerNamesAndUnits:
     CsvInference.inferColumnTypes headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals
 
 let inferHeaders missingValues cultureInfo unitsOfMeasureProvider preferOptionals (rows : string [][]) =
-    if rows.Length <= 2
-    then 0, None, None, None //Not enough info to infer anything, assume first row data
+    if rows.Length <= 2 then 
+        0, None, None, None //Not enough info to infer anything, assume first row data
     else
-      let headersAndUnits, _ = CsvInference.parseHeaders (Some rows.[0]) rows.[0].Length "" unitsOfMeasureProvider
-      let headerNames = headersAndUnits |> Array.map fst
-      let headerUnits = headersAndUnits |> Array.map snd
-      let computeRowType row = 
-          // Zip units and values to infer cell types
-          let cellTypes =
-            row
-            |> Array.zip headerUnits
-            |> Array.map (fun p -> CsvInference.inferCellType preferOptionals missingValues cultureInfo (fst p) (snd p))
-          // Zip headers and types to build InferedTypes with proper names
-          let props = 
-            Array.zip headerNames cellTypes 
-            |> Array.map (fun p -> {Name = fst p; Type = snd p})
-            |> List.ofArray
-          InferedType.Record(None, props, false)
-
-      //Check if header types are different than rest of rows
-      let headerRow = computeRowType rows.[0]
-      let dataRow =
-        rows.[1..]
-        |> Array.map computeRowType
-        |> Array.reduce (subtypeInfered (not preferOptionals))
-      if headerRow = dataRow
-      then 0, None, None, Some dataRow
-      else 1, Some headerNames, Some headerUnits, Some dataRow
+        let headers = Some rows.[0]
+        let numberOfColumns = rows.[0].Length
+        let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider
+        let headerRowType = inferColumns preferOptionals missingValues cultureInfo headerNamesAndUnits [rows.[0]]
+        let dataRowsType = inferColumns preferOptionals missingValues cultureInfo headerNamesAndUnits rows.[1..]      
+        if headerRowType = dataRowsType then 
+            0, None, None, None
+        else 
+            let headerNames, units = Array.unzip headerNamesAndUnits
+            1, Some headerNames, Some units, Some dataRowsType

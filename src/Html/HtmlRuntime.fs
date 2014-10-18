@@ -30,7 +30,7 @@ type HtmlTableCell =
 type HtmlTable = 
     { Name : string
       HeaderNamesAndUnits : (string * Type option)[]
-      InferedType : InferedType option
+      InferedProperties : PrimitiveInferedProperty list option
       Rows :  string [] []
       Html : HtmlNode }
     member x.Headers = Array.map fst x.HeaderNamesAndUnits
@@ -115,6 +115,8 @@ module HtmlRuntime =
         
         if not includeLayoutTables && (rowLengths |> List.filter (fun x -> x > 1) |> List.length <= 1) then None else
 
+        let tableName = makeUnique (getTableName (sprintf "Table%d" (index + 1)) table parents)
+
         let res = Array.init rows.Length  (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
@@ -135,7 +137,7 @@ module HtmlRuntime =
                         if i < rows.Length && j < numberOfColumns
                         then res.[i].[j] <- data
 
-        let startIndex, headers, units, inferedType = 
+        let startIndex, headerNames, units, inferedProperties = 
             if res.[0] |> Array.forall (fun r -> r.IsHeader) 
             then 1, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
             else res
@@ -144,16 +146,15 @@ module HtmlRuntime =
         
         // headers and units may already be parsed in inferHeaders
         let headerNamesAndUnits =
-          match (headers, units) with
-          | Some h, Some u -> Array.zip h u
-          | _, _ -> CsvInference.parseHeaders headers numberOfColumns "" unitsOfMeasureProvider |> fst
+          match headerNames, units with
+          | Some headerNames, Some units -> Array.zip headerNames units
+          | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" unitsOfMeasureProvider |> fst
 
-        let tableName = makeUnique (getTableName (sprintf "Table%d" (index + 1)) table parents)
         let rows = res.[startIndex..] |> Array.map (Array.map (fun x -> x.Data))
 
         Some { Name = tableName
                HeaderNamesAndUnits = headerNamesAndUnits
-               InferedType = inferedType
+               InferedProperties = inferedProperties
                Rows = rows 
                Html = table }
 

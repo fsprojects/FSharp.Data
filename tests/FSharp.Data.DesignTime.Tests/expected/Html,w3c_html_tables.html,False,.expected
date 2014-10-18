@@ -59,13 +59,13 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member ``The most basic table``: HtmlProvider+TheMostBasicTable with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Volcano Name", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
-                                        TextRuntime.GetNonOptionalValue("Location", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("Last Major Eruption", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
-                                        TextRuntime.GetNonOptionalValue("Type of Eruption", TextRuntime.ConvertString(value), value))
+                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "The most basic table")
 
 
@@ -110,16 +110,16 @@ class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * s
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
-    member ``Last Major Eruption``: string with get
-    (let _,_,t3,_ = this in t3)
+    member Column1: string with get
+    (let t1,_,_,_ = this in t1)
 
-    member Location: string with get
+    member Column2: string with get
     (let _,t2,_,_ = this in t2)
 
-    member ``Type of Eruption``: string with get
-    (let _,_,_,t4 = this in t4)
+    member Column3: string with get
+    (let _,_,t3,_ = this in t3)
 
-    member ``Volcano Name``: string with get
-    (let t1,_,_,_ = this in t1)
+    member Column4: string with get
+    (let _,_,_,t4 = this in t4)
 
 

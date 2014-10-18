@@ -42,11 +42,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                 doc
                 |> HtmlRuntime.getTables includeLayoutTables missingValues cultureInfo (Some ProviderHelpers.unitsOfMeasureProvider) preferOptionals
                 |> List.map (fun table -> table.Name,
-                                          match table.InferedType with //Type may already be inferred
-                                          | Some typ -> CsvInference.getFields
-                                                                    preferOptionals
-                                                                    typ
-                                                                    (Array.init table.HeaderNamesAndUnits.Length (fun _ -> None))
+                                          match table.InferedProperties with //Type may already be inferred
+                                          | Some inferedProperties -> inferedProperties
                                           | None -> HtmlInference.inferColumns
                                                                     preferOptionals 
                                                                     missingValues

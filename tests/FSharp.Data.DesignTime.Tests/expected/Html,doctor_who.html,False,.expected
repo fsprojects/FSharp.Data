@@ -1061,7 +1061,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table67: HtmlProvider+Table67 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Characters", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table67")
@@ -1069,7 +1069,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table68: HtmlProvider+Table68 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Production", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table68")
@@ -1077,7 +1077,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table69: HtmlProvider+Table69 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Spin-offs", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table69")
@@ -1085,7 +1085,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table70: HtmlProvider+Table70 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Showrunners", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table70")
@@ -1093,7 +1093,7 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
     member Table71: HtmlProvider+Table71 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
-                                        TextRuntime.GetNonOptionalValue("Film", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value))
     HtmlTable<_>.Create(rowConverter, this, "Table71")
@@ -2710,7 +2710,7 @@ class HtmlProvider+Table66+Row : string * string
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table67+Row : string * string
-    member Characters: string with get
+    member Column1: string with get
     (let t1,_ = this in t1)
 
     member Column2: string with get
@@ -2719,38 +2719,38 @@ class HtmlProvider+Table67+Row : string * string
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table68+Row : string * string
+    member Column1: string with get
+    (let t1,_ = this in t1)
+
     member Column2: string with get
     (let _,t2 = this in t2)
-
-    member Production: string with get
-    (let t1,_ = this in t1)
 
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table69+Row : string * string
+    member Column1: string with get
+    (let t1,_ = this in t1)
+
     member Column2: string with get
     (let _,t2 = this in t2)
-
-    member Spin-offs: string with get
-    (let t1,_ = this in t1)
 
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table70+Row : string * string
+    member Column1: string with get
+    (let t1,_ = this in t1)
+
     member Column2: string with get
     (let _,t2 = this in t2)
-
-    member Showrunners: string with get
-    (let t1,_ = this in t1)
 
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table71+Row : string * string
+    member Column1: string with get
+    (let t1,_ = this in t1)
+
     member Column2: string with get
     (let _,t2 = this in t2)
-
-    member Film: string with get
-    (let t1,_ = this in t1)
 
 
 [<[TypeProviderEditorHideMethods()]>]
