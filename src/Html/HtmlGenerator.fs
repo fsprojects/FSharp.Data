@@ -74,15 +74,19 @@ module internal HtmlGenerator =
                 (TextRuntime.GetMissingValues missingValuesStr) 
                 (TextRuntime.GetCulture cultureStr) htmlList.Values
 
-        let listItemType =
+        let listItemType, conv =
             match columns with
-            | StructuralTypes.InferedType.Primitive(typ,_, _) -> typ
-            | _ -> typeof<string>
+            | StructuralTypes.InferedType.Primitive(typ,_, optional) -> 
+                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
+                typ, conv
+            | _ -> 
+                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
+                typ, conv
                         
         let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
         
         let rowConverter =
-            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", listItemType, false, None))
+            
             let rowVar = Var("row", typeof<string>)
             let rowVarExpr = Expr.Var rowVar
             let body = 
