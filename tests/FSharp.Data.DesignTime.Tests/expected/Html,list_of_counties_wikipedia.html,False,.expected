@@ -95,23 +95,23 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List12")
 
-    member List13: HtmlProvider+List13 with get
+    member List5: HtmlProvider+List5 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List13")
+    HtmlList<_>.Create(rowConverter, this, "List5")
 
-    member List14: HtmlProvider+List14 with get
+    member List6: HtmlProvider+List6 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List14")
+    HtmlList<_>.Create(rowConverter, this, "List6")
 
-    member List15: HtmlProvider+List15 with get
+    member List7: HtmlProvider+List7 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List15")
+    HtmlList<_>.Create(rowConverter, this, "List7")
 
     member List8: HtmlProvider+List8 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -272,13 +272,13 @@ class HtmlProvider+List11 : FDR.HtmlList<string>
 class HtmlProvider+List12 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List13 : FDR.HtmlList<string>
+class HtmlProvider+List5 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List14 : FDR.HtmlList<string>
+class HtmlProvider+List6 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List15 : FDR.HtmlList<string>
+class HtmlProvider+List7 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List8 : FDR.HtmlList<string>
