@@ -1,9 +1,11 @@
 ﻿/// Structural inference for HTML tables
 module FSharp.Data.Runtime.HtmlInference
 
+open System
 open System.Globalization
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
+open FSharp.Data.Runtime.StructuralTypes
 
 type Parameters = {
     MissingValues: string[]
@@ -33,3 +35,17 @@ let inferHeaders parameters (rows : string [][]) =
         else 
             let headerNames, units = Array.unzip headerNamesAndUnits
             true, Some headerNames, Some units, Some dataRowsType
+
+let inferListType parameters values = 
+
+    let inferedtype value = 
+        // If there's only whitespace, treat it as a missing value and not as a string
+        if String.IsNullOrWhiteSpace value || value = "&nbsp;" || value = "&nbsp" then InferedType.Null
+        // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+        elif Array.exists ((=) <| value.Trim()) parameters.MissingValues then 
+            if parameters.PreferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, None, false)
+        else getInferedTypeFromString parameters.CultureInfo value None
+
+    values
+    |> Seq.map inferedtype
+    |> Seq.reduce (subtypeInfered (not parameters.PreferOptionals))

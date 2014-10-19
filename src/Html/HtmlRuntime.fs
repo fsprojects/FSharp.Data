@@ -48,12 +48,44 @@ type HtmlTable =
             wr.WriteLine()
         sb.ToString()
 
+type HtmlList = 
+    { Name : string
+      Values : string[]
+      Html : HtmlNode }
+
+type HtmlDefinitionList = 
+    { Name : string
+      Definitions : HtmlList list
+      Html : HtmlNode }
+
+type HtmlObject = 
+    | Table of HtmlTable
+    | List of HtmlList
+    | DefinitionList of HtmlDefinitionList
+    member x.Name =
+        match x with
+        | Table(t) -> t.Name
+        | List(l) -> l.Name
+        | DefinitionList(l) -> l.Name
+
 // --------------------------------------------------------------------------------------
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
+    
+    let private findElementWithRelations (names:seq<string>) (doc:HtmlDocument) =
+        [ doc.Elements names
+          |> List.map (fun table -> table, [])
+          
+          doc.Elements(fun x -> x.Elements names <> [])
+          |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent]))
+          
+          doc.Descendants(fun x -> x.Elements(fun x -> x.Elements names <> []) <> [])
+          |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent; grandParent])))
+        ]
+        |> List.concat
 
-    let private getTableName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
+    let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let tryGetName choices =
             choices
@@ -95,7 +127,7 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
                 
-    let private parseTable parameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+    let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
         let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
         
@@ -107,7 +139,7 @@ module HtmlRuntime =
         
         if not includeLayoutTables && (rowLengths |> List.filter (fun x -> x > 1) |> List.length <= 1) then None else
 
-        let tableName = makeUnique (getTableName (sprintf "Table%d" (index + 1)) table parents)
+        let name = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
 
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
@@ -130,58 +162,103 @@ module HtmlRuntime =
                         then res.[i].[j] <- data
 
         let hasHeaders, headerNamesAndUnits, inferedProperties = 
-            match parameters with
+            match inferenceParameters with
             | None -> None, None, None
-            | Some parameters ->
+            | Some inferenceParameters ->
                 let hasHeaders, headerNames, units, inferedProperties = 
                     if res.[0] |> Array.forall (fun r -> r.IsHeader) 
                     then true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
                     else res
                           |> Array.map (Array.map (fun x -> x.Data))
-                          |> HtmlInference.inferHeaders parameters
+                          |> HtmlInference.inferHeaders inferenceParameters
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =
                   match headerNames, units with
                   | Some headerNames, Some units -> Array.zip headerNames units
-                  | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" parameters.UnitsOfMeasureProvider |> fst
+                  | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" inferenceParameters.UnitsOfMeasureProvider |> fst
 
                 Some hasHeaders, Some headerNamesAndUnits, inferedProperties
 
         let rows = res |> Array.map (Array.map (fun x -> x.Data))
 
-        Some { Name = tableName
-               HeaderNamesAndUnits = headerNamesAndUnits
-               InferedProperties = inferedProperties
-               HasHeaders = hasHeaders
-               Rows = rows 
-               Html = table }
+        { Name = name
+          HeaderNamesAndUnits = headerNamesAndUnits
+          InferedProperties = inferedProperties
+          HasHeaders = hasHeaders
+          Rows = rows 
+          Html = table } |> Some
 
-    let getTables parameters includeLayoutTables (doc:HtmlDocument) =
+    let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
 
-        let tableElements = 
-            [ doc.Elements ["table"]
-              |> List.map (fun table -> table, [])
-              
-              doc.Elements(fun x -> x.Elements ["table"] <> [])
-              |> List.collect (fun parent -> parent.Elements ["table"] |> List.map (fun table -> table, [parent]))
-              
-              doc.Descendants(fun x -> x.Elements(fun x -> x.Elements ["table"] <> []) <> [])
-              |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements ["table"] |> List.map (fun table -> table, [parent; grandParent])))
-            ]
-            |> List.concat
-            |> (fun x -> if includeLayoutTables 
-                         then x 
-                         else x |> List.filter (fun (e,_) -> (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")) |> not)
-                )
+        let rows = list.Descendants ["li"] |> List.map HtmlNode.innerText |> List.toArray
+    
+        if rows.Length <= 1 then None else
+
+        let name = makeUnique (getName (sprintf "List%d" (index + 1)) list parents)
+
+        { Name = name
+          Values = rows
+          Html = list } |> Some
+
+    let private parseDefinitionList makeUnique index (definitionList:HtmlNode, parents:HtmlNode list) =
         
+        let rec createDefinitionGroups (nodes:HtmlNode list) =
+            let rec loop state ((groupName, _, elements) as currentGroup) (nodes:HtmlNode list) =
+                match nodes with
+                | [] -> (currentGroup :: state) |> List.rev
+                | h::t when HtmlNode.name h = "dt" ->
+                    loop (currentGroup :: state) (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
+                | h::t ->
+                    loop state (groupName, h, ((HtmlNode.innerText h) :: elements)) t
+            match nodes with
+            | [] -> []
+            | h :: t when HtmlNode.name h = "dt" -> loop [] (NameUtils.nicePascalName (HtmlNode.innerText h), h, []) t
+            | h :: t -> loop [] ("Undefined", h, []) t        
+        
+        let data =
+            definitionList.Descendants ["dt"; "dd"]
+            |> createDefinitionGroups
+            |> List.map (fun (group, node, values) -> { Name = group
+                                                        Values = values |> List.rev |> List.toArray
+                                                        Html = node })
+
+        if data.Length <= 1 then None else
+
+        let name = makeUnique (getName (sprintf "DefinitionList%d" (index + 1)) definitionList parents)
+        
+        { Name = name
+          Definitions = data
+          Html = definitionList } |> Some
+
+    let getTables inferenceParameters includeLayoutTables (doc:HtmlDocument) =
+        let tableElements = findElementWithRelations ["table"] doc
+        let tableElements = 
+            if includeLayoutTables
+            then tableElements
+            else tableElements |> List.filter (fun (e, _) -> not (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")))
         tableElements
-        |> List.mapi (parseTable parameters includeLayoutTables (NameUtils.uniqueGenerator id))
+        |> List.mapi (parseTable inferenceParameters includeLayoutTables (NameUtils.uniqueGenerator id))
         |> List.choose id
 
-type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>) =
+    let getLists (doc:HtmlDocument) =        
+        findElementWithRelations ["ol"; "ul"] doc
+        |> List.mapi (parseList (NameUtils.uniqueGenerator id))
+        |> List.choose id
 
-    member x.Html = doc
+    let getDefinitionLists (doc:HtmlDocument) =                
+        findElementWithRelations ["dl"] doc
+        |> List.mapi (parseDefinitionList (NameUtils.uniqueGenerator id))
+        |> List.choose id
+
+    let getHtmlObjects inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
+        (doc |> getTables inferenceParameters includeLayoutTables |> List.map Table) 
+        @ (doc |> getLists |> List.map List)
+        @ (doc |> getDefinitionLists |> List.map DefinitionList)
+
+type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlObject>) =
+
+    member __.Html = doc
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -190,35 +267,59 @@ type TypedHtmlDocument internal (doc:HtmlDocument, tables:Map<string,HtmlTable>)
         let doc = 
             reader 
             |> HtmlDocument.Load
-        let tables = 
+        let htmlObjects = 
             doc
-            |> HtmlRuntime.getTables None includeLayoutTables
-            |> List.map (fun table -> table.Name, table) 
+            |> HtmlRuntime.getHtmlObjects None includeLayoutTables
+            |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
-        TypedHtmlDocument(doc, tables)
+        TypedHtmlDocument(doc, htmlObjects)
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member __.GetTable(id:string) = 
-       tables |> Map.find id
+    member __.GetObject(id:string) = 
+        htmlObjects |> Map.find id
 
-and HtmlTable<'rowType> internal (name:string, headers:string[] option, values:'rowType[], html:HtmlNode) =
+type HtmlTable<'rowType> internal (name:string, headers:string[] option, values:'rowType[], html:HtmlNode) =
 
     member __.Name = name
     member __.Headers = headers
     member __.Rows = values
-
     member __.Html = html
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string, hasHeaders:bool) =
-       let table = doc.GetTable id
-       let headers, rows = 
-          if hasHeaders then
-              Some table.Rows.[0], table.Rows.[1..]
-          else
-              None, table.Rows
-       HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
+        match doc.GetObject id with
+        | Table table -> 
+            let headers, rows = 
+                if hasHeaders then
+                    Some table.Rows.[0], table.Rows.[1..]
+                else
+                    None, table.Rows
+            HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
+        | _ -> failwithf "Element %s is not a table" id
+
+type HtmlList<'itemType> internal (name:string, values:'itemType[], html) = 
+    
+    member __.Name = name
+    member __.Values = values
+    member __.Html = html
+
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    static member Create(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string) =
+        match doc.GetObject id with
+        | List list -> HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)
+        | _ -> failwithf "Element %s is not a list" id
+
+    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+    static member CreateNested(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string, index:int) =
+        let list = 
+            match doc.GetObject id with
+            | List list-> list
+            | DefinitionList definitionList -> definitionList.Definitions.[index]
+            | _ -> failwithf "Element %s is not a list" id
+        HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)
