@@ -33,7 +33,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
         let resource = args.[7] :?> string
 
         let getSpecFromSamples samples = 
-      
+
             let doc : HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
@@ -43,13 +43,8 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
                       PreferOptionals  = preferOptionals }
                 doc
-                |> HtmlRuntime.getTables (Some inferenceParameters) includeLayoutTables
-                |> List.map (fun table -> table.Name,
-                                          table.HasHeaders.Value,
-                                          match table.InferedProperties with //Type may already be inferred
-                                          | Some inferedProperties -> inferedProperties
-                                          | None -> HtmlInference.inferColumns inferenceParameters table.HeaderNamesAndUnits.Value (if table.HasHeaders.Value then table.Rows.[1..] else table.Rows))
-                |> HtmlGenerator.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer
+                |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
+                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 

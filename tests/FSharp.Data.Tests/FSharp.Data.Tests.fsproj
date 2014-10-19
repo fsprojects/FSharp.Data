@@ -297,6 +297,7 @@
     <Compile Include="HtmlParser.fs" />
     <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlProvider.fs" />
+    <Compile Include="HtmlProviderList.fs" />
     <None Include="packages.config" />
     <None Include="paket.references" />
     <None Include="app.config" />
