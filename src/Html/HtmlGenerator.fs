@@ -149,7 +149,7 @@ module internal HtmlGenerator =
             
             let create (htmlDoc:Expr) =
                 let rowConverterVar = Var("rowConverter", rowConverter.Type)
-                let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, list.Name, index)
+                let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, definitionList.Name, index)
                 Expr.Let(rowConverterVar, rowConverter, body) 
 
             let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true)

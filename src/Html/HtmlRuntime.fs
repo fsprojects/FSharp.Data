@@ -187,7 +187,7 @@ module HtmlRuntime =
           InferedProperties = inferedProperties
           HasHeaders = hasHeaders
           Rows = rows 
-          Html = table } |> Table |> Some
+          Html = table } |> Some
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
 
@@ -199,7 +199,7 @@ module HtmlRuntime =
 
         { Name = name
           Values = rows
-          Html = list } |> List |> Some
+          Html = list } |> Some
 
     let private parseDefinitionList makeUnique index (definitionList:HtmlNode, parents:HtmlNode list) =
         
@@ -229,7 +229,7 @@ module HtmlRuntime =
         
         { Name = name
           Definitions = data
-          Html = definitionList } |> DefinitionList |> Some
+          Html = definitionList } |> Some
 
     let getTables inferenceParameters includeLayoutTables (doc:HtmlDocument) =
         let tableElements = findElementWithRelations ["table"] doc
@@ -252,7 +252,9 @@ module HtmlRuntime =
         |> List.choose id
 
     let getHtmlObjects inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
-        (getTables inferenceParameters includeLayoutTables doc) @ getLists doc @ getDefinitionLists doc
+        (doc |> getTables inferenceParameters includeLayoutTables |> List.map Table) 
+        @ (doc |> getLists |> List.map List)
+        @ (doc |> getDefinitionLists |> List.map DefinitionList)
 
 type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlObject>) =
 

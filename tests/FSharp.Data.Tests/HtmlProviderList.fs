@@ -79,7 +79,7 @@ let ``Simple List infers hetergenous list as string type correctly ``() =
 
 [<Test>]
 let ``Should find the list as a header``() = 
-    let table = HtmlProvider<"""<html>
+    let list = HtmlProvider<"""<html>
                     <body>
                         <div>
                             <h2>Example List</h2>
@@ -90,12 +90,12 @@ let ``Should find the list as a header``() =
                             <li>3</li>
                         </ul>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().Lists.ExampleList
-    table.Values |> should equal [1;2;3]
+                </html>""", PreferOptionals=true>.GetSample().Lists.``Example List``
+    list.Values |> should equal [1;2;3]
 
 [<Test>]
-let ``Should find the table as a header when nested deeper``() = 
-    let table = HtmlProvider<"""<html>
+let ``Should find the list as a header when nested deeper``() = 
+    let list = HtmlProvider<"""<html>
                     <body>
                         <div>
                             <h2>
@@ -110,8 +110,8 @@ let ``Should find the table as a header when nested deeper``() =
                             <li>3</li>
                         </ul>
                     </body>
-                </html>""", PreferOptionals=true>.GetSample().Lists.ExampleList
-    table.Values |> should equal [1;2;3]
+                </html>""", PreferOptionals=true>.GetSample().Lists.``Example List``
+    list.Values |> should equal [1;2;3]
 
 [<Test>]
 let ``Handles simple definition list``() = 
