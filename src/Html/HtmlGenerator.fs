@@ -75,62 +75,17 @@ module internal HtmlGenerator =
         propertyName, create, tableType
 
     let private createListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr (htmlList : HtmlList) =
-        let columns = 
-            HtmlInference.inferListType 
-                preferOptionals 
-                (TextRuntime.GetMissingValues missingValuesStr) 
-                (TextRuntime.GetCulture cultureStr) htmlList.Values
-
-        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
-                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
-                |> NameUtils.nicePascalName
-
-        let listItemType, conv =
-            match columns with
-            | StructuralTypes.InferedType.Primitive(typ,_, optional) -> 
-                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
-                typ, conv
-            | _ -> 
-                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
-                typ, conv
-                        
-        let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
-        
-        let rowConverter =
-            
-            let rowVar = Var("row", typeof<string>)
-            let rowVarExpr = Expr.Var rowVar
-            let body = 
-              conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
-              |> replacer.ToRuntime
-        
-            let delegateType = 
-              typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
-        
-            Expr.NewDelegate(delegateType, [rowVar], body)
-        
-        let create (htmlDoc:Expr) =
-            let rowConverterVar = Var("rowConverter", rowConverter.Type)
-            let body = listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name)
-            Expr.Let(rowConverterVar, rowConverter, body)
-
-        let listNiceName = uniqueNiceName htmlList.Name
-        
-        let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
-        listNiceName, create, listType
-
-    let private createDefinitionListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr (htmlList : HtmlDefinitionList) =
-
-        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
-                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
-                |> NameUtils.nicePascalName
-
-        let createListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr index (l : HtmlList) =
+        if htmlList.Values.Length > 0 
+        then
             let columns = 
                 HtmlInference.inferListType 
                     preferOptionals 
                     (TextRuntime.GetMissingValues missingValuesStr) 
-                    (TextRuntime.GetCulture cultureStr) l.Values
+                    (TextRuntime.GetCulture cultureStr) htmlList.Values
+
+            let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                    HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                    |> NameUtils.nicePascalName
 
             let listItemType, conv =
                 match columns with
@@ -140,9 +95,9 @@ module internal HtmlGenerator =
                 | _ -> 
                     let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
                     typ, conv
-                        
+                            
             let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
-
+            
             let rowConverter =
                 
                 let rowVar = Var("row", typeof<string>)
@@ -158,13 +113,64 @@ module internal HtmlGenerator =
             
             let create (htmlDoc:Expr) =
                 let rowConverterVar = Var("rowConverter", rowConverter.Type)
-                let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name, index)
-                Expr.Let(rowConverterVar, rowConverter, body) 
-                       
-            let listNiceName = uniqueNiceName l.Name
+                let body = listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name)
+                Expr.Let(rowConverterVar, rowConverter, body)
+
+            let listNiceName = uniqueNiceName htmlList.Name
             
             let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
-            listNiceName, create, listType
+            Some (listNiceName, create, listType)
+        else None
+
+    let private createDefinitionListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr (htmlList : HtmlDefinitionList) =
+
+        let uniqueNiceName = NameUtils.uniqueGenerator <| fun s ->
+                HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+                |> NameUtils.nicePascalName
+
+        let createListType (replacer:AssemblyReplacer) preferOptionals missingValuesStr cultureStr index (l : HtmlList) =
+            if l.Values.Length > 0
+            then 
+                let columns = 
+                    HtmlInference.inferListType 
+                        preferOptionals 
+                        (TextRuntime.GetMissingValues missingValuesStr) 
+                        (TextRuntime.GetCulture cultureStr) l.Values
+
+                let listItemType, conv =
+                    match columns with
+                    | StructuralTypes.InferedType.Primitive(typ,_, optional) -> 
+                        let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
+                        typ, conv
+                    | _ -> 
+                        let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
+                        typ, conv
+                            
+                let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
+
+                let rowConverter =
+                    
+                    let rowVar = Var("row", typeof<string>)
+                    let rowVarExpr = Expr.Var rowVar
+                    let body = 
+                      conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
+                      |> replacer.ToRuntime
+                
+                    let delegateType = 
+                      typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
+                
+                    Expr.NewDelegate(delegateType, [rowVar], body)
+                
+                let create (htmlDoc:Expr) =
+                    let rowConverterVar = Var("rowConverter", rowConverter.Type)
+                    let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, htmlList.Name, index)
+                    Expr.Let(rowConverterVar, rowConverter, body) 
+                           
+                let listNiceName = uniqueNiceName l.Name
+                
+                let listType = ProvidedTypeDefinition(listNiceName, Some listTypeWithErasedType, HideObjectMethods = true)
+                Some (listNiceName, create, listType)
+            else None
 
         let listNiceName = uniqueNiceName htmlList.Name
 
@@ -173,6 +179,7 @@ module internal HtmlGenerator =
         let lists = 
             htmlList.Definitions
             |> List.mapi(createListType replacer preferOptionals missingValuesStr cultureStr)
+            |> List.choose id
 
         for (listName, create, listType) in lists do
             definitionListType.AddMember(listType)
@@ -206,9 +213,11 @@ module internal HtmlGenerator =
                  containerType.AddMember <| ProvidedProperty(tableNiceName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List(l) ->
                 let containerType = getOrCreateContainer "Lists"
-                let (listName, create, tableType) = createListType replacer preferOptionals missingValuesStr cultureStr l
-                htmlType.AddMember tableType
-                containerType.AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                match createListType replacer preferOptionals missingValuesStr cultureStr l with
+                | Some(listName, create, tableType) ->
+                    htmlType.AddMember tableType
+                    containerType.AddMember <| ProvidedProperty(listName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                | None -> ()
             | DefinitionList(dl) ->
                 let containerType = getOrCreateContainer "DefinitionLists"       
                 let (listName, tableType) = createDefinitionListType replacer preferOptionals missingValuesStr cultureStr dl

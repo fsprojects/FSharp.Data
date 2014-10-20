@@ -14,6 +14,9 @@ class HtmlProvider : FDR.TypedHtmlDocument
     static member GetSample: () -> HtmlProvider
     TypedHtmlDocument.Create(false, "", "", FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "NuGet.html")))
 
+    member Lists: HtmlProvider+ListsContainer with get
+    this
+
     static member Load: stream:System.IO.Stream -> HtmlProvider
     TypedHtmlDocument.Create(false, "", "", ((new StreamReader(stream)) :> TextReader))
 
@@ -26,13 +29,70 @@ class HtmlProvider : FDR.TypedHtmlDocument
     static member Parse: text:string -> HtmlProvider
     TypedHtmlDocument.Create(false, "", "", ((new StringReader(text)) :> TextReader))
 
-    member Tables: HtmlProvider+TableContainer with get
+    member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
-    member ``Version History``: HtmlProvider+VersionHistory with get
+class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+    member Dependencies: HtmlProvider+Dependencies with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Dependencies")
+
+    member List2: HtmlProvider+List2 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List2")
+
+    member List9: HtmlProvider+List9 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List9")
+
+    member Menu: HtmlProvider+Menu with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "menu")
+
+    member NetFramework40: HtmlProvider+NetFramework40 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, ".NETFramework 4.0")
+
+    member Owners: HtmlProvider+Owners with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Owners")
+
+    member PortableClassLibraryNetFramework40Silverlight50WindowsPhone80Windows80: HtmlProvider+PortableClassLibraryNetFramework40Silverlight50WindowsPhone80Windows80 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Portable Class Library (.NETFramework 4.0, Silverlight 5.0, WindowsPhone 8.0, Windows 8.0)")
+
+    member PortableClassLibraryNetFramework45Windows80: HtmlProvider+PortableClassLibraryNetFramework45Windows80 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Portable Class Library (.NETFramework 4.5, Windows 8.0)")
+
+    member Tags: HtmlProvider+Tags with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Tags")
+
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+    member VersionHistory: HtmlProvider+VersionHistory with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
                                         TextRuntime.GetNonOptionalValue("Version", TextRuntime.ConvertString(value), value),
@@ -42,6 +102,33 @@ class HtmlProvider+TableContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("Last updated", TextRuntime.ConvertDateTime("", value), value))
     HtmlTable<_>.Create(rowConverter, this, "Version History")
 
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Dependencies : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+List2 : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+List9 : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Menu : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+NetFramework40 : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Owners : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+PortableClassLibraryNetFramework40Silverlight50WindowsPhone80Windows80 : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+PortableClassLibraryNetFramework45Windows80 : FDR.HtmlList<string>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+Tags : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+VersionHistory : FDR.HtmlTable<HtmlProvider+VersionHistory+Row>
