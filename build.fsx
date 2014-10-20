@@ -61,10 +61,12 @@ Target "AssemblyInfo" <| fun () ->
             Path.GetFileNameWithoutExtension file
             |> replace ".Portable47" ""
             |> replace ".Portable7" ""
+            |> replace ".Portable259" ""
             |> replace "AssemblyInfo" "FSharp.Data"
         let versionSuffix =
             if file.Contains ".Portable47" then ".47"
             elif file.Contains ".Portable7" then ".7"
+            elif file.Contains ".Portable259" then ".259"
             else ".0"
         let version = release.AssemblyVersion + versionSuffix
         CreateFSharpAssemblyInfo file
@@ -169,6 +171,8 @@ Target "SourceLink" <| fun () ->
     CopyFiles "bin/portable7" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
     CopyFiles "bin/portable47" (!! "src/bin/portable47/Release/FSharp.Data.*")    
     CopyFiles "bin/portable47" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
+    CopyFiles "bin/portable259" (!! "src/bin/portable259/Release/FSharp.Data.*")    
+    CopyFiles "bin/portable259" (!! "src/bin/Release/FSharp.Data.DesignTime.*")
 
 #endif
 

@@ -43,6 +43,12 @@ let private fsharp31Portable7AssembliesPath =
     ++ "FSharp" 
     ++ ".NETCore" 
     ++ "3.3.1.0" 
+    
+let private fsharp31Portable259AssembliesPath = 
+     referenceAssembliesPath
+     ++ "FSharp" 
+     ++ ".NETCore" 
+     ++ "3.259.3.1"
 
 let private fsharp30AssembliesPath1 = 
     referenceAssembliesPath
@@ -100,6 +106,7 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths =
         | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath1; fsharp30Portable47AssembliesPath2]
         | "FSharp.Core", "2.3.5.1" -> [fsharp31Portable47AssembliesPath]
         | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
+        | "FSharp.Core", "3.259.3.1" -> [fsharp31Portable259AssembliesPath]
         | "FSharp.Data", _ -> fsharpDataPaths
         | _, "2.0.5.0" -> [portable47AssembliesPath]
         | _, _ -> []
@@ -125,6 +132,7 @@ type FSharpDataRuntimeVersion =
     | Net40
     | Portable7 //net45+win8
     | Portable47 //net45+wp8+win8
+    | Portable259 //net45+wp8+win8+wpa81
     member x.SupportsLocalFileSystem = 
         match x with
         | Net40 -> true
@@ -155,6 +163,7 @@ let init (cfg : TypeProviderConfig) =
         | 0 -> FSharpDataRuntimeVersion.Net40
         | 7 -> FSharpDataRuntimeVersion.Portable7
         | 47 -> FSharpDataRuntimeVersion.Portable47
+        | 259 -> FSharpDataRuntimeVersion.Portable259
         | _ -> failwithf "Unexpected version of %s.dll: %O [Looking for revision 0, 7 or 47]" runtimeAssemblyName.Name runtimeAssemblyName.Version
 
     let runtimeAssemblyPair = Assembly.GetCallingAssembly(), runtimeAssembly
