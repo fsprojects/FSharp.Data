@@ -156,3 +156,9 @@ let ``Handles definition list correctly``() =
     list.Authors.Values |> should equal ["Remy Sharp"; "Rich Clark"]
     list.Category.Values |> should equal ["Comment"]
     list.Editor.Values |> should equal ["Brandan Lennox"]
+
+[<Test>]
+let ``Handles SimpleListHtml file``() = 
+    let list = HtmlProvider<"Data/SimpleHtmlLists.html">.GetSample()
+    list.Lists.SimpleCount.Values |> should equal [1;2;3]
+    list.DefinitionLists.MyDLLists.Count.Values |> should equal [1;2]
