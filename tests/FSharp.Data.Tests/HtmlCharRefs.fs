@@ -26,17 +26,7 @@ let charRefsTestCases =
 let ``Should substitute char references``(ref:string, result:string) = 
     let html = sprintf """<html><body>%s</body></html>""" ref
     let parsed = HtmlDocument.Parse html
-    let expected = 
-        createDoc "" 
-         [
-           createElement "html" []
-            [
-               createElement "body" []
-                [
-                   createText result
-                ]
-            ]
-         ]
+    let expected = HtmlDocument.New([HtmlNode.NewElement("html", [HtmlNode.NewElement("body", [HtmlNode.NewText result])])])
     parsed |> should equal expected
 
 [<Test>]
@@ -44,17 +34,14 @@ let ``Should substitute char references in attribute``() =
     let html = """<a href="/url?q=http://fsharp.github.io/FSharp.Data/&amp;sa=U&amp;ei=sv1jU_3bMMmk0QX33YGQBw&amp;ved=0CB4QFjAA&amp;usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"><b>F# Data</b>: Library for Data Access - F# Open Source Group @ GitHub</a>"""
     let parsed = HtmlDocument.Parse html
     let expected = 
-        createDoc "" 
+        HtmlDocument.New(
          [
-           createElement "a" ["href", "/url?q=http://fsharp.github.io/FSharp.Data/&sa=U&ei=sv1jU_3bMMmk0QX33YGQBw&ved=0CB4QFjAA&usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"]
+           HtmlNode.NewElement("a", ["href", "/url?q=http://fsharp.github.io/FSharp.Data/&sa=U&ei=sv1jU_3bMMmk0QX33YGQBw&ved=0CB4QFjAA&usg=AFQjCNF_2exXvCWzixA0Uj58KLThvXYUwA"],
             [
-               createElement "b" []
-                [
-                   createText "F# Data"
-                ]
-               createText ": Library for Data Access - F# Open Source Group @ GitHub"
-            ]
-         ]
+               HtmlNode.NewElement("b", [HtmlNode.NewText "F# Data"])
+               HtmlNode.NewText ": Library for Data Access - F# Open Source Group @ GitHub"
+            ])
+         ])
     parsed |> should equal expected
 
 [<Test>]

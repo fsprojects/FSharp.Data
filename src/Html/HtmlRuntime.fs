@@ -2,10 +2,12 @@
 
 open System
 open System.ComponentModel
+open System.Globalization
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
+open FSharp.Data.HtmlExtensions
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -73,36 +75,28 @@ type HtmlObject =
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
     
-    let private findElementWithRelations (names:seq<string>) (doc:HtmlDocument) =
-        [ doc.Elements names
-          |> List.map (fun table -> table, [])
-          
-          doc.Elements(fun x -> x.Elements names <> [])
-          |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent]))
-          
-          doc.Descendants(fun x -> x.Elements(fun x -> x.Elements names <> []) <> [])
-          |> List.collect (fun grandParent -> grandParent.Elements() |> List.collect (fun parent -> parent.Elements names |> List.map (fun table -> table, [parent; grandParent])))
-        ]
-        |> List.concat
-
     let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
+
+        let parents = parents |> Seq.truncate 2 |> Seq.toList
 
         let tryGetName choices =
             choices
-            |> List.tryPick (fun (attrName) -> 
-                match element.TryGetAttribute attrName with
-                | Some(HtmlAttribute(_,value)) -> Some <| value
-                | None -> None
+            |> List.tryPick (fun attrName -> 
+                element 
+                |> HtmlNode.tryGetAttribute attrName
+                |> Option.map HtmlAttribute.value
             )
 
         let rec tryFindPrevious f (x:HtmlNode) (parents:HtmlNode list)= 
             match parents with
             | p::rest ->
                 let nearest = 
-                    HtmlNode.descendants true (fun _ -> true) p 
+                    p
+                    |> HtmlNode.descendants false true (fun _ -> true)
                     |> Seq.takeWhile ((<>) x) 
                     |> Seq.filter f
-                    |> Seq.toList |> List.rev
+                    |> Seq.toList
+                    |> List.rev
                 match nearest with
                 | [] -> tryFindPrevious f p rest
                 | h :: _ -> Some h 
@@ -112,7 +106,7 @@ module HtmlRuntime =
             let isHeading s =
                 let name = HtmlNode.name s
                 Regex.IsMatch(name, """h\d""")
-            tryFindPrevious isHeading element parents            
+            tryFindPrevious isHeading element parents
 
         let cleanup (str:String) =
             HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
@@ -144,8 +138,8 @@ module HtmlRuntime =
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
-                let rowSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "rowspan")) - 1
-                let colSpan = max 1 (cell.GetAttributeValue(0, Int32.TryParse, "colspan")) - 1
+                let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
+                let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
 
                 let data =
                     let getContents contents = 
@@ -232,7 +226,7 @@ module HtmlRuntime =
           Html = definitionList } |> Some
 
     let getTables inferenceParameters includeLayoutTables (doc:HtmlDocument) =
-        let tableElements = findElementWithRelations ["table"] doc
+        let tableElements = doc.DescendantsWithPath("table")
         let tableElements = 
             if includeLayoutTables
             then tableElements
@@ -242,12 +236,14 @@ module HtmlRuntime =
         |> List.choose id
 
     let getLists (doc:HtmlDocument) =        
-        findElementWithRelations ["ol"; "ul"] doc
+        doc
+        |> HtmlDocument.descendantsNamedWithPath true ["ol"; "ul"]
         |> List.mapi (parseList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
     let getDefinitionLists (doc:HtmlDocument) =                
-        findElementWithRelations ["dl"] doc
+        doc
+        |> HtmlDocument.descendantsNamedWithPath true ["dl"]
         |> List.mapi (parseDefinitionList (NameUtils.uniqueGenerator id))
         |> List.choose id
 

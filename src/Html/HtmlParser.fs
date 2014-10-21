@@ -7,6 +7,7 @@ open System.IO
 open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
+open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 
@@ -33,12 +34,37 @@ type HtmlNode =
     /// Creates an html element
     /// </summary>
     /// <param name="name">The name of the element</param>
+    static member NewElement(name:string) =
+        HtmlElement(name.ToLowerInvariant(), [], [])
+
+    /// <summary>
+    /// Creates an html element
+    /// </summary>
+    /// <param name="name">The name of the element</param>
+    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
+    static member NewElement(name:string, attrs:seq<_>) =
+        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
+        HtmlElement(name.ToLowerInvariant(), attrs, [])
+
+    /// <summary>
+    /// Creates an html element
+    /// </summary>
+    /// <param name="name">The name of the element</param>
+    /// <param name="children">The children elements of this element</param>
+    static member NewElement(name:string, children:seq<_>) =
+        HtmlElement(name.ToLowerInvariant(), [], List.ofSeq children)
+
+
+    /// <summary>
+    /// Creates an html element
+    /// </summary>
+    /// <param name="name">The name of the element</param>
     /// <param name="attrs">The HtmlAttribute(s) of the element</param>
     /// <param name="children">The children elements of this element</param>
-    static member NewElement(name:string, attrs:seq<_>, children:seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList 
+    static member NewElement(name:string, attrs:seq<_>, children:seq<_>) =        
+        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
         HtmlElement(name.ToLowerInvariant(), attrs, List.ofSeq children)
-    
+
     /// <summary>
     /// Creates a text content element
     /// </summary>
@@ -111,6 +137,13 @@ type HtmlDocument =
     /// <param name="children">The child elements of this document</param>
     static member New(docType, children:seq<_>) = 
         HtmlDocument(docType, List.ofSeq children)
+
+    /// <summary>
+    /// Creates an html document
+    /// </summary>
+    /// <param name="children">The child elements of this document</param>
+    static member New(children:seq<_>) = 
+        HtmlDocument("", List.ofSeq children)
 
     override x.ToString() =
         match x with
@@ -645,3 +678,44 @@ module internal HtmlParser =
     /// All br tags will be replaced by newlines
     let parseFragment reader = 
         parse reader |> snd
+
+// --------------------------------------------------------------------------------------
+
+type HtmlDocument with
+
+    /// Parses the specified HTML string
+    static member Parse(text) = 
+        use reader = new StringReader(text)
+        HtmlParser.parseDocument reader
+        
+    /// Loads HTML from the specified stream
+    static member Load(stream:Stream) = 
+        use reader = new StreamReader(stream)
+        HtmlParser.parseDocument reader
+    
+    /// Loads HTML from the specified reader
+    static member Load(reader:TextReader) = 
+        HtmlParser.parseDocument reader
+        
+    /// Loads HTML from the specified uri asynchronously
+    static member AsyncLoad(uri:string) = async {
+        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+        return HtmlParser.parseDocument reader
+    }
+    
+    /// Loads HTML from the specified uri
+    static member Load(uri:string) =
+        HtmlDocument.AsyncLoad(uri)
+        |> Async.RunSynchronously
+
+type HtmlNode with
+
+    /// Parses the specified HTML string to a list of HTML nodes
+    static member Parse(text) = 
+        use reader = new StringReader(text)
+        HtmlParser.parseFragment reader
+
+    /// Parses the specified HTML string to a list of HTML nodes
+    static member ParseRooted(rootName, text) = 
+        use reader = new StringReader(text)
+        HtmlElement(rootName, [], HtmlParser.parseFragment reader)

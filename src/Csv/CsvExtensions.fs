@@ -10,7 +10,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Extension>]
-type CsvExtensions =
+type StringExtensions =
 
   [<Extension>]
   static member AsInteger(x:String, [<Optional>] ?cultureInfo) = 

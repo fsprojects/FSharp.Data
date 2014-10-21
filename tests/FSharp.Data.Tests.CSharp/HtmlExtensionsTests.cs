@@ -33,7 +33,7 @@ namespace FSharp.Data.Tests.CSharp
         public void HtmlNode_Child_no_children_with_text_element()
         {
             var node = HtmlNode.NewText("Hello");
-            Assert.AreEqual(0, node.Children().Length);
+            Assert.AreEqual(0, node.Elements().Length);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace FSharp.Data.Tests.CSharp
         public void HtmlElement_Elements_none_with_bad_attribute()
         {
             var node = CreateDivElement();
-            Assert.IsTrue(node.Elements(new[] { "bad" }).IsEmpty);
+            Assert.IsTrue(node.Elements("bad").IsEmpty);
         }
 
         private static HtmlNode CreateDivElement()

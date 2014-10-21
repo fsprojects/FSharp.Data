@@ -39,32 +39,28 @@ let ``Can handle unclosed tags correctly``() =
                     </html>"""
     let result = HtmlDocument.Parse simpleHtml
     let expected = 
-        createDoc "" 
+        HtmlDocument.New
          [
-           createElement "html" []
+           HtmlNode.NewElement("html",
             [
-               createElement "head" [] 
+               HtmlNode.NewElement("head",
                 [
-                    createElement "script" [
-                                      "language","JavaScript"
-                                      "src","/bwx_generic.js"
-                                     ] []
-                    createElement "link" [
-                                      "rel","stylesheet"
-                                      "type","text/css"
-                                      "href","/bwx_style.css"
-                                   ][]
-                ]
-               createElement "body" []
+                    HtmlNode.NewElement("script", ["language","JavaScript"
+                                                   "src","/bwx_generic.js"])
+                    HtmlNode.NewElement("link", ["rel","stylesheet"
+                                                 "type","text/css"
+                                                 "href","/bwx_style.css"])
+                ])
+               HtmlNode.NewElement("body",
                 [
-                    createElement "img" ["src", "myimg.jpg"] []
-                    createElement "table" ["title", "table"]
+                    HtmlNode.NewElement("img", ["src", "myimg.jpg"])
+                    HtmlNode.NewElement("table", ["title", "table"],
                      [
-                        createElement "tr" [] [createElement "th" [] [createText "Column 1"]; createElement "th" [] [createText "Column 2"]]
-                        createElement "tr" [] [createElement "td" [] [createText "1"]; createElement "td" [] [createText "yes"]]
-                     ]    
-                ]
-            ]
+                        HtmlNode.NewElement("tr", [HtmlNode.NewElement("th", [HtmlNode.NewText "Column 1"]); HtmlNode.NewElement("th", [HtmlNode.NewText "Column 2"])])
+                        HtmlNode.NewElement("tr", [HtmlNode.NewElement("td", [HtmlNode.NewText "1"]); HtmlNode.NewElement("td", [HtmlNode.NewText "yes"])])
+                     ])
+                ])
+            ])
         ]
     result |> should equal expected
 
@@ -281,16 +277,10 @@ let ``Can handle html with doctype and xml namespaces``() =
     let html = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml"><body>content</body></html>"""
     let htmlDoc = HtmlDocument.Parse html
     let expected = 
-            createDoc "html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""
+            HtmlDocument.New("html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"",
              [
-               createElement "html" ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"]
-                [
-                   createElement "body" []
-                    [
-                       createText "content"
-                    ]
-                ]
-            ]
+               HtmlNode.NewElement("html", ["lang","en"; "xml:lang","en"; "xmlns","http://www.w3.org/1999/xhtml"], [HtmlNode.NewElement("body", [HtmlNode.NewText "content"])])
+             ])
     expected |> should equal htmlDoc
 
 [<Test>]

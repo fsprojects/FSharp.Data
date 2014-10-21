@@ -65,11 +65,11 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Further reading")
 
-    member List12: HtmlProvider+List12 with get
+    member List9: HtmlProvider+List9 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List12")
+    HtmlList<_>.Create(rowConverter, this, "List9")
 
     member Namespaces: HtmlProvider+Namespaces with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -184,7 +184,7 @@ class HtmlProvider+ExerciseQuestions : FDR.HtmlList<string>
 class HtmlProvider+FurtherReading : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List12 : FDR.HtmlList<string>
+class HtmlProvider+List9 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Namespaces : FDR.HtmlList<string>

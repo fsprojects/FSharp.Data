@@ -3,6 +3,7 @@
 * Added support for lists in addition to tables in HtmlProvider.
 * Added TBA and TBD to list of default missing values.
 * Make HTML parser API more C# friendly.
+* Improve API of HTML operations.
 
 #### 2.1.0-beta - October 12 2014
 * New logo.
