@@ -346,3 +346,11 @@ let ``Can parse national rail mobile site correctly``() =
     HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"] |> List.length |> should equal 23
     HtmlDocument.Load "data/UKDepartures.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 69
     HtmlDocument.Load "data/UKLiveProgress.html" |> HtmlDocument.descendantsNamed false ["li"; "hr"] |> List.length |> should equal 27
+
+[<Test>]
+let ``Can parse zoopla site correctly``() =
+    HtmlDocument.Load "data/zoopla.html" 
+    |> HtmlDocument.descendantsNamed false ["li"]
+    |> List.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
+    |> List.length 
+    |> should equal 100
