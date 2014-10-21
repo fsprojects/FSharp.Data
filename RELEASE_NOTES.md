@@ -1,4 +1,4 @@
-#### 2.1.0-beta2 - Unreleased
+#### 2.1.0-beta2 - October 21 2014
 * Improve generated table names in HtmlProvider.
 * Added support for lists in addition to tables in HtmlProvider.
 * Added TBA and TBD to list of default missing values.
