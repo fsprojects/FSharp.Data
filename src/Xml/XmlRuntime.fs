@@ -20,7 +20,7 @@ module XElementExtensions =
         let httpMethod = defaultArg httpMethod HttpMethod.Post
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
-            if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+            if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
             then headers
             else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
         let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers
@@ -35,7 +35,7 @@ module XElementExtensions =
         let httpMethod = defaultArg httpMethod HttpMethod.Post
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
-            if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+            if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
             then headers
             else HttpRequestHeaders.UserAgent "F# Data XML Type Provider" :: headers
         let headers = HttpRequestHeaders.ContentType HttpContentTypes.Xml :: headers

@@ -33,7 +33,7 @@ let generateSetupScript dir proj =
     let fsFiles = 
         fsProjXml.Document.Descendants(getElemName "Compile")
         |> Seq.choose (fun elem -> getAttrValue "Include" elem)
-        |> Seq.filter (Path.GetExtension >> ((<>) ".fsi"))
+        |> Seq.filter (Path.GetExtension >> (<>) ".fsi")
         |> Seq.map (fun path -> "#load \"" + path + "\"")
         |> Seq.toList
     

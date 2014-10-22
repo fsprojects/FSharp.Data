@@ -354,3 +354,11 @@ let ``Can parse zoopla site correctly``() =
     |> List.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
     |> List.length 
     |> should equal 100
+
+[<Test>]
+let ``Doesn't insert whitespace on attribute name when there are two whitespace characters before an attribute``() =
+    HtmlNode.Parse "<a data-lecture-id=\"27\"\r\ndata-modal-iframe=\"https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27\"></a>"
+    |> List.head
+    |> HtmlNode.attributeValue "data-modal-iframe"
+    |> should equal "https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27"
+

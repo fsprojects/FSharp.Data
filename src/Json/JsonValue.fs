@@ -382,7 +382,7 @@ type JsonValue with
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
-        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
         else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
     let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers
@@ -397,7 +397,7 @@ type JsonValue with
     let httpMethod = defaultArg httpMethod HttpMethod.Post
     let headers = defaultArg (Option.map List.ofSeq headers) []
     let headers =
-        if headers |> List.exists (fst >> ((=) (fst (HttpRequestHeaders.UserAgent ""))))
+        if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
         then headers
         else HttpRequestHeaders.UserAgent "F# Data JSON Type Provider" :: headers
     let headers = HttpRequestHeaders.ContentType HttpContentTypes.Json :: headers

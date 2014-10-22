@@ -73,7 +73,7 @@ module internal XmlTypeBuilder =
         | { Type = (InferedType.Primitive _ | InferedType.Json _) as typ } -> Some([typ], [])
         | { Type = InferedType.Collection (order, types) } -> Some([], inOrder order types)
         | { Type = InferedType.Heterogeneous cases } ->
-              let collections, others = Map.toList cases |> List.partition (fst >> ((=) InferedTypeTag.Collection))
+              let collections, others = Map.toList cases |> List.partition (fst >> (=) InferedTypeTag.Collection)
               match collections with
               | [InferedTypeTag.Collection, InferedType.Collection (order, types)] -> Some(List.map snd others, inOrder order types)
               | [] -> Some(List.map snd others, [])

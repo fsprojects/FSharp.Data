@@ -573,7 +573,7 @@ module internal HtmlParser =
             | _ -> state.ConsAttrValue(); attributeValueUnquoted state
         and attributeValueUnquoted state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
-            | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
+            | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); beforeAttributeName state
             | '&' -> 
                 assert (state.ContentLength = 0)
                 state.InsertionMode := InsertionMode.CharRefMode
@@ -604,7 +604,7 @@ module internal HtmlParser =
                 attributeValueCharRef stop continuation state
         and afterAttributeValueQuoted state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
-            | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); attributeName state
+            | TextParser.Whitespace _ -> state.Pop(); state.NewAttribute(); afterAttributeValueQuoted state
             | _ -> attributeName state
         and ifNotClosingTagOrEof isEnd (state:HtmlState) f = ifEofThenDataElse state <| fun c ->
             match c with
