@@ -164,7 +164,7 @@ let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider 
       use reader = new StringReader(schema)
       let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
       if schemaStr.Length > headers.Length then
-        failwithf "Schema was expected to have at most %d items, but has %d" headers.Length schemaStr.Length
+        failwithf "The provided schema contains %d columns, the inference found %d columns - please check the number of columns and the separator " schemaStr.Length headers.Length 
       let schema = Array.zeroCreate headers.Length
       for index = 0 to schemaStr.Length-1 do
         let item = schemaStr.[index].Trim()
