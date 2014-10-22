@@ -27,7 +27,7 @@ type JsonExtensions =
   static member GetProperty(x, propertyName) = 
     match x with
     | JsonValue.Record properties -> 
-        match Array.tryFind (fst >> ((=) propertyName)) properties with 
+        match Array.tryFind (fst >> (=) propertyName) properties with 
         | Some (_, value) -> value
         | None -> failwithf "Didn't find property '%s' in %s" propertyName <| x.ToString(JsonSaveOptions.DisableFormatting)
     | _ -> failwithf "Not an object: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
@@ -38,7 +38,7 @@ type JsonExtensions =
   static member TryGetProperty(x, propertyName) = 
     match x with
     | JsonValue.Record properties -> 
-        Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
+        Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
     | _ -> None
 
   /// Assuming the value is an object, get value with the specified name
@@ -167,7 +167,7 @@ module Options =
     member x.TryGetProperty(propertyName) = 
       match x with
       | JsonValue.Record properties -> 
-          Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
+          Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
       | _ -> None
   
     /// Try to get a property of a JSON value.
@@ -251,7 +251,7 @@ module Options =
     static member TryGetProperty(x, propertyName) = 
       match x with
       | Some (JsonValue.Record properties) -> 
-          Array.tryFind (fst >> ((=) propertyName)) properties |> Option.map snd
+          Array.tryFind (fst >> (=) propertyName) properties |> Option.map snd
       | _ -> None
   
     /// Try to get a property of a JSON value.
