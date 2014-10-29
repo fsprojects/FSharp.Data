@@ -15,7 +15,7 @@ open FSharp.Data.JsonExtensions
 
 let charRefsTestCases =
     JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
-    |> Array.filter (fun x -> x?characters.AsString() <> " ")
+  //  |> Array.filter (fun x -> x?characters.AsString() <> " ")
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
 ///When using `data\charrefs-full.json` there seems to be some encoding problems
