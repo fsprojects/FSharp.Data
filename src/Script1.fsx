@@ -1,24 +1,18 @@
-﻿#I "bin/Debug"
+﻿#load "Net/UriUtils.fs"
+#load "Net/Http.fs"
+#load "CommonRuntime/IO.fs"
+#load "CommonRuntime/TextConversions.fs"
+#load "CommonRuntime/TextRuntime.fs"
+#load "Html/HtmlCharRefs.fs"
+#load "Html/HtmlParser.fs"
 
-#r "FSharp.Data.dll"
-
+open System.IO
 open FSharp.Data
-open FSharp.Data.Runtime
 
-let simpleLists = 
-    """<html>
-          <body>
-              <ul>
-                  <li>
-                      <ul>
-                          <li>1</li>
-                          <li>2</li>
-                      </ul>
-                  </li>
-                  <li>2</li>
-                  <li>3</li>
-              </ul>
-          </body>
-      </html>""" |> HtmlDocument.Parse
+let html = """
+<ul>
+    <li>1</il>
+    <li>2</il>
+</ul>"""
 
-HtmlRuntime.getLists simpleLists
+let doc = HtmlParser.parseFragment (new StringReader(html)) 

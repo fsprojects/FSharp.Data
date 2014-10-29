@@ -42,9 +42,7 @@ let ``Can handle nested lists``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-
-    printfn "%A" list.Values
-    list.Values |> should equal ["1";"2";"Foo Bar";"2";"3"]
+    list.Values |> should equal ["1";"Foo Bar";"2";"2";"3"]
 
 [<Test>]
 let ``Simple List handles missing values``() = 
