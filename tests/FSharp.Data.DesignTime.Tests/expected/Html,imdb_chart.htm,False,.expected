@@ -35,107 +35,17 @@ class HtmlProvider : FDR.TypedHtmlDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
-    member CELEBS: HtmlProvider+Celebs with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "CELEBS")
-
-    member ``CHARTS & TRENDS``: HtmlProvider+ChartsTrends with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "CHARTS & TRENDS")
-
-    member COMMUNITY: HtmlProvider+Community with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "COMMUNITY")
-
     member Consumer_main_nav: HtmlProvider+ConsumerMainNav with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "consumer_main_nav")
 
-    member EVENTS: HtmlProvider+Events with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "EVENTS")
-
-    member ``GET DISCOVERED``: HtmlProvider+GetDiscovered with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "GET DISCOVERED")
-
-    member ``IMDb Charts``: HtmlProvider+ImDbCharts with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "IMDb Charts")
-
-    member ``LATEST HEADLINES``: HtmlProvider+LatestHeadlines with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "LATEST HEADLINES")
-
-    member List15: HtmlProvider+List15 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List15")
-
-    member MOVIES: HtmlProvider+Movies with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "MOVIES")
-
-    member NEWS: HtmlProvider+News with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "NEWS")
-
-    member PHOTOS: HtmlProvider+Photos with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "PHOTOS")
-
-    member ``SPECIAL FEATURES``: HtmlProvider+SpecialFeatures with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "SPECIAL FEATURES")
-
-    member ``TV & VIDEO``: HtmlProvider+TvVideo with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "TV & VIDEO")
-
     member ``Top 250``: HtmlProvider+Top250 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Top 250")
-
-    member ``Top Movies by Genre``: HtmlProvider+TopMoviesByGenre with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Top Movies by Genre")
-
-    member ``YOUR WATCHLIST``: HtmlProvider+YourWatchlist with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "YOUR WATCHLIST")
 
 
 [<[TypeProviderEditorHideMethods()]>]
@@ -156,58 +66,13 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Celebs : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ChartsTrends : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Community : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ConsumerMainNav : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Events : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+GetDiscovered : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ImDbCharts : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+LatestHeadlines : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List15 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Movies : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+News : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Photos : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SpecialFeatures : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.HtmlTable<HtmlProvider+Top250+Row>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TopMoviesByGenre : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TvVideo : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+YourWatchlist : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250+Row : string * string * decimal * string * string
