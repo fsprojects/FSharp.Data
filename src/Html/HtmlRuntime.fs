@@ -184,8 +184,26 @@ module HtmlRuntime =
           Html = table } |> Some
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
+        
+        let rec walkListItems s (items:HtmlNode list) =
+            match items with
+            | [] -> s
+            | HtmlElement("li", _, elements) :: t -> 
+                let state = 
+                    elements |> List.fold (fun s node ->
+                        match node with
+                        | HtmlText(content) -> (content.Trim()) :: s
+                        | _ -> s
+                    ) s
+                    |> List.rev
+                walkListItems state t
+            | _ :: t -> walkListItems s t
+            
 
-        let rows = list.Descendants ["li"] |> List.map HtmlNode.innerText |> List.toArray
+        let rows = 
+            list.Descendants(["li"], false, false) 
+            |> List.collect (fun node -> walkListItems [] (node.Descendants((fun _ -> true), true)))
+            |> List.toArray
     
         if rows.Length <= 1 then None else
 
@@ -237,13 +255,13 @@ module HtmlRuntime =
 
     let getLists (doc:HtmlDocument) =        
         doc
-        |> HtmlDocument.descendantsNamedWithPath true ["ol"; "ul"]
+        |> HtmlDocument.descendantsNamedWithPath false ["ol"; "ul"]
         |> List.mapi (parseList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
     let getDefinitionLists (doc:HtmlDocument) =                
         doc
-        |> HtmlDocument.descendantsNamedWithPath true ["dl"]
+        |> HtmlDocument.descendantsNamedWithPath false ["dl"]
         |> List.mapi (parseDefinitionList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
