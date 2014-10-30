@@ -50,6 +50,26 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+    member ``Take The Quiz!``: HtmlProvider+TakeTheQuiz with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Column1", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("Column2", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("Column3", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("Column4", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[4])
+                                        TextRuntime.GetNonOptionalValue("Column5", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[5])
+                                        TextRuntime.GetNonOptionalValue("Column6", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[6])
+                                        TextRuntime.GetNonOptionalValue("Column7", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[7])
+                                        TextRuntime.GetNonOptionalValue("Column8", TextRuntime.ConvertString(value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Take The Quiz!", false)
+
     member ``Top 250``: HtmlProvider+Top250 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -69,10 +89,40 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 class HtmlProvider+ConsumerMainNav : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TakeTheQuiz : FDR.HtmlTable<HtmlProvider+TakeTheQuiz+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.HtmlTable<HtmlProvider+Top250+Row>
+
+[<[TypeProviderEditorHideMethods()]>]
+class HtmlProvider+TakeTheQuiz+Row : string * string * string * string * string * string * string * string
+    member Column1: string with get
+    (let t1,_,_,_,_,_,_,_ = this in t1)
+
+    member Column2: string with get
+    (let _,t2,_,_,_,_,_,_ = this in t2)
+
+    member Column3: string with get
+    (let _,_,t3,_,_,_,_,_ = this in t3)
+
+    member Column4: string with get
+    (let _,_,_,t4,_,_,_,_ = this in t4)
+
+    member Column5: string with get
+    (let _,_,_,_,t5,_,_,_ = this in t5)
+
+    member Column6: string with get
+    (let _,_,_,_,_,t6,_,_ = this in t6)
+
+    member Column7: string with get
+    (let _,_,_,_,_,_,t7,_ = this in t7)
+
+    member Column8: string with get
+    (let _,_,_,_,_,_,_,t8 = this in t8)
+
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250+Row : string * string * decimal * string * string

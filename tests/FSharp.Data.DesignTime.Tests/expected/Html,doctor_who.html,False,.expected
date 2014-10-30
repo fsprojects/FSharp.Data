@@ -457,7 +457,7 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Title", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("Code", TextRuntime.ConvertString(value), value),
+                                        TextRuntime.GetNonOptionalValue("Code", TextRuntime.ConvertInteger("", value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Episodes", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
@@ -1884,8 +1884,8 @@ class HtmlProvider+Season211984+Row : int * string * string * string * string * 
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season211984Continued+Row : int * string * string * string * string * string * string
-    member Code: string with get
+class HtmlProvider+Season211984Continued+Row : int * string * int * string * string * string * string
+    member Code: int with get
     (let _,_,t3,_,_,_,_ = this in t3)
 
     member Director: string with get

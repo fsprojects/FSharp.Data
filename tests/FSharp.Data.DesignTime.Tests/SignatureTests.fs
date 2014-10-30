@@ -22,6 +22,7 @@ let testCases =
 
 let testCasesForUSA =
     testCases
+    |> Array.map snd
     |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
 
 let expectedDirectory = sourceDirectory ++ "expected" 
@@ -35,9 +36,12 @@ let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "port
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
-    for testCase in testCases do
-        testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
-        |> ignore
+    for (sample,testCase) in testCases do
+        try
+            testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
+            |> ignore
+        with e -> 
+            raise(new System.Exception(sprintf "Failed generating: %s" sample, e))
 
 let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
