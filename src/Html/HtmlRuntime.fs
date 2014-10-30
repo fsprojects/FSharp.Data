@@ -131,7 +131,7 @@ module HtmlRuntime =
         let rowLengths = cells |> List.map (fun x -> x.Length)
         let numberOfColumns = List.max rowLengths
         
-        if not includeLayoutTables && (rowLengths |> List.filter (fun x -> x > 1) |> List.length <= 1) then None else
+        if not includeLayoutTables && (numberOfColumns < 1) then None else
 
         let name = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
 
