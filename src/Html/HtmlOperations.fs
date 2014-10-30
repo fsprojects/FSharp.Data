@@ -57,22 +57,20 @@ module HtmlNode =
         | HtmlElement(elements = elements) -> elements
         | _ -> []
 
-    /// <summary>
     /// Finds all of the elements nodes of this node that match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    ///  * names - The set of names to match
+    ///  * n - The given node
     let inline elementsNamed names n = 
         let nameSet = getNameSet names
         n |> elements |> List.filter (name >> nameSet.Contains)
 
-    /// <summary>
     /// Gets all of the descendants of this node that statisfy the given predicate
-    /// </summary>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * n - The given node
     let descendants includeSelf recurseOnMatch predicate n = 
         let rec descendantsBy includeSelf n =
             [
@@ -87,24 +85,24 @@ module HtmlNode =
             ]
         descendantsBy includeSelf n
     
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this nodes that match the given set of names
-    /// </summary>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * names - The set of names to match
+    /// * n - The given node
     let inline descendantsNamed includeSelf recurseOnMatch names n = 
         let nameSet = getNameSet names
         n |> descendants includeSelf recurseOnMatch (name >> nameSet.Contains)
         
-    /// <summary>
+    
     /// Gets all of the descendants of this node that statisfy the given predicate
-    /// </summary>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * n - The given node
     let descendantsWithPath includeSelf recurseOnMatch predicate n = 
         let rec descendantsBy includeSelf path n =
             [
@@ -119,13 +117,13 @@ module HtmlNode =
             ]
         descendantsBy includeSelf [] n
     
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this nodes that match the given set of names
-    /// </summary>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * names - The set of names to match
+    /// * n - The given node
     let inline descendantsNamedWithPath includeSelf recurseOnMatch names n = 
         let nameSet = getNameSet names
         n |> descendantsWithPath includeSelf recurseOnMatch (name >> nameSet.Contains)
@@ -136,39 +134,39 @@ module HtmlNode =
         | HtmlElement(attributes = attributes) -> attributes
         | _ -> []
 
-    /// <summary>
+    
     /// Tries to return an attribute that exists on the current node
-    /// </summary>
-    /// <param name="name">The name of the attribute to return.</param>
+    /// Parameters:
+    /// * name - The name of the attribute to return.
     let inline tryGetAttribute name n =
         n |> attributes |> List.tryFind (HtmlAttribute.name >> ((=) (toLower name)))
     
-    /// <summary>
+    
     /// Returns the attribute with the given name. If the
     /// attribute does not exist then this will throw an exception
-    /// </summary>
-    /// <param name="name">The name of the attribute to select</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * name - The name of the attribute to select
+    /// * n - The given node
     let inline attribute name n = 
         match tryGetAttribute name n with
         | Some v -> v
         | None -> failwithf "Unable to find attribute (%s)" name
 
-    /// <summary>
+    
     /// Return the value of the named attribute, or an empty string if not found.
-    /// </summary>
-    /// <param name="name">The name of the attribute to get the value from</param>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * name - The name of the attribute to get the value from
+    /// * n - The given node
     let inline attributeValue name n = 
         defaultArg (n |> tryGetAttribute name |> Option.map HtmlAttribute.value) ""
 
-    /// <summary>
+    
     /// Returns true if the current node has an attribute that
     /// matches both the name and the value
-    /// </summary>
-    /// <param name="name">The name of the attribute</param>
-    /// <param name="value">The value of the attribute</param>
-    /// <param name="x">The given html node</param>
+    /// Parameters:
+    /// * name - The name of the attribute
+    /// * value - The value of the attribute
+    /// * x - The given html node
     let inline hasAttribute name value n = 
         match tryGetAttribute name n with
         | Some attr -> toLower (HtmlAttribute.value attr) = toLower value
@@ -196,10 +194,10 @@ module HtmlNode =
             | _ -> String.Empty
         innerText' n
 
-    /// <summary>
+    
     /// Returns the inner text of the current node
-    /// </summary>
-    /// <param name="n">The given node</param>
+    /// Parameters:
+    /// * n - The given node
     let inline innerText n = 
         innerTextExcluding [] n
 
@@ -218,49 +216,49 @@ type HtmlNodeExtensions =
     static member Elements(n:HtmlNode) = 
         HtmlNode.elements n
 
-    /// <summary>
+    
     /// Gets all of the elements of the current node, which match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names by which to map the elements</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the elements
     [<Extension>]
     static member Elements(n:HtmlNode, names:seq<string>) = 
         HtmlNode.elementsNamed names n
 
-    /// <summary>
+    
     /// Gets all of the elements of the current node, which match the given name
-    /// </summary>
-    /// <param name="names">The name by which to map the elements</param>
+    /// Parameters:
+    /// * names - The name by which to map the elements
     [<Extension>]
     static member Elements(n:HtmlNode, name:string) = 
         HtmlNode.elementsNamed [name] n
         
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(n:HtmlNode, predicate, includeSelf, recurseOnMatch) = 
         HtmlNode.descendants includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
     /// Recurses on match
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member Descendants(n:HtmlNode, predicate, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendants includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
     [<Extension>]
     static member Descendants(n:HtmlNode, predicate) = 
         let includeSelf = false
@@ -277,99 +275,99 @@ type HtmlNodeExtensions =
         let predicate = fun _ -> true
         HtmlNode.descendants includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the descendants
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(n:HtmlNode, names:seq<string>, includeSelf, recurseOnMatch) = 
         HtmlNode.descendantsNamed includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
     /// Recurses on match
-    /// </summary>
-    /// <param name="names">The set of names by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the descendants
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member Descendants(n:HtmlNode, names:seq<string>, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendantsNamed includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
-    /// <param name="names">The set of names by which to map the descendants</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the descendants
     [<Extension>]
     static member Descendants(n:HtmlNode, names:seq<string>) = 
         let includeSelf = false
         let recurseOnMatch = true
         HtmlNode.descendantsNamed includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
-    /// </summary>
-    /// <param name="name">The name by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * name - The name by which to map the descendants
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(n:HtmlNode, name:string, includeSelf, recurseOnMatch) = 
         HtmlNode.descendantsNamed includeSelf recurseOnMatch [name] n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
     /// Recurses on match
-    /// </summary>
-    /// <param name="name">The name by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * name - The name by which to map the descendants
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member Descendants(n:HtmlNode, name:string, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendantsNamed includeSelf recurseOnMatch [name] n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
-    /// <param name="name">The name by which to map the descendants</param>
+    /// Parameters:
+    /// * name - The name by which to map the descendants
     [<Extension>]
     static member Descendants(n:HtmlNode, name:string) = 
         let recurseOnMatch = true
         let includeSelf = false
         HtmlNode.descendantsNamed includeSelf recurseOnMatch [name] n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, predicate, includeSelf, recurseOnMatch) = 
         HtmlNode.descendantsWithPath includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
     /// Recurses on match
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, predicate, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendantsWithPath includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node that satisfy the predicate
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
-    /// <param name="predicate">The predicate for which descendants to return</param>
+    /// Parameters:
+    /// * predicate - The predicate for which descendants to return
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, predicate) = 
         let recurseOnMatch = true
@@ -386,65 +384,64 @@ type HtmlNodeExtensions =
         let predicate = fun _ -> true
         HtmlNode.descendantsWithPath includeSelf recurseOnMatch predicate n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the descendants
+    /// * includeSelf - Include the current node
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, names:seq<string>, includeSelf, recurseOnMatch) = 
         HtmlNode.descendantsNamedWithPath includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
     /// Recurses on match
-    /// </summary>
-    /// <param name="names">The set of names by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * names - The set of names by which to map the descendants
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, names:seq<string>, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendantsNamedWithPath includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given set of names
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, names:seq<string>) = 
         let recurseOnMatch = true
         let includeSelf = false
         HtmlNode.descendantsNamedWithPath includeSelf recurseOnMatch names n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
-    /// </summary>
-    /// <param name="name">The name by which to map the descendants</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * name - The name by which to map the descendants
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, name:string, includeSelf, recurseOnMatch) = 
         HtmlNode.descendantsNamedWithPath includeSelf recurseOnMatch [name] n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
     /// Recurses on match
-    /// </summary>
-    /// <param name="name">The names by which to map the descendants</param>
-    /// <param name="includeSelf">Include the current node</param>
+    /// Parameters:
+    /// * name - The names by which to map the descendants
+    /// * includeSelf - Include the current node
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, name:string, includeSelf) = 
         let recurseOnMatch = true
         HtmlNode.descendantsNamedWithPath includeSelf recurseOnMatch [name] n
 
-    /// <summary>
+    
     /// Gets all of the descendants of the current node, which match the given name
     /// Recurses on match
     /// Doesn't include self
-    /// </summary>
-    /// <param name="name">The names by which to map the descendants</param>
+    /// Parameters:
+    /// * name - The names by which to map the descendants
     [<Extension>]
     static member DescendantsWithPath(n:HtmlNode, name:string) = 
         let recurseOnMatch = true
@@ -456,37 +453,37 @@ type HtmlNodeExtensions =
     static member Attributes(n:HtmlNode) = 
         HtmlNode.attributes n
 
-    /// <summary>
+    
     /// Tries to select an attribute with the given name from the current node.
-    /// </summary>
-    /// <param name="name">The name of the attribute to select</param>
+    /// Parameters:
+    /// * name - The name of the attribute to select
     [<Extension>]
     static member TryGetAttribute(n:HtmlNode, name:string) = 
         HtmlNode.tryGetAttribute name n
 
-    /// <summary>
+    
     /// Returns the attribute with the given name. If the
     /// attribute does not exist then this will throw an exception
-    /// </summary>
-    /// <param name="name">The name of the attribute to select</param>
+    /// Parameters:
+    /// * name - The name of the attribute to select
     [<Extension>]
     static member Attribute(n:HtmlNode, name) = 
         HtmlNode.attribute name n
 
-    /// <summary>
+    
     /// Return the value of the named attribute, or an empty string if not found.
-    /// </summary>
-    /// <param name="name">The name of the attribute to get the value from</param>
+    /// Parameters:
+    /// * name - The name of the attribute to get the value from
     [<Extension>]
     static member AttributeValue(n:HtmlNode, name) =
       HtmlNode.attributeValue name n
 
-    /// <summary>
+    
     /// Returns true if the current node has an attribute that
     /// matches both the name and the value
-    /// </summary>
-    /// <param name="name">The name of the attribute</param>
-    /// <param name="value">The value of the attribute</param>
+    /// Parameters:
+    /// * name - The name of the attribute
+    /// * value - The value of the attribute
     [<Extension>]
     static member HasAttribute(n:HtmlNode, name, value) = 
         HtmlNode.hasAttribute name value n
@@ -521,67 +518,67 @@ module HtmlDocument =
         match doc with
         | HtmlDocument(elements = elements) -> elements
                 
-    /// <summary>
+    
     /// Returns all of the root elements of the document that match the set of names
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="doc">The given document</param>
+    /// Parameters:
+    /// * names - The set of names to match
+    /// * doc - The given document
     let inline elementsNamed names doc = 
         let nameSet = getNameSet names
         doc |> elements |> List.filter (HtmlNode.name >> nameSet.Contains)
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
-    /// </summary>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="doc">The given document</param>
+    /// Parameters:
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * doc - The given document
     let inline descendants recurseOnMatch predicate doc =
         doc |> elements |> List.collect (HtmlNode.descendants true recurseOnMatch predicate)
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
-    /// </summary>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="doc">The given document</param>
+    /// Parameters:
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * names - The set of names to match
+    /// * doc - The given document
     let inline descendantsNamed recurseOnMatch names doc = 
         let nameSet = getNameSet names
         doc |> descendants recurseOnMatch (HtmlNode.name >> nameSet.Contains)
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
-    /// </summary>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="doc">The given document</param>
+    /// Parameters:
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * doc - The given document
     let inline descendantsWithPath recurseOnMatch predicate doc =
         doc |> elements |> List.collect (HtmlNode.descendantsWithPath true recurseOnMatch predicate)
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
-    /// </summary>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="doc">The given document</param>
+    /// Parameters:
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
+    /// * names - The set of names to match
+    /// * doc - The given document
     let inline descendantsNamedWithPath recurseOnMatch names doc = 
         let nameSet = getNameSet names
         doc |> descendantsWithPath recurseOnMatch (HtmlNode.name >> nameSet.Contains)
 
-    /// <summary>
+    
     /// Finds the body element of the given document,
     /// this throws an exception if no body element exists.
-    /// </summary>
-    /// <param name="x">The given document</param>
+    /// Parameters:
+    /// * x - The given document
     let inline body (x:HtmlDocument) = 
         match descendantsNamed false ["body"] x with
         | [] -> failwith "No element body found!"
         | body:: _ -> body
 
-    /// <summary>
+    
     /// Tries to find the body element of the given document.
-    /// </summary>
-    /// <param name="x">The given document</param>
+    /// Parameters:
+    /// * x - The given document
     let inline tryGetBody (x:HtmlDocument) = 
         match descendantsNamed false ["body"] x with
         | [] -> None
@@ -590,45 +587,45 @@ module HtmlDocument =
 [<Extension>]
 type HtmlDocumentExtensions =
 
-    /// <summary>
+    
     /// Returns all of the root elements of the current document
     /// that match the given predicate
-    /// </summary>
-    /// <param name="predicate">The predicate used to match elements</param>
+    /// Parameters:
+    /// * predicate - The predicate used to match elements
     [<Extension>]
     static member Elements(doc:HtmlDocument) = 
         HtmlDocument.elements doc
 
-    /// <summary>
+    
     /// Returns all of the root elements in the current document that match the set of names
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
+    /// Parameters:
+    /// * names - The set of names to match
     [<Extension>]
     static member Elements(doc:HtmlDocument, names:seq<string>) = 
         HtmlDocument.elementsNamed names doc
 
-    /// <summary>
+    
     /// Returns all of the root elements in the current document that match the name
-    /// </summary>
-    /// <param name="name">The name to match</param>
+    /// Parameters:
+    /// * name - The name to match
     [<Extension>]
     static member Elements(doc:HtmlDocument, name:string) = 
         HtmlDocument.elementsNamed [name] doc
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
-    /// </summary>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(doc:HtmlDocument, predicate, recurseOnMatch) = 
         HtmlDocument.descendants recurseOnMatch predicate doc
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
     /// Recurses on match
-    /// </summary>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
+    /// Parameters:
+    /// * predicate - The predicate by which to match the nodes to return
     [<Extension>]
     static member Descendants(doc:HtmlDocument, predicate) = 
         let recurseOnMatch = true
@@ -642,58 +639,58 @@ type HtmlDocumentExtensions =
         let predicate = fun _ -> true
         HtmlDocument.descendants recurseOnMatch predicate doc
         
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * names - The set of names to match
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(doc:HtmlDocument, names:seq<string>, recurseOnMatch) =
         HtmlDocument.descendantsNamed recurseOnMatch names doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
     /// Recurses on match
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
+    /// Parameters:
+    /// * names - The set of names to match
     [<Extension>]
     static member Descendants(doc:HtmlDocument, names:seq<string>) =
         let recurseOnMatch = true
         HtmlDocument.descendantsNamed recurseOnMatch names doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given name
-    /// </summary>
-    /// <param name="name">The name to match</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * name - The name to match
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member Descendants(doc:HtmlDocument, name:string, recurseOnMatch) =
         HtmlDocument.descendantsNamed recurseOnMatch [name] doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given name
     /// Recurses on match
-    /// </summary>
-    /// <param name="names">The name to match</param>
+    /// Parameters:
+    /// * names - The name to match
     [<Extension>]
     static member Descendants(doc:HtmlDocument, name:string) =
         let recurseOnMatch = true
         HtmlDocument.descendantsNamed recurseOnMatch [name] doc
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
-    /// </summary>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * predicate - The predicate by which to match the nodes to return
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, predicate, recurseOnMatch) = 
         HtmlDocument.descendantsWithPath recurseOnMatch predicate doc
 
-    /// <summary>
+    
     /// Gets all of the descendants of this document that statisfy the given predicate
     /// Recurses on match
-    /// </summary>
-    /// <param name="predicate">The predicate by which to match the nodes to return</param>
+    /// Parameters:
+    /// * predicate - The predicate by which to match the nodes to return
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, predicate) = 
         let recurseOnMatch = true
@@ -707,39 +704,39 @@ type HtmlDocumentExtensions =
         let predicate = fun _ -> true
         HtmlDocument.descendantsWithPath recurseOnMatch predicate doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * names - The set of names to match
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, names:seq<string>, recurseOnMatch) =
         HtmlDocument.descendantsNamedWithPath recurseOnMatch names doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given set of names
     /// Recurses on match
-    /// </summary>
-    /// <param name="names">The set of names to match</param>
+    /// Parameters:
+    /// * names - The set of names to match
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, names:seq<string>) =
         let recurseOnMatch = true
         HtmlDocument.descendantsNamedWithPath recurseOnMatch names doc
         
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given name
-    /// </summary>
-    /// <param name="name">The name to match</param>
-    /// <param name="recurseOnMatch">If a match is found continues down the tree matching child elements</param>
+    /// Parameters:
+    /// * name - The name to match
+    /// * recurseOnMatch - If a match is found continues down the tree matching child elements
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, name:string, recurseOnMatch) =
         HtmlDocument.descendantsNamedWithPath recurseOnMatch [name] doc
 
-    /// <summary>
+    
     /// Finds all of the descendant nodes of this document that match the given name
     /// Recurses on match
-    /// </summary>
-    /// <param name="name">The name to match</param>
+    /// Parameters:
+    /// * name - The name to match
     [<Extension>]
     static member DescendantsWithPath(doc:HtmlDocument, name:string) =
         let recurseOnMatch = true
