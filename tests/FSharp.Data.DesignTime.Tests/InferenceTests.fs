@@ -378,3 +378,22 @@ let ``Doesn't infer 12-002 as a date``() =
 let ``Doesn't infer ad3mar as a date``() =
   StructuralInference.inferPrimitiveType CultureInfo.InvariantCulture "ad3mar"
   |> shouldEqual typeof<string>
+
+[<Test>]
+let ``Inference with % suffix``() = 
+  let source = CsvFile.Parse("float,integer\n2.0%,2%\n4.0%,3%\n")
+  let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false) }
+  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false) }
+  let expected = toRecord [ propFloat ; propInteger ]
+  actual |> shouldEqual expected
+
+
+[<Test>]
+let ``Inference with $ prefix``() = 
+  let source = CsvFile.Parse("float,integer\n$2.0,$2\n$4.0,$3\n")
+  let actual, _ = inferType source Int32.MaxValue [||] culture "" false false
+  let propFloat = { Name = "float"; Type = InferedType.Primitive(typeof<Decimal>, None, false) }
+  let propInteger = { Name = "integer"; Type = InferedType.Primitive(typeof<int>, None, false) }
+  let expected = toRecord [ propFloat ; propInteger ]
+  actual |> shouldEqual expected
