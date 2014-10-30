@@ -39,19 +39,36 @@ module private Helpers =
 type TextConversions = 
 
   static member DefaultMissingValues = [|"NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD"|]
+  static member DefaultNonCurrencyAdorners = [|"%"|]
+
+  static member RemovableAdornerCharacters =
+#if FX_NO_ENUMERABLE_CULTURES
+        [|CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol|]
+#else
+        (CultureInfo.GetCultures(CultureTypes.AllCultures) |> Array.map (fun x -> x.NumberFormat.CurrencySymbol)) 
+#endif
+        |> Array.append TextConversions.DefaultNonCurrencyAdorners
+  
+  //This removes any adorners that might otherwise casue the inference to infer string. A notable a change is
+  //Currency Symbols are now treated as an Adorner like a '%' sign thus are now independant
+  //of the culture. Which is probably better since we have lots of scenarios where I want to
+  //consume values prefixed with € or $ but in a different culture. 
+  static member RemoveAdorners(value:string) = 
+      TextConversions.RemovableAdornerCharacters
+      |> Array.fold (fun (s:string) ad -> s.Replace(ad, "")) value
 
   /// Turns empty or null string value into None, otherwise returns Some
   static member AsString str =
     if String.IsNullOrWhiteSpace str then None else Some str
 
-  static member AsInteger cultureInfo text = 
-    Int32.TryParse(text, NumberStyles.Integer, cultureInfo) |> asOption
+  static member AsInteger cultureInfo (text:string) = 
+    Int32.TryParse(TextConversions.RemoveAdorners(text), NumberStyles.Integer, cultureInfo) |> asOption
   
-  static member AsInteger64 cultureInfo text = 
-    Int64.TryParse(text, NumberStyles.Integer, cultureInfo) |> asOption
+  static member AsInteger64 cultureInfo (text:string) = 
+    Int64.TryParse(TextConversions.RemoveAdorners(text), NumberStyles.Integer, cultureInfo) |> asOption
   
-  static member AsDecimal cultureInfo text =
-    Decimal.TryParse(text, NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, cultureInfo) |> asOption
+  static member AsDecimal cultureInfo (text:string) =
+    Decimal.TryParse(TextConversions.RemoveAdorners(text), NumberStyles.Number ||| NumberStyles.AllowCurrencySymbol, cultureInfo) |> asOption
   
   /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
   static member AsFloat missingValues useNoneForMissingValues cultureInfo (text:string) = 
