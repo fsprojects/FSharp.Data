@@ -206,8 +206,8 @@ module HtmlNode =
         | None -> false
 
     /// Returns true if the current node has the specified name
-    let inline hasName expectedName n = 
-        name n = expectedName
+    let inline hasName (expectedName:string) n = 
+        name n = expectedName.ToLowerInvariant()
 
     /// Returns true if the current node has the specified id
     let inline hasId id n = 
