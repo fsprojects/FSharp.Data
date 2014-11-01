@@ -176,8 +176,6 @@
         </When>
         <When Condition="$(TargetFrameworkVersion) == 'v3.5'">
         </When>
-        <When Condition="$(TargetFrameworkVersion) == 'v4.0' And $(TargetFrameworkProfile) == 'Client'">
-        </When>
         <Otherwise>
           <ItemGroup>
             <Reference Include="Zlib.Portable">
@@ -216,6 +214,15 @@
         </Reference>
       </ItemGroup>
     </When>
+    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight'">
+      <ItemGroup>
+        <Reference Include="Zlib.Portable">
+          <HintPath>..\..\..\packages\Zlib.Portable\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
     <When Condition="$(TargetFrameworkIdentifier) == 'Windows'">
       <ItemGroup>
         <Reference Include="Zlib.Portable">
@@ -234,7 +241,7 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition="$(TargetFrameworkIdentifier) == 'Silverlight'">
+    <Otherwise>
       <ItemGroup>
         <Reference Include="Zlib.Portable">
           <HintPath>..\..\..\packages\Zlib.Portable\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
@@ -242,6 +249,6 @@
           <Paket>True</Paket>
         </Reference>
       </ItemGroup>
-    </When>
+    </Otherwise>
   </Choose>
 </Project>
