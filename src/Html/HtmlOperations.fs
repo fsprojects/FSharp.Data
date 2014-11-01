@@ -205,6 +205,10 @@ module HtmlNode =
         | Some attr -> toLower (HtmlAttribute.value attr) = toLower value
         | None -> false
 
+    /// Returns true if the current node has the specified name
+    let inline hasName expectedName n = 
+        name n = expectedName
+
     /// Returns true if the current node has the specified id
     let inline hasId id n = 
         hasAttribute "id" id n
@@ -547,6 +551,11 @@ type HtmlNodeExtensions =
     [<Extension>]
     static member HasAttribute(n:HtmlNode, name, value) = 
         HtmlNode.hasAttribute name value n
+
+    /// Returns true if the current node has the specified name
+    [<Extension>]
+    static member HasName(n:HtmlNode, name) = 
+        HtmlNode.hasName name n
 
     /// Returns true if the current node has the specified id
     [<Extension>]
