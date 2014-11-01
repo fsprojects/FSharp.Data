@@ -66,17 +66,16 @@ module HtmlNode =
         n |> elements |> List.filter (name >> nameSet.Contains)
 
     let private descendantsBy includeSelf recurseOnMatch predicate n = 
-        let rec descendantsBy includeSelf n =
-            [
-                let proceed = ref true
-                if includeSelf && predicate n then
-                    yield n
-                    if not recurseOnMatch then
-                        proceed := false
-                if !proceed then
-                    for element in elements n do
-                        yield! descendantsBy true element
-            ]
+        let rec descendantsBy includeSelf n = seq {
+            let proceed = ref true
+            if includeSelf && predicate n then
+                yield n
+                if not recurseOnMatch then
+                    proceed := false
+            if !proceed then
+                for element in elements n do
+                    yield! descendantsBy true element
+        }
         descendantsBy includeSelf n
 
     /// Gets all of the descendants of this node that statisfy the given predicate
@@ -116,17 +115,16 @@ module HtmlNode =
         n |> descendantsAndSelf recurseOnMatch (name >> nameSet.Contains)
                 
     let private descendantsByWithPath includeSelf recurseOnMatch predicate n = 
-        let rec descendantsByWithPath includeSelf path n =
-            [
-                let proceed = ref true
-                if includeSelf && predicate n then
-                    yield n, path
-                    if not recurseOnMatch then
-                        proceed := false
-                if !proceed then
-                    for element in elements n do
-                        yield! descendantsByWithPath true (n::path) element
-            ]
+        let rec descendantsByWithPath includeSelf path n = seq {
+            let proceed = ref true
+            if includeSelf && predicate n then
+                yield n, path
+                if not recurseOnMatch then
+                    proceed := false
+            if !proceed then
+                for element in elements n do
+                    yield! descendantsByWithPath true (n::path) element
+        }
         descendantsByWithPath includeSelf [] n
     
     /// Gets all of the descendants of this node that statisfy the given predicate
@@ -601,7 +599,7 @@ module HtmlDocument =
     /// * predicate - The predicate by which to match the nodes to return
     /// * doc - The given document
     let inline descendants recurseOnMatch predicate doc =
-        doc |> elements |> List.collect (HtmlNode.descendantsAndSelf recurseOnMatch predicate)
+        doc |> elements |> Seq.collect (HtmlNode.descendantsAndSelf recurseOnMatch predicate)
 
     /// Finds all of the descendant nodes of this document that match the given set of names
     /// Parameters:
@@ -618,7 +616,7 @@ module HtmlDocument =
     /// * predicate - The predicate by which to match the nodes to return
     /// * doc - The given document
     let inline descendantsWithPath recurseOnMatch predicate doc =
-        doc |> elements |> List.collect (HtmlNode.descendantsAndSelfWithPath recurseOnMatch predicate)
+        doc |> elements |> Seq.collect (HtmlNode.descendantsAndSelfWithPath recurseOnMatch predicate)
 
     /// Finds all of the descendant nodes of this document that match the given set of names
     /// Parameters:
@@ -634,7 +632,7 @@ module HtmlDocument =
     /// Parameters:
     /// * x - The given document
     let inline body (x:HtmlDocument) = 
-        match descendantsNamed false ["body"] x with
+        match List.ofSeq <| descendantsNamed false ["body"] x with
         | [] -> failwith "No element body found!"
         | body:: _ -> body
 
@@ -642,7 +640,7 @@ module HtmlDocument =
     /// Parameters:
     /// * x - The given document
     let inline tryGetBody (x:HtmlDocument) = 
-        match descendantsNamed false ["body"] x with
+        match List.ofSeq <| descendantsNamed false ["body"] x with
         | [] -> None
         | body:: _ -> Some body
 
