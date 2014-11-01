@@ -98,15 +98,15 @@ let ``Can get all of the descendants that match the given set of names``() =
 let ``Can get descendants with path of a node that matches a predicate``() =
     let result = doc |> HtmlNode.descendantsWithPath false (HtmlNode.name >> (=) "link")
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
-    result |> List.map fst |> should equal [expected]
-    result |> List.map (snd >> List.map HtmlNode.name) |> should equal [["head"; "html"]]
+    result |> Seq.map fst |> Seq.toList |> should equal [expected]
+    result |> Seq.map (snd >> List.map HtmlNode.name) |> Seq.toList |> should equal [["head"; "html"]]
 
 [<Test>]
 let ``Can get all of the descendants with path that match the given set of names``() =
     let result = doc |> HtmlNode.descendantsNamedWithPath false ["link"]
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
-    result |> List.map fst |> should equal [expected]
-    result |> List.map (snd >> List.map HtmlNode.name) |> should equal [["head"; "html"]]
+    result |> Seq.map fst |> Seq.toList |> should equal [expected]
+    result |> Seq.map (snd >> List.map HtmlNode.name) |> Seq.toList |> should equal [["head"; "html"]]
 
 [<Test>]
 let ``Can get all elements of a node that matches a set of names``() = 
@@ -130,7 +130,7 @@ let ``Can get all elements of a node that matches a set of names``() =
 
 [<Test>]
 let ``Can extract the inner text from a node``() = 
-    let result = doc.Descendants("tr") |> List.map (HtmlNode.innerText)
+    let result = doc.Descendants("tr") |> Seq.map (HtmlNode.innerText) |> Seq.toList
     result |> should equal [
         "Column 1Column 2"
         "1yes"
