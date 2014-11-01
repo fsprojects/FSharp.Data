@@ -13,6 +13,7 @@ module private Utils =
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Operations on HTML attributes
 module HtmlAttribute = 
 
     /// Gets the name of the given attribute
@@ -28,6 +29,7 @@ module HtmlAttribute =
 // --------------------------------------------------------------------------------------
 
 [<Extension>]
+/// Extension methods on HTML attributes
 type HtmlAttributeExtensions =
 
     /// Gets the name of the current attribute
@@ -43,6 +45,7 @@ type HtmlAttributeExtensions =
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Operations on HTML nodes
 module HtmlNode =
 
     /// Gets the given nodes name
@@ -238,6 +241,7 @@ module HtmlNode =
 // --------------------------------------------------------------------------------------
 
 [<Extension>]
+/// Extension methods on HTML nodes
 type HtmlNodeExtensions =
                
     /// Gets the given nodes name
@@ -573,6 +577,7 @@ type HtmlNodeExtensions =
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+// Operations on HTML documents
 module HtmlDocument = 
     
     /// Returns the doctype of the document
@@ -645,6 +650,7 @@ module HtmlDocument =
         | body:: _ -> Some body
 
 [<Extension>]
+/// Extension methods on HTML documents
 type HtmlDocumentExtensions =
 
     /// Returns all of the root elements of the current document
@@ -801,7 +807,9 @@ type HtmlDocumentExtensions =
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Provides the dynamic operator for getting attribute values from HTML elements
 module HtmlExtensions =
 
+    /// Gets the value of an attribute from an HTML element
     let (?) (node : HtmlNode) name = 
         HtmlNode.attributeValue name node 

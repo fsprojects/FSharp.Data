@@ -10,6 +10,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Extension>]
+/// Extension methods on strings for conversions to other types
 type StringExtensions =
 
   [<Extension>]
@@ -62,6 +63,8 @@ type StringExtensions =
     | _ -> failwithf "Not a guid: %s" x
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Provides the dynamic operator for getting column values by name from CSV rows
 module CsvExtensions =
-  /// Get column of a CsvRow
+  
+  /// Get the value of a column by name from a CSV row
   let (?) (csvRow:CsvRow) (columnName:string) = csvRow.[columnName]

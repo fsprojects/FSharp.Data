@@ -11,6 +11,7 @@ open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 
+/// Represents an HTML attribute. The name is always normalized to lowercase
 type HtmlAttribute = 
 
     private | HtmlAttribute of name:string * value:string    
@@ -24,6 +25,7 @@ type HtmlAttribute =
         HtmlAttribute(name.ToLowerInvariant(), value)
 
 [<StructuredFormatDisplay("{_Print}")>]
+/// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
 
     private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
@@ -132,6 +134,7 @@ type HtmlNode =
     member x._Print = x.ToString()
 
 [<StructuredFormatDisplay("{_Print}")>]
+/// Represents an HTML document
 type HtmlDocument = 
     private | HtmlDocument of docType:string * elements:HtmlNode list
   

@@ -12,6 +12,7 @@ open FSharp.Data.Runtime
 open Microsoft.FSharp.Core
 
 [<Extension>]
+/// Extension methods on JSON values
 type JsonExtensions =
 
   /// Get a sequence of key-value pairs representing the properties of an object
@@ -135,8 +136,10 @@ type JsonExtensions =
     | None -> JsonExtensions.AsArray(x) |> Array.map (fun e -> JsonExtensions.InnerText(e)) |> String.Concat
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Provides the dynamic operator for getting a property of a JSON object
 module JsonExtensions =
-  /// Get property of a JSON object (assuming that the value is an object)
+
+  /// Get a property of a JSON object  
   let (?) (jsonObject:JsonValue) propertyName = jsonObject.GetProperty(propertyName)
 
   type JsonValue with

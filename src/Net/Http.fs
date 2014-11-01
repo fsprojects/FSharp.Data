@@ -274,6 +274,7 @@ module HttpContentTypes =
 
 type private HeaderEnum = System.Net.HttpRequestHeader
 
+/// Constants for common HTTP encodings
 module HttpEncodings = 
 
     let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
