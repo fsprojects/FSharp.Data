@@ -84,26 +84,26 @@ let doc =
 
 [<Test>]
 let ``Can get descendants of a node that matches a predicate``() =
-    let result = doc |> HtmlNode.descendants false false (HtmlNode.name >> (=) "link")
+    let result = doc |> HtmlNode.descendants false (HtmlNode.name >> (=) "link")
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
     result |> should equal [expected]
 
 [<Test>]
 let ``Can get all of the descendants that match the given set of names``() =
-    let result = doc |> HtmlNode.descendantsNamed false false ["link"]
+    let result = doc |> HtmlNode.descendantsNamed false ["link"]
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
     result |> should equal [expected]
 
 [<Test>]
 let ``Can get descendants with path of a node that matches a predicate``() =
-    let result = doc |> HtmlNode.descendantsWithPath false false (HtmlNode.name >> (=) "link")
+    let result = doc |> HtmlNode.descendantsWithPath false (HtmlNode.name >> (=) "link")
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
     result |> List.map fst |> should equal [expected]
     result |> List.map (snd >> List.map HtmlNode.name) |> should equal [["head"; "html"]]
 
 [<Test>]
 let ``Can get all of the descendants with path that match the given set of names``() =
-    let result = doc |> HtmlNode.descendantsNamedWithPath false false ["link"]
+    let result = doc |> HtmlNode.descendantsNamedWithPath false ["link"]
     let expected = HtmlNode.NewElement("link", ["rel", "stylesheet"; "type", "text/css"; "href", "/bwx_style.css"])
     result |> List.map fst |> should equal [expected]
     result |> List.map (snd >> List.map HtmlNode.name) |> should equal [["head"; "html"]]

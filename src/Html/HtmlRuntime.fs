@@ -92,7 +92,7 @@ module HtmlRuntime =
             | p::rest ->
                 let nearest = 
                     p
-                    |> HtmlNode.descendants false true (fun _ -> true)
+                    |> HtmlNode.descendants true (fun _ -> true)
                     |> Seq.takeWhile ((<>) x) 
                     |> Seq.filter f
                     |> Seq.toList
@@ -114,7 +114,7 @@ module HtmlRuntime =
         match deriveFromSibling element parents with
         | Some e -> cleanup(e.InnerText())
         | _ ->
-                match element.Descendants ["caption"] with
+                match element.Descendants("caption", false) with
                 | [] ->
                      match tryGetName ["id"; "name"; "title"; "summary"] with
                      | Some name -> cleanup name
@@ -123,7 +123,7 @@ module HtmlRuntime =
                 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
-        let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
+        let rows = table.Descendants("tr", false) |> List.mapi (fun i r -> i,r)
         
         if rows.Length <= 1 then None else
 
@@ -201,8 +201,8 @@ module HtmlRuntime =
             
 
         let rows = 
-            list.Descendants(["li"], false, false) 
-            |> List.collect (fun node -> walkListItems [] (node.Descendants((fun _ -> true), true)))
+            list.Descendants("li", false) 
+            |> List.collect (fun node -> walkListItems [] (node.DescendantsAndSelf()))
             |> List.toArray
     
         if rows.Length <= 1 then None else
@@ -229,7 +229,8 @@ module HtmlRuntime =
             | h :: t -> loop [] ("Undefined", h, []) t        
         
         let data =
-            definitionList.Descendants ["dt"; "dd"]
+            definitionList
+            |> HtmlNode.descendantsNamed false ["dt"; "dd"]
             |> createDefinitionGroups
             |> List.map (fun (group, node, values) -> { Name = group
                                                         Values = values |> List.rev |> List.toArray
@@ -244,7 +245,7 @@ module HtmlRuntime =
           Html = definitionList } |> Some
 
     let getTables inferenceParameters includeLayoutTables (doc:HtmlDocument) =
-        let tableElements = doc.DescendantsWithPath("table")
+        let tableElements = doc.DescendantsWithPath "table"
         let tableElements = 
             if includeLayoutTables
             then tableElements
