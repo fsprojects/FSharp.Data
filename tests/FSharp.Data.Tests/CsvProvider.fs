@@ -321,3 +321,27 @@ let ``Extra whitespace is not removed``() =
     rows.[1].Column1 |> should equal " 1"
     rows.[0].Column2 |> should equal "2.3  "
     rows.[1].Column2 |> should equal "\tb"
+
+let [<Literal>] percentageCsv = """
+  Column1,Column2,Column3
+  TRUE,no,3
+  "yes", "false", 1.92%"""
+  
+type PercentageCsv = CsvProvider<percentageCsv>
+
+[<Test>]
+let ``Can handle percentages in the values``() = 
+    let data = PercentageCsv.GetSample().Rows |> Seq.nth 1
+    data.Column3 |> should equal 1.92M
+
+let [<Literal>] currency = """
+  Column1,Column2,Column3
+  £1, $2, £3
+  £4, $5, £6"""
+
+type Currency = CsvProvider<currency>
+
+[<Test>]
+let ``Can handle currency in the values``() = 
+   let data = Currency.GetSample().Rows |> Seq.head
+   data.Column3 |> should equal 3M

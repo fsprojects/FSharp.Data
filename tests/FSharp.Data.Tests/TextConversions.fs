@@ -29,4 +29,4 @@ let ``Boolean conversions``() =
 let ``Decimal conversions``() = 
   TextConversions.AsDecimal CultureInfo.InvariantCulture "¤50" |> should equal (Some 50M)
   TextConversions.AsDecimal (CultureInfo "en-GB") "£50" |> should equal (Some 50M)
-  TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal None
+  TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal (Some 50M)

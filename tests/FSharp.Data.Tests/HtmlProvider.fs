@@ -135,3 +135,45 @@ let ``Should parse units from inferred table headers``() =
     distance |> should equal 1.5<metre>
     let time = table.Rows.[0].Time
     time |> should equal 30.5<second>
+
+[<Test>]
+let ``Can handle a table with a single column``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <tr><td>Value</td></tr>
+                            <tr><td>2</td></tr>
+                            <tr><td>2</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0]
+    percentage |> should equal 2
+
+[<Test>]
+let ``Should infer a column with a currency prefix as the correct type``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <tr><td>Date</td><td>Cost</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>£ 2</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>£ 2</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Cost
+    percentage |> should equal 2
+
+[<Test>]
+let ``Should infer a column with a percentage suffix as the correct type``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <tr><td>Date</td><td>Percentage</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>2%</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>2%</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Percentage
+    percentage |> should equal 2

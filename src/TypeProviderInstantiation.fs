@@ -205,6 +205,7 @@ type TypeProviderInstantiation =
 
     static member Parse (line:string) =
         let args = line.Split [|','|]
+        args.[0],
         match args.[0] with
         | "Csv" ->
             Csv { Sample = args.[1]

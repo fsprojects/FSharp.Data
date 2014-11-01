@@ -26,6 +26,25 @@ let ``Simple List infers int type correctly ``() =
     list.Values |> should equal [1;2;3]
 
 [<Test>]
+let ``Can handle nested lists``() = 
+    let list = HtmlProvider<"""<html>
+                    <body>
+                        <ul>
+                            <li>
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                </ul>
+                                Foo Bar
+                            </li>
+                            <li>2</li>
+                            <li>3</li>
+                        </ul>
+                    </body>
+                </html>""", PreferOptionals=true>.GetSample().Lists.List1
+    list.Values |> should equal ["1";"Foo Bar";"2";"2";"3"]
+
+[<Test>]
 let ``Simple List handles missing values``() = 
     let list = HtmlProvider<"""<html>
                     <body>

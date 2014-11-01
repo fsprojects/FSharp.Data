@@ -29,6 +29,7 @@ type HtmlNode =
     private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
             | HtmlText of content:string
             | HtmlComment of content:string
+            | HtmlCData of content:string
     
     /// <summary>
     /// Creates an html element
@@ -116,6 +117,10 @@ type HtmlNode =
                     append "<!--"
                     append str
                     append "-->"
+            | HtmlCData str -> 
+                    append "<![CDATA["
+                    append str
+                    append "]]>"
         
         let sb = StringBuilder()
         serialize sb 0 false x |> ignore
@@ -190,6 +195,7 @@ module internal HtmlParser =
         | TagEnd of string
         | Text of string
         | Comment of string
+        | CData of string
         | EOF
         override x.ToString() =
             match x with
@@ -199,6 +205,7 @@ module internal HtmlParser =
             | Text _ -> "text"
             | Comment _ -> "comment"
             | EOF -> "eof"
+            | CData _ -> "cdata"
         member x.IsEndTag name =
             match x with
             | TagEnd(endName) when name = endName -> true
@@ -227,6 +234,7 @@ module internal HtmlParser =
         | CharRefMode
         | CommentMode
         | DocTypeMode
+        | CDATAMode
         override x.ToString() =
             match x with
             | DefaultMode -> "default"
@@ -234,7 +242,8 @@ module internal HtmlParser =
             | CharRefMode -> "charref"
             | CommentMode -> "comment"
             | DocTypeMode -> "doctype"
-    
+            | CDATAMode -> "cdata"
+
     type HtmlState = 
         { Attributes : (CharList * CharList) list ref
           CurrentTag : CharList ref
@@ -337,6 +346,7 @@ module internal HtmlParser =
                 | CharRefMode -> content.Trim() |> HtmlCharRefs.substitute |> Text
                 | CommentMode -> Comment content
                 | DocTypeMode -> DocType content
+                | CDATAMode -> CData (content.Replace("<![CDATA[", "").Replace("]]>", ""))
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
             result
@@ -374,6 +384,7 @@ module internal HtmlParser =
                 | CharRefMode -> charRef state
                 | DocTypeMode -> docType state
                 | CommentMode -> comment state
+                | CDATAMode -> data state
         and script state = ifEofThenDataElse state <| fun c ->
             match c with
             | '<' -> state.Pop(); scriptLessThanSign state
@@ -381,7 +392,7 @@ module internal HtmlParser =
         and scriptLessThanSign state =
             match state.Peek() with
             | '/' -> state.Pop(); scriptEndTagOpen state
-            | '!' -> state.Pop(); scriptDataEscapeStart state
+            | '!' -> state.Cons('<'); state.Cons(); scriptDataEscapeStart state
             | _ -> state.Cons('<'); state.Cons(); script state
         and scriptDataEscapeStart state = 
             match state.Peek() with
@@ -489,22 +500,21 @@ module internal HtmlParser =
             | current -> 
                 match new String(Array.append current (state.Pop(5))) with
                 | "DOCTYPE" -> docType state
-                | "[CDATA[" -> cData [||] state
+                | "[CDATA[" -> state.Cons("<![CDATA[".ToCharArray()); cData state
                 | _ -> bogusComment state
-        and cData prev state = 
-            if (string prev) = "]]>"
+        and cData (state:HtmlState) = 
+            if ((!state.Content).ToString().EndsWith("]]>"))
             then 
-               state.InsertionMode := CommentMode
+               state.InsertionMode := CDATAMode
                state.Emit()
             else 
-               match prev, state.Peek() with
-               | [||], ']' -> state.Pop();  cData [|']'|] state 
-               | [|']'|], ']' -> state.Pop(); cData [|']'|] state
-               | [|']';']'|], '>' -> state.Pop();  cData [|']';']';'>'|] state
-               | _, TextParser.EndOfFile _ -> 
-                    state.InsertionMode := CommentMode
+               match state.Peek() with
+               | ']' -> state.Cons();  cData state 
+               | '>' -> state.Cons();  cData state
+               | TextParser.EndOfFile _ -> 
+                    state.InsertionMode := CDATAMode
                     state.Emit()
-               | _, _ -> state.Cons(); cData [||] state
+               | _ -> state.Cons(); cData state
         and docType state =
             match state.Peek() with
             | '>' -> 
@@ -558,13 +568,13 @@ module internal HtmlParser =
             match c with
             | '=' -> state.Pop(); beforeAttributeValue state
             | TextParser.LetterDigit _ -> state.ConsAttrName(); attributeName state
-            | TextParser.Whitespace _ -> state.ConsAttrName(); afterAttributeName state
+            | TextParser.Whitespace _ -> afterAttributeName state
             | _ -> state.ConsAttrName(); attributeName state
         and afterAttributeName state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
             | TextParser.Whitespace _ -> state.Pop(); afterAttributeName state
             | '=' -> state.Pop(); beforeAttributeValue state
-            | _ -> attributeName state
+            | _ -> state.NewAttribute(); attributeName state
         and beforeAttributeValue state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeValue state
@@ -642,8 +652,8 @@ module internal HtmlParser =
                 let dt, tokens, content = parse' docType [] name rest
                 let e = HtmlElement(name, attributes, content)
                 parse' dt (e :: elements) expectedTagEnd tokens
-            | TagEnd name :: rest when name <> expectedTagEnd -> 
-                // ignore this token
+            | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
+                // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd rest
             | TagEnd _ :: rest -> 
                 docType, rest, List.rev elements
@@ -656,6 +666,9 @@ module internal HtmlParser =
                     parse' docType (t :: elements) expectedTagEnd rest
             | Comment cont :: rest -> 
                 let c = HtmlComment cont
+                parse' docType (c :: elements) expectedTagEnd rest
+            | CData cont :: rest -> 
+                let c = HtmlCData cont
                 parse' docType (c :: elements) expectedTagEnd rest
             | EOF :: _ -> docType, [], List.rev elements
             | [] -> docType, [], List.rev elements

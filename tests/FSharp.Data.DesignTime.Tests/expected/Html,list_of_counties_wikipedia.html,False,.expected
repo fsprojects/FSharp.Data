@@ -41,137 +41,11 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Commentary")
 
-    member Contents: HtmlProvider+Contents with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Contents")
-
-    member Interaction: HtmlProvider+Interaction with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Interaction")
-
     member Languages: HtmlProvider+Languages with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Languages")
-
-    member Languages2: HtmlProvider+Languages2 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Languages2")
-
-    member Languages3: HtmlProvider+Languages3 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Languages3")
-
-    member Languages4: HtmlProvider+Languages4 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Languages4")
-
-    member List10: HtmlProvider+List10 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List10")
-
-    member List11: HtmlProvider+List11 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List11")
-
-    member List12: HtmlProvider+List12 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List12")
-
-    member List5: HtmlProvider+List5 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List5")
-
-    member List6: HtmlProvider+List6 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List6")
-
-    member List7: HtmlProvider+List7 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List7")
-
-    member List8: HtmlProvider+List8 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List8")
-
-    member List9: HtmlProvider+List9 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List9")
-
-    member Namespaces: HtmlProvider+Namespaces with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Namespaces")
-
-    member Navigation: HtmlProvider+Navigation with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Navigation")
-
-    member ``Personal tools``: HtmlProvider+PersonalTools with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Personal tools")
-
-    member Print/export: HtmlProvider+PrintExport with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Print/export")
-
-    member ``References and Notes``: HtmlProvider+ReferencesAndNotes with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "References and Notes")
-
-    member ``See also``: HtmlProvider+SeeAlso with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "See also")
-
-    member Tools: HtmlProvider+Tools with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Tools")
-
-    member Views: HtmlProvider+Views with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Views")
 
 
 [<[TypeProviderEditorHideMethods()]>]
@@ -245,46 +119,7 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 class HtmlProvider+Commentary : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Contents : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Interaction : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Languages : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages2 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages3 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages4 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List10 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List11 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List12 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List5 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List6 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List7 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List8 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List9 : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row>
@@ -296,31 +131,7 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland : FDR.HtmlTable
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Namespaces : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Navigation : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+PersonalTools : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+PrintExport : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ReferencesAndNotes : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SeeAlso : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Tools : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Views : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row : int * string * decimal * decimal * decimal * string * string * string

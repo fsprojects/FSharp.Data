@@ -1,6 +1,7 @@
 ﻿namespace FSharp.Data
 
 open System
+open System.Globalization
 
 module internal HtmlCharRefs = 
 
@@ -2239,20 +2240,29 @@ module internal HtmlCharRefs =
           "&zwnj;", "\u200C";
         |] |> Map.ofArray
 
-    let (|Hex|Num|Std|) (ref:string) =
-        if ref.Length > 2
+    let (|Number|Lookup|) (orig:string) =
+        let s = orig.TrimEnd([|';'|])
+        if s.Length > 2
         then
-            let (delimeters, discriminator) = ref.ToLowerInvariant() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
+            let (delimeters, discriminator) = s.ToLowerInvariant() |> (fun ref ->  (ref.[0..1], ref.[ref.Length - 1]), ref.[2])
             match delimeters with
-            | ("&#", ';') when discriminator <> 'x' -> Num(ref.Substring(2, ref.Length - 3))
-            | ("&#", _) when discriminator <> 'x' -> Num(ref.Substring(2, ref.Length - 2))
-            | ("&x", ';') when Char.IsDigit(discriminator) -> Hex(ref.Substring(2, ref.Length - 3))
-            | ("&x", _) when Char.IsDigit(discriminator) -> Hex(ref.Substring(2, ref.Length - 2))
-            | _ -> Std(ref) 
-        else Std(ref)
+            | ("&#", _) -> 
+                let num = 
+                    if discriminator <> 'x'
+                    then s.Substring(2, s.Length - 2)
+                    else s.Substring(3, s.Length - 3)
+                match Int32.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture) with
+                | true, i -> Number(i)
+                | false, _ -> Lookup(orig)
+            | ("&x", _) ->  
+                let num = s.Substring(2, s.Length - 2)
+                match Int32.TryParse(num, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture) with
+                | true, i -> Number(i)
+                | false, _ -> Lookup(orig)
+            | _ -> Lookup(orig) 
+        else Lookup(orig)
 
     let substitute (ref:string) = 
         match ref with
-        | Hex(num) -> Convert.ToChar(Int32.Parse(num, Globalization.NumberStyles.AllowHexSpecifier)).ToString()
-        | Num(num) -> Convert.ToChar(Int32.Parse(num)).ToString()
-        | Std(ref) -> defaultArg (refs.TryFind ref) ref
+        | Number(num) -> Convert.ToChar(num).ToString()
+        | Lookup(ref) -> defaultArg (refs.TryFind ref) ref

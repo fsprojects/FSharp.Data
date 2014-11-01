@@ -40,12 +40,15 @@ module internal HtmlGenerator =
         let fields = columns |> List.mapi (fun index field ->
             let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
             { TypeForTuple = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> if columns.Length = 1 then row else Expr.TupleGet(row, index))
               Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )
         
         // The erased row type will be a tuple of all the field types (without the units of measure)
-        let rowErasedType = 
-            FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
+        let rowErasedType =
+            if fields.Length = 1
+            then fields.Head.TypeForTuple
+            else
+                FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
             |> replacer.ToRuntime
         
         let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
@@ -60,8 +63,10 @@ module internal HtmlGenerator =
         let rowConverter =
             let rowVar = Var("row", typeof<string[]>)
             let rowVarExpr = Expr.Var rowVar
-            let body = 
-              Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
+            let body =
+              if fields.Length = 1
+              then fields.Head.Convert rowVarExpr
+              else Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
               |> replacer.ToRuntime
         
             let delegateType = 

@@ -47,41 +47,11 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "CSS to the rescue: a better looking table")
 
-    member Contents: HtmlProvider+Contents with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Contents")
-
     member ``Exercise questions``: HtmlProvider+ExerciseQuestions with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Exercise questions")
-
-    member ``Further reading``: HtmlProvider+FurtherReading with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Further reading")
-
-    member List9: HtmlProvider+List9 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "List9")
-
-    member Namespaces: HtmlProvider+Namespaces with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Namespaces")
-
-    member Navigation: HtmlProvider+Navigation with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Navigation")
 
     member ``Structuring the table further``: HtmlProvider+StructuringTheTableFurther with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -106,24 +76,6 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Tools")
-
-    member Tools2: HtmlProvider+Tools2 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Tools2")
-
-    member Tools3: HtmlProvider+Tools3 with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Tools3")
-
-    member Views: HtmlProvider+Views with get
-    let rowConverter = new Func<_,_>(fun (row:string) -> 
-                                        let value = TextConversions.AsString(row)
-                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
-    HtmlList<_>.Create(rowConverter, this, "Views")
 
 
 [<[TypeProviderEditorHideMethods()]>]
@@ -172,25 +124,10 @@ class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlList<string>
 class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Contents : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+CssToTheRescueABetterLookingTable : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ExerciseQuestions : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+FurtherReading : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List9 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Namespaces : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Navigation : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther : FDR.HtmlList<string>
@@ -209,15 +146,6 @@ class HtmlProvider+TheMostBasicTable : FDR.HtmlTable<HtmlProvider+TheMostBasicTa
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Tools : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Tools2 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Tools3 : FDR.HtmlList<string>
-
-[<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Views : FDR.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
