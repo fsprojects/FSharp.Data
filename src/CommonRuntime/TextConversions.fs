@@ -38,13 +38,13 @@ module private Helpers =
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
 type TextConversions = 
 
-  /// "NaN" "NA" "#N/A" ":" "-" "TBA" "TBD"
+  /// `NaN` `NA` `#N/A` `:` `-` `TBA` `TBD`
   static member DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
   
-  /// '%' '‰' '‱'
+  /// `%` `‰` `‱`
   static member DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
   
-  /// '¤' '$' '¢' '£' '¥' '₱' '﷼' '₤' '₭' '₦' '₨' '₩' '₮' '€' '฿' '₡' '៛' '؋' '₴' '₪' '₫' '₹' 'ƒ'
+  /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
   static member DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
 
   static member private DefaultRemovableAdornerCharacters = 
@@ -85,8 +85,8 @@ type TextConversions =
     | _ -> None
 
   /// Parse date time using either the JSON milliseconds format or using ISO 8601
-  /// that is, either "\/Date(<msec-since-1/1/1970>)\/" or something
-  /// along the lines of "2013-01-28T00:37Z"
+  /// that is, either `\/Date(<msec-since-1/1/1970>)\/` or something
+  /// along the lines of `2013-01-28T00:37Z`
   static member AsDateTime cultureInfo (text:string) =
     // Try parse "Date(<msec>)" style format
     let matchesMS = msDateRegex.Value.Match (text.Trim())
