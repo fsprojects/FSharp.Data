@@ -293,7 +293,7 @@ module HttpEncodings =
 #endif
 
 [<AutoOpen>]
-module private Helpers =
+module private HttpHelpers =
 
     /// consumes a stream asynchronously until the end
     /// and returns a memory stream with the full content

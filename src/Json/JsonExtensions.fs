@@ -106,9 +106,8 @@ type JsonExtensions =
 
   /// Get the boolean value of an element (assuming that the value is a boolean)
   [<Extension>]
-  static member AsBoolean(x, [<Optional>] ?cultureInfo) =
-    let cultureInfo = defaultArg cultureInfo  CultureInfo.InvariantCulture
-    match JsonConversions.AsBoolean cultureInfo x with
+  static member AsBoolean(x) =
+    match JsonConversions.AsBoolean x with
     | Some b -> b
     | _ -> failwithf "Not a boolean: %s" <| x.ToString(JsonSaveOptions.DisableFormatting)
 
