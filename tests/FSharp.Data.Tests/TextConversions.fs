@@ -9,11 +9,11 @@
 open NUnit.Framework
 open FsUnit
 open System.Globalization
-open FSharp.Data.Runtime
+open FSharp.Data
 
 [<Test>]
 let ``Boolean conversions``() = 
-  let asBoolean = TextConversions.AsBoolean CultureInfo.InvariantCulture
+  let asBoolean = TextConversions.AsBoolean
 
   asBoolean "yEs"  |> should equal (Some true)
   asBoolean "trUe" |> should equal (Some true)
