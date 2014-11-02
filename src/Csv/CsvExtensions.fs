@@ -43,9 +43,8 @@ type StringExtensions =
     | _ -> failwithf "Not a float: %s" x
   
   [<Extension>]
-  static member AsBoolean(x:String, [<Optional>] ?cultureInfo) =
-    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
-    match TextConversions.AsBoolean cultureInfo x with
+  static member AsBoolean(x:String) =
+    match TextConversions.AsBoolean x with
     | Some b -> b
     | _ -> failwithf "Not a boolean: %s" x
 

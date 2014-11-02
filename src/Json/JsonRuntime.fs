@@ -112,8 +112,8 @@ type JsonRuntime =
                                                  (*useNoneForMissingValues*)true
                                                  (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertBoolean(cultureStr, json) = 
-    json |> Option.bind (JsonConversions.AsBoolean (TextRuntime.GetCulture cultureStr))
+  static member ConvertBoolean(json) = 
+    json |> Option.bind JsonConversions.AsBoolean
 
   static member ConvertDateTime(cultureStr, json) = 
     json |> Option.bind (JsonConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
@@ -189,8 +189,7 @@ type JsonRuntime =
         fun json -> (JsonConversions.AsDecimal cultureInfo json).IsSome ||
                     (JsonConversions.AsFloat [| |] (*useNoneForMissingValues*)true cultureInfo json).IsSome
     | InferedTypeTag.Boolean -> 
-        JsonConversions.AsBoolean (TextRuntime.GetCulture cultureStr)
-        >> Option.isSome
+        JsonConversions.AsBoolean >> Option.isSome
     | InferedTypeTag.String -> 
         JsonConversions.AsString (*useNoneForNullOrEmpty*)true (TextRuntime.GetCulture cultureStr)
         >> Option.isSome

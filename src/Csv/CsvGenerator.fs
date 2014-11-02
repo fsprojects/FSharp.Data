@@ -6,6 +6,7 @@ namespace ProviderImplementation
 open System
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
+open FSharp.Data
 open FSharp.Data.Runtime
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes

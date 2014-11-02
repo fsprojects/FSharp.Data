@@ -43,11 +43,11 @@ type JsonConversions =
     | JsonValue.String s -> TextConversions.AsFloat missingValues useNoneForMissingValues cultureInfo s
     | _ -> None
 
-  static member AsBoolean cultureInfo = function
+  static member AsBoolean = function
     | JsonValue.Boolean b -> Some b
     | JsonValue.Number 1M -> Some true
     | JsonValue.Number 0M -> Some false
-    | JsonValue.String s -> TextConversions.AsBoolean cultureInfo s
+    | JsonValue.String s -> TextConversions.AsBoolean s
     | _ -> None
 
   static member AsDateTime cultureInfo = function
