@@ -4,7 +4,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -18,7 +18,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -36,7 +36,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
                                                                        TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                                                       TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                                                       TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                                                        TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -50,7 +50,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                                                      [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                                                        TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                        TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                                         TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                                         TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -69,7 +69,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
                                                                        TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                                                       TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                                                       TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                                                        TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -83,7 +83,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                                                      [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                                                        TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                                                        TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                                         TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                                         TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -101,7 +101,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -115,7 +115,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -132,7 +132,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -146,7 +146,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -163,7 +163,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -177,7 +177,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -194,7 +194,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -208,7 +208,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
@@ -225,7 +225,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
                                               TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
-                                              TextRuntime.ConvertBoolean("", TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
                                               TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
@@ -239,7 +239,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
                                             [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
-                                               TextRuntime.ConvertBooleanBack("", (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), true)
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
                                                TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
                                                TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))

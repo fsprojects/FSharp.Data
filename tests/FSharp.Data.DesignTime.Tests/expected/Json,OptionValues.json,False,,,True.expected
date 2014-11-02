@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : authors:JsonProvider+Author[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("authors",
                                  (authors :> obj)) |], "")
@@ -39,7 +39,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Author : FDR.IJsonDocument
+class JsonProvider+Author : FDR.BaseTypes.IJsonDocument
     new : name:string -> age:int option -> JsonProvider+Author
     JsonRuntime.CreateRecord([| ("name",
                                  (name :> obj))

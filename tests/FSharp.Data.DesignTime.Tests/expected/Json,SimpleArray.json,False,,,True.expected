@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : items:JsonProvider+Item[] -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("items",
                                  (items :> obj)) |], "")
@@ -39,7 +39,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Item : FDR.IJsonDocument
+class JsonProvider+Item : FDR.BaseTypes.IJsonDocument
     new : id:string -> JsonProvider+Item
     JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj)) |], "")

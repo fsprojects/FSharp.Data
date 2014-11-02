@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Xs : FDR.XmlElement
+class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     new : xs:XmlProvider+X[] -> XmlProvider+Xs
     XmlRuntime.CreateRecord("XS", 
                             [| |], 
@@ -41,7 +41,7 @@ class XmlProvider+Xs : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+X : FDR.XmlElement
+class XmlProvider+X : FDR.BaseTypes.XmlElement
     new : intLike:int -> boolLike:bool -> value:XmlProvider+X2 -> XmlProvider+X
     XmlRuntime.CreateRecord("X", 
                             [| ("intLike",
@@ -56,7 +56,7 @@ class XmlProvider+X : FDR.XmlElement
 
     member BoolLike: bool with get
     let value = XmlRuntime.TryGetAttribute(this, "boolLike")
-    TextRuntime.GetNonOptionalValue("Attribute boolLike", TextRuntime.ConvertBoolean("", value), value)
+    TextRuntime.GetNonOptionalValue("Attribute boolLike", TextRuntime.ConvertBoolean(value), value)
 
     member IntLike: int with get
     let value = XmlRuntime.TryGetAttribute(this, "intLike")
@@ -68,7 +68,7 @@ class XmlProvider+X : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+X2 : FDR.IJsonDocument
+class XmlProvider+X2 : FDR.BaseTypes.IJsonDocument
     new : a:int -> XmlProvider+X2
     JsonRuntime.CreateRecord([| ("a",
                                  (a :> obj)) |], "")

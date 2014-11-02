@@ -1,40 +1,40 @@
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider : FDR.TypedHtmlDocument
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``External links``: HtmlProvider+ExternalLinks with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -49,7 +49,7 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``List of presidents``: HtmlProvider+ListOfPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -116,28 +116,28 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ExternalLinks : FDR.HtmlList<string>
+class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages : FDR.HtmlList<string>
+class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfPresidents : FDR.HtmlTable<HtmlProvider+ListOfPresidents+Row>
+class HtmlProvider+ListOfPresidents : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfPresidents+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+LivingFormerPresidents : FDR.HtmlTable<HtmlProvider+LivingFormerPresidents+Row>
+class HtmlProvider+LivingFormerPresidents : FDR.BaseTypes.HtmlTable<HtmlProvider+LivingFormerPresidents+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table10 : FDR.HtmlTable<HtmlProvider+Table10+Row>
+class HtmlProvider+Table10 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table10+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table12 : FDR.HtmlTable<HtmlProvider+Table12+Row>
+class HtmlProvider+Table12 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table12+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table6 : FDR.HtmlTable<HtmlProvider+Table6+Row>
+class HtmlProvider+Table6 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table6+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table8 : FDR.HtmlTable<HtmlProvider+Table8+Row>
+class HtmlProvider+Table8 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table8+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfPresidents+Row : int * string * string * string * string * string * string * string * string * string

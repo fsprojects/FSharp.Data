@@ -1,40 +1,40 @@
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider : FDR.TypedHtmlDocument
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``Colours and uniforms``: HtmlProvider+ColoursAndUniforms with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -103,7 +103,7 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Current champions``: HtmlProvider+CurrentChampions with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -276,94 +276,94 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ColoursAndUniforms : FDR.HtmlList<string>
+class HtmlProvider+ColoursAndUniforms : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+CurrentChampions : FDR.HtmlTable<HtmlProvider+CurrentChampions+Row>
+class HtmlProvider+CurrentChampions : FDR.BaseTypes.HtmlTable<HtmlProvider+CurrentChampions+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ExternalLinks : FDR.HtmlList<string>
+class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+InvitationEvents : FDR.HtmlList<string>
+class HtmlProvider+InvitationEvents : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+JuniorEvents : FDR.HtmlList<string>
+class HtmlProvider+JuniorEvents : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages : FDR.HtmlList<string>
+class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List34 : FDR.HtmlList<string>
+class HtmlProvider+List34 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List35 : FDR.HtmlList<string>
+class HtmlProvider+List35 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List36 : FDR.HtmlList<string>
+class HtmlProvider+List36 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List37 : FDR.HtmlList<string>
+class HtmlProvider+List37 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+MainEvents : FDR.HtmlList<string>
+class HtmlProvider+MainEvents : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RankingPoints : FDR.HtmlTable<HtmlProvider+RankingPoints+Row>
+class HtmlProvider+RankingPoints : FDR.BaseTypes.HtmlTable<HtmlProvider+RankingPoints+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Records : FDR.HtmlTable<HtmlProvider+Records+Row>
+class HtmlProvider+Records : FDR.BaseTypes.HtmlTable<HtmlProvider+Records+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SeeAlso : FDR.HtmlTable<HtmlProvider+SeeAlso+Row>
+class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlTable<HtmlProvider+SeeAlso+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SinglesChampionsNeverWorldNo1 : FDR.HtmlList<string>
+class HtmlProvider+SinglesChampionsNeverWorldNo1 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table1 : FDR.HtmlTable<HtmlProvider+Table1+Row>
+class HtmlProvider+Table1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table1+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table10 : FDR.HtmlTable<HtmlProvider+Table10+Row>
+class HtmlProvider+Table10 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table10+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table22 : FDR.HtmlTable<HtmlProvider+Table22+Row>
+class HtmlProvider+Table22 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table22+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table30 : FDR.HtmlTable<HtmlProvider+Table30+Row>
+class HtmlProvider+Table30 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table30+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table31 : FDR.HtmlTable<HtmlProvider+Table31+Row>
+class HtmlProvider+Table31 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table31+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table32 : FDR.HtmlTable<HtmlProvider+Table32+Row>
+class HtmlProvider+Table32 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table32+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table34 : FDR.HtmlTable<HtmlProvider+Table34+Row>
+class HtmlProvider+Table34 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table34+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table36 : FDR.HtmlTable<HtmlProvider+Table36+Row>
+class HtmlProvider+Table36 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table36+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table38 : FDR.HtmlTable<HtmlProvider+Table38+Row>
+class HtmlProvider+Table38 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table38+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table39 : FDR.HtmlTable<HtmlProvider+Table39+Row>
+class HtmlProvider+Table39 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table39+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table40 : FDR.HtmlTable<HtmlProvider+Table40+Row>
+class HtmlProvider+Table40 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table40+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table41 : FDR.HtmlTable<HtmlProvider+Table41+Row>
+class HtmlProvider+Table41 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table41+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table42 : FDR.HtmlTable<HtmlProvider+Table42+Row>
+class HtmlProvider+Table42 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table42+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table44 : FDR.HtmlTable<HtmlProvider+Table44+Row>
+class HtmlProvider+Table44 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table44+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TrophiesAndPrizeMoney : FDR.HtmlTable<HtmlProvider+TrophiesAndPrizeMoney+Row>
+class HtmlProvider+TrophiesAndPrizeMoney : FDR.BaseTypes.HtmlTable<HtmlProvider+TrophiesAndPrizeMoney+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+CurrentChampions+Row : string * string * string * string

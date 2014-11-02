@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Authors : FDR.XmlElement
+class XmlProvider+Authors : FDR.BaseTypes.XmlElement
     new : authors:XmlProvider+Author[] -> XmlProvider+Authors
     XmlRuntime.CreateRecord("authors", 
                             [| |], 
@@ -41,7 +41,7 @@ class XmlProvider+Authors : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Author : FDR.XmlElement
+class XmlProvider+Author : FDR.BaseTypes.XmlElement
     new : name:string -> surname:string -> birth:int option -> books:XmlProvider+Book[] -> manuscript:XmlProvider+Manuscript option -> XmlProvider+Author
     XmlRuntime.CreateRecord("author", 
                             [| ("name",
@@ -78,7 +78,7 @@ class XmlProvider+Author : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Book : FDR.XmlElement
+class XmlProvider+Book : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Book
     XmlRuntime.CreateRecord("book", 
                             [| ("title",
@@ -95,7 +95,7 @@ class XmlProvider+Book : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Manuscript : FDR.XmlElement
+class XmlProvider+Manuscript : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Manuscript
     XmlRuntime.CreateRecord("manuscript", 
                             [| ("title",

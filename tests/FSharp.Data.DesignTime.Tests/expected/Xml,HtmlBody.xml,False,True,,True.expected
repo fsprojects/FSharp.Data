@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Div : FDR.XmlElement
+class XmlProvider+Div : FDR.BaseTypes.XmlElement
     new : id:string option -> value:string option -> spans:string[] -> divs:XmlProvider+Div[] -> XmlProvider+Div
     XmlRuntime.CreateRecord("div", 
                             [| ("id",

@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("kind",
                                  (kind :> obj))
@@ -45,7 +45,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Data : FDR.IJsonDocument
+class JsonProvider+Data : FDR.BaseTypes.IJsonDocument
     new : modhash:JsonValue -> children:JsonProvider+Child[] -> after:string -> before:JsonValue -> JsonProvider+Data
     JsonRuntime.CreateRecord([| ("modhash",
                                  (modhash :> obj))
@@ -63,19 +63,19 @@ class JsonProvider+Data : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "after")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Before: FDR.IJsonDocument with get
+    member Before: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "before")
 
     member Children: JsonProvider+Child[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "children"), new Func<_,_>(id)))
 
-    member Modhash: FDR.IJsonDocument with get
+    member Modhash: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "modhash")
 
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Child : FDR.IJsonDocument
+class JsonProvider+Child : FDR.BaseTypes.IJsonDocument
     new : kind:string -> data:JsonProvider+Data2 -> JsonProvider+Child
     JsonRuntime.CreateRecord([| ("kind",
                                  (kind :> obj))
@@ -95,7 +95,7 @@ class JsonProvider+Child : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Data2 : FDR.IJsonDocument
+class JsonProvider+Data2 : FDR.BaseTypes.IJsonDocument
     new : subredditId:string -> linkTitle:string -> bannedBy:JsonValue -> subreddit:string -> linkAuthor:string -> likes:JsonValue -> replies:JsonValue -> saved:bool -> id:string -> gilded:int -> author:string -> parentId:string -> approvedBy:JsonValue -> body:string -> edited:bool -> authorFlairCssClass:JsonValue -> downs:int -> bodyHtml:string -> linkId:string -> scoreHidden:bool -> name:string -> created:int -> authorFlairText:JsonValue -> linkUrl:string -> createdUtc:int -> ups:int -> numReports:JsonValue -> distinguished:JsonValue -> JsonProvider+Data2
     JsonRuntime.CreateRecord([| ("subreddit_id",
                                  (subredditId :> obj))
@@ -157,20 +157,20 @@ class JsonProvider+Data2 : FDR.IJsonDocument
     new : jsonValue:JsonValue -> JsonProvider+Data2
     JsonDocument.Create(jsonValue, "")
 
-    member ApprovedBy: FDR.IJsonDocument with get
+    member ApprovedBy: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "approved_by")
 
     member Author: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "author")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member AuthorFlairCssClass: FDR.IJsonDocument with get
+    member AuthorFlairCssClass: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "author_flair_css_class")
 
-    member AuthorFlairText: FDR.IJsonDocument with get
+    member AuthorFlairText: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "author_flair_text")
 
-    member BannedBy: FDR.IJsonDocument with get
+    member BannedBy: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "banned_by")
 
     member Body: string with get
@@ -189,7 +189,7 @@ class JsonProvider+Data2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "created_utc")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
-    member Distinguished: FDR.IJsonDocument with get
+    member Distinguished: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "distinguished")
 
     member Downs: int with get
@@ -198,7 +198,7 @@ class JsonProvider+Data2 : FDR.IJsonDocument
 
     member Edited: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "edited")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Gilded: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "gilded")
@@ -208,7 +208,7 @@ class JsonProvider+Data2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Likes: FDR.IJsonDocument with get
+    member Likes: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "likes")
 
     member LinkAuthor: string with get
@@ -231,23 +231,23 @@ class JsonProvider+Data2 : FDR.IJsonDocument
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "name")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member NumReports: FDR.IJsonDocument with get
+    member NumReports: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "num_reports")
 
     member ParentId: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "parent_id")
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
-    member Replies: FDR.IJsonDocument with get
+    member Replies: FDR.BaseTypes.IJsonDocument with get
     JsonRuntime.GetPropertyPackedOrNull(this, "replies")
 
     member Saved: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "saved")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member ScoreHidden: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "score_hidden")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Subreddit: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "subreddit")

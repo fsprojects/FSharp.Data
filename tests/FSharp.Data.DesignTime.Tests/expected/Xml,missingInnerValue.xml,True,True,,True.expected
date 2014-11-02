@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Child : FDR.XmlElement
+class XmlProvider+Child : FDR.BaseTypes.XmlElement
     new : a:int option -> b:string option -> inner:XmlProvider+Inner option -> XmlProvider+Child
     XmlRuntime.CreateRecord("child", 
                             [| ("a",
@@ -50,7 +50,7 @@ class XmlProvider+Child : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Inner : FDR.XmlElement
+class XmlProvider+Inner : FDR.BaseTypes.XmlElement
     new : c:string -> XmlProvider+Inner
     XmlRuntime.CreateRecord("inner", 
                             [| ("c",

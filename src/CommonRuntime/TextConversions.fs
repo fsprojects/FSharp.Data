@@ -85,7 +85,7 @@ type TextConversions =
     | _ -> None
 
   /// Parse date time using either the JSON milliseconds format or using ISO 8601
-  /// that is, either `\/Date(<msec-since-1/1/1970>)\/` or something
+  /// that is, either `/Date(<msec-since-1/1/1970>)/` or something
   /// along the lines of `2013-01-28T00:37Z`
   static member AsDateTime cultureInfo (text:string) =
     // Try parse "Date(<msec>)" style format
