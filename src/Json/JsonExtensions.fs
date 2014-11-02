@@ -12,7 +12,7 @@ open FSharp.Data.Runtime
 open Microsoft.FSharp.Core
 
 [<Extension>]
-/// Extension methods on JSON values
+/// Extension methods with operations on JSON values
 type JsonExtensions =
 
   /// Get a sequence of key-value pairs representing the properties of an object

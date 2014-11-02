@@ -9,6 +9,7 @@ open System.Reflection
 open Microsoft.FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.JsonInference

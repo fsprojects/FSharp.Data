@@ -1,16 +1,12 @@
 // --------------------------------------------------------------------------------------
 // JSON type provider - methods that are called from the generated erased code
 // --------------------------------------------------------------------------------------
-namespace FSharp.Data.Runtime
+namespace FSharp.Data.Runtime.BaseTypes
 
-open System
 open System.ComponentModel
-open System.Globalization
 open System.IO
 open FSharp.Data
-open FSharp.Data.JsonExtensions
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.StructuralTypes
 
 #nowarn "10001"
 
@@ -75,6 +71,18 @@ type JsonDocument =
     | [| JsonValue.Array array |] -> array
     | array -> array
     |> Array.mapi (fun i value -> JsonDocument.Create(value, "[" + (string i) + "]"))
+
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.Data.Runtime
+
+open System
+open System.Globalization
+open FSharp.Data
+open FSharp.Data.JsonExtensions
+open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
+open FSharp.Data.Runtime.StructuralTypes
 
 /// [omit]
 type JsonValueOptionAndPath = 

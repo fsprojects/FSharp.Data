@@ -10,14 +10,14 @@ open System.Runtime.InteropServices
 // force to reference System.Xml.Linq.dll everytime you reference FSharp.Data, even when not using
 // any of the XML parts
 [<AutoOpen>]
-/// Extension methods for XElement. It is auto opened.
+/// Extension methods for XElement
 module XElementExtensions = 
 
     type XElement with
 
       /// Sends the XML to the specified uri. Defaults to a POST request.
       member x.Request(uri:string, [<Optional>] ?httpMethod, [<Optional>] ?headers:seq<_>) =  
-        let httpMethod = defaultArg httpMethod HttpMethod.Post
+        let httpMethod = defaultArg httpMethod HttpMethod.Post  
         let headers = defaultArg (Option.map List.ofSeq headers) []
         let headers =
             if headers |> List.exists (fst >> (=) (fst (HttpRequestHeaders.UserAgent "")))
@@ -45,7 +45,9 @@ module XElementExtensions =
           headers = headers,
           httpMethod = httpMethod)
 
-namespace FSharp.Data.Runtime
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.Data.Runtime.BaseTypes
 
 open System
 open System.ComponentModel
@@ -101,6 +103,15 @@ type XmlElement =
       XDocument.Parse("<root>" + text + "</root>").Root.Elements()
       |> Seq.map (fun value -> { XElement = value })
       |> Seq.toArray
+
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.Data.Runtime
+
+open System
+open System.IO
+open System.Xml.Linq
+open FSharp.Data.Runtime.BaseTypes
 
 /// Static helper methods called from the generated code for working with XML
 type XmlRuntime = 

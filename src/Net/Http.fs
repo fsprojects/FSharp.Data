@@ -46,7 +46,7 @@ module HttpMethod =
     /// Reserved for use with a proxy that can dynamically switch to being a tunnel 
     let Connect = "CONNECT"
 
-/// Header to send in an HTTP request
+/// Headers that can be sent in an HTTP request
 module HttpRequestHeaders =
     /// Content-Types that are acceptable for the response
     let Accept (contentType:string) = "Accept", contentType
@@ -135,7 +135,7 @@ module HttpRequestHeaders =
     /// Override HTTP method. 
     let XHTTPMethodOverride (httpMethod:string) = "X-HTTP-Method-Override", httpMethod
 
-/// Header received in an HTTP response
+/// Headers that can be received in an HTTP response
 module HttpResponseHeaders =
     /// Specifying which web sites can participate in cross-origin resource sharing
     let [<Literal>] AccessControlAllowOrigin = "Access-Control-Allow-Origin"
@@ -277,7 +277,10 @@ type private HeaderEnum = System.Net.HttpRequestHeader
 /// Constants for common HTTP encodings
 module HttpEncodings = 
 
+    /// ISO-8859-1
     let PostDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://stackoverflow.com/questions/708915/detecting-the-character-encoding-of-an-http-post-request/708942#708942
+
+    /// ISO-8859-1
     let ResponseDefaultEncoding = Encoding.GetEncoding("ISO-8859-1") // http://www.ietf.org/rfc/rfc2616.txt
 
     let internal getEncoding (encodingStr:string) = 

@@ -10,7 +10,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Extension>]
-/// Extension methods on strings for conversions to other types
+/// Extension methods with conversions from strings to other types
 type StringExtensions =
 
   [<Extension>]
