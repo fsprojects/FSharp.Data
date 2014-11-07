@@ -31,7 +31,7 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
 
 let dumpAll inst =
     dump false false Net40 false inst
-    dump false false Portable7 false inst
+    //dump false false Portable7 false inst
     dump false false Portable47 false inst
 
 Html { Sample = "doctor_who.html"
@@ -70,6 +70,7 @@ Csv { Sample = "AirQuality.csv"
       Schema = ""
       HasHeaders = true
       IgnoreErrors = false
+      SkipRows = 0
       AssumeMissingValues = false
       PreferOptionals = false
       Quote = '"'

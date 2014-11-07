@@ -30,3 +30,4 @@ let ``Decimal conversions``() =
   TextConversions.AsDecimal CultureInfo.InvariantCulture "¤50" |> should equal (Some 50M)
   TextConversions.AsDecimal (CultureInfo "en-GB") "£50" |> should equal (Some 50M)
   TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal (Some 50M)
+  TextConversions.AsDecimal CultureInfo.InvariantCulture "(10,000,000.99)" |> should equal (Some -10000000.99M)

@@ -1,4 +1,9 @@
-#### 2.1.0 - Unreleased
+#### 2.1.1 - November 2 2014
+* Added SkipRows parameter to CsvProvider.
+* Automatically skip outlier rows in CsvProvider.
+* Accept more number formats.
+
+#### 2.1.0 - November 2 2014
 * Fixed parsing of HTML attributes without value.
 * Fixed parsing of non-breaking spaces in HTML.
 * Fixed parsing of CDATA in HTML script elements.
