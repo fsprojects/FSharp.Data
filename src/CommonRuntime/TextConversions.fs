@@ -68,13 +68,13 @@ type TextConversions =
     Int64.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Integer, cultureInfo) |> asOption
   
   static member AsDecimal cultureInfo text =
-    Decimal.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Number, cultureInfo) |> asOption
+    Decimal.TryParse(TextConversions.RemoveAdorners text, NumberStyles.Currency, cultureInfo) |> asOption
   
   /// if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used
   static member AsFloat missingValues useNoneForMissingValues cultureInfo (text:string) = 
     match text.Trim() with
     | OneOfIgnoreCase missingValues -> if useNoneForMissingValues then None else Some Double.NaN
-    | _ -> Double.TryParse(text, NumberStyles.Float, cultureInfo)
+    | _ -> Double.TryParse(text, NumberStyles.Any, cultureInfo)
            |> asOption
            |> Option.bind (fun f -> if useNoneForMissingValues && Double.IsNaN f then None else Some f)
   

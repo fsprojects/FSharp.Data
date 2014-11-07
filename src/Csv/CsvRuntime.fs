@@ -100,13 +100,17 @@ module private CsvHelpers =
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
     
-  let parseIntoLines newReader separators quote hasHeaders =
+  let parseIntoLines newReader separators quote hasHeaders skipRows =
 
     // Get the first iterator and read the first line
     let firstReader : TextReader = newReader()
 
     let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
-    let firstLine = 
+
+    for i = 1 to skipRows do
+      linesIterator.MoveNext() |> ignore
+
+    let firstLine =
       if linesIterator.MoveNext() then
         linesIterator.Current
       else
@@ -133,6 +137,14 @@ module private CsvHelpers =
       HasHeaders = hasHeaders
       Separators = separators
       Quote = quote }
+
+  // Always ignore empty rows
+  // On files with more than 3 columns, ignore rows with only 1 value (they're probably comments)
+  let ignoreRow untypedRow =
+    if Array.length untypedRow > 3 then
+        Array.sumBy (fun s -> if String.IsNullOrWhiteSpace s then 0 else 1) untypedRow <= 1
+    else
+        Array.forall String.IsNullOrWhiteSpace untypedRow
 
   let parseIntoTypedRows newReader 
                          ignoreErrors 
@@ -170,8 +182,7 @@ module private CsvHelpers =
             let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
             failwithf "Couldn't parse row %d according to schema: Expected %d columns, got %d" lineNumber numberOfColumns untypedRow.Length
         else
-          // Always ignore empty rows
-          if not (Array.forall String.IsNullOrWhiteSpace untypedRow) then
+          if not (ignoreRow untypedRow) then
             // Try to convert the untyped rows to 'RowType      
             let convertedRow = 
               try 
@@ -208,12 +219,12 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, cacheRows) =    
-    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors)
+  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
-  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors) as this =
+  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
@@ -235,7 +246,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let noSeparatorsSpecified = String.IsNullOrEmpty separators
     let separators = if noSeparatorsSpecified then "," else separators
 
-    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders
+    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders skipRows
 
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
     let probablyTabSeparated =
@@ -244,7 +255,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     let parsedCsvLines =
       if probablyTabSeparated
-      then parseIntoLines newReader "\t" quote hasHeaders
+      then parseIntoLines newReader "\t" quote hasHeaders skipRows
       else parsedCsvLines
 
     // Detect header that has empty trailing column name that doesn't correspond to a column in
