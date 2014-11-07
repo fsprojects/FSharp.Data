@@ -82,6 +82,9 @@
     <Content Include="Data/cp932.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data/GDP.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/AnyFeed.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
