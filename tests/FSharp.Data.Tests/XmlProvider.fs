@@ -19,7 +19,7 @@ let ``Can control type inference`` () =
 
   let intLike   : int       = inferred.IntLike
   let boolLike  : bool      = inferred.BoolLike
-  let jsonValue : JsonValue = inferred.Value.JsonValue
+  let jsonValue : JsonValue = inferred.JsonLike.JsonValue
 
   intLike   |> should equal 123
   boolLike  |> should equal false
@@ -29,7 +29,7 @@ let ``Can control type inference`` () =
 
   let intLike   : string    = notInferred.IntLike
   let boolLike  : string    = notInferred.BoolLike
-  let jsonValue : string    = notInferred.Value
+  let jsonValue : string    = notInferred.JsonLike
 
   intLike   |> should equal "123"
   boolLike  |> should equal "0"
