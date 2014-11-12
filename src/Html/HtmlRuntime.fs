@@ -27,34 +27,26 @@ type HtmlTableCell =
         | Empty -> ""
         | Cell(_, d) -> d
 
-type HtmlTableRow = 
-    | Row of HtmlTableCell [] *  HtmlNode
-    | Empty 
-    member x.Cells =
-        match x with
-        | Empty -> [||]
-        | Row(cells, _) -> cells
-
 type HtmlTable = 
     { Name : string
       HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
       InferedProperties : PrimitiveInferedProperty list option // sometimes set at designtime, never at runtime
       HasHeaders: bool option // always set at designtime, never at runtime
-      Rows :  HtmlTableRow []
+      Rows :  string [] []
       Html : HtmlNode }
     override x.ToString() =
         let sb = StringBuilder()
         use wr = new StringWriter(sb) 
         wr.WriteLine(x.Name)
-        let data = x.Rows
+        let data = array2D x.Rows
         let rows = data.GetLength(0)
-        let columns = (data |> Array.maxBy (fun r -> r.Cells.Length)).Cells.Length
+        let columns = data.GetLength(1)
         let widths = Array.zeroCreate columns 
-        data |> Array.iteri (fun _ row ->
-            row.Cells |> Array.iteri (fun c cell -> widths.[c] <- max (widths.[c]) (cell.Data.Length)))
+        data |> Array2D.iteri (fun _ c cell ->
+            widths.[c] <- max (widths.[c]) (cell.Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                wr.Write(data.[r].Cells.[c].Data.PadRight(widths.[c] + 1))
+                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
             wr.WriteLine()
         sb.ToString()
 
@@ -144,7 +136,7 @@ module HtmlRuntime =
         let name = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
 
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
-        for rowindex, node in rows do
+        for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
                 let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
                 let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
@@ -182,11 +174,13 @@ module HtmlRuntime =
 
                 Some hasHeaders, Some headerNamesAndUnits, inferedProperties
 
+        let rows = res |> Array.map (Array.map (fun x -> x.Data))
+
         { Name = name
           HeaderNamesAndUnits = headerNamesAndUnits
           InferedProperties = inferedProperties
           HasHeaders = hasHeaders
-          Rows = res 
+          Rows = rows 
           Html = table } |> Some
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
@@ -299,8 +293,6 @@ type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlOb
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member __.GetObject(id:string) = 
         htmlObjects |> Map.find id
-
-type HtmlTableRow<'rowType>(htmlNode)
 
 type HtmlTable<'rowType> internal (name:string, headers:string[] option, values:'rowType[], html:HtmlNode) =
 
