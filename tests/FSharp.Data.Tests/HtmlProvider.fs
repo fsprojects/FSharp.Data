@@ -177,3 +177,18 @@ let ``Should infer a column with a percentage suffix as the correct type``() =
                 </html>""">.GetSample().Tables.Table1
     let percentage = table.Rows.[0].Percentage
     percentage |> should equal 2
+
+[<Test>]
+let ``If finds name for table and element is empty reverts to default name``() =
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <h2></h2>
+                        <table>
+                            <tr><td>Date</td><td>Percentage</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>2%</td></tr>
+                            <tr><td>01/01/2013 12:00</td><td>2%</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Percentage
+    percentage |> should equal 2
