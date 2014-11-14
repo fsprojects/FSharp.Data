@@ -1,40 +1,40 @@
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider : FDR.TypedHtmlDocument
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``External links``: HtmlProvider+ExternalLinks with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -61,7 +61,7 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``50th Anniversary``: HtmlProvider+50thAnniversary with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -457,7 +457,7 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
                                         let value = TextConversions.AsString(row.[1])
                                         TextRuntime.GetNonOptionalValue("Title", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[2])
-                                        TextRuntime.GetNonOptionalValue("Code", TextRuntime.ConvertInteger("", value), value),
+                                        TextRuntime.GetNonOptionalValue("Code", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[3])
                                         TextRuntime.GetNonOptionalValue("Episodes", TextRuntime.ConvertString(value), value),
                                         let value = TextConversions.AsString(row.[4])
@@ -1176,223 +1176,223 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+50thAnniversary : FDR.HtmlTable<HtmlProvider+50thAnniversary+Row>
+class HtmlProvider+50thAnniversary : FDR.BaseTypes.HtmlTable<HtmlProvider+50thAnniversary+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+AudiobookReadings : FDR.HtmlTable<HtmlProvider+AudiobookReadings+Row>
+class HtmlProvider+AudiobookReadings : FDR.BaseTypes.HtmlTable<HtmlProvider+AudiobookReadings+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ExternalLinks : FDR.HtmlList<string>
+class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+HomeVideoReleases : FDR.HtmlTable<HtmlProvider+HomeVideoReleases+Row>
+class HtmlProvider+HomeVideoReleases : FDR.BaseTypes.HtmlTable<HtmlProvider+HomeVideoReleases+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages : FDR.HtmlList<string>
+class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+List12 : FDR.HtmlList<string>
+class HtmlProvider+List12 : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+OverviewOfSeasonsAndSeries : FDR.HtmlTable<HtmlProvider+OverviewOfSeasonsAndSeries+Row>
+class HtmlProvider+OverviewOfSeasonsAndSeries : FDR.BaseTypes.HtmlTable<HtmlProvider+OverviewOfSeasonsAndSeries+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RadioBroadcasts : FDR.HtmlTable<HtmlProvider+RadioBroadcasts+Row>
+class HtmlProvider+RadioBroadcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RadioBroadcasts2 : FDR.HtmlTable<HtmlProvider+RadioBroadcasts2+Row>
+class HtmlProvider+RadioBroadcasts2 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts2+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RadioBroadcasts3 : FDR.HtmlTable<HtmlProvider+RadioBroadcasts3+Row>
+class HtmlProvider+RadioBroadcasts3 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts3+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RadioBroadcasts4 : FDR.HtmlTable<HtmlProvider+RadioBroadcasts4+Row>
+class HtmlProvider+RadioBroadcasts4 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts4+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+RadioBroadcasts5 : FDR.HtmlTable<HtmlProvider+RadioBroadcasts5+Row>
+class HtmlProvider+RadioBroadcasts5 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts5+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season10197273 : FDR.HtmlTable<HtmlProvider+Season10197273+Row>
+class HtmlProvider+Season10197273 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season10197273+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season11197374 : FDR.HtmlTable<HtmlProvider+Season11197374+Row>
+class HtmlProvider+Season11197374 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season11197374+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season1196364 : FDR.HtmlTable<HtmlProvider+Season1196364+Row>
+class HtmlProvider+Season1196364 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season1196364+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season12197475 : FDR.HtmlTable<HtmlProvider+Season12197475+Row>
+class HtmlProvider+Season12197475 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season12197475+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season13197576 : FDR.HtmlTable<HtmlProvider+Season13197576+Row>
+class HtmlProvider+Season13197576 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season13197576+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season14197677 : FDR.HtmlTable<HtmlProvider+Season14197677+Row>
+class HtmlProvider+Season14197677 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season14197677+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season15197778 : FDR.HtmlTable<HtmlProvider+Season15197778+Row>
+class HtmlProvider+Season15197778 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season15197778+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season16197879 : FDR.HtmlTable<HtmlProvider+Season16197879+Row>
+class HtmlProvider+Season16197879 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season16197879+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season17197980 : FDR.HtmlTable<HtmlProvider+Season17197980+Row>
+class HtmlProvider+Season17197980 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season17197980+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season18198081 : FDR.HtmlTable<HtmlProvider+Season18198081+Row>
+class HtmlProvider+Season18198081 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season18198081+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season191982 : FDR.HtmlTable<HtmlProvider+Season191982+Row>
+class HtmlProvider+Season191982 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season191982+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season201983 : FDR.HtmlTable<HtmlProvider+Season201983+Row>
+class HtmlProvider+Season201983 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season201983+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season211984 : FDR.HtmlTable<HtmlProvider+Season211984+Row>
+class HtmlProvider+Season211984 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season211984+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season211984Continued : FDR.HtmlTable<HtmlProvider+Season211984Continued+Row>
+class HtmlProvider+Season211984Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Season211984Continued+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season2196465 : FDR.HtmlTable<HtmlProvider+Season2196465+Row>
+class HtmlProvider+Season2196465 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season2196465+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season221985 : FDR.HtmlTable<HtmlProvider+Season221985+Row>
+class HtmlProvider+Season221985 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season221985+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season231986 : FDR.HtmlTable<HtmlProvider+Season231986+Row>
+class HtmlProvider+Season231986 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season231986+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season241987 : FDR.HtmlTable<HtmlProvider+Season241987+Row>
+class HtmlProvider+Season241987 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season241987+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season25198889 : FDR.HtmlTable<HtmlProvider+Season25198889+Row>
+class HtmlProvider+Season25198889 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season25198889+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season261989 : FDR.HtmlTable<HtmlProvider+Season261989+Row>
+class HtmlProvider+Season261989 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season261989+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season3196566 : FDR.HtmlTable<HtmlProvider+Season3196566+Row>
+class HtmlProvider+Season3196566 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season3196566+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season4196667 : FDR.HtmlTable<HtmlProvider+Season4196667+Row>
+class HtmlProvider+Season4196667 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season4196667+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season4196667Continued : FDR.HtmlTable<HtmlProvider+Season4196667Continued+Row>
+class HtmlProvider+Season4196667Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Season4196667Continued+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season5196768 : FDR.HtmlTable<HtmlProvider+Season5196768+Row>
+class HtmlProvider+Season5196768 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season5196768+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season6196869 : FDR.HtmlTable<HtmlProvider+Season6196869+Row>
+class HtmlProvider+Season6196869 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season6196869+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season71970 : FDR.HtmlTable<HtmlProvider+Season71970+Row>
+class HtmlProvider+Season71970 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season71970+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season81971 : FDR.HtmlTable<HtmlProvider+Season81971+Row>
+class HtmlProvider+Season81971 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season81971+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season91972 : FDR.HtmlTable<HtmlProvider+Season91972+Row>
+class HtmlProvider+Season91972 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season91972+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SeeAlso : FDR.HtmlList<string>
+class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+SeeAlso : FDR.HtmlTable<HtmlProvider+SeeAlso+Row>
+class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlTable<HtmlProvider+SeeAlso+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series1 : FDR.HtmlTable<HtmlProvider+Series1+Row>
+class HtmlProvider+Series1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series1+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series12005 : FDR.HtmlTable<HtmlProvider+Series12005+Row>
+class HtmlProvider+Series12005 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series12005+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series2 : FDR.HtmlTable<HtmlProvider+Series2+Row>
+class HtmlProvider+Series2 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series2+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series22006 : FDR.HtmlTable<HtmlProvider+Series22006+Row>
+class HtmlProvider+Series22006 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series22006+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series32007 : FDR.HtmlTable<HtmlProvider+Series32007+Row>
+class HtmlProvider+Series32007 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series32007+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series42008 : FDR.HtmlTable<HtmlProvider+Series42008+Row>
+class HtmlProvider+Series42008 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series42008+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series52010 : FDR.HtmlTable<HtmlProvider+Series52010+Row>
+class HtmlProvider+Series52010 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series52010+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series62011 : FDR.HtmlTable<HtmlProvider+Series62011+Row>
+class HtmlProvider+Series62011 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series62011+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series7201213 : FDR.HtmlTable<HtmlProvider+Series7201213+Row>
+class HtmlProvider+Series7201213 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series7201213+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series7201213Continued : FDR.HtmlTable<HtmlProvider+Series7201213Continued+Row>
+class HtmlProvider+Series7201213Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Series7201213Continued+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Series82014 : FDR.HtmlTable<HtmlProvider+Series82014+Row>
+class HtmlProvider+Series82014 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series82014+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Special1983 : FDR.HtmlTable<HtmlProvider+Special1983+Row>
+class HtmlProvider+Special1983 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special1983+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Special2006 : FDR.HtmlTable<HtmlProvider+Special2006+Row>
+class HtmlProvider+Special2006 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special2006+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Special2014 : FDR.HtmlTable<HtmlProvider+Special2014+Row>
+class HtmlProvider+Special2014 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special2014+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials : FDR.HtmlTable<HtmlProvider+Specials+Row>
+class HtmlProvider+Specials : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials2005 : FDR.HtmlTable<HtmlProvider+Specials2005+Row>
+class HtmlProvider+Specials2005 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2005+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials2007 : FDR.HtmlTable<HtmlProvider+Specials2007+Row>
+class HtmlProvider+Specials2007 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2007+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials200810 : FDR.HtmlTable<HtmlProvider+Specials200810+Row>
+class HtmlProvider+Specials200810 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials200810+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials201011 : FDR.HtmlTable<HtmlProvider+Specials201011+Row>
+class HtmlProvider+Specials201011 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials201011+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials201112 : FDR.HtmlTable<HtmlProvider+Specials201112+Row>
+class HtmlProvider+Specials201112 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials201112+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials2012 : FDR.HtmlTable<HtmlProvider+Specials2012+Row>
+class HtmlProvider+Specials2012 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2012+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Specials2013 : FDR.HtmlTable<HtmlProvider+Specials2013+Row>
+class HtmlProvider+Specials2013 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2013+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table66 : FDR.HtmlTable<HtmlProvider+Table66+Row>
+class HtmlProvider+Table66 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table66+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table67 : FDR.HtmlTable<HtmlProvider+Table67+Row>
+class HtmlProvider+Table67 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table67+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table68 : FDR.HtmlTable<HtmlProvider+Table68+Row>
+class HtmlProvider+Table68 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table68+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table69 : FDR.HtmlTable<HtmlProvider+Table69+Row>
+class HtmlProvider+Table69 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table69+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table70 : FDR.HtmlTable<HtmlProvider+Table70+Row>
+class HtmlProvider+Table70 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table70+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table71 : FDR.HtmlTable<HtmlProvider+Table71+Row>
+class HtmlProvider+Table71 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table71+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TelevisionBroadcasts : FDR.HtmlTable<HtmlProvider+TelevisionBroadcasts+Row>
+class HtmlProvider+TelevisionBroadcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+TelevisionBroadcasts+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TelevisionMovie1996 : FDR.HtmlTable<HtmlProvider+TelevisionMovie1996+Row>
+class HtmlProvider+TelevisionMovie1996 : FDR.BaseTypes.HtmlTable<HtmlProvider+TelevisionMovie1996+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Webcasts : FDR.HtmlTable<HtmlProvider+Webcasts+Row>
+class HtmlProvider+Webcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+Webcasts+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+50thAnniversary+Row : string * string * string * string * System.DateTime
@@ -1884,8 +1884,8 @@ class HtmlProvider+Season211984+Row : int * string * string * string * string * 
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Season211984Continued+Row : int * string * int * string * string * string * string
-    member Code: int with get
+class HtmlProvider+Season211984Continued+Row : int * string * string * string * string * string * string
+    member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
 
     member Director: string with get

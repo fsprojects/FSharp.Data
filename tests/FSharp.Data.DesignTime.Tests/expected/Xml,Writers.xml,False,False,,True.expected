@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Authors : FDR.XmlElement
+class XmlProvider+Authors : FDR.BaseTypes.XmlElement
     new : topic:string -> authors:XmlProvider+Author[] -> XmlProvider+Authors
     XmlRuntime.CreateRecord("authors", 
                             [| ("topic",
@@ -46,7 +46,7 @@ class XmlProvider+Authors : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Author : FDR.XmlElement
+class XmlProvider+Author : FDR.BaseTypes.XmlElement
     new : name:string -> born:int option -> XmlProvider+Author
     XmlRuntime.CreateRecord("author", 
                             [| ("name",

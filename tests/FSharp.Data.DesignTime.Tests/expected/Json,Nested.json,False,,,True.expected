@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : main:JsonProvider+Main -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("main",
                                  (main :> obj)) |], "")
@@ -39,7 +39,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Main : FDR.IJsonDocument
+class JsonProvider+Main : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> isCool:bool -> JsonProvider+Main
     JsonRuntime.CreateRecord([| ("firstName",
                                  (firstName :> obj))
@@ -63,7 +63,7 @@ class JsonProvider+Main : FDR.IJsonDocument
 
     member IsCool: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "isCool")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member LastName: string with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "lastName")

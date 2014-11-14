@@ -34,15 +34,16 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
     let schema = args.[3] :?> string
     let hasHeaders = args.[4] :?> bool
     let ignoreErrors = args.[5] :?> bool
-    let assumeMissingValues = args.[6] :?> bool
-    let preferOptionals = args.[7] :?> bool
-    let quote = args.[8] :?> char
-    let missingValuesStr = args.[9] :?> string
-    let cacheRows = args.[10] :?> bool
-    let cultureStr = args.[11] :?> string
-    let encodingStr = args.[12] :?> string
-    let resolutionFolder = args.[13] :?> string
-    let resource = args.[14] :?> string
+    let skipRows = args.[6] :?> int
+    let assumeMissingValues = args.[7] :?> bool
+    let preferOptionals = args.[8] :?> bool
+    let quote = args.[9] :?> char
+    let missingValuesStr = args.[10] :?> string
+    let cacheRows = args.[11] :?> bool
+    let cultureStr = args.[12] :?> string
+    let encodingStr = args.[13] :?> string
+    let resolutionFolder = args.[14] :?> string
+    let resource = args.[15] :?> string
     
     if sample = "" then
       if schema = "" then
@@ -61,7 +62,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
         else
           value
-      CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors)
+      CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows)
 
     let getSpecFromSamples samples = 
       
@@ -85,7 +86,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
           let body = 
             csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
-                                              separators, quote, hasHeaders, ignoreErrors, cacheRows)
+                                              separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
@@ -100,6 +101,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       ProvidedStaticParameter("Schema", typeof<string>, parameterDefaultValue = "")
       ProvidedStaticParameter("HasHeaders", typeof<bool>, parameterDefaultValue = true)
       ProvidedStaticParameter("IgnoreErrors", typeof<bool>, parameterDefaultValue = false)
+      ProvidedStaticParameter("SkipRows", typeof<int>, parameterDefaultValue = 0)
       ProvidedStaticParameter("AssumeMissingValues", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("PreferOptionals", typeof<bool>, parameterDefaultValue = false)
       ProvidedStaticParameter("Quote", typeof<char>, parameterDefaultValue = '"')
@@ -119,6 +121,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
        You can also specify a unit and the name of the column like this: `Name (type&lt;unit&gt;)`, or you can override only the name. If you don't want to specify all the columns, you can reference the columns by name like this: `ColumnName=type`.</param>
        <param name='HasHeaders'>Whether the sample contains the names of the columns as its first line.</param>
        <param name='IgnoreErrors'>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.</param>
+       <param name='SkipRows'>SKips the first n rows of the CSV file.</param>
        <param name='AssumeMissingValues'>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</param>
        <param name='PreferOptionals'>When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `""` for missing values. Defaults to false.</param>
        <param name='Quote'>The quotation mark (for surrounding values containing the delimiter). Defaults to `"`.</param>

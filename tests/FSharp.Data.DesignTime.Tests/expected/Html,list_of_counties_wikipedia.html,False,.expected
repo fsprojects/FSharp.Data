@@ -1,40 +1,40 @@
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider : FDR.TypedHtmlDocument
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Commentary: HtmlProvider+Commentary with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -49,7 +49,7 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``List of most populous built-up areas in England and Wales``: HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -116,22 +116,22 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Commentary : FDR.HtmlList<string>
+class HtmlProvider+Commentary : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Languages : FDR.HtmlList<string>
+class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row>
+class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland+Row>
+class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland : FDR.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row>
+class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Table5 : FDR.HtmlTable<HtmlProvider+Table5+Row>
+class HtmlProvider+Table5 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table5+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row : int * string * decimal * decimal * decimal * string * string * string

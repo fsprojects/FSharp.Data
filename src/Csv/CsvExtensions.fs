@@ -10,6 +10,7 @@ open FSharp.Data
 open FSharp.Data.Runtime
 
 [<Extension>]
+/// Extension methods with conversions from strings to other types
 type StringExtensions =
 
   [<Extension>]
@@ -42,9 +43,8 @@ type StringExtensions =
     | _ -> failwithf "Not a float: %s" x
   
   [<Extension>]
-  static member AsBoolean(x:String, [<Optional>] ?cultureInfo) =
-    let cultureInfo = defaultArg cultureInfo CultureInfo.InvariantCulture
-    match TextConversions.AsBoolean cultureInfo x with
+  static member AsBoolean(x:String) =
+    match TextConversions.AsBoolean x with
     | Some b -> b
     | _ -> failwithf "Not a boolean: %s" x
 
@@ -62,6 +62,8 @@ type StringExtensions =
     | _ -> failwithf "Not a guid: %s" x
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+/// Provides the dynamic operator for getting column values by name from CSV rows
 module CsvExtensions =
-  /// Get column of a CsvRow
+  
+  /// Get the value of a column by name from a CSV row
   let (?) (csvRow:CsvRow) (columnName:string) = csvRow.[columnName]

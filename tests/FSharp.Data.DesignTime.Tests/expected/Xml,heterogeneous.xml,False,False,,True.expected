@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Test : FDR.XmlElement
+class XmlProvider+Test : FDR.BaseTypes.XmlElement
     new : options:XmlProvider+Options[] -> XmlProvider+Test
     XmlRuntime.CreateRecord("test", 
                             [| |], 
@@ -41,7 +41,7 @@ class XmlProvider+Test : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Options : FDR.XmlElement
+class XmlProvider+Options : FDR.BaseTypes.XmlElement
     new : node:XmlProvider+Node -> XmlProvider+Options
     XmlRuntime.CreateRecord("options", 
                             [| |], 
@@ -57,7 +57,7 @@ class XmlProvider+Options : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Node : FDR.XmlElement
+class XmlProvider+Node : FDR.BaseTypes.XmlElement
     new : set:XmlProvider+SetChoice -> XmlProvider+Node
     XmlRuntime.CreateRecord("node", 
                             [| ("set",
@@ -78,7 +78,7 @@ class XmlProvider+SetChoice : string option
     Some TextRuntime.ConvertIntegerBack("", Some value)
 
     new : value:bool -> XmlProvider+SetChoice
-    Some TextRuntime.ConvertBooleanBack("", Some value, false)
+    Some TextRuntime.ConvertBooleanBack(Some value, false)
 
     new : value:string -> XmlProvider+SetChoice
     Some TextRuntime.ConvertStringBack(Some value)
@@ -87,7 +87,7 @@ class XmlProvider+SetChoice : string option
     None
 
     member Boolean: bool option with get
-    TextRuntime.ConvertBoolean("", this)
+    TextRuntime.ConvertBoolean(this)
 
     member Number: int option with get
     TextRuntime.ConvertInteger("", this)

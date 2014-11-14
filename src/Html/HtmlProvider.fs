@@ -9,6 +9,7 @@ open ProviderImplementation.ProviderHelpers
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 
 #nowarn "10001"
 
@@ -34,7 +35,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
         let getSpecFromSamples samples = 
 
-            let doc : HtmlDocument = Seq.exactlyOne samples
+            let doc : FSharp.Data.HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
                 let inferenceParameters : HtmlInference.Parameters = 
@@ -50,7 +51,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ TypedHtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")

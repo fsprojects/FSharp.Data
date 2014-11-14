@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Foo : FDR.XmlElement
+class XmlProvider+Foo : FDR.BaseTypes.XmlElement
     new : a:string -> XmlProvider+Foo
     XmlRuntime.CreateRecord("foo", 
                             [| ("a",

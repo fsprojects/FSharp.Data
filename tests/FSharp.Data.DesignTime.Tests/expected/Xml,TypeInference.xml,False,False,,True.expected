@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Xs : FDR.XmlElement
+class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     new : xs:XmlProvider+X[] -> XmlProvider+Xs
     XmlRuntime.CreateRecord("XS", 
                             [| |], 
@@ -41,39 +41,39 @@ class XmlProvider+Xs : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+X : FDR.XmlElement
-    new : intLike:int -> boolLike:bool -> value:XmlProvider+X2 -> XmlProvider+X
+class XmlProvider+X : FDR.BaseTypes.XmlElement
+    new : intLike:int -> boolLike:bool -> jsonLike:XmlProvider+JsonLike -> XmlProvider+X
     XmlRuntime.CreateRecord("X", 
                             [| ("intLike",
-                                (intLike :> obj))
-                               ("boolLike",
-                                (boolLike :> obj)) |], 
-                            [| ("",
-                                (value :> obj)) |], "")
+                                (intLike :> obj)) |], 
+                            [| ("boolLike",
+                                (boolLike :> obj))
+                               ("jsonLike",
+                                (jsonLike :> obj)) |], "")
 
     new : xElement:System.Xml.Linq.XElement -> XmlProvider+X
     XmlElement.Create(xElement)
 
     member BoolLike: bool with get
-    let value = XmlRuntime.TryGetAttribute(this, "boolLike")
-    TextRuntime.GetNonOptionalValue("Attribute boolLike", TextRuntime.ConvertBoolean("", value), value)
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "boolLike"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean(value), value)
 
     member IntLike: int with get
     let value = XmlRuntime.TryGetAttribute(this, "intLike")
     TextRuntime.GetNonOptionalValue("Attribute intLike", TextRuntime.ConvertInteger("", value), value)
 
-    member Value: XmlProvider+X2 with get
-    XmlRuntime.GetJsonValue(this, "")
+    member JsonLike: XmlProvider+JsonLike with get
+    XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "jsonLike"), "")
 
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+X2 : FDR.IJsonDocument
-    new : a:int -> XmlProvider+X2
+class XmlProvider+JsonLike : FDR.BaseTypes.IJsonDocument
+    new : a:int -> XmlProvider+JsonLike
     JsonRuntime.CreateRecord([| ("a",
                                  (a :> obj)) |], "")
 
-    new : jsonValue:JsonValue -> XmlProvider+X2
+    new : jsonValue:JsonValue -> XmlProvider+JsonLike
     JsonDocument.Create(jsonValue, "")
 
     member A: int with get

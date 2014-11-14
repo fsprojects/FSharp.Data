@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ordercontainer:JsonProvider+Ordercontainer -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("ordercontainer",
                                  (ordercontainer :> obj)) |], "")
@@ -39,7 +39,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Ordercontainer : FDR.IJsonDocument
+class JsonProvider+Ordercontainer : FDR.BaseTypes.IJsonDocument
     new : backgrounds:JsonProvider+Backgrounds -> project:JsonProvider+Background -> JsonProvider+Ordercontainer
     JsonRuntime.CreateRecord([| ("backgrounds",
                                  (backgrounds :> obj))
@@ -58,7 +58,7 @@ class JsonProvider+Ordercontainer : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Background : FDR.IJsonDocument
+class JsonProvider+Background : FDR.BaseTypes.IJsonDocument
     new : title:JsonProvider+Title -> JsonProvider+Background
     JsonRuntime.CreateRecord([| ("title",
                                  (title :> obj)) |], "")
@@ -72,7 +72,7 @@ class JsonProvider+Background : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Backgrounds : FDR.IJsonDocument
+class JsonProvider+Backgrounds : FDR.BaseTypes.IJsonDocument
     new : background:JsonProvider+Background -> JsonProvider+Backgrounds
     JsonRuntime.CreateRecord([| ("background",
                                  (background :> obj)) |], "")
@@ -86,7 +86,7 @@ class JsonProvider+Backgrounds : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Title : FDR.IJsonDocument
+class JsonProvider+Title : FDR.BaseTypes.IJsonDocument
     new : text:string -> JsonProvider+Title
     JsonRuntime.CreateRecord([| ("text",
                                  (text :> obj)) |], "")

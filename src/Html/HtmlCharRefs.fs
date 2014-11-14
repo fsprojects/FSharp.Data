@@ -2251,7 +2251,7 @@ module internal HtmlCharRefs =
                     if discriminator <> 'x'
                     then s.Substring(2, s.Length - 2)
                     else s.Substring(3, s.Length - 3)
-                match Int32.TryParse(num) with
+                match Int32.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture) with
                 | true, i -> Number(i)
                 | false, _ -> Lookup(orig)
             | ("&x", _) ->  

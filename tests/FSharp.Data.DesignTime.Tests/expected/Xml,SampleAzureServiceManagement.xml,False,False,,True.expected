@@ -25,7 +25,7 @@ class XmlProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Locations : FDR.XmlElement
+class XmlProvider+Locations : FDR.BaseTypes.XmlElement
     new : locations:XmlProvider+Location[] -> XmlProvider+Locations
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}Locations", 
                             [| |], 
@@ -41,7 +41,7 @@ class XmlProvider+Locations : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+Location : FDR.XmlElement
+class XmlProvider+Location : FDR.BaseTypes.XmlElement
     new : name:string -> displayName:string -> availableServices:string[] -> computeCapabilities:XmlProvider+ComputeCapabilities -> XmlProvider+Location
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}Location", 
                             [| |], 
@@ -76,7 +76,7 @@ class XmlProvider+Location : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+ComputeCapabilities : FDR.XmlElement
+class XmlProvider+ComputeCapabilities : FDR.BaseTypes.XmlElement
     new : webWorkerRoleSizes:XmlProvider+WebWorkerRoleSizes -> virtualMachinesRoleSizes:XmlProvider+VirtualMachinesRoleSizes -> XmlProvider+ComputeCapabilities
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}ComputeCapabilities", 
                             [| |], 
@@ -97,7 +97,7 @@ class XmlProvider+ComputeCapabilities : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+VirtualMachinesRoleSizes : FDR.XmlElement
+class XmlProvider+VirtualMachinesRoleSizes : FDR.BaseTypes.XmlElement
     new : roleSizes:string[] -> XmlProvider+VirtualMachinesRoleSizes
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}VirtualMachinesRoleSizes", 
                             [| |], 
@@ -115,7 +115,7 @@ class XmlProvider+VirtualMachinesRoleSizes : FDR.XmlElement
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class XmlProvider+WebWorkerRoleSizes : FDR.XmlElement
+class XmlProvider+WebWorkerRoleSizes : FDR.BaseTypes.XmlElement
     new : roleSizes:string[] -> XmlProvider+WebWorkerRoleSizes
     XmlRuntime.CreateRecord("{http://schemas.microsoft.com/windowsazure}WebWorkerRoleSizes", 
                             [| |], 

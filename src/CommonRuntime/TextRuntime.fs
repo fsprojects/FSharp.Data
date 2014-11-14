@@ -2,6 +2,7 @@
 
 open System
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 
 /// Static helper methods called from the generated code for working with text
@@ -38,8 +39,8 @@ type TextRuntime =
                                                  (*useNoneForMissingValues*)true 
                                                  (TextRuntime.GetCulture cultureStr))
 
-  static member ConvertBoolean(cultureStr, text) = 
-    text |> Option.bind (TextConversions.AsBoolean (TextRuntime.GetCulture cultureStr))
+  static member ConvertBoolean(text) = 
+    text |> Option.bind TextConversions.AsBoolean
 
   static member ConvertDateTime(cultureStr, text) = 
     text |> Option.bind (TextConversions.AsDateTime (TextRuntime.GetCulture cultureStr))
@@ -79,8 +80,7 @@ type TextRuntime =
           value.ToString(TextRuntime.GetCulture cultureStr)
     | None -> ""
   
-  // cultureStr is ignored for now, but might not be in the future, so we're keeping in in the API
-  static member ConvertBooleanBack(_cultureStr:string, value:bool option, use0and1) =     
+  static member ConvertBooleanBack(value:bool option, use0and1) =     
     match value with
     | Some value when use0and1 -> if value then "1" else "0"
     | Some value -> if value then "true" else "false"

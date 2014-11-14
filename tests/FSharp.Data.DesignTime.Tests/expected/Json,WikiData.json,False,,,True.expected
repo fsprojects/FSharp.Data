@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> address:JsonProvider+Address -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("firstName",
                                  (firstName :> obj))
@@ -57,7 +57,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Address : FDR.IJsonDocument
+class JsonProvider+Address : FDR.BaseTypes.IJsonDocument
     new : streetAddress:string -> city:string -> state:string -> postalCode:int -> JsonProvider+Address
     JsonRuntime.CreateRecord([| ("streetAddress",
                                  (streetAddress :> obj))

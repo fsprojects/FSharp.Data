@@ -14,6 +14,7 @@ type CsvProviderArgs =
       Schema : string
       HasHeaders : bool
       IgnoreErrors : bool
+      SkipRows : int
       AssumeMissingValues : bool
       PreferOptionals : bool
       Quote : char
@@ -88,6 +89,7 @@ type TypeProviderInstantiation =
                    box x.Schema
                    box x.HasHeaders
                    box x.IgnoreErrors
+                   box x.SkipRows
                    box x.AssumeMissingValues
                    box x.PreferOptionals
                    box x.Quote
@@ -205,7 +207,7 @@ type TypeProviderInstantiation =
 
     static member Parse (line:string) =
         let args = line.Split [|','|]
-        args.[1],
+        args.[0],
         match args.[0] with
         | "Csv" ->
             Csv { Sample = args.[1]
@@ -214,6 +216,7 @@ type TypeProviderInstantiation =
                   Schema = args.[3].Replace(';', ',')
                   HasHeaders = args.[4] |> bool.Parse
                   IgnoreErrors = false
+                  SkipRows = 0
                   AssumeMissingValues = args.[5] |> bool.Parse
                   PreferOptionals = args.[6] |> bool.Parse
                   Quote = '"'

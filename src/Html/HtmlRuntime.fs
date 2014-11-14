@@ -1,7 +1,6 @@
 ﻿namespace FSharp.Data.Runtime
 
 open System
-open System.ComponentModel
 open System.Globalization
 open System.IO
 open System.Text
@@ -15,6 +14,7 @@ open FSharp.Data.Runtime.StructuralTypes
 
 // --------------------------------------------------------------------------------------
 
+/// Representation of an HTML table cell
 type HtmlTableCell = 
     | Cell of bool * string
     | Empty
@@ -27,6 +27,7 @@ type HtmlTableCell =
         | Empty -> ""
         | Cell(_, d) -> d
 
+/// Representation of an HTML table cell
 type HtmlTable = 
     { Name : string
       HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
@@ -50,16 +51,19 @@ type HtmlTable =
             wr.WriteLine()
         sb.ToString()
 
+/// Representation of an HTML list
 type HtmlList = 
     { Name : string
       Values : string[]
       Html : HtmlNode }
 
+/// Representation of an HTML definition list
 type HtmlDefinitionList = 
     { Name : string
       Definitions : HtmlList list
       Html : HtmlNode }
 
+/// Representation of an HTML table, list, or definition list
 type HtmlObject = 
     | Table of HtmlTable
     | List of HtmlList
@@ -92,7 +96,7 @@ module HtmlRuntime =
             | p::rest ->
                 let nearest = 
                     p
-                    |> HtmlNode.descendants false true (fun _ -> true)
+                    |> HtmlNode.descendants true (fun _ -> true)
                     |> Seq.takeWhile ((<>) x) 
                     |> Seq.filter f
                     |> Seq.toList
@@ -103,9 +107,7 @@ module HtmlRuntime =
             | [] -> None
 
         let deriveFromSibling element parents = 
-            let isHeading s =
-                let name = HtmlNode.name s
-                Regex.IsMatch(name, """h\d""")
+            let isHeading s = s |> HtmlNode.name |> HtmlParser.headingRegex.Value.IsMatch
             tryFindPrevious isHeading element parents
 
         let cleanup (str:String) =
@@ -118,7 +120,7 @@ module HtmlRuntime =
             then defaultName
             else cleanup(innerText)
         | _ ->
-                match element.Descendants ["caption"] with
+                match List.ofSeq <| element.Descendants("caption", false) with
                 | [] ->
                      match tryGetName ["id"; "name"; "title"; "summary"] with
                      | Some name -> cleanup name
@@ -127,7 +129,7 @@ module HtmlRuntime =
                 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
-        let rows = table.Descendants(["tr"], true, false) |> List.mapi (fun i r -> i,r)
+        let rows = table.Descendants("tr", false) |> List.ofSeq |> List.mapi (fun i r -> i,r)
         
         if rows.Length <= 1 then None else
 
@@ -205,8 +207,9 @@ module HtmlRuntime =
             
 
         let rows = 
-            list.Descendants(["li"], false, false) 
-            |> List.collect (fun node -> walkListItems [] (node.Descendants((fun _ -> true), true)))
+            list.Descendants("li", false) 
+            |> List.ofSeq
+            |> List.collect (fun node -> walkListItems [] (node.DescendantsAndSelf() |> List.ofSeq))
             |> List.toArray
     
         if rows.Length <= 1 then None else
@@ -233,7 +236,9 @@ module HtmlRuntime =
             | h :: t -> loop [] ("Undefined", h, []) t        
         
         let data =
-            definitionList.Descendants ["dt"; "dd"]
+            definitionList
+            |> HtmlNode.descendantsNamed false ["dt"; "dd"]
+            |> List.ofSeq
             |> createDefinitionGroups
             |> List.map (fun (group, node, values) -> { Name = group
                                                         Values = values |> List.rev |> List.toArray
@@ -248,7 +253,7 @@ module HtmlRuntime =
           Html = definitionList } |> Some
 
     let getTables inferenceParameters includeLayoutTables (doc:HtmlDocument) =
-        let tableElements = doc.DescendantsWithPath("table")
+        let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
         let tableElements = 
             if includeLayoutTables
             then tableElements
@@ -260,12 +265,14 @@ module HtmlRuntime =
     let getLists (doc:HtmlDocument) =        
         doc
         |> HtmlDocument.descendantsNamedWithPath false ["ol"; "ul"]
+        |> List.ofSeq
         |> List.mapi (parseList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
     let getDefinitionLists (doc:HtmlDocument) =                
         doc
         |> HtmlDocument.descendantsNamedWithPath false ["dl"]
+        |> List.ofSeq
         |> List.mapi (parseDefinitionList (NameUtils.uniqueGenerator id))
         |> List.choose id
 
@@ -274,7 +281,18 @@ module HtmlRuntime =
         @ (doc |> getLists |> List.map List)
         @ (doc |> getDefinitionLists |> List.map DefinitionList)
 
-type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlObject>) =
+// --------------------------------------------------------------------------------------
+
+namespace FSharp.Data.Runtime.BaseTypes
+
+open System
+open System.ComponentModel
+open System.IO
+open FSharp.Data
+open FSharp.Data.Runtime
+
+/// Underlying representation of the root types generated by HtmlProvider
+type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string,HtmlObject>) =
 
     member __.Html = doc
 
@@ -290,7 +308,7 @@ type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlOb
             |> HtmlRuntime.getHtmlObjects None includeLayoutTables
             |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
-        TypedHtmlDocument(doc, htmlObjects)
+        HtmlDocument(doc, htmlObjects)
 
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -298,7 +316,8 @@ type TypedHtmlDocument internal (doc:HtmlDocument, htmlObjects:Map<string,HtmlOb
     member __.GetObject(id:string) = 
         htmlObjects |> Map.find id
 
-type HtmlTable<'rowType> internal (name:string, headers:string[] option, values:'rowType[], html:HtmlNode) =
+/// Underlying representation of table types generated by HtmlProvider
+type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:'RowType[], html:HtmlNode) =
 
     member __.Name = name
     member __.Headers = headers
@@ -308,7 +327,7 @@ type HtmlTable<'rowType> internal (name:string, headers:string[] option, values:
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(rowConverter:Func<string[],'rowType>, doc:TypedHtmlDocument, id:string, hasHeaders:bool) =
+    static member Create(rowConverter:Func<string[],'RowType>, doc:HtmlDocument, id:string, hasHeaders:bool) =
         match doc.GetObject id with
         | Table table -> 
             let headers, rows = 
@@ -319,7 +338,8 @@ type HtmlTable<'rowType> internal (name:string, headers:string[] option, values:
             HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
         | _ -> failwithf "Element %s is not a table" id
 
-type HtmlList<'itemType> internal (name:string, values:'itemType[], html) = 
+/// Underlying representation of list types generated by HtmlProvider
+type HtmlList<'ItemType> internal (name:string, values:'ItemType[], html) = 
     
     member __.Name = name
     member __.Values = values
@@ -327,14 +347,14 @@ type HtmlList<'itemType> internal (name:string, values:'itemType[], html) =
 
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string) =
+    static member Create(rowConverter:Func<string,'ItemType>, doc:HtmlDocument, id:string) =
         match doc.GetObject id with
         | List list -> HtmlList<_>(list.Name, Array.map rowConverter.Invoke list.Values, list.Html)
         | _ -> failwithf "Element %s is not a list" id
 
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member CreateNested(rowConverter:Func<string,'itemType>, doc:TypedHtmlDocument, id:string, index:int) =
+    static member CreateNested(rowConverter:Func<string,'ItemType>, doc:HtmlDocument, id:string, index:int) =
         let list = 
             match doc.GetObject id with
             | List list-> list

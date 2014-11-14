@@ -11,6 +11,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.QuotationBuilder
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 
 module internal HtmlGenerator =
@@ -162,7 +163,7 @@ module internal HtmlGenerator =
 
             prop, listType
             
-        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
         
         for prop, listType in List.mapi createListType definitionList.Definitions do
             definitionListType.AddMember listType
@@ -172,7 +173,7 @@ module internal HtmlGenerator =
 
     let generateTypes asm ns typeName parameters (replacer:AssemblyReplacer) (htmlObjects:HtmlObject list) =
 
-        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
         
         let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
 
@@ -184,7 +185,7 @@ module internal HtmlGenerator =
             match containerTypes.TryGetValue(name) with
             | true, t -> t
             | false, _ ->
-                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<TypedHtmlDocument>), HideObjectMethods = true)
+                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
                 htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
                 htmlType.AddMember containerType
                 containerTypes.Add(name, containerType)

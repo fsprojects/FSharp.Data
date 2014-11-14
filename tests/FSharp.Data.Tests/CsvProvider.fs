@@ -345,3 +345,12 @@ type Currency = CsvProvider<currency>
 let ``Can handle currency in the values``() = 
    let data = Currency.GetSample().Rows |> Seq.head
    data.Column3 |> should equal 3M
+
+[<Test>]
+let ``Can parse http://databank.worldbank.org/data/download/GDP.csv``() = 
+   let gdp = new CsvProvider<"Data/GDP.csv", SkipRows=3, MissingValues="..">()
+   let firstRow = gdp.Rows |> Seq.head
+   firstRow.Ranking |> should equal 1
+   firstRow.Column1 |> should equal "USA"
+   firstRow.Economy |> should equal "United States"   
+   firstRow.``US dollars)`` |> should equal 16800000.

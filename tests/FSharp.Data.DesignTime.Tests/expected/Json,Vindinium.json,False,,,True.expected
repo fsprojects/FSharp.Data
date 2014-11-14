@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : game:JsonProvider+Game -> hero:JsonProvider+Hero -> token:string -> viewUrl:string -> playUrl:string -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("game",
                                  (game :> obj))
@@ -62,7 +62,7 @@ class JsonProvider+Root : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Game : FDR.IJsonDocument
+class JsonProvider+Game : FDR.BaseTypes.IJsonDocument
     new : id:string -> turn:int -> maxTurns:int -> heroes:JsonProvider+Hero[] -> board:JsonProvider+Board -> finished:bool -> JsonProvider+Game
     JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
@@ -85,7 +85,7 @@ class JsonProvider+Game : FDR.IJsonDocument
 
     member Finished: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "finished")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Heroes: JsonProvider+Hero[] with get
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "heroes"), new Func<_,_>(id)))
@@ -105,7 +105,7 @@ class JsonProvider+Game : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Hero : FDR.IJsonDocument
+class JsonProvider+Hero : FDR.BaseTypes.IJsonDocument
     new : id:int -> name:string -> userId:string -> elo:int -> pos:JsonProvider+Pos -> life:int -> gold:int -> mineCount:int -> spawnPos:JsonProvider+Pos -> crashed:bool -> JsonProvider+Hero
     JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))
@@ -133,7 +133,7 @@ class JsonProvider+Hero : FDR.IJsonDocument
 
     member Crashed: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "crashed")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member Elo: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "elo")
@@ -172,7 +172,7 @@ class JsonProvider+Hero : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Board : FDR.IJsonDocument
+class JsonProvider+Board : FDR.BaseTypes.IJsonDocument
     new : size:int -> tiles:string -> JsonProvider+Board
     JsonRuntime.CreateRecord([| ("size",
                                  (size :> obj))
@@ -193,7 +193,7 @@ class JsonProvider+Board : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Pos : FDR.IJsonDocument
+class JsonProvider+Pos : FDR.BaseTypes.IJsonDocument
     new : x:int -> y:int -> JsonProvider+Pos
     JsonRuntime.CreateRecord([| ("x",
                                  (x :> obj))

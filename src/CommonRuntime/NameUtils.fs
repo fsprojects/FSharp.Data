@@ -93,8 +93,11 @@ let uniqueGenerator niceName =
     set.Add name |> ignore
     name
 
-let capitalizeFirstLetter (s:string) =
-    (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
+let capitalizeFirstLetter (s:string) =    
+    match s.Length with
+        | 0 -> ""
+        | 1 -> (Char.ToUpperInvariant s.[0]).ToString()                
+        | _ -> (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive 

@@ -11,6 +11,7 @@ open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
 
+/// Represents an HTML attribute. The name is always normalized to lowercase
 type HtmlAttribute = 
 
     private | HtmlAttribute of name:string * value:string    
@@ -23,8 +24,8 @@ type HtmlAttribute =
     static member New(name:string, value:string) =
         HtmlAttribute(name.ToLowerInvariant(), value)
 
-
 [<StructuredFormatDisplay("{_Print}")>]
+/// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
 
     private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
@@ -133,6 +134,7 @@ type HtmlNode =
     member x._Print = x.ToString()
 
 [<StructuredFormatDisplay("{_Print}")>]
+/// Represents an HTML document
 type HtmlDocument = 
     private | HtmlDocument of docType:string * elements:HtmlNode list
   
@@ -189,6 +191,7 @@ module internal HtmlParser =
 #endif
     let wsRegex = lazy Regex("\\s+", regexOptions)
     let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
+    let headingRegex = lazy Regex("""h\d""", regexOptions)
 
     type HtmlToken =
         | DocType of string
@@ -653,12 +656,10 @@ module internal HtmlParser =
                 let dt, tokens, content = parse' docType [] name rest
                 let e = HtmlElement(name, attributes, content)
                 parse' dt (e :: elements) expectedTagEnd tokens
-            | TagEnd name :: rest when (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) && name <> expectedTagEnd -> 
-                //this will be ignored if name is the reverse of the open tag <li></il>
-                // ignore this token
+            | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
+                // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
                 parse' docType elements expectedTagEnd rest
             | TagEnd _ :: rest -> 
-               
                 docType, rest, List.rev elements
             | Text cont :: rest ->
                 if cont = "" then

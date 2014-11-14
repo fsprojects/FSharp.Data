@@ -1,40 +1,40 @@
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider : FDR.TypedHtmlDocument
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
 
     static member AsyncGetSample: () -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
-    let f = new Func<_,_>(fun (t:TextReader) -> TypedHtmlDocument.Create(false, t))
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
 
     static member Load: stream:System.IO.Stream -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
     static member Load: reader:System.IO.TextReader -> HtmlProvider
-    TypedHtmlDocument.Create(false, reader)
+    HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
-    TypedHtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
     member Tables: HtmlProvider+TablesContainer with get
     this
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -79,7 +79,7 @@ class HtmlProvider+ListsContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
                                         let value = TextConversions.AsString(row.[0])
@@ -118,34 +118,34 @@ class HtmlProvider+TablesContainer : FDR.TypedHtmlDocument
 
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlList<string>
+class HtmlProvider+AddingSomeMoreFeatures : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+AddingSomeMoreFeatures : FDR.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
+class HtmlProvider+AddingSomeMoreFeatures : FDR.BaseTypes.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+CssToTheRescueABetterLookingTable : FDR.HtmlList<string>
+class HtmlProvider+CssToTheRescueABetterLookingTable : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+ExerciseQuestions : FDR.HtmlList<string>
+class HtmlProvider+ExerciseQuestions : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+StructuringTheTableFurther : FDR.HtmlList<string>
+class HtmlProvider+StructuringTheTableFurther : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+StructuringTheTableFurther : FDR.HtmlTable<HtmlProvider+StructuringTheTableFurther+Row>
+class HtmlProvider+StructuringTheTableFurther : FDR.BaseTypes.HtmlTable<HtmlProvider+StructuringTheTableFurther+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Summary : FDR.HtmlList<string>
+class HtmlProvider+Summary : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TheMostBasicTable : FDR.HtmlList<string>
+class HtmlProvider+TheMostBasicTable : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+TheMostBasicTable : FDR.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
+class HtmlProvider+TheMostBasicTable : FDR.BaseTypes.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
 
 [<[TypeProviderEditorHideMethods()]>]
-class HtmlProvider+Tools : FDR.HtmlList<string>
+class HtmlProvider+Tools : FDR.BaseTypes.HtmlList<string>
 
 [<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string

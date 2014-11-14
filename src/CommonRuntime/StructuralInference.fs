@@ -5,6 +5,7 @@ open System
 open System.Diagnostics
 open System.Collections.Generic
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -242,6 +243,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
+  let (|ParseNoCulture|_|) func value = func value
 
   let asGuid _ value = TextConversions.AsGuid value
 
@@ -278,7 +280,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | "" -> null
   | Parse TextConversions.AsInteger 0 -> typeof<Bit0>
   | Parse TextConversions.AsInteger 1 -> typeof<Bit1>
-  | Parse TextConversions.AsBoolean _ -> typeof<bool>
+  | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>

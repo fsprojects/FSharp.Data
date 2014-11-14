@@ -17,9 +17,6 @@ let charRefsTestCases =
     JsonValue.Load(__SOURCE_DIRECTORY__ + "/data/charrefs.json")?items.AsArray()
     |> Array.map (fun x -> [| x?key.AsString(); x?characters.AsString() |])
 
-///When using `data\charrefs-full.json` there seems to be some encoding problems
-///and equality issues on these characters however this gives a resonable 
-///cross-section of the named char refs in the HTML standard. 
 [<Test>]
 [<TestCaseSource "charRefsTestCases">]
 let ``Should substitute char references``(ref:string, result:string) = 

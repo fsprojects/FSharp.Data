@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Root : FDR.IJsonDocument
+class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : intLike:int -> boolLike1:bool -> boolLike2:bool -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("intLike",
                                  (intLike :> obj))
@@ -39,11 +39,11 @@ class JsonProvider+Root : FDR.IJsonDocument
 
     member BoolLike1: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolLike1")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member BoolLike2: bool with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "boolLike2")
-    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean("", value.JsonOpt), value.JsonOpt)
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
     member IntLike: int with get
     let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "intLike")

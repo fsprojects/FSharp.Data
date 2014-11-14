@@ -25,7 +25,7 @@ class JsonProvider
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+WorldBank : FDR.IJsonDocument
+class JsonProvider+WorldBank : FDR.BaseTypes.IJsonDocument
     new : array:JsonProvider+Record[] -> record:JsonProvider+Record2 -> JsonProvider+WorldBank
     JsonRuntime.CreateArray([| (array :> obj)
                                (record :> obj) |], "")
@@ -42,7 +42,7 @@ class JsonProvider+WorldBank : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Record : FDR.IJsonDocument
+class JsonProvider+Record : FDR.BaseTypes.IJsonDocument
     new : indicator:JsonProvider+Indicator -> country:JsonProvider+Indicator -> value:decimal option -> decimal:int -> date:int -> JsonProvider+Record
     JsonRuntime.CreateRecord([| ("indicator",
                                  (indicator :> obj))
@@ -78,7 +78,7 @@ class JsonProvider+Record : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Record2 : FDR.IJsonDocument
+class JsonProvider+Record2 : FDR.BaseTypes.IJsonDocument
     new : page:int -> pages:int -> perPage:int -> total:int -> JsonProvider+Record2
     JsonRuntime.CreateRecord([| ("page",
                                  (page :> obj))
@@ -111,7 +111,7 @@ class JsonProvider+Record2 : FDR.IJsonDocument
 
 [<[TypeProviderEditorHideMethods()]>]
 [<[AllowNullLiteral((Boolean)False)]>]
-class JsonProvider+Indicator : FDR.IJsonDocument
+class JsonProvider+Indicator : FDR.BaseTypes.IJsonDocument
     new : id:string -> value:string -> JsonProvider+Indicator
     JsonRuntime.CreateRecord([| ("id",
                                  (id :> obj))

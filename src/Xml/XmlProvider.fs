@@ -7,6 +7,7 @@ open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 
 // ----------------------------------------------------------------------------------------------
 

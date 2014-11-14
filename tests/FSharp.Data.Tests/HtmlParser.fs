@@ -7,7 +7,6 @@
 module FSharp.Data.Tests.HtmlParser
 #endif
 
-
 open System.Globalization
 open NUnit.Framework
 open FsUnit
@@ -440,7 +439,8 @@ let ``Can handle CDATA blocks``() =
     let result = 
         doc
         |> HtmlDocument.descendantsNamed false [ "li" ]
-        |> List.map (HtmlNode.innerText)
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
     result |> should equal [ "1"; "2"]
 
 [<Test>]
@@ -461,7 +461,8 @@ let ``Can parse nested lists correctly when stops on recurse``() =
     let result = 
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed false [ "li" ]
-        |> List.map (HtmlNode.innerText)
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
     result |> should equal [ "12"; "3"; "4" ]
 
 [<Test>]
@@ -482,34 +483,35 @@ let ``Can parse nested lists correctly when continues on recurse``() =
     let result = 
         (HtmlDocument.Parse html)
         |> HtmlDocument.descendantsNamed true [ "li" ]
-        |> List.map (HtmlNode.innerText)
+        |> Seq.map (HtmlNode.innerText)
+        |> Seq.toList
     result |> should equal [ "12"; "1"; "2"; "3"; "4" ]
 
 [<Test>]
 let ``Can parse national rail mobile site correctly``() = 
     HtmlDocument.Load "data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
-    |> List.length
+    |> Seq.length
     |> should equal 68
     HtmlDocument.Load "data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li" ]
-    |> List.length
+    |> Seq.length
     |> should equal 15
     HtmlDocument.Load "data/UKDepartures.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
-    |> List.length
+    |> Seq.length
     |> should equal 69
     HtmlDocument.Load "data/UKLiveProgress.html"
     |> HtmlDocument.descendantsNamed false [ "li"; "hr" ]
-    |> List.length
+    |> Seq.length
     |> should equal 17
 
 [<Test>]
 let ``Can parse zoopla site correctly``() = 
     HtmlDocument.Load "data/zoopla.html"
     |> HtmlDocument.descendantsNamed true ["li"]
-    |> List.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
-    |> List.length 
+    |> Seq.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
+    |> Seq.length 
     |> should equal 100
 
 [<Test>]
@@ -519,5 +521,4 @@ let ``Doesn't insert whitespace on attribute name when there are two whitespace 
     |> List.head
     |> HtmlNode.attributeValue "data-modal-iframe"
     |> should equal "https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27"
-
 

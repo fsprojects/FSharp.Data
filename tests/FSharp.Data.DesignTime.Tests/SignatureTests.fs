@@ -15,14 +15,17 @@ let (++) a b = Path.Combine(a, b)
 
 let sourceDirectory = __SOURCE_DIRECTORY__
 
-let testCases = 
+let testCasesTuple = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
+let testCases = 
+    testCasesTuple
+    |> Array.map snd
+
 let testCasesForUSA =
     testCases
-    |> Array.map snd
     |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
 
 let expectedDirectory = sourceDirectory ++ "expected" 
@@ -36,7 +39,7 @@ let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "port
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
-    for (sample,testCase) in testCases do
+    for (sample, testCase) in testCasesTuple do
         try
             testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
             |> ignore

@@ -1,3 +1,10 @@
+#### 2.1.0 - November 2 2014
+* Fixed parsing of HTML attributes without value.
+* Fixed parsing of non-breaking spaces in HTML.
+* Fixed parsing of CDATA in HTML script elements.
+* Support for more currency symbols and percent, per mil, and basic point symbols when parsing numbers.
+* Promoted TextConversions to top level.
+
 #### 2.1.0-beta2 - October 21 2014
 * Improve generated table names in HtmlProvider.
 * Added support for lists in addition to tables in HtmlProvider.
