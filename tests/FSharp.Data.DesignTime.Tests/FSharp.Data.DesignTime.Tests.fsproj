@@ -45,38 +45,6 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <ItemGroup>
-    <Compile Include="../Common/FsUnit.fs">
-      <Link>FsUnit.fs</Link>
-    </Compile>
-    <Compile Include="InferenceTests.fs" />
-    <None Include="SignatureTestCases.config" />
-    <Compile Include="SignatureTests.fs" />
-    <Compile Include="DocumentationTests.fs" />
-    <None Include="app.config" />
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FSharp.Data.DesignTime">
-      <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <Import Project="$(SolutionDir)\.paket\paket.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework'">
       <Choose>
@@ -133,8 +101,18 @@
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
+            <Reference Include="CommandLine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
             <Reference Include="FSharp.CodeFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="FSharp.Compiler.Service">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -150,6 +128,21 @@
             </Reference>
             <Reference Include="FSharp.MetadataFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="RazorEngine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="System.Web.Razor">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="fsformatting">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -187,8 +180,18 @@
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
+            <Reference Include="CommandLine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
             <Reference Include="FSharp.CodeFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="FSharp.Compiler.Service">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -204,6 +207,21 @@
             </Reference>
             <Reference Include="FSharp.MetadataFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="RazorEngine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="System.Web.Razor">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="fsformatting">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -241,8 +259,18 @@
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
+            <Reference Include="CommandLine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
             <Reference Include="FSharp.CodeFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="FSharp.Compiler.Service">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -258,6 +286,21 @@
             </Reference>
             <Reference Include="FSharp.MetadataFormat">
               <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="RazorEngine">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="System.Web.Razor">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+              <Private>True</Private>
+              <Paket>True</Paket>
+            </Reference>
+            <Reference Include="fsformatting">
+              <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
               <Private>True</Private>
               <Paket>True</Paket>
             </Reference>
@@ -297,8 +340,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -314,6 +367,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -351,8 +419,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -368,6 +446,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -405,8 +498,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -422,6 +525,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -459,8 +577,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -476,6 +604,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -513,8 +656,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -530,6 +683,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -567,8 +735,18 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="CommandLine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="FSharp.Compiler.Service">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -584,6 +762,21 @@
         </Reference>
         <Reference Include="FSharp.MetadataFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.MetadataFormat.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="RazorEngine">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Web.Razor">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="fsformatting">
+          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -605,4 +798,36 @@
       </ItemGroup>
     </Otherwise>
   </Choose>
+  <ItemGroup>
+    <Compile Include="../Common/FsUnit.fs">
+      <Link>FsUnit.fs</Link>
+    </Compile>
+    <Compile Include="InferenceTests.fs" />
+    <None Include="SignatureTestCases.config" />
+    <Compile Include="SignatureTests.fs" />
+    <Compile Include="DocumentationTests.fs" />
+    <None Include="app.config" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FSharp.Data.DesignTime">
+      <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)\.paket\paket.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
 </Project>

@@ -41,68 +41,6 @@
     <DocumentationFile>bin\portable47\Release\FSharp.Data.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Net\UriUtils.fs" />
-    <Compile Include="Net\Http.fs" />
-    <Compile Include="CommonRuntime\IO.fs" />
-    <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\TextConversions.fs" />
-    <Compile Include="CommonRuntime\TextRuntime.fs" />
-    <Compile Include="CommonRuntime\Pluralizer.fs" />
-    <Compile Include="CommonRuntime\NameUtils.fs" />
-    <Compile Include="CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="CommonRuntime\StructuralInference.fs" />
-    <Compile Include="Json\JsonValue.fs" />
-    <Compile Include="Json\JsonConversions.fs" />
-    <Compile Include="Json\JsonExtensions.fs" />
-    <Compile Include="Json\JsonRuntime.fs" />
-    <Compile Include="Xml\XmlRuntime.fs" />
-    <Compile Include="Csv\CsvRuntime.fs" />
-    <Compile Include="Csv\CsvFile.fs" />
-    <Compile Include="Csv\CsvExtensions.fs" />
-    <Compile Include="Csv\CsvInference.fs" />
-    <Compile Include="WorldBank\WorldBankRuntime.fs" />
-    <Compile Include="Freebase\FreebaseRequests.fs" />
-    <Compile Include="Freebase\FreebaseSchema.fs" />
-    <Compile Include="Freebase\FreebaseRuntime.fs" />
-    <Compile Include="Freebase\FreebaseOperators.fs" />
-    <Compile Include="Html\HtmlCharRefs.fs" />
-    <Compile Include="Html\HtmlParser.fs" />
-    <Compile Include="Html\HtmlOperations.fs" />
-    <Compile Include="Html\HtmlInference.fs" />
-    <Compile Include="Html\HtmlRuntime.fs" />
-    <Compile Include="Runtime.fs" />
-    <Compile Include="AssemblyInfo.Portable47.fs" />
-    <None Include="paket.references" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETPortable\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <PropertyGroup>
-    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
-  </PropertyGroup>
-  <Import Project="DefineConstants.targets" />
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target> -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable47" />
-    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable47" />
-    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(SolutionDir)bin\portable47" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable47" />
-  </Target>
-  <Import Project="$(SolutionDir)\.paket\paket.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework'">
       <Choose>
@@ -189,4 +127,66 @@
       </ItemGroup>
     </Otherwise>
   </Choose>
+  <ItemGroup>
+    <Compile Include="Net\UriUtils.fs" />
+    <Compile Include="Net\Http.fs" />
+    <Compile Include="CommonRuntime\IO.fs" />
+    <Compile Include="CommonRuntime\Caching.fs" />
+    <Compile Include="CommonRuntime\TextConversions.fs" />
+    <Compile Include="CommonRuntime\TextRuntime.fs" />
+    <Compile Include="CommonRuntime\Pluralizer.fs" />
+    <Compile Include="CommonRuntime\NameUtils.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="Json\JsonValue.fs" />
+    <Compile Include="Json\JsonConversions.fs" />
+    <Compile Include="Json\JsonExtensions.fs" />
+    <Compile Include="Json\JsonRuntime.fs" />
+    <Compile Include="Xml\XmlRuntime.fs" />
+    <Compile Include="Csv\CsvRuntime.fs" />
+    <Compile Include="Csv\CsvFile.fs" />
+    <Compile Include="Csv\CsvExtensions.fs" />
+    <Compile Include="Csv\CsvInference.fs" />
+    <Compile Include="WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="Freebase\FreebaseRequests.fs" />
+    <Compile Include="Freebase\FreebaseSchema.fs" />
+    <Compile Include="Freebase\FreebaseRuntime.fs" />
+    <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlCharRefs.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlOperations.fs" />
+    <Compile Include="Html\HtmlInference.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
+    <Compile Include="Runtime.fs" />
+    <Compile Include="AssemblyInfo.Portable47.fs" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETPortable\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="DefineConstants.targets" />
+  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable47" />
+    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable47" />
+    <Copy Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(SolutionDir)bin\portable47" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable47" />
+  </Target>
+  <Import Project="$(SolutionDir)\.paket\paket.targets" />
 </Project>

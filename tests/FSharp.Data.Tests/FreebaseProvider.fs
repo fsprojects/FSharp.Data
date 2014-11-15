@@ -96,11 +96,7 @@ let ``Can access the webpages for music composers``() =
         |> Seq.map (fun composer -> String.concat "\n" composer.``Topical webpage``)
         |> Seq.find (not << String.IsNullOrWhiteSpace)
 
-#if TEAM_CITY
-    webPage.Split('\n').[0] |> should equal "http://www.discogs.com/artist/John+Barry"
-#else
     webPage.Split('\n').[0] |> should equal "http://www.quantz.info/"
-#endif
 
 [<Test>]
 let ``Can access the webpages of stock exchanges``() =
@@ -185,13 +181,7 @@ let ``tvrage_id is not unique in mql query``() =
     |> Seq.head
     |> should equal ("Jack Abramoff", "1958-02-28")
 
-#if TEAM_CITY
-// US
-let ghanaCodes = [|"GHA"; "GH"|]
-#else
-// Everywhere else
 let ghanaCodes = [|"GHA"|]
-#endif
 
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
