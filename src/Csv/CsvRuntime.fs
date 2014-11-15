@@ -139,12 +139,8 @@ module private CsvHelpers =
       Quote = quote }
 
   // Always ignore empty rows
-  // On files with more than 3 columns, ignore rows with only 1 value (they're probably comments)
-  let ignoreRow untypedRow =
-    if Array.length untypedRow > 3 then
-        Array.sumBy (fun s -> if String.IsNullOrWhiteSpace s then 0 else 1) untypedRow <= 1
-    else
-        Array.forall String.IsNullOrWhiteSpace untypedRow
+  let inline ignoreRow untypedRow =
+    Array.forall String.IsNullOrWhiteSpace untypedRow
 
   let parseIntoTypedRows newReader 
                          ignoreErrors 

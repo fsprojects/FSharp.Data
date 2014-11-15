@@ -145,7 +145,7 @@ module HtmlRuntime =
 
                 let data =
                     let getContents contents = 
-                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
+                        (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
                     match cell with
                     | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
                     | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
