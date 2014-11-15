@@ -1,3 +1,8 @@
+#### 2.1.1 - Unreleased
+* Add SkipRows parameter to CsvProvider.
+* Improved parsing of numbers.
+* Fixed XmlProvider so InferTypesFromValues=false works for elements in addition to attributes.
+
 #### 2.1.0 - November 2 2014
 * Fixed parsing of HTML attributes without value.
 * Fixed parsing of non-breaking spaces in HTML.
