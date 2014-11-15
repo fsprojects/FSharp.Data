@@ -1150,7 +1150,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     inherit Type()
 
     do match container with
-       | TypeContainer.Namespace _ -> FSharp.Data.Runtime.IO.log (sprintf "Creating ProvidedTypeDefinition %s [%d]" className (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode this))
+       | TypeContainer.Namespace _ -> ProviderImplementation.IO.log (sprintf "Creating ProvidedTypeDefinition %s [%d]" className (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode this))
        | _ -> ()
 
     // state

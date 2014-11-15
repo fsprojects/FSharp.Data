@@ -172,5 +172,16 @@
       <Private>True</Private>
       <Paket>True</Paket>
     </Reference>
+    <Reference Include="FSharp.Data">
+      <HintPath>..\..\bin\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.DesignTime">
+      <HintPath>..\..\bin\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
 </Project>

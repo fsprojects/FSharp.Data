@@ -5,6 +5,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Text.RegularExpressions
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
@@ -23,9 +24,11 @@ module internal HtmlGenerator =
 
     let private getPropertyName = NameUtils.capitalizeFirstLetter
     
+    let private invalidTypeNameRegex = Regex("[^0-9a-zA-Z_]+", RegexOptions.Compiled)
+
     let private typeNameGenerator() =
         NameUtils.uniqueGenerator <| fun s ->
-            HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
+            invalidTypeNameRegex.Replace(s, " ")
             |> NameUtils.nicePascalName
 
     let private createTableType replacer getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 

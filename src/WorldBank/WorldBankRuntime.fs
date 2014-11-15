@@ -20,26 +20,26 @@ module Implementation =
     let private retryCount = 5
     let private parallelIndicatorPageDownloads = 8
 
-    type internal IndicatorRecord = 
+    type IndicatorRecord = 
         { Id : string
           Name: string
           TopicIds : string list
           Source : string
           Description : string }
 
-    type internal CountryRecord = 
+    type CountryRecord = 
         { Id : string
           Name : string
           CapitalCity : string
           Region : string }
         member x.IsRegion = x.Region = "Aggregates"
 
-    type internal TopicRecord = 
+    type TopicRecord = 
         { Id : string
           Name : string
           Description : string }
 
-    type internal ServiceConnection(restCache:ICache<_>,serviceUrl:string, sources) =
+    type ServiceConnection(restCache:ICache<_>,serviceUrl:string, sources) =
 
         let worldBankUrl (functions: string list) (props: (string * string) list) = 
             let url = 
@@ -167,14 +167,14 @@ module Implementation =
         let regions = lazy (getRegions() |> Async.RunSynchronously)
         let regionsIndexed = lazy (regions.Force() |> dict)
 
-        member internal __.Topics = topics.Force()
+        member __.Topics = topics.Force()
         member internal __.TopicsIndexed = topicsIndexed.Force()
-        member internal __.Indicators = indicators.Force()
+        member __.Indicators = indicators.Force()
         member internal __.IndicatorsIndexed = indicatorsIndexed.Force()
         member internal __.IndicatorsByTopic = indicatorsByTopic.Force()
-        member internal __.Countries = countries.Force()
+        member __.Countries = countries.Force()
         member internal __.CountriesIndexed = countriesIndexed.Force()
-        member internal __.Regions = regions.Force()
+        member __.Regions = regions.Force()
         member internal __.RegionsIndexed = regionsIndexed.Force()
         /// At runtime, download the data
         member internal __.GetDataAsync(countryOrRegionCode, indicatorCode) = 

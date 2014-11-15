@@ -39,16 +39,7 @@
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Net\UriUtils.fs" />
-    <Compile Include="Net\Http.fs" />
-    <Compile Include="CommonRuntime\IO.fs" />
-    <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\TextConversions.fs" />
-    <Compile Include="CommonRuntime\TextRuntime.fs" />
-    <Compile Include="CommonRuntime\Pluralizer.fs" />
-    <Compile Include="CommonRuntime\NameUtils.fs" />
-    <Compile Include="CommonRuntime\StructuralTypes.fs" />
-    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonProviderImplementation\IO.fs" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
@@ -57,31 +48,22 @@
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
     <Compile Include="CommonProviderImplementation\Debug.fs" />
-    <Compile Include="Json\JsonValue.fs" />
-    <Compile Include="Json\JsonConversions.fs" />
-    <Compile Include="Json\JsonExtensions.fs" />
-    <Compile Include="Json\JsonRuntime.fs" />
     <Compile Include="Json\JsonInference.fs" />
     <Compile Include="Json\JsonConversionsGenerator.fs" />
     <Compile Include="Json\JsonGenerator.fs" />
     <Compile Include="Json\JsonProvider.fs" />
-    <Compile Include="Xml\XmlRuntime.fs" />
     <Compile Include="Xml\XmlInference.fs" />
     <Compile Include="Xml\XmlGenerator.fs" />
     <Compile Include="Xml\XmlProvider.fs" />
-    <Compile Include="Csv\CsvRuntime.fs" />
-    <Compile Include="Csv\CsvFile.fs" />
-    <Compile Include="Csv\CsvExtensions.fs" />
-    <Compile Include="Csv\CsvInference.fs" />
     <Compile Include="Csv\CsvGenerator.fs" />
     <Compile Include="Csv\CsvProvider.fs" />
-    <Compile Include="WorldBank\WorldBankRuntime.fs" />
     <Compile Include="WorldBank\WorldBankProvider.fs" />
     <Compile Include="Html\HtmlCharRefs.fs" />
     <Compile Include="Html\HtmlParser.fs" />
     <Compile Include="Html\HtmlOperations.fs" />
     <Compile Include="Html\HtmlInference.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
+    <Compile Include="Freebase\FreebaseProvider.fs" />
     <Compile Include="Html\HtmlGenerator.fs" />
     <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
@@ -99,6 +81,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Import Project="DefineConstants.targets" />
+  <ItemGroup>
+    <ProjectReference Include="FSharp.Data.fsproj">
+      <Name>FSharp.Data</Name>
+      <Project>{6ebfde55-9687-40a9-8c1a-6e204ecb117f}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -120,14 +109,9 @@
   <Target Name="BeforeBuild">
   </Target> -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin\portable47" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin\portable47" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin\portable47" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin\portable259" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin\portable259" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
-    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin\portable259" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(ProjectDir)..\bin" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).pdb')" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).mdb" DestinationFolder="$(ProjectDir)..\bin" Condition="Exists('$(ProjectDir)$(OutDir)$(TargetName).mdb')" />
     <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(ProjectDir)..\bin" />
   </Target>
 </Project>

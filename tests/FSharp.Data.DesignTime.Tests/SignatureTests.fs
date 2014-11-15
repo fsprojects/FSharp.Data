@@ -1,5 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../bin/FSharp.Data.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else

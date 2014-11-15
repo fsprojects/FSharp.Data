@@ -14,6 +14,7 @@ open FSharp.Data.Runtime.IO
 open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
+open ProviderImplementation.IO
 open ProviderImplementation.ProvidedTypes
 
 // ----------------------------------------------------------------------------------------------
@@ -241,7 +242,7 @@ module ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                asyncReadText (Some (tp, fullTypeName)) resolver formatName encodingStr uri
+                asyncReadText (IO.watchForChanges (tp, fullTypeName)) resolver formatName encodingStr uri
                 |> Async.RunSynchronously
     
             try
