@@ -114,7 +114,11 @@ module HtmlRuntime =
             HtmlParser.wsRegex.Value.Replace(str.Replace('–', '-'), " ").Replace("[edit]", null).Trim()
 
         match deriveFromSibling element parents with
-        | Some e -> cleanup(e.InnerText())
+        | Some e -> 
+            let innerText = e.InnerText()
+            if String.IsNullOrWhiteSpace(innerText)
+            then defaultName
+            else cleanup(innerText)
         | _ ->
                 match List.ofSeq <| element.Descendants("caption", false) with
                 | [] ->

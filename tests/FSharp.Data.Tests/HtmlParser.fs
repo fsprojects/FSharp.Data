@@ -521,3 +521,4 @@ let ``Doesn't insert whitespace on attribute name when there are two whitespace 
     |> List.head
     |> HtmlNode.attributeValue "data-modal-iframe"
     |> should equal "https://class.coursera.org/mathematicalmethods-001/lecture/view?lecture_id=27"
+
