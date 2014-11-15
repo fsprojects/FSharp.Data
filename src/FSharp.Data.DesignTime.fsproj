@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Debug\FSharp.Data.DesignTime.xml</DocumentationFile>
-    <StartAction>Program</StartAction>
+    <StartAction>Project</StartAction>
     <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe</StartProgram>
     <StartArguments>C:\Git\FSharp.Data\TestApps.Console.Portable259.sln</StartArguments>
     <OtherFlags>--warnon:1182</OtherFlags>
@@ -43,7 +43,6 @@
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
     <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
-    <Compile Include="CommonProviderImplementation\AssemblyReplacer.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />

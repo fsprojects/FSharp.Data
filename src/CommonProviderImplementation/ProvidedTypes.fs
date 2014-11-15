@@ -1265,8 +1265,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
     member this.ResetEnclosingType (ty) = 
         container <- TypeContainer.Type ty
-    new (assembly:Assembly,namespaceName,className,baseType) = new ProvidedTypeDefinition(TypeContainer.Namespace (assembly,namespaceName), className, baseType)
-    new (className,baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
+    new (assembly:Assembly,namespaceName,className, baseType) = new ProvidedTypeDefinition(TypeContainer.Namespace (assembly,namespaceName), className, baseType)
+    new (className, baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
     // state ops
 
     override this.UnderlyingSystemType = typeof<Type>

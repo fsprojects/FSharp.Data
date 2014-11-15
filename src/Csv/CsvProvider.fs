@@ -22,7 +22,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.CsvProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let asm, version = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let csvProvTy = ProvidedTypeDefinition(asm, ns, "CsvProvider", Some typeof<obj>)
 
@@ -77,19 +77,19 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
         inferredFields 
-        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
+        |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) 
 
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
       
-      let paramType = (replacer.ToRuntime typedefof<seq<_>>).MakeGenericType(rowType)
+      let paramType = typedefof<seq<_>>.MakeGenericType(rowType)
       let headers = 
         match sampleCsv.Headers with 
         | None -> <@@ None: string[] option @@> 
         | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
 
       let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], InvokeCode = (fun (Singleton paramValue) ->
-        let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
+        let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, headers,  sampleCsv.NumberOfColumns, separators, quote)
         Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
        
@@ -97,13 +97,13 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
           let body = 
-            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
+            csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, reader, 
                                               separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName
+                 getSpecFromSamples version this cfg encodingStr resolutionFolder resource typeName
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

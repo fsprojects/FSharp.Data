@@ -31,7 +31,7 @@ module internal HtmlGenerator =
             invalidTypeNameRegex.Replace(s, " ")
             |> NameUtils.nicePascalName
 
-    let private createTableType replacer getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
+    let private createTableType getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
 
         let columns =  
             match table.InferedProperties with
@@ -42,7 +42,7 @@ module internal HtmlGenerator =
                                            (if table.HasHeaders.Value then table.Rows.[1..] else table.Rows)
 
         let fields = columns |> List.mapi (fun index field ->
-            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
+            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr field
             { TypeForTuple = typWithoutMeasure
               Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> if columns.Length = 1 then row else Expr.TupleGet(row, index))
               Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )
@@ -51,9 +51,7 @@ module internal HtmlGenerator =
         let rowErasedType =
             if fields.Length = 1
             then fields.Head.TypeForTuple
-            else
-                FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
-            |> replacer.ToRuntime
+            else FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
         
         let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true, NonNullable = true)
         
@@ -61,8 +59,8 @@ module internal HtmlGenerator =
         for field in fields do
             rowType.AddMember field.Property
         
-        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowErasedType)
-        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
+        let tableErasedWithRowErasedType = typedefof<HtmlTable<_>>.MakeGenericType(rowErasedType)
+        let tableErasedTypeWithGeneratedRow = typedefof<HtmlTable<_>>.MakeGenericType(rowType)
         
         let rowConverter =
             let rowVar = Var("row", typeof<string[]>)
@@ -71,7 +69,6 @@ module internal HtmlGenerator =
               if fields.Length = 1
               then fields.Head.Convert rowVarExpr
               else Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
-              |> replacer.ToRuntime
         
             let delegateType = 
               typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
@@ -88,28 +85,26 @@ module internal HtmlGenerator =
         
         create, tableType
 
-    let private createListType replacer getListTypeName (inferenceParameters, missingValuesStr, cultureStr) (list:HtmlList) =
+    let private createListType getListTypeName (inferenceParameters, missingValuesStr, cultureStr) (list:HtmlList) =
         
         let columns = HtmlInference.inferListType inferenceParameters list.Values
 
         let listItemType, conv =
             match columns with
             | InferedType.Primitive(typ,_, optional) -> 
-                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
+                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
                 typ, conv
             | _ -> 
-                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<string>, false, None))
+                let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<string>, false, None))
                 typ, conv
                         
-        let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
+        let listTypeWithErasedType = typedefof<HtmlList<_>>.MakeGenericType(listItemType)
         
         let rowConverter =
             
             let rowVar = Var("row", typeof<string>)
             let rowVarExpr = Expr.Var rowVar
-            let body = 
-              conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
-              |> replacer.ToRuntime
+            let body = conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
         
             let delegateType = 
               typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
@@ -124,7 +119,7 @@ module internal HtmlGenerator =
         let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true, NonNullable = true)
         create, listType
 
-    let private createDefinitionListType (replacer:AssemblyReplacer) getDefinitionListTypeName (inferenceParameters, missingValuesStr, cultureStr) (definitionList:HtmlDefinitionList) =
+    let private createDefinitionListType getDefinitionListTypeName (inferenceParameters, missingValuesStr, cultureStr) (definitionList:HtmlDefinitionList) =
 
         let getListTypeName = typeNameGenerator()
 
@@ -135,13 +130,13 @@ module internal HtmlGenerator =
             let listItemType, conv =
                 match columns with
                 | StructuralTypes.InferedType.Primitive(typ,_, optional) -> 
-                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
+                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typ, optional, None))
                     typ, conv
                 | _ -> 
-                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
+                    let typ, _, conv, _convBack = ConversionsGenerator.convertStringValue missingValuesStr cultureStr (StructuralTypes.PrimitiveInferedProperty.Create("", typeof<String>, false, None))
                     typ, conv
                         
-            let listTypeWithErasedType = (replacer.ToRuntime typedefof<HtmlList<_>>).MakeGenericType(listItemType)
+            let listTypeWithErasedType = typedefof<HtmlList<_>>.MakeGenericType(listItemType)
 
             let rowConverter =
                 
@@ -149,7 +144,6 @@ module internal HtmlGenerator =
                 let rowVarExpr = Expr.Var rowVar
                 let body = 
                   conv <@ TextConversions.AsString(%%rowVarExpr:string) @>
-                  |> replacer.ToRuntime
             
                 let delegateType = 
                   typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
@@ -166,7 +160,7 @@ module internal HtmlGenerator =
 
             prop, listType
             
-        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
+        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some typeof<HtmlDocument>, HideObjectMethods = true)
         
         for prop, listType in List.mapi createListType definitionList.Definitions do
             definitionListType.AddMember listType
@@ -174,9 +168,9 @@ module internal HtmlGenerator =
 
         definitionListType
 
-    let generateTypes asm ns typeName parameters (replacer:AssemblyReplacer) (htmlObjects:HtmlObject list) =
+    let generateTypes asm ns typeName parameters (htmlObjects:HtmlObject list) =
 
-        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
+        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<HtmlDocument>, HideObjectMethods = true)
         
         let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
 
@@ -188,7 +182,7 @@ module internal HtmlGenerator =
             match containerTypes.TryGetValue(name) with
             | true, t -> t
             | false, _ ->
-                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
+                let containerType = ProvidedTypeDefinition(name + "Container", Some typeof<HtmlDocument>, HideObjectMethods = true)
                 htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
                 htmlType.AddMember containerType
                 containerTypes.Add(name, containerType)
@@ -198,17 +192,17 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                  let containerType = getOrCreateContainer "Tables"
-                 let create, tableType = createTableType replacer getTableTypeName parameters table
+                 let create, tableType = createTableType getTableTypeName parameters table
                  htmlType.AddMember tableType
                  containerType.AddMember <| ProvidedProperty(getPropertyName table.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List list ->
                 let containerType = getOrCreateContainer "Lists"
-                let create, tableType = createListType replacer getListTypeName parameters list
+                let create, tableType = createListType getListTypeName parameters list
                 htmlType.AddMember tableType
                 containerType.AddMember <| ProvidedProperty(getPropertyName list.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | DefinitionList definitionList ->
                 let containerType = getOrCreateContainer "DefinitionLists"
-                let tableType = createDefinitionListType replacer getDefinitionListTypeName parameters definitionList
+                let tableType = createDefinitionListType getDefinitionListTypeName parameters definitionList
                 htmlType.AddMember tableType
                 containerType.AddMember <| ProvidedProperty(getPropertyName definitionList.Name, tableType, GetterCode = fun (Singleton doc) -> doc)
 
