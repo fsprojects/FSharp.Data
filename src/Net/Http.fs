@@ -553,7 +553,8 @@ module private HttpHelpers =
                 mimeType = HttpContentTypes.JavaScript ||
                 mimeType = "application/ecmascript" ||
                 mimeType = "application/xml-dtd" ||
-                mimeType.StartsWith "application/" && mimeType.EndsWith "+xml"
+                mimeType.StartsWith "application/" && mimeType.EndsWith "+xml" ||
+                mimeType.StartsWith "application/" && mimeType.EndsWith "+json"
             mimeType.Split([| ';' |], StringSplitOptions.RemoveEmptyEntries)
             |> Array.exists isText
 
