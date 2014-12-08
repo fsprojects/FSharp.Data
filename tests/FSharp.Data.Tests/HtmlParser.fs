@@ -404,9 +404,7 @@ let ``Ignores spurious closing tags``() =
   </a>
 </li>"""
     let result = (HtmlDocument.Parse html).ToString().Replace("\r", null)
-    result
-    |> shouldEqual
-    <| expected.Replace("\r", null)
+    result |> shouldEqual (expected.Replace("\r", null))
 
 [<Test>]
 let ``Renders textarea closing tag``() =
