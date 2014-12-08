@@ -43,7 +43,7 @@ $(function(){
 
 ### How to get F# Data
 
-* The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>. [![NuGet Status](http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data/)
+* The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>. [![NuGet Status](//img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data/)
 
 * In addition to the official releases, you can also get NuGet packages from the [Continuous Integration 
   package source](https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782).
