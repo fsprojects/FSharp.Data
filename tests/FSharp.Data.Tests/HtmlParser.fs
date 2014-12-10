@@ -404,9 +404,14 @@ let ``Ignores spurious closing tags``() =
   </a>
 </li>"""
     let result = (HtmlDocument.Parse html).ToString().Replace("\r", null)
-    result
-    |> shouldEqual
-    <| expected.Replace("\r", null)
+    result |> shouldEqual (expected.Replace("\r", null))
+
+[<Test>]
+let ``Renders textarea closing tag``() =
+    let html = """<textarea cols="40" rows="2"></textarea>"""
+    let result = (HtmlDocument.Parse html).ToString()
+
+    result |> shouldEqual """<textarea cols="40" rows="2"></textarea>"""
 
 [<Test>]
 let ``Can handle CDATA blocks``() = 
