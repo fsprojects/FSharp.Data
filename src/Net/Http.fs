@@ -360,16 +360,32 @@ module private HttpHelpers =
             false
 #endif
 
-    let writeBody (req:HttpWebRequest) (postBytes:byte[]) = async { 
+    let writeBody (req:HttpWebRequest) (postBytes:byte[]) =
+        // On Mono, a bug in HttpWebRequest causes a deadlock when using it with Async.FromBeginEnd
+        // To work around, we use a different FromBeginEnd
+        // See https://github.com/fsharp/FSharp.Data/issues/762
+        // and https://bugzilla.xamarin.com/show_bug.cgi?id=25519
+        let alternateFromBeginEnd beginAction endAction obj =
+            Threading.Tasks.TaskFactory().FromAsync(
+                Func<_, _, _>(fun c s -> beginAction(c, s)),
+                Func<_, _>(endAction),
+                obj)
+            |> Async.AwaitTask
+
+        async {
 #if FX_NO_WEBREQUEST_CONTENTLENGTH
-        ignore (req?ContentLength <- int64 postBytes.Length)
+            ignore (req?ContentLength <- int64 postBytes.Length)
 #else
-        req.ContentLength <- int64 postBytes.Length
+            req.ContentLength <- int64 postBytes.Length
 #endif
-        use! output = Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
-        do! output.AsyncWrite(postBytes, 0, postBytes.Length)
-        output.Flush()
-    }
+            use! output =
+                if Type.GetType("Mono.Runtime") <> null
+                then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
+                else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
+
+            do! output.AsyncWrite(postBytes, 0, postBytes.Length)
+            output.Flush()
+        }
 
     let reraisePreserveStackTrace (e:Exception) =
         try
