@@ -366,9 +366,9 @@ module private HttpHelpers =
         // See https://github.com/fsharp/FSharp.Data/issues/762
         // and https://bugzilla.xamarin.com/show_bug.cgi?id=25519
         let alternateFromBeginEnd beginAction endAction obj =
-            System.Threading.Tasks.TaskFactory().FromAsync(
-                System.Func<_, _, _>(fun c s -> beginAction(c, s)),
-                System.Func<_, _>(endAction),
+            Threading.Tasks.TaskFactory().FromAsync(
+                Func<_, _, _>(fun c s -> beginAction(c, s)),
+                Func<_, _>(endAction),
                 obj)
             |> Async.AwaitTask
 
@@ -379,7 +379,7 @@ module private HttpHelpers =
             req.ContentLength <- int64 postBytes.Length
 #endif
             use! output =
-                if System.Type.GetType("Mono.Runtime") <> null
+                if Type.GetType("Mono.Runtime") <> null
                 then alternateFromBeginEnd req.BeginGetRequestStream req.EndGetRequestStream req
                 else Async.FromBeginEnd(req.BeginGetRequestStream, req.EndGetRequestStream)
 
