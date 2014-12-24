@@ -2,6 +2,7 @@
 * Add SkipRows parameter to CsvProvider.
 * Improved parsing of numbers.
 * Fixed XmlProvider so InferTypesFromValues=false works for elements in addition to attributes.
+* Workarounded Mono bug causing HTTP POST requests to hang.
 
 #### 2.1.0 - November 2 2014
 * Fixed parsing of HTML attributes without value.
