@@ -170,6 +170,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\shared.xsd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data/reddit.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
