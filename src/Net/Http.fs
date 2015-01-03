@@ -28,6 +28,9 @@ open FSharp.Data.Runtime
 
 /// The method to use in an HTTP request
 module HttpMethod =
+
+    // RFC 2626 specifies 8 methods
+
     /// Request information about the communication options available on the request/response chain identified by the URI
     let Options = "OPTIONS"
     /// Retrieve whatever information (in the form of an entity) is identified by the URI
@@ -45,6 +48,28 @@ module HttpMethod =
     let Trace = "TRACE"
     /// Reserved for use with a proxy that can dynamically switch to being a tunnel 
     let Connect = "CONNECT"
+
+    // RFC 4918 (WebDAV) adds 7 methods
+
+    /// Retrieves properties defined on the resource identified by the request URI
+    let PropFind = "PROPFIND"
+    /// Processes instructions specified in the request body to set and/or remove properties defined on the resource identified by the request URI
+    let PropPatch = "PROPPATCH"
+    /// Creates a new collection resource at the location specified by the Request URI
+    let MkCol = "MKCOL"
+    /// Creates a duplicate of the source resource, identified by the Request-URI, in the destination resource, identified by the URI in the Destination header
+    let Copy = "COPY"
+    /// Logical equivalent of a copy, followed by consistency maintenance processing, followed by a delete of the source where all three actions are performed atomically
+    let Move = "MOVE"
+    /// Used to take out a lock of any access type on the resource identified by the request URI.
+    let Lock = "LOCK"
+    /// Removes the lock identified by the lock token from the request URI, and all other resources included in the lock
+    let Unlock = "UNLOCK"
+
+    // RFC 5789 adds one more
+
+    /// Requests that the origin server applies partial modifications contained in the entity enclosed in the request to the resource identified by the request URI
+    let Patch = "PATCH"
 
 /// Headers that can be sent in an HTTP request
 module HttpRequestHeaders =

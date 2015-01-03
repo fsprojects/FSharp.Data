@@ -1,3 +1,6 @@
+#### 2.1.2 - Unreleased
+* Added constants for more HTTP methods.
+
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
 * Improved parsing of numbers.
