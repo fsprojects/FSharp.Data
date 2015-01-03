@@ -88,6 +88,8 @@ let ``Can access Austrias national anthem by Fifa code``() =
     let anthem = country.``National anthem`` |> Seq.head
     anthem.Anthem.Name |> should equal "Land der Berge, Land am Strome"
 
+#if BUILD_SERVER
+#else
 [<Test>]
 let ``Can access the webpages for music composers``() =
 
@@ -97,6 +99,7 @@ let ``Can access the webpages for music composers``() =
         |> Seq.find (not << String.IsNullOrWhiteSpace)
 
     webPage.Split('\n').[0] |> should equal "http://www.quantz.info/"
+#endif
 
 [<Test>]
 let ``Can access the webpages of stock exchanges``() =
