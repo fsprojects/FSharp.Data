@@ -232,3 +232,253 @@ let ``Extension on complex types``() =
     items.Hat.Value.Name         |> should equal "string"
     items.Shirt.Value.Sleeve     |> should equal 100
     items.Umbrella.Value.EffDate |> should equal <| new System.DateTime(1900,1,1)
+
+type simpleUnqualified = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="unqualified">
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" />
+      <element name="elem1" type="tns:foo" />
+    </sequence>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="s" type="string" />
+    </sequence>
+  </complexType>
+</schema>""">
+
+type simpleQualified = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="s" type="string" />
+    </sequence>
+  </complexType>
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" />
+      <element name="elem1" type="tns:foo" />
+    </sequence>
+  </complexType>
+
+</schema>""">
+
+// Qualified did not work out of order, & multiple references before definition also failed
+type simpleQualifiedOrdered = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" />
+      <element name="elem1" type="tns:foo" />
+      <element name="elem2" type="tns:foo" />
+    </sequence>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="s" type="string" />
+    </sequence>
+  </complexType>
+</schema>""">
+
+let simpleQualifiedXml = 
+     """<?xml version="1.0" encoding="utf-8"?>
+          <fsd:root xmlns:fsd="https://github.com/FSharp.Data/">
+            <fsd:elem>blah</fsd:elem>
+            <fsd:elem1>
+              <fsd:fooElem>false</fsd:fooElem>
+              <fsd:s>zzz</fsd:s>
+            </fsd:elem1>
+          </fsd:root>
+     """ 
+let simpleUnqualifiedXml = """<?xml version="1.0" encoding="utf-8"?>
+              <root xmlns:fsd="https://github.com/FSharp.Data/">
+                <elem>blah</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <s>zzz</s>
+                </elem1>
+              </root>
+         """ 
+let simpleDefaultQualifiedXml = """<?xml version="1.0" encoding="utf-8"?>
+              <root xmlns="https://github.com/FSharp.Data/">
+                <elem>blah</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <s>zzz</s>
+                </elem1>
+              </root>
+         """ 
+
+[<Test>]
+let ``Unqualified schema parses with unqualified elements``() =
+    let data = simpleUnqualified.ParseRoot(simpleUnqualifiedXml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+[<Test>]
+let ``Unqualified schema fails with qualified elements``() =
+    (fun () ->
+          let root = simpleUnqualified.ParseRoot(simpleQualifiedXml)
+          root.Elem1.S |> ignore) 
+    |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``Unqualified schema fails with default-namespace qualified elements``() =
+   (fun () -> 
+          let root = simpleUnqualified.ParseRoot(simpleDefaultQualifiedXml)
+          root.Elem1.S |> ignore)
+   |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``Qualified schema parses with qualified elements``() =
+    let data = simpleQualified.ParseRoot(simpleQualifiedXml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+[<Test>]
+let ``Qualified schema (reordered) parses with qualified elements``() =
+    let data = simpleQualifiedOrdered.ParseRoot(simpleQualifiedXml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+
+[<Test>]
+let ``Qualified schema parses with default-namespace qualified elements``() =
+    let data = simpleQualified.ParseRoot(simpleDefaultQualifiedXml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+[<Test>]
+let ``Qualified schema fails with unqualified elements``() =
+    (fun () -> let root = simpleQualified.ParseRoot(simpleUnqualifiedXml)
+               root.Elem1.S |> ignore) 
+    |> should throw typeof<System.Exception>
+
+
+type unqualifiedWithOverride = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="unqualified">
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" />
+      <element form="qualified" name="elem1" type="tns:foo" />
+    </sequence>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="s" type="string" />
+    </sequence>
+  </complexType>
+</schema>""">
+
+[<Test>]
+let ``Unqualified schema with qualified element fails if unqualified``() =
+    (fun () -> let root = unqualifiedWithOverride.ParseRoot(simpleUnqualifiedXml)
+               root.Elem1.S |> ignore) 
+    |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``Unqualified schema with qualified element parses when qualified``() =
+    let xml = """<?xml version="1.0" encoding="utf-8"?>
+              <root xmlns:fsd="https://github.com/FSharp.Data/">
+                <elem>blah</elem>
+                <fsd:elem1>
+                  <fooElem>false</fooElem>
+                  <s>zzz</s>
+                </fsd:elem1>
+              </root>
+         """ 
+    let data = unqualifiedWithOverride.ParseRoot(xml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+type qualifiedWithOverride = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="s" type="string" />
+    </sequence>
+  </complexType>
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" />
+      <element form="unqualified" name="elem1" type="tns:foo" />
+    </sequence>
+  </complexType>
+
+</schema>""">
+
+[<Test>]
+let ``Qualified schema with unqualified element fails if qualified``() =
+    (fun () -> let root = qualifiedWithOverride.ParseRoot(simpleQualifiedXml)
+               root.Elem1.S |> ignore) 
+    |> should throw typeof<System.Exception>
+
+[<Test>]
+let ``Qualified schema with unqualified element parses when unqualified``() =
+    let xml = """<?xml version="1.0" encoding="utf-8"?>
+          <fsd:root xmlns:fsd="https://github.com/FSharp.Data/">
+            <fsd:elem>blah</fsd:elem>
+            <elem1>
+              <fsd:fooElem>false</fsd:fooElem>
+              <fsd:s>zzz</fsd:s>
+            </elem1>
+          </fsd:root>
+     """ 
+    let data = qualifiedWithOverride.ParseRoot(xml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+type undeclaredTargetNamespace = XsdProvider<"""<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:complexType name="root">
+    <xsd:sequence>
+      <xsd:element name="elem" type="xsd:string" />
+      <xsd:element name="elem1" type="foo" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="foo">
+    <xsd:sequence>
+      <xsd:element name="fooElem" type="xsd:boolean" />
+      <xsd:element name="s" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>""">
+
+
+[<Test>]
+let ``Schema with undeclared target namespace``() =
+    let xml =  """<?xml version="1.0" encoding="utf-8"?>
+              <root>
+                <elem>blah</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <s>zzz</s>
+                </elem1>
+              </root>
+         """ 
+    let data = undeclaredTargetNamespace.ParseRoot(xml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"
+
+
+type defaultTargetNamespace = XsdProvider<"""<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xsd:complexType name="root">
+    <xsd:sequence>
+      <xsd:element name="elem" type="xsd:string" />
+      <xsd:element name="elem1" type="foo" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="foo">
+    <xsd:sequence>
+      <xsd:element name="fooElem" type="xsd:boolean" />
+      <xsd:element name="s" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>""">
+
+
+[<Test>]
+let ``Schema with default target namespace``() =
+    let data = defaultTargetNamespace.ParseRoot(simpleQualifiedXml)
+    data.Elem |> should equal "blah"
+    data.Elem1.S |> should equal "zzz"

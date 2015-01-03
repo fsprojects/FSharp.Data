@@ -191,11 +191,10 @@
     <Compile Include="CsvProvider.fs" />
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
-    <Compile Include="FreebaseProvider.fs" />
     <Compile Include="WorldBankProvider.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
-    <Compile Include="XsdProvider.fs" />    
+    <Compile Include="XsdProvider.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

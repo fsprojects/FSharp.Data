@@ -198,6 +198,9 @@ and internal Schema(this:System.Xml.Schema.XmlSchema, failOnUnsupported : bool) 
                      ("boolean"     , typeof<bool>);
                      ] 
     
+    member x.TargetNamespace = this.TargetNamespace
+    member x.HasTargetNamespace = String.IsNullOrEmpty(x.TargetNamespace) |> not
+
     member private x.Read (external:XmlSchemaExternal) =
         try
             let root = Path.GetDirectoryName(this.SourceUri)
@@ -250,7 +253,12 @@ and internal Schema(this:System.Xml.Schema.XmlSchema, failOnUnsupported : bool) 
 
 module XsdBuilder = 
   let generateType (schema:System.Xml.Schema.XmlSchema) includeMetadata failOnUnsupported =
-    let elementFormIsDefault = schema.ElementFormDefault = XmlSchemaForm.Qualified    
+    let elementFormIsQualified (element: XmlSchemaElement) = 
+        match element.Form, schema.ElementFormDefault with 
+        | XmlSchemaForm.None, XmlSchemaForm.Qualified -> true
+        | XmlSchemaForm.Qualified, _ -> true
+        | _ -> false
+        
     let schema = Schema(schema, failOnUnsupported)
     let _types = new System.Collections.Generic.Dictionary<string, InferedType>()
 
@@ -306,56 +314,45 @@ module XsdBuilder =
                                        else
                                           InferedMultiplicity.Single
                              | _,_ -> InferedMultiplicity.Multiple
-                         multiplicity,el |> getTypeFromAnnotated,el.Name)
-           |> List.filter(fun (_,t,_) -> t.IsSome)
-           |> List.map(fun (multiplicity,t,name) ->
+                         multiplicity,el |> getTypeFromAnnotated,el.Name, elementFormIsQualified el)
+           |> List.filter(fun (_,t,_,_) -> t.IsSome)
+           |> List.map(fun (multiplicity,t,name,qualifiedForm) ->
                          let elemType =  
                                match t with
                                Some(InferedType.Record(Some "", p,o)) ->
                                       InferedType.Record(Some name,p,o)
                                | Some(t) -> t
                                | _ -> failwith "Filter failed"
-                         (InferedTypeTag.Record (Some name),(multiplicity, elemType)))
-           
+                          // TODO top-level elements vs nested
+                         let nameWithNs = if qualifiedForm && schema.HasTargetNamespace then sprintf "{%s}%s" schema.TargetNamespace name else name
+                         (InferedTypeTag.Record (Some nameWithNs),(multiplicity, elemType)))
+
+    and qualifySchemaType typeName =if schema.HasTargetNamespace then schema.TargetNamespace + ":" + typeName else typeName
+               
     and getType typeName =
         if String.IsNullOrWhiteSpace(typeName) then
             None
         else 
+            //lookup already build types and XSD native types
             match _types.TryGetValue(typeName) with
-            true,t -> 
-               Some(t)
+            | true,t -> Some(t)
             | false,_ -> 
-                //might violate namespaces
-                //lookup already build types and XSD native types
-                match (_types.Keys |> Seq.filter (fun key -> key.Split(':').Last() = typeName)).SingleOrDefault() with
-                null -> 
-                    //It's not native and it's not created already
-                    match schema.Types |> List.filter(fun t -> t.Name = typeName), typeName.Contains(":") with
-                    //we found one matching without namespace
-                    t::_,_ -> Some(t |> createType)
-                    | _ , true when typeName.IndexOf(Schema.Namespace,StringComparison.InvariantCultureIgnoreCase) >= 0 -> 
-                        //we've already searched for build in types so default to string
-                        getType (Schema.Namespace + ":string")
-                    | _ , true when not elementFormIsDefault ->
-                        match schema.Types |> List.filter(fun t -> t.Name = typeName.Split(':').Last()) with
-                        t::_ -> Some(t |> createType)
-                        | [] -> getType (Schema.Namespace + ":string")
-                    | _ , false when elementFormIsDefault ->
-                        match schema.Types |> List.filter(fun t -> t.Name.Split(':').Last() = typeName) with
-                        t::_ -> Some(t |> createType)
-                        | [] -> getType (Schema.Namespace + ":string")
-                    | _ -> failwithf "Unknown type %s %A" typeName (schema.Types |> List.map(fun e -> e.Name))             
-                | key -> 
-                    Some(_types.[key])
-
+                //It's not native and it's not created already
+                match schema.Types |> List.filter (fun t -> qualifySchemaType t.Name = typeName) with
+                //we found one matching without namespaec
+                t::_ -> Some(t |> createType)
+                | _  when typeName.IndexOf(Schema.Namespace,StringComparison.InvariantCultureIgnoreCase) >= 0 -> 
+                    //we've already searched for build in types so default to string
+                    getType (Schema.Namespace + ":string")
+                | _ -> failwithf "Unknown type %s %A" typeName (schema.Types |> List.map(fun e -> qualifySchemaType e.Name))             
+                
     and createType (typeDeclaration:SchemaType) =
       let n = typeDeclaration.Name
 
-      if _types.ContainsKey (n) then _types.[n]
+      if _types.ContainsKey (qualifySchemaType n) then _types.[qualifySchemaType n]
       else
           let t = 
                match typeDeclaration with
-                 _ when _types.ContainsKey (n) -> _types.[n]
                  | :? simpleType as simple -> 
                       let typeName = simple.BaseTypeName.ToString()
                       let t = 
@@ -392,7 +389,7 @@ module XsdBuilder =
                              ::createConstant("TypeName", typeDeclaration.Name)
                              ::elements
                          else
-                              elements
+                             elements
                       let attributes = 
                             typeDeclaration.Attributes 
                             |> List.map( fun a ->
@@ -419,7 +416,7 @@ module XsdBuilder =
                       
                  | _ -> failwithf "unknown type definition %s %s" (typeDeclaration.Name.ToString()) (typeDeclaration.GetType().Name)
           try
-            _types.Add(n,t)
+            _types.Add(qualifySchemaType n,t)
           with e ->
             match e with
             :? ArgumentException -> failwithf "duplication of type '%s'" n
