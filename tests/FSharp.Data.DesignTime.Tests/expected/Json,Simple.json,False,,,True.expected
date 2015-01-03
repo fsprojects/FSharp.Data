@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> isCool:bool -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("firstName",

@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Consumer_main_nav: HtmlProvider+ConsumerMainNav with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -48,7 +46,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Top 250")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Take The Quiz!``: HtmlProvider+TakeTheQuiz with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -85,19 +82,14 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Top 250", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ConsumerMainNav : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TakeTheQuiz : FDR.BaseTypes.HtmlTable<HtmlProvider+TakeTheQuiz+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250 : FDR.BaseTypes.HtmlTable<HtmlProvider+Top250+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TakeTheQuiz+Row : string * string * string * string * string * string * string * string
     member Column1: string with get
     (let t1,_,_,_,_,_,_,_ = this in t1)
@@ -124,7 +116,6 @@ class HtmlProvider+TakeTheQuiz+Row : string * string * string * string * string 
     (let _,_,_,_,_,_,_,t8 = this in t8)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Top250+Row : string * string * decimal * string * string
     member Column1: string with get
     (let t1,_,_,_,_ = this in t1)

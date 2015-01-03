@@ -23,8 +23,6 @@ class JsonProvider
     JsonRuntime.ConvertArray(JsonDocument.Create(((new StringReader(text)) :> TextReader), ""), new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : url:string -> labelsUrl:string -> commentsUrl:string -> eventsUrl:string -> htmlUrl:string -> id:int -> number:int -> title:string -> user:JsonProvider+User -> labels:JsonProvider+Label[] -> state:string -> assignee:JsonValue -> milestone:JsonValue -> comments:int -> createdAt:System.DateTime -> updatedAt:System.DateTime -> closedAt:JsonValue -> pullRequest:JsonProvider+PullRequest -> body:string option -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("url",
@@ -139,8 +137,6 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
     new : url:string -> name:string -> color:JsonProvider+FloatOrString -> JsonProvider+Label
     JsonRuntime.CreateRecord([| ("url",
@@ -165,8 +161,6 @@ class JsonProvider+Label : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
     new : htmlUrl:string option -> diffUrl:string option -> patchUrl:string option -> JsonProvider+PullRequest
     JsonRuntime.CreateRecord([| ("html_url",
@@ -189,8 +183,6 @@ class JsonProvider+PullRequest : FDR.BaseTypes.IJsonDocument
     JsonRuntime.ConvertString("", JsonRuntime.TryGetPropertyUnpacked(this, "patch_url"))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     new : login:string -> id:int -> avatarUrl:string -> gravatarId:System.Guid -> url:string -> htmlUrl:string -> followersUrl:string -> followingUrl:string -> gistsUrl:string -> starredUrl:string -> subscriptionsUrl:string -> organizationsUrl:string -> reposUrl:string -> eventsUrl:string -> receivedEventsUrl:string -> type:string -> JsonProvider+User
     JsonRuntime.CreateRecord([| ("login",
@@ -294,8 +286,6 @@ class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+FloatOrString : FDR.BaseTypes.IJsonDocument
     new : number:float -> JsonProvider+FloatOrString
     JsonRuntime.CreateValue((number :> obj), "")

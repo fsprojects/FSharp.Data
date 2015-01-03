@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : birthdate:System.DateTime -> anniversary:System.DateTime -> noTimeZone:System.DateTime -> utcTime:System.DateTime -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("birthdate",

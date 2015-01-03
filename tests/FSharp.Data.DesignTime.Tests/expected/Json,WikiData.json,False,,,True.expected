@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : firstName:string -> lastName:string -> age:int -> address:JsonProvider+Address -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("firstName",
@@ -55,8 +53,6 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Address : FDR.BaseTypes.IJsonDocument
     new : streetAddress:string -> city:string -> state:string -> postalCode:int -> JsonProvider+Address
     JsonRuntime.CreateRecord([| ("streetAddress",

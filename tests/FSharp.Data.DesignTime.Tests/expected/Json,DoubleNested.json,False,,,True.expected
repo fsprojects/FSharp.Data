@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : main:JsonProvider+Main -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("main",
@@ -37,8 +35,6 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "main")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Main : FDR.BaseTypes.IJsonDocument
     new : title:string -> nested:JsonProvider+Nested -> JsonProvider+Main
     JsonRuntime.CreateRecord([| ("title",
@@ -57,8 +53,6 @@ class JsonProvider+Main : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Nested : FDR.BaseTypes.IJsonDocument
     new : nestedTitle:string -> JsonProvider+Nested
     JsonRuntime.CreateRecord([| ("nestedTitle",

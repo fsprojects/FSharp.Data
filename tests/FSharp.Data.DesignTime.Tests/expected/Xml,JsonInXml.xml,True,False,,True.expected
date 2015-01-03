@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+PropertyBag : FDR.BaseTypes.XmlElement
     new : blahData:XmlProvider+BlahData -> XmlProvider+PropertyBag
     XmlRuntime.CreateRecord("PropertyBag", 
@@ -39,8 +37,6 @@ class XmlProvider+PropertyBag : FDR.BaseTypes.XmlElement
     XmlRuntime.GetChild(this, "BlahDataArray|BlahData")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
     new : blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
     XmlRuntime.CreateRecord("BlahData", 
@@ -70,8 +66,6 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
     XmlRuntime.ConvertArray(this, "BlahDataSomethingFoo", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results -> XmlProvider+BlahDataSomethingFoo
     JsonRuntime.CreateRecord([| ("Something.Schema",
@@ -90,8 +84,6 @@ class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
     new : number:int -> XmlProvider+BlahDataSomethingFoo2
     XmlRuntime.CreateRecord("BlahDataSomethingFoo2", 
@@ -115,8 +107,6 @@ class XmlProvider+BlahDataSomethingFoo2 : FDR.BaseTypes.XmlElement
     TextRuntime.ConvertInteger("", XmlRuntime.TryGetValue(this))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> results:XmlProvider+Results2 -> XmlProvider+BlahDataSomethingFoo3
     JsonRuntime.CreateRecord([| ("Something.Schema",
@@ -135,8 +125,6 @@ class XmlProvider+BlahDataSomethingFoo3 : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
     new : size:int -> value:XmlProvider+BlahDataSomethingFoo3 -> XmlProvider+BlahDataSomethingFoo4
     XmlRuntime.CreateRecord("BlahDataSomethingFoo3", 
@@ -156,8 +144,6 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
     XmlRuntime.GetJsonValue(this, "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> query:string option -> XmlProvider+Results
     JsonRuntime.CreateRecord([| ("Something.Schema",
@@ -176,8 +162,6 @@ class XmlProvider+Results : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Results2 : FDR.BaseTypes.IJsonDocument
     new : somethingSchema:string -> query:string -> XmlProvider+Results2
     JsonRuntime.CreateRecord([| ("Something.Schema",

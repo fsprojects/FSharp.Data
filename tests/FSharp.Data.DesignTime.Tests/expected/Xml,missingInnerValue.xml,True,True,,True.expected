@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Child : FDR.BaseTypes.XmlElement
     new : a:int option -> b:string option -> inner:XmlProvider+Inner option -> XmlProvider+Child
     XmlRuntime.CreateRecord("child", 
@@ -48,8 +46,6 @@ class XmlProvider+Child : FDR.BaseTypes.XmlElement
     XmlRuntime.ConvertOptional(this, "inner", new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Inner : FDR.BaseTypes.XmlElement
     new : c:string -> XmlProvider+Inner
     XmlRuntime.CreateRecord("inner", 

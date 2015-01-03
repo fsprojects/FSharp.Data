@@ -106,7 +106,7 @@ Target "Build" <| fun () ->
 
 Target "BuildTests" <| fun () ->
     !! "FSharp.Data.Tests.sln"
-    |> MSBuildReleaseExt "" [] "Rebuild"
+    |> MSBuildReleaseExt "" (if isLocalBuild then [] else ["DefineConstants","BUILD_SERVER"]) "Rebuild"
     |> ignore
 
 Target "BuildConsoleTests" <| fun () ->
@@ -115,7 +115,7 @@ Target "BuildConsoleTests" <| fun () ->
 //#else
 //    ++ "TestApps.Console.Portable7.sln"
 //#endif
-    |> MSBuildReleaseExt "" [] "Rebuild"
+    |> MSBuildRelease "" "Rebuild"
     |> ignore
 
 // --------------------------------------------------------------------------------------

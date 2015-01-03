@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Authors : FDR.BaseTypes.XmlElement
     new : authors:XmlProvider+Author[] -> XmlProvider+Authors
     XmlRuntime.CreateRecord("authors", 
@@ -39,8 +37,6 @@ class XmlProvider+Authors : FDR.BaseTypes.XmlElement
     XmlRuntime.ConvertArray(this, "author", new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Author : FDR.BaseTypes.XmlElement
     new : name:string -> surname:string -> birth:int option -> books:XmlProvider+Book[] -> manuscript:XmlProvider+Manuscript option -> XmlProvider+Author
     XmlRuntime.CreateRecord("author", 
@@ -76,8 +72,6 @@ class XmlProvider+Author : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute surname", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Book : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Book
     XmlRuntime.CreateRecord("book", 
@@ -93,8 +87,6 @@ class XmlProvider+Book : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute title", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Manuscript : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Manuscript
     XmlRuntime.CreateRecord("manuscript", 

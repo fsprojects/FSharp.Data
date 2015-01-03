@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "us_presidents_wikipedia.html")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``External links``: HtmlProvider+ExternalLinks with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -48,7 +46,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Languages")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``List of presidents``: HtmlProvider+ListOfPresidents with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -115,31 +112,22 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table8", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfPresidents : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfPresidents+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+LivingFormerPresidents : FDR.BaseTypes.HtmlTable<HtmlProvider+LivingFormerPresidents+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table10+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table12 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table12+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table6 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table6+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table8 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table8+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfPresidents+Row : int * string * string * string * string * string * string * string * string * string
     member ``Left office``: string with get
     (let _,_,_,_,t5,_,_,_,_,_ = this in t5)
@@ -172,7 +160,6 @@ class HtmlProvider+ListOfPresidents+Row : int * string * string * string * strin
     (let t1,_,_,_,_,_,_,_,_,_ = this in t1)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+LivingFormerPresidents+Row : string * string * string
     member ``Date of birth``: string with get
     (let _,_,t3 = this in t3)
@@ -184,7 +171,6 @@ class HtmlProvider+LivingFormerPresidents+Row : string * string * string
     (let _,t2,_ = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10+Row : string * string
     member ``Presidents of the United States``: string with get
     (let t1,_ = this in t1)
@@ -193,7 +179,6 @@ class HtmlProvider+Table10+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table12+Row : string * string
     member ``Lists related to the Presidents and Vice Presidents of the United States``: string with get
     (let t1,_ = this in t1)
@@ -202,13 +187,11 @@ class HtmlProvider+Table12+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table6+Row : string
     member ``Topics related to List of Presidents of the United States``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table8+Row : string * string
     member ``Chief executives of the United States``: string with get
     (let t1,_ = this in t1)

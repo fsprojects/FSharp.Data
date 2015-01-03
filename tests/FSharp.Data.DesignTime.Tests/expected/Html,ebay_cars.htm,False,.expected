@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
@@ -30,7 +29,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!.``: HtmlProvider+2002Rover75ClubSeANiceOne with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -45,9 +43,7 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!. 2")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+2002Rover75ClubSeANiceOne : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+2002Rover75ClubSeANiceOne2 : FDR.BaseTypes.HtmlList<string>
 

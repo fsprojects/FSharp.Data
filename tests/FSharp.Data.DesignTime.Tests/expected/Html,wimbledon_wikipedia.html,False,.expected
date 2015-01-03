@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "wimbledon_wikipedia.html")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``Colours and uniforms``: HtmlProvider+ColoursAndUniforms with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -102,7 +100,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Singles champions never World No. 1")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Current champions``: HtmlProvider+CurrentChampions with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -275,97 +272,66 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Trophies and prize money", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ColoursAndUniforms : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+CurrentChampions : FDR.BaseTypes.HtmlTable<HtmlProvider+CurrentChampions+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+InvitationEvents : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+JuniorEvents : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List34 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List35 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List36 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List37 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+MainEvents : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RankingPoints : FDR.BaseTypes.HtmlTable<HtmlProvider+RankingPoints+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Records : FDR.BaseTypes.HtmlTable<HtmlProvider+Records+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlTable<HtmlProvider+SeeAlso+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SinglesChampionsNeverWorldNo1 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table1+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table10+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table22 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table22+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table30 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table30+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table31 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table31+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table32 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table32+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table34 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table34+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table36 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table36+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table38 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table38+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table39 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table39+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table40 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table40+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table41 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table41+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table42 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table42+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table44 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table44+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TrophiesAndPrizeMoney : FDR.BaseTypes.HtmlTable<HtmlProvider+TrophiesAndPrizeMoney+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+CurrentChampions+Row : string * string * string * string
     member Champion: string with get
     (let _,t2,_,_ = this in t2)
@@ -380,7 +346,6 @@ class HtmlProvider+CurrentChampions+Row : string * string * string * string
     (let _,_,_,t4 = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RankingPoints+Row : string * int * int
     member ATP: int with get
     (let _,t2,_ = this in t2)
@@ -392,7 +357,6 @@ class HtmlProvider+RankingPoints+Row : string * int * int
     (let _,_,t3 = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Records+Row : string * string * string * string * string
     member Count: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -410,7 +374,6 @@ class HtmlProvider+Records+Row : string * string * string * string * string
     (let _,_,_,_,t5 = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SeeAlso+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -419,7 +382,6 @@ class HtmlProvider+SeeAlso+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table1+Row : string * string
     member ``The Championships, Wimbledon``: string with get
     (let t1,_ = this in t1)
@@ -428,25 +390,21 @@ class HtmlProvider+Table1+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table10+Row : string
     member ``Wimbledon (Amateur Era)``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table22+Row : string
     member ``Wimbledon (Open Era)``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table30+Row : string
     member ``Wimbledon drawsheets``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table31+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
@@ -479,7 +437,6 @@ class HtmlProvider+Table31+Row : int * int * int * int * System.Nullable<int> * 
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int> * System.Nullable<int>
     member 1968: System.Nullable<int> with get
     (let _,_,_,_,_,_,_,_,t9,_ = this in t9)
@@ -512,13 +469,11 @@ class HtmlProvider+Table32+Row : int * int * int * int * System.Nullable<int> * 
     (let _,_,_,_,_,_,_,t8,_,_ = this in t8)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table34+Row : string
     member ``Grand Slam tournaments (Majors)``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table36+Row : string * string * string
     member Tennis: string with get
     (let t1,_,_ = this in t1)
@@ -530,37 +485,31 @@ class HtmlProvider+Table36+Row : string * string * string
     (let _,_,t3 = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table38+Row : string
     member ``Grand Slam tournament champions``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table39+Row : string
     member ``Australasian and Australian Championships / Australian Open``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table40+Row : string
     member ``French Championships / French Open``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table41+Row : string
     member ``The Championships, Wimbledon``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table42+Row : string
     member ``U.S. National Championships / US Open``: string with get
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table44+Row : string * string
     member ``All England Lawn Tennis and Croquet Club``: string with get
     (let t1,_ = this in t1)
@@ -569,7 +518,6 @@ class HtmlProvider+Table44+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TrophiesAndPrizeMoney+Row : string * string * int
     member ``Increase from 2012``: int with get
     (let _,_,t3 = this in t3)

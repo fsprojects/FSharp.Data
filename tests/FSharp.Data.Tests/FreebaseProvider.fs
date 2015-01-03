@@ -181,27 +181,28 @@ let ``tvrage_id is not unique in mql query``() =
     |> Seq.head
     |> should equal ("Jack Abramoff", "1958-02-28")
 
-let ghanaCodes = [|"GHA"|]
-
+#if BUILD_SERVER
+#else
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals.Ghana
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
+#endif
 
 [<Test>]
 let ``Check Individuals10 works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals10.``United Kingdom``
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GBR"|]
 
 [<Test>]
 let ``Check Individuals100 works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals100.``Czech Republic``
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"CZE"|]
 
 [<Test>]
 let ``Check IndividualsAZ works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.IndividualsAZ.P.Portugal
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"PRT"|]
 
 [<Test>]
 let ``Check IndividualsAZ good for large collections``() =

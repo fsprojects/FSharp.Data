@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+ObjStation : FDR.BaseTypes.XmlElement
     new : stationDesc:string -> stationAlias:string option -> stationLatitude:decimal -> stationLongitude:decimal -> stationCode:string -> stationId:int -> XmlProvider+ObjStation
     XmlRuntime.CreateRecord("{http://api.irishrail.ie/realtime/}objStation", 

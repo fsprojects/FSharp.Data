@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -253,7 +252,6 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class CsvProvider+Row : int * bool option * int option * string option * string option * decimal option * int option * int * string option * decimal option * string option * string option
     member Age: decimal option with get
     (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6)
