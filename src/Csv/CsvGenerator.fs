@@ -18,7 +18,8 @@ module internal CsvTypeBuilder =
     { TypeForTuple : Type
       Property : ProvidedProperty
       Convert: Expr -> Expr
-      ConvertBack: Expr -> Expr }
+      ConvertBack: Expr -> Expr
+      Param : ProvidedParameter }
 
   let generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer inferredFields =
     
@@ -28,7 +29,8 @@ module internal CsvTypeBuilder =
       { TypeForTuple = typWithoutMeasure
         Property = ProvidedProperty(propertyName, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
         Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>
-        ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index)) } )
+        ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index))
+        Param = ProvidedParameter(propertyName, typ) } )
 
     // The erased row type will be a tuple of all the field types (without the units of measure)
     let rowErasedType = 
@@ -36,6 +38,9 @@ module internal CsvTypeBuilder =
       |> replacer.ToRuntime
     
     let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
+
+    let ctor = ProvidedConstructor([ for field in fields -> field.Param ], InvokeCode = (fun args -> Expr.NewTuple(args) ))
+    rowType.AddMember ctor
     
     // Each property of the generated row type will simply be a tuple get
     for field in fields do
@@ -76,4 +81,4 @@ module internal CsvTypeBuilder =
 
       Expr.NewDelegate(delegateType, [rowVar], body)
 
-    csvType, csvErasedTypeWithRowErasedType, stringArrayToRow, rowToStringArray
+    csvType, csvErasedTypeWithRowErasedType, rowType, stringArrayToRow, rowToStringArray

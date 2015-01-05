@@ -354,3 +354,45 @@ let ``Can parse http://databank.worldbank.org/data/download/GDP.csv``() =
    firstRow.Column1 |> should equal "USA"
    firstRow.Economy |> should equal "United States"   
    firstRow.``US dollars)`` |> should equal 16800000.
+
+
+let [<Literal>] simpleWithStrCsv = """
+  Column1,ColumnB,Column3
+  TRUE,abc,3
+  "yes","Freddy", 1.92 """
+
+
+type SimpleWithStrCsv = CsvProvider<simpleWithStrCsv>
+
+[<Test>]
+let ``Can duplicate own rows``() = 
+  let csv = SimpleWithStrCsv.GetSample()
+  let csv' = csv.Append csv.Rows
+  let out = csv'.SaveToString()
+  let reParsed = SimpleWithStrCsv.Parse(out)
+  reParsed.Rows |> Seq.length |> should equal 4
+  let row = reParsed.Rows |> Seq.nth 3
+  row.Column1 |> should equal true
+  row.ColumnB |> should equal "Freddy"
+  row.Column3 |> should equal 1.92
+
+[<Test>]
+let ``Create particular row``() = 
+  let row = new SimpleWithStrCsv.Row(true, "Second col", 42.5M)
+
+  row.Column1 |> should equal true
+  row.ColumnB |> should equal "Second col"
+  row.Column3 |> should equal 42.5M
+
+[<Test>]
+let ``Can set created rows``() = 
+  let row1 = new SimpleWithStrCsv.Row(true, "foo", 1.3M)
+  let row2 = new SimpleWithStrCsv.Row(Column1 = false, ColumnB = "foo", Column3 = 42M)
+  let csv = SimpleWithStrCsv.New([row1; row2])
+  csv.Rows |> Seq.nth 0 |> should equal row1
+  csv.Rows |> Seq.nth 1 |> should equal row2
+
+  csv.Headers.Value.[1]  |> should equal "ColumnB"
+  let s = csv.SaveToString()
+  s |> should notEqual ""
+   

@@ -212,6 +212,14 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
 
+
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =    
+    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() =() }, rows, headers, numberOfColumns, separators, quote)
+    
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
@@ -337,8 +345,11 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
 
-  member inline private x.map f =
-    new CsvFile<'RowType>(rowToStringArray, disposer, f x.Rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  member inline private x.withRows rows =
+    new CsvFile<'RowType>(rowToStringArray, disposer, rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+
+  member inline private x.map f = x.withRows (f x.Rows)
 
   /// Returns a new csv with the same rows as the original but which guarantees
   /// that each row will be only be read and parsed from the input at most once.
@@ -370,3 +381,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// Returns a csv that when enumerated returns at most N rows.
   member x.Truncate count = 
     Seq.truncate count |> x.map
+
+  /// Returns a csv with the same rows as the original plus the provided rows appended
+  member x.Append rows = 
+    Seq.append x.Rows rows |> x.withRows
