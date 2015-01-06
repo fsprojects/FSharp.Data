@@ -395,4 +395,11 @@ let ``Can set created rows``() =
   csv.Headers.Value.[1]  |> should equal "ColumnB"
   let s = csv.SaveToString()
   s |> should notEqual ""
-   
+
+
+type CsvUom = CsvProvider<"Data/SmallTest.csv">
+[<Test>] 
+let ``Can create new csv row with units of measure``() =
+  let row = new CsvUom.Row("name", 3.5M<metre>, 27M<Data.UnitSystems.SI.UnitSymbols.s>)
+  row.Distance |> should equal 3.5M<metre>
+  

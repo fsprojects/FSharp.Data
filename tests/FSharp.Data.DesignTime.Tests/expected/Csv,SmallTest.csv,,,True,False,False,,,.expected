@@ -101,6 +101,15 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false)
 
+    static member New: rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_ = row in t1))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Name"
+                                                           "Distance (metre)"
+                                                           "Time (s)" |], 3, ",", '"')
+
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -117,6 +126,11 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : string * decimal * decimal
+    new : Name:string -> Distance:decimal<metre> -> Time:decimal<s> -> CsvProvider+Row
+    Name,
+    Distance,
+    Time
+
     member Distance: decimal<metre> with get
     (let _,t2,_ = this in t2)
 

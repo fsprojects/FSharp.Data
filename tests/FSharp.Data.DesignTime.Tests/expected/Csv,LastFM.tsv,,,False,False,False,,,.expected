@@ -157,6 +157,16 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,t6 = row in t6)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), "	", '"', false, false, 0, false)
 
+    static member New: rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertDateTimeBack("", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertGuidBack((let _,_,t3,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_ = row in t4))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_ = row in t5))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,t6 = row in t6)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, None, 6, "	", '"')
+
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -181,6 +191,14 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : string * System.DateTime * System.Guid option * string * string * string
+    new : Column1:string -> Column2:System.DateTime -> Column3:System.Guid option -> Column4:string -> Column5:string -> Column6:string -> CsvProvider+Row
+    Column1,
+    Column2,
+    Column3,
+    Column4,
+    Column5,
+    Column6
+
     member Column1: string with get
     (let t1,_,_,_,_,_ = this in t1)
 

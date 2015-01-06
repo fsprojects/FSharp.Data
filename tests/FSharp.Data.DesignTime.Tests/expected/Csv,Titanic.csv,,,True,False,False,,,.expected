@@ -290,6 +290,33 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false)
 
+    static member New: rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertBooleanBack(Some (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "PassengerId"
+                                                           "Survived"
+                                                           "Pclass"
+                                                           "Name"
+                                                           "Sex"
+                                                           "Age"
+                                                           "SibSp"
+                                                           "Parch"
+                                                           "Ticket"
+                                                           "Fare"
+                                                           "Cabin"
+                                                           "Embarked" |], 12, ",", '"')
+
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -333,6 +360,20 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : int * bool * int * string * string * float * int * int * string * decimal * string * string
+    new : PassengerId:int -> Survived:bool -> Pclass:int -> Name:string -> Sex:string -> Age:float -> SibSp:int -> Parch:int -> Ticket:string -> Fare:decimal -> Cabin:string -> Embarked:string -> CsvProvider+Row
+    PassengerId,
+    Survived,
+    Pclass,
+    Name,
+    Sex,
+    Age,
+    SibSp,
+    Parch,
+    Ticket,
+    Fare,
+    Cabin,
+    Embarked
+
     member Age: float with get
     (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6)
 
