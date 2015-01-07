@@ -29,6 +29,12 @@ type XmlProviderArgs =
       Culture : string
       ResolutionFolder : string }
 
+type XsdProviderArgs = 
+    { SchemaFile : string
+      ResolutionFolder : string
+      IncludeMetadata : bool
+      FailOnUnsupported : bool }
+
 type JsonProviderArgs = 
     { Sample : string
       SampleIsList : bool
@@ -54,6 +60,7 @@ type FreebaseProviderArgs =
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
+    | Xsd of XsdProviderArgs
     | Json of JsonProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs
@@ -83,6 +90,12 @@ type TypeProviderInstantiation =
                    box x.Global
                    box x.Culture
                    box x.ResolutionFolder |] 
+            | Xsd x ->
+                (fun cfg -> new XsdProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.SchemaFile
+                   box x.ResolutionFolder
+                   box x.IncludeMetadata
+                   box x.FailOnUnsupported |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -124,6 +137,11 @@ type TypeProviderInstantiation =
              x.SampleIsList.ToString()
              x.Global.ToString()
              x.Culture]
+        | Xsd x -> 
+            ["Xsd"
+             x.SchemaFile
+             x.IncludeMetadata.ToString()
+             x.FailOnUnsupported.ToString()]
         | Json x -> 
             ["Json"
              x.Sample
@@ -180,6 +198,11 @@ type TypeProviderInstantiation =
                   Global = args.[3] |> bool.Parse
                   Culture = args.[4]
                   ResolutionFolder = "" }
+        | "Xsd" ->
+            Xsd { SchemaFile = args.[1]
+                  ResolutionFolder = ""
+                  IncludeMetadata = true
+                  FailOnUnsupported = false } 
         | "Json" ->
             Json { Sample = args.[1]
                    SampleIsList = args.[2] |> bool.Parse

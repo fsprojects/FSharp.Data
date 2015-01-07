@@ -1,0 +1,274 @@
+class XsdProvider
+    static member AsyncGetSample: () -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "xaml2006.xsd"), f)
+
+    static member AsyncLoad: uri:string -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri), f)
+
+    static member GetSample: () -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "xaml2006.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XsdProvider+Schema
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XsdProvider+Schema
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri)))
+
+    static member Parse: text:string -> XsdProvider+Schema
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseCode: text:string -> XsdProvider+Code
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("code")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseDCode: text:string -> XsdProvider+DCode
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("dcode")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseDXData: text:string -> XsdProvider+DXData
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("dxdata")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseXData: text:string -> XsdProvider+XData
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("xdata")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+
+class XsdProvider+Code : FDR.XmlElement
+    new : source:string -> type:string -> targetNamespace:string -> typeName:string -> XsdProvider+Code
+    XmlRuntime.CreateRecord("Code", 
+                            [| ("Source",
+                                (source :> obj))
+                               ("Type",
+                                (type :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Code
+    XmlElement.Create(xElement)
+
+    member Source: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "Source")
+    TextRuntime.GetNonOptionalValue("Attribute Source", TextRuntime.ConvertString(value), value)
+
+    member TargetNamespace: string with get
+    ("http://schemas.microsoft.com/winfx/2006/xaml" :> obj)
+
+    member Type: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "Type")
+    TextRuntime.GetNonOptionalValue("Attribute Type", TextRuntime.ConvertString(value), value)
+
+    member TypeName: string with get
+    ("dCode" :> obj)
+
+
+class XsdProvider+DCode : FDR.XmlElement
+    new : source:string -> type:string -> targetNamespace:string -> typeName:string -> XsdProvider+DCode
+    XmlRuntime.CreateRecord("dCode", 
+                            [| ("Source",
+                                (source :> obj))
+                               ("Type",
+                                (type :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+DCode
+    XmlElement.Create(xElement)
+
+    member Source: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "Source")
+    TextRuntime.GetNonOptionalValue("Attribute Source", TextRuntime.ConvertString(value), value)
+
+    member TargetNamespace: string with get
+    ("http://schemas.microsoft.com/winfx/2006/xaml" :> obj)
+
+    member Type: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "Type")
+    TextRuntime.GetNonOptionalValue("Attribute Type", TextRuntime.ConvertString(value), value)
+
+    member TypeName: string with get
+    ("dCode" :> obj)
+
+
+class XsdProvider+DXData : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> XsdProvider+DXData
+    XmlRuntime.CreateRecord("dXData", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+DXData
+    XmlElement.Create(xElement)
+
+    member TargetNamespace: string with get
+    ("http://schemas.microsoft.com/winfx/2006/xaml" :> obj)
+
+    member TypeName: string with get
+    ("dXData" :> obj)
+
+
+class XsdProvider+Schema : FDR.XmlElement
+    new : code:XsdProvider+Code -> xData:XsdProvider+XData -> dCode:XsdProvider+DCode -> dxData:XsdProvider+DXData -> frlrfSystemStringClassTopic:string -> XsdProvider+Schema
+    XmlRuntime.CreateRecord("Schema", 
+                            [| |], 
+                            [| ("Code",
+                                (code :> obj))
+                               ("XData",
+                                (xData :> obj))
+                               ("dCode",
+                                (dCode :> obj))
+                               ("dXData",
+                                (dxData :> obj))
+                               ("frlrfSystemStringClassTopic",
+                                (frlrfSystemStringClassTopic :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
+    XmlElement.Create(xElement)
+
+    member Code: XsdProvider+Code with get
+    XmlRuntime.GetChild(this, "Code")
+
+    member DCode: XsdProvider+DCode with get
+    XmlRuntime.GetChild(this, "dCode")
+
+    member DXData: XsdProvider+DXData with get
+    XmlRuntime.GetChild(this, "dXData")
+
+    member FrlrfSystemStringClassTopic: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "frlrfSystemStringClassTopic"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member XData: XsdProvider+XData with get
+    XmlRuntime.GetChild(this, "XData")
+
+
+class XsdProvider+XData : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> XsdProvider+XData
+    XmlRuntime.CreateRecord("XData", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+XData
+    XmlElement.Create(xElement)
+
+    member TargetNamespace: string with get
+    ("http://schemas.microsoft.com/winfx/2006/xaml" :> obj)
+
+    member TypeName: string with get
+    ("dXData" :> obj)
+
+

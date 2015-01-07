@@ -1,0 +1,1368 @@
+class XsdProvider
+    static member AsyncGetSample: () -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "gpx.xsd"), f)
+
+    static member AsyncLoad: uri:string -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri), f)
+
+    static member GetSample: () -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "gpx.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XsdProvider+Schema
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XsdProvider+Schema
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri)))
+
+    static member Parse: text:string -> XsdProvider+Schema
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseBoundsType: text:string -> XsdProvider+BoundsType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("boundstype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseCopyrightType: text:string -> XsdProvider+CopyrightType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("copyrighttype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseEmailType: text:string -> XsdProvider+EmailType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("emailtype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseExtensionsType: text:string -> XsdProvider+ExtensionsType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []),
+                   Value ("extensionstype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseGpx: text:string -> XsdProvider+Gpx
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("gpx")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseGpxType: text:string -> XsdProvider+GpxType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("gpxtype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseLinkType: text:string -> XsdProvider+LinkType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("linktype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseMetadataType: text:string -> XsdProvider+MetadataType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("metadatatype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParsePersonType: text:string -> XsdProvider+PersonType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("persontype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParsePtType: text:string -> XsdProvider+PtType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("pttype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParsePtsegType: text:string -> XsdProvider+PtsegType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("ptsegtype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseRteType: text:string -> XsdProvider+RteType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("rtetype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseTrkType: text:string -> XsdProvider+TrkType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("trktype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseTrksegType: text:string -> XsdProvider+TrksegType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("trksegtype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseWptType: text:string -> XsdProvider+WptType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("wpttype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+
+class XsdProvider+BoundsType : FDR.XmlElement
+    new : minlat:decimal -> minlon:decimal -> maxlat:decimal -> maxlon:decimal -> targetNamespace:string -> typeName:string -> XsdProvider+BoundsType
+    XmlRuntime.CreateRecord("boundsType", 
+                            [| ("minlat",
+                                (minlat :> obj))
+                               ("minlon",
+                                (minlon :> obj))
+                               ("maxlat",
+                                (maxlat :> obj))
+                               ("maxlon",
+                                (maxlon :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+BoundsType
+    XmlElement.Create(xElement)
+
+    member Maxlat: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "maxlat")
+    TextRuntime.GetNonOptionalValue("Attribute maxlat", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Maxlon: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "maxlon")
+    TextRuntime.GetNonOptionalValue("Attribute maxlon", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Minlat: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "minlat")
+    TextRuntime.GetNonOptionalValue("Attribute minlat", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Minlon: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "minlon")
+    TextRuntime.GetNonOptionalValue("Attribute minlon", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("boundsType" :> obj)
+
+
+class XsdProvider+CopyrightType : FDR.XmlElement
+    new : author:string -> targetNamespace:string -> typeName:string -> year:string option -> license:string option -> XsdProvider+CopyrightType
+    XmlRuntime.CreateRecord("copyrightType", 
+                            [| ("author",
+                                (author :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}year",
+                                (year :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}license",
+                                (license :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+CopyrightType
+    XmlElement.Create(xElement)
+
+    member Author: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "author")
+    TextRuntime.GetNonOptionalValue("Attribute author", TextRuntime.ConvertString(value), value)
+
+    member License: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}license", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                    let value = XmlRuntime.TryGetValue(t)
+                                                                                                    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("copyrightType" :> obj)
+
+    member Year: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}year", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+
+class XsdProvider+EmailType : FDR.XmlElement
+    new : id:string -> domain:string -> targetNamespace:string -> typeName:string -> XsdProvider+EmailType
+    XmlRuntime.CreateRecord("emailType", 
+                            [| ("id",
+                                (id :> obj))
+                               ("domain",
+                                (domain :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+EmailType
+    XmlElement.Create(xElement)
+
+    member Domain: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "domain")
+    TextRuntime.GetNonOptionalValue("Attribute domain", TextRuntime.ConvertString(value), value)
+
+    member Id: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "id")
+    TextRuntime.GetNonOptionalValue("Attribute id", TextRuntime.ConvertString(value), value)
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("emailType" :> obj)
+
+
+class XsdProvider+ExtensionsType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> XsdProvider+ExtensionsType
+    XmlRuntime.CreateRecord("extensionsType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+ExtensionsType
+    XmlElement.Create(xElement)
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("extensionsType" :> obj)
+
+
+class XsdProvider+Gpx : FDR.XmlElement
+    new : version:string -> creator:string -> targetNamespace:string -> typeName:string -> metadata:XsdProvider+MetadataType option -> wpts:XsdProvider+WptType[] -> rtes:XsdProvider+RteType[] -> trks:XsdProvider+TrkType[] -> extensions:XsdProvider+ExtensionsType option -> XsdProvider+Gpx
+    XmlRuntime.CreateRecord("gpx", 
+                            [| ("version",
+                                (version :> obj))
+                               ("creator",
+                                (creator :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}metadata",
+                                (metadata :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}wpt",
+                                (wpts :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}rte",
+                                (rtes :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}trk",
+                                (trks :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Gpx
+    XmlElement.Create(xElement)
+
+    member Creator: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "creator")
+    TextRuntime.GetNonOptionalValue("Attribute creator", TextRuntime.ConvertString(value), value)
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Metadata: XsdProvider+MetadataType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}metadata", new Func<_,_>(id)))
+
+    member Rtes: XsdProvider+RteType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}rte", new Func<_,_>(id)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Trks: XsdProvider+TrkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}trk", new Func<_,_>(id)))
+
+    member TypeName: string with get
+    ("gpxType" :> obj)
+
+    member Version: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "version")
+    TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertString(value), value)
+
+    member Wpts: XsdProvider+WptType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}wpt", new Func<_,_>(id)))
+
+
+class XsdProvider+GpxType : FDR.XmlElement
+    new : version:string -> creator:string -> targetNamespace:string -> typeName:string -> metadata:XsdProvider+MetadataType option -> wpts:XsdProvider+WptType[] -> rtes:XsdProvider+RteType[] -> trks:XsdProvider+TrkType[] -> extensions:XsdProvider+ExtensionsType option -> XsdProvider+GpxType
+    XmlRuntime.CreateRecord("gpxType", 
+                            [| ("version",
+                                (version :> obj))
+                               ("creator",
+                                (creator :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}metadata",
+                                (metadata :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}wpt",
+                                (wpts :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}rte",
+                                (rtes :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}trk",
+                                (trks :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+GpxType
+    XmlElement.Create(xElement)
+
+    member Creator: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "creator")
+    TextRuntime.GetNonOptionalValue("Attribute creator", TextRuntime.ConvertString(value), value)
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Metadata: XsdProvider+MetadataType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}metadata", new Func<_,_>(id)))
+
+    member Rtes: XsdProvider+RteType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}rte", new Func<_,_>(id)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Trks: XsdProvider+TrkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}trk", new Func<_,_>(id)))
+
+    member TypeName: string with get
+    ("gpxType" :> obj)
+
+    member Version: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "version")
+    TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertString(value), value)
+
+    member Wpts: XsdProvider+WptType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}wpt", new Func<_,_>(id)))
+
+
+class XsdProvider+LinkType : FDR.XmlElement
+    new : href:string -> targetNamespace:string -> typeName:string -> text:string option -> type:string option -> XsdProvider+LinkType
+    XmlRuntime.CreateRecord("linkType", 
+                            [| ("href",
+                                (href :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}text",
+                                (text :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}type",
+                                (type :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+LinkType
+    XmlElement.Create(xElement)
+
+    member Href: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "href")
+    TextRuntime.GetNonOptionalValue("Attribute href", TextRuntime.ConvertString(value), value)
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Text: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}text", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Type: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}type", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TypeName: string with get
+    ("linkType" :> obj)
+
+
+class XsdProvider+MetadataType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> name:string option -> desc:string option -> author:XsdProvider+PersonType option -> copyright:XsdProvider+CopyrightType option -> links:XsdProvider+LinkType[] -> time:System.DateTime option -> keywords:string option -> bounds:XsdProvider+BoundsType option -> extensions:XsdProvider+ExtensionsType option -> XsdProvider+MetadataType
+    XmlRuntime.CreateRecord("metadataType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}name",
+                                (name :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}desc",
+                                (desc :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}author",
+                                (author :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}copyright",
+                                (copyright :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}link",
+                                (links :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}time",
+                                (time :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}keywords",
+                                (keywords :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}bounds",
+                                (bounds :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+MetadataType
+    XmlElement.Create(xElement)
+
+    member Author: XsdProvider+PersonType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}author", new Func<_,_>(id)))
+
+    member Bounds: XsdProvider+BoundsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}bounds", new Func<_,_>(id)))
+
+    member Copyright: XsdProvider+CopyrightType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}copyright", new Func<_,_>(id)))
+
+    member Desc: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}desc", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Keywords: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}keywords", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                     let value = XmlRuntime.TryGetValue(t)
+                                                                                                     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Links: XsdProvider+LinkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}link", new Func<_,_>(id)))
+
+    member Name: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}name", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Time: System.DateTime option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}time", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("en-GB", value), value)))
+
+    member TypeName: string with get
+    ("metadataType" :> obj)
+
+
+class XsdProvider+PersonType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> name:string option -> email:XsdProvider+EmailType option -> link:XsdProvider+LinkType option -> XsdProvider+PersonType
+    XmlRuntime.CreateRecord("personType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}name",
+                                (name :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}email",
+                                (email :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}link",
+                                (link :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+PersonType
+    XmlElement.Create(xElement)
+
+    member Email: XsdProvider+EmailType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}email", new Func<_,_>(id)))
+
+    member Link: XsdProvider+LinkType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}link", new Func<_,_>(id)))
+
+    member Name: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}name", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("personType" :> obj)
+
+
+class XsdProvider+PtType : FDR.XmlElement
+    new : lat:decimal -> lon:decimal -> targetNamespace:string -> typeName:string -> ele:decimal option -> time:System.DateTime option -> XsdProvider+PtType
+    XmlRuntime.CreateRecord("ptType", 
+                            [| ("lat",
+                                (lat :> obj))
+                               ("lon",
+                                (lon :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}ele",
+                                (ele :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}time",
+                                (time :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+PtType
+    XmlElement.Create(xElement)
+
+    member Ele: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}ele", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Lat: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "lat")
+    TextRuntime.GetNonOptionalValue("Attribute lat", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Lon: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "lon")
+    TextRuntime.GetNonOptionalValue("Attribute lon", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Time: System.DateTime option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}time", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("en-GB", value), value)))
+
+    member TypeName: string with get
+    ("ptType" :> obj)
+
+
+class XsdProvider+PtsegType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> pts:XsdProvider+PtType[] -> XsdProvider+PtsegType
+    XmlRuntime.CreateRecord("ptsegType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}pt",
+                                (pts :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+PtsegType
+    XmlElement.Create(xElement)
+
+    member Pts: XsdProvider+PtType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}pt", new Func<_,_>(id)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member TypeName: string with get
+    ("ptsegType" :> obj)
+
+
+class XsdProvider+RteType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> name:string option -> cmt:string option -> desc:string option -> src:string option -> links:XsdProvider+LinkType[] -> number:string option -> type:string option -> extensions:XsdProvider+ExtensionsType option -> rtepts:XsdProvider+WptType[] -> XsdProvider+RteType
+    XmlRuntime.CreateRecord("rteType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}name",
+                                (name :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}cmt",
+                                (cmt :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}desc",
+                                (desc :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}src",
+                                (src :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}link",
+                                (links :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}number",
+                                (number :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}type",
+                                (type :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}rtept",
+                                (rtepts :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+RteType
+    XmlElement.Create(xElement)
+
+    member Cmt: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}cmt", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Desc: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}desc", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Links: XsdProvider+LinkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}link", new Func<_,_>(id)))
+
+    member Name: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}name", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Number: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}number", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Rtepts: XsdProvider+WptType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}rtept", new Func<_,_>(id)))
+
+    member Src: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}src", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Type: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}type", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TypeName: string with get
+    ("rteType" :> obj)
+
+
+class XsdProvider+Schema : FDR.XmlElement
+    new : boundsType:XsdProvider+BoundsType -> copyrightType:XsdProvider+CopyrightType -> degreesType:decimal -> dgpsStationType:int -> emailType:XsdProvider+EmailType -> extensionsType:XsdProvider+ExtensionsType -> fixType:string -> gpx:XsdProvider+Gpx -> gpxType:XsdProvider+GpxType -> latitudeType:decimal -> linkType:XsdProvider+LinkType -> longitudeType:decimal -> metadataType:XsdProvider+MetadataType -> personType:XsdProvider+PersonType -> ptType:XsdProvider+PtType -> ptsegType:XsdProvider+PtsegType -> rteType:XsdProvider+RteType -> trkType:XsdProvider+TrkType -> trksegType:XsdProvider+TrksegType -> wptType:XsdProvider+WptType -> XsdProvider+Schema
+    XmlRuntime.CreateRecord("Schema", 
+                            [| |], 
+                            [| ("boundsType",
+                                (boundsType :> obj))
+                               ("copyrightType",
+                                (copyrightType :> obj))
+                               ("degreesType",
+                                (degreesType :> obj))
+                               ("dgpsStationType",
+                                (dgpsStationType :> obj))
+                               ("emailType",
+                                (emailType :> obj))
+                               ("extensionsType",
+                                (extensionsType :> obj))
+                               ("fixType",
+                                (fixType :> obj))
+                               ("gpx",
+                                (gpx :> obj))
+                               ("gpxType",
+                                (gpxType :> obj))
+                               ("latitudeType",
+                                (latitudeType :> obj))
+                               ("linkType",
+                                (linkType :> obj))
+                               ("longitudeType",
+                                (longitudeType :> obj))
+                               ("metadataType",
+                                (metadataType :> obj))
+                               ("personType",
+                                (personType :> obj))
+                               ("ptType",
+                                (ptType :> obj))
+                               ("ptsegType",
+                                (ptsegType :> obj))
+                               ("rteType",
+                                (rteType :> obj))
+                               ("trkType",
+                                (trkType :> obj))
+                               ("trksegType",
+                                (trksegType :> obj))
+                               ("wptType",
+                                (wptType :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
+    XmlElement.Create(xElement)
+
+    member BoundsType: XsdProvider+BoundsType with get
+    XmlRuntime.GetChild(this, "boundsType")
+
+    member CopyrightType: XsdProvider+CopyrightType with get
+    XmlRuntime.GetChild(this, "copyrightType")
+
+    member DegreesType: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "degreesType"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member DgpsStationType: int with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "dgpsStationType"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-GB", value), value)
+
+    member EmailType: XsdProvider+EmailType with get
+    XmlRuntime.GetChild(this, "emailType")
+
+    member ExtensionsType: XsdProvider+ExtensionsType with get
+    XmlRuntime.GetChild(this, "extensionsType")
+
+    member FixType: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "fixType"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Gpx: XsdProvider+Gpx with get
+    XmlRuntime.GetChild(this, "gpx")
+
+    member GpxType: XsdProvider+GpxType with get
+    XmlRuntime.GetChild(this, "gpxType")
+
+    member LatitudeType: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "latitudeType"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member LinkType: XsdProvider+LinkType with get
+    XmlRuntime.GetChild(this, "linkType")
+
+    member LongitudeType: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "longitudeType"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member MetadataType: XsdProvider+MetadataType with get
+    XmlRuntime.GetChild(this, "metadataType")
+
+    member PersonType: XsdProvider+PersonType with get
+    XmlRuntime.GetChild(this, "personType")
+
+    member PtType: XsdProvider+PtType with get
+    XmlRuntime.GetChild(this, "ptType")
+
+    member PtsegType: XsdProvider+PtsegType with get
+    XmlRuntime.GetChild(this, "ptsegType")
+
+    member RteType: XsdProvider+RteType with get
+    XmlRuntime.GetChild(this, "rteType")
+
+    member TrkType: XsdProvider+TrkType with get
+    XmlRuntime.GetChild(this, "trkType")
+
+    member TrksegType: XsdProvider+TrksegType with get
+    XmlRuntime.GetChild(this, "trksegType")
+
+    member WptType: XsdProvider+WptType with get
+    XmlRuntime.GetChild(this, "wptType")
+
+
+class XsdProvider+TrkType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> name:string option -> cmt:string option -> desc:string option -> src:string option -> links:XsdProvider+LinkType[] -> number:string option -> type:string option -> extensions:XsdProvider+ExtensionsType option -> trksegs:XsdProvider+TrksegType[] -> XsdProvider+TrkType
+    XmlRuntime.CreateRecord("trkType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}name",
+                                (name :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}cmt",
+                                (cmt :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}desc",
+                                (desc :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}src",
+                                (src :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}link",
+                                (links :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}number",
+                                (number :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}type",
+                                (type :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}trkseg",
+                                (trksegs :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+TrkType
+    XmlElement.Create(xElement)
+
+    member Cmt: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}cmt", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Desc: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}desc", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Links: XsdProvider+LinkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}link", new Func<_,_>(id)))
+
+    member Name: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}name", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Number: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}number", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Src: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}src", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Trksegs: XsdProvider+TrksegType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}trkseg", new Func<_,_>(id)))
+
+    member Type: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}type", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TypeName: string with get
+    ("trkType" :> obj)
+
+
+class XsdProvider+TrksegType : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> trkpts:XsdProvider+WptType[] -> extensions:XsdProvider+ExtensionsType option -> XsdProvider+TrksegType
+    XmlRuntime.CreateRecord("trksegType", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}trkpt",
+                                (trkpts :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+TrksegType
+    XmlElement.Create(xElement)
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Trkpts: XsdProvider+WptType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}trkpt", new Func<_,_>(id)))
+
+    member TypeName: string with get
+    ("trksegType" :> obj)
+
+
+class XsdProvider+WptType : FDR.XmlElement
+    new : lat:decimal -> lon:decimal -> targetNamespace:string -> typeName:string -> ele:decimal option -> time:System.DateTime option -> magvar:decimal option -> geoidheight:decimal option -> name:string option -> cmt:string option -> desc:string option -> src:string option -> links:XsdProvider+LinkType[] -> sym:string option -> type:string option -> fix:string option -> sat:string option -> hdop:decimal option -> vdop:decimal option -> pdop:decimal option -> ageofdgpsdata:decimal option -> dgpsid:int option -> extensions:XsdProvider+ExtensionsType option -> XsdProvider+WptType
+    XmlRuntime.CreateRecord("wptType", 
+                            [| ("lat",
+                                (lat :> obj))
+                               ("lon",
+                                (lon :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}ele",
+                                (ele :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}time",
+                                (time :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}magvar",
+                                (magvar :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}geoidheight",
+                                (geoidheight :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}name",
+                                (name :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}cmt",
+                                (cmt :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}desc",
+                                (desc :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}src",
+                                (src :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}link",
+                                (links :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}sym",
+                                (sym :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}type",
+                                (type :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}fix",
+                                (fix :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}sat",
+                                (sat :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}hdop",
+                                (hdop :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}vdop",
+                                (vdop :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}pdop",
+                                (pdop :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}ageofdgpsdata",
+                                (ageofdgpsdata :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}dgpsid",
+                                (dgpsid :> obj))
+                               ("{http://www.topografix.com/GPX/1/1}extensions",
+                                (extensions :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+WptType
+    XmlElement.Create(xElement)
+
+    member Ageofdgpsdata: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}ageofdgpsdata", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                          let value = XmlRuntime.TryGetValue(t)
+                                                                                                          TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Cmt: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}cmt", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Desc: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}desc", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Dgpsid: int option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}dgpsid", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-GB", value), value)))
+
+    member Ele: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}ele", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Extensions: XsdProvider+ExtensionsType option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}extensions", new Func<_,_>(id)))
+
+    member Fix: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}fix", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Geoidheight: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}geoidheight", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                        let value = XmlRuntime.TryGetValue(t)
+                                                                                                        TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Hdop: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}hdop", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Lat: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "lat")
+    TextRuntime.GetNonOptionalValue("Attribute lat", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Links: XsdProvider+LinkType[] with get
+    XmlRuntime.ConvertArray(this, "{http://www.topografix.com/GPX/1/1}link", new Func<_,_>(id)))
+
+    member Lon: decimal with get
+    let value = XmlRuntime.TryGetAttribute(this, "lon")
+    TextRuntime.GetNonOptionalValue("Attribute lon", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+    member Magvar: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}magvar", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                   let value = XmlRuntime.TryGetValue(t)
+                                                                                                   TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Name: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}name", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Pdop: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}pdop", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+    member Sat: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}sat", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Src: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}src", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Sym: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}sym", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                let value = XmlRuntime.TryGetValue(t)
+                                                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TargetNamespace: string with get
+    ("http://www.topografix.com/GPX/1/1" :> obj)
+
+    member Time: System.DateTime option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}time", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("en-GB", value), value)))
+
+    member Type: string option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}type", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member TypeName: string with get
+    ("wptType" :> obj)
+
+    member Vdop: decimal option with get
+    XmlRuntime.ConvertOptional(this, "{http://www.topografix.com/GPX/1/1}vdop", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                                 let value = XmlRuntime.TryGetValue(t)
+                                                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)))
+
+

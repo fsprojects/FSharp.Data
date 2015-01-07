@@ -1,0 +1,388 @@
+class XsdProvider
+    static member AsyncGetSample: () -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "purchaseOrder.xsd"), f)
+
+    static member AsyncLoad: uri:string -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri), f)
+
+    static member GetSample: () -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "XSD" "purchaseOrder.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XsdProvider+Schema
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XsdProvider+Schema
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "XSD" uri)))
+
+    static member Parse: text:string -> XsdProvider+Schema
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseItems: text:string -> XsdProvider+Items
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("items")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParsePurchaseOrder: text:string -> XsdProvider+PurchaseOrder
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("purchaseorder")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParsePurchaseOrderType: text:string -> XsdProvider+PurchaseOrderType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []),
+                   Value ("purchaseordertype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseUsAddress: text:string -> XsdProvider+UsAddress
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("usaddress")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+
+class XsdProvider+Items : FDR.XmlElement
+    new : targetNamespace:string -> typeName:string -> items:XsdProvider+Item[] -> XsdProvider+Items
+    XmlRuntime.CreateRecord("Items", 
+                            [| |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://tempuri.org/po.xsd}item",
+                                (items :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Items
+    XmlElement.Create(xElement)
+
+    member Items: XsdProvider+Item[] with get
+    XmlRuntime.ConvertArray(this, "{http://tempuri.org/po.xsd}item", new Func<_,_>(id)))
+
+    member TargetNamespace: string with get
+    ("http://tempuri.org/po.xsd" :> obj)
+
+    member TypeName: string with get
+    ("Items" :> obj)
+
+
+class XsdProvider+PurchaseOrder : FDR.XmlElement
+    new : orderDate:System.DateTime -> targetNamespace:string -> typeName:string -> shipTo:XsdProvider+UsAddress -> billTo:XsdProvider+UsAddress -> items:XsdProvider+Items -> XsdProvider+PurchaseOrder
+    XmlRuntime.CreateRecord("purchaseOrder", 
+                            [| ("orderDate",
+                                (orderDate :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://tempuri.org/po.xsd}shipTo",
+                                (shipTo :> obj))
+                               ("{http://tempuri.org/po.xsd}billTo",
+                                (billTo :> obj))
+                               ("{http://tempuri.org/po.xsd}items",
+                                (items :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+PurchaseOrder
+    XmlElement.Create(xElement)
+
+    member BillTo: XsdProvider+UsAddress with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}billTo")
+
+    member Items: XsdProvider+Items with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}items")
+
+    member OrderDate: System.DateTime with get
+    let value = XmlRuntime.TryGetAttribute(this, "orderDate")
+    TextRuntime.GetNonOptionalValue("Attribute orderDate", TextRuntime.ConvertDateTime("en-GB", value), value)
+
+    member ShipTo: XsdProvider+UsAddress with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}shipTo")
+
+    member TargetNamespace: string with get
+    ("http://tempuri.org/po.xsd" :> obj)
+
+    member TypeName: string with get
+    ("PurchaseOrderType" :> obj)
+
+
+class XsdProvider+PurchaseOrderType : FDR.XmlElement
+    new : orderDate:System.DateTime -> targetNamespace:string -> typeName:string -> shipTo:XsdProvider+UsAddress -> billTo:XsdProvider+UsAddress -> items:XsdProvider+Items -> XsdProvider+PurchaseOrderType
+    XmlRuntime.CreateRecord("PurchaseOrderType", 
+                            [| ("orderDate",
+                                (orderDate :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://tempuri.org/po.xsd}shipTo",
+                                (shipTo :> obj))
+                               ("{http://tempuri.org/po.xsd}billTo",
+                                (billTo :> obj))
+                               ("{http://tempuri.org/po.xsd}items",
+                                (items :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+PurchaseOrderType
+    XmlElement.Create(xElement)
+
+    member BillTo: XsdProvider+UsAddress with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}billTo")
+
+    member Items: XsdProvider+Items with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}items")
+
+    member OrderDate: System.DateTime with get
+    let value = XmlRuntime.TryGetAttribute(this, "orderDate")
+    TextRuntime.GetNonOptionalValue("Attribute orderDate", TextRuntime.ConvertDateTime("en-GB", value), value)
+
+    member ShipTo: XsdProvider+UsAddress with get
+    XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}shipTo")
+
+    member TargetNamespace: string with get
+    ("http://tempuri.org/po.xsd" :> obj)
+
+    member TypeName: string with get
+    ("PurchaseOrderType" :> obj)
+
+
+class XsdProvider+Schema : FDR.XmlElement
+    new : items:XsdProvider+Items -> purchaseOrderType:XsdProvider+PurchaseOrderType -> sku:string -> usAddress:XsdProvider+UsAddress -> comment:string -> purchaseOrder:XsdProvider+PurchaseOrder -> XsdProvider+Schema
+    XmlRuntime.CreateRecord("Schema", 
+                            [| |], 
+                            [| ("Items",
+                                (items :> obj))
+                               ("PurchaseOrderType",
+                                (purchaseOrderType :> obj))
+                               ("SKU",
+                                (sku :> obj))
+                               ("USAddress",
+                                (usAddress :> obj))
+                               ("comment",
+                                (comment :> obj))
+                               ("purchaseOrder",
+                                (purchaseOrder :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
+    XmlElement.Create(xElement)
+
+    member Comment: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "comment"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Items: XsdProvider+Items with get
+    XmlRuntime.GetChild(this, "Items")
+
+    member PurchaseOrder: XsdProvider+PurchaseOrder with get
+    XmlRuntime.GetChild(this, "purchaseOrder")
+
+    member PurchaseOrderType: XsdProvider+PurchaseOrderType with get
+    XmlRuntime.GetChild(this, "PurchaseOrderType")
+
+    member Sku: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "SKU"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member UsAddress: XsdProvider+UsAddress with get
+    XmlRuntime.GetChild(this, "USAddress")
+
+
+class XsdProvider+UsAddress : FDR.XmlElement
+    new : country:string -> targetNamespace:string -> typeName:string -> name:string -> street:string -> city:string -> state:string -> zip:decimal -> XsdProvider+UsAddress
+    XmlRuntime.CreateRecord("USAddress", 
+                            [| ("country",
+                                (country :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://tempuri.org/po.xsd}name",
+                                (name :> obj))
+                               ("{http://tempuri.org/po.xsd}street",
+                                (street :> obj))
+                               ("{http://tempuri.org/po.xsd}city",
+                                (city :> obj))
+                               ("{http://tempuri.org/po.xsd}state",
+                                (state :> obj))
+                               ("{http://tempuri.org/po.xsd}zip",
+                                (zip :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+UsAddress
+    XmlElement.Create(xElement)
+
+    member City: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}city"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Country: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "country")
+    TextRuntime.GetNonOptionalValue("Attribute country", TextRuntime.ConvertString(value), value)
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member State: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}state"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Street: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}street"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member TargetNamespace: string with get
+    ("http://tempuri.org/po.xsd" :> obj)
+
+    member TypeName: string with get
+    ("USAddress" :> obj)
+
+    member Zip: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}zip"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+
+class XsdProvider+Item : FDR.XmlElement
+    new : partNum:string -> targetNamespace:string -> typeName:string -> productName:string -> quantity:string -> usPrice:decimal -> shipDate:System.DateTime option -> XsdProvider+Item
+    XmlRuntime.CreateRecord("Item", 
+                            [| ("partNum",
+                                (partNum :> obj)) |], 
+                            [| ("TargetNamespace",
+                                (targetNamespace :> obj))
+                               ("TypeName",
+                                (typeName :> obj))
+                               ("{http://tempuri.org/po.xsd}productName",
+                                (productName :> obj))
+                               ("{http://tempuri.org/po.xsd}quantity",
+                                (quantity :> obj))
+                               ("{http://tempuri.org/po.xsd}USPrice",
+                                (usPrice :> obj))
+                               ("{http://tempuri.org/po.xsd}shipDate",
+                                (shipDate :> obj)) |], "en-GB")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Item
+    XmlElement.Create(xElement)
+
+    member PartNum: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "partNum")
+    TextRuntime.GetNonOptionalValue("Attribute partNum", TextRuntime.ConvertString(value), value)
+
+    member ProductName: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}productName"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Quantity: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}quantity"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member ShipDate: System.DateTime option with get
+    XmlRuntime.ConvertOptional(this, "{http://tempuri.org/po.xsd}shipDate", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                                             let value = XmlRuntime.TryGetValue(t)
+                                                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("en-GB", value), value)))
+
+    member TargetNamespace: string with get
+    ("http://tempuri.org/po.xsd" :> obj)
+
+    member TypeName: string with get
+    ("Item2" :> obj)
+
+    member UsPrice: decimal with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/po.xsd}USPrice"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDecimal("en-GB", value), value)
+
+

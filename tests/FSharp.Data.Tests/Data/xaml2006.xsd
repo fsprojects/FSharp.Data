@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://schemas.microsoft.com/winfx/2006/xaml" 
+    elementFormDefault="qualified" 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    >
+    
+    <!-- Root element attributes -->
+    <xs:attribute name="Class" type="frlrfSystemStringClassTopic" />
+    <xs:attribute name="Subclass" type="frlrfSystemStringClassTopic" />
+    <xs:attribute name="TypeArguments" type="frlrfSystemStringClassTopic" />
+  
+
+    <!-- Attributes for things inside of a resource dictionary  -->
+    <xs:attribute name="Key" type="frlrfSystemStringClassTopic" />
+    
+    <!-- Attributes on any object tag -->
+    <xs:attribute name="Name" type="frlrfSystemStringClassTopic" />
+
+    <xs:attribute name="Language" type="frlrfSystemStringClassTopic" />
+  
+    <!-- Elements -->
+    <xs:element name="Code" type="dCode" />
+    <xs:element name="XData" type="dXData" />
+
+  <xs:complexType name="dCode" mixed="true">
+    <xs:attribute name="Source" type="frlrfSystemStringClassTopic" />
+    <xs:attribute name="Type" type="frlrfSystemStringClassTopic" />
+  </xs:complexType>
+  
+    <xs:complexType name="dXData" mixed="false">
+        <xs:choice minOccurs="1" maxOccurs="1">
+            <xs:any processContents="skip" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:simpleType name="frlrfSystemStringClassTopic" >
+        <xs:restriction base="xs:string" />
+    </xs:simpleType>
+</xs:schema>

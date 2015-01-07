@@ -139,6 +139,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.Fre
     member Chemistry: FreebaseDataProvider+ServiceTypes+DomainObjects+ChemistryDomain with get
     this.GetDomainById("/chemistry")
 
+    member Comedy: FreebaseDataProvider+ServiceTypes+DomainObjects+ComedyDomain with get
+    this.GetDomainById("/comedy")
+
     member Comics: FreebaseDataProvider+ServiceTypes+DomainObjects+ComicsDomain with get
     this.GetDomainById("/comic_books")
 
@@ -207,6 +210,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.Fre
 
     member Library: FreebaseDataProvider+ServiceTypes+DomainObjects+LibraryDomain with get
     this.GetDomainById("/library")
+
+    member Lightweight: <NULL> with get
+    this.GetDomainById("/base/lightweight")
 
     member Location: FreebaseDataProvider+ServiceTypes+DomainObjects+LocationDomain with get
     this.GetDomainById("/location")
@@ -605,6 +611,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+ArchitectureDomain : FDR.F
     member Building Occupants: FreebaseDataProvider+ServiceTypes+Architecture+Architecture+Building_occupantDataCollection with get
     this.GetObjectsOfTypeId("/architecture/building_occupant")
 
+    member Building complex functions: FreebaseDataProvider+ServiceTypes+Architecture+Architecture+Building_complex_functionDataCollection with get
+    this.GetObjectsOfTypeId("/architecture/building_complex_function")
+
     member Building complexs: FreebaseDataProvider+ServiceTypes+Architecture+Architecture+Building_complexDataCollection with get
     this.GetObjectsOfTypeId("/architecture/building_complex")
 
@@ -994,6 +1003,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebas
     member Award achievement levels: FreebaseDataProvider+ServiceTypes+Award+Award+Award_achievement_levelDataCollection with get
     this.GetObjectsOfTypeId("/award/award_achievement_level")
 
+    member Award announcements: FreebaseDataProvider+ServiceTypes+Award+Award+Award_announcementDataCollection with get
+    this.GetObjectsOfTypeId("/award/award_announcement")
+
     member Award categories: FreebaseDataProvider+ServiceTypes+Award+Award+Award_categoryDataCollection with get
     this.GetObjectsOfTypeId("/award/award_category")
 
@@ -1002,6 +1014,9 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+AwardsDomain : FDR.Freebas
 
     member Award disciplines: FreebaseDataProvider+ServiceTypes+Award+Award+Award_disciplineDataCollection with get
     this.GetObjectsOfTypeId("/award/award_discipline")
+
+    member Award nomination announcements: FreebaseDataProvider+ServiceTypes+Award+Award+Award_nomination_announcementDataCollection with get
+    this.GetObjectsOfTypeId("/award/award_nomination_announcement")
 
     member Award-Nominated Works: FreebaseDataProvider+ServiceTypes+Award+Award+Award_nominated_workDataCollection with get
     this.GetObjectsOfTypeId("/award/award_nominated_work")
@@ -1256,6 +1271,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
 
+    member Aviation accident or incident: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Aviation accident or incident Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/015xf8")
+
     member Bomb: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Bomb Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0ct4f")
 
@@ -1265,16 +1283,19 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     member Sabotage: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Sabotage Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0795q")
 
-    member Wind shear: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals+Wind shear Item with get
-    this.GetIndividualById("/aviation/accident_type", "/m/01gmh2")
-
 
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
 
+    member Aircraft upset: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Aircraft upset Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/0cb79t")
+
     member Atmospheric icing: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Atmospheric icing Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/083d7q")
+
+    member Aviation accident or incident: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Aviation accident or incident Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/015xf8")
 
     member Bird strike: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals10+Bird strike Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/04gk6_")
@@ -1344,8 +1365,14 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndiv
     member Aircraft hijacking: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Aircraft hijacking Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/0wj1")
 
+    member Aircraft upset: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Aircraft upset Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/0cb79t")
+
     member Atmospheric icing: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Atmospheric icing Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/083d7q")
+
+    member Aviation accident or incident: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Aviation accident or incident Item with get
+    this.GetIndividualById("/aviation/accident_type", "/m/015xf8")
 
     member Bird strike: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Accident_typeDataIndividuals100+Bird strike Item with get
     this.GetIndividualById("/aviation/accident_type", "/m/04gk6_")
@@ -1667,6 +1694,12 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member 2006 Mexico DC-9 drug bust: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+2006 Mexico DC-9 drug bust Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0cp7gx")
 
+    member AHRLAC Holdings Ahrlac: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+AHRLAC Holdings Ahrlac Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0h7lzhg")
+
+    member Aero-X: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Aero-X Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/0ll4xyc")
+
     member Akutan Zero: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Akutan Zero Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/051z2vs")
 
@@ -1706,6 +1739,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Bravo November: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Bravo November Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/07s4xq_")
 
+    member Brazilian Air Force One: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Brazilian Air Force One Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/026k9s4")
+
     member Breitling Orbiter 3: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Breitling Orbiter 3 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/09kr0z")
 
@@ -1738,6 +1774,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member Double Eagle V: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Double Eagle V Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/02695pv")
+
+    member Douglas R4D-3 N763A: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Douglas R4D-3 N763A Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/027ty2y")
 
     member Enola Gay: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Enola Gay Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/02m5s")
@@ -1798,6 +1837,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member Kee Bird: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Kee Bird Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/026cfk4")
+
+    member Kiowa Warrior: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Kiowa Warrior Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/011__hyf")
 
     member L'Oiseau Blanc: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+L'Oiseau Blanc Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/043qr5k")
@@ -1865,6 +1907,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
     member Old 666: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Old 666 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/02pthhk")
 
+    member Orlan-10: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Orlan-10 Item with get
+    this.GetIndividualById("/aviation/aircraft", "/m/010s9t4j")
+
     member Osoaviakhim-1: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Osoaviakhim-1 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/05s_gxk")
 
@@ -1891,9 +1936,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividual
 
     member R101: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+R101 Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/01rnwx")
-
-    member R4D-3 05078: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+R4D-3 05078 Item with get
-    this.GetIndividualById("/aviation/aircraft", "/m/027ty2y")
 
     member Rare Bear: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+AircraftDataIndividuals100+Rare Bear Item with get
     this.GetIndividualById("/aviation/aircraft", "/m/0gp28q")
@@ -2102,6 +2144,9 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
 
 
 class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10 : FDR.Freebase.FreebaseIndividuals
+    member ATR: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+ATR Item with get
+    this.GetIndividualById("/aviation/aircraft_designer", "/m/01l2_v")
+
     member Airbus: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Airbus Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/015zfz")
 
@@ -2206,9 +2251,6 @@ class FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataI
 
     member Northrop Grumman: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Northrop Grumman Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01frpd")
-
-    member Oskar Ursinus: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+Oskar Ursinus Item with get
-    this.GetIndividualById("/aviation/aircraft_designer", "/m/0246fc")
 
     member PZL: FreebaseDataProvider+ServiceTypes+Aviation+Aviation+Aircraft_designerDataIndividuals10+PZL Item with get
     this.GetIndividualById("/aviation/aircraft_designer", "/m/01hftq")
