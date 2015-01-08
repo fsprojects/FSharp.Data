@@ -1290,9 +1290,6 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
             | SymbolKind.SDArray, [typ] -> 
                 let (t:Type) = ProvidedTypeDefinition.EraseType typ
                 t.MakeArrayType()
-            | SymbolKind.Generic genericTypeDefinition, _ when not genericTypeDefinition.IsGenericTypeDefinition -> 
-                // Unit of measure parameters can match here, but not really generic types.
-                genericTypeDefinition.UnderlyingSystemType
             | SymbolKind.Generic genericTypeDefinition, typeArgs ->
                 let genericArguments =
                   typeArgs

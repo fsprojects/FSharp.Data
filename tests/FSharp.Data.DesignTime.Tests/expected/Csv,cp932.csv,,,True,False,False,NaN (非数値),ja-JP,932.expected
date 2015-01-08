@@ -1,4 +1,11 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _) -> 
+                                            [| TextRuntime.ConvertIntegerBack("ja-JP", Some (let t1,_ = row in t1))
+                                               TextRuntime.ConvertFloatBack("ja-JP", "NaN (非数値)", Some (let _,t2 = row in t2)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "id"
+                                                           "value" |], 2, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -80,13 +87,6 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertFloatBack("ja-JP", "NaN (非数値)", Some (let _,t2 = row in t2)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "932" uri)), ",", '"', true, false, 0, false)
 
-    static member New: rows:CsvProvider+Row seq -> CsvProvider
-    let rowToStringArray = new Func<_,_>(fun (row:_ * _) -> 
-                                            [| TextRuntime.ConvertIntegerBack("ja-JP", Some (let t1,_ = row in t1))
-                                               TextRuntime.ConvertFloatBack("ja-JP", "NaN (非数値)", Some (let _,t2 = row in t2)) |])
-    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "id"
-                                                           "value" |], 2, ",", '"')
-
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -100,9 +100,9 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : int * float
-    new : Id:int -> Value:float -> CsvProvider+Row
-    Id,
-    Value
+    new : id:int -> value:float -> CsvProvider+Row
+    id,
+    value
 
     member Id: int with get
     (let t1,_ = this in t1)

@@ -84,13 +84,15 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
       
       let paramType = (replacer.ToRuntime typedefof<seq<_>>).MakeGenericType(rowType)
-      let headers = match sampleCsv.Headers with 
-            | None -> <@@ None: string[] option @@> 
-            | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
-      let newfn = ProvidedMethod("New", [ ProvidedParameter("rows", paramType) ], csvType, IsStaticMethod = true, InvokeCode = (fun (Singleton paramValue) ->
+      let headers = 
+        match sampleCsv.Headers with 
+        | None -> <@@ None: string[] option @@> 
+        | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
+
+      let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], InvokeCode = (fun (Singleton paramValue) ->
         let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
         Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
-      csvType.AddMember(newfn) 
+      csvType.AddMember(ctor) 
        
       { GeneratedType = csvType
         RepresentationType = csvType

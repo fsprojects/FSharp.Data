@@ -30,7 +30,7 @@ module internal CsvTypeBuilder =
         Property = ProvidedProperty(propertyName, typ, GetterCode = fun (Singleton row) -> Expr.TupleGet(row, index))
         Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @>
         ConvertBack = fun rowVarExpr -> convBack (Expr.TupleGet(rowVarExpr, index))
-        Param = ProvidedParameter(propertyName, typ) } )
+        Param = ProvidedParameter(NameUtils.niceCamelName propertyName, typ) } )
 
     // The erased row type will be a tuple of all the field types (without the units of measure)
     let rowErasedType = 

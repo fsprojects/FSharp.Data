@@ -387,8 +387,8 @@ let ``Create particular row``() =
 [<Test>]
 let ``Can set created rows``() = 
   let row1 = new SimpleWithStrCsv.Row(true, "foo", 1.3M)
-  let row2 = new SimpleWithStrCsv.Row(Column1 = false, ColumnB = "foo", Column3 = 42M)
-  let csv = SimpleWithStrCsv.New([row1; row2])
+  let row2 = new SimpleWithStrCsv.Row(column1 = false, columnB = "foo", column3 = 42M)
+  let csv = new SimpleWithStrCsv([row1; row2])
   csv.Rows |> Seq.nth 0 |> should equal row1
   csv.Rows |> Seq.nth 1 |> should equal row2
 
