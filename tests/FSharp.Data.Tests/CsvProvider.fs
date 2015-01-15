@@ -114,7 +114,7 @@ let ``Infers type of an emtpy CSV file`` () =
 
 [<Test>]
 let ``Does not treat invariant culture number such as 3.14 as a date in cultures using 3,14`` () =
-  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="nb-NO">.GetSample()
+  let csv = CsvProvider<"Data/DnbHistoriskeKurser.csv", ",", 10, Culture="pt-PT">.GetSample()
   let row = csv.Rows |> Seq.head
   (row.Dato, row.USD) |> shouldEqual (DateTime(2013, 2, 7), "5.4970")
 

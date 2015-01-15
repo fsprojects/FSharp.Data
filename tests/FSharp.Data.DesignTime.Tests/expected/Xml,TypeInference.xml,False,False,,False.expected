@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     new : xs:XmlProvider+X[] -> XmlProvider+Xs
     XmlRuntime.CreateRecord("XS", 
@@ -39,8 +37,6 @@ class XmlProvider+Xs : FDR.BaseTypes.XmlElement
     XmlRuntime.ConvertArray(this, "X", new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+X : FDR.BaseTypes.XmlElement
     new : intLike:string -> boolLike:string -> jsonLike:string -> XmlProvider+X
     XmlRuntime.CreateRecord("X", 

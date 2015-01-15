@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "list_of_counties_wikipedia.html")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member Commentary: HtmlProvider+Commentary with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -48,7 +46,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Languages")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``List of most populous built-up areas in England and Wales``: HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -115,25 +112,18 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table5", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Commentary : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland : FDR.BaseTypes.HtmlTable<HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table5 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table5+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row : int * string * decimal * decimal * decimal * string * string * string
     member Area: decimal<MeasureProduct`2> with get
     (let _,_,_,t4,_,_,_,_ = this in t4)
@@ -160,7 +150,6 @@ class HtmlProvider+ListOfMostPopulousBuiltUpAreasInEnglandAndWales+Row : int * s
     (let t1,_,_,_,_,_,_,_ = this in t1)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland+Row : int * string * decimal * decimal * decimal * string * string
     member ``Area (km²)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
@@ -184,7 +173,6 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInNorthernIreland+Row : int * str
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row : int * string * decimal * decimal * decimal * string * string
     member ``Area (km²)``: decimal with get
     (let _,_,_,t4,_,_,_ = this in t4)
@@ -208,7 +196,6 @@ class HtmlProvider+ListOfMostPopulousUrbanAreasInScotland+Row : int * string * d
     (let _,t2,_,_,_,_,_ = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table5+Row : string * string
     member ``List of settlements in the United Kingdom``: string with get
     (let t1,_ = this in t1)

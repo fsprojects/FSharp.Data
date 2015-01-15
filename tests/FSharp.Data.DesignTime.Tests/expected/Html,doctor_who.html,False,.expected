@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "doctor_who.html")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``External links``: HtmlProvider+ExternalLinks with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -60,7 +58,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "See also")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``50th Anniversary``: HtmlProvider+50thAnniversary with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -1175,226 +1172,152 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Webcasts", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+50thAnniversary : FDR.BaseTypes.HtmlTable<HtmlProvider+50thAnniversary+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AudiobookReadings : FDR.BaseTypes.HtmlTable<HtmlProvider+AudiobookReadings+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ExternalLinks : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+HomeVideoReleases : FDR.BaseTypes.HtmlTable<HtmlProvider+HomeVideoReleases+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Languages : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+List12 : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+OverviewOfSeasonsAndSeries : FDR.BaseTypes.HtmlTable<HtmlProvider+OverviewOfSeasonsAndSeries+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts2 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts2+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts3 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts3+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts4 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts4+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts5 : FDR.BaseTypes.HtmlTable<HtmlProvider+RadioBroadcasts5+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season10197273 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season10197273+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season11197374 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season11197374+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season1196364 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season1196364+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season12197475 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season12197475+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season13197576 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season13197576+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season14197677 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season14197677+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season15197778 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season15197778+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season16197879 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season16197879+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season17197980 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season17197980+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season18198081 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season18198081+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season191982 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season191982+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season201983 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season201983+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season211984 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season211984+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season211984Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Season211984Continued+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season2196465 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season2196465+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season221985 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season221985+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season231986 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season231986+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season241987 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season241987+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season25198889 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season25198889+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season261989 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season261989+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season3196566 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season3196566+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season4196667 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season4196667+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season4196667Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Season4196667Continued+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season5196768 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season5196768+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season6196869 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season6196869+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season71970 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season71970+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season81971 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season81971+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season91972 : FDR.BaseTypes.HtmlTable<HtmlProvider+Season91972+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlTable<HtmlProvider+SeeAlso+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series1+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series12005 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series12005+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series2 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series2+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series22006 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series22006+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series32007 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series32007+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series42008 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series42008+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series52010 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series52010+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series62011 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series62011+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series7201213 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series7201213+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series7201213Continued : FDR.BaseTypes.HtmlTable<HtmlProvider+Series7201213Continued+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series82014 : FDR.BaseTypes.HtmlTable<HtmlProvider+Series82014+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special1983 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special1983+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special2006 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special2006+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special2014 : FDR.BaseTypes.HtmlTable<HtmlProvider+Special2014+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2005 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2005+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2007 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2007+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials200810 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials200810+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials201011 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials201011+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials201112 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials201112+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2012 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2012+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2013 : FDR.BaseTypes.HtmlTable<HtmlProvider+Specials2013+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table66 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table66+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table67 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table67+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table68 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table68+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table69 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table69+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table70 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table70+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table71 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table71+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TelevisionBroadcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+TelevisionBroadcasts+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TelevisionMovie1996 : FDR.BaseTypes.HtmlTable<HtmlProvider+TelevisionMovie1996+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Webcasts : FDR.BaseTypes.HtmlTable<HtmlProvider+Webcasts+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+50thAnniversary+Row : string * string * string * string * System.DateTime
     member Episodes: string with get
     (let _,t2,_,_,_ = this in t2)
@@ -1412,7 +1335,6 @@ class HtmlProvider+50thAnniversary+Row : string * string * string * string * Sys
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AudiobookReadings+Row : string * string * string * string * string
     member Episodes: string with get
     (let _,t2,_,_,_ = this in t2)
@@ -1430,7 +1352,6 @@ class HtmlProvider+AudiobookReadings+Row : string * string * string * string * s
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+HomeVideoReleases+Row : string * string * string * string * string
     member Director: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1448,7 +1369,6 @@ class HtmlProvider+HomeVideoReleases+Row : string * string * string * string * s
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+OverviewOfSeasonsAndSeries+Row : string * string * string * int * int * System.DateTime * decimal * System.DateTime * float * float
     member ``Average viewers (in millions)``: float with get
     (let _,_,_,_,_,_,_,_,_,t10 = this in t10)
@@ -1481,7 +1401,6 @@ class HtmlProvider+OverviewOfSeasonsAndSeries+Row : string * string * string * i
     (let _,_,_,t4,_,_,_,_,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts+Row : string * string * string * string * string
     member Director/Producer: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1499,7 +1418,6 @@ class HtmlProvider+RadioBroadcasts+Row : string * string * string * string * str
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts2+Row : string * string * string * string * string
     member Director/Producer: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1517,7 +1435,6 @@ class HtmlProvider+RadioBroadcasts2+Row : string * string * string * string * st
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts3+Row : string * string * string * string * string
     member Director/Producer: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1535,7 +1452,6 @@ class HtmlProvider+RadioBroadcasts3+Row : string * string * string * string * st
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts4+Row : string * string * string * string * string
     member Director/Producer: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1553,7 +1469,6 @@ class HtmlProvider+RadioBroadcasts4+Row : string * string * string * string * st
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+RadioBroadcasts5+Row : string * string * string * string * string
     member Director/Producer: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -1571,7 +1486,6 @@ class HtmlProvider+RadioBroadcasts5+Row : string * string * string * string * st
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season10197273+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1595,7 +1509,6 @@ class HtmlProvider+Season10197273+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season11197374+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1619,7 +1532,6 @@ class HtmlProvider+Season11197374+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season1196364+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1643,7 +1555,6 @@ class HtmlProvider+Season1196364+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season12197475+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1667,7 +1578,6 @@ class HtmlProvider+Season12197475+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season13197576+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1691,7 +1601,6 @@ class HtmlProvider+Season13197576+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season14197677+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1715,7 +1624,6 @@ class HtmlProvider+Season14197677+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season15197778+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1739,7 +1647,6 @@ class HtmlProvider+Season15197778+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season16197879+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1763,7 +1670,6 @@ class HtmlProvider+Season16197879+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season17197980+Row : string * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1787,7 +1693,6 @@ class HtmlProvider+Season17197980+Row : string * string * string * string * stri
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season18198081+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1811,7 +1716,6 @@ class HtmlProvider+Season18198081+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season191982+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1835,7 +1739,6 @@ class HtmlProvider+Season191982+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season201983+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1859,7 +1762,6 @@ class HtmlProvider+Season201983+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season211984+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1883,7 +1785,6 @@ class HtmlProvider+Season211984+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season211984Continued+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1907,7 +1808,6 @@ class HtmlProvider+Season211984Continued+Row : int * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season2196465+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1931,7 +1831,6 @@ class HtmlProvider+Season2196465+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season221985+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1955,7 +1854,6 @@ class HtmlProvider+Season221985+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season231986+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -1979,7 +1877,6 @@ class HtmlProvider+Season231986+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season241987+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2003,7 +1900,6 @@ class HtmlProvider+Season241987+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season25198889+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2027,7 +1923,6 @@ class HtmlProvider+Season25198889+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season261989+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2051,7 +1946,6 @@ class HtmlProvider+Season261989+Row : int * string * string * string * string * 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season3196566+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2075,7 +1969,6 @@ class HtmlProvider+Season3196566+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season4196667+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2099,7 +1992,6 @@ class HtmlProvider+Season4196667+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season4196667Continued+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2123,7 +2015,6 @@ class HtmlProvider+Season4196667Continued+Row : int * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season5196768+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2147,7 +2038,6 @@ class HtmlProvider+Season5196768+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season6196869+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2171,7 +2061,6 @@ class HtmlProvider+Season6196869+Row : int * string * string * string * string *
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season71970+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2195,7 +2084,6 @@ class HtmlProvider+Season71970+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season81971+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2219,7 +2107,6 @@ class HtmlProvider+Season81971+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Season91972+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2243,7 +2130,6 @@ class HtmlProvider+Season91972+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+SeeAlso+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2252,7 +2138,6 @@ class HtmlProvider+SeeAlso+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series1+Row : int * string * string * System.DateTime
     member No: int with get
     (let t1,_,_,_ = this in t1)
@@ -2267,7 +2152,6 @@ class HtmlProvider+Series1+Row : int * string * string * System.DateTime
     (let _,_,t3,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series12005+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2291,7 +2175,6 @@ class HtmlProvider+Series12005+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series2+Row : int * string * string * System.DateTime
     member No: int with get
     (let t1,_,_,_ = this in t1)
@@ -2306,7 +2189,6 @@ class HtmlProvider+Series2+Row : int * string * string * System.DateTime
     (let _,_,t3,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series22006+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2330,7 +2212,6 @@ class HtmlProvider+Series22006+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series32007+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2354,7 +2235,6 @@ class HtmlProvider+Series32007+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series42008+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2378,7 +2258,6 @@ class HtmlProvider+Series42008+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series52010+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2402,7 +2281,6 @@ class HtmlProvider+Series52010+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series62011+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2426,7 +2304,6 @@ class HtmlProvider+Series62011+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series7201213+Row : int * string * string * string * string * System.DateTime
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2447,7 +2324,6 @@ class HtmlProvider+Series7201213+Row : int * string * string * string * string *
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series7201213Continued+Row : int * string * string * string * string * System.DateTime
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2468,7 +2344,6 @@ class HtmlProvider+Series7201213Continued+Row : int * string * string * string *
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Series82014+Row : int * string * string * string * string * string
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2489,7 +2364,6 @@ class HtmlProvider+Series82014+Row : int * string * string * string * string * s
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special1983+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2513,7 +2387,6 @@ class HtmlProvider+Special1983+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special2006+Row : int * string * string * string * string * string * System.DateTime
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2537,7 +2410,6 @@ class HtmlProvider+Special2006+Row : int * string * string * string * string * s
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Special2014+Row : int * float * string * string * string * System.DateTime
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2558,7 +2430,6 @@ class HtmlProvider+Special2014+Row : int * float * string * string * string * Sy
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials+Row : string * string * int * string * string * float
     member ``Average viewers (in millions)``: float with get
     (let _,_,_,_,_,t6 = this in t6)
@@ -2579,7 +2450,6 @@ class HtmlProvider+Specials+Row : string * string * int * string * string * floa
     (let _,t2,_,_,_,_ = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2005+Row : string * string * string * string * string * string * System.DateTime
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2603,7 +2473,6 @@ class HtmlProvider+Specials2005+Row : string * string * string * string * string
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2007+Row : string * string * string * string * string * string * System.DateTime
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2627,7 +2496,6 @@ class HtmlProvider+Specials2007+Row : string * string * string * string * string
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials200810+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2651,7 +2519,6 @@ class HtmlProvider+Specials200810+Row : int * string * string * string * string 
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials201011+Row : string * string * string * string * string * string * System.DateTime
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2675,7 +2542,6 @@ class HtmlProvider+Specials201011+Row : string * string * string * string * stri
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials201112+Row : string * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2699,7 +2565,6 @@ class HtmlProvider+Specials201112+Row : string * string * string * string * stri
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2012+Row : string * string * string * string * string * string
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2720,7 +2585,6 @@ class HtmlProvider+Specials2012+Row : string * string * string * string * string
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Specials2013+Row : string * string * string * string * string * string
     member Director: string with get
     (let _,_,_,_,t5,_ = this in t5)
@@ -2741,7 +2605,6 @@ class HtmlProvider+Specials2013+Row : string * string * string * string * string
     (let _,_,_,t4,_,_ = this in t4)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table66+Row : string * string
     member ``Doctor Who``: string with get
     (let t1,_ = this in t1)
@@ -2750,7 +2613,6 @@ class HtmlProvider+Table66+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table67+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2759,7 +2621,6 @@ class HtmlProvider+Table67+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table68+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2768,7 +2629,6 @@ class HtmlProvider+Table68+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table69+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2777,7 +2637,6 @@ class HtmlProvider+Table69+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table70+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2786,7 +2645,6 @@ class HtmlProvider+Table70+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table71+Row : string * string
     member Column1: string with get
     (let t1,_ = this in t1)
@@ -2795,7 +2653,6 @@ class HtmlProvider+Table71+Row : string * string
     (let _,t2 = this in t2)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TelevisionBroadcasts+Row : string * string * string * string * string
     member Director: string with get
     (let _,_,_,t4,_ = this in t4)
@@ -2813,7 +2670,6 @@ class HtmlProvider+TelevisionBroadcasts+Row : string * string * string * string 
     (let _,_,t3,_,_ = this in t3)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TelevisionMovie1996+Row : int * string * string * string * string * string * string
     member Code: string with get
     (let _,_,t3,_,_,_,_ = this in t3)
@@ -2837,7 +2693,6 @@ class HtmlProvider+TelevisionMovie1996+Row : int * string * string * string * st
     (let _,_,_,_,t5,_,_ = this in t5)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Webcasts+Row : string * string * string * string * string
     member Director: string with get
     (let _,_,_,t4,_ = this in t4)

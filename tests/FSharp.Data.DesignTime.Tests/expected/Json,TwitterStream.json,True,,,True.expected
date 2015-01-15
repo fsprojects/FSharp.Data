@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : inReplyToStatusIdStr:int64 option -> text:string option -> inReplyToUserIdStr:int option -> retweetCount:int option -> geo:JsonProvider+Geo option -> source:string option -> retweeted:bool option -> truncated:bool option -> idStr:int64 option -> entities:JsonProvider+Entities option -> inReplyToUserId:int option -> inReplyToStatusId:int64 option -> place:JsonProvider+Place option -> coordinates:JsonProvider+Geo option -> inReplyToScreenName:string option -> createdAt:string option -> user:JsonProvider+User option -> id:int64 option -> contributors:JsonValue -> favorited:bool option -> possiblySensitive:bool option -> possiblySensitiveEditable:bool option -> retweetedStatus:JsonProvider+RetweetedStatus option -> delete:JsonProvider+Delete option -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("in_reply_to_status_id_str",
@@ -152,8 +150,6 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     JsonRuntime.TryGetPropertyPacked(this, "user")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
     new : status:JsonProvider+Status -> JsonProvider+Delete
     JsonRuntime.CreateRecord([| ("status",
@@ -166,8 +162,6 @@ class JsonProvider+Delete : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "status")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     new : userMentions:JsonProvider+UserMention[] -> hashtags:JsonProvider+Hashtag[] -> urls:JsonProvider+Url[] -> media:JsonProvider+Media[] -> JsonProvider+Entities
     JsonRuntime.CreateRecord([| ("user_mentions",
@@ -195,8 +189,6 @@ class JsonProvider+Entities : FDR.BaseTypes.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Geo : FDR.BaseTypes.IJsonDocument
     new : type:string -> coordinates:decimal[] -> JsonProvider+Geo
     JsonRuntime.CreateRecord([| ("type",
@@ -215,8 +207,6 @@ class JsonProvider+Geo : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Place : FDR.BaseTypes.IJsonDocument
     new : countryCode:string -> attributes:JsonProvider+Attributes -> fullName:string -> placeType:string -> name:string -> country:string -> id:string -> url:string -> boundingBox:JsonProvider+BoundingBox -> JsonProvider+Place
     JsonRuntime.CreateRecord([| ("country_code",
@@ -276,8 +266,6 @@ class JsonProvider+Place : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
     new : inReplyToStatusIdStr:int64 option -> text:string -> inReplyToUserIdStr:int option -> retweetCount:int -> geo:JsonValue -> source:string -> retweeted:bool -> truncated:bool -> idStr:int64 -> entities:JsonProvider+Entities2 -> inReplyToUserId:int option -> inReplyToStatusId:int64 option -> place:JsonValue -> coordinates:JsonValue -> inReplyToScreenName:string option -> createdAt:string -> user:JsonProvider+User2 -> id:int64 -> contributors:JsonValue -> favorited:bool -> possiblySensitive:bool option -> possiblySensitiveEditable:bool option -> JsonProvider+RetweetedStatus
     JsonRuntime.CreateRecord([| ("in_reply_to_status_id_str",
@@ -404,8 +392,6 @@ class JsonProvider+RetweetedStatus : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "user")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     new : notifications:JsonValue -> contributorsEnabled:bool -> timeZone:string option -> profileBackgroundColor:JsonProvider+IntOrString -> location:JsonProvider+IntOrString -> profileBackgroundTile:bool -> profileImageUrlHttps:string -> defaultProfileImage:bool -> followRequestSent:JsonValue -> profileSidebarFillColor:JsonProvider+IntOrString -> description:string option -> profileBannerUrl:string option -> favouritesCount:int -> screenName:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> idStr:int -> verified:bool -> lang:string -> statusesCount:int -> profileUseBackgroundImage:bool -> protected:bool -> profileImageUrl:string -> listedCount:int -> geoEnabled:bool -> createdAt:string -> profileTextColor:JsonProvider+FloatOrString -> name:string -> profileBackgroundImageUrl:string -> friendsCount:int -> url:string option -> id:int -> isTranslator:bool -> defaultProfile:bool -> following:JsonValue -> profileBackgroundImageUrlHttps:string -> utcOffset:int option -> profileLinkColor:JsonProvider+IntOrString -> followersCount:int -> JsonProvider+User
     JsonRuntime.CreateRecord([| ("notifications",
@@ -627,8 +613,6 @@ class JsonProvider+User : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Attributes : FDR.BaseTypes.IJsonDocument
     new : () -> JsonProvider+Attributes
     JsonRuntime.CreateRecord([| |], "")
@@ -637,8 +621,6 @@ class JsonProvider+Attributes : FDR.BaseTypes.IJsonDocument
     JsonDocument.Create(jsonValue, "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
     new : type:string -> coordinates:decimal[][][] -> JsonProvider+BoundingBox
     JsonRuntime.CreateRecord([| ("type",
@@ -657,8 +639,6 @@ class JsonProvider+BoundingBox : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
     new : userMentions:JsonProvider+UserMention[] -> hashtags:JsonProvider+Hashtag[] -> urls:JsonProvider+Url[] -> media:JsonProvider+Media[] -> JsonProvider+Entities2
     JsonRuntime.CreateRecord([| ("user_mentions",
@@ -686,8 +666,6 @@ class JsonProvider+Entities2 : FDR.BaseTypes.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "user_mentions"), new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+FloatOrString : FDR.BaseTypes.IJsonDocument
     new : number:float -> JsonProvider+FloatOrString
     JsonRuntime.CreateValue((number :> obj), "")
@@ -708,8 +686,6 @@ class JsonProvider+FloatOrString : FDR.BaseTypes.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Hashtag : FDR.BaseTypes.IJsonDocument
     new : text:string -> indices:int[] -> JsonProvider+Hashtag
     JsonRuntime.CreateRecord([| ("text",
@@ -728,8 +704,6 @@ class JsonProvider+Hashtag : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
     new : number:int -> JsonProvider+IntOrString
     JsonRuntime.CreateValue((number :> obj), "")
@@ -750,8 +724,6 @@ class JsonProvider+IntOrString : FDR.BaseTypes.IJsonDocument
     JsonRuntime.TryGetValueByTypeTag(this, "", "String", new Func<_,_>(fun (t:IJsonDocument) -> JsonRuntime.GetNonOptionalValue(t.Path(), JsonRuntime.ConvertString("", Some t.JsonValue), Some t.JsonValue)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Media : FDR.BaseTypes.IJsonDocument
     new : type:string -> expandedUrl:string -> indices:int[] -> mediaUrlHttps:string -> sizes:JsonProvider+Sizes -> idStr:int64 -> mediaUrl:string -> id:int64 -> url:string -> displayUrl:string -> JsonProvider+Media
     JsonRuntime.CreateRecord([| ("type",
@@ -817,8 +789,6 @@ class JsonProvider+Media : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Status : FDR.BaseTypes.IJsonDocument
     new : userIdStr:int -> idStr:int64 -> id:int64 -> userId:int -> JsonProvider+Status
     JsonRuntime.CreateRecord([| ("user_id_str",
@@ -850,8 +820,6 @@ class JsonProvider+Status : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Url : FDR.BaseTypes.IJsonDocument
     new : expandedUrl:string -> indices:int[] -> displayUrl:string -> url:string -> JsonProvider+Url
     JsonRuntime.CreateRecord([| ("expanded_url",
@@ -882,8 +850,6 @@ class JsonProvider+Url : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+User2 : FDR.BaseTypes.IJsonDocument
     new : notifications:JsonValue -> contributorsEnabled:bool -> timeZone:string option -> profileBackgroundColor:JsonProvider+IntOrString -> location:string option -> profileBackgroundTile:bool -> profileImageUrlHttps:string -> defaultProfileImage:bool -> followRequestSent:JsonValue -> profileSidebarFillColor:JsonProvider+IntOrString -> description:string option -> favouritesCount:int -> screenName:string -> profileSidebarBorderColor:JsonProvider+IntOrString -> idStr:int -> verified:bool -> lang:string -> statusesCount:int -> profileUseBackgroundImage:bool -> protected:bool -> profileImageUrl:string -> listedCount:int -> geoEnabled:bool -> createdAt:string -> profileTextColor:JsonProvider+IntOrString -> name:string -> profileBackgroundImageUrl:string -> friendsCount:int -> url:string option -> id:int -> isTranslator:bool -> defaultProfile:bool -> following:JsonValue -> profileBackgroundImageUrlHttps:string -> utcOffset:int option -> profileLinkColor:JsonProvider+IntOrString -> followersCount:int -> profileBannerUrl:string option -> JsonProvider+User2
     JsonRuntime.CreateRecord([| ("notifications",
@@ -1105,8 +1071,6 @@ class JsonProvider+User2 : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertBoolean(value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+UserMention : FDR.BaseTypes.IJsonDocument
     new : indices:int[] -> screenName:string -> idStr:int -> name:string -> id:int -> JsonProvider+UserMention
     JsonRuntime.CreateRecord([| ("indices",
@@ -1143,8 +1107,6 @@ class JsonProvider+UserMention : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Sizes : FDR.BaseTypes.IJsonDocument
     new : thumb:JsonProvider+Thumb -> medium:JsonProvider+Thumb -> large:JsonProvider+Thumb -> small:JsonProvider+Thumb -> JsonProvider+Sizes
     JsonRuntime.CreateRecord([| ("thumb",
@@ -1172,8 +1134,6 @@ class JsonProvider+Sizes : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "thumb")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Thumb : FDR.BaseTypes.IJsonDocument
     new : h:int -> w:int -> resize:string -> JsonProvider+Thumb
     JsonRuntime.CreateRecord([| ("h",

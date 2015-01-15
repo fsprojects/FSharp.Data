@@ -23,8 +23,6 @@ class JsonProvider
     JsonDocument.Create(((new StringReader(text)) :> TextReader), "")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     new : ab:JsonProvider+Ab -> JsonProvider+Root
     JsonRuntime.CreateRecord([| ("ab",
@@ -37,8 +35,6 @@ class JsonProvider+Root : FDR.BaseTypes.IJsonDocument
     JsonRuntime.GetPropertyPacked(this, "ab")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
     new : persons:JsonProvider+Person[] -> JsonProvider+Ab
     JsonRuntime.CreateRecord([| ("persons",
@@ -51,8 +47,6 @@ class JsonProvider+Ab : FDR.BaseTypes.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "persons"), new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
     new : contacts:JsonProvider+Contact[] -> emails:JsonValue[] -> phones:JsonValue[] -> JsonProvider+Person
     JsonRuntime.CreateRecord([| ("contacts",
@@ -75,8 +69,6 @@ class JsonProvider+Person : FDR.BaseTypes.IJsonDocument
     JsonRuntime.ConvertArray(JsonRuntime.GetPropertyPackedOrNull(this, "phones"), new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class JsonProvider+Contact : FDR.BaseTypes.IJsonDocument
     new : emailCapability:int[] -> emailImEnabled:bool[] -> emails:string[] -> phones:JsonValue[] -> JsonProvider+Contact
     JsonRuntime.CreateRecord([| ("emailCapability",

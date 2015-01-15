@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "MarketDepth.htm")))
@@ -30,7 +29,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member Table1: HtmlProvider+Table1 with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -59,10 +57,8 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "Table1", true)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table1 : FDR.BaseTypes.HtmlTable<HtmlProvider+Table1+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Table1+Row : System.DateTime * int * decimal * float * float * float * float * float * float * float * float
     member ``Accepted Bid Vol``: float with get
     (let _,_,_,_,_,_,t7,_,_,_,_ = this in t7)

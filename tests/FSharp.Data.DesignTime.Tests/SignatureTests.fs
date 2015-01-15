@@ -22,6 +22,9 @@ let testCasesTuple =
 
 let testCases = 
     testCasesTuple
+#if BUILD_SERVER
+    |> Array.filter (snd >> function | Freebase _ | WorldBank _ -> false | _ -> true)
+#endif
     |> Array.map snd
 
 let expectedDirectory = sourceDirectory ++ "expected" 

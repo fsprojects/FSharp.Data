@@ -1,4 +1,3 @@
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "w3c_html_tables.html")))
@@ -33,7 +32,6 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -78,7 +76,6 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
     HtmlList<_>.Create(rowConverter, this, "Tools")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Adding some more features``: HtmlProvider+AddingSomeMoreFeatures with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -117,37 +114,26 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     HtmlTable<_>.Create(rowConverter, this, "The most basic table", false)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures : FDR.BaseTypes.HtmlTable<HtmlProvider+AddingSomeMoreFeatures+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+CssToTheRescueABetterLookingTable : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+ExerciseQuestions : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther : FDR.BaseTypes.HtmlTable<HtmlProvider+StructuringTheTableFurther+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Summary : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable : FDR.BaseTypes.HtmlTable<HtmlProvider+TheMostBasicTable+Row>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+Tools : FDR.BaseTypes.HtmlList<string>
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
@@ -162,7 +148,6 @@ class HtmlProvider+AddingSomeMoreFeatures+Row : string * string * string * strin
     (let t1,_,_,_ = this in t1)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * string
     member ``Last Major Eruption``: string with get
     (let _,_,t3,_ = this in t3)
@@ -177,7 +162,6 @@ class HtmlProvider+StructuringTheTableFurther+Row : string * string * string * s
     (let t1,_,_,_ = this in t1)
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class HtmlProvider+TheMostBasicTable+Row : string * string * string * string
     member Column1: string with get
     (let t1,_,_,_ = this in t1)

@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Rss : FDR.BaseTypes.XmlElement
     new : version:decimal -> channel:XmlProvider+Channel -> XmlProvider+Rss
     XmlRuntime.CreateRecord("rss", 
@@ -44,8 +42,6 @@ class XmlProvider+Rss : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute version", TextRuntime.ConvertDecimal("", value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Channel : FDR.BaseTypes.XmlElement
     new : items:XmlProvider+Item[] -> XmlProvider+Channel
     XmlRuntime.CreateRecord("channel", 
@@ -60,8 +56,6 @@ class XmlProvider+Channel : FDR.BaseTypes.XmlElement
     XmlRuntime.ConvertArray(this, "item", new Func<_,_>(id)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Item : FDR.BaseTypes.XmlElement
     new : title:string option -> description:XmlProvider+Description option -> temp:XmlProvider+Temp option -> XmlProvider+Item
     XmlRuntime.CreateRecord("item", 
@@ -88,8 +82,6 @@ class XmlProvider+Item : FDR.BaseTypes.XmlElement
                                                                TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Description : FDR.BaseTypes.XmlElement
     new : () -> XmlProvider+Description
     XmlRuntime.CreateRecord("description", 
@@ -100,8 +92,6 @@ class XmlProvider+Description : FDR.BaseTypes.XmlElement
     XmlElement.Create(xElement)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Temp : FDR.BaseTypes.XmlElement
     new : () -> XmlProvider+Temp
     XmlRuntime.CreateRecord("temp", 

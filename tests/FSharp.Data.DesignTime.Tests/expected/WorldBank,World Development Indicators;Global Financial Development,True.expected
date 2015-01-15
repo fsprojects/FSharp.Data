@@ -1,13 +1,10 @@
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider
     static member GetDataContext: () -> WorldBankDataProvider+ServiceTypes+WorldBankDataService
     (new WorldBankData("http://api.worldbank.org", "World Development Indicators;Global Financial Development"))
 
 
-[<[TypeProviderXmlDoc("<summary>Contains the types that describe the data service</summary>")]>]
 class WorldBankDataProvider+ServiceTypes
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.WorldBankData
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
     (this :> IWorldBankData).GetCountries()
@@ -19,7 +16,6 @@ class WorldBankDataProvider+ServiceTypes+WorldBankDataService : FDR.WorldBank.Wo
     (this :> IWorldBankData).GetTopics()
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollection<T><Country>
     member Afghanistan: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("AFG", "Afghanistan")
@@ -808,7 +804,6 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     (this :> ICountryCollection).GetCountry("ZWE", "Zimbabwe")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollection<T><Region>
     member Africa: WorldBankDataProvider+ServiceTypes+Region with get
     (this :> IRegionCollection).GetRegion("AFR")
@@ -925,7 +920,6 @@ class WorldBankDataProvider+ServiceTypes+Regions : FDR.WorldBank.RegionCollectio
     (this :> IRegionCollection).GetRegion("WLD")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<T><Topic>
     member ``Agriculture & Rural Development``: WorldBankDataProvider+ServiceTypes+Topic with get
     (this :> ITopicCollection).GetTopic("1")
@@ -991,13 +985,11 @@ class WorldBankDataProvider+ServiceTypes+Topics : FDR.WorldBank.TopicCollection<
     (this :> ITopicCollection).GetTopic("16")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Country : FDR.WorldBank.Country
     member Indicators: WorldBankDataProvider+ServiceTypes+Indicators with get
     (this :> ICountry).GetIndicators()
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Region : FDR.WorldBank.Region
     member Countries: WorldBankDataProvider+ServiceTypes+Countries with get
     (this :> IRegion).GetCountries()
@@ -1006,13 +998,11 @@ class WorldBankDataProvider+ServiceTypes+Region : FDR.WorldBank.Region
     (this :> IRegion).GetIndicators()
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Topic : FDR.WorldBank.Topic
     member Indicators: WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions with get
     (this :> ITopic).GetIndicators()
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``(%) Benefits held by 1st 20% population - All Social Insurance``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("allsi.bi_q1")
@@ -1068,6 +1058,21 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Access to electricity (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.ACCS.ZS")
 
+    member ``Access to electricity, rural (% of population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.ELC.ACCS.RU.ZS")
+
+    member ``Access to electricity, urban (% of population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.ELC.ACCS.UR.ZS")
+
+    member ``Access to non-solid fuel (% of households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.NSF.ACCS.ZS")
+
+    member ``Access to non-solid fuel, rural (% of households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.NSF.ACCS.RU.ZS")
+
+    member ``Access to non-solid fuel, urban (% of households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.NSF.ACCS.UR.ZS")
+
     member ``Account at a formal financial institution (% age 15+)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.05")
 
@@ -1082,6 +1087,18 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Account used to receive wages (% age 15+)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.11")
+
+    member ``Adequacy of social insurance programs (% of total welfare of beneficiary households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_si_allsi.adq_pop_tot")
+
+    member ``Adequacy of social protection and labor programs (% of total welfare of beneficiary households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_allsp.adq_pop_tot")
+
+    member ``Adequacy of social safety net programs (% of total welfare of beneficiary households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_sa_allsa.adq_pop_tot")
+
+    member ``Adequacy of unemployment benefits and ALMP (% of total welfare of beneficiary households)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_lm_alllm.adq_pop_tot")
 
     member ``Adjusted net enrollment rate, primary (% of primary school age children)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.PRM.TENR")
@@ -1409,6 +1426,18 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Battle-related deaths (number of people)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("VC.BTL.DETH")
+
+    member ``Benefits incidence in poorest quintile (%) - All Labor Market``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_lm_alllm.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) - All Social Assistance``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_sa_allsa.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) - All Social Insurance``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_si_allsi.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) -All Social Protection and Labor``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_allsp.ben_q1_tot")
 
     member ``Binding coverage, all products (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("TM.TAX.MRCH.BC.ZS")
@@ -1847,6 +1876,18 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Cost to import (US$ per container)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.IMP.COST.CD")
+
+    member ``Coverage (%) - All Labor Market``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_lm_alllm.cov_pop_tot")
+
+    member ``Coverage (%) - All Social Assistance``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_sa_allsa.cov_pop_tot")
+
+    member ``Coverage (%) - All Social Insurance``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_si_allsi.cov_pop_tot")
+
+    member ``Coverage (%) -All Social Protection and Labor``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("per_allsp.cov_pop_tot")
 
     member ``Credit card (% age 15+)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.20")
@@ -2490,7 +2531,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``GHG net emissions/removals by LUCF (Mt of CO2 equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CLC.GHGR.MT.CE")
 
-    member ``GINI index``: FDR.WorldBank.Indicator async with get
+    member ``GINI index (World Bank estimate)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.GINI")
 
     member ``GNI (constant 2005 US$)``: FDR.WorldBank.Indicator async with get
@@ -2666,9 +2707,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Gross national expenditure deflator (base year varies by country)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NE.DAB.DEFL.ZS")
-
-    member ``Gross national income (constant LCU)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GNY.TOTL.KN")
 
     member ``Gross portfolio debt liabilities to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.DM.10")
@@ -3453,6 +3491,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Methane emissions in energy sector (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.METH.EG.KT.CE")
 
+    member ``Methodology assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IQ.SCI.MTHD")
+
     member ``Military expenditure (% of GDP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("MS.MIL.XPND.GD.ZS")
 
@@ -3888,12 +3929,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Ores and metals imports (% of merchandise imports)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("TM.VAL.MMTL.ZS.UN")
 
-    member ``Organic water pollutant (BOD) emissions (kg per day per worker)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.WRKR.KG")
-
-    member ``Organic water pollutant (BOD) emissions (kg per day)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.TOTL.KG")
-
     member ``Other expense (% of expense)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GC.XPN.OTHR.ZS")
 
@@ -3933,11 +3968,17 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Outstanding international public debt securities to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.DM.06")
 
+    member ``Overall level of statistical capacity (scale 0 - 100)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IQ.SCI.OVRL")
+
     member ``PFC gas emissions (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.PFCG.KT.CE")
 
-    member ``PM10, country level (micrograms per cubic meter)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.ATM.PM10.MC.M3")
+    member ``PM2.5 pollution, mean annual exposure (micrograms per cubic meter)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EN.ATM.PM25.MC.M3")
+
+    member ``PM2.5 pollution, population exposed to levels exceeding WHO guideline value (% of total)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EN.ATM.PM25.MC.ZS")
 
     member ``PNG, bonds (AMT, current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.AMT.PNGB.CD")
@@ -4227,6 +4268,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Pension fund assets to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.DI.13")
 
+    member ``Periodicity and timeliness assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IQ.SCI.PRDC")
+
     member ``Permanent cropland (% of land area)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("AG.LND.CROP.ZS")
 
@@ -4437,7 +4481,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Primary education, teachers (% female)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.PRM.TCHR.FE.ZS")
 
-    member ``Primary income on FDI (current US$)``: FDR.WorldBank.Indicator async with get
+    member ``Primary income on FDI, payments (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("BX.KLT.DREM.CD.DT")
 
     member ``Primary income payments (BoP, current US$)``: FDR.WorldBank.Indicator async with get
@@ -4866,6 +4910,15 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Share of women employed in the nonagricultural sector (% of total nonagricultural employment)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.EMP.INSV.FE.ZS")
 
+    member ``Share of youth not in education, employment or training, female (% of female youth population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.NEET.FE.ZS")
+
+    member ``Share of youth not in education, employment or training, male (% of male youth population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.NEET.MA.ZS")
+
+    member ``Share of youth not in education, employment or training, total (% of youth population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SL.UEM.NEET.ZS")
+
     member ``Short-term debt (% of exports of goods, services and primary income)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.DOD.DSTC.XP.ZS")
 
@@ -4889,6 +4942,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Social contributions (current LCU)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GC.REV.SOCL.CN")
+
+    member ``Source data assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IQ.SCI.SRCE")
 
     member ``Start-up procedures to register a business (number)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.REG.PROC")
@@ -5169,7 +5225,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Tuberculosis case detection rate (%, all forms)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.TBS.DTEC.ZS")
 
-    member ``Tuberculosis treatment success rate (% of registered cases)``: FDR.WorldBank.Indicator async with get
+    member ``Tuberculosis treatment success rate (% of new cases)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.TBS.CURE.ZS")
 
     member ``Undisbursed external debt, official creditors (UND, current US$)``: FDR.WorldBank.Indicator async with get
@@ -5298,30 +5354,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Wanted fertility rate (births per woman)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.WFRT")
 
-    member ``Water pollution, chemical industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.CHEM.ZS")
-
-    member ``Water pollution, clay and glass industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.CGLS.ZS")
-
-    member ``Water pollution, food industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.FOOD.ZS")
-
-    member ``Water pollution, metal industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.MTAL.ZS")
-
-    member ``Water pollution, other industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.OTHR.ZS")
-
-    member ``Water pollution, paper and pulp industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.PAPR.ZS")
-
-    member ``Water pollution, textile industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.TXTL.ZS")
-
-    member ``Water pollution, wood industry (% of total BOD emissions)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EE.BOD.WOOD.ZS")
-
     member ``Water productivity, total (constant 2005 US$ GDP per cubic meter of total freshwater withdrawal)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("ER.GDP.FWTL.M3.KD")
 
@@ -5353,7 +5385,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.35")
 
 
-[<[TypeProviderEditorHideMethods()]>]
 class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.IndicatorsDescriptions
     member ``(%) Benefits held by 1st 20% population - All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("allsi.bi_q1")
@@ -5409,6 +5440,21 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Access to electricity (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.ACCS.ZS")
 
+    member ``Access to electricity, rural (% of population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.ACCS.RU.ZS")
+
+    member ``Access to electricity, urban (% of population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.ACCS.UR.ZS")
+
+    member ``Access to non-solid fuel (% of households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.NSF.ACCS.ZS")
+
+    member ``Access to non-solid fuel, rural (% of households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.NSF.ACCS.RU.ZS")
+
+    member ``Access to non-solid fuel, urban (% of households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.NSF.ACCS.UR.ZS")
+
     member ``Account at a formal financial institution (% age 15+)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AI.05")
 
@@ -5423,6 +5469,18 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Account used to receive wages (% age 15+)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AI.11")
+
+    member ``Adequacy of social insurance programs (% of total welfare of beneficiary households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_si_allsi.adq_pop_tot")
+
+    member ``Adequacy of social protection and labor programs (% of total welfare of beneficiary households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_allsp.adq_pop_tot")
+
+    member ``Adequacy of social safety net programs (% of total welfare of beneficiary households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_sa_allsa.adq_pop_tot")
+
+    member ``Adequacy of unemployment benefits and ALMP (% of total welfare of beneficiary households)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_lm_alllm.adq_pop_tot")
 
     member ``Adjusted net enrollment rate, primary (% of primary school age children)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.PRM.TENR")
@@ -5750,6 +5808,18 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Battle-related deaths (number of people)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("VC.BTL.DETH")
+
+    member ``Benefits incidence in poorest quintile (%) - All Labor Market``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_lm_alllm.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) - All Social Assistance``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_sa_allsa.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) - All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_si_allsi.ben_q1_tot")
+
+    member ``Benefits incidence in poorest quintile (%) -All Social Protection and Labor``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_allsp.ben_q1_tot")
 
     member ``Binding coverage, all products (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("TM.TAX.MRCH.BC.ZS")
@@ -6188,6 +6258,18 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Cost to import (US$ per container)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.IMP.COST.CD")
+
+    member ``Coverage (%) - All Labor Market``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_lm_alllm.cov_pop_tot")
+
+    member ``Coverage (%) - All Social Assistance``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_sa_allsa.cov_pop_tot")
+
+    member ``Coverage (%) - All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_si_allsi.cov_pop_tot")
+
+    member ``Coverage (%) -All Social Protection and Labor``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("per_allsp.cov_pop_tot")
 
     member ``Credit card (% age 15+)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AI.20")
@@ -6831,7 +6913,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``GHG net emissions/removals by LUCF (Mt of CO2 equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CLC.GHGR.MT.CE")
 
-    member ``GINI index``: FDR.WorldBank.IndicatorDescription with get
+    member ``GINI index (World Bank estimate)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.GINI")
 
     member ``GNI (constant 2005 US$)``: FDR.WorldBank.IndicatorDescription with get
@@ -7007,9 +7089,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Gross national expenditure deflator (base year varies by country)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NE.DAB.DEFL.ZS")
-
-    member ``Gross national income (constant LCU)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GNY.TOTL.KN")
 
     member ``Gross portfolio debt liabilities to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DM.10")
@@ -7794,6 +7873,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Methane emissions in energy sector (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.METH.EG.KT.CE")
 
+    member ``Methodology assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IQ.SCI.MTHD")
+
     member ``Military expenditure (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("MS.MIL.XPND.GD.ZS")
 
@@ -8229,12 +8311,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Ores and metals imports (% of merchandise imports)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("TM.VAL.MMTL.ZS.UN")
 
-    member ``Organic water pollutant (BOD) emissions (kg per day per worker)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.WRKR.KG")
-
-    member ``Organic water pollutant (BOD) emissions (kg per day)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.TOTL.KG")
-
     member ``Other expense (% of expense)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GC.XPN.OTHR.ZS")
 
@@ -8274,11 +8350,17 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Outstanding international public debt securities to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DM.06")
 
+    member ``Overall level of statistical capacity (scale 0 - 100)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IQ.SCI.OVRL")
+
     member ``PFC gas emissions (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PFCG.KT.CE")
 
-    member ``PM10, country level (micrograms per cubic meter)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PM10.MC.M3")
+    member ``PM2.5 pollution, mean annual exposure (micrograms per cubic meter)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PM25.MC.M3")
+
+    member ``PM2.5 pollution, population exposed to levels exceeding WHO guideline value (% of total)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PM25.MC.ZS")
 
     member ``PNG, bonds (AMT, current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.AMT.PNGB.CD")
@@ -8568,6 +8650,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Pension fund assets to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.13")
 
+    member ``Periodicity and timeliness assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IQ.SCI.PRDC")
+
     member ``Permanent cropland (% of land area)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("AG.LND.CROP.ZS")
 
@@ -8778,7 +8863,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Primary education, teachers (% female)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.PRM.TCHR.FE.ZS")
 
-    member ``Primary income on FDI (current US$)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Primary income on FDI, payments (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("BX.KLT.DREM.CD.DT")
 
     member ``Primary income payments (BoP, current US$)``: FDR.WorldBank.IndicatorDescription with get
@@ -9207,6 +9292,15 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Share of women employed in the nonagricultural sector (% of total nonagricultural employment)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.EMP.INSV.FE.ZS")
 
+    member ``Share of youth not in education, employment or training, female (% of female youth population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.NEET.FE.ZS")
+
+    member ``Share of youth not in education, employment or training, male (% of male youth population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.NEET.MA.ZS")
+
+    member ``Share of youth not in education, employment or training, total (% of youth population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SL.UEM.NEET.ZS")
+
     member ``Short-term debt (% of exports of goods, services and primary income)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.DOD.DSTC.XP.ZS")
 
@@ -9230,6 +9324,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Social contributions (current LCU)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GC.REV.SOCL.CN")
+
+    member ``Source data assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IQ.SCI.SRCE")
 
     member ``Start-up procedures to register a business (number)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.REG.PROC")
@@ -9510,7 +9607,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Tuberculosis case detection rate (%, all forms)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.TBS.DTEC.ZS")
 
-    member ``Tuberculosis treatment success rate (% of registered cases)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Tuberculosis treatment success rate (% of new cases)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.TBS.CURE.ZS")
 
     member ``Undisbursed external debt, official creditors (UND, current US$)``: FDR.WorldBank.IndicatorDescription with get
@@ -9638,30 +9735,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Wanted fertility rate (births per woman)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.WFRT")
-
-    member ``Water pollution, chemical industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.CHEM.ZS")
-
-    member ``Water pollution, clay and glass industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.CGLS.ZS")
-
-    member ``Water pollution, food industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.FOOD.ZS")
-
-    member ``Water pollution, metal industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.MTAL.ZS")
-
-    member ``Water pollution, other industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.OTHR.ZS")
-
-    member ``Water pollution, paper and pulp industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.PAPR.ZS")
-
-    member ``Water pollution, textile industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.TXTL.ZS")
-
-    member ``Water pollution, wood industry (% of total BOD emissions)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EE.BOD.WOOD.ZS")
 
     member ``Water productivity, total (constant 2005 US$ GDP per cubic meter of total freshwater withdrawal)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("ER.GDP.FWTL.M3.KD")

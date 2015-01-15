@@ -37,7 +37,7 @@ let ``Should use api key from FREEBASE_API_KEY environment variable``() =
     let data = FreebaseData.GetDataContext()
     data.DataContext.ApiKey |> should equal (Some "KEY1234")
 
-let data = FreebaseData.GetDataContext()
+let data = FreebaseDataProvider<Key="AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY">.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
@@ -88,6 +88,8 @@ let ``Can access Austrias national anthem by Fifa code``() =
     let anthem = country.``National anthem`` |> Seq.head
     anthem.Anthem.Name |> should equal "Land der Berge, Land am Strome"
 
+#if BUILD_SERVER
+#else
 [<Test>]
 let ``Can access the webpages for music composers``() =
 
@@ -97,6 +99,7 @@ let ``Can access the webpages for music composers``() =
         |> Seq.find (not << String.IsNullOrWhiteSpace)
 
     webPage.Split('\n').[0] |> should equal "http://www.quantz.info/"
+#endif
 
 [<Test>]
 let ``Can access the webpages of stock exchanges``() =
@@ -181,27 +184,28 @@ let ``tvrage_id is not unique in mql query``() =
     |> Seq.head
     |> should equal ("Jack Abramoff", "1958-02-28")
 
-let ghanaCodes = [|"GHA"|]
-
+#if BUILD_SERVER
+#else
 [<Test>]
 let ``Can handle Ghana multiple ISO 3 codes``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals.Ghana
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GHA"|]
+#endif
 
 [<Test>]
 let ``Check Individuals10 works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals10.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals10.``United Kingdom``
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"GBR"|]
 
 [<Test>]
 let ``Check Individuals100 works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.Individuals100.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.Individuals100.``Czech Republic``
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"CZE"|]
 
 [<Test>]
 let ``Check IndividualsAZ works for small collection``() =
-    let ghana = data.``Time and Space``.Location.Countries.IndividualsAZ.G.Ghana
-    ghana.``ISO Alpha 3`` |> Seq.toArray |> should equal ghanaCodes
+    let country = data.``Time and Space``.Location.Countries.IndividualsAZ.P.Portugal
+    country.``ISO Alpha 3`` |> Seq.toArray |> should equal [|"PRT"|]
 
 [<Test>]
 let ``Check IndividualsAZ good for large collections``() =

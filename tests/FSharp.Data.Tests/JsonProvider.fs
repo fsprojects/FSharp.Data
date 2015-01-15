@@ -152,7 +152,7 @@ let ``Heterogeneous types with Nulls, Missing, and "" should return None on all 
     j.[1].A.Boolean  |> should equal None
     j.[1].A.Number   |> should equal (Some 2)
     j.[1].A.Array    |> should equal None
-    j.[1].B.DateTime |> should equal (Some (DateTime(2014,3,4)))
+    j.[1].B.DateTime |> should equal (Some (DateTime(DateTime.Today.Year,3,4)))
     j.[1].B.Number   |> should equal (Some 3.4m)
     j.[1].B.Array    |> should equal None
     j.[1].C.Boolean  |> should equal (Some true)

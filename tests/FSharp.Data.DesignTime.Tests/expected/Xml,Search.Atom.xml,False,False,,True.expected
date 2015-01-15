@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     new : lang:string -> id:string -> links:XmlProvider+Link[] -> title:string -> updated:System.DateTime -> itemsPerPage:int -> entries:XmlProvider+Entry[] -> XmlProvider+Feed
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}feed", 
@@ -73,8 +71,6 @@ class XmlProvider+Feed : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     new : id:string -> published:System.DateTime -> links:XmlProvider+Link2[] -> title:string -> content:XmlProvider+Content -> updated:System.DateTime -> geo:XmlProvider+Geo -> metadata:XmlProvider+Metadata -> source:string -> lang:string -> author:XmlProvider+Author -> XmlProvider+Entry
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}entry", 
@@ -145,8 +141,6 @@ class XmlProvider+Entry : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertDateTime("", value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Link : FDR.BaseTypes.XmlElement
     new : type:string -> href:string -> rel:string -> XmlProvider+Link
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
@@ -174,8 +168,6 @@ class XmlProvider+Link : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute type", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Author : FDR.BaseTypes.XmlElement
     new : name:string -> uri:string -> XmlProvider+Author
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}author", 
@@ -197,8 +189,6 @@ class XmlProvider+Author : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Content : FDR.BaseTypes.XmlElement
     new : type:string -> value:string -> XmlProvider+Content
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}content", 
@@ -219,8 +209,6 @@ class XmlProvider+Content : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Geo : FDR.BaseTypes.XmlElement
     new : () -> XmlProvider+Geo
     XmlRuntime.CreateRecord("{http://api.twitter.com/}geo", 
@@ -231,8 +219,6 @@ class XmlProvider+Geo : FDR.BaseTypes.XmlElement
     XmlElement.Create(xElement)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Link2 : FDR.BaseTypes.XmlElement
     new : type:string -> href:string -> rel:string -> XmlProvider+Link2
     XmlRuntime.CreateRecord("{http://www.w3.org/2005/Atom}link", 
@@ -260,8 +246,6 @@ class XmlProvider+Link2 : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Attribute type", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Metadata : FDR.BaseTypes.XmlElement
     new : resultType:string -> XmlProvider+Metadata
     XmlRuntime.CreateRecord("{http://api.twitter.com/}metadata", 

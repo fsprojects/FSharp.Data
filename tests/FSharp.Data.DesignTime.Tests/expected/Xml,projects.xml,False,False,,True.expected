@@ -23,8 +23,6 @@ class XmlProvider
     XmlElement.Create(((new StringReader(text)) :> TextReader))
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Ordercontainer : FDR.BaseTypes.XmlElement
     new : background:XmlProvider+Background -> project:XmlProvider+Project -> XmlProvider+Ordercontainer
     XmlRuntime.CreateRecord("ordercontainer", 
@@ -44,8 +42,6 @@ class XmlProvider+Ordercontainer : FDR.BaseTypes.XmlElement
     XmlRuntime.GetChild(this, "project")
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Background : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Background
     XmlRuntime.CreateRecord("background", 
@@ -61,8 +57,6 @@ class XmlProvider+Background : FDR.BaseTypes.XmlElement
     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
 
 
-[<[TypeProviderEditorHideMethods()]>]
-[<[AllowNullLiteral((Boolean)False)]>]
 class XmlProvider+Project : FDR.BaseTypes.XmlElement
     new : title:string -> XmlProvider+Project
     XmlRuntime.CreateRecord("project", 

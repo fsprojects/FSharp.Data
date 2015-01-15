@@ -1,7 +1,12 @@
-#### 2.1.1 - Unreleased
+#### 2.1.2 - Unreleased
+* Added constants for more HTTP methods.
+
+#### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
 * Improved parsing of numbers.
 * Fixed XmlProvider so InferTypesFromValues=false works for elements in addition to attributes.
+* Recognise media types application/*+json as text.
+* Workarounded Mono bug causing HTTP POST requests to hang.
 
 #### 2.1.0 - November 2 2014
 * Fixed parsing of HTML attributes without value.

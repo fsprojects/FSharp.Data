@@ -492,9 +492,10 @@ module Debug =
                 |> Seq.sortBy (fun m -> m.Name)
                 |> Seq.truncate maxWidth
             for t in pendingForThisDepth do
-                for attr in t.GetCustomAttributesData() do
-                     print <| (sprintf "[<%A>]" attr).Replace("Microsoft.FSharp.Core.", null).Replace("CompilerServices.", null).Replace("Attribute(", "(")
-                     println()
+                //Disabled because not working on Mono
+                //for attr in t.GetCustomAttributesData() do
+                //     print <| (sprintf "[<%A>]" attr).Replace("Microsoft.FSharp.Core.", null).Replace("CompilerServices.", null).Replace("Attribute(", "(")
+                //     println()
                 match t with
                 | t when FSharpType.IsRecord t-> "record "
                 | t when FSharpType.IsModule t -> "module "
