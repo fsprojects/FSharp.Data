@@ -37,7 +37,7 @@ let ``Should use api key from FREEBASE_API_KEY environment variable``() =
     let data = FreebaseData.GetDataContext()
     data.DataContext.ApiKey |> should equal (Some "KEY1234")
 
-let data = FreebaseDataProvider<Key="AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY">.GetDataContext()
+let data = FreebaseData.GetDataContext()
 
 [<Test>]
 let ``Can access the first 10 amino acids``() =
