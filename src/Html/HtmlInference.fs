@@ -3,9 +3,94 @@ module FSharp.Data.Runtime.HtmlInference
 
 open System
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
+
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module MicroDataSchema =
+
+    module Utils = 
+    
+        let (|Attr|_|) (name:string) (n:HtmlNode) = 
+            let attr = (HtmlNode.tryGetAttribute name n)
+            attr |> Option.map (fun x -> x.Value())
+
+        let getPath str = 
+            (match Uri.TryCreate(str, UriKind.Absolute) with 
+             | true, uri -> uri.LocalPath 
+             | false, _ -> "").Trim('/')
+
+    type Type = 
+        | Primitive of ResizeArray<string>
+        | Link
+        | Img
+        | Scoped of string
+    
+    type Property = {
+        Name : string
+        Type : Type
+        IsOptional : bool
+    }
+    
+    type Scope = {
+         FullName : string
+         Name : string
+         Properties : ResizeArray<Property>
+    }
+    with
+        static member Empty = {
+            FullName = String.Empty
+            Name = String.Empty
+            Properties = new ResizeArray<_>()
+        }
+
+    let createScope fullName = 
+        {
+            FullName = fullName
+            Name = (Utils.getPath fullName)
+            Properties = new ResizeArray<_>()
+        }
+    
+    let addProperty (prop:Property) (scope:Scope) = 
+        match scope.Properties |> Seq.tryFind (fun x -> x.Name = prop.Name) with
+        | Some(h) -> 
+            match h.Type, prop.Type with
+            | Primitive(s), Primitive(s') -> s.AddRange(s')
+            | _ -> () 
+        | None -> scope.Properties.Add prop
+
+    let getType (n:HtmlNode) = 
+        let nodeName = n.Name()
+        match nodeName with
+        | "a" | "link" -> Link
+        | "img" -> Img
+        | "meta" -> 
+            let valueAttrs = ["content"; "value"; "src"]
+            match valueAttrs |> List.tryPick (n.TryGetAttribute) with
+            | Some attr -> Primitive (new ResizeArray<_>([attr.Value()]))
+            | None -> Primitive (new ResizeArray<_>([n.InnerText()]))
+        | _ -> Primitive (new ResizeArray<_>([n.InnerText()]))
+   
+    let rec walkElements currentScope scopes (n:HtmlNode) = 
+        match n with
+        | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
+              addProperty { Name = prop; Type = Scoped scope; IsOptional = false } currentScope
+              let newScope = createScope scope
+              HtmlNode.elements n |> List.fold (walkElements newScope) (newScope :: scopes)
+        | Utils.Attr "itemtype" scope -> 
+              let newScope = createScope scope
+              HtmlNode.elements n |> List.fold (walkElements newScope) (newScope :: scopes)
+        | Utils.Attr "itemprop" prop ->
+              let typ = getType n
+              addProperty { Name = prop; Type = typ; IsOptional = false } currentScope
+              HtmlNode.elements n |> List.fold (walkElements currentScope) scopes
+        | _ -> HtmlNode.elements n |> List.fold (walkElements currentScope) scopes
+
+    let build (doc:HtmlDocument) = 
+        HtmlDocument.descendants false (HtmlNode.hasAttribute "itemscope" "") doc
+        |> Seq.fold (walkElements Scope.Empty) []
 
 type Parameters = {
     MissingValues: string[]

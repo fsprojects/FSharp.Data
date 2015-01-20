@@ -13,19 +13,34 @@ open FSharp.Data.Runtime.StructuralTypes
 #nowarn "10001"
 
 // --------------------------------------------------------------------------------------
-
+type HtmlValue =
+    | Text of string
+    | Link of href:string * content:string
+    | Img of string
+    with 
+        member x.AsString() = 
+            match x with
+            | Text t -> t
+            | Link(_,t) -> t
+            | Img(t) -> t 
 /// Representation of an HTML table cell
 type HtmlTableCell = 
-    | Cell of bool * string
+    | Header of string
+    | Value of HtmlValue
+    | Property of string * HtmlTableCell
+    | Scope of string * HtmlTableCell list
     | Empty
     member x.IsHeader =
         match x with
-        | Empty -> true
-        | Cell(h, _) -> h
-    member x.Data = 
+        | Empty | Header _ -> true
+        | _ -> false
+    override x.ToString() = 
         match x with
         | Empty -> ""
-        | Cell(_, d) -> d
+        | Header d -> d
+        | Value d -> d.AsString()
+        | Property (n, v) -> sprintf "%s=%s" n (v.ToString())
+        | Scope(n, v) -> sprintf "{ Scope = %s, { %s }" n (String.Join(",", List.map (fun x -> x.ToString())))
 
 /// Representation of an HTML table cell
 type HtmlTable = 
@@ -33,7 +48,7 @@ type HtmlTable =
       HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
       InferedProperties : PrimitiveInferedProperty list option // sometimes set at designtime, never at runtime
       HasHeaders: bool option // always set at designtime, never at runtime
-      Rows :  string [] []
+      Rows :  HtmlTableCell [] []
       Html : HtmlNode }
     override x.ToString() =
         let sb = StringBuilder()
@@ -44,10 +59,10 @@ type HtmlTable =
         let columns = data.GetLength(1)
         let widths = Array.zeroCreate columns 
         data |> Array2D.iteri (fun _ c cell ->
-            widths.[c] <- max (widths.[c]) (cell.Length))
+            widths.[c] <- max (widths.[c]) (cell.ToString().Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                wr.Write(data.[r,c].PadRight(widths.[c] + 1))
+                wr.Write(data.[r,c].ToString().PadRight(widths.[c] + 1))
             wr.WriteLine()
         sb.ToString()
 
@@ -78,7 +93,18 @@ type HtmlObject =
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
+
+    module internal Utils = 
+        
+        let (|Attr|_|) (name:string) (n:HtmlNode) = 
+            let attr = (HtmlNode.tryGetAttribute name n)
+            attr |> Option.map (fun x -> x.Value())
     
+        let getPath str = 
+            (match Uri.TryCreate(str, UriKind.Absolute) with 
+             | true, uri -> uri.LocalPath 
+             | false, _ -> "").Trim('/')
+   
     let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let parents = parents |> Seq.truncate 2 |> Seq.toList
@@ -126,6 +152,31 @@ module HtmlRuntime =
                      | Some name -> cleanup name
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
+
+    let private getMicroDataSchema (n:HtmlNode list) = 
+        let getValue (n:HtmlNode) = 
+            let nodeName = n.Name()
+            match nodeName with
+            | "a" | "link" -> Link(n.AttributeValue("href"), n.InnerText())
+            | "img" -> Img(n.AttributeValue("src"))
+            | "meta" -> 
+                let valueAttrs = ["content"; "value"; "src"]
+                match valueAttrs |> List.tryPick (n.TryGetAttribute) with
+                | Some attr -> Text(attr.Value())
+                | None -> Text(n.InnerText())
+            | _ -> Text(n.InnerText())
+            |> Value
+        
+        let rec walk state (n:HtmlNode) = 
+            match n with
+            | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
+                  Property(prop, Scope(scope, HtmlNode.elements n |> List.fold walk [])) :: state
+            | Utils.Attr "itemtype" scope -> 
+                  Scope(scope, HtmlNode.elements n |> List.fold walk []) :: state
+            | Utils.Attr "itemprop" prop ->
+                  Property(prop, HtmlNode.elements n |> List.head |> getValue) :: state
+            | _ ->  HtmlNode.elements n |> List.fold (walk) state
+        n |> List.fold walk []
                 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
@@ -151,8 +202,10 @@ module HtmlRuntime =
                     let getContents contents = 
                         (contents |> List.map (HtmlNode.innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
                     match cell with
-                    | HtmlElement("td", _, contents) -> Cell (false, getContents contents)
-                    | HtmlElement("th", _, contents) -> Cell (true, getContents contents)
+                    | HtmlElement("td", _, contents) -> 
+                        
+                        Cell (false, getContents contents)
+                    | HtmlElement("th", _, contents) -> Header (getContents contents)
                     | _ -> Empty
                 let col_i = ref colindex
                 while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
@@ -180,7 +233,7 @@ module HtmlRuntime =
 
                 Some hasHeaders, Some headerNamesAndUnits, inferedProperties
 
-        let rows = res |> Array.map (Array.map (fun x -> x.Data))
+        let rows = res //|> Array.map (Array.map (fun x -> x.Data))
 
         { Name = name
           HeaderNamesAndUnits = headerNamesAndUnits
@@ -332,10 +385,10 @@ type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:
         | Table table -> 
             let headers, rows = 
                 if hasHeaders then
-                    Some table.Rows.[0], table.Rows.[1..]
+                    Some (table.Rows.[0] |> Array.map (fun x -> x.Data)), (table.Rows.[1..] |> Array.map (Array.map (fun x' -> x'.Data)))
                 else
-                    None, table.Rows
-            HtmlTable<_>(table.Name, headers, Array.map rowConverter.Invoke rows, table.Html)
+                    None, table.Rows |> Array.map (Array.map (fun x' -> x'.Data))
+            HtmlTable<_>(table.Name, headers , Array.map rowConverter.Invoke rows, table.Html)
         | _ -> failwithf "Element %s is not a table" id
 
 /// Underlying representation of list types generated by HtmlProvider

@@ -36,7 +36,7 @@ module internal HtmlGenerator =
             | None -> 
                 HtmlInference.inferColumns inferenceParameters 
                                            table.HeaderNamesAndUnits.Value 
-                                           (if table.HasHeaders.Value then table.Rows.[1..] else table.Rows)
+                                           ((if table.HasHeaders.Value then table.Rows.[1..] else table.Rows) |> Array.map (Array.map (fun x -> x.Data)))
 
         let fields = columns |> List.mapi (fun index field ->
             let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
