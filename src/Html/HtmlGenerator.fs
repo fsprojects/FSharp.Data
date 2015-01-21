@@ -14,6 +14,23 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 
+module internal HtmlConversionsGenerator = 
+    
+    let convertNodeList (replacer:AssemblyReplacer) preferOptionals missingValueStr cultureStr (field:InferedProperty) = 
+        match field.Type with
+        | InferedType.Primitive(typ, unit, optional) ->
+            let typ, typWrapper = 
+                if optional then
+                  if preferOptionals then typ, TypeWrapper.Option
+                  elif typ = typeof<float> then typ, TypeWrapper.None
+                  elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
+                  elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
+                  else typ, TypeWrapper.Option
+                else typ, TypeWrapper.None
+            let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
+            ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
+        | _ -> failwith "unsupported conversion"
+
 module internal HtmlGenerator =
 
     type private FieldInfo = 
@@ -39,10 +56,10 @@ module internal HtmlGenerator =
                                            ((if table.HasHeaders.Value then table.Rows.[1..] else table.Rows) |> Array.map (Array.map (fun x -> x.Data)))
 
         let fields = columns |> List.mapi (fun index field ->
-            let typ, typWithoutMeasure, conv, _convBack = ConversionsGenerator.convertStringValue replacer missingValuesStr cultureStr field
+            let typ, typWithoutMeasure, conv, _convBack = HtmlConversionsGenerator.convertNodeList replacer inferenceParameters.PreferOptionals missingValuesStr cultureStr field
             { TypeForTuple = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> if columns.Length = 1 then row else Expr.TupleGet(row, index))
-              Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string[]).[index]) @> } )
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> if columns.Length = 1 then row else Expr.TupleGet(row, index) |> replacer.ToRuntime)
+              Convert = fun rowVarExpr -> conv <@ TextConversions.AsString(HtmlNode.innerTextConcat (%%rowVarExpr:(HtmlNode [])[]).[index]) @> |> replacer.ToRuntime } )
         
         // The erased row type will be a tuple of all the field types (without the units of measure)
         let rowErasedType =
@@ -62,7 +79,7 @@ module internal HtmlGenerator =
         let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
         
         let rowConverter =
-            let rowVar = Var("row", typeof<string[]>)
+            let rowVar = Var("row", typeof<HtmlNode[][]> |> replacer.ToRuntime)
             let rowVarExpr = Expr.Var rowVar
             let body =
               if fields.Length = 1
@@ -71,7 +88,7 @@ module internal HtmlGenerator =
               |> replacer.ToRuntime
         
             let delegateType = 
-              typedefof<Func<_,_>>.MakeGenericType(typeof<string[]>, rowErasedType)
+              typedefof<Func<_,_>>.MakeGenericType(typeof<HtmlNode[][]> |> replacer.ToRuntime, rowErasedType)
         
             Expr.NewDelegate(delegateType, [rowVar], body)
         

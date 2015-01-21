@@ -92,25 +92,140 @@ module MicroDataSchema =
         HtmlDocument.descendants false (HtmlNode.hasAttribute "itemscope" "") doc
         |> Seq.fold (walkElements Scope.Empty) []
 
+module internal Utils = 
+    
+    let (|Attr|_|) (name:string) (n:HtmlNode) = 
+        let attr = (HtmlNode.tryGetAttribute name n)
+        attr |> Option.map (fun x -> x.Value())
+
+    let getPath str = 
+        (match Uri.TryCreate(str, UriKind.Absolute) with 
+         | true, uri -> uri.LocalPath 
+         | false, _ -> "").Trim('/')
+  
 type Parameters = {
     MissingValues: string[]
     CultureInfo: CultureInfo
     UnitsOfMeasureProvider: IUnitsOfMeasureProvider
     PreferOptionals: bool }
 
-let inferColumns parameters (headerNamesAndUnits:_[]) rows = 
+let private inferNodeType preferOptionals missingValues cultureInfo unit (n:HtmlNode) =
+    let nodeName = n.Name()
+    match nodeName with
+    | "a" | "link" -> 
+        InferedType.Record(Some "Link", 
+            [
+              { Name = "Href"; Type = InferedType.Primitive(typeof<string>, None, false) }
+              { Name = "Contents"; Type = InferedType.Primitive(typeof<string>, None, false) }
+            ], false)
+    | "img" ->
+        InferedType.Record(Some "Image", 
+            [
+              { Name = "Src"; Type = InferedType.Primitive(typeof<string>, None, false) }
+            ], false)
+    | "meta" -> 
+        let valueAttrs = ["content"; "value"; "src"]
+        let value = 
+            match valueAttrs |> List.tryPick (n.TryGetAttribute) with
+            | Some attr -> attr.Value()
+            | None -> n.InnerText()
+        CsvInference.inferCellType preferOptionals missingValues cultureInfo unit value
+    | _ -> CsvInference.inferCellType preferOptionals missingValues cultureInfo unit (n.InnerText())
+
+let private tryInferMicroDataType preferOptionals missingValues cultureInfo unit (n:HtmlNode []) = 
+
+    let rec walk state (n:HtmlNode) = 
+        match n with
+        | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
+              { Name = prop; Type = InferedType.Record(Some scope, HtmlNode.elements n |> List.fold walk [], false) } :: state
+        | Utils.Attr "itemtype" scope -> 
+              { Name = scope; Type = InferedType.Record(Some scope, HtmlNode.elements n |> List.fold walk [], false) } :: state
+        | Utils.Attr "itemprop" prop ->
+              { Name = prop; Type = (inferNodeType preferOptionals missingValues cultureInfo unit n) } :: state
+        | _ ->  HtmlNode.elements n |> List.fold (walk) state
+    
+    match n |> Array.fold walk [] with
+    | [] -> None
+    | a -> Some (InferedType.Record(None, a, false))
+
+
+let rec private annotateUnitOfMeasure (name:string) typ =
+    let name = name.Split('\n').[0]
+    match typ with
+    | InferedType.Primitive(typ, unit, optional) ->
+        match unit with 
+        | Some unit -> 
+            if StructuralInference.supportsUnitsOfMeasure typ then
+              name, InferedType.Primitive(typ, Some unit, optional)
+            else
+              name, InferedType.Primitive(typ, None, optional)
+        | _ -> name, InferedType.Primitive(typ, None, optional)
+    | InferedType.Record(n, props, opts) ->
+        name, InferedType.Record(n, props |> List.map (fun p -> let (n, t) = annotateUnitOfMeasure p.Name p.Type in { Name = n; Type = t }), opts)
+
+let internal inferType (headerNamesAndUnits:_[]) schema (rows : seq<(HtmlNode []) []>) inferRows missingValues cultureInfo assumeMissingValues preferOptionals =
+
+  // If we have no data, generate one empty row with empty strings, 
+  // so that we get a type with all the properties (returning string values)
+  let rowsIterator = rows.GetEnumerator()
+  let rows = 
+    if rowsIterator.MoveNext() then
+      seq {
+        yield rowsIterator.Current
+        try
+          while rowsIterator.MoveNext() do
+            yield rowsIterator.Current
+        finally
+          rowsIterator.Dispose()
+        if assumeMissingValues then
+          yield Array.create headerNamesAndUnits.Length [||]
+      }
+    else
+      Array.create headerNamesAndUnits.Length [||] |> Seq.singleton 
+  
+  let rows = if inferRows > 0 then Seq.truncate (if assumeMissingValues && inferRows < Int32.MaxValue then inferRows + 1 else inferRows) rows else rows
+
+  // Infer the type of collection using structural inference
+  let types = 
+    [ for row in rows ->
+        let fields = 
+          [ for (name, unit), schema, value in Array.zip3 headerNamesAndUnits schema row ->
+              let typ = 
+                match schema with
+                | Some _ -> InferedType.Null // this will be ignored, so just return anything
+                | None -> 
+                    match tryInferMicroDataType preferOptionals missingValues cultureInfo unit value with
+                    | Some t -> t
+                    | None -> CsvInference.inferCellType preferOptionals missingValues cultureInfo unit (value |> Array.toList |> HtmlNode.innerTextConcat)
+              let name, typ = annotateUnitOfMeasure name typ
+              { Name = name
+                Type = typ } ]
+        InferedType.Record(None, fields, false) ]
+
+  let inferedType = 
+    if schema |> Array.forall Option.isSome then
+        // all the columns types are already set, so all the rows will be the same
+        types |> List.head
+    else
+        List.reduce (StructuralInference.subtypeInfered ((*allowEmptyValues*)not preferOptionals)) types
+  
+  match inferedType with
+  | InferedType.Record(_, fields, _) -> fields
+  | _ -> failwith "Expected record type" 
+
+let inferColumns parameters (headerNamesAndUnits:_[]) (rows : seq<(HtmlNode []) []>) = 
 
     let inferRows = 0
     let schema = Array.init headerNamesAndUnits.Length (fun _ -> None)
     let assumeMissingValues = false
 
-    CsvInference.inferColumnTypes headerNamesAndUnits schema rows inferRows parameters.MissingValues parameters.CultureInfo assumeMissingValues parameters.PreferOptionals
+    inferType headerNamesAndUnits schema rows inferRows parameters.MissingValues parameters.CultureInfo assumeMissingValues parameters.PreferOptionals
 
-let inferHeaders parameters (rows : string [][]) =
+let inferHeaders parameters (rows : (HtmlNode []) [][]) =
     if rows.Length <= 2 then 
         false, None, None, None //Not enough info to infer anything, assume first row data
     else
-        let headers = Some rows.[0]
+        let headers = Some (rows.[0] |> Array.map (Array.toList >> HtmlNode.innerTextConcat))
         let numberOfColumns = rows.[0].Length
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" parameters.UnitsOfMeasureProvider
         let headerRowType = inferColumns parameters headerNamesAndUnits [rows.[0]]

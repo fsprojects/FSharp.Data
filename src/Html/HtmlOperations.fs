@@ -238,6 +238,12 @@ module HtmlNode =
     let inline innerText n = 
         innerTextExcluding [] n
 
+    /// Returns the concatenated inner text of the current nodes
+    /// Parameters:
+    /// * n - The given nodes
+    let inline innerTextConcat n = 
+        (n |> Seq.map (innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim() 
+
 // --------------------------------------------------------------------------------------
 
 [<Extension>]
