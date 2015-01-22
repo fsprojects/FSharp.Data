@@ -6,27 +6,22 @@ open System.IO
 open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
-open FSharp.Data.HtmlExtensions
 open FSharp.Data.Runtime
+open FSharp.Data.HtmlExtensions
 open FSharp.Data.Runtime.StructuralTypes
-
+open FSharp.Data.Runtime.HtmlInference
 #nowarn "10001"
+
+
 
 // --------------------------------------------------------------------------------------
 /// Representation of an HTML table cell
 type HtmlTableCell = 
-    | Header of HtmlNode []
-    | Cell of HtmlNode []
+    | Header of HtmlValue
+    | Cell of HtmlValue
     | Empty
-    override x.ToString() = 
-        match x with
-        | Empty -> ""
-        | Header d -> HtmlNode.innerTextConcat (d |> Array.toList)
-        | Cell d -> HtmlNode.innerTextConcat (d |> Array.toList)
     member x.Data = 
-        match x with
-        | Empty -> [||]
-        | Header d | Cell d -> d
+       match x with | Header d | Cell d -> d | Empty _ -> HtmlValue.Null
 
 /// Representation of an HTML table cell
 type HtmlTable = 
@@ -34,7 +29,7 @@ type HtmlTable =
       HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
       InferedProperties : InferedProperty list option // sometimes set at designtime, never at runtime
       HasHeaders: bool option // always set at designtime, never at runtime
-      Rows :  HtmlTableCell [] []
+      Rows :  HtmlValue[][]
       Html : HtmlNode }
     override x.ToString() =
         let sb = StringBuilder()
@@ -79,6 +74,17 @@ type HtmlObject =
 
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
+
+    module Utils = 
+    
+        let (|Attr|_|) (name:string) (n:HtmlNode) = 
+            let attr = (HtmlNode.tryGetAttribute name n)
+            attr |> Option.map (fun x -> x.Value())
+
+        let getPath str = 
+            (match Uri.TryCreate(str, UriKind.Absolute) with 
+             | true, uri -> uri.LocalPath 
+             | false, _ -> "").Trim('/')
    
     let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
@@ -128,6 +134,50 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
 
+    let rec getValue (n:HtmlNode list) =
+       
+        let rec getValue' (n:HtmlNode) =
+            let nodeName = n.Name()
+            match nodeName with
+            | "a" | "link" -> 
+                Link(n.AttributeValue("href"), match n.Elements() with | [] -> Null | h :: _ -> getValue' h)
+            | "img" ->
+                Img(n.AttributeValue("src"))
+            | "meta" -> 
+                let valueAttrs = ["content"; "value"; "src"]
+                let value = 
+                    match valueAttrs |> List.tryPick (n.TryGetAttribute) with
+                    | Some attr -> attr.Value()
+                    | None -> n.InnerText()
+                Primitive(value)
+            | _ -> 
+                match tryParseMicroSchema n with
+                | Some h -> h
+                | None -> Primitive(n.InnerText())
+
+        match n |> List.map getValue' with
+        | [] -> Null
+        | h :: [] -> h
+        | h -> HtmlValue.List(h)
+ 
+    and tryParseMicroSchema (n:HtmlNode) =
+
+        let rec walk state (n:HtmlNode) = 
+            match n with
+            | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
+                  Property(prop, Record(scope, HtmlNode.elements n |> List.fold walk [])) :: state
+            | Utils.Attr "itemtype" scope -> 
+                  Record(scope, HtmlNode.elements n |> List.fold walk []) :: state
+            | Utils.Attr "itemprop" prop ->
+                  Property(prop, getValue (n.Elements())) :: state
+            | _ ->  HtmlNode.elements n |> List.fold (walk) state
+        
+        match walk [] n with
+        | [] -> None
+        | h :: [] -> Some h
+        | h -> Some <| HtmlValue.List h
+
+
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
 
         let rows = table.Descendants("tr", false) |> List.ofSeq |> List.mapi (fun i r -> i,r)
@@ -150,8 +200,8 @@ module HtmlRuntime =
                 
                 let data =
                     match cell with
-                    | HtmlElement("td", _, contents) -> Cell (Array.ofList contents)
-                    | HtmlElement("th", _, contents) -> Header (Array.ofList contents)
+                    | HtmlElement("td", _, contents) -> Cell (contents |> getValue)
+                    | HtmlElement("th", _, contents) -> Header (contents |> getValue)
                     | _ -> Empty
 
                 let col_i = ref colindex
@@ -167,10 +217,10 @@ module HtmlRuntime =
             | Some inferenceParameters ->
                 let hasHeaders, headerNames, units, inferedProperties = 
                     if res.[0] |> Array.forall (function | Header _ | Empty -> true | _ -> false) 
-                    then true, res.[0] |> Array.map (fun x -> x.ToString()) |> Some, None, None
+                    then true, res.[0] |> Array.map (fun x -> x.Data.ToString()) |> Some, None, None
                     else res
-                          |> Array.map (Array.map (fun x -> x.Data))
-                          |> HtmlInference.inferHeaders inferenceParameters
+                         |> Array.map (Array.map (fun x -> x.Data))
+                         |> HtmlInference.inferHeaders inferenceParameters
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =
@@ -180,7 +230,7 @@ module HtmlRuntime =
 
                 Some hasHeaders, Some headerNamesAndUnits, inferedProperties
 
-        let rows = res //|> Array.map (Array.map (fun x -> x.Data))
+        let rows = res |> Array.map (Array.map (fun x -> x.Data))
 
         { Name = name
           HeaderNamesAndUnits = headerNamesAndUnits
@@ -327,14 +377,15 @@ type HtmlTable<'RowType> internal (name:string, headers:string[] option, values:
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(rowConverter:Func<HtmlNode [] [],'RowType>, doc:HtmlDocument, id:string, hasHeaders:bool) =
+    static member Create(rowConverter:Func<string[][],'RowType>, doc:HtmlDocument, id:string, hasHeaders:bool) =
         match doc.GetObject id with
         | Table table -> 
             let headers, rows = 
                 if hasHeaders then
-                    Some (table.Rows.[0] |> Array.map (fun x -> x.ToString())), (table.Rows.[1..] |> Array.map (Array.map (fun x' -> x'.Data)))
+                    Some (table.Rows.[0] |> Array.map (fun x -> x.ToString())), (table.Rows.[1..])
                 else
-                    None, table.Rows |> Array.map (Array.map (fun x' -> x'.Data))
+                    None, table.Rows
+            let rows = rows |> Array.map (Array.map (fun x -> x.AsStringArray()))
             HtmlTable<_>(table.Name, headers , Array.map rowConverter.Invoke rows, table.Html)
         | _ -> failwithf "Element %s is not a table" id
 
