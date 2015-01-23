@@ -133,6 +133,7 @@ module internal HtmlGenerator =
 
         let rowMapper f rows = 
             <@ (%%rows : string[][][]) |> Seq.map (%%f : (string[][] -> obj[]))  @>
+            |> replacer.ToRuntime
 
         let create (htmlDoc:Expr) =
             <@@
