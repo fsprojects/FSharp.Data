@@ -310,6 +310,7 @@
     <None Include="packages.config" />
     <None Include="paket.references" />
     <None Include="app.config" />
+    <None Include="Script1.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

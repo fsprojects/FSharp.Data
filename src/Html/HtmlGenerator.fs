@@ -14,29 +14,7 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 
-type HtmlConversionsGenerator = 
-    
-    static member ConvertNodeList(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, field:InferedProperty) = 
-        match field.Type with
-        | InferedType.Primitive(typ, unit, optional) ->
-            let typ, typWrapper = 
-                if optional then
-                  if preferOptionals then typ, TypeWrapper.Option
-                  elif typ = typeof<float> then typ, TypeWrapper.None
-                  elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-                  elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
-                  else typ, TypeWrapper.Option
-                else typ, TypeWrapper.None
-            let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
-            0, ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-        | _ -> failwith "unsupported conversion"
-
 module internal HtmlGenerator =
-
-    type private FieldInfo = 
-      { TypeForTuple : Type
-        Property : ProvidedProperty
-        Convert: Expr -> Expr }
 
     let private getPropertyName = NameUtils.capitalizeFirstLetter
     
@@ -45,7 +23,71 @@ module internal HtmlGenerator =
             HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
 
-    let private createTableType replacer getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
+    type private FieldInfo = 
+      { 
+        Name : string
+        ReturnType : Type
+        Property : ProvidedProperty
+        Convert : (Expr -> Expr)   
+      }
+
+    type private Field = 
+        | Primitive of FieldInfo
+        | Record of FieldInfo
+        member x.ReturnType = 
+            match x with
+            | Primitive f -> f.ReturnType
+            | Record (f) -> f.ReturnType
+        member x.Property = 
+            match x with
+            | Primitive f -> f.Property
+            | Record (f) -> f.Property
+        member x.Name = 
+            match x with
+            | Primitive f -> f.Name
+            | Record (f) -> f.Name
+
+
+    let rec private convertProperty(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, isSingleton, field:InferedProperty) = 
+        let getTypeAndWrapper typ optional = 
+            if optional then
+              if preferOptionals then typ, TypeWrapper.Option
+              elif typ = typeof<float> then typ, TypeWrapper.None
+              elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
+              elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
+              else typ, TypeWrapper.Option
+            else typ, TypeWrapper.None
+
+        match field.Type with
+        | InferedType.Primitive(typ, unit, optional) ->
+            let typ, typWrapper = getTypeAndWrapper typ optional    
+            let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
+            let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
+            {
+              Name = field.Name 
+              ReturnType = typWithoutMeasure
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> row) 
+              Convert = (fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr : string [][]).[index].[propIndex]) @>)
+            }
+            |> Primitive
+        | InferedType.Record(name, props, optional) -> 
+            let thisType = ProvidedTypeDefinition(typeNameGenerator() (if name.IsSome then name.Value else sprintf "NestedRecord_%d_%d" index propIndex), Some typeof<obj>, HideObjectMethods = true)
+
+            props |> List.iteri (fun i prop ->
+                match convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, i, isSingleton, prop) with
+                | Primitive field -> thisType.AddMember field.Property
+                | Record(field) -> thisType.AddMember(field.ReturnType); thisType.AddMember field.Property
+                )
+
+            { 
+              Name = field.Name
+              ReturnType = thisType
+              Property = ProvidedProperty(field.Name, thisType, GetterCode = fun (Singleton row) -> <@@ TextConversions.AsString((%%row : string []).[propIndex]) @@>) 
+              Convert = (fun rowVarExpr -> <@@ (%%rowVarExpr: string [][]).[index] @@>) }
+            |> Record
+        | _ -> failwith "unsupported conversion"
+
+    let private createTableType (replacer:AssemblyReplacer) getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
 
         let columns =  
             match table.InferedProperties with
@@ -53,53 +95,53 @@ module internal HtmlGenerator =
             | None -> 
                 HtmlInference.inferColumns inferenceParameters 
                                            table.HeaderNamesAndUnits.Value 
-                                           (if table.HasHeaders.Value then table.Rows.[1..] else table.Rows)
+                                           (if table.HasHeaders then table.Rows.[1..] else table.Rows)
+        
+        let rowType = ProvidedTypeDefinition("Row", Some typeof<obj>, HideObjectMethods = true)
 
         let fields = columns |> List.mapi (fun index field ->
-            let propIndex, (typ, typWithoutMeasure, conv, _convBack) = HtmlConversionsGenerator.ConvertNodeList(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr,field)
-            { TypeForTuple = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> (if columns.Length = 1 then row else Expr.TupleGet(row, index)))
-              Convert = fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr:string [][]).[index].[propIndex]) @> } )
+             let field = convertProperty(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr, index, 0, columns.Length = 1, field)
+             match field with
+             | Primitive p -> rowType.AddMember(p.Property); p
+             | Record r -> rowType.AddMember r.ReturnType; rowType.AddMember r.Property; r
+            )
         
-        // The erased row type will be a tuple of all the field types (without the units of measure)
-        let rowErasedType =
-            if fields.Length = 1
-            then fields.Head.TypeForTuple
-            else
-                FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
-            |> replacer.ToRuntime
+        let rowTypeCtor = ProvidedConstructor([for field in fields -> ProvidedParameter(field.Name, field.ReturnType)])
+        rowType.AddMember rowTypeCtor
+
+        let tableName = table.Name
+        let hasHeaders = table.HasHeaders
+
+        let tableErasedWithRowErasedType = (typedefof<seq<_>>).MakeGenericType(rowType)
+
+        let rowConverter = 
+            let rowVar = Var("row", typeof<string[][]>) 
+            let rowVarExpr = Expr.Var rowVar 
+            let body = 
+              if fields.Length = 1 
+              then Expr.Coerce(fields.Head.Convert rowVarExpr , typeof<obj>)
+              else Expr.NewArray(typeof<obj>, List.map (fun f -> Expr.Coerce(f.Convert rowVarExpr, typeof<obj>)) fields)
+            
+            let delegateType =  
+              typedefof<Func<_,_>>.MakeGenericType(typeof<string[][]>, typeof<obj[]>) 
+            
+            Expr.NewDelegate(delegateType, [rowVar], body) 
         
-        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
-        
-        // Each property of the generated row type will simply be a tuple get
-        for field in fields do
-            rowType.AddMember field.Property
-        
-        let tableErasedWithRowErasedType = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowErasedType)
-        let tableErasedTypeWithGeneratedRow = (replacer.ToRuntime typedefof<HtmlTable<_>>).MakeGenericType(rowType)
-        
-        let rowConverter =
-            let rowVar = Var("row", typeof<string[][]>)
-            let rowVarExpr = Expr.Var rowVar
-            let body =
-              if fields.Length = 1
-              then fields.Head.Convert rowVarExpr
-              else Expr.NewTuple [ for field in fields -> field.Convert rowVarExpr ]
-              |> replacer.ToRuntime
-        
-            let delegateType = 
-              (typedefof<Func<_,_>>).MakeGenericType(typeof<string[][]>, rowErasedType)
-        
-            Expr.NewDelegate(delegateType, [rowVar], body)
-        
+        let tableRowExtractorExpr (htmlDoc:Expr) : Expr = 
+            let rowType = (replacer.ToRuntime typedefof<HtmlTableRows>) 
+            rowType?Create () (htmlDoc, tableName, hasHeaders)
+
         let create (htmlDoc:Expr) =
-            let rowConverterVar = Var("rowConverter", rowConverter.Type)
-            let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, table.Name, table.HasHeaders.Value)
-            Expr.Let(rowConverterVar, rowConverter, body)
+            <@@
+                let rows = (%%(tableRowExtractorExpr htmlDoc) : string[][][]) 
+                    
+                rows 
+                |> Seq.map (fun r -> Expr.Application(Expr.Var(Var("rowConverter", rowConverter.Type)), Expr.Value r))
+            @@>
         
-        let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedWithRowErasedType, HideObjectMethods = true)
         tableType.AddMember rowType
-        
+         
         create, tableType
 
     let private createListType replacer getListTypeName (inferenceParameters, missingValuesStr, cultureStr) (list:HtmlList) =
