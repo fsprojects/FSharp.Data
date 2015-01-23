@@ -131,12 +131,13 @@ module internal HtmlGenerator =
             let rowType = (replacer.ToRuntime typedefof<HtmlTableRows>) 
             rowType?Create () (htmlDoc, tableName, hasHeaders)
 
+        let rowMapper f rows = 
+            <@ (%%rows : string[][][]) |> Seq.map (%%f : (string[][] -> obj[]))  @>
+
         let create (htmlDoc:Expr) =
             <@@
-                let rows = (%%(tableRowExtractorExpr htmlDoc) : string[][][]) 
-                    
-                rows 
-                |> Seq.map (fun r -> Expr.Application(Expr.Var(Var("rowConverter", rowConverter.Type)), Expr.Value r))
+                let rows = (tableRowExtractorExpr htmlDoc)
+                rowMapper (Expr.Var(Var("rowConverter", rowConverter.Type))) rows
             @@>
         
         let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedWithRowErasedType, HideObjectMethods = true)
