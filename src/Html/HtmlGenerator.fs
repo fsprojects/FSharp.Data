@@ -28,7 +28,6 @@ module internal HtmlGenerator =
         Name : string
         ReturnType : Type
         Property : ProvidedProperty
-        Convert : (Expr -> Expr)   
       }
 
     type private Field = 
@@ -66,12 +65,11 @@ module internal HtmlGenerator =
             {
               Name = field.Name 
               ReturnType = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> row) 
-              Convert = (fun rowVarExpr -> conv <@ TextConversions.AsString((%%rowVarExpr : string [][]).[index].[propIndex]) @>)
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> <@@ (%%row : HtmlRow).GetColumn(index).GetValue(propIndex) @@> |> replacer.ToRuntime) 
             }
             |> Primitive
         | InferedType.Record(name, props, optional) -> 
-            let thisType = ProvidedTypeDefinition(typeNameGenerator() (if name.IsSome then name.Value else sprintf "NestedRecord_%d_%d" index propIndex), Some typeof<obj>, HideObjectMethods = true)
+            let thisType = ProvidedTypeDefinition(typeNameGenerator() (if name.IsSome then name.Value else sprintf "NestedRecord_%d_%d" index propIndex), Some (replacer.ToRuntime  typeof<HtmlColumn>), HideObjectMethods = true)
 
             props |> List.iteri (fun i prop ->
                 match convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, i, isSingleton, prop) with
@@ -82,8 +80,8 @@ module internal HtmlGenerator =
             { 
               Name = field.Name
               ReturnType = thisType
-              Property = ProvidedProperty(field.Name, thisType, GetterCode = fun (Singleton row) -> <@@ TextConversions.AsString((%%row : string []).[propIndex]) @@>) 
-              Convert = (fun rowVarExpr -> <@@ (%%rowVarExpr: string [][]).[index] @@>) }
+              Property = ProvidedProperty(field.Name, thisType, GetterCode = fun (Singleton row) -> <@@ (%%row : HtmlRow).GetColumn(index) @@> |> replacer.ToRuntime) 
+            }
             |> Record
         | _ -> failwith "unsupported conversion"
 
@@ -97,7 +95,7 @@ module internal HtmlGenerator =
                                            table.HeaderNamesAndUnits.Value 
                                            (if table.HasHeaders then table.Rows.[1..] else table.Rows)
         
-        let rowType = ProvidedTypeDefinition("Row", Some typeof<obj>, HideObjectMethods = true)
+        let rowType = ProvidedTypeDefinition("Row", Some (replacer.ToRuntime typeof<HtmlRow>), HideObjectMethods = true)
 
         let fields = columns |> List.mapi (fun index field ->
              let field = convertProperty(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr, index, 0, columns.Length = 1, field)
@@ -106,41 +104,15 @@ module internal HtmlGenerator =
              | Record r -> rowType.AddMember r.ReturnType; rowType.AddMember r.Property; r
             )
         
-        let rowTypeCtor = ProvidedConstructor([for field in fields -> ProvidedParameter(field.Name, field.ReturnType)])
-        rowType.AddMember rowTypeCtor
-
         let tableName = table.Name
         let hasHeaders = table.HasHeaders
 
         let tableErasedWithRowErasedType = (typedefof<seq<_>>).MakeGenericType(rowType)
-
-        let rowConverter = 
-            let rowVar = Var("row", typeof<string[][]>) 
-            let rowVarExpr = Expr.Var rowVar 
-            let body = 
-              if fields.Length = 1 
-              then Expr.Coerce(fields.Head.Convert rowVarExpr , typeof<obj>)
-              else Expr.NewArray(typeof<obj>, List.map (fun f -> Expr.Coerce(f.Convert rowVarExpr, typeof<obj>)) fields)
-            
-            let delegateType =  
-              typedefof<Func<_,_>>.MakeGenericType(typeof<string[][]>, typeof<obj[]>) 
-            
-            Expr.NewDelegate(delegateType, [rowVar], body) 
         
-        let tableRowExtractorExpr (htmlDoc:Expr) : Expr = 
-            let rowType = (replacer.ToRuntime typedefof<HtmlTableRows>) 
-            let r : Expr = rowType?Create () (htmlDoc, tableName, hasHeaders)
-            r |> replacer.ToRuntime
-
-        let rowMapper f rows = 
-            <@ (%%rows : string[][][]) |> Seq.map (%%f : (string[][] -> obj[]))  @>
-            |> replacer.ToRuntime
-
-        let create (htmlDoc:Expr) =
-            <@@
-                let rows = (tableRowExtractorExpr htmlDoc)
-                rowMapper (Expr.Var(Var("rowConverter", rowConverter.Type))) rows
-            @@>
+        let create (htmlDoc:Expr) : Expr = 
+            let rowType = (replacer.ToRuntime typedefof<HtmlRow>) 
+            let body : Expr = rowType?Create () (htmlDoc, tableName, hasHeaders)
+            body
         
         let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedWithRowErasedType, HideObjectMethods = true)
         tableType.AddMember rowType
