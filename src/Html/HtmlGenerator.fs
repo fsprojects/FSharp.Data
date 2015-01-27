@@ -62,10 +62,26 @@ module internal HtmlGenerator =
             let typ, typWrapper = getTypeAndWrapper typ optional    
             let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
             let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
+            
+            let flags = 
+                Reflection.BindingFlags.Instance
+                ||| Reflection.BindingFlags.Public
+
+            let getColumnMethodInfo = 
+                (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetColumn", flags)
+            
+            let getValueMethodInfo = 
+                (replacer.ToRuntime typeof<HtmlColumn>).GetMethod("GetValue", flags)
+            
+            let accessorExpr row = 
+                <@ 
+                    let call = (%%Expr.Call(Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)]), getValueMethodInfo, [Expr.Value(propIndex)]) : string)
+                    TextConversions.AsString(call)
+                @>
             {
               Name = field.Name 
               ReturnType = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> <@@ (%%row : HtmlRow).GetColumn(index).GetValue(propIndex) @@> |> replacer.ToRuntime) 
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> conv (accessorExpr row) |> replacer.ToRuntime) 
             }
             |> Primitive
         | InferedType.Record(name, props, optional) -> 
