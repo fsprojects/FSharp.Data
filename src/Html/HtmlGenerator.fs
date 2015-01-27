@@ -28,6 +28,7 @@ module internal HtmlGenerator =
         Name : string
         ReturnType : Type
         Property : ProvidedProperty
+        Conv : (Expr<string option> -> Expr)
       }
 
     type private Field = 
@@ -48,6 +49,16 @@ module internal HtmlGenerator =
 
 
     let rec private convertProperty(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, isSingleton, field:InferedProperty) = 
+        let flags = 
+            Reflection.BindingFlags.Instance
+            ||| Reflection.BindingFlags.Public
+
+        let getColumnMethodInfo = 
+            (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetColumn", flags)
+        
+        let getValueMethodInfo = 
+            (replacer.ToRuntime typeof<HtmlColumn>).GetMethod("GetValue", flags)
+        
         let getTypeAndWrapper typ optional = 
             if optional then
               if preferOptionals then typ, TypeWrapper.Option
@@ -57,46 +68,49 @@ module internal HtmlGenerator =
               else typ, TypeWrapper.Option
             else typ, TypeWrapper.None
 
+        let rowAccessorExpr index propIndex row = 
+                <@ 
+                    let call = (%%Expr.Call(Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)]), getValueMethodInfo, [Expr.Value(propIndex)]) : string)
+                    TextConversions.AsString(call)
+                @>
+        
+        let colAccessorExpr index row = Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)])
+        
+        let valueAccessorExpr propIndex col : Expr<string option> = 
+                <@ 
+                    let call = (%%Expr.Call(col, getValueMethodInfo, [Expr.Value(propIndex)]) : string)
+                    TextConversions.AsString(call)
+                @>
+
         match field.Type with
         | InferedType.Primitive(typ, unit, optional) ->
             let typ, typWrapper = getTypeAndWrapper typ optional    
             let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
             let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-            
-            let flags = 
-                Reflection.BindingFlags.Instance
-                ||| Reflection.BindingFlags.Public
-
-            let getColumnMethodInfo = 
-                (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetColumn", flags)
-            
-            let getValueMethodInfo = 
-                (replacer.ToRuntime typeof<HtmlColumn>).GetMethod("GetValue", flags)
-            
-            let accessorExpr row = 
-                <@ 
-                    let call = (%%Expr.Call(Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)]), getValueMethodInfo, [Expr.Value(propIndex)]) : string)
-                    TextConversions.AsString(call)
-                @>
             {
               Name = field.Name 
               ReturnType = typWithoutMeasure
-              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> conv (accessorExpr row) |> replacer.ToRuntime) 
+              Property = ProvidedProperty(field.Name, typ, GetterCode = fun (Singleton row) -> conv (rowAccessorExpr index propIndex row) |> replacer.ToRuntime)
+              Conv = conv
             }
             |> Primitive
         | InferedType.Record(name, props, optional) -> 
-            let thisType = ProvidedTypeDefinition(typeNameGenerator() (if name.IsSome then name.Value else sprintf "NestedRecord_%d_%d" index propIndex), Some (replacer.ToRuntime  typeof<HtmlColumn>), HideObjectMethods = true)
+            let thisType = ProvidedTypeDefinition(typeNameGenerator() (if name.IsSome then name.Value else sprintf "NestedRecord_%d_%d" index propIndex), Some (replacer.ToRuntime typeof<HtmlColumn>), HideObjectMethods = true)
 
             props |> List.iteri (fun i prop ->
                 match convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, i, isSingleton, prop) with
-                | Primitive field -> thisType.AddMember field.Property
-                | Record(field) -> thisType.AddMember(field.ReturnType); thisType.AddMember field.Property
+                | Primitive field ->
+                     field.Property.GetterCode <- (fun (Singleton col) -> field.Conv (valueAccessorExpr i col))
+                     thisType.AddMember field.Property
+                | Record(field) -> 
+                    thisType.AddMember(field.ReturnType); thisType.AddMember field.Property
                 )
 
             { 
               Name = field.Name
               ReturnType = thisType
-              Property = ProvidedProperty(field.Name, thisType, GetterCode = fun (Singleton row) -> <@@ (%%row : HtmlRow).GetColumn(index) @@> |> replacer.ToRuntime) 
+              Property = ProvidedProperty(field.Name, thisType, GetterCode = fun (Singleton row) -> (colAccessorExpr index row)) 
+              Conv = (fun x -> x :> Expr)
             }
             |> Record
         | _ -> failwith "unsupported conversion"
