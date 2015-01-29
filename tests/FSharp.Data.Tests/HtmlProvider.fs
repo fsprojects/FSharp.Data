@@ -264,30 +264,28 @@ let ``Can handle a table with a thead, tfoot, tbody``() =
     let percentage = table.Rows.[0].Savings
     percentage |> should equal 180
 
-//[<Test>]
-//let ``Can handle a table with a thead, tfoot, tbody without tr``() = 
-//    let table = HtmlProvider<"""<html>
-//                    <body>
-//                        <table>
-//                         <thead>
-//                             <th>Month</th>
-//                             <th>Savings</th>
-//                         </thead>
-//                         <tfoot>
-//                             <td>Sum</td>
-//                             <td>$180</td>
-//                         </tfoot>
-//                         <tbody>
-//                             <td>January</td>
-//                             <td>$100</td>
-//                          </tr>
-//                          <tr>
-//                             <td>February</td>
-//                             <td>$80</td>
-//                          </tr>
-//                         </tbody>
-//                        </table>
-//                    </body>
-//                </html>""">.GetSample().Tables.Table1
-//    let percentage = table.Rows.[0].Savings
-//    percentage |> should equal 180
+[<Test>]
+let ``Can handle a table with headers directly inside thead``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <thead>
+                                <th>Month</th>
+                                <th>Savings</th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>January</td>
+                                    <td>$100</td>
+                                </tr>
+                                <tr>
+                                    <td>February</td>
+                                    <td>$80</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    match table.Headers with
+    | None -> failwith "No headers found"
+    | Some headers -> headers |> should equal [ "Month"; "Savings" ]
