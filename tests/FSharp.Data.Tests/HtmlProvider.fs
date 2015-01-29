@@ -192,3 +192,102 @@ let ``If finds name for table and element is empty reverts to default name``() =
                 </html>""">.GetSample().Tables.Table1
     let percentage = table.Rows.[0].Percentage
     percentage |> should equal 2
+
+[<Test>]
+let ``Can handle a table with a thead declaring headers containing th``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Value</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tr><td>2</td><td>4</td></tr>
+                            <tr><td>6</td><td>8</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Value
+    percentage |> should equal 2
+
+[<Test>]
+let ``Can handle a table with a thead declaring headers containing td``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>Value</td>
+                                    <td>Cost</td>
+                                </tr>
+                            </thead>
+                            <tr><td>2</td><td>4</td></tr>
+                            <tr><td>6</td><td>8</td></tr>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Value
+    percentage |> should equal 2
+
+[<Test>]
+let ``Can handle a table with a thead, tfoot, tbody``() = 
+    let table = HtmlProvider<"""<html>
+                    <body>
+                        <table>
+                         <thead>
+                          <tr>
+                             <th>Month</th>
+                             <th>Savings</th>
+                          </tr>
+                         </thead>
+                         <tfoot>
+                          <tr>
+                             <td>Sum</td>
+                             <td>$180</td>
+                          </tr>
+                         </tfoot>
+                         <tbody>
+                          <tr>
+                             <td>January</td>
+                             <td>$100</td>
+                          </tr>
+                          <tr>
+                             <td>February</td>
+                             <td>$80</td>
+                          </tr>
+                         </tbody>
+                        </table>
+                    </body>
+                </html>""">.GetSample().Tables.Table1
+    let percentage = table.Rows.[0].Savings
+    percentage |> should equal 180
+
+//[<Test>]
+//let ``Can handle a table with a thead, tfoot, tbody without tr``() = 
+//    let table = HtmlProvider<"""<html>
+//                    <body>
+//                        <table>
+//                         <thead>
+//                             <th>Month</th>
+//                             <th>Savings</th>
+//                         </thead>
+//                         <tfoot>
+//                             <td>Sum</td>
+//                             <td>$180</td>
+//                         </tfoot>
+//                         <tbody>
+//                             <td>January</td>
+//                             <td>$100</td>
+//                          </tr>
+//                          <tr>
+//                             <td>February</td>
+//                             <td>$80</td>
+//                          </tr>
+//                         </tbody>
+//                        </table>
+//                    </body>
+//                </html>""">.GetSample().Tables.Table1
+//    let percentage = table.Rows.[0].Savings
+//    percentage |> should equal 180
