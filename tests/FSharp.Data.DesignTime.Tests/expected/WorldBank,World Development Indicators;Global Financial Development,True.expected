@@ -1892,6 +1892,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Credit card (% age 15+)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AI.20")
 
+    member ``Credit depth of information index (0=low to 6=high)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("IC.CRD.INFO.XQ")
+
     member ``Credit to government and state owned enterprises to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.EI.08")
 
@@ -1997,9 +2000,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Depositors with commercial banks (per 1,000 adults)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FB.CBK.DPTR.P3")
 
-    member ``Depth of credit information index (0=low to 8=high)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IC.CRD.INFO.XQ")
-
     member ``Depth of the food deficit (kilocalories per person per day)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SN.ITK.DFCT")
 
@@ -2032,9 +2032,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Discrepancy in expenditure estimate of GDP (current LCU)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.GDP.DISC.CN")
-
-    member ``Distance to frontier score (0=lowest performance to 100=frontier)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IC.BUS.DFRN.XQ")
 
     member ``Documents to export (number)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.EXP.DOCS")
@@ -4367,8 +4364,14 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Poverty gap at $2 a day (PPP) (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.GAP2")
 
-    member ``Poverty gap at national poverty lines (%)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty gap at national poverty line (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.NAGP")
+
+    member ``Poverty gap at rural poverty line (%)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.POV.RUGP")
+
+    member ``Poverty gap at urban poverty line (%)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.POV.URGP")
 
     member ``Poverty headcount ratio at $1.25 a day (PPP) (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.DDAY")
@@ -4376,8 +4379,14 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Poverty headcount ratio at $2 a day (PPP) (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.2DAY")
 
-    member ``Poverty headcount ratio at national poverty lines (% of population)``: FDR.WorldBank.Indicator async with get
+    member ``Poverty headcount ratio at national poverty line (% of population)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SI.POV.NAHC")
+
+    member ``Poverty headcount ratio at rural poverty line (% of rural population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.POV.RUHC")
+
+    member ``Poverty headcount ratio at urban poverty line (% of urban population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SI.POV.URHC")
 
     member ``Power outages in firms in a typical month (number)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.ELC.OUTG")
@@ -4724,12 +4733,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Rural population growth (annual %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL.ZG")
 
-    member ``Rural poverty gap at national poverty lines (%)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SI.POV.RUGP")
-
-    member ``Rural poverty headcount ratio at national poverty lines (% of rural population)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SI.POV.RUHC")
-
     member ``S&P Global Equity Indices (annual % change)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("CM.MKT.INDX.ZG")
 
@@ -4970,7 +4973,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Stocks traded, turnover ratio (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("CM.MKT.TRNR")
 
-    member ``Strength of legal rights index (0=weak to 12=strong)``: FDR.WorldBank.Indicator async with get
+    member ``Strength of legal rights index (0=weak to 10=strong)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.LGL.CRED.XQ")
 
     member ``Subsidies and other transfers (% of expense)``: FDR.WorldBank.Indicator async with get
@@ -5308,12 +5311,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Urban population growth (annual %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.URB.GROW")
-
-    member ``Urban poverty gap at national poverty lines (%)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SI.POV.URGP")
-
-    member ``Urban poverty headcount ratio at national poverty lines (% of urban population)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SI.POV.URHC")
 
     member ``Use of IMF credit (DOD, current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.DOD.DIMF.CD")
@@ -6277,6 +6274,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Credit card (% age 15+)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AI.20")
 
+    member ``Credit depth of information index (0=low to 6=high)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("IC.CRD.INFO.XQ")
+
     member ``Credit to government and state owned enterprises to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.EI.08")
 
@@ -6382,9 +6382,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Depositors with commercial banks (per 1,000 adults)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FB.CBK.DPTR.P3")
 
-    member ``Depth of credit information index (0=low to 8=high)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IC.CRD.INFO.XQ")
-
     member ``Depth of the food deficit (kilocalories per person per day)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SN.ITK.DFCT")
 
@@ -6417,9 +6414,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Discrepancy in expenditure estimate of GDP (current LCU)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.DISC.CN")
-
-    member ``Distance to frontier score (0=lowest performance to 100=frontier)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IC.BUS.DFRN.XQ")
 
     member ``Documents to export (number)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.EXP.DOCS")
@@ -8752,8 +8746,14 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Poverty gap at $2 a day (PPP) (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.GAP2")
 
-    member ``Poverty gap at national poverty lines (%)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty gap at national poverty line (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.NAGP")
+
+    member ``Poverty gap at rural poverty line (%)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.RUGP")
+
+    member ``Poverty gap at urban poverty line (%)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.URGP")
 
     member ``Poverty headcount ratio at $1.25 a day (PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.DDAY")
@@ -8761,8 +8761,14 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Poverty headcount ratio at $2 a day (PPP) (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.2DAY")
 
-    member ``Poverty headcount ratio at national poverty lines (% of population)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Poverty headcount ratio at national poverty line (% of population)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.NAHC")
+
+    member ``Poverty headcount ratio at rural poverty line (% of rural population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.RUHC")
+
+    member ``Poverty headcount ratio at urban poverty line (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.URHC")
 
     member ``Power outages in firms in a typical month (number)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.ELC.OUTG")
@@ -9109,12 +9115,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Rural population growth (annual %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL.ZG")
 
-    member ``Rural poverty gap at national poverty lines (%)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.RUGP")
-
-    member ``Rural poverty headcount ratio at national poverty lines (% of rural population)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.RUHC")
-
     member ``S&P Global Equity Indices (annual % change)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("CM.MKT.INDX.ZG")
 
@@ -9355,7 +9355,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Stocks traded, turnover ratio (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("CM.MKT.TRNR")
 
-    member ``Strength of legal rights index (0=weak to 12=strong)``: FDR.WorldBank.IndicatorDescription with get
+    member ``Strength of legal rights index (0=weak to 10=strong)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.LGL.CRED.XQ")
 
     member ``Subsidies and other transfers (% of expense)``: FDR.WorldBank.IndicatorDescription with get
@@ -9693,12 +9693,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Urban population growth (annual %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.URB.GROW")
-
-    member ``Urban poverty gap at national poverty lines (%)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.URGP")
-
-    member ``Urban poverty headcount ratio at national poverty lines (% of urban population)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SI.POV.URHC")
 
     member ``Use of IMF credit (DOD, current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.DOD.DIMF.CD")
