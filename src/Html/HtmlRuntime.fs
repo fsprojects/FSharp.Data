@@ -128,8 +128,17 @@ module HtmlRuntime =
                 | h :: _ -> h.InnerText()
                 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
-
-        let rows = table.Descendants("tr", false) |> List.ofSeq |> List.mapi (fun i r -> i,r)
+        let rows =
+            let header =
+                match table.Descendants("thead", false) |> Seq.toList with
+                | [ head ] ->
+                    // if we have a tr in here, do nothing - we get all trs next anyway
+                    match head.Descendants("tr" ,false) |> Seq.toList with
+                    | [] -> [ head ]
+                    | _ -> []
+                | _ -> []
+            header @ (table.Descendants("tr", false) |> List.ofSeq)
+            |> List.mapi (fun i r -> i,r)
         
         if rows.Length <= 1 then None else
 
@@ -169,8 +178,8 @@ module HtmlRuntime =
                     if res.[0] |> Array.forall (fun r -> r.IsHeader) 
                     then true, res.[0] |> Array.map (fun x -> x.Data) |> Some, None, None
                     else res
-                          |> Array.map (Array.map (fun x -> x.Data))
-                          |> HtmlInference.inferHeaders inferenceParameters
+                         |> Array.map (Array.map (fun x -> x.Data))
+                         |> HtmlInference.inferHeaders inferenceParameters
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =

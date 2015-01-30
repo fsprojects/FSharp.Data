@@ -2,7 +2,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -24,7 +24,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -41,7 +41,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let f = new Func<_,_>(fun (t:TextReader) -> 
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
-                                                                       TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                                                        let value = TextConversions.AsString(row.[1])
                                                                        TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                                                        let value = TextConversions.AsString(row.[2])
@@ -63,7 +63,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[10])
                                                                        TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                     [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                                                     [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                                         TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -81,7 +81,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     let f = new Func<_,_>(fun (t:TextReader) -> 
                              let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                                                        let value = TextConversions.AsString(row.[0])
-                                                                       TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                                                       TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                                                        let value = TextConversions.AsString(row.[1])
                                                                        TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                                                        let value = TextConversions.AsString(row.[2])
@@ -103,7 +103,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                        let value = TextConversions.AsString(row.[10])
                                                                        TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
                              let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                                                     [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                                                     [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                                         TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                                         TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -120,7 +120,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member GetSample: () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -142,7 +142,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -158,7 +158,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -180,7 +180,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -196,7 +196,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: reader:System.IO.TextReader -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -218,7 +218,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -234,7 +234,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Load: uri:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -256,7 +256,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
@@ -272,7 +272,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
-                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("pt-PT", value), value),
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
                                               let value = TextConversions.AsString(row.[1])
                                               TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
                                               let value = TextConversions.AsString(row.[2])
@@ -294,7 +294,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                               let value = TextConversions.AsString(row.[10])
                                               TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("pt-PT", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
