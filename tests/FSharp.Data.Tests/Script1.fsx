@@ -17,7 +17,7 @@ let table = HtmlProvider<"""<html>
                     </table>
                 </body>
             </html>""">.GetSample().Tables.Table1
-let distance = table |> Seq.map (fun x -> x.Distance) |> Seq.toList
+let velocity = table |> Seq.map (fun x -> x.Distance * x.Time) |> Seq.toList
 
 let [<Literal>] data= 
     """<html>
@@ -33,7 +33,7 @@ let [<Literal>] data=
                              <div itemprop="director" itemscope itemtype="http://schema.org/Person">
                              Director: <span itemprop="name">James Cameron</span> (born <span itemprop="birthDate">August 16, 1954 </span>)
                              </div>
-                             <span itemprop="genre">Science fiction</span>
+                             <span itemprop="genre">Science fiction / Blue People</span>
                              <a href="../movies/avatar-theatrical-trailer.html" itemprop="trailer">Trailer</a>
                            </div>
                        </td>
@@ -61,4 +61,4 @@ let [<Literal>] data=
 
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 
-let movieName = table1 |> Seq.map (fun x -> x.``Column 3``.genre) |> Seq.toList
+let movieName = table1 |> Seq.map (fun x -> x.) |> Seq.toList

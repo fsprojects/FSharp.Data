@@ -16,24 +16,6 @@ type HtmlValue =
     | Record of string * HtmlValue list
     | List of HtmlValue list
     | Null
-    override x.ToString() = 
-        match x with
-        | Primitive(d) -> d
-        | Link(d, _) -> d
-        | Img(d) -> d
-        | Property(_, d) -> d.ToString()
-        | Record(_, d) -> String.Join(",", List.map (fun x -> x.ToString()) d)
-        | List d -> String.Join(",", List.map (fun x -> x.ToString()) d)
-        | Null -> ""
-    member x.AsStringArray() = 
-        match x with
-        | Primitive(d) -> [|d|]
-        | Link(d, x) -> Array.concat [[|d|]; x.AsStringArray()]
-        | Img(d) -> [|d|]
-        | Property(_, d) -> d.AsStringArray()
-        | Record(_, d) -> d |> Seq.collect (fun x -> x.AsStringArray()) |> Seq.toArray
-        | List d -> d |> Seq.collect (fun x -> x.AsStringArray()) |> Seq.toArray
-        | Null -> [||]
   
 type Parameters = {
     MissingValues: string[]
@@ -103,7 +85,9 @@ let internal inferType (headerNamesAndUnits:_[]) schema (rows : seq<HtmlValue []
     else
       Array.create headerNamesAndUnits.Length HtmlValue.Null |> Seq.singleton 
   
-  let rows = if inferRows > 0 then Seq.truncate (if assumeMissingValues && inferRows < Int32.MaxValue then inferRows + 1 else inferRows) rows else rows
+  let rows = 
+      if inferRows > 0 then Seq.truncate (if assumeMissingValues && inferRows < Int32.MaxValue then inferRows + 1 else inferRows) rows else rows
+      |> Seq.toList
 
   // Infer the type of collection using structural inference
   let types = 
@@ -128,7 +112,8 @@ let internal inferType (headerNamesAndUnits:_[]) schema (rows : seq<HtmlValue []
   
   match inferedType with
   | InferedType.Record(_, fields, _) -> fields
-  | _ -> failwith "Expected record type" 
+  | _ -> failwith "Expected record type"
+  |> Seq.toList 
 
 let inferColumns parameters (headerNamesAndUnits:_[]) (rows : seq<HtmlValue []>) = 
 
@@ -136,17 +121,23 @@ let inferColumns parameters (headerNamesAndUnits:_[]) (rows : seq<HtmlValue []>)
     let schema = Array.init headerNamesAndUnits.Length (fun _ -> None)
     let assumeMissingValues = false
 
-    inferType headerNamesAndUnits schema rows inferRows parameters.MissingValues parameters.CultureInfo assumeMissingValues parameters.PreferOptionals
+    let inferedTypes = inferType headerNamesAndUnits schema rows inferRows parameters.MissingValues parameters.CultureInfo assumeMissingValues parameters.PreferOptionals
+
+    if (Seq.length rows) = 1
+    then Seq.zip (Seq.nth 0 rows) inferedTypes
+    else Seq.zip (Seq.nth 1 rows) inferedTypes
+    |> Seq.toList
+    
 
 let inferHeaders parameters (rows : HtmlValue [][]) =
     if rows.Length <= 2 then 
         false, None, None, None //Not enough info to infer anything, assume first row data
     else
-        let headers = Some (rows.[0] |> Array.map (fun x -> x.ToString()))
+        let headers = Some (rows.[0] |> Array.map (function | Primitive d -> d | _ -> ""))
         let numberOfColumns = rows.[0].Length
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" parameters.UnitsOfMeasureProvider
-        let headerRowType = inferColumns parameters headerNamesAndUnits [rows.[0]]
-        let dataRowsType = inferColumns parameters headerNamesAndUnits rows.[1..]      
+        let headerRowType = inferColumns parameters headerNamesAndUnits [rows.[0]] |> List.map snd
+        let dataRowsType = inferColumns parameters headerNamesAndUnits rows.[1..] |> List.map snd
         if headerRowType = dataRowsType then 
             false, None, None, None
         else 
