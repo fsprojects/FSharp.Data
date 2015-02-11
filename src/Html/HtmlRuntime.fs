@@ -374,8 +374,8 @@ type HtmlRow internal (headers:string[], cells:HtmlInference.HtmlValue[]) =
     member x.Headers = headers
     member x.Cells = cells
 
-    member x.GetColumn(cellIndex:int) = 
-       cells.[cellIndex]
+    member x.GetCell(cellIndex:int) = 
+        cells.[cellIndex].AsObject()
     
     /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
