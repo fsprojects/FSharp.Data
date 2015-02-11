@@ -28,40 +28,17 @@ module internal HtmlGenerator =
         Name : string
         ReturnType : Type
         Property : ProvidedProperty
-        Conv : (Expr<string option> -> Expr)
+        IsRecord : bool
       }
 
-    type private Field = 
-        | Primitive of FieldInfo
-        | Record of FieldInfo
-        member x.ReturnType = 
-            match x with
-            | Primitive f -> f.ReturnType
-            | Record (f) -> f.ReturnType
-        member x.Property = 
-            match x with
-            | Primitive f -> f.Property
-            | Record (f) -> f.Property
-        member x.Name = 
-            match x with
-            | Primitive f -> f.Name
-            | Record (f) -> f.Name
-
-
-    let rec private convertProperty(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, index, value, field:InferedProperty) = 
+    let rec private convertProperty(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, value, field:InferedProperty) = 
         
         let flags = 
             Reflection.BindingFlags.Instance
             ||| Reflection.BindingFlags.Public
 
-        let getColumnMethodInfo = 
-            (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetColumn", flags)
-//        
-//        let getValueMethodInfo = 
-//            (replacer.ToRuntime typeof<HtmlCell>).GetMethod("GetValue", flags)
-
-        let runtimeValueType = 
-            (replacer.ToRuntime typeof<HtmlInference.HtmlValue>)
+        let getCellMethodInfo = 
+            (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetCell", flags)
         
         let getTypeAndWrapper typ optional = 
             if optional then
@@ -71,90 +48,69 @@ module internal HtmlGenerator =
               elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
               else typ, TypeWrapper.Option
             else typ, TypeWrapper.None
-//
-//        let rowAccessorExpr index propIndex row = 
-//                <@ 
-//                    let call = (%%Expr.Call(Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)]), getValueMethodInfo, [Expr.Value(propIndex)]) : string)
-//                    TextConversions.AsString(call)
-//                @>
-//        
-        let cellAccessorExpr (index:int) row = 
-            Expr.Call(row, getColumnMethodInfo, [Expr.Value(index)])
-//        
-//        let valueAccessorExpr propIndex col : Expr<string option> = 
-//                <@ 
-//                    let call = (%%Expr.Call(col, getValueMethodInfo, [Expr.Value(propIndex)]) : string)
-//                    TextConversions.AsString(call)
-//                @>
-        
-        let htmlValueReader, unionTagReader = 
-            FSharpType.GetUnionCases(runtimeValueType)
-            |> Array.map (fun x -> x.Tag, (x.GetFields() |> Array.map (fun f -> (fun (v:Expr) -> Expr.PropertyGet(v,f)))))
-            |> Map.ofArray, FSharpValue.PreComputeUnionTagReader(typeof<HtmlInference.HtmlValue>)
 
-        let createProperty name returnType (converterExpr:Expr<string option> -> Expr) value = 
-            match value with
-            | HtmlInference.HtmlValue.Primitive _ -> 
-                let unionTag = unionTagReader value
-                let accessor (row : Expr)  = 
-                    <@ 
-                        TextConversions.AsString (%%(htmlValueReader.[unionTag].[0] (cellAccessorExpr index row)) : string) 
-                    @>
-                    |> converterExpr 
-                    |> replacer.ToRuntime
+        let getTypeName = function 
+            | Some n -> typeNameGenerator() n
+            | None -> typeNameGenerator() ""
 
-                ProvidedProperty(name, returnType, GetterCode = (fun (Singleton row) -> accessor row))
-            | _ -> failwithf "Only primitives supported at the moment"
-            
-//
-//        let getTypeName = function 
-//            | Some n -> typeNameGenerator() n
-//            | None -> typeNameGenerator() ""
-//
-//        let createPrimitiveProperty name accessor typ unit optional = 
-//            let typ, typWrapper = getTypeAndWrapper typ optional    
-//            let field = PrimitiveInferedProperty.Create(field.Name, typ, typWrapper, unit)
-//            let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-//            {
-//              Name = (getPropertyName field.Name) 
-//              ReturnType = typWithoutMeasure
-//              Property = ProvidedProperty(getPropertyName name, typ, GetterCode = fun (Singleton row) -> conv (accessor row) |> replacer.ToRuntime)
-//              Conv = conv
-//            }
-//
-//        let rec createRecordProperty name (typeName :string option) properties optional index = 
-//            let thisType = ProvidedTypeDefinition(getTypeName typeName, Some (replacer.ToRuntime typeof<HtmlInference.HtmlValue>), HideObjectMethods = true)
-//            properties |> List.iteri (fun i prop ->
-//                match prop.Type with
-//                | InferedType.Primitive(typ, unit, optional) ->
-//                     let field = createPrimitiveProperty prop.Name (fun col -> valueAccessorExpr i col) typ unit optional
-//                     thisType.AddMember field.Property
-//                | InferedType.Record(name, props, optional) ->
-//                    let field = createRecordProperty prop.Name name props optional i
-//                    thisType.AddMember(field.ReturnType); thisType.AddMember field.Property
-//                )
-//
-//            { 
-//              Name = (getPropertyName name)
-//              ReturnType = thisType
-//              Property = ProvidedProperty(getPropertyName name, thisType, GetterCode = fun (Singleton row) -> row) 
-//              Conv = (fun x -> x :> Expr)
-//            }
+        let cellAccessorExpr (index:int) propIndex row = 
+            <@
+                 let values = (%%(Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])) : obj[])
+                 values.[propIndex]
+            @> |> replacer.ToRuntime
 
         match field.Type with
         | InferedType.Primitive(typ, unit, optional) ->
             let typ, typWrapper = getTypeAndWrapper typ optional    
             let field = PrimitiveInferedProperty.Create(getPropertyName field.Name, typ, typWrapper, unit)
             let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-            let property = createProperty field.Name typ conv value
+            let accessor (row : Expr)  = 
+                    <@ 
+                        let value = (%%(Expr.Coerce((Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])), typeof<string>)) : string)
+                        TextConversions.AsString(value)
+                    @> |> (conv >> replacer.ToRuntime)
+            let property = ProvidedProperty(field.Name, typ, GetterCode = (fun (Singleton row) -> accessor row))
             {
               Name = field.Name 
               ReturnType = typWithoutMeasure
               Property = property
-              Conv = conv
-            } |> Primitive
-//        | InferedType.Record(name, props, optional) -> 
-//            (createRecordProperty field.Name name props optional index) |> Field.Record
+              IsRecord = false
+            }
+        | InferedType.Record(name, props, optional) ->
+            let returnType = ProvidedTypeDefinition(getTypeName name, Some <| (replacer.ToRuntime typeof<HtmlRow>), HideObjectMethods = true)
+
+            for (propIndex, prop) in props |> List.mapi (fun i x -> (i,x)) do
+                let prop = 
+                    match prop.Type with
+                    | InferedType.Primitive(typ, unit, optional) ->
+                        let typ, typWrapper = getTypeAndWrapper typ optional    
+                        let field = PrimitiveInferedProperty.Create(getPropertyName field.Name, typ, typWrapper, unit)
+                        let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
+                        
+                        let arrayAccessor propIndex (arr:Expr) = 
+                            <@@ 
+                                let arr = (%%arr : obj[])
+                                arr.[propIndex]
+                            @@>
+                        
+                        let accessor (row : Expr)  = 
+                                <@ 
+                                    let value = (%%(Expr.Coerce(arrayAccessor propIndex (Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])), typeof<string>)) : string)
+                                    TextConversions.AsString(value)
+                                @> |> (conv >> replacer.ToRuntime)
+                        ProvidedProperty(getPropertyName prop.Name, typ, GetterCode = (fun (Singleton row) -> accessor row))
+                    | _ -> 
+                        let prop = convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, value, prop)
+                        prop.Property
+                returnType.AddMember prop
+
+            let property = ProvidedProperty(getPropertyName field.Name, returnType, GetterCode = (fun (Singleton row) -> row))
+            {
+              Name = field.Name
+              ReturnType = returnType
+              Property = property
+              IsRecord = true
+            }
         | _ -> failwith "unsupported conversion"
 
     let private createTableType (replacer:AssemblyReplacer) getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
@@ -169,11 +125,11 @@ module internal HtmlGenerator =
         
         let rowType = ProvidedTypeDefinition("Row", Some (replacer.ToRuntime typeof<HtmlRow>), HideObjectMethods = true)
 
-        let fields = properties |> List.mapi (fun index (value, prop) ->
-             let field = convertProperty(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr, index, value, prop)
-             match field with
-             | Primitive p -> rowType.AddMember(p.Property); p
-             | Record r -> rowType.AddMember r.ReturnType; rowType.AddMember r.Property; r
+        properties |> List.iteri (fun index (value, prop) ->
+             let field = convertProperty(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr, index, 0, value, prop)
+             if field.IsRecord
+             then rowType.AddMember field.ReturnType; rowType.AddMember field.Property;
+             else rowType.AddMember field.Property;
             )
         
         let tableName = table.Name

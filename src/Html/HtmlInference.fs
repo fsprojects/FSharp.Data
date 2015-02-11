@@ -18,6 +18,15 @@ type HtmlValue =
     | Record of string * HtmlValue list
     | List of HtmlValue list
     | Null
+    member x.AsObject() = 
+        match x with
+        | Primitive(d) -> box d
+        | Img(d) -> box d
+        | Link(href, contents) ->  box [|box href; box (contents.AsObject())|]
+        | Null -> null
+        | List vs -> box (vs |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
+        | Record (name, props) -> box (props |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
+        | Property (name, v) -> v.AsObject()
   
 type Parameters = {
     MissingValues: string[]
