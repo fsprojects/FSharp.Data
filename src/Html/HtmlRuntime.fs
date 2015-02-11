@@ -21,7 +21,7 @@ type HtmlTableCell =
     | Cell of HtmlValue
     | Empty
     member x.Data = 
-       match x with | Header d | Cell d -> d | Empty _ -> HtmlValue.Null
+       match x with | Header (d) | Cell (d) -> d | Empty _ -> HtmlValue.Null
 
 /// Representation of an HTML table cell
 type HtmlTable = 
@@ -134,66 +134,77 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
 
-    let rec getValue (n:HtmlNode list) =
+    let getPath (paths : HtmlNode list) = 
+        String.Join("/", paths |> List.rev)
+
+    let rec getValue basePath (n:HtmlNode list) =
        
-        let rec getValue' (n:HtmlNode) =
+        let rec getValue' path (n:HtmlNode) =
             let nodeName = n.Name()
             match nodeName with
             | "a" | "link" -> 
-                Link(n.AttributeValue("href"), match n.Elements() with | [] -> Null | h :: _ -> getValue' h)
+                Link(n.AttributeValue("href"), match n.Elements() with | [] -> Null | h :: _ -> getValue' (h :: path) h)
             | "img" ->
                 Img(n.AttributeValue("src"))
             | "meta" -> 
                 let valueAttrs = ["content"; "value"; "src"]
-                let value = 
+                let (name, value) = 
                     match valueAttrs |> List.tryPick (n.TryGetAttribute) with
-                    | Some attr -> attr.Value()
-                    | None -> n.InnerText()
-                Primitive(value)
+                    | Some attr -> Some(attr.Name()), (attr.Value())
+                    | None -> None, (n.InnerText())
+                match name with
+                | Some name -> Primitive(value, (getPath (n :: path)) + "/[@" + name + "]")
+                | None -> Primitive(value, (getPath (n :: path)))
             | _ -> 
-                match tryParseMicroSchema n with
+                match tryParseMicroSchema path n with
                 | Some h -> h
-                | None -> Primitive(n.InnerText())
+                | None -> Primitive(n.InnerText(), getPath (n :: path))
 
-        match n |> List.map getValue' with
+        match n |> List.map (getValue' basePath) with
         | [] -> Null
         | h :: [] -> h
         | h -> HtmlValue.List(h)
  
-    and tryParseMicroSchema (n:HtmlNode) =
+    and tryParseMicroSchema path (n:HtmlNode) =
 
-        let rec walk state (n:HtmlNode) = 
+        let rec walk path state (n:HtmlNode) = 
             match n with
             | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
-                  Property(prop, Record(Utils.getPath scope, HtmlNode.elements n |> List.fold walk [])) :: state
+                  Property(prop, Record(Utils.getPath scope, HtmlNode.elements n |> List.fold (fun s x -> walk (n :: path) s x) [])) :: state
             | Utils.Attr "itemtype" scope -> 
-                  Record(Utils.getPath scope, HtmlNode.elements n |> List.fold walk []) :: state
+                  Record(Utils.getPath scope, HtmlNode.elements n |> List.fold (fun s x -> walk (n :: path) s x) []) :: state
             | Utils.Attr "itemprop" prop ->
-                  Property(prop, getValue (n.Elements())) :: state
-            | _ ->  HtmlNode.elements n |> List.fold (walk) state
+                  Property(prop, getValue (n :: path) (n.Elements())) :: state
+            | _ ->  HtmlNode.elements n |> List.fold (fun s x -> walk (n :: path) s x) state
         
-        match walk [] n with
+        match walk path [] n with
         | [] -> None
         | h :: [] -> Some h
         | h -> Some <| HtmlValue.List h
 
 
+    let getCells (rows : (int * (HtmlNode * HtmlNode list)) list) = 
+        rows 
+        |> List.map (fun (_,(r, paths)) -> 
+                        r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, (e, e :: paths))
+                    )
+    
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
         let rows =
             let header =
-                match table.Descendants("thead", false) |> Seq.toList with
-                | [ head ] ->
+                match table.DescendantsWithPath("thead", false) |> Seq.toList with
+                | [ (head,paths) ] ->
                     // if we have a tr in here, do nothing - we get all trs next anyway
                     match head.Descendants("tr" ,false) |> Seq.toList with
-                    | [] -> [ head ]
+                    | [] -> [ head, paths ]
                     | _ -> []
                 | _ -> []
-            header @ (table.Descendants("tr", false) |> List.ofSeq)
+            header @ (table.DescendantsWithPath("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i,r)
         
         if rows.Length <= 1 then None else
 
-        let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
+        let cells = getCells rows
         let rowLengths = cells |> List.map (fun x -> x.Length)
         let numberOfColumns = List.max rowLengths
         
@@ -203,14 +214,14 @@ module HtmlRuntime =
 
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
         for rowindex, _ in rows do
-            for colindex, cell in cells.[rowindex] do
+            for colindex, (cell, path) in cells.[rowindex] do
                 let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
                 let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
                 
                 let data =
                     match cell with
-                    | HtmlElement("td", _, contents) -> Cell (contents |> getValue)
-                    | HtmlElement("th", _, contents) -> Header (contents |> getValue)
+                    | HtmlElement("td", _, contents) -> Cell (contents |> getValue path)
+                    | HtmlElement("th", _, contents) -> Header (contents |> getValue path)
                     | _ -> Empty
 
                 let col_i = ref colindex

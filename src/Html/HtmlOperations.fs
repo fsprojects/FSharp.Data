@@ -3,6 +3,7 @@
 open System
 open FSharp.Data
 open System.Runtime.CompilerServices
+open System.Xml.Linq
 
 [<AutoOpen>]
 module private Utils =
@@ -654,6 +655,10 @@ module HtmlDocument =
         match List.ofSeq <| descendantsNamed false ["body"] x with
         | [] -> None
         | body:: _ -> Some body
+
+    let bodyToXDocument (x:HtmlDocument) = 
+        let reader = new HtmlReader(body x)
+        XDocument.Load(reader)
 
 [<Extension>]
 /// Extension methods with operations on HTML documents
