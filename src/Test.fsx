@@ -127,3 +127,5 @@ let htmlToXml (url:string) =
     url
     |> HtmlDocument.Load
     |> HtmlDocument.bodyToXDocument
+
+let xDoc = htmlToXml "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"

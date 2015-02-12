@@ -15,7 +15,7 @@ open FSharp.Data.Runtime
 /// Represents an HTML attribute. The name is always normalized to lowercase
 type HtmlAttribute = 
 
-    private | HtmlAttribute of name:string * value:string    
+    | HtmlAttribute of name:string * value:string    
 
     /// <summary>
     /// Creates an html attribute
@@ -29,10 +29,10 @@ type HtmlAttribute =
 /// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
 
-    private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-            | HtmlText of content:string
-            | HtmlComment of content:string
-            | HtmlCData of content:string
+    | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+    | HtmlText of content:string
+    | HtmlComment of content:string
+    | HtmlCData of content:string
     
     /// <summary>
     /// Creates an html element
@@ -142,180 +142,192 @@ type HtmlNode =
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     member x._Print = x.ToString()
 
-type HtmlReader internal(root:HtmlNode) =
-    inherit XmlReader()
-
-    let (|Element|Text|Attr|Comment|CDATA|) (o:obj) =
-        match o with
-        | :? HtmlNode as e ->
-            match e with
-            | HtmlElement (a,b,c) -> Element (a,(b |> List.map (function HtmlAttribute(n,v) -> (n,v))),c) 
-            | HtmlText t -> Text t
-            | HtmlComment c -> Comment c
-            | HtmlCData cd -> CDATA cd 
-        | :? HtmlAttribute as a -> 
-             let (HtmlAttribute(n,v)) = a
-             Attr (n,v) 
-        | _ -> failwithf "Unknown %A" o
-
-    let mutable attrIndex = 0
-    let mutable lastElement : obj = null
-    let mutable currentElement : obj = (box root)
-    let mutable isEOF = false
-    let mutable readState = ReadState.Interactive
-    
-    let rec iterator e =
-        seq {
-            match e with
-            | HtmlElement(_, _, es) ->   
-                yield (box e)
-                for e' in es do
-                    yield! iterator e'
-            | _ -> yield (box e)
-        }
-
-    let enumerator = 
-        lazy
-            readState <- ReadState.Interactive
-            (iterator root).GetEnumerator()
-
-    override x.NodeType
-        with get() =
-            if isEOF
-            then XmlNodeType.EndElement
-            else
-                match currentElement with
-                | Element _ -> XmlNodeType.Element
-                | Text _ -> XmlNodeType.Text
-                | Attr _ -> XmlNodeType.Attribute
-                | Comment _ -> XmlNodeType.Comment
-                | CDATA _ -> XmlNodeType.CDATA
-                
-    override x.LocalName
-        with get() =
-            match currentElement with
-            | Element (n,_,_) -> n
-            | Attr(n,_) -> n
-            | _ -> ""
-    
-    override x.NamespaceURI with get() = ""
-    override x.Prefix with get() = ""
-    override x.HasValue
-        with get() =
-            match currentElement with
-            | Element (_,_,a) -> List.isEmpty a
-            | Text t | Comment t | CDATA t-> String.IsNullOrEmpty(t)
-            | Attr (_,v) -> String.IsNullOrEmpty(v)
-    
-    override x.Value
-        with get() =
-            match currentElement with
-            | Element (n,_,a) -> n
-            | Text t | Comment t | CDATA t -> t
-            | Attr (_,t) -> t
-    
-    override x.Depth with get() = 0
-    override x.BaseURI with get() = ""
-    override x.IsEmptyElement
-        with get() =
-             match currentElement with
-             | Element (_,_,a) -> List.isEmpty a
-             | Text t | Comment t | CDATA t -> String.IsNullOrEmpty(t)
-             | Attr _ -> false
-             
-    override x.AttributeCount
-        with get() =
-             match currentElement with
-             | Element (_, attrs, _) ->  List.length attrs
-             | _ -> 0
-                 
-    override x.GetAttribute(name) =
-             match currentElement with
-             | Element  (_,attrs,_) ->
-                  match attrs |> List.tryFind (fst >> ((=) name)) with
-                  | Some (_,v) -> v
-                  | None -> ""
-             | _ -> ""
-     
-    override x.GetAttribute(name, _) = x.GetAttribute(name)
-    override x.GetAttribute(i) =
-             match currentElement with
-             | Element (_,attrs,_) -> snd (attrs.[i])
-             | _ -> ""
-    
-    override x.MoveToAttribute(name) =
-             match currentElement with
-             | Element (_,attrs,_) ->
-                    match attrs |> List.tryFind (fst >> ((=) name)) with
-                    | Some a -> currentElement <- a; true
-                    | None -> false
-             | _ -> false
-    
-    override x.MoveToAttribute(name, _) = x.MoveToAttribute(name)
-    override x.MoveToFirstAttribute() =
-             match currentElement with
-             | Element (_,attrs,_) ->
-                   if (List.length attrs) > 0
-                   then attrIndex <- 0; currentElement <- attrs.[0]; true
-                   else false
-             | _ -> false
-    
-    override x.MoveToNextAttribute() =
-             match lastElement with
-             | Element (_,attrs,_) ->
-                     let len = List.length attrs
-                     if len > 0 && (attrIndex + 1 < len)
-                     then 
-                        attrIndex <- (attrIndex + 1)
-                        currentElement <- attrs.[attrIndex]
-                        true
-                     else false
-             | _ -> false
-             
-    override x.MoveToElement() =
-             currentElement <- lastElement
-             true
-             
-    override x.ReadAttributeValue() =
-             match currentElement with
-             | Attr (_, v) -> currentElement <- (box v); true
-             | _ -> false
-    
-    override x.Read() =
-        let result = enumerator.Value.MoveNext()
-        let curr = enumerator.Value.Current
-        if result
-        then
-          match curr with
-          | Element _ ->
-            lastElement <- curr
-            currentElement <- lastElement
-          | _ ->
-            currentElement <- curr
-        else isEOF <- true
-        result
-             
-    override x.EOF with get() = isEOF
-
-#if FX_NO_XMLREADER_CLOSE
-    override x.Dispose(isDisposing:bool) = 
-        readState <- ReadState.Closed
-        enumerator.Value.Dispose()
-#else    
-    override x.Close() = 
-        readState <- ReadState.Closed
-        enumerator.Value.Dispose()
-#endif
-    
-    override x.ReadState with get() = if isEOF then ReadState.EndOfFile else readState
-    override x.NameTable with get() = NameTable() :> XmlNameTable
-    override x.LookupNamespace(_) = ""
-    override x.ResolveEntity() = ()
+//type HtmlReader internal(root:HtmlNode) =
+//    inherit XmlReader()
+//
+//    let (|Element|Text|Attr|Comment|CDATA|Null|) (o:obj) =
+//        match o with
+//        | :? HtmlNode as e ->
+//            match e with
+//            | HtmlElement (a,b,c) -> Element (a,b,c) 
+//            | HtmlText t -> Text t
+//            | HtmlComment c -> Comment c
+//            | HtmlCData cd -> CDATA cd 
+//        | :? HtmlAttribute as a -> 
+//             let (HtmlAttribute(n,v)) = a
+//             Attr (n,v) 
+//        | null -> Null
+//        | _ -> failwithf "Unknown %A" o
+//
+//    let mutable attrIndex = 0
+//    let mutable lastElement : obj = null
+//    let mutable currentElement : obj = (box root)
+//    let mutable isEOF = false
+//    let mutable readState = ReadState.Interactive
+//    
+//    let rec iterator e =
+//        seq {
+//            match e with
+//            | HtmlElement(_, _, es) ->   
+//                yield (box e)
+//                for e' in es do
+//                    yield! iterator e'
+//            | _ -> yield (box e)
+//        }
+//
+//    let enumerator = 
+//        lazy
+//            readState <- ReadState.Interactive
+//            (iterator root).GetEnumerator()
+//
+//    override x.NodeType
+//        with get() =
+//            if isEOF
+//            then XmlNodeType.EndElement
+//            else
+//                match currentElement with
+//                | Element _ -> XmlNodeType.Element
+//                | Text _ -> XmlNodeType.Text
+//                | Attr _ -> XmlNodeType.Attribute
+//                | Comment _ -> XmlNodeType.Comment
+//                | CDATA _ -> XmlNodeType.CDATA
+//                | Null -> XmlNodeType.None
+//                
+//    override x.LocalName
+//        with get() =
+//            match currentElement with
+//            | Element (n,_,_) -> n
+//            | Attr(n,_) -> n
+//            | _ -> ""
+//    
+//    override x.NamespaceURI with get() = ""
+//    override x.Prefix with get() = ""
+//    override x.HasValue
+//        with get() =
+//            match currentElement with
+//            | Element (_,_,a) -> List.isEmpty a
+//            | Text t | Comment t | CDATA t-> String.IsNullOrEmpty(t)
+//            | Attr (_,v) -> String.IsNullOrEmpty(v)
+//            | Null -> false
+//    
+//    override x.Value
+//        with get() =
+//            match currentElement with
+//            | Element (n,_,a) -> n
+//            | Text t | Comment t | CDATA t -> t
+//            | Attr (_,t) -> t
+//            | Null -> ""
+//    
+//    override x.Depth with get() = 0
+//    override x.BaseURI with get() = ""
+//    override x.IsEmptyElement
+//        with get() =
+//             match currentElement with
+//             | Element (_,_,a) -> List.isEmpty a
+//             | Text t | Comment t | CDATA t -> String.IsNullOrEmpty(t)
+//             | Attr _ -> false
+//             | Null -> true
+//             
+//    override x.AttributeCount
+//        with get() =
+//             match currentElement with
+//             | Element (_, attrs, _) ->  List.length attrs
+//             | _ -> 0
+//                 
+//    override x.GetAttribute(name) =
+//             match currentElement with
+//             | Element  (_,attrs,_) ->
+//                  match attrs |> List.tryFind (function | HtmlAttribute(n, _) -> n = name) with
+//                  | Some (HtmlAttribute(_,v)) -> v
+//                  | None -> ""
+//             | _ -> ""
+//     
+//    override x.GetAttribute(name, _) = x.GetAttribute(name)
+//    override x.GetAttribute(i) =
+//             match currentElement with
+//             | Element (_,attrs,_) -> (attrs.[i]) |> (function | HtmlAttribute (_, v) -> v)
+//             | _ -> ""
+//    
+//    override x.MoveToAttribute(name) =
+//             match currentElement with
+//             | Element (_,attrs,_) ->
+//                    match attrs |> List.mapi (fun i x -> i,x) |> List.tryFind (fun (i, x) -> x |> function | HtmlAttribute(n, _) -> n = name) with
+//                    | Some (i,a) ->
+//                        attrIndex <- i 
+//                        lastElement <- currentElement
+//                        currentElement <- a; true
+//                    | None -> false
+//             | _ -> false
+//    
+//    override x.MoveToAttribute(name, _) = x.MoveToAttribute(name)
+//    override x.MoveToFirstAttribute() =
+//             match currentElement with
+//             | Element (_,attrs,_) ->
+//                   if (List.length attrs) > 0
+//                   then 
+//                        attrIndex <- 0; 
+//                        currentElement <- attrs.[0]; true
+//                   else false
+//             | _ -> false
+//    
+//    override x.MoveToNextAttribute() =
+//             match lastElement with
+//             | Element (_,attrs,_) ->
+//                     let len = List.length attrs
+//                     if len > 0 && (attrIndex + 1 < len)
+//                     then 
+//                        attrIndex <- (attrIndex + 1)
+//                        currentElement <- attrs.[attrIndex]
+//                        true
+//                     else false
+//             | _ -> false
+//             
+//    override x.MoveToElement() =
+//             currentElement <- lastElement
+//             true
+//             
+//    override x.ReadAttributeValue() =
+//             match currentElement with
+//             | Attr _ -> true
+//             | _ -> false
+//    
+//    override x.Read() =
+//        let result = enumerator.Value.MoveNext()
+//        let curr = enumerator.Value.Current
+//        if result
+//        then
+//          match curr with
+//          | Element _ ->
+//            lastElement <- curr
+//            currentElement <- lastElement
+//          | _ ->
+//            currentElement <- curr
+//        else 
+//            readState <- ReadState.EndOfFile
+//            isEOF <- true
+//        result
+//             
+//    override x.EOF with get() = isEOF
+//
+//#if FX_NO_XMLREADER_CLOSE
+//    override x.Dispose(isDisposing:bool) = 
+//        readState <- ReadState.Closed
+//        enumerator.Value.Dispose()
+//#else    
+//    override x.Close() = 
+//        readState <- ReadState.Closed
+//        enumerator.Value.Dispose()
+//#endif
+//    
+//    override x.ReadState with get() = readState
+//    override x.NameTable with get() = NameTable() :> XmlNameTable
+//    override x.LookupNamespace(_) = ""
+//    override x.ResolveEntity() = ()
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
 type HtmlDocument = 
-    private | HtmlDocument of docType:string * elements:HtmlNode list
+    | HtmlDocument of docType:string * elements:HtmlNode list
   
     /// <summary>
     /// Creates an html document

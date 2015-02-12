@@ -244,6 +244,18 @@ module HtmlNode =
     /// * n - The given nodes
     let inline innerTextConcat n = 
         (n |> Seq.map (innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim() 
+    
+    /// Converts the current HtmlNode to an XNode
+    let rec toXNode (x:HtmlNode) : XNode = 
+        match x with 
+        | HtmlElement(name, attrs, es) ->
+            let elem = XElement(XName.Get(name))
+            elem.Add([| for (HtmlAttribute(n,v)) in attrs -> XAttribute(XName.Get(n), v)|])
+            elem.Add([| for elem in es -> toXNode elem |] )
+            elem :> XNode
+        | HtmlCData(c) -> XCData(c) :> XNode
+        | HtmlComment c -> XComment(c) :> XNode
+        | HtmlText t -> XText(t) :> XNode
 
 // --------------------------------------------------------------------------------------
 
@@ -581,6 +593,11 @@ type HtmlNodeExtensions =
     static member InnerText(n:HtmlNode) = 
         HtmlNode.innerText n
 
+    [<Extension>]
+    static member ToXNode(n:HtmlNode) = 
+        HtmlNode.toXNode n
+
+
 // --------------------------------------------------------------------------------------
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -656,9 +673,8 @@ module HtmlDocument =
         | [] -> None
         | body:: _ -> Some body
 
-    let bodyToXDocument (x:HtmlDocument) = 
-        let reader = new HtmlReader(body x)
-        XDocument.Load(reader)
+    let toXDocument (x:HtmlDocument) = 
+        XDocument(x |> elements |> List.head |> HtmlNode.toXNode)
 
 [<Extension>]
 /// Extension methods with operations on HTML documents
