@@ -4,6 +4,7 @@ namespace FSharp.Data
 open System
 open System.ComponentModel
 open System.IO
+open System.Xml.Linq
 open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
@@ -23,6 +24,12 @@ type HtmlAttribute =
     /// <param name="value">The value of the attribute</param>
     static member New(name:string, value:string) =
         HtmlAttribute(name.ToLowerInvariant(), value)
+
+    member x.ToXAttribute() = 
+        let (HtmlAttribute(name, value)) = x
+        match name.Split([|':'|]) with
+        | [|ns;h|] -> XAttribute(XName.Get(h,ns), value)
+        | [|h|] -> XAttribute(XName.Get(h), value) 
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML node. The names of elements are always normalized to lowercase
@@ -79,6 +86,17 @@ type HtmlNode =
     /// </summary>
     /// <param name="content">The actual content</param>
     static member NewComment content = HtmlComment(content)
+
+    member x.ToXNode() =
+        match x with
+        | HtmlElement(name, attrs, contents) ->
+            let element = XElement(XName.Get(name))
+            element.Add([|for attr in attrs -> (attr.ToXAttribute())|])
+            element.Add([|for e in contents -> (e.ToXNode())|])
+            element :> XNode
+        | HtmlText t -> XText(t) :> XNode
+        | HtmlComment t -> XComment(t) :> XNode
+        | HtmlCData t -> XCData(t) :> XNode
 
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation canAddNewLine html =

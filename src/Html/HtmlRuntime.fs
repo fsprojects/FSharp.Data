@@ -5,6 +5,7 @@ open System.Globalization
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
+open System.Xml.Linq
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.HtmlExtensions
@@ -17,11 +18,10 @@ open FSharp.Data.Runtime.HtmlInference
 // --------------------------------------------------------------------------------------
 /// Representation of an HTML table cell
 type HtmlTableCell = 
-    | Header of HtmlValue
-    | Cell of HtmlValue
-    | Empty
+    | Header of XElement
+    | Cell of XElement
     member x.Data = 
-       match x with | Header d | Cell d -> d | Empty _ -> HtmlValue.Null
+        match x with | Header d | Cell d -> d
 
 /// Representation of an HTML table cell
 type HtmlTable = 
@@ -139,43 +139,44 @@ module HtmlRuntime =
         let rec getValue' (n:HtmlNode) =
             let nodeName = n.Name()
             match nodeName with
-            | "a" | "link" -> 
-                Link(n.AttributeValue("href"), match n.Elements() with | [] -> Null | h :: _ -> getValue' h)
+            | "a" | "link" ->
+                XElement(XName.Get nodeName,[|
+                    XElement(XName.Get "href", [|XText(n.AttributeValue("href"))|])
+                |]) :> XNode
             | "img" ->
-                Img(n.AttributeValue("src"))
+                XElement(XName.Get nodeName,[|
+                    XElement(XName.Get "src", [|XText(n.AttributeValue("src"))|])
+                |]) :> XNode
             | "meta" -> 
                 let valueAttrs = ["content"; "value"; "src"]
                 let value = 
                     match valueAttrs |> List.tryPick (n.TryGetAttribute) with
                     | Some attr -> attr.Value()
                     | None -> n.InnerText()
-                Primitive(value)
+                XText(value) :> XNode
             | _ -> 
                 match tryParseMicroSchema n with
-                | Some h -> h
-                | None -> Primitive(n.InnerText())
+                | Some h -> XElement(XName.Get "Record", h |> Array.ofList) :> XNode
+                | None -> XText(n.InnerText()) :> XNode
 
-        match n |> List.map getValue' with
-        | [] -> Null
-        | h :: [] -> h
-        | h -> HtmlValue.List(h)
+        n |> List.map getValue'
+
  
-    and tryParseMicroSchema (n:HtmlNode) =
+    and tryParseMicroSchema (n:HtmlNode) : XNode list option =
 
-        let rec walk state (n:HtmlNode) = 
+        let rec walk (state : XNode list) (n:HtmlNode) = 
             match n with
             | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
-                  Property(prop, Record(Utils.getPath scope, HtmlNode.elements n |> List.fold walk [])) :: state
+                  (XElement(XName.Get(prop), [|XElement(XName.Get(scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
             | Utils.Attr "itemtype" scope -> 
-                  Record(Utils.getPath scope, HtmlNode.elements n |> List.fold walk []) :: state
+                  (XElement(XName.Get(scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
             | Utils.Attr "itemprop" prop ->
-                  Property(prop, getValue (n.Elements())) :: state
+                  (XElement(XName.Get(prop), getValue (n.Elements()) |> List.toArray) :> XNode) :: state
             | _ ->  HtmlNode.elements n |> List.fold (walk) state
         
         match walk [] n with
         | [] -> None
-        | h :: [] -> Some h
-        | h -> Some <| HtmlValue.List h
+        | a -> Some a
 
 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
@@ -202,6 +203,7 @@ module HtmlRuntime =
         let name = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
 
         let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
+
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
                 let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
@@ -209,12 +211,14 @@ module HtmlRuntime =
                 
                 let data =
                     match cell with
-                    | HtmlElement("td", _, contents) -> Cell (contents |> getValue)
-                    | HtmlElement("th", _, contents) -> Header (contents |> getValue)
-                    | _ -> Empty
-
+                    | HtmlElement("td", _, contents) -> 
+                        let value = XElement(XName.Get "Cell", getValue contents)
+                        Some <| Cell (value)
+                    | HtmlElement("th", _, contents) -> 
+                        Some <| Header (XElement(XName.Get "Header", XText(HtmlNode.innerTextConcat contents)))
+                    | _ -> None
                 let col_i = ref colindex
-                while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> Empty do incr(col_i)
+                while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> None do incr(col_i)
                 for j in [!col_i..(!col_i + colSpan)] do
                     for i in [rowindex..(rowindex + rowSpan)] do
                         if i < rows.Length && j < numberOfColumns
@@ -225,11 +229,13 @@ module HtmlRuntime =
             | None -> false, None, None
             | Some inferenceParameters ->
                 let hasHeaders, headerNames, units, inferedProperties = 
-                    if res.[0] |> Array.forall (function | Header _ | Empty -> true | _ -> false) 
-                    then true, res.[0] |> Array.map (fun x -> x.Data.ToString()) |> Some, None, None
-                    else res
-                         |> Array.map (Array.map (fun x -> x.Data))
-                         |> HtmlInference.inferHeaders inferenceParameters
+                    if res.[0] |> Array.forall (function | (Some (Header _)) | None -> true | _ -> false) 
+                    then true, res.[0] |> Array.map (function | (Some (Header h)) -> h.Value | _ -> "") |> Some, None, None
+                    else                          
+                         res
+                         |> Array.map (fun row -> 
+                                let rowType = XElement(XName.Get "Row", row |> Array.map (function | Some c -> c.Data | None -> XElement(XName.Get "Empty", [||]))))
+                                ProviderImplementation.XmlInference.inferGlobalType true inferenceParameters.CultureInfo false rowType
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =

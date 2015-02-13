@@ -10,7 +10,7 @@ open FSharp.Data.Runtime.StructuralTypes
 
 type HtmlValue = 
     | Primitive of string
-    | Link of string * HtmlValue
+    | Link of string * HtmlValue 
     | Img of string
     | Property of string * HtmlValue
     | Record of string * HtmlValue list
@@ -18,12 +18,12 @@ type HtmlValue =
     | Null
     member x.AsObject() = 
         match x with
-        | Primitive(d) -> box d
-        | Img(d) -> box d
-        | Link(href, contents) ->  box [|box href; box (contents.AsObject())|]
+        | Primitive(d) -> [|box d|]
+        | Img(d) -> [|box d|]
+        | Link(href, contents) ->  [|box href; box (contents.AsObject())|]
         | Null -> null
-        | List vs -> box (vs |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
-        | Record (name, props) -> box (props |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
+        | List vs -> (vs |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
+        | Record (name, props) -> (props |> List.toArray |> Array.map (fun x -> box <| x.AsObject()))
         | Property (name, v) -> v.AsObject()
   
 type Parameters = {
@@ -46,7 +46,7 @@ let rec private annotateUnitOfMeasure (name:string) typ =
         name.Split('\n').[0], InferedType.Record(n, props |> List.map (fun p -> let (n, t) = annotateUnitOfMeasure p.Name p.Type in { Name = n; Type = t }), opts)
     | _ -> name.Split('\n').[0], typ
 
-let rec private inferHtmlValueType preferOptionals missingValues cultureInfo unit (n:HtmlValue) =
+let rec inferHtmlValueType preferOptionals missingValues cultureInfo unit (n:HtmlValue) =
     match n with
     | Primitive(value) -> CsvInference.inferCellType preferOptionals missingValues cultureInfo unit value
     | Link(href, content) -> 

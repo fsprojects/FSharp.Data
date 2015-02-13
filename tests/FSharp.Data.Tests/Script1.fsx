@@ -61,4 +61,4 @@ let [<Literal>] data=
 
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 
-let movieName = table1 |> Seq.map (fun x -> x.) |> Seq.toList
+let movieName = table1 |> Seq.map (fun x -> x.``Column 3``.Name) |> Seq.toList

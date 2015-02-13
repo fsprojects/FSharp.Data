@@ -101,6 +101,7 @@ module internal HtmlGenerator =
                         ProvidedProperty(getPropertyName prop.Name, typ, GetterCode = (fun (Singleton row) -> accessor row))
                     | _ -> 
                         let prop = convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, value, prop)
+                        returnType.AddMember prop.ReturnType
                         prop.Property
                 returnType.AddMember prop
 
