@@ -20,7 +20,7 @@ type HtmlValue =
     | Null
     member x.AsObject() = 
         match x with
-        | Primitive(d,_) -> box d
+        | Primitive(d) -> box d
         | Img(d) -> box d
         | Link(href, contents) ->  box [|box href; box (contents.AsObject())|]
         | Null -> null

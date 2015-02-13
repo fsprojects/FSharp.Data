@@ -94,7 +94,6 @@
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
     <None Include="Test.fsx" />
-    <None Include="Script1.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
