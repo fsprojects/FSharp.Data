@@ -8,11 +8,9 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
 
-type XPath = string
-
 type HtmlValue = 
-    | Primitive of string * XPath
-    | Link of string * HtmlValue 
+    | Primitive of string
+    | Link of string * HtmlValue
     | Img of string
     | Property of string * HtmlValue
     | Record of string * HtmlValue list
@@ -50,7 +48,7 @@ let rec private annotateUnitOfMeasure (name:string) typ =
 
 let rec private inferHtmlValueType preferOptionals missingValues cultureInfo unit (n:HtmlValue) =
     match n with
-    | Primitive(value,_) -> CsvInference.inferCellType preferOptionals missingValues cultureInfo unit value
+    | Primitive(value) -> CsvInference.inferCellType preferOptionals missingValues cultureInfo unit value
     | Link(href, content) -> 
         InferedType.Record(Some "Link", 
             [
@@ -144,7 +142,7 @@ let inferHeaders parameters (rows : HtmlValue [][]) =
     if rows.Length <= 2 then 
         false, None, None, None //Not enough info to infer anything, assume first row data
     else
-        let headers = Some (rows.[0] |> Array.map (function | Primitive (d,_) -> d | _ -> ""))
+        let headers = Some (rows.[0] |> Array.map (function | Primitive d -> d | _ -> ""))
         let numberOfColumns = rows.[0].Length
         let headerNamesAndUnits, _ = CsvInference.parseHeaders headers numberOfColumns "" parameters.UnitsOfMeasureProvider
         let headerRowType = inferColumns parameters headerNamesAndUnits [rows.[0]] |> List.map snd
