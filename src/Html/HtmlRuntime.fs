@@ -234,8 +234,9 @@ module HtmlRuntime =
                     else                          
                          res
                          |> Array.map (fun row -> 
-                                let rowType = XElement(XName.Get "Row", row |> Array.map (function | Some c -> c.Data | None -> XElement(XName.Get "Empty", [||]))))
-                                ProviderImplementation.XmlInference.inferGlobalType true inferenceParameters.CultureInfo false rowType
+                               let rowType = XElement(XName.Get "Row", row |> Array.map (function | Some c -> c.Data | None -> XElement(XName.Get "Empty", [||]))))
+                               ProviderImplementation.XmlInference.inferGlobalType true inferenceParameters.CultureInfo false rowType
+                         )
         
                 // headers and units may already be parsed in inferHeaders
                 let headerNamesAndUnits =
