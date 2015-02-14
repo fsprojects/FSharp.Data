@@ -1,6 +1,7 @@
 #### 2.1.2 - Unreleased
 * Added constants for more HTTP methods.
-* Added fix for `thead` element without nested `tr` element
+* Added fix for `thead` element without nested `tr` element.
+* Improved global inference in XmlProvider.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
