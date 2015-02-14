@@ -15,3 +15,4 @@ log.csv
 log.txt
 .paket/paket.exe
 *.ide
+.vs
