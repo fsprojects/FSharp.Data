@@ -9,8 +9,6 @@ build_script:
 test: off
 artifacts:
   - path: bin\*.nupkg
-environment:
-  FREEBASE_API_KEY: AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
 branches:
   except:
     - gh-pages

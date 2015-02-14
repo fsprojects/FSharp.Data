@@ -62,10 +62,6 @@
     <Compile Include="Csv\CsvExtensions.fs" />
     <Compile Include="Csv\CsvInference.fs" />
     <Compile Include="WorldBank\WorldBankRuntime.fs" />
-    <Compile Include="Freebase\FreebaseRequests.fs" />
-    <Compile Include="Freebase\FreebaseSchema.fs" />
-    <Compile Include="Freebase\FreebaseRuntime.fs" />
-    <Compile Include="Freebase\FreebaseOperators.fs" />
     <Compile Include="Html\HtmlCharRefs.fs" />
     <Compile Include="Html\HtmlParser.fs" />
     <Compile Include="Html\HtmlOperations.fs" />

@@ -300,7 +300,6 @@
     <Compile Include="CsvProvider.fs" />
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
-    <Compile Include="FreebaseProvider.fs" />
     <Compile Include="WorldBankProvider.fs" />
     <Compile Include="HtmlCharRefs.fs" />
     <Compile Include="HtmlParser.fs" />

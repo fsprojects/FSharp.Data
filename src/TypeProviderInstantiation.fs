@@ -5,7 +5,6 @@ open System.IO
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
 open FSharp.Data.Runtime
-open FSharp.Data.Runtime.Freebase.FreebaseRequests
 
 type CsvProviderArgs = 
     { Sample : string
@@ -59,24 +58,12 @@ type WorldBankProviderArgs =
     { Sources : string
       Asynchronous : bool }
 
-type FreebaseProviderArgs =
-    { Key : string
-      ServiceUrl : string
-      NumIndividuals : int
-      UseUnitsOfMeasure : bool 
-      Pluralize : bool 
-      SnapshotDate : string
-      LocalCache : bool
-      AllowLocalQueryEvaluation : bool
-      UseRefinedTypes: bool }
-
 type TypeProviderInstantiation = 
     | Csv of CsvProviderArgs
     | Xml of XmlProviderArgs
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
-    | Freebase of FreebaseProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly =
         let f, args =
@@ -133,17 +120,6 @@ type TypeProviderInstantiation =
                 (fun cfg -> new WorldBankProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sources
                    box x.Asynchronous |] 
-            | Freebase x ->
-                (fun cfg -> new FreebaseTypeProvider(cfg) :> TypeProviderForNamespaces),
-                [| box x.Key
-                   box x.ServiceUrl
-                   box x.NumIndividuals
-                   box x.UseUnitsOfMeasure 
-                   box x.Pluralize
-                   box x.SnapshotDate
-                   box x.LocalCache
-                   box x.AllowLocalQueryEvaluation 
-                   box x.UseRefinedTypes |]
         Debug.generate resolutionFolder runtimeAssembly f args
 
     override x.ToString() =
@@ -182,11 +158,6 @@ type TypeProviderInstantiation =
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString()]
-        | Freebase x -> 
-            ["Freebase"
-             x.NumIndividuals.ToString()
-             x.UseUnitsOfMeasure.ToString()
-             x.Pluralize.ToString()]
         |> String.concat ","
 
     member x.ExpectedPath outputFolder = 
@@ -196,9 +167,7 @@ type TypeProviderInstantiation =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
         let output = 
             x.GenerateType resolutionFolder runtimeAssembly
-            |> match x with
-               | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
-               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+            |> Debug.prettyPrint signatureOnly ignoreOutput 10 100
             |> replace "FSharp.Data.Runtime." "FDR."
             |> replace resolutionFolder "<RESOLUTION_FOLDER>"
         if outputFolder <> "" then
@@ -256,16 +225,6 @@ type TypeProviderInstantiation =
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
-        | "Freebase" ->
-            Freebase { Key = args.[1]
-                       NumIndividuals = args.[2] |> Int32.Parse
-                       UseUnitsOfMeasure = args.[3] |> bool.Parse
-                       Pluralize = args.[4] |> bool.Parse
-                       SnapshotDate = ""
-                       ServiceUrl = FreebaseQueries.DefaultServiceUrl
-                       LocalCache = true
-                       AllowLocalQueryEvaluation = true 
-                       UseRefinedTypes = true }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices
