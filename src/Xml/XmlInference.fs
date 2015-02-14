@@ -50,12 +50,17 @@ let getInferedTypeFromValue inferTypesFromValues cultureInfo (element:XElement) 
 /// Infers type for the element, unifying nodes of the same name
 /// accross the entire document (we first get information based
 /// on just attributes and then use a fixed point)
-let inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues (element:XElement) =
+let inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues (elements:XElement[]) =
 
   // Initial state contains types with attributes but all 
   // children are ignored (bodies are based on just body values)
+  let document = 
+    elements 
+    |> Seq.map (fun e -> e.Document)
+    |> Seq.reduce (fun d1 d2 -> 
+        if d1 <> d2 then failwith "inferGlobalType: Elements from multiple documents!" else d1)
   let initialTypes =
-    element.Document.Descendants() 
+    document.Descendants() 
     |> Seq.groupBy (fun el -> el.Name)
     |> Seq.map (fun (name, elements) ->
         // Get attributes for all `name` named elements 
@@ -98,7 +103,8 @@ let inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues (element:X
           body.Type <- bodyType
       | _ -> failwith "inferGlobalType: Expected record type with a name"
 
-  assignment.[element.Name.ToString()] |> snd
+  elements |> Array.map (fun element ->        
+    assignment.[element.Name.ToString()] |> snd)
 
 /// Get information about type locally (the type of children is infered
 /// recursively, so same elements in different positions have different types)
@@ -125,6 +131,6 @@ let rec inferLocalType inferTypesFromValues cultureInfo allowEmptyValues (elemen
 /// A type is infered either using `inferLocalType` which only looks
 /// at immediate children or using `inferGlobalType` which unifies nodes
 /// of the same name in the entire document
-let inferType inferTypesFromValues cultureInfo allowEmptyValues globalInference (element:XElement) =
-  if globalInference then inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues element
-  else inferLocalType inferTypesFromValues cultureInfo allowEmptyValues element
+let inferType inferTypesFromValues cultureInfo allowEmptyValues globalInference (elements:XElement[]) =
+  if globalInference then inferGlobalType inferTypesFromValues cultureInfo allowEmptyValues elements
+  else Array.map (inferLocalType inferTypesFromValues cultureInfo allowEmptyValues) elements
