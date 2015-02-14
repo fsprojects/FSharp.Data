@@ -75,15 +75,28 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
-      let csvType, csvErasedType, stringArrayToRow, rowToStringArray = 
+      let csvType, csvErasedType, rowType, stringArrayToRow, rowToStringArray = 
         inferredFields 
         |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
-  
+
+
+      let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
+      let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
+      
+      let paramType = (replacer.ToRuntime typedefof<seq<_>>).MakeGenericType(rowType)
+      let headers = 
+        match sampleCsv.Headers with 
+        | None -> <@@ None: string[] option @@> 
+        | Some headers -> Expr.NewArray(typeof<string>, headers |> Array.map (fun h -> Expr.Value(h)) |> List.ofArray) |> (fun x-> <@@ Some (%%x : string[]) @@>)
+
+      let ctor = ProvidedConstructor([ ProvidedParameter("rows", paramType) ], InvokeCode = (fun (Singleton paramValue) ->
+        let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
+        Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
+      csvType.AddMember(ctor) 
+       
       { GeneratedType = csvType
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
-          let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
-          let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
           let body = 
             csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
                                               separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)

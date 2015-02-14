@@ -1,4 +1,31 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                               TextRuntime.ConvertDateTimeBack("", Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Game"
+                                                           "Bat1"
+                                                           "Bat2"
+                                                           "Runs"
+                                                           "Wkts"
+                                                           "Conceded"
+                                                           "Caught"
+                                                           "Stumped"
+                                                           ""
+                                                           "Opposition"
+                                                           "Ground"
+                                                           "StartDate" |], 12, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -333,6 +360,20 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : int * string * string * float * float * float * float * float * string * string * string * System.DateTime
+    new : game:int -> bat1:string -> bat2:string -> runs:float -> wkts:float -> conceded:float -> caught:float -> stumped:float -> column9:string -> opposition:string -> ground:string -> startDate:System.DateTime -> CsvProvider+Row
+    game,
+    bat1,
+    bat2,
+    runs,
+    wkts,
+    conceded,
+    caught,
+    stumped,
+    column9,
+    opposition,
+    ground,
+    startDate
+
     member Bat1: string with get
     (let _,t2,_,_,_,_,_,_,_,_,_,_ = this in t2)
 
