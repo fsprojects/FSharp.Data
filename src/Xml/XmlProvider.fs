@@ -46,7 +46,8 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
         samples
-        |> Seq.map (fun sampleXml -> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference sampleXml)
+        |> Array.ofSeq
+        |> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference
         |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->

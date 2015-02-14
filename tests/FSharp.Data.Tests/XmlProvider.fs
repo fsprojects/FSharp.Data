@@ -217,6 +217,23 @@ let ``Global inference with empty elements doesn't crash``() =
     child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
+type Cars = XmlProvider<"Data/Cars.xml", SampleIsList=true, Global=true>
+
+[<Test>]
+let ``Global inference unifies element types across multiple samples``() =
+  let readCars str = 
+    let doc = Cars.Parse(str)
+    match doc.Car, doc.ArrayOfCar with
+    | Some car, _ -> [ car.Type ]
+    | _, Some cars -> [ for c in cars.Cars -> c.Type ]
+    | _ -> []
+  
+  readCars "<Car><Type>Audi</Type></Car>" 
+  |> should equal ["Audi"]
+
+  readCars "<ArrayOfCar><Car><Type>Audi</Type></Car><Car><Type>BMW</Type></Car></ArrayOfCar>" 
+  |> should equal ["Audi"; "BMW"]
+
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
 
 // Acronyms are renamed correctly; see https://github.com/fsharp/FSharp.Data/issues/309
