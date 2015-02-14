@@ -1,3 +1,4 @@
+// Based on code for the F# 3.0 Developer Preview release of September 2011,
 // Copyright (c) Microsoft Corporation 2005-2012.
 // This sample code is provided "as is" without warranty of any kind. 
 // We disclaim all warranties, either express or implied, including the 
@@ -5,8 +6,8 @@
 
 // This file contains a set of helper types and methods for providing types in an implementation 
 // of ITypeProvider.
-//
-// This code is a sample for use in conjunction with the F# 3.0 Beta release of March 2012
+
+// This code has been modified and is appropriate for use in conjunction with the F# 3.0, F# 3.1, and F# 3.1.1 releases
 
 namespace ProviderImplementation.ProvidedTypes
 
@@ -19,6 +20,11 @@ open System.Linq.Expressions
 open System.Collections.Generic
 open Microsoft.FSharp.Core.CompilerServices
 
+type E = Quotations.Expr
+module P = Quotations.Patterns
+module ES = Quotations.ExprShape
+module DP = Quotations.DerivedPatterns
+
 type internal ExpectedStackState = 
     | Empty = 1
     | Address = 2
@@ -26,11 +32,10 @@ type internal ExpectedStackState =
 
 [<AutoOpen>]
 module internal Misc =
-    let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
     let TypeBuilderInstantiationType = 
-        if runningOnMono
-        then typeof<TypeBuilder>.Assembly.GetType("System.Reflection.MonoGenericClass")
-        else typeof<TypeBuilder>.Assembly.GetType("System.Reflection.Emit.TypeBuilderInstantiation")
+        let runningOnMono = try System.Type.GetType("Mono.Runtime") <> null with e -> false 
+        let typeName = if runningOnMono then "System.Reflection.MonoGenericClass" else "System.Reflection.Emit.TypeBuilderInstantiation"
+        typeof<TypeBuilder>.Assembly.GetType(typeName)
     let GetTypeFromHandleMethod = typeof<Type>.GetMethod("GetTypeFromHandle")
     let LanguagePrimitivesType = typedefof<list<_>>.Assembly.GetType("Microsoft.FSharp.Core.LanguagePrimitives")
     let ParseInt32Method = LanguagePrimitivesType.GetMethod "ParseInt32"
@@ -90,6 +95,7 @@ module internal Misc =
             member __.Constructor = typeof<AllowNullLiteralAttribute>.GetConstructors().[0]
             member __.ConstructorArguments = upcast [| CustomAttributeTypedArgument(typeof<bool>, value) |]
             member __.NamedArguments = upcast [| |] }
+
     /// This makes an xml doc attribute w.r.t. an amortized computation of an xml doc string.
     /// It is important that the text of the xml doc only get forced when poking on the ConstructorArguments
     /// for the CustomAttributeData object.
@@ -293,6 +299,139 @@ module internal Misc =
             else r
         trans q
 
+    let getFastFuncType (args : list<E>) resultType =
+        let types =
+            [|
+                for arg in args -> arg.Type
+                yield resultType
+            |]
+        let fastFuncTy = 
+            match List.length args with
+            | 2 -> typedefof<OptimizedClosures.FSharpFunc<_, _, _>>.MakeGenericType(types)
+            | 3 -> typedefof<OptimizedClosures.FSharpFunc<_, _, _, _>>.MakeGenericType(types)
+            | 4 -> typedefof<OptimizedClosures.FSharpFunc<_, _, _, _, _>>.MakeGenericType(types)
+            | 5 -> typedefof<OptimizedClosures.FSharpFunc<_, _, _, _, _, _>>.MakeGenericType(types)
+            | _ -> invalidArg "args" "incorrect number of arguments"
+        fastFuncTy.GetMethod("Adapt")
+    
+    let inline (===) a b = LanguagePrimitives.PhysicalEquality a b
+    
+    let traverse f = 
+        let rec fallback e = 
+            match e with
+            | P.Let(v, value, body) ->
+                let fixedValue = f fallback value
+                let fixedBody = f fallback body
+                if fixedValue === value && fixedBody === body then 
+                    e
+                else
+                    E.Let(v, fixedValue, fixedBody) 
+            | ES.ShapeVar _ -> e
+            | ES.ShapeLambda(v, body) -> 
+                let fixedBody = f fallback body 
+                if fixedBody === body then 
+                    e
+                else
+                    E.Lambda(v, fixedBody)
+            | ES.ShapeCombination(shape, exprs) -> 
+                let exprs1 = List.map (f fallback) exprs
+                if List.forall2 (===) exprs exprs1 then 
+                    e
+                else
+                    ES.RebuildShapeCombination(shape, exprs1)
+        fun e -> f fallback e
+
+    let RightPipe = <@@ (|>) @@>
+    let inlineRightPipe expr = 
+        let rec loop = traverse loopCore
+        and loopCore fallback orig = 
+            match orig with
+            | DP.SpecificCall RightPipe (None, _, [operand; applicable]) ->
+                let fixedOperand = loop operand
+                match loop applicable with
+                | P.Lambda(arg, body) ->
+                    let v = Quotations.Var("__temp", operand.Type)
+                    let ev = E.Var v
+
+                    let fixedBody = loop body
+                    E.Let(v, fixedOperand, fixedBody.Substitute(fun v1 -> if v1 = arg then Some ev else None))
+                | fixedApplicable -> E.Application(fixedApplicable, fixedOperand)
+            | x -> fallback x
+        loop expr
+
+    let inlineValueBindings e = 
+        let map = Dictionary(HashIdentity.Reference)
+        let rec loop = traverse loopCore
+        and loopCore fallback orig = 
+            match orig with
+            | P.Let(id, (P.Value(_) as v), body) when not id.IsMutable ->
+                map.[id] <- v
+                let fixedBody = loop body
+                map.Remove(id) |> ignore
+                fixedBody
+            | ES.ShapeVar v -> 
+                match map.TryGetValue v with
+                | true, e -> e
+                | _ -> orig
+            | x -> fallback x
+        loop e
+
+
+    let optimizeCurriedApplications expr = 
+        let rec loop = traverse loopCore
+        and loopCore fallback orig = 
+            match orig with
+            | P.Application(e, arg) -> 
+                let e1 = tryPeelApplications e [loop arg]
+                if e1 === e then 
+                    orig 
+                else 
+                    e1
+            | x -> fallback x
+        and tryPeelApplications orig args = 
+            let n = List.length args
+            match orig with
+            | P.Application(e, arg) -> 
+                let e1 = tryPeelApplications e ((loop arg)::args)
+                if e1 === e then 
+                    orig 
+                else 
+                    e1
+            | P.Let(id, applicable, (P.Lambda(_) as body)) when n > 0 -> 
+                let numberOfApplication = countPeelableApplications body id 0
+                if numberOfApplication = 0 then orig
+                elif n = 1 then E.Application(applicable, List.head args)
+                elif n <= 5 then
+                    let resultType = 
+                        applicable.Type 
+                        |> Seq.unfold (fun t -> 
+                            if not t.IsGenericType then None
+                            else
+                            let args = t.GetGenericArguments()
+                            if args.Length <> 2 then None
+                            else
+                            Some (args.[1], args.[1])
+                        )
+                        |> Seq.nth (n - 1)
+
+                    let adaptMethod = getFastFuncType args resultType
+                    let adapted = E.Call(adaptMethod, [loop applicable])
+                    let invoke = adapted.Type.GetMethod("Invoke", [| for arg in args -> arg.Type |])
+                    E.Call(adapted, invoke, args)
+                else
+                    (applicable, args) ||> List.fold (fun e a -> E.Application(e, a))
+            | _ -> 
+                orig
+        and countPeelableApplications expr v n =
+            match expr with
+            // v - applicable entity obtained on the prev step
+            // \arg -> let v1 = (f arg) in rest ==> f 
+            | P.Lambda(arg, P.Let(v1, P.Application(P.Var f, P.Var arg1), rest)) when v = f && arg = arg1 -> countPeelableApplications rest v1 (n + 1)
+            // \arg -> (f arg) ==> f
+            | P.Lambda(arg, P.Application(P.Var f, P.Var arg1)) when v = f && arg = arg1 -> n
+            | _ -> n
+        loop expr
+    
     // FSharp.Data change: use the real variable names instead of indices, to improve output of Debug.fs
     let transQuotationToCode isGenerated qexprf (paramNames: string[]) (argExprs: Quotations.Expr[]) = 
         // add let bindings for arguments to ensure that arguments will be evaluated
@@ -301,6 +440,14 @@ module internal Misc =
 
         let pairs = Array.zip argExprs vars
         let expr = Array.foldBack (fun (arg, var) e -> Quotations.Expr.Let(var, arg, e)) pairs expr
+        let expr = 
+            if isGenerated then
+                let e1 = inlineRightPipe expr
+                let e2 = optimizeCurriedApplications e1
+                let e3 = inlineValueBindings e2
+                e3
+            else
+                expr
 
         transExpr isGenerated expr
 
@@ -1013,6 +1160,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
         TypeAttributes.Sealed |||
         enum (int32 TypeProviderTypeAttributes.IsErased)
 
+
+    let mutable enumUnderlyingType = typeof<int>
     let mutable baseType   =  lazy baseType
     let mutable membersKnown   = ResizeArray<MemberInfo>()
     let mutable membersQueue   = ResizeArray<(unit -> list<MemberInfo>)>()       
@@ -1106,7 +1255,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     member this.AddObsoleteAttribute (msg,?isError)         = customAttributesImpl.AddObsolete (msg,defaultArg isError false)
     member this.AddDefinitionLocation(line,column,filePath) = customAttributesImpl.AddDefinitionLocation(line, column, filePath)
     member this.HideObjectMethods with set v                = customAttributesImpl.HideObjectMethods <- v
-    member this.NonNullable with set v                = customAttributesImpl.NonNullable <- v
+    member this.NonNullable with set v                      = customAttributesImpl.NonNullable <- v
     member __.GetCustomAttributesDataImpl() = customAttributesImpl.GetCustomAttributesData()
     member this.AddCustomAttribute attribute                = customAttributesImpl.AddCustomAttribute attribute
 #if FX_NO_CUSTOMATTRIBUTEDATA
@@ -1120,6 +1269,9 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     new (className,baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
     // state ops
 
+    override this.UnderlyingSystemType = typeof<Type>
+    member this.SetEnumUnderlyingType(ty) = enumUnderlyingType <- ty
+    override this.GetEnumUnderlyingType() = if this.IsEnum then enumUnderlyingType else invalidOp "not enum type"
     member this.SetBaseType t = baseType <- lazy Some t
     member this.SetBaseTypeDelayed t = baseType <- t
     member this.SetAttributes x = attributes <- x
@@ -1370,7 +1522,6 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     override this.IsPrimitiveImpl() = false
     override this.IsCOMObjectImpl() = false
     override this.HasElementTypeImpl() = false
-    override this.UnderlyingSystemType = typeof<System.Type>
     override this.Name = className
     override this.DeclaringType = declaringType.Force()
     override this.MemberType = if this.IsNested then MemberTypes.NestedType else MemberTypes.TypeInfo      
@@ -1426,6 +1577,7 @@ type AssemblyGenerator(assemblyFileName) =
     let uniqueLambdaTypeName() = 
         // lambda name should be unique across all types that all type provider might contribute in result assembly
         sprintf "Lambda%O" (Guid.NewGuid()) 
+
     member __.Assembly = assembly :> Assembly
     /// Emit the given provided type definitions into an assembly and adjust 'Assembly' property of all type definitions to return that
     /// assembly.
@@ -1505,7 +1657,7 @@ type AssemblyGenerator(assemblyFileName) =
 
         let ctorMap = Dictionary<ProvidedConstructor, ConstructorBuilder>(HashIdentity.Reference)
         let methMap = Dictionary<ProvidedMethod, MethodBuilder>(HashIdentity.Reference)
-        let fieldMap = Dictionary<ProvidedField, FieldBuilder>(HashIdentity.Reference)
+        let fieldMap = Dictionary<FieldInfo, FieldBuilder>(HashIdentity.Reference)
 
         let iterateTypes f = 
             let rec typeMembers (ptd : ProvidedTypeDefinition) = 
@@ -1567,22 +1719,39 @@ type AssemblyGenerator(assemblyFileName) =
                     ctorMap.[pcinfo] <- cb
                 | _ -> () 
                     
+            if ptd.IsEnum then
+                tb.DefineField("value__", ptd.GetEnumUnderlyingType(), FieldAttributes.Public ||| FieldAttributes.SpecialName ||| FieldAttributes.RTSpecialName)
+                |> ignore
+
             for finfo in ptd.GetFields(ALL) do
-                match finfo with 
-                | :? ProvidedField as pfinfo when not (fieldMap.ContainsKey pfinfo)  -> 
-                    let fb = tb.DefineField(finfo.Name, convType finfo.FieldType, finfo.Attributes)
-                    let cattr = pfinfo.GetCustomAttributesDataImpl() 
+                let fieldInfo = 
+                    match finfo with 
+                        | :? ProvidedField as pinfo -> 
+                            Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), None)
+                        | :? ProvidedLiteralField as pinfo ->
+                            Some (pinfo.Name, convType finfo.FieldType, finfo.Attributes, pinfo.GetCustomAttributesDataImpl(), Some (pinfo.GetRawConstantValue()))
+                        | _ -> None
+                match fieldInfo with
+                | Some (name, ty, attr, cattr, constantVal) when not (fieldMap.ContainsKey finfo) ->
+                    let fb = tb.DefineField(name, ty, attr)
+                    if constantVal.IsSome then
+                        fb.SetConstant constantVal.Value
                     defineCustomAttrs fb.SetCustomAttribute cattr
-                    fieldMap.[pfinfo] <- fb
+                    fieldMap.[finfo] <- fb
                 | _ -> () 
             for minfo in ptd.GetMethods(ALL) do
                 match minfo with 
                 | :? ProvidedMethod as pminfo when not (methMap.ContainsKey pminfo)  -> 
                     let mb = tb.DefineMethod(minfo.Name, minfo.Attributes, convType minfo.ReturnType, [| for p in minfo.GetParameters() -> convType p.ParameterType |])
-                    for (i,(:? ProvidedParameter as p)) in minfo.GetParameters() |> Seq.mapi (fun i x -> (i,x)) do
-                        let pb = mb.DefineParameter(i+1, ParameterAttributes.None, p.Name)
+                    for (i, p) in minfo.GetParameters() |> Seq.mapi (fun i x -> (i,x :?> ProvidedParameter)) do
+                        // TODO: check why F# compiler doesn't emit default value when just p.Attributes is used (thus bad metadata is emitted)
+//                        let mutable attrs = ParameterAttributes.None
+//                        
+//                        if p.IsOut then attrs <- attrs ||| ParameterAttributes.Out
+//                        if p.HasDefaultParameterValue then attrs <- attrs ||| ParameterAttributes.Optional
+
+                        let pb = mb.DefineParameter(i+1, p.Attributes, p.Name)
                         if p.HasDefaultParameterValue then 
-                            pb.SetConstant p.RawDefaultValue
                             do
                                 let ctor = typeof<System.Runtime.InteropServices.DefaultParameterValueAttribute>.GetConstructor([|typeof<obj>|])
                                 let builder = new CustomAttributeBuilder(ctor, [|p.RawDefaultValue|])
@@ -1861,12 +2030,20 @@ type AssemblyGenerator(assemblyFileName) =
                         popIfEmptyExpected expectedState
 
                     | Quotations.Patterns.FieldGet (objOpt,field) -> 
+                        match field with
+                        | :? ProvidedLiteralField as plf when plf.DeclaringType.IsEnum ->
+                            if expectedState <> ExpectedStackState.Empty then
+                                emit expectedState (Quotations.Expr.Value(field.GetRawConstantValue(), field.FieldType.GetEnumUnderlyingType()))
+                        | _ ->
                         match objOpt with 
                         | None -> () 
                         | Some e -> 
                           let s = if e.Type.IsValueType then ExpectedStackState.Address else ExpectedStackState.Value
                           emit s e
-                        let field = match field with :? ProvidedField as pf when fieldMap.ContainsKey pf -> fieldMap.[pf] :> FieldInfo | m -> m
+                        let field = 
+                            match field with 
+                            | :? ProvidedField as pf when fieldMap.ContainsKey pf -> fieldMap.[pf] :> FieldInfo 
+                            | m -> m
                         if field.IsStatic then 
                             ilg.Emit(OpCodes.Ldsfld, field)
                         else
@@ -2265,7 +2442,7 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 
 #if FX_NO_LOCAL_FILESYSTEM
     interface System.IDisposable with 
-        member x.Dispose() =
+        member x.Dispose() = 
             disposing.Trigger(x, EventArgs.Empty)
 #else
     abstract member ResolveAssembly : args : System.ResolveEventArgs -> Assembly
@@ -2287,6 +2464,7 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
         cfg.RuntimeAssembly
         |> IO.Path.GetDirectoryName
         |> this.RegisterProbingFolder
+
     interface System.IDisposable with 
         member x.Dispose() = 
             disposing.Trigger(x, EventArgs.Empty)
