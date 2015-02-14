@@ -79,7 +79,6 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         inferredFields 
         |> CsvTypeBuilder.generateTypes asm ns typeName (missingValuesStr, cultureStr) replacer 
 
-
       let stringArrayToRowVar = Var("stringArrayToRow", stringArrayToRow.Type)
       let rowToStringArrayVar = Var("rowToStringArray", rowToStringArray.Type)
       

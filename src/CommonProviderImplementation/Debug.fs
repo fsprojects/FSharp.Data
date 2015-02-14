@@ -403,23 +403,16 @@ module Debug =
                 print str
                 println()
 
-            // Translate parameter type to erased types - work around EraseType trying to instantiate UoM as generic type
-            let matchGeneric = function | SymbolKind.Generic td when not td.IsGenericTypeDefinition -> true | _ -> false
-            let transParamType (t : Type) =
-                match t with
-                | :? ProvidedSymbolType as sym when matchGeneric sym.Kind -> t
-                | _ -> ProvidedTypeDefinition.EraseType t
-
             let getMethodBody (m: ProvidedMethod) = 
-                seq { if not m.IsStatic then yield (transParamType m.DeclaringType)
-                      for param in m.GetParameters() do yield (transParamType param.ParameterType) }
+                seq { if not m.IsStatic then yield (ProvidedTypeDefinition.EraseType m.DeclaringType)
+                      for param in m.GetParameters() do yield (ProvidedTypeDefinition.EraseType param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> m.GetInvokeCodeInternal false
 
             let getConstructorBody (c: ProvidedConstructor) = 
                 if c.IsImplicitCtor then Expr.Value(()) else
-                seq { for param in c.GetParameters() do yield (transParamType param.ParameterType) }
+                seq { for param in c.GetParameters() do yield (ProvidedTypeDefinition.EraseType param.ParameterType) }
                 |> Seq.map (fun typ -> Expr.Value(null, typ))
                 |> Array.ofSeq
                 |> c.GetInvokeCodeInternal false

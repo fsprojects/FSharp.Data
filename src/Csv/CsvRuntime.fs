@@ -212,13 +212,11 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
 
-
-
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
   static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =    
-    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() =() }, rows, headers, numberOfColumns, separators, quote)
+    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, headers, numberOfColumns, separators, quote)
     
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
@@ -345,42 +343,45 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      x.Save(writer, ?separator=separator, ?quote=quote)
      writer.ToString()
 
-
   member inline private x.withRows rows =
-    new CsvFile<'RowType>(rowToStringArray, disposer, rows,  x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+    new CsvFile<'RowType>(rowToStringArray, disposer, rows, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
 
-  member inline private x.map f = x.withRows (f x.Rows)
-
+  member inline private x.mapRows f = x.withRows (f x.Rows)
+  
   /// Returns a new csv with the same rows as the original but which guarantees
   /// that each row will be only be read and parsed from the input at most once.
   member x.Cache() =   
-    Seq.cache |> x.map
+    Seq.cache |> x.mapRows
+
+  /// Returns a new csv where every row has been transformed by the provided mapping function.
+  member x.Map (mapping:Func<_,_>) =
+    Seq.map mapping.Invoke |> x.mapRows
 
   /// Returns a new csv containing only the rows for which the given predicate returns "true".
   member x.Filter (predicate:Func<_,_>) = 
-    Seq.filter predicate.Invoke |> x.map
+    Seq.filter predicate.Invoke |> x.mapRows
   
   /// Returns a new csv with only the first N rows of the underlying csv.
   member x.Take count = 
-    Seq.take count |> x.map
+    Seq.take count |> x.mapRows
   
   /// Returns a csv that, when iterated, yields rowswhile the given predicate
   /// returns <c>true</c>, and then returns no further rows.
   member x.TakeWhile (predicate:Func<_,_>) = 
-    Seq.takeWhile predicate.Invoke |> x.map
+    Seq.takeWhile predicate.Invoke |> x.mapRows
   
   /// Returns a csv that skips N rows and then yields the remaining rows.
   member x.Skip count = 
-    Seq.skip count |> x.map
+    Seq.skip count |> x.mapRows
   
   /// Returns a csv that, when iterated, skips rows while the given predicate returns
   /// <c>true</c>, and then yields the remaining rows.
   member x.SkipWhile (predicate:Func<_,_>) = 
-    Seq.skipWhile predicate.Invoke |> x.map
+    Seq.skipWhile predicate.Invoke |> x.mapRows
   
   /// Returns a csv that when enumerated returns at most N rows.
   member x.Truncate count = 
-    Seq.truncate count |> x.map
+    Seq.truncate count |> x.mapRows
 
   /// Returns a csv with the same rows as the original plus the provided rows appended
   member x.Append rows = 
