@@ -1,7 +1,7 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
     new : rows:CsvProvider+Row seq -> CsvProvider
     let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
-                                            [| TextRuntime.ConvertDateTimeBack("nb-NO", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
                                                TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
                                                TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))

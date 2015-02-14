@@ -7,6 +7,9 @@ class FreebaseDataProvider+ServiceTypes+FreebaseService : FDR.Freebase.FreebaseD
     member ``Arts and Entertainment``: FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment with get
     this.GetDomainCategoryById("/en/arts_entertainment")
 
+    member Businessperson: FreebaseDataProvider+ServiceTypes+DomainObjects+Businessperson with get
+    this.GetDomainCategoryById("/en/businessperson")
+
     member Commons: FreebaseDataProvider+ServiceTypes+DomainObjects+Commons with get
     this.GetDomainCategoryById("/category/commons")
 
@@ -83,6 +86,8 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+Arts and Entertainment : F
     member ``Visual Art``: FreebaseDataProvider+ServiceTypes+DomainObjects+Visual Art Domain with get
     this.GetDomainById("/visual_art")
 
+
+class FreebaseDataProvider+ServiceTypes+DomainObjects+Businessperson : FDR.Freebase.FreebaseDomainCategory
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+Commons : FDR.Freebase.FreebaseDomainCategory
     member ``American football``: FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain with get
@@ -488,26 +493,6 @@ class FreebaseDataProvider+ServiceTypes+DomainObjects+System : FDR.Freebase.Free
 
     member ``Metaweb System Types``: FreebaseDataProvider+ServiceTypes+DomainObjects+Metaweb System Types Domain with get
     this.GetDomainById("/type")
-
-
-class FreebaseDataProvider+ServiceTypes+DomainObjects+Time and Space : FDR.Freebase.FreebaseDomainCategory
-    member Event: FreebaseDataProvider+ServiceTypes+DomainObjects+EventDomain with get
-    this.GetDomainById("/event")
-
-    member Location: FreebaseDataProvider+ServiceTypes+DomainObjects+LocationDomain with get
-    this.GetDomainById("/location")
-
-    member ``Measurement Unit``: FreebaseDataProvider+ServiceTypes+DomainObjects+Measurement Unit Domain with get
-    this.GetDomainById("/measurement_unit")
-
-    member ``Physical Geography``: FreebaseDataProvider+ServiceTypes+DomainObjects+Physical Geography Domain with get
-    this.GetDomainById("/geography")
-
-    member ``Protected Places``: FreebaseDataProvider+ServiceTypes+DomainObjects+Protected Places Domain with get
-    this.GetDomainById("/protected_sites")
-
-    member Time: FreebaseDataProvider+ServiceTypes+DomainObjects+TimeDomain with get
-    this.GetDomainById("/time")
 
 
 class FreebaseDataProvider+ServiceTypes+DomainObjects+American football Domain : FDR.Freebase.FreebaseDomain
