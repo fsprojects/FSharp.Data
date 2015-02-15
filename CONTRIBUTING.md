@@ -59,6 +59,7 @@ If you open `FSharp.Data.sln`, you'll see the following projects for _runtime co
  * **FSharp.Data** - the desktop .NET 4.0 version
  * **FSharp.Data.Portable47** - F# portable library version (Profile 47 targeting desktop .NET 4.5, Silverlight 5.0, Windows Phone 8 and Windows 8)
  * **FSharp.Data.Portable7** - F# portable library version (Profile 7 targeting desktop .NET 4.5 and Windows 8)
+ * **FSharp.Data.Portable259** - F# portable library version (Profile 259 targeting desktop .NET 4.5, Windows 8, Windows Phone 8 Silverlight and Windows Phone 8.1)
  
 The _design time_ components are in the following project:
 

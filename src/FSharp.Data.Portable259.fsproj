@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>20ff7265-7261-4aeb-a211-b5a845da808a</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FSharp.Data</RootNamespace>
+    <AssemblyName>FSharp.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetProfile>netcore</TargetProfile>
+    <TargetFSharpCoreVersion>3.259.3.1</TargetFSharpCoreVersion>
+    <Name>FSharp.Data.Portable259</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <Tailcalls>false</Tailcalls>
+    <OutputPath>bin\portable259\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FX_NO_LOCAL_FILESYSTEM;FX_NO_CUSTOMTYPEDESCRIPTOR;FX_NO_REGEX_COMPILATION;FX_NO_URI_WORKAROUND;FX_NO_WEBREQUEST_REFERER;FX_NO_WEBREQUEST_HOST;FX_NO_WEBREQUEST_AUTOMATICDECOMPRESSION;FX_NO_WEBREQUEST_CONTENTLENGTH;FX_NO_WEBREQUEST_USERAGENT;FX_NO_WEBREQUEST_CONNECTION;FX_NO_WEBREQUEST_DATE;FX_NO_WEBREQUEST_EXPECT;FX_NO_WEBREQUEST_IFMODIFIEDSINCE;FX_NO_WEBREQUEST_RANGE;FX_NO_WEBRESPONSE_CHARACTERSET;FX_NO_ENVIRONMENT_VARIABLES;FX_NO_GETENCODING_BY_CODEPAGE;FX_NO_CONCURRENT;FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE;FX_NET_CORE_REFLECTION</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\portable259\Debug\FSharp.Data.xml</DocumentationFile>
+    <OtherFlags>--warnon:1182</OtherFlags>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <Tailcalls>true</Tailcalls>
+    <OutputPath>bin\portable259\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>bin\portable259\Release\FSharp.Data.XML</DocumentationFile>
+    <OtherFlags>--warnon:1182</OtherFlags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Net\UriUtils.fs" />
+    <Compile Include="Net\Http.fs" />
+    <Compile Include="CommonRuntime\IO.fs" />
+    <Compile Include="CommonRuntime\Caching.fs" />
+    <Compile Include="CommonRuntime\TextConversions.fs" />
+    <Compile Include="CommonRuntime\TextRuntime.fs" />
+    <Compile Include="CommonRuntime\Pluralizer.fs" />
+    <Compile Include="CommonRuntime\NameUtils.fs" />
+    <Compile Include="CommonRuntime\StructuralTypes.fs" />
+    <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="Json\JsonValue.fs" />
+    <Compile Include="Json\JsonConversions.fs" />
+    <Compile Include="Json\JsonExtensions.fs" />
+    <Compile Include="Json\JsonRuntime.fs" />
+    <Compile Include="Xml\XmlRuntime.fs" />
+    <Compile Include="Csv\CsvRuntime.fs" />
+    <Compile Include="Csv\CsvFile.fs" />
+    <Compile Include="Csv\CsvExtensions.fs" />
+    <Compile Include="Csv\CsvInference.fs" />
+    <Compile Include="WorldBank\WorldBankRuntime.fs" />
+    <Compile Include="Freebase\FreebaseRequests.fs" />
+    <Compile Include="Freebase\FreebaseSchema.fs" />
+    <Compile Include="Freebase\FreebaseRuntime.fs" />
+    <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Runtime.fs" />
+    <Compile Include="AssemblyInfo.Portable259.fs" />
+    <None Include="paket.references" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <Name>FSharp.Core</Name>
+      <AssemblyName>FSharp.Core.dll</AssemblyName>
+      <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <PropertyGroup>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">12</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName)$(TargetExt)" DestinationFolder="$(SolutionDir)bin\portable259" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).pdb" DestinationFolder="$(SolutionDir)bin\portable259" />
+    <Copy SourceFiles="$(ProjectDir)$(OutDir)$(TargetName).xml" DestinationFolder="$(SolutionDir)bin\portable259" />
+  </Target>
+  <Import Project="$(SolutionDir)\.paket\paket.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETPortable' And $(TargetFrameworkProfile) == 'Profile136' And $(TargetPlatformIdentifier) == 'Portable' And $(TargetPlatformVersion) == '7.0'">
+      <ItemGroup>
+        <Reference Include="Zlib.Portable">
+          <HintPath>..\packages\Zlib.Portable\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETPortable'">
+      <ItemGroup>
+        <Reference Include="Zlib.Portable">
+          <HintPath>..\packages\Zlib.Portable\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+</Project>
