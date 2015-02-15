@@ -55,7 +55,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName
+                     getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

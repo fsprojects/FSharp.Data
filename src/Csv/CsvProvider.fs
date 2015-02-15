@@ -102,8 +102,10 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
+    let maxNumberOfRows = if inferRows > 0 then Some inferRows else None
+
     generateType "CSV" sample (*sampleIsList*)false parse (fun _ _ -> failwith "Not Applicable")
-                 getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName
+                 getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName maxNumberOfRows
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
