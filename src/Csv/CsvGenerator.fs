@@ -37,7 +37,7 @@ module internal CsvTypeBuilder =
       FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
       |> replacer.ToRuntime
     
-    let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
+    let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true, NonNullable = true)
 
     let ctor = ProvidedConstructor([ for field in fields -> field.Param ], InvokeCode = fun args -> Expr.NewTuple(args))
     rowType.AddMember ctor
@@ -52,7 +52,7 @@ module internal CsvTypeBuilder =
     let csvErasedTypeWithGeneratedRowType = 
       (replacer.ToRuntime typedefof<CsvFile<_>>).MakeGenericType(rowType) 
 
-    let csvType = ProvidedTypeDefinition(asm, ns, typeName, Some csvErasedTypeWithGeneratedRowType, HideObjectMethods = true)    
+    let csvType = ProvidedTypeDefinition(asm, ns, typeName, Some csvErasedTypeWithGeneratedRowType, HideObjectMethods = true, NonNullable = true)
     csvType.AddMember rowType
     
     // Based on the set of fields, create a function that converts a string[] to the tuple type

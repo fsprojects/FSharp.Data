@@ -33,7 +33,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let connection = ServiceConnection(restCache, defaultServiceUrl, sources)
  
-        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, baseType=Some typeof<obj>, HideObjectMethods = true)
+        let resTy = ProvidedTypeDefinition(asm, ns, worldBankTypeName, baseType=Some typeof<obj>, HideObjectMethods = true, NonNullable = true)
 
         let conv (expr:Expr->Expr) (args:Expr list) = let arg0 = replacer.ToDesignTime args.[0] in replacer.ToRuntime (expr arg0)
 
@@ -44,7 +44,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let indicatorsType =
-            let t = ProvidedTypeDefinition("Indicators", baseType=Some (replacer.ToRuntime typeof<Indicators>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Indicators", baseType=Some (replacer.ToRuntime typeof<Indicators>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for indicator in connection.Indicators do
                       let indicatorIdVal = indicator.Id
@@ -66,7 +66,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let indicatorsDescriptionsType =
-            let t = ProvidedTypeDefinition("IndicatorsDescriptions", baseType=Some (replacer.ToRuntime typeof<IndicatorsDescriptions>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("IndicatorsDescriptions", baseType=Some (replacer.ToRuntime typeof<IndicatorsDescriptions>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for indicator in connection.Indicators do
                       let indicatorIdVal = indicator.Id
@@ -81,7 +81,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let countryType =
-            let t = ProvidedTypeDefinition("Country", baseType=Some (replacer.ToRuntime typeof<Country>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Country", baseType=Some (replacer.ToRuntime typeof<Country>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", indicatorsType, IsStatic=false,
                               GetterCode = conv (fun arg -> <@@ ((%%arg : Country) :> ICountry).GetIndicators() @@>))
@@ -92,7 +92,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let countriesType =
             let countryCollectionType = ProvidedTypeBuilder.MakeGenericType(replacer.ToRuntime typedefof<CountryCollection<_>>, [ countryType ])
-            let t = ProvidedTypeDefinition("Countries", baseType=Some countryCollectionType, HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Countries", baseType=Some countryCollectionType, HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for country in connection.Countries do
                     let countryIdVal = country.Id
@@ -107,7 +107,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let regionType =
-            let t = ProvidedTypeDefinition("Region", baseType=Some (replacer.ToRuntime typeof<Region>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Region", baseType=Some (replacer.ToRuntime typeof<Region>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", indicatorsType, IsStatic=false,
                                GetterCode = conv (fun arg -> <@@ ((%%arg : Region) :> IRegion).GetIndicators() @@>))
@@ -122,7 +122,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let regionsType =
             let regionCollectionType = ProvidedTypeBuilder.MakeGenericType(replacer.ToRuntime typedefof<RegionCollection<_>>, [ regionType ])
-            let t = ProvidedTypeDefinition("Regions", baseType=Some regionCollectionType, HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Regions", baseType=Some regionCollectionType, HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for code, name in connection.Regions do
                     let prop = 
@@ -135,7 +135,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
   
         let topicType =
-            let t = ProvidedTypeDefinition("Topic", baseType=Some (replacer.ToRuntime typeof<Topic>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Topic", baseType=Some (replacer.ToRuntime typeof<Topic>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ let prop = ProvidedProperty("Indicators", replacer.ToRuntime indicatorsDescriptionsType, IsStatic=false,
                               GetterCode = conv (fun arg -> <@@ ((%%arg : Topic) :> ITopic).GetIndicators() @@>))
@@ -146,7 +146,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
 
         let topicsType =
             let topicCollectionType = ProvidedTypeBuilder.MakeGenericType(replacer.ToRuntime typedefof<TopicCollection<_>>, [ topicType ])
-            let t = ProvidedTypeDefinition("Topics", baseType=Some topicCollectionType, HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("Topics", baseType=Some topicCollectionType, HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ for topic in connection.Topics do
                     let topicIdVal = topic.Id
@@ -160,7 +160,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
             t
 
         let worldBankDataServiceType =
-            let t = ProvidedTypeDefinition("WorldBankDataService", baseType=Some (replacer.ToRuntime typeof<WorldBankData>), HideObjectMethods=true)
+            let t = ProvidedTypeDefinition("WorldBankDataService", baseType=Some (replacer.ToRuntime typeof<WorldBankData>), HideObjectMethods = true, NonNullable = true)
             t.AddMembersDelayed (fun () -> 
                 [ yield ProvidedProperty("Countries", countriesType, IsStatic=false, GetterCode = conv (fun arg -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetCountries() @@>))
                   yield ProvidedProperty("Regions", regionsType, IsStatic=false, GetterCode = conv (fun arg -> <@@ ((%%arg : WorldBankData) :> IWorldBankData).GetRegions() @@>))
@@ -184,7 +184,7 @@ type public WorldBankProvider(cfg:TypeProviderConfig) as this =
     do worldBankType.AddXmlDoc "<summary>Typed representation of WorldBank data. See http://www.worldbank.org for terms and conditions.</summary>"
 
     let paramWorldBankType = 
-        let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some(typeof<obj>), HideObjectMethods = true)
+        let t = ProvidedTypeDefinition(asm, ns, "WorldBankDataProvider", Some typeof<obj>)
         
         let defaultSourcesStr = String.Join(";", defaultSources)
         let helpText = "<summary>Typed representation of WorldBank data with additional configuration parameters. See http://www.worldbank.org for terms and conditions.</summary>
