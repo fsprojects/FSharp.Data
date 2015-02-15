@@ -1,4 +1,4 @@
-#### 2.1.2 - Unreleased
+#### 2.2.0- Unreleased
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element.
 * Improved global inference in XmlProvider.
