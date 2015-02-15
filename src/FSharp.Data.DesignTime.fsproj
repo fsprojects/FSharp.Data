@@ -57,12 +57,6 @@
     <Compile Include="Csv\CsvGenerator.fs" />
     <Compile Include="Csv\CsvProvider.fs" />
     <Compile Include="WorldBank\WorldBankProvider.fs" />
-    <Compile Include="Html\HtmlCharRefs.fs" />
-    <Compile Include="Html\HtmlParser.fs" />
-    <Compile Include="Html\HtmlOperations.fs" />
-    <Compile Include="Html\HtmlInference.fs" />
-    <Compile Include="Html\HtmlRuntime.fs" />
-    <Compile Include="Freebase\FreebaseProvider.fs" />
     <Compile Include="Html\HtmlGenerator.fs" />
     <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
