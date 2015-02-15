@@ -49,7 +49,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
 
       let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
         [ for sampleJson in samples -> JsonInference.inferType inferTypesFromValues cultureInfo "" sampleJson ]
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 

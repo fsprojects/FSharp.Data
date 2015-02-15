@@ -402,8 +402,8 @@ let ``Can construct collapsed non-primitive collections and elements with json``
         JsonInXml.PropertyBag(
             JsonInXml.BlahData(
                 [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
-                null, 
-                null, 
+                Unchecked.defaultof<_>, 
+                Unchecked.defaultof<_>, 
                 None))
     pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
   <BlahDataArray>
@@ -480,7 +480,7 @@ let ``Can construct elements with heterogeneous records with primitives``() =
                                  "title", 
                                  AtomSearch.Content("type", "value"),
                                  DateTime(2000, 3, 3),
-                                 null,
+                                 Unchecked.defaultof<_>,
                                  AtomSearch.Metadata("resultType"),
                                  "source",
                                  "lange",

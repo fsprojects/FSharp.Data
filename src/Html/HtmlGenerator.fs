@@ -52,7 +52,7 @@ module internal HtmlGenerator =
                 FSharpType.MakeTupleType([| for field in fields -> field.TypeForTuple |])
             |> replacer.ToRuntime
         
-        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true)
+        let rowType = ProvidedTypeDefinition("Row", Some rowErasedType, HideObjectMethods = true, NonNullable = true)
         
         // Each property of the generated row type will simply be a tuple get
         for field in fields do
@@ -80,7 +80,7 @@ module internal HtmlGenerator =
             let body = tableErasedWithRowErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, table.Name, table.HasHeaders.Value)
             Expr.Let(rowConverterVar, rowConverter, body)
         
-        let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true)
+        let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedTypeWithGeneratedRow, HideObjectMethods = true, NonNullable = true)
         tableType.AddMember rowType
         
         create, tableType
@@ -118,7 +118,7 @@ module internal HtmlGenerator =
             let body = listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, list.Name)
             Expr.Let(rowConverterVar, rowConverter, body)
 
-        let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true)
+        let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true, NonNullable = true)
         create, listType
 
     let private createDefinitionListType (replacer:AssemblyReplacer) getDefinitionListTypeName (inferenceParameters, missingValuesStr, cultureStr) (definitionList:HtmlDefinitionList) =
@@ -158,12 +158,12 @@ module internal HtmlGenerator =
                 let body = listTypeWithErasedType?CreateNested () (Expr.Var rowConverterVar, htmlDoc, definitionList.Name, index)
                 Expr.Let(rowConverterVar, rowConverter, body) 
 
-            let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true)
+            let listType = ProvidedTypeDefinition(getListTypeName list.Name, Some listTypeWithErasedType, HideObjectMethods = true, NonNullable = true)
             let prop = ProvidedProperty(getPropertyName list.Name, listType, GetterCode = fun (Singleton doc) -> create doc)
 
             prop, listType
             
-        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
+        let definitionListType = ProvidedTypeDefinition(getDefinitionListTypeName definitionList.Name, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
         
         for prop, listType in List.mapi createListType definitionList.Definitions do
             definitionListType.AddMember listType
@@ -173,7 +173,7 @@ module internal HtmlGenerator =
 
     let generateTypes asm ns typeName parameters (replacer:AssemblyReplacer) (htmlObjects:HtmlObject list) =
 
-        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
+        let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
         
         let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
 
@@ -185,7 +185,7 @@ module internal HtmlGenerator =
             match containerTypes.TryGetValue(name) with
             | true, t -> t
             | false, _ ->
-                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true)
+                let containerType = ProvidedTypeDefinition(name + "Container", Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
                 htmlType.AddMember <| ProvidedProperty(name, containerType, GetterCode = fun (Singleton doc) -> doc)
                 htmlType.AddMember containerType
                 containerTypes.Add(name, containerType)

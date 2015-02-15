@@ -8,6 +8,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
+open FSharp.Data.Runtime.StructuralTypes
 
 // ----------------------------------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
         samples
         |> Array.ofSeq
         |> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
