@@ -14,5 +14,6 @@ TestResult.xml
 log.csv
 log.txt
 .paket/paket.exe
+paket-files
 *.ide
 .vs

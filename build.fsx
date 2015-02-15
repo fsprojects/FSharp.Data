@@ -33,7 +33,8 @@ let description = """
   It also includes helpers for parsing CSV, HTML and JSON files and for sending HTTP requests."""
 let tags = "F# fsharp data typeprovider WorldBank CSV HTML JSON XML HTTP"
 
-let gitHome = "https://github.com/fsharp"
+let gitOwner = "fsharp"
+let gitHome = "https://github.com/" + gitOwner
 let gitName = "FSharp.Data"
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/fsharp"
 
@@ -210,10 +211,47 @@ let publishFiles what branch fromFolder toFolder =
     Commit tempFolder <| sprintf "Update %s for version %s" what release.NugetVersion
     Branches.push tempFolder
 
+#load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+open Octokit
+
+let createGitHubRelease() =
+    // set git tag and release to github
+    StageAll ""
+    Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
+    Branches.pushBranch "" "upstream" "master"
+
+    Branches.tag "" release.NugetVersion
+    Branches.pushTag "" "upstream" release.NugetVersion
+
+    let user = getBuildParamOrDefault "github-user" ""
+    let pw = getBuildParamOrDefault "github-pw" ""
+
+    let user = 
+        if user = "" then 
+            printf "username: "
+            Console.ReadLine()
+        else 
+            user
+    let pw = 
+        if pw = "" then 
+            printf "password: "
+            Console.ReadLine()
+        else 
+            pw
+
+    let draft =
+        createClient user pw
+        |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
+   
+    draft
+    |> releaseDraft
+    |> Async.RunSynchronously
+
 Target "ReleaseDocs" <| fun () ->
     publishFiles "generated documentation" "gh-pages" "docs/output" "" 
 
 Target "ReleaseBinaries" <| fun () ->
+    createGitHubRelease() 
     publishFiles "binaries" "release" "bin" "bin" 
 
 Target "Release" DoNothing
