@@ -2,7 +2,6 @@ language: objective-c
 
 env:
   global:
-    - FREEBASE_API_KEY=AIzaSyBTcOKmU7L7gFB4AdyAz75JRmdHixdLYjY
     - MONO_VERSION=3.10.0
 
 install:
