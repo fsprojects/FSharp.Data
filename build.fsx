@@ -214,15 +214,23 @@ let publishFiles what branch fromFolder toFolder =
 #load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
 open Octokit
 
-let createGitHubRelease() =
-    // set git tag and release to github
+let createRelease() =
+
+    // Set release date in release notes
+    let releaseNotes = File.ReadAllText "RELEASE_NOTES.md" 
+    let releaseNotes = releaseNotes.Replace("#### " + release.NugetVersion + " - Unreleased", "#### " + release.NugetVersion + " - " + DateTime.Now.ToString("MMMM d yyyy"))
+    File.WriteAllText("RELEASE_NOTES.md", releaseNotes)
+
+    // Commit assembly info and RELEASE_NOTES.md
     StageAll ""
     Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
     Branches.pushBranch "" "upstream" "master"
 
+    // Create tag
     Branches.tag "" release.NugetVersion
     Branches.pushTag "" "upstream" release.NugetVersion
 
+    // Create github release
     let user = getBuildParamOrDefault "github-user" ""
     let pw = getBuildParamOrDefault "github-pw" ""
 
@@ -251,7 +259,7 @@ Target "ReleaseDocs" <| fun () ->
     publishFiles "generated documentation" "gh-pages" "docs/output" "" 
 
 Target "ReleaseBinaries" <| fun () ->
-    createGitHubRelease() 
+    createRelease() 
     publishFiles "binaries" "release" "bin" "bin" 
 
 Target "Release" DoNothing
