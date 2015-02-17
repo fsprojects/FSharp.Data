@@ -29,7 +29,7 @@ type HtmlAttribute =
         let (HtmlAttribute(name, value)) = x
         match name.Split([|':'|]) with
         | [|ns;h|] -> XAttribute(XName.Get(h,ns), value)
-        | [|h|] -> XAttribute(XName.Get(h), value) 
+        | _ -> XAttribute(XName.Get(name), value) 
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML node. The names of elements are always normalized to lowercase
