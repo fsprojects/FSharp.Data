@@ -15,7 +15,7 @@ open FSharp.Data.Runtime
 /// Represents an HTML attribute. The name is always normalized to lowercase
 type HtmlAttribute = 
 
-    private | HtmlAttribute of name:string * value:string    
+    internal | HtmlAttribute of name:string * value:string    
 
     /// <summary>
     /// Creates an html attribute
@@ -35,10 +35,10 @@ type HtmlAttribute =
 /// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
 
-    private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-            | HtmlText of content:string
-            | HtmlComment of content:string
-            | HtmlCData of content:string
+    internal | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+             | HtmlText of content:string
+             | HtmlComment of content:string
+             | HtmlCData of content:string
     
     /// <summary>
     /// Creates an html element
@@ -87,7 +87,7 @@ type HtmlNode =
     /// <param name="content">The actual content</param>
     static member NewComment content = HtmlComment(content)
 
-    member x.ToXNode() =
+    member x.ToXNode() : XNode =
         match x with
         | HtmlElement(name, attrs, contents) ->
             let element = XElement(XName.Get(name))

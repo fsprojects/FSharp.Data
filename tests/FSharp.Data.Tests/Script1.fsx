@@ -8,79 +8,6 @@ module FSharp.Data.Tests.HtmlProvider
 open System
 open FSharp.Data
 
-let [<Literal>] xmlTable = """
-<example_table>
-    <rows>
-        <row>
-            <Date>01/01/2013 12:00</Date>
-            <Distance_m>2</Distance_m>
-            <Time_s>1.5</Time_s>
-            <Column_3>2</Column_3>
-            <Column_4>2</Column_4>
-        </row>
-        <row>
-            <Date>01/01/2013 12:00</Date>
-            <Distance_m>2</Distance_m>
-            <Time_s>1.5</Time_s>
-            <Column_3>2</Column_3>
-            <Column_4>2</Column_4>
-        </row>
-    </rows>
-</example_table>
-"""
-
-let [<Literal>] xmlTableAdv = """
-<example_table>
-    <rows>
-        <row>
-            <Date>01/01/2013 12:00</Date>
-            <Distance_m>2</Distance_m>
-            <Time_s>1.5</Time_s>
-            <Column_3>
-                 <movie>
-                   <name>Alien</name>
-                   <director>
-                        <name>James Cameron</name>
-                        <birthDate>August 16, 1954 </birthDate>
-                   </director>
-                   <genre>Science fiction / Green People</genre>
-                   <trailer>
-                        <href>../movies/avatar-theatrical-trailer.html</href>
-                   </trailer>
-                 </movie>
-            </Column_3>
-            <Column_4>2</Column_4>
-        </row>
-        <row>
-            <Date>01/01/2013 12:00</Date>
-            <Distance_m>2</Distance_m>
-            <Time_s>1.5</Time_s>
-            <Column_3>
-                 <movie>
-                   <name>Avatar</name>
-                   <director>
-                        <name>James Cameron</name>
-                        <birthDate>August 16, 1954 </birthDate>
-                   </director>
-                   <genre>Science fiction / Blue People</genre>
-                   <trailer>
-                        <href>../movies/avatar-theatrical-trailer.html</href>
-                   </trailer>
-                 </movie>
-            </Column_3>
-            <Column_4>2</Column_4>
-        </row>
-    </rows>
-</example_table>
-"""
-    
-
-type SimpleTable = XmlProvider<xmlTable>
-let rs = SimpleTable.GetSample().Rows |> Seq.toArray
-
-type AdvTable = XmlProvider<xmlTableAdv>
-let rsA = AdvTable.GetSample().Rows |> Seq.map (fun x -> x.Column3.Movie.Name) |> Seq.toArray
-
 let table = HtmlProvider<"""<html>
                 <body>
                     <table>
@@ -90,7 +17,7 @@ let table = HtmlProvider<"""<html>
                     </table>
                 </body>
             </html>""">.GetSample().Tables.Table1
-let velocity = table |> Seq.map (fun x -> x.Distance * x.Time) |> Seq.toList
+let velocity = table.Rows |> Seq.map (fun x -> x.Distance * x.Time) |> Seq.toList
 
 let [<Literal>] data= 
     """<html>
@@ -125,6 +52,11 @@ let [<Literal>] data=
                              <span itemprop="genre">Science fiction</span>
                              <a href="../movies/avatar-theatrical-trailer.html" itemprop="trailer">Trailer</a>
                            </div>
+                           <div itemscope itemtype="http://schema.org/rating">
+                              <div  itemprop="val">
+                                <meta value="8" />
+                             </div>
+                           </div>
                        </td>
                        <td>2</td>
                    </tr>
@@ -134,4 +66,4 @@ let [<Literal>] data=
 
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 
-let movieName = table1 |> Seq.map (fun x -> x.``Column 3``.Name) |> Seq.toList
+let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Rating.Value.Val) |> Seq.toList

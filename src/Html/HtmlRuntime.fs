@@ -10,40 +10,42 @@ open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.HtmlExtensions
 open FSharp.Data.Runtime.StructuralTypes
-open FSharp.Data.Runtime.HtmlInference
+
 #nowarn "10001"
 
 
 
 // --------------------------------------------------------------------------------------
-/// Representation of an HTML table cell
-type HtmlTableCell = 
-    | Header of XElement
-    | Cell of XElement
-    member x.Data = 
-        match x with | Header d | Cell d -> d
-
-/// Representation of an HTML table cell
+/// Representation of an HTML table
 type HtmlTable = 
     { Name : string
-      HeaderNamesAndUnits : (string * Type option)[] option // always set at designtime, never at runtime
-      InferedProperties : InferedProperty list option // sometimes set at designtime, never at runtime
+      HeaderNamesAndUnits : (string * Type option)[] // always set
       HasHeaders: bool // always set at designtime, never at runtime
-      Rows :  HtmlValue[][]
+      Data :  HtmlNode option[][]
       Html : HtmlNode }
+    member x.Headers with get() = x.HeaderNamesAndUnits |> Array.map fst
+    member x.Rows 
+        with get() =
+            if x.HasHeaders 
+            then x.Data.[1..]
+            else x.Data
+
     override x.ToString() =
         let sb = StringBuilder()
         use wr = new StringWriter(sb) 
         wr.WriteLine(x.Name)
-        let data = array2D x.Rows
+        let data = array2D x.Data
         let rows = data.GetLength(0)
         let columns = data.GetLength(1)
+        let nodeText = function
+            | Some n -> HtmlNode.innerText n
+            | None -> ""
         let widths = Array.zeroCreate columns 
         data |> Array2D.iteri (fun _ c cell ->
-            widths.[c] <- max (widths.[c]) (cell.ToString().Length))
+            widths.[c] <- max (widths.[c]) ((nodeText cell).Length))
         for r in 0 .. rows - 1 do
             for c in 0 .. columns - 1 do
-                wr.Write(data.[r,c].ToString().PadRight(widths.[c] + 1))
+                wr.Write((nodeText data.[r,c]).PadRight(widths.[c] + 1))
             wr.WriteLine()
         sb.ToString()
 
@@ -61,12 +63,12 @@ type HtmlDefinitionList =
 
 /// Representation of an HTML table, list, or definition list
 type HtmlObject = 
-    | Table of HtmlTable
+    | Table of XElement
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
     member x.Name =
         match x with
-        | Table(t) -> t.Name
+        | Table(t) -> t.Name.LocalName
         | List(l) -> l.Name
         | DefinitionList(l) -> l.Name
 
@@ -134,19 +136,34 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
 
-    let rec getValue (n:HtmlNode list) =
+    let private getTableHeaders (numberCols:int) (ip:HtmlInference.Parameters) (rows:(HtmlNode option)[][]) =
+        let nodeText = function
+            | Some n -> HtmlNode.innerText n
+            | None -> ""
+        let headerRow, firstDataRow = rows.[0] |> Array.map nodeText, rows.[1] |> Array.map nodeText
+        let headerNamesAndUnits = headerRow |> Array.map (fun x -> x,None)
+        let schema = Array.init numberCols (fun _ -> None)
+        let (headerRowType, _) = CsvInference.inferType headerNamesAndUnits schema [headerRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+        let (rowType, _) = CsvInference.inferType headerNamesAndUnits schema [firstDataRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+        if headerRowType = rowType 
+        then None
+        else Some headerRow
+
+    let rec private getValue (n:HtmlNode list) =
        
         let rec getValue' (n:HtmlNode) =
             let nodeName = n.Name()
             match nodeName with
             | "a" | "link" ->
-                XElement(XName.Get nodeName,[|
-                    XElement(XName.Get "href", [|XText(n.AttributeValue("href"))|])
-                |]) :> XNode
+                XElement(XName.Get nodeName,
+                            [|
+                                XElement(XName.Get "href", [|XText(n.AttributeValue("href"))|])
+                            |]) :> XNode
             | "img" ->
-                XElement(XName.Get nodeName,[|
-                    XElement(XName.Get "src", [|XText(n.AttributeValue("src"))|])
-                |]) :> XNode
+                XElement(XName.Get nodeName,
+                            [|
+                                XElement(XName.Get "src", [|XText(n.AttributeValue("src"))|])
+                            |]) :> XNode
             | "meta" -> 
                 let valueAttrs = ["content"; "value"; "src"]
                 let value = 
@@ -156,38 +173,29 @@ module HtmlRuntime =
                 XText(value) :> XNode
             | _ -> 
                 match tryParseMicroSchema n with
-                | Some h -> XElement(XName.Get "Record", h |> Array.ofList) :> XNode
+                | Some h -> h 
                 | None -> XText(n.InnerText()) :> XNode
 
         n |> List.map getValue'
 
  
-    and tryParseMicroSchema (n:HtmlNode) : XNode list option =
+    and tryParseMicroSchema (n:HtmlNode) =
 
         let rec walk (state : XNode list) (n:HtmlNode) = 
             match n with
             | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
-                  (XElement(XName.Get(prop), [|XElement(XName.Get(scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
+                  (XElement(XName.Get(prop), [|XElement(XName.Get(Utils.getPath scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
             | Utils.Attr "itemtype" scope -> 
-                  (XElement(XName.Get(scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
+                  (XElement(XName.Get(Utils.getPath scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
             | Utils.Attr "itemprop" prop ->
                   (XElement(XName.Get(prop), getValue (n.Elements()) |> List.toArray) :> XNode) :: state
             | _ ->  HtmlNode.elements n |> List.fold (walk) state
         
         match walk [] n with
         | [] -> None
-        | a -> Some a
+        | h :: _ -> Some h
 
-    let private getTableHeaders ip (rows:HtmlNode[][]) = 
-        let headerRow, firstDataRow = rows.[0] |> Array.map (HtmlNode.innerText), rows.[1] |> Array.map (HtmlNode.innerText)
-        let (headerRowType, _) = CsvInference.inferType [||] [||] [headerRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
-        let (rowType, _) = CsvInference.inferType [||] [||] [firstDataRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
-        if headerRowType = rowType 
-        then Some headerRow
-        else None
-
-
-    let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+    let private parseTable (ip:HtmlInference.Parameters option) includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
         let rows =
             let header =
                 match table.Descendants("thead", false) |> Seq.toList with
@@ -199,82 +207,67 @@ module HtmlRuntime =
                 | _ -> []
             header @ (table.Descendants("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i,r)
-
-        let ip = 
-            match inferenceParameters with
-            | Some ip -> ip
-            | None -> 
-                { MissingValues = TextRuntime.GetMissingValues missingValuesStr
-                  CultureInfo = TextRuntime.GetCulture cultureStr
-                  UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
-                  PreferOptionals  = false }
         
-        if rows.Length <= 1 
-        then None 
+        if rows.Length <= 1 then None 
         else
-            let headers = getTableHeaders ip rows
-                
 
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
         let rowLengths = cells |> List.map (fun x -> x.Length)
         let numberOfColumns = List.max rowLengths
-        
         if not includeLayoutTables && (numberOfColumns < 1) then None else
-
-        let name = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
-
-        let res = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> Empty))
+        
+        let tableData = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> None))
 
         for rowindex, _ in rows do
             for colindex, cell in cells.[rowindex] do
                 let rowSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?rowspan) 0) - 1
                 let colSpan = max 1 (defaultArg (TextConversions.AsInteger CultureInfo.InvariantCulture cell?colspan) 0) - 1
-                
-                let data =
-                    match cell with
-                    | HtmlElement("td", _, contents) -> 
-                        let value = XElement(XName.Get "Cell", getValue contents)
-                        Some <| Cell (value)
-                    | HtmlElement("th", _, contents) -> 
-                        Some <| Header (XElement(XName.Get "Header", XText(HtmlNode.innerTextConcat contents)))
-                    | _ -> None
+
                 let col_i = ref colindex
-                while !col_i < res.[rowindex].Length && res.[rowindex].[!col_i] <> None do incr(col_i)
+                while !col_i < tableData.[rowindex].Length && tableData.[rowindex].[!col_i] <> None do incr(col_i)
                 for j in [!col_i..(!col_i + colSpan)] do
                     for i in [rowindex..(rowindex + rowSpan)] do
                         if i < rows.Length && j < numberOfColumns
-                        then res.[i].[j] <- data
+                        then tableData.[i].[j] <- (Some cell)
 
-        let hasHeaders, headerNamesAndUnits, inferedProperties = 
-            match inferenceParameters with
-            | None -> false, None, None
-            | Some inferenceParameters ->
-                let hasHeaders, headerNames, units, inferedProperties = 
-                    if res.[0] |> Array.forall (function | (Some (Header _)) | None -> true | _ -> false) 
-                    then true, res.[0] |> Array.map (function | (Some (Header h)) -> h.Value | _ -> "") |> Some, None, None
-                    else                          
-                         res
-                         |> Array.map (fun row -> 
-                               let rowType = XElement(XName.Get "Row", row |> Array.map (function | Some c -> c.Data | None -> XElement(XName.Get "Empty", [||]))))
-                               ProviderImplementation.XmlInference.inferGlobalType true inferenceParameters.CultureInfo false rowType
-                         )
-        
-                // headers and units may already be parsed in inferHeaders
-                let headerNamesAndUnits =
-                  match headerNames, units with
-                  | Some headerNames, Some units -> Array.zip headerNames units
-                  | _, _ -> CsvInference.parseHeaders headerNames numberOfColumns "" inferenceParameters.UnitsOfMeasureProvider |> fst
+        let tableName = makeUnique (getName (sprintf "Table%d" (index + 1)) table parents)
+        let (hasHeaders, headers) = 
+            match ip with
+            | Some ip ->  
+                let headers = getTableHeaders numberOfColumns ip tableData
+                let (headerWithMeasure,_) = CsvInference.parseHeaders headers numberOfColumns "" ip.UnitsOfMeasureProvider
+                let headerWithMeasure = 
+                    headerWithMeasure 
+                    |> Array.map (fun (name, unit) -> 
+                                        match unit with
+                                        | Some _ -> name.Split('\n').[1].Replace(" ","_"), unit
+                                        | None -> name.Split('\n').[0].Replace(" ","_"), unit
+                                 )
+                match headers with
+                | Some _ -> true, headerWithMeasure
+                | None -> false, headerWithMeasure
+            | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i), None)
 
-                hasHeaders, Some headerNamesAndUnits, inferedProperties
+        let xElement =
+            let headers = headers |> Array.mapi (fun i (c,_) -> i,c) |> Map.ofArray
+            let rows =
+                XElement(XName.Get "rows", [
+                            if hasHeaders then tableData.[1..] else tableData
+                            |> Array.mapi (fun _ cols ->
+                                let data =
+                                    cols |> Array.mapi (fun colI n -> 
+                                        match n with 
+                                        | Some (HtmlElement(_,_,contents)) -> 
+                                            XElement(XName.Get (headers.[colI]), getValue contents)
+                                        | Some (HtmlText(t)) -> XElement(XName.Get (headers.[colI]), [XText(t)])
+                                        | Some _ | None -> XElement(XName.Get (headers.[colI]), [XText("")]))
+                                XElement(XName.Get "row", data)
+                    )
+                ])
+            XElement(XName.Get tableName, [rows])
+  
+        xElement |> Some
 
-        let rows = res |> Array.map (Array.map (fun x -> x.Data))
-
-        { Name = name
-          HeaderNamesAndUnits = headerNamesAndUnits
-          InferedProperties = (inferedProperties)
-          HasHeaders = hasHeaders
-          Rows = rows 
-          Html = table } |> Some
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
         
@@ -403,30 +396,15 @@ type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string
     member __.GetObject(id:string) = 
         htmlObjects |> Map.find id
 
+open System.Xml.Linq
 
+type HtmlRuntimeTable() = 
 
-/// Underlying representation of table types generated by HtmlProvider
-type HtmlRow internal (headers:string[], cells:HtmlInference.HtmlValue[]) =
-    
-    member x.Headers = headers
-    member x.Cells = cells
-
-    member x.GetCell(cellIndex:int) = 
-        cells.[cellIndex].AsObject()
-    
-    /// [omit]
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(doc:HtmlDocument, id:string, hasHeaders:bool) =
+    static member Create(doc:HtmlDocument, id:string) =
         match doc.GetObject id with
-        | Table table -> 
-            let headers, rows = 
-                if hasHeaders then
-                    table.Rows.[0] |> Array.map (fun x -> x.ToString()), (table.Rows.[1..])
-                else
-                    Array.empty, table.Rows
-            let rows = rows |> Array.map (fun r -> new HtmlRow(headers, r))
-            rows
+        | Table table -> table
         | _ -> failwithf "Element %s is not a table" id
 
 /// Underlying representation of list types generated by HtmlProvider

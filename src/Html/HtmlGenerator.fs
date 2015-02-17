@@ -4,6 +4,7 @@
 namespace ProviderImplementation
 
 open System
+open System.Xml.Linq
 open System.Collections.Generic
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Reflection
@@ -22,131 +23,19 @@ module internal HtmlGenerator =
         NameUtils.uniqueGenerator <| fun s ->
             HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
-
-    type private FieldInfo = 
-      { 
-        Name : string
-        ReturnType : Type
-        Property : ProvidedProperty
-        IsRecord : bool
-      }
-
-    let rec private convertProperty(replacer:AssemblyReplacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, value, field:InferedProperty) = 
+  
+    let private createTableType (replacer:AssemblyReplacer) (inferenceParameters:HtmlInference.Parameters, missingValuesStr, cultureStr) tableType (table:XElement) = 
+               
+        let tableName = table.Name.LocalName
+        let inferedType = XmlInference.inferType true inferenceParameters.CultureInfo false false table
+        let ctx = XmlGenerationContext.Create(cultureStr,tableType, true, replacer)
+        let result = ProviderImplementation.XmlTypeBuilder.generateXmlType ctx inferedType
+        let runtimeTypeWrapper = replacer.ToRuntime (typeof<HtmlRuntimeTable>)
         
-        let flags = 
-            Reflection.BindingFlags.Instance
-            ||| Reflection.BindingFlags.Public
+        let create (htmlDoc:Expr) =
+            runtimeTypeWrapper?Create () (htmlDoc, tableName)
 
-        let getCellMethodInfo = 
-            (replacer.ToRuntime typeof<HtmlRow>).GetMethod("GetCell", flags)
-        
-        let getTypeAndWrapper typ optional = 
-            if optional then
-              if preferOptionals then typ, TypeWrapper.Option
-              elif typ = typeof<float> then typ, TypeWrapper.None
-              elif typ = typeof<decimal> then typeof<float>, TypeWrapper.None
-              elif typ = typeof<Bit0> || typ = typeof<Bit1> || typ = typeof<int> || typ = typeof<int64> then typ, TypeWrapper.Nullable
-              else typ, TypeWrapper.Option
-            else typ, TypeWrapper.None
-
-        let getTypeName = function 
-            | Some n -> typeNameGenerator() n
-            | None -> typeNameGenerator() ""
-
-        let cellAccessorExpr (index:int) propIndex row = 
-            <@
-                 let values = (%%(Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])) : obj[])
-                 values.[propIndex]
-            @> |> replacer.ToRuntime
-
-        match field.Type with
-        | InferedType.Primitive(typ, unit, optional) ->
-            let typ, typWrapper = getTypeAndWrapper typ optional    
-            let field = PrimitiveInferedProperty.Create(getPropertyName field.Name, typ, typWrapper, unit)
-            let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-            let accessor (row : Expr)  = 
-                    <@ 
-                        let value = (%%(Expr.Coerce((Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])), typeof<string>)) : string)
-                        TextConversions.AsString(value)
-                    @> |> (conv >> replacer.ToRuntime)
-            let property = ProvidedProperty(field.Name, typ, GetterCode = (fun (Singleton row) -> accessor row))
-            {
-              Name = field.Name 
-              ReturnType = typWithoutMeasure
-              Property = property
-              IsRecord = false
-            }
-        | InferedType.Record(name, props, optional) ->
-            let returnType = ProvidedTypeDefinition(getTypeName name, Some <| (replacer.ToRuntime typeof<HtmlRow>), HideObjectMethods = true)
-
-            for (propIndex, prop) in props |> List.mapi (fun i x -> (i,x)) do
-                let prop = 
-                    match prop.Type with
-                    | InferedType.Primitive(typ, unit, optional) ->
-                        let typ, typWrapper = getTypeAndWrapper typ optional    
-                        let field = PrimitiveInferedProperty.Create(getPropertyName field.Name, typ, typWrapper, unit)
-                        let (typ, typWithoutMeasure, conv, _convBack) = ConversionsGenerator.convertStringValue replacer missingValueStr cultureStr field
-                        
-                        let arrayAccessor propIndex (arr:Expr) = 
-                            <@@ 
-                                let arr = (%%arr : obj[])
-                                arr.[propIndex]
-                            @@>
-                        
-                        let accessor (row : Expr)  = 
-                                <@ 
-                                    let value = (%%(Expr.Coerce(arrayAccessor propIndex (Expr.Call(row, getCellMethodInfo, [Expr.Value(index)])), typeof<string>)) : string)
-                                    TextConversions.AsString(value)
-                                @> |> (conv >> replacer.ToRuntime)
-                        ProvidedProperty(getPropertyName prop.Name, typ, GetterCode = (fun (Singleton row) -> accessor row))
-                    | _ -> 
-                        let prop = convertProperty(replacer, preferOptionals, missingValueStr, cultureStr, index, propIndex, value, prop)
-                        returnType.AddMember prop.ReturnType
-                        prop.Property
-                returnType.AddMember prop
-
-            let property = ProvidedProperty(getPropertyName field.Name, returnType, GetterCode = (fun (Singleton row) -> row))
-            {
-              Name = field.Name
-              ReturnType = returnType
-              Property = property
-              IsRecord = true
-            }
-        | _ -> failwith "unsupported conversion"
-
-    let private createTableType (replacer:AssemblyReplacer) getTableTypeName (inferenceParameters, missingValuesStr, cultureStr) (table:HtmlTable) = 
-
-        let properties =  
-            match table.InferedProperties with
-            | Some inferedProperties -> Seq.zip table.Rows.[0] inferedProperties |> Seq.toList
-            | None -> 
-                HtmlInference.inferColumns inferenceParameters 
-                                           table.HeaderNamesAndUnits.Value 
-                                           (if table.HasHeaders then table.Rows.[1..] else table.Rows)
-        
-        let rowType = ProvidedTypeDefinition("Row", Some (replacer.ToRuntime typeof<HtmlRow>), HideObjectMethods = true)
-
-        properties |> List.iteri (fun index (value, prop) ->
-             let field = convertProperty(replacer,inferenceParameters.PreferOptionals,missingValuesStr,cultureStr, index, 0, value, prop)
-             if field.IsRecord
-             then rowType.AddMember field.ReturnType; rowType.AddMember field.Property;
-             else rowType.AddMember field.Property;
-            )
-        
-        let tableName = table.Name
-        let hasHeaders = table.HasHeaders
-
-        let tableErasedWithRowErasedType = (typedefof<seq<_>>).MakeGenericType(rowType)
-        
-        let create (htmlDoc:Expr) : Expr = 
-            let rowType = (replacer.ToRuntime typedefof<HtmlRow>) 
-            let body : Expr = rowType?Create () (htmlDoc, tableName, hasHeaders)
-            body
-        
-        let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some tableErasedWithRowErasedType, HideObjectMethods = true)
-        tableType.AddMember rowType
-         
-        create, tableType
+        (fun doc -> create doc |> result.Converter), result.ConvertedType
 
     let private createListType replacer getListTypeName (inferenceParameters, missingValuesStr, cultureStr) (list:HtmlList) =
         
@@ -258,9 +147,10 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                  let containerType = getOrCreateContainer "Tables"
-                 let create, tableType = createTableType replacer getTableTypeName parameters table
+                 let tableType = ProvidedTypeDefinition(getTableTypeName table.Name.LocalName, Some typeof<obj>)
                  htmlType.AddMember tableType
-                 containerType.AddMember <| ProvidedProperty(getPropertyName table.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                 let create, tableType = createTableType replacer parameters tableType table
+                 containerType.AddMember <| ProvidedProperty(getPropertyName table.Name.LocalName, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List list ->
                 let containerType = getOrCreateContainer "Lists"
                 let create, tableType = createListType replacer getListTypeName parameters list
