@@ -178,6 +178,14 @@ module HtmlRuntime =
         | [] -> None
         | a -> Some a
 
+    let private getTableHeaders ip (rows:HtmlNode[][]) = 
+        let headerRow, firstDataRow = rows.[0] |> Array.map (HtmlNode.innerText), rows.[1] |> Array.map (HtmlNode.innerText)
+        let (headerRowType, _) = CsvInference.inferType [||] [||] [headerRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+        let (rowType, _) = CsvInference.inferType [||] [||] [firstDataRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+        if headerRowType = rowType 
+        then Some headerRow
+        else None
+
 
     let private parseTable inferenceParameters includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
         let rows =
@@ -191,8 +199,21 @@ module HtmlRuntime =
                 | _ -> []
             header @ (table.Descendants("tr", false) |> List.ofSeq)
             |> List.mapi (fun i r -> i,r)
+
+        let ip = 
+            match inferenceParameters with
+            | Some ip -> ip
+            | None -> 
+                { MissingValues = TextRuntime.GetMissingValues missingValuesStr
+                  CultureInfo = TextRuntime.GetCulture cultureStr
+                  UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
+                  PreferOptionals  = false }
         
-        if rows.Length <= 1 then None else
+        if rows.Length <= 1 
+        then None 
+        else
+            let headers = getTableHeaders ip rows
+                
 
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
         let rowLengths = cells |> List.map (fun x -> x.Length)
