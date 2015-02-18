@@ -36,7 +36,7 @@ module private Helpers =
 // --------------------------------------------------------------------------------------
 
 /// Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options
-type TextConversions = 
+type TextConversions private() = 
 
   /// `NaN` `NA` `#N/A` `:` `-` `TBA` `TBD`
   static member DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
@@ -47,7 +47,7 @@ type TextConversions =
   /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
   static member DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
 
-  static member private DefaultRemovableAdornerCharacters = 
+  static member val private DefaultRemovableAdornerCharacters = 
     Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners
   
   //This removes any adorners that might otherwise casue the inference to infer string. A notable a change is
@@ -55,7 +55,7 @@ type TextConversions =
   //of the culture. Which is probably better since we have lots of scenarios where we want to
   //consume values prefixed with € or $ but in a different culture. 
   static member private RemoveAdorners (value:string) = 
-      new String(value.ToCharArray() |> Array.filter (not << TextConversions.DefaultRemovableAdornerCharacters.Contains))
+    String(value.ToCharArray() |> Array.filter (not << TextConversions.DefaultRemovableAdornerCharacters.Contains))
 
   /// Turns empty or null string value into None, otherwise returns Some
   static member AsString str =
