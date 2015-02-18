@@ -9,6 +9,7 @@ open System.Xml.Linq
 open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.HtmlExtensions
+open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 
 #nowarn "10001"
@@ -23,12 +24,43 @@ type HtmlTable =
       HasHeaders: bool // always set at designtime, never at runtime
       Data :  HtmlNode option[][]
       Html : HtmlNode }
-    member x.Headers with get() = x.HeaderNamesAndUnits |> Array.map fst
-    member x.Rows 
-        with get() =
-            if x.HasHeaders 
-            then x.Data.[1..]
-            else x.Data
+    
+    member x.ToXElement(hasHeaders:bool, headers:string[]) = 
+        let headers = headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
+        let rows =
+            XElement(XName.Get "rows", [
+                        if hasHeaders then x.Data.[1..] else x.Data
+                        |> Array.mapi (fun _ cols ->
+                            let data =
+                                cols |> Array.mapi (fun colI n -> 
+                                    match n with 
+                                    | Some (HtmlElement(_,_,contents)) -> 
+                                        XElement(XName.Get (headers.[colI]), HtmlNode.convertToXNode contents)
+                                    | Some (HtmlText(t)) -> XElement(XName.Get (headers.[colI]), [XText(t)])
+                                    | Some _ | None -> XElement(XName.Get (headers.[colI]), [XText("")]))
+                            XElement(XName.Get "row", data)
+                )
+            ])
+        XElement(XName.Get x.Name, [rows]) 
+
+     member x.ToJson(hasHeaders:bool, headers:string[]) = 
+        let headers = headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
+        let rows =
+            JsonValue.Array(
+                        if hasHeaders then x.Data.[1..] else x.Data
+                        |> Array.mapi (fun _ cols ->
+                            let data =
+                                cols |> Array.mapi (fun colI n -> 
+                                    match n with 
+                                    | Some (HtmlElement(_,_,contents)) -> 
+                                        match HtmlNode.convertToJson contents with
+                                        | [h] -> headers.[colI], h
+                                        | h -> headers.[colI], JsonValue.Array (h |> List.toArray)
+                                    | Some (HtmlText(t)) -> headers.[colI], JsonValue.String t
+                                    | Some _ | None -> headers.[colI], JsonValue.Null)
+                            JsonValue.Record(data)
+                           ))
+        JsonValue.Record([|"Rows", rows|]) 
 
     override x.ToString() =
         let sb = StringBuilder()
@@ -63,12 +95,12 @@ type HtmlDefinitionList =
 
 /// Representation of an HTML table, list, or definition list
 type HtmlObject = 
-    | Table of XElement
+    | Table of HtmlTable
     | List of HtmlList
     | DefinitionList of HtmlDefinitionList
     member x.Name =
         match x with
-        | Table(t) -> t.Name.LocalName
+        | Table(t) -> t.Name
         | List(l) -> l.Name
         | DefinitionList(l) -> l.Name
 
@@ -77,17 +109,6 @@ type HtmlObject =
 /// Helper functions called from the generated code for working with HTML tables
 module HtmlRuntime =
 
-    module Utils = 
-    
-        let (|Attr|_|) (name:string) (n:HtmlNode) = 
-            let attr = (HtmlNode.tryGetAttribute name n)
-            attr |> Option.map (fun x -> x.Value())
-
-        let getPath str = 
-            (match Uri.TryCreate(str, UriKind.Absolute) with 
-             | true, uri -> uri.LocalPath 
-             | false, _ -> "").Trim('/')
-   
     let private getName defaultName (element:HtmlNode) (parents:HtmlNode list) = 
 
         let parents = parents |> Seq.truncate 2 |> Seq.toList
@@ -149,52 +170,6 @@ module HtmlRuntime =
         then None
         else Some headerRow
 
-    let rec private getValue (n:HtmlNode list) =
-       
-        let rec getValue' (n:HtmlNode) =
-            let nodeName = n.Name()
-            match nodeName with
-            | "a" | "link" ->
-                XElement(XName.Get nodeName,
-                            [|
-                                XElement(XName.Get "href", [|XText(n.AttributeValue("href"))|])
-                            |]) :> XNode
-            | "img" ->
-                XElement(XName.Get nodeName,
-                            [|
-                                XElement(XName.Get "src", [|XText(n.AttributeValue("src"))|])
-                            |]) :> XNode
-            | "meta" -> 
-                let valueAttrs = ["content"; "value"; "src"]
-                let value = 
-                    match valueAttrs |> List.tryPick (n.TryGetAttribute) with
-                    | Some attr -> attr.Value()
-                    | None -> n.InnerText()
-                XText(value) :> XNode
-            | _ -> 
-                match tryParseMicroSchema n with
-                | Some h -> h 
-                | None -> XText(n.InnerText()) :> XNode
-
-        n |> List.map getValue'
-
- 
-    and tryParseMicroSchema (n:HtmlNode) =
-
-        let rec walk (state : XNode list) (n:HtmlNode) = 
-            match n with
-            | Utils.Attr "itemscope" _ & Utils.Attr "itemtype" scope & Utils.Attr "itemprop" prop ->  
-                  (XElement(XName.Get(prop), [|XElement(XName.Get(Utils.getPath scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
-            | Utils.Attr "itemtype" scope -> 
-                  (XElement(XName.Get(Utils.getPath scope), HtmlNode.elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
-            | Utils.Attr "itemprop" prop ->
-                  (XElement(XName.Get(prop), getValue (n.Elements()) |> List.toArray) :> XNode) :: state
-            | _ ->  HtmlNode.elements n |> List.fold (walk) state
-        
-        match walk [] n with
-        | [] -> None
-        | h :: _ -> Some h
-
     let private parseTable (ip:HtmlInference.Parameters option) includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
         let rows =
             let header =
@@ -247,26 +222,14 @@ module HtmlRuntime =
                 | Some _ -> true, headerWithMeasure
                 | None -> false, headerWithMeasure
             | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i), None)
-
-        let xElement =
-            let headers = headers |> Array.mapi (fun i (c,_) -> i,c) |> Map.ofArray
-            let rows =
-                XElement(XName.Get "rows", [
-                            if hasHeaders then tableData.[1..] else tableData
-                            |> Array.mapi (fun _ cols ->
-                                let data =
-                                    cols |> Array.mapi (fun colI n -> 
-                                        match n with 
-                                        | Some (HtmlElement(_,_,contents)) -> 
-                                            XElement(XName.Get (headers.[colI]), getValue contents)
-                                        | Some (HtmlText(t)) -> XElement(XName.Get (headers.[colI]), [XText(t)])
-                                        | Some _ | None -> XElement(XName.Get (headers.[colI]), [XText("")]))
-                                XElement(XName.Get "row", data)
-                    )
-                ])
-            XElement(XName.Get tableName, [rows])
-  
-        xElement |> Some
+        
+        { 
+            Name = tableName
+            HeaderNamesAndUnits = headers
+            HasHeaders = hasHeaders
+            Data = tableData
+            Html = table 
+        } |> Some
 
 
     let private parseList makeUnique index (list:HtmlNode, parents:HtmlNode list) =
@@ -399,12 +362,14 @@ type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string
 open System.Xml.Linq
 
 type HtmlRuntimeTable() = 
-
+    
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(doc:HtmlDocument, id:string) =
+    static member Create(doc:HtmlDocument, id:string, hasHeaders:bool, headers:string[]) =
         match doc.GetObject id with
-        | Table table -> table
+        | Table table -> 
+            let table = table.ToXElement(hasHeaders, headers)           
+            { XElement = table }
         | _ -> failwithf "Element %s is not a table" id
 
 /// Underlying representation of list types generated by HtmlProvider

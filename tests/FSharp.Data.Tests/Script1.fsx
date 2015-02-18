@@ -47,7 +47,7 @@ let [<Literal>] data=
                            <div itemscope itemtype ="http://schema.org/Movie">
                              <h1 itemprop="name">Alien</h1>
                              <div itemprop="director" itemscope itemtype="http://schema.org/Person">
-                             Director: <span itemprop="name">James Cameron</span> (born <span itemprop="birthDate">August 16, 1954 </span>)
+                             Director: <span itemprop="name">James Cameron</span> (born <span itemprop="birthDate">August 17, 1954 </span>)
                              </div>
                              <span itemprop="genre">Science fiction</span>
                              <a href="../movies/avatar-theatrical-trailer.html" itemprop="trailer">Trailer</a>
@@ -66,4 +66,6 @@ let [<Literal>] data=
 
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 
-let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Rating.Value.Val) |> Seq.toList
+let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.BirthDate) |> Seq.toList
+
+let zoopla = HtmlProvider<"http://www.zoopla.co.uk/for-sale/property/london/waterloo/?include_retirement_homes=true&include_shared_ownership=true&new_homes=include&q=Waterloo%2C%20London&results_sort=newest_listings&search_source=home">

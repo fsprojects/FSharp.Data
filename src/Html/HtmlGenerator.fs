@@ -24,16 +24,18 @@ module internal HtmlGenerator =
             HtmlParser.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
   
-    let private createTableType (replacer:AssemblyReplacer) (inferenceParameters:HtmlInference.Parameters, missingValuesStr, cultureStr) tableType (table:XElement) = 
+    let private createTableType (replacer:AssemblyReplacer) (inferenceParameters:HtmlInference.Parameters, missingValuesStr, cultureStr) tableType (table:HtmlTable) = 
                
-        let tableName = table.Name.LocalName
-        let inferedType = XmlInference.inferType true inferenceParameters.CultureInfo false false table
-        let ctx = XmlGenerationContext.Create(cultureStr,tableType, true, replacer)
+        let tableName = table.Name
+        let tableHeaders = table.HeaderNamesAndUnits |> Array.map fst
+        let hasHeaders = table.HasHeaders
+        let inferedType = XmlInference.inferType true inferenceParameters.CultureInfo true false (table.ToXElement(hasHeaders, tableHeaders))
+        let ctx = XmlGenerationContext.Create(cultureStr,tableType, false, replacer)
         let result = ProviderImplementation.XmlTypeBuilder.generateXmlType ctx inferedType
         let runtimeTypeWrapper = replacer.ToRuntime (typeof<HtmlRuntimeTable>)
         
         let create (htmlDoc:Expr) =
-            runtimeTypeWrapper?Create () (htmlDoc, tableName)
+            runtimeTypeWrapper?Create () (htmlDoc, tableName, hasHeaders, tableHeaders)
 
         (fun doc -> create doc |> result.Converter), result.ConvertedType
 
@@ -147,10 +149,10 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                  let containerType = getOrCreateContainer "Tables"
-                 let tableType = ProvidedTypeDefinition(getTableTypeName table.Name.LocalName, Some typeof<obj>)
+                 let tableType = ProvidedTypeDefinition(getTableTypeName table.Name, Some typeof<obj>)
                  htmlType.AddMember tableType
                  let create, tableType = createTableType replacer parameters tableType table
-                 containerType.AddMember <| ProvidedProperty(getPropertyName table.Name.LocalName, tableType, GetterCode = fun (Singleton doc) -> create doc)
+                 containerType.AddMember <| ProvidedProperty(getPropertyName table.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List list ->
                 let containerType = getOrCreateContainer "Lists"
                 let create, tableType = createListType replacer getListTypeName parameters list
