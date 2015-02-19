@@ -44,7 +44,6 @@ type HtmlAttributeExtensions =
         HtmlAttribute.value attr
 
 // --------------------------------------------------------------------------------------
-
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Module with operations on HTML nodes
 module HtmlNode =
@@ -245,115 +244,59 @@ module HtmlNode =
     let inline innerTextConcat n = 
         (n |> Seq.map (innerTextExcluding ["table"; "ul"; "ol"; "dl"; "sup"; "sub"]) |> String.Concat).Replace(Environment.NewLine, "").Trim()
 
-
-    let rec convertToXNode (n:HtmlNode list) : XNode list =
-       
-        let rec getValue' (n:HtmlNode) =
-            let nodeName = (name n)
-            match nodeName with
-            | "a" | "link" ->
-                XElement(XName.Get nodeName,
-                            [|
-                                XElement(XName.Get "href", [|XText(attributeValue "href" n)|])
-                            |]) :> XNode
-            | "img" ->
-                XElement(XName.Get nodeName,
-                            [|
-                                XElement(XName.Get "src", [|XText(attributeValue "src" n)|])
-                            |]) :> XNode
-            | "meta" -> 
-                let valueAttrs = ["content"; "value"; "src"]
-                let value = 
-                    match valueAttrs |> List.tryPick (fun x -> tryGetAttribute x n) with
-                    | Some attr -> attr.Value()
-                    | None -> innerText n
-                XText(value) :> XNode
-            | _ -> 
-                match tryParseMicroSchema n with
-                | Some h -> h 
-                | None -> XText(innerText n) :> XNode
-
-        and tryParseMicroSchema (n:HtmlNode) =
-            let (|Attr|_|) (name:string) (n:HtmlNode) = 
-                let attr = (tryGetAttribute name n)
-                attr |> Option.map (fun x -> x.Value())
-
-            let getPath str = 
-                (match Uri.TryCreate(str, UriKind.Absolute) with 
-                 | true, uri -> uri.LocalPath 
-                 | false, _ -> "").Trim('/')
-
-            let rec walk (state : XNode list) (n:HtmlNode) = 
-                match n with
-                | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->  
-                      (XElement(XName.Get(prop), [|XElement(XName.Get(getPath scope), elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
-                | Attr "itemtype" scope -> 
-                      (XElement(XName.Get(getPath scope), elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
-                | Attr "itemprop" prop ->
-                      (XElement(XName.Get(prop), convertToXNode (elements n) |> List.toArray) :> XNode) :: state
-                | _ ->  elements n |> List.fold walk state
-            
-            match walk [] n with
-            | [] -> None
-            | h :: _ -> Some h
-
-        n |> List.map (fun n -> getValue' n)
-
-    let rec convertToJson (n:HtmlNode list) : JsonValue list =
-       
-        let rec getValue' (n:HtmlNode) =
-            let nodeName = (name n)
-            match nodeName with
-            | "a" | "link" ->
-                JsonValue.Record([|nodeName, JsonValue.Record([|"href", JsonValue.String(attributeValue "href" n)|])|])
-            | "img" ->
-                JsonValue.Record([|nodeName, JsonValue.Record([|"src", JsonValue.String(attributeValue "src" n)|])|])
-            | "meta" -> 
-                let valueAttrs = ["content"; "value"; "src"]
-                let value = 
-                    match valueAttrs |> List.tryPick (fun x -> tryGetAttribute x n) with
-                    | Some attr -> attr.Value()
-                    | None -> innerText n
-                JsonValue.String value
-            | _ -> 
-                match tryParseMicroSchema n with
-                | Some h -> h 
-                | None -> JsonValue.String(innerText n)
-
-        and tryParseMicroSchema (n:HtmlNode) =
-            let (|Attr|_|) (name:string) (n:HtmlNode) = 
-                let attr = (tryGetAttribute name n)
-                attr |> Option.map (fun x -> x.Value())
-
-            let getPath str = 
-                (match Uri.TryCreate(str, UriKind.Absolute) with 
-                 | true, uri -> uri.LocalPath 
-                 | false, _ -> "").Trim('/')
-
-            let rec walk (state : JsonValue list) (n:HtmlNode) = 
-                match n with
-                | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->
-                      match  elements n |> List.fold walk [] |> List.toArray with
-                      | [|h|] -> JsonValue.Record([|prop, h|]) :: state
-                      | h -> JsonValue.Record([|prop, JsonValue.Array(h)|]) :: state
-                | Attr "itemtype" scope -> 
-                      match  elements n |> List.fold walk [] |> List.toArray with
-                      | [|h|] -> h :: state
-                      | h -> JsonValue.Array(h) :: state
-                | Attr "itemprop" prop ->
-                      match convertToJson (elements n) |> List.toArray with
-                      | [|h|] -> JsonValue.Record([|prop, h|]) :: state
-                      | h -> JsonValue.Record([|prop, JsonValue.Array(h)|]) :: state 
-                | _ ->  elements n |> List.fold walk state
-            
-            match walk [] n with
-            | [] -> None
-            | h :: _ -> Some h
-
-        n |> List.map (fun n -> getValue' n)
-
- 
     
+//    let rec normalise (n:HtmlNode list) : HtmlNode list =
+//       
+//        let rec getValue' (n:HtmlNode) =
+//            let nodeName = (name n)
+//            match nodeName with
+//            | "a" | "link" ->
+//                HtmlElement(nodeName, [],
+//                            [
+//                                HtmlElement("href", [], [HtmlText(attributeValue "href" n)])
+//                            ])
+//            | "img" ->
+//                HtmlElement(nodeName, [],
+//                            [
+//                                XElement(XName.Get "src", [|XText(attributeValue "src" n)|])
+//                            ]) :> XNode
+//            | "meta" -> 
+//                let valueAttrs = ["content"; "value"; "src"]
+//                let value = 
+//                    match valueAttrs |> List.tryPick (fun x -> tryGetAttribute x n) with
+//                    | Some attr -> attr.Value()
+//                    | None -> innerText n
+//                XText(value) :> XNode
+//            | _ -> 
+//                match tryParseMicroSchema n with
+//                | Some h -> h 
+//                | None -> XText(innerText n) :> XNode
+//
+//        and tryParseMicroSchema (n:HtmlNode) =
+//            let (|Attr|_|) (name:string) (n:HtmlNode) = 
+//                let attr = (tryGetAttribute name n)
+//                attr |> Option.map (fun x -> x.Value())
+//
+//            let getPath str = 
+//                (match Uri.TryCreate(str, UriKind.Absolute) with 
+//                 | true, uri -> uri.LocalPath 
+//                 | false, _ -> "").Trim('/')
+//
+//            let rec walk (state : XNode list) (n:HtmlNode) = 
+//                match n with
+//                | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->  
+//                      (XElement(XName.Get(prop), [|XElement(XName.Get(getPath scope), elements n |> List.fold walk [] |> List.toArray)|]) :> XNode) :: state
+//                | Attr "itemtype" scope -> 
+//                      (XElement(XName.Get(getPath scope), elements n |> List.fold walk [] |> List.toArray) :> XNode) :: state
+//                | Attr "itemprop" prop ->
+//                      (XElement(XName.Get(prop), normalise (elements n) |> List.toArray) :> XNode) :: state
+//                | _ ->  elements n |> List.fold walk state
+//            
+//            match walk [] n with
+//            | [] -> None
+//            | h :: _ -> Some h
+//
+//        n |> List.map (fun n -> getValue' n)
 
 // --------------------------------------------------------------------------------------
 

@@ -25,15 +25,8 @@ type HtmlAttribute =
     static member New(name:string, value:string) =
         HtmlAttribute(name.ToLowerInvariant(), value)
 
-    member x.ToXAttribute() = 
-        let (HtmlAttribute(name, value)) = x
-        match name.Split([|':'|]) with
-        | [|ns;h|] -> XAttribute(XName.Get(h,ns), value)
-        | _ -> XAttribute(XName.Get(name), value) 
-
-[<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML node. The names of elements are always normalized to lowercase
-type HtmlNode =
+and [<StructuredFormatDisplay("{_Print}")>] HtmlNode =
 
     internal | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
              | HtmlText of content:string
@@ -86,17 +79,6 @@ type HtmlNode =
     /// </summary>
     /// <param name="content">The actual content</param>
     static member NewComment content = HtmlComment(content)
-
-    member x.ToXNode() : XNode =
-        match x with
-        | HtmlElement(name, attrs, contents) ->
-            let element = XElement(XName.Get(name))
-            element.Add([|for attr in attrs -> (attr.ToXAttribute())|])
-            element.Add([|for e in contents -> (e.ToXNode())|])
-            element :> XNode
-        | HtmlText t -> XText(t) :> XNode
-        | HtmlComment t -> XComment(t) :> XNode
-        | HtmlCData t -> XCData(t) :> XNode
 
     override x.ToString() =
         let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
@@ -673,14 +655,14 @@ module internal HtmlParser =
                 let t = HtmlText Environment.NewLine
                 parse' docType (t :: elements) expectedTagEnd rest
             | Tag(true, name, attributes) :: rest ->
-               let e = HtmlElement(name, attributes, [])
+               let e =  HtmlElement(name, attributes, [])
                parse' docType (e :: elements) expectedTagEnd rest
             | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
                let e = HtmlElement(name, attributes, [])
                parse' docType (e :: elements) expectedTagEnd rest
             | Tag(_, name, attributes) :: rest ->
                 let dt, tokens, content = parse' docType [] name rest
-                let e = HtmlElement(name, attributes, content)
+                let e =  HtmlElement(name, attributes, content)
                 parse' dt (e :: elements) expectedTagEnd tokens
             | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
