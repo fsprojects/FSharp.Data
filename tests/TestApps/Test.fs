@@ -14,7 +14,7 @@ let getTestData() = async {
                           headers = [ Origin "https://accounts.coursera.org"
                                       "X-CSRFToken", "something"
                                       Referer "https://accounts.coursera.org/signin" ], 
-                          body = FormValues [ "email", "a"; "password", "b" ],
+                          body = FormValues [ "email", "a"; "password", "b"; "webrequest", "true" ],
                           cookies = [ "csrftoken", "something" ],
                           silentHttpErrors = true)
         |> Async.Ignore

@@ -15,8 +15,8 @@ open FSharp.Data.Runtime.IO
 
 // --------------------------------------------------------------------------------------
 
-// Parser for the CSV format 
-module internal CsvReader = 
+/// Parser for the CSV format 
+module CsvReader = 
 
   /// Lazily reads the specified CSV file using the specified separators
   /// (Handles most of the RFC 4180 - most notably quoted values and also

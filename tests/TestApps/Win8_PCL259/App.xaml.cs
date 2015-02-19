@@ -17,7 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
-namespace Win8_PCL7_3310
+namespace Win8_PCL259
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.

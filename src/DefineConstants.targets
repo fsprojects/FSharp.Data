@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' or '$(TargetFrameworkProfile)' == 'Profile7' ">
+  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' or '$(TargetFrameworkProfile)' == 'Profile259' ">
     <DefineConstants>$(DefineConstants);FX_NO_LOCAL_FILESYSTEM</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_CUSTOMTYPEDESCRIPTOR</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_REGEX_COMPILATION</DefineConstants>
@@ -18,12 +18,10 @@
     <DefineConstants>$(DefineConstants);FX_NO_WEBRESPONSE_CHARACTERSET</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_ENVIRONMENT_VARIABLES</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_GETENCODING_BY_CODEPAGE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile47' ">
     <DefineConstants>$(DefineConstants);FX_NO_CONCURRENT</DefineConstants>
     <DefineConstants>$(DefineConstants);FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile7' ">
+  <PropertyGroup Condition=" '$(TargetFrameworkProfile)' == 'Profile259' ">
     <DefineConstants>$(DefineConstants);FX_NET_CORE_REFLECTION</DefineConstants>
   </PropertyGroup>
 </Project>

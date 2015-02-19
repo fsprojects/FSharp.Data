@@ -1,5 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../packages/NUnit/lib/nunit.framework.dll"
+#r "../../bin/FSharp.Data.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -33,7 +34,7 @@ let resolutionFolder = sourceDirectory ++ ".." ++ "FSharp.Data.Tests" ++ "Data"
 let assemblyName = "FSharp.Data.dll"
 let runtimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ assemblyName
 let portable47RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable47" ++ assemblyName
-let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable7" ++ assemblyName
+let portable259RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "portable259" ++ assemblyName
 
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
@@ -64,5 +65,5 @@ let ``Generating expressions works in portable profile 47 `` (testCase:TypeProvi
 [<Test>]
 [<TestCaseSource "testCases">]
 [<Platform "Net">]
-let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
-    testCase.Dump resolutionFolder "" portable7RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore
+let ``Generating expressions works in portable profile 259 `` (testCase:TypeProviderInstantiation) = 
+    testCase.Dump resolutionFolder "" portable259RuntimeAssembly (*signatureOnly*)false (*ignoreOutput*)true |> ignore

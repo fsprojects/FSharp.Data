@@ -1150,7 +1150,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     inherit Type()
 
     do match container with
-       | TypeContainer.Namespace _ -> FSharp.Data.Runtime.IO.log (sprintf "Creating ProvidedTypeDefinition %s [%d]" className (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode this))
+       | TypeContainer.Namespace _ -> ProviderImplementation.IO.log (sprintf "Creating ProvidedTypeDefinition %s [%d]" className (System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode this))
        | _ -> ()
 
     // state
@@ -1265,8 +1265,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
     member this.ResetEnclosingType (ty) = 
         container <- TypeContainer.Type ty
-    new (assembly:Assembly,namespaceName,className,baseType) = new ProvidedTypeDefinition(TypeContainer.Namespace (assembly,namespaceName), className, baseType)
-    new (className,baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
+    new (assembly:Assembly,namespaceName,className, baseType) = new ProvidedTypeDefinition(TypeContainer.Namespace (assembly,namespaceName), className, baseType)
+    new (className, baseType) = new ProvidedTypeDefinition(TypeContainer.TypeToBeDecided, className, baseType)
     // state ops
 
     override this.UnderlyingSystemType = typeof<Type>

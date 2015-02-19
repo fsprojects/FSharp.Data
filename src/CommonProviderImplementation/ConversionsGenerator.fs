@@ -23,34 +23,32 @@ let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<string op
   elif typ = typeof<Guid> then  <@@ TextRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"
 
-let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<string> =
-  if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@ TextRuntime.ConvertIntegerBack(cultureStr, %%value) @>
-  elif typ = typeof<int64> then <@ TextRuntime.ConvertInteger64Back(cultureStr, %%value) @>
-  elif typ = typeof<decimal> then <@ TextRuntime.ConvertDecimalBack(cultureStr, %%value) @>
-  elif typ = typeof<float> then <@ TextRuntime.ConvertFloatBack(cultureStr, missingValuesStr, %%value) @>
-  elif typ = typeof<string> then <@ TextRuntime.ConvertStringBack(%%value) @>
-  elif typ = typeof<bool> || typ = typeof<Bit> then <@ TextRuntime.ConvertBooleanBack(%%value, false) @>
-  elif typ = typeof<Guid> then <@ TextRuntime.ConvertGuidBack(%%value) @>
-  elif typ = typeof<DateTime> then <@ TextRuntime.ConvertDateTimeBack(cultureStr, %%value) @>
+let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr =
+  if typ = typeof<int> || typ = typeof<Bit0> || typ = typeof<Bit1> then <@@ TextRuntime.ConvertIntegerBack(cultureStr, %%value) @@>
+  elif typ = typeof<int64> then <@@ TextRuntime.ConvertInteger64Back(cultureStr, %%value) @@>
+  elif typ = typeof<decimal> then <@@ TextRuntime.ConvertDecimalBack(cultureStr, %%value) @@>
+  elif typ = typeof<float> then <@@ TextRuntime.ConvertFloatBack(cultureStr, missingValuesStr, %%value) @@>
+  elif typ = typeof<string> then <@@ TextRuntime.ConvertStringBack(%%value) @@>
+  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ TextRuntime.ConvertBooleanBack(%%value, false) @@>
+  elif typ = typeof<Guid> then <@@ TextRuntime.ConvertGuidBack(%%value) @@>
+  elif typ = typeof<DateTime> then <@@ TextRuntime.ConvertDateTimeBack(cultureStr, %%value) @@>
   else failwith "getBackConversionQuotation: Unsupported primitive type"
 
 /// Creates a function that takes Expr<string option> and converts it to 
 /// an expression of other type - the type is specified by `field`
-let convertStringValue (replacer:AssemblyReplacer) missingValuesStr cultureStr (field:PrimitiveInferedProperty) = 
+let convertStringValue missingValuesStr cultureStr (field:PrimitiveInferedProperty) = 
 
   let returnType = 
     match field.TypeWrapper with
     | TypeWrapper.None -> field.TypeWithMeasure
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.TypeWithMeasure
     | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.TypeWithMeasure
-    |> replacer.ToRuntime
 
   let returnTypeWithoutMeasure = 
     match field.TypeWrapper with
     | TypeWrapper.None -> field.RuntimeType
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.RuntimeType
     | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.RuntimeType
-    |> replacer.ToRuntime
 
   let convert (value:Expr<string option>) =
     let convert value = 
@@ -64,7 +62,6 @@ let convertStringValue (replacer:AssemblyReplacer) missingValuesStr cultureStr (
         Expr.Let(var, value, body)
     | TypeWrapper.Option -> convert value
     | TypeWrapper.Nullable -> typeof<TextRuntime>?OptionToNullable (field.RuntimeType) (convert value)
-    |> replacer.ToRuntime
 
   let convertBack value = 
     let value = 
@@ -72,7 +69,6 @@ let convertStringValue (replacer:AssemblyReplacer) missingValuesStr cultureStr (
       | TypeWrapper.None -> ProviderHelpers.some field.RuntimeType value
       | TypeWrapper.Option -> value
       | TypeWrapper.Nullable -> typeof<TextRuntime>?NullableToOption (field.RuntimeType) value
-      |> replacer.ToDesignTime
-    getBackConversionQuotation missingValuesStr cultureStr field.InferedType value |> replacer.ToRuntime
+    getBackConversionQuotation missingValuesStr cultureStr field.InferedType value
 
   returnType, returnTypeWithoutMeasure, convert, convertBack

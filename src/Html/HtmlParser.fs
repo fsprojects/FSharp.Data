@@ -197,8 +197,7 @@ module internal HtmlParser =
 #else
         RegexOptions.Compiled
 #endif
-    let wsRegex = lazy Regex("\\s+", regexOptions)
-    let invalidTypeNameRegex = lazy Regex("[^0-9a-zA-Z_]+", regexOptions)
+    let wsRegex = lazy Regex("\\s+", regexOptions)    
     let headingRegex = lazy Regex("""h\d""", regexOptions)
 
     type HtmlToken =
