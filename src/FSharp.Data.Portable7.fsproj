@@ -68,8 +68,8 @@
     <Compile Include="Freebase\FreebaseRuntime.fs" />
     <Compile Include="Freebase\FreebaseOperators.fs" />
     <Compile Include="Html\HtmlCharRefs.fs" />
+    <Compile Include="Html\HtmlDom.fs" />
     <Compile Include="Html\HtmlParser.fs" />
-    <Compile Include="Html\HtmlOperations.fs" />
     <Compile Include="Html\HtmlInference.fs" />
     <Compile Include="Html\HtmlRuntime.fs" />
     <Compile Include="Runtime.fs" />

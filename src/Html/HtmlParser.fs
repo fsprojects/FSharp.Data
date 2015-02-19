@@ -2,178 +2,11 @@
 namespace FSharp.Data
 
 open System
-open System.ComponentModel
 open System.IO
-open System.Xml.Linq
-open System.Text
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
-
-// --------------------------------------------------------------------------------------
-
-/// Represents an HTML attribute. The name is always normalized to lowercase
-type HtmlAttribute = 
-
-    internal | HtmlAttribute of name:string * value:string    
-
-    /// <summary>
-    /// Creates an html attribute
-    /// </summary>
-    /// <param name="name">The name of the attribute</param>
-    /// <param name="value">The value of the attribute</param>
-    static member New(name:string, value:string) =
-        HtmlAttribute(name.ToLowerInvariant(), value)
-
-/// Represents an HTML node. The names of elements are always normalized to lowercase
-and [<StructuredFormatDisplay("{_Print}")>] HtmlNode =
-
-    internal | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-             | HtmlText of content:string
-             | HtmlComment of content:string
-             | HtmlCData of content:string
-    
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    static member NewElement(name:string) =
-        HtmlElement(name.ToLowerInvariant(), [], [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    static member NewElement(name:string, attrs:seq<_>) =
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, [])
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name:string, children:seq<_>) =
-        HtmlElement(name.ToLowerInvariant(), [], List.ofSeq children)
-
-
-    /// <summary>
-    /// Creates an html element
-    /// </summary>
-    /// <param name="name">The name of the element</param>
-    /// <param name="attrs">The HtmlAttribute(s) of the element</param>
-    /// <param name="children">The children elements of this element</param>
-    static member NewElement(name:string, attrs:seq<_>, children:seq<_>) =        
-        let attrs = attrs |> Seq.map HtmlAttribute.New |> Seq.toList
-        HtmlElement(name.ToLowerInvariant(), attrs, List.ofSeq children)
-
-    /// <summary>
-    /// Creates a text content element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewText content = HtmlText(content)
-
-    /// <summary>
-    /// Creates a comment element
-    /// </summary>
-    /// <param name="content">The actual content</param>
-    static member NewComment content = HtmlComment(content)
-
-    override x.ToString() =
-        let rec serialize (sb:StringBuilder) indentation canAddNewLine html =
-            let append (str:string) = sb.Append str |> ignore
-            let appendEndTag name =
-                append "</"
-                append name
-                append ">"
-            let shouldAppendEndTag name =
-                name = "textarea"
-            let newLine plus =
-                sb.AppendLine() |> ignore
-                String(' ', indentation + plus) |> append
-            match html with
-            | HtmlElement(name, attributes, elements) ->
-                let onlyText = elements |> List.forall (function HtmlText _ -> true | _ -> false)
-                if canAddNewLine && not onlyText then
-                    newLine 0
-                append "<"
-                append name
-                for HtmlAttribute(name, value) in attributes do
-                    append " "
-                    append name
-                    append "=\""
-                    append value
-                    append "\""
-                if elements.IsEmpty then
-                    if shouldAppendEndTag name then
-                        append ">"
-                        appendEndTag name
-                    else
-                        append " />"
-                else
-                    append ">"
-                    if not onlyText then
-                        newLine 2
-                    let mutable canAddNewLine = false
-                    for element in elements do
-                        serialize sb (indentation + 2) canAddNewLine element
-                        canAddNewLine <- true
-                    if not onlyText then
-                        newLine 0
-                    appendEndTag name
-            | HtmlText str -> append str
-            | HtmlComment str -> 
-                    append "<!--"
-                    append str
-                    append "-->"
-            | HtmlCData str -> 
-                    append "<![CDATA["
-                    append str
-                    append "]]>"
-        
-        let sb = StringBuilder()
-        serialize sb 0 false x |> ignore
-        sb.ToString()
-
-    /// [omit]
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
-
-[<StructuredFormatDisplay("{_Print}")>]
-/// Represents an HTML document
-type HtmlDocument = 
-    private | HtmlDocument of docType:string * elements:HtmlNode list
-  
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="docType">The document type specifier string</param>
-    /// <param name="children">The child elements of this document</param>
-    static member New(docType, children:seq<_>) = 
-        HtmlDocument(docType, List.ofSeq children)
-
-    /// <summary>
-    /// Creates an html document
-    /// </summary>
-    /// <param name="children">The child elements of this document</param>
-    static member New(children:seq<_>) = 
-        HtmlDocument("", List.ofSeq children)
-
-    override x.ToString() =
-        match x with
-        | HtmlDocument(docType, elements) ->
-            (if String.IsNullOrEmpty docType then "" else "<!" + docType + ">" + Environment.NewLine)
-            +
-            (elements |> List.map (fun x -> x.ToString()) |> String.Concat)
-
-    /// [omit]
-    [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
-    [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    member x._Print = x.ToString()
-
-// --------------------------------------------------------------------------------------
+open System.Runtime.CompilerServices
 
 module private TextParser = 
 
@@ -706,41 +539,51 @@ module internal HtmlParser =
 
 // --------------------------------------------------------------------------------------
 
-type HtmlDocument with
+[<AutoOpen>]
+module HtmlParserExtensions = 
 
-    /// Parses the specified HTML string
-    static member Parse(text) = 
-        use reader = new StringReader(text)
-        HtmlParser.parseDocument reader
-        
-    /// Loads HTML from the specified stream
-    static member Load(stream:Stream) = 
-        use reader = new StreamReader(stream)
-        HtmlParser.parseDocument reader
+    type HtmlDocument with
     
-    /// Loads HTML from the specified reader
-    static member Load(reader:TextReader) = 
-        HtmlParser.parseDocument reader
+        /// Parses the specified HTML string
+        [<Extension>]
+        static member Parse(text) = 
+            use reader = new StringReader(text)
+            HtmlParser.parseDocument reader
+            
+        /// Loads HTML from the specified stream
+        [<Extension>]
+        static member Load(stream:Stream) = 
+            use reader = new StreamReader(stream)
+            HtmlParser.parseDocument reader
         
-    /// Loads HTML from the specified uri asynchronously
-    static member AsyncLoad(uri:string) = async {
-        let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
-        return HtmlParser.parseDocument reader
-    }
+        /// Loads HTML from the specified reader
+        [<Extension>]
+        static member Load(reader:TextReader) = 
+            HtmlParser.parseDocument reader
+            
+        /// Loads HTML from the specified uri asynchronously
+        [<Extension>]
+        static member AsyncLoad(uri:string) = async {
+            let! reader = IO.asyncReadTextAtRuntime false "" "" "HTML" "" uri
+            return HtmlParser.parseDocument reader
+        }
+        
+        /// Loads HTML from the specified uri
+        [<Extension>]
+        static member Load(uri:string) =
+            HtmlDocument.AsyncLoad(uri)
+            |> Async.RunSynchronously
     
-    /// Loads HTML from the specified uri
-    static member Load(uri:string) =
-        HtmlDocument.AsyncLoad(uri)
-        |> Async.RunSynchronously
-
-type HtmlNode with
-
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member Parse(text) = 
-        use reader = new StringReader(text)
-        HtmlParser.parseFragment reader
-
-    /// Parses the specified HTML string to a list of HTML nodes
-    static member ParseRooted(rootName, text) = 
-        use reader = new StringReader(text)
-        HtmlElement(rootName, [], HtmlParser.parseFragment reader)
+    type HtmlNode with
+    
+        /// Parses the specified HTML string to a list of HTML nodes
+        [<Extension>]
+        static member Parse(text) = 
+            use reader = new StringReader(text)
+            HtmlParser.parseFragment reader
+    
+        /// Parses the specified HTML string to a list of HTML nodes
+        [<Extension>]
+        static member ParseRooted(rootName, text) = 
+            use reader = new StringReader(text)
+            HtmlElement(rootName, [], HtmlParser.parseFragment reader)

@@ -23,27 +23,29 @@ type HtmlTable =
     { Name : string
       HeaderNamesAndUnits : (string * Type option)[] // always set
       HasHeaders: bool // always set at designtime, never at runtime
-      Data :  HtmlNode option[][]
+      Data :  HtmlNode option [][]
       Html : HtmlNode }
+    
+    member x.ToHtmlElement(hasHeaders:bool, headers:string[]) = 
+        let headerMap = headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
+        let rows =
+            HtmlElement("rows", [],
+                        if hasHeaders then x.Data.[1..] else x.Data
+                        |> Array.mapi (fun _ cols ->
+                            let data =
+                                cols |> Array.mapi (fun colI n -> 
+                                    match n with 
+                                    | Some (HtmlElement(_,_,contents)) -> 
+                                        HtmlElement(headerMap.[colI], [], HtmlNode.normalise contents)
+                                    | Some (HtmlText(t)) -> HtmlElement(headerMap.[colI], [], [HtmlText(t)])
+                                    | Some _ | None -> HtmlElement(headerMap.[colI], [], [HtmlText("")])
+                                 ) |> List.ofArray
+                            HtmlElement("row",[], data))
+                        |> List.ofArray
+                )
+        HtmlElement(x.Name, [], [rows])
 
-    override x.ToString() =
-        let sb = StringBuilder()
-        use wr = new StringWriter(sb) 
-        wr.WriteLine(x.Name)
-        let data = array2D x.Data
-        let rows = data.GetLength(0)
-        let columns = data.GetLength(1)
-        let nodeText = function
-            | Some n -> HtmlNode.innerText n
-            | None -> ""
-        let widths = Array.zeroCreate columns 
-        data |> Array2D.iteri (fun _ c cell ->
-            widths.[c] <- max (widths.[c]) ((nodeText cell).Length))
-        for r in 0 .. rows - 1 do
-            for c in 0 .. columns - 1 do
-                wr.Write((nodeText data.[r,c]).PadRight(widths.[c] + 1))
-            wr.WriteLine()
-        sb.ToString()
+    override x.ToString() = x.Data.ToString()
 
 /// Representation of an HTML list
 type HtmlList = 
@@ -121,20 +123,21 @@ module HtmlRuntime =
                      | _ -> defaultName
                 | h :: _ -> h.InnerText()
 
-    let private getTableHeaders (numberCols:int) (ip:Parameters) (rows:(HtmlNode option)[][]) =
-        let nodeText = function
-            | Some n -> HtmlNode.innerText n
-            | None -> ""
-        let headerRow, firstDataRow = rows.[0] |> Array.map nodeText, rows.[1] |> Array.map nodeText
-        let headerNamesAndUnits = headerRow |> Array.map (fun x -> x,None)
-        let schema = Array.init numberCols (fun _ -> None)
-        let (headerRowType, _) = CsvInference.inferType headerNamesAndUnits schema [headerRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
-        let (rowType, _) = CsvInference.inferType headerNamesAndUnits schema [firstDataRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
-        if headerRowType = rowType 
-        then None
-        else Some headerRow
-
     let private parseTable (ip:Parameters option) includeLayoutTables makeUnique index (table:HtmlNode, parents:HtmlNode list) = 
+        
+        let getTableHeaders (numberCols:int) (ip:Parameters) (rows:(HtmlNode option)[][]) =
+            let nodeText = function
+                | Some n -> HtmlNode.innerText n
+                | None -> ""
+            let headerRow, firstDataRow = rows.[0] |> Array.map nodeText, rows.[1] |> Array.map nodeText
+            let headerNamesAndUnits = headerRow |> Array.map (fun x -> x,None)
+            let schema = Array.init numberCols (fun _ -> None)
+            let (headerRowType, _) = CsvInference.inferType headerNamesAndUnits schema [headerRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+            let (rowType, _) = CsvInference.inferType headerNamesAndUnits schema [firstDataRow] 1 ip.MissingValues ip.CultureInfo true ip.PreferOptionals
+            if headerRowType = rowType 
+            then None
+            else Some headerRow
+        
         let rows =
             let header =
                 match table.Descendants("thead", false) |> Seq.toList with
@@ -186,13 +189,12 @@ module HtmlRuntime =
                 | Some _ -> true, headerWithMeasure
                 | None -> false, headerWithMeasure
             | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i), None)
-        
-        { 
-            Name = tableName
-            HeaderNamesAndUnits = headers
-            HasHeaders = hasHeaders
-            Data = tableData
-            Html = table 
+                
+        { Name = tableName
+          HeaderNamesAndUnits = headers
+          HasHeaders = hasHeaders
+          Data =  tableData
+          Html = table 
         } |> Some
 
 
@@ -285,8 +287,8 @@ module HtmlRuntime =
 
     let getHtmlObjects inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
         (doc |> getTables inferenceParameters includeLayoutTables |> List.map Table) 
-        @ (doc |> getLists |> List.map List)
-        @ (doc |> getDefinitionLists |> List.map DefinitionList)
+    //    @ (doc |> getLists |> List.map List)
+    //    @ (doc |> getDefinitionLists |> List.map DefinitionList)
 
 // --------------------------------------------------------------------------------------
 
@@ -331,7 +333,7 @@ type HtmlRuntimeTable() =
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
     static member Create(doc:HtmlDocument, id:string, hasHeaders:bool, headers:string[]) =
         match doc.GetObject id with
-        | Table table -> table
+        | Table table -> table.ToHtmlElement(hasHeaders, headers)
         | _ -> failwithf "Element %s is not a table" id
 
 /// Underlying representation of list types generated by HtmlProvider

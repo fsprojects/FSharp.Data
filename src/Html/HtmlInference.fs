@@ -22,10 +22,10 @@ type Parameters = {
 /// Generates record fields for all attributes
 let private getAttributes inferTypesFromValues cultureInfo (node:HtmlNode) =
   [ for attr in HtmlNode.attributes node do
-        yield { Name = attr.Name()
+        yield { Name = attr.Name
                 Type =
                     if inferTypesFromValues then
-                        getInferedTypeFromString cultureInfo (attr.Value()) None
+                        getInferedTypeFromString cultureInfo attr.Value None
                     else
                         InferedType.Primitive(typeof<string>, None, false)
               } ]
