@@ -226,6 +226,12 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member ParseRow (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote) =    
+    CsvReader.readCsvFile (new StringReader(text) :> TextReader) separators quote |> Seq.exactlyOne |> fst |> (fun x -> stringArrayToRow.Invoke(null, x))
+
+  /// [omit]
   new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
 
     // Track created Readers so that we can dispose of all of them

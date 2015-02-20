@@ -92,6 +92,12 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         let body = csvErasedType?CreateEmpty () (Expr.Var rowToStringArrayVar, paramValue, replacer.ToRuntime headers,  sampleCsv.NumberOfColumns, separators, quote)
         Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
+
+      let parse = ProvidedMethod("Parse", [ProvidedParameter("text", typeof<string>)], rowType, IsStaticMethod = true)
+      parse.InvokeCode <- fun (Singleton text) -> 
+        let body = csvErasedType?ParseRow() (text, Expr.Var stringArrayToRowVar, separators, quote)
+        Expr.Let(stringArrayToRowVar, stringArrayToRow, body)
+      rowType.AddMember parse
        
       { GeneratedType = csvType
         RepresentationType = csvType
