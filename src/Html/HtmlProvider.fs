@@ -38,14 +38,13 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             let doc : FSharp.Data.HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
-                let inferenceParameters : HtmlInference.Parameters = 
+                let inferenceParameters : HtmlDom.TableInferenceParameters = 
                     { MissingValues = TextRuntime.GetMissingValues missingValuesStr
                       CultureInfo = TextRuntime.GetCulture cultureStr
                       UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
                       PreferOptionals  = preferOptionals }
-                doc
-                |> HtmlRuntime.getHtmlObjects (Some inferenceParameters) includeLayoutTables
-                |> HtmlGenerator.generateTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
+                doc.GetObjects((Some inferenceParameters), includeLayoutTables)
+                |> HtmlGenerator.generateHtmlTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 

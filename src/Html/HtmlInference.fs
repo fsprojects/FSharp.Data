@@ -8,17 +8,6 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralInference
 open FSharp.Data.Runtime.StructuralTypes
 
-// The type of XML element is always a non-optional record with a field
-// for every attribute. If it has some content, then it also 
-// contains a special field named "" which is either a collection
-// (of other records etc.) or a primitive with the type of the content
-
-type Parameters = {
-    MissingValues: string[]
-    CultureInfo: CultureInfo
-    UnitsOfMeasureProvider: IUnitsOfMeasureProvider
-    PreferOptionals: bool }
-
 /// Generates record fields for all attributes
 let private getAttributes inferTypesFromValues cultureInfo (node:HtmlNode) =
   [ for attr in HtmlNode.attributes node do
