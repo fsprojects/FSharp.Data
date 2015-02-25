@@ -61,8 +61,25 @@ type HtmlRuntime =
       else None
             
     /// Creates a XElement with a scalar value and wraps it in a HtmlNode
-    static member CreateValue(name, value:obj, cultureStr) = 
-      HtmlRuntime.CreateRecord(name, [| |], [| "", value |], cultureStr)
+    static member CreateValue(name, value:obj, cultureStr) =
+      let cultureInfo = TextRuntime.GetCulture cultureStr
+      let inline strWithCulture v =
+              (^a : (member ToString : IFormatProvider -> string) (v, cultureInfo))  
+      let serialize (v:obj) =
+          match v with
+          | :? HtmlNode as v -> HtmlNode.innerText v
+          | _ ->
+              match v with
+              | :? string        as v -> v
+              | :? DateTime      as v -> strWithCulture v
+              | :? int           as v -> strWithCulture v
+              | :? int64         as v -> strWithCulture v
+              | :? float         as v -> strWithCulture v
+              | :? decimal       as v -> strWithCulture v
+              | :? bool          as v -> if v then "true" else "false"
+              | :? Guid          as v -> v.ToString()
+              | _ -> failwithf "Unexpected value: %A" v
+      HtmlElement(name, [], [HtmlText(serialize value)])
     
     // Creates a HtmlElement with the given attributes and elements and wraps it as a HtmlNode
     static member CreateRecord(name, attributes:(string * obj)[], elements:(string * obj)[], cultureStr) =
@@ -89,8 +106,8 @@ type HtmlRuntime =
           [
              for (name, value) in elements ->
                 match serialize value with
-                | :? string as v -> HtmlText(v)
-                | :? HtmlNode as n -> (HtmlElement(name, [], [n]))
+                | :? string as v -> HtmlElement(name, [], [HtmlText(v)])
+                | :? HtmlNode as n -> HtmlElement(name, [], [n])
                 | _ -> failwithf "Unexpected value"
           ]
 

@@ -45,5 +45,5 @@ let rec inferType inferTypesFromValues cultureInfo allowEmptyValues (node:HtmlNo
         let primitive = getInferedTypeFromValue inferTypesFromValues cultureInfo node
         yield { Name = ""
                 Type = primitive } ]
-
-  InferedType.Record(Some(HtmlNode.name node), props, false)
+  
+  InferedType.Record(node.TryName, props, false)

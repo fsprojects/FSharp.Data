@@ -179,6 +179,11 @@ type HtmlNode =
         match n with
         | HtmlElement(name = name) -> name
         | _ -> ""
+
+    member n.TryName = 
+        match n with
+        | HtmlElement(name = name) -> Some name
+        | _ -> None
         
     /// Gets all of the nodes immediately under this node
     member n.Elements() =
@@ -500,6 +505,8 @@ module HtmlNode =
 
     /// Gets the given nodes name
     let name (n:HtmlNode) = n.Name
+
+    let tryName (n:HtmlNode) = n.TryName
         
     /// Gets all of the nodes immediately under this node
     let elements (n:HtmlNode) = n.Elements()
@@ -743,21 +750,19 @@ module HtmlDom =
          member x.ToHtmlElement(hasHeaders:bool, headers:string[]) = 
              let headerMap = headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
              let rows =
-                 HtmlElement("rows", [],
-                             if hasHeaders then x.Data.[1..] else x.Data
-                             |> Array.mapi (fun _ cols ->
-                                 let data =
-                                     cols |> Array.mapi (fun colI n -> 
-                                         match n with 
-                                         | Some (HtmlElement(_,_,contents)) -> 
-                                             HtmlElement(headerMap.[colI], [], HtmlNode.normalise contents)
-                                         | Some (HtmlText(t)) -> HtmlElement(headerMap.[colI], [], [HtmlText(t)])
-                                         | Some _ | None -> HtmlElement(headerMap.[colI], [], [HtmlText("")])
-                                      ) |> List.ofArray
-                                 HtmlElement("row",[], data))
-                             |> List.ofArray
-                     )
-             HtmlElement(x.Name, [], [rows])
+                 if hasHeaders then x.Data.[1..] else x.Data
+                 |> Array.mapi (fun _ cols ->
+                     let data =
+                         cols |> Array.mapi (fun colI n -> 
+                             match n with 
+                             | Some (HtmlElement(_,_,contents)) -> 
+                                 HtmlElement(headerMap.[colI], [], HtmlNode.normalise contents)
+                             | Some (HtmlText(t)) -> HtmlElement(headerMap.[colI], [], [HtmlText(t)])
+                             | Some _ | None -> HtmlElement(headerMap.[colI], [], [HtmlText("")])
+                          ) |> List.ofArray
+                     HtmlElement("row",[], data))
+                 |> List.ofArray
+             HtmlElement(x.Name, [], rows)
          
          override x.ToString() = x.Data.ToString()
 
@@ -768,20 +773,18 @@ module HtmlDom =
 
         member x.ToHtmlElement() = 
             let rows =
-                HtmlElement("rows", [],
-                        x.Values
-                        |> Array.mapi (fun _ v ->
-                            let data =
-                                match v with 
-                                | HtmlElement(name,_,contents) -> 
-                                    HtmlElement(name, [], HtmlNode.normalise contents)
-                                | HtmlText(t) -> HtmlText(t)
-                                | _ -> HtmlText("")
-                                 
-                            HtmlElement("row",[], [data]))
-                        |> List.ofArray
-                )
-            HtmlElement(x.Name, [], [rows])
+                x.Values
+                |> Array.mapi (fun _ v ->
+                    let data =
+                        match v with 
+                        | HtmlElement(name,_,contents) -> 
+                            HtmlElement(name, [], HtmlNode.normalise contents)
+                        | HtmlText(t) -> HtmlText(t)
+                        | _ -> HtmlText("")
+                         
+                    HtmlElement("row",[], [data]))
+                |> List.ofArray
+            HtmlElement(x.Name, [], rows)
     
     type HtmlDefinitionList = 
         { Name : string
@@ -1210,8 +1213,8 @@ type HtmlDocument =
     member doc.GetObjects(inferenceParameters, includeLayoutTables) = 
         (fun doc -> 
             (doc |> HtmlDom.getTables inferenceParameters includeLayoutTables |> List.map HtmlDom.Table) 
-            @ (doc |> HtmlDom.getLists |> List.map HtmlDom.List)
-            @ (doc |> HtmlDom.getDefinitionLists |> List.map HtmlDom.DefinitionList)
+          //  @ (doc |> HtmlDom.getLists |> List.map HtmlDom.List)
+          //  @ (doc |> HtmlDom.getDefinitionLists |> List.map HtmlDom.DefinitionList)
         ) doc.Body
 
 // --------------------------------------------------------------------------------------
