@@ -45,8 +45,6 @@ and internal HtmlGenerationResult =
       Converter : Expr -> Expr }
 
 module internal HtmlTypeBuilder = 
-    
-
 
     /// Recognizes different valid infered types of content:
     ///
@@ -413,10 +411,16 @@ module internal HtmlGenerator =
   
     let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.TableInferenceParameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
                
-        let name, hasHeaders, headers = 
+        let name, hasHeaders, headers, createExtensions = 
             match hobj with
-            | HtmlDom.Table t -> t.Name, t.HasHeaders, (t.HeaderNamesAndUnits |> Array.map fst)
-            | _ -> hobj.Name, false, [||]
+            | HtmlDom.Table t -> 
+                let headers = (t.HeaderNamesAndUnits |> Array.map fst)
+                t.Name, t.HasHeaders, headers,
+                (fun (t:ProvidedTypeDefinition) ->
+                    t.AddMember <| ProvidedProperty("Headers", typeof<string[]>, GetterCode = fun _ -> <@@ headers @@>)
+                    t
+                )
+            | _ -> hobj.Name, false, [||], id
             
         let htmlElement = hobj.ToHtmlElement(hasHeaders, headers)
         let inferedType = HtmlInference.inferType true inferenceParameters.CultureInfo true htmlElement
@@ -426,8 +430,8 @@ module internal HtmlGenerator =
         
         let create (htmlDoc:Expr) =
             runtimeTypeWrapper?Create () (htmlDoc, name, hasHeaders, headers)
-
-        (fun doc -> create doc |> result.Converter), result.ConvertedType
+        
+        (fun doc -> create doc |> result.Converter), ((result.ConvertedType :?> ProvidedTypeDefinition) |> createExtensions)
 
 
     let generateHtmlTypes asm ns typeName parameters (replacer:AssemblyReplacer) (htmlObjects:HtmlDom.HtmlObject list) =
@@ -436,7 +440,7 @@ module internal HtmlGenerator =
         
         let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
 
-        let getTableTypeName = typeNameGenerator()
+        let generateTypeName = typeNameGenerator()
 
         let getOrCreateContainer name = 
             match containerTypes.TryGetValue(name) with
@@ -451,11 +455,11 @@ module internal HtmlGenerator =
         for htmlObj in htmlObjects do
             let containerType =
                 match htmlObj with
-                | HtmlDom.Table _ ->getOrCreateContainer "Tables"   
+                | HtmlDom.Table _ -> getOrCreateContainer "Tables"   
                 | HtmlDom.List _ -> getOrCreateContainer "Lists"
                 | HtmlDom.DefinitionList _ -> getOrCreateContainer "DefinitionLists"
                
-            let typ = ProvidedTypeDefinition(getTableTypeName htmlObj.Name, Some typeof<obj>)
+            let typ = ProvidedTypeDefinition(generateTypeName htmlObj.Name, Some typeof<obj>)
             htmlType.AddMember typ
             let create, tableType = createType replacer parameters typ htmlObj
             containerType.AddMember <| ProvidedProperty(getPropertyName htmlObj.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)

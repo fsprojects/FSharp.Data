@@ -36,34 +36,34 @@ let ``SimpleHtml infers date type correctly ``() =
 [<Test>]
 let ``SimpleHtml infers int type correctly ``() = 
     let table = SimpleHtml().Tables.Table
-    table.Rows.[0].``Column 1`` |> should equal 1
+    table.Rows.[0].Column1 |> should equal 1
 
 [<Test>]
 let ``SimpleHtml infers bool type correctly ``() = 
     let table = SimpleHtml().Tables.Table
-    table.Rows.[0].``Column 2`` |> should equal true
+    table.Rows.[0].Column2 |> should equal true
 
 [<Test>]
 let ``SimpleHtml infers decimal type correctly ``() = 
     let table = SimpleHtml().Tables.Table
-    table.Rows.[0].``Column 3`` |> should equal 2M
+    table.Rows.[0].Column3 |> should equal 2M
 
 [<Test>]
 let ``SimpleHtml infers as optional fail through type correctly ``() = 
     let table = SimpleHtml().Tables.Table
-    table.Rows.[0].``Column 4`` |> should equal (Some 2M)
+    table.Rows.[0].Column4 |> should equal (Some 2M)
 
 [<Test>]
 let ``Can create type for simple table``() = 
     let table = SimpleHtml().Tables.Table
-    table.Rows.[0].``Column 1`` |> should equal 1
+    table.Rows.[0].Column1 |> should equal 1
 
 type MarketDepth = HtmlProvider<"data/marketdepth.htm">
 
 [<Test>]
 let ``Can infer tables out of the market depth file``() =
     let table = MarketDepth().Tables.Table1
-    table.Rows.[0].``Settlement Day`` |> should equal (DateTime(2014, 1, 14, 0, 0,0))
+    table.Rows.[0].SettlementDay |> should equal (DateTime(2014, 1, 14, 0, 0,0))
     table.Rows.[0].Period |> should equal 1
 
 [<Test>]
@@ -84,7 +84,7 @@ let ``Should find the table as a header``() =
                         </table>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Tables.``Example Table``
-    table.Rows.[0].``Column 3`` |> should equal 2M
+    table.Row.Column3 |> should equal 2M
 
 [<Test>]
 let ``Should find the table as a header when nested deeper``() = 
@@ -103,7 +103,7 @@ let ``Should find the table as a header when nested deeper``() =
                         </table>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Tables.``Example Table``
-    table.Rows.[0].``Column 3`` |> should equal 2M
+    table.Row.Column3 |> should equal 2M
 
 [<Test>]
 let ``Should parse units from table headers``() = 
@@ -115,9 +115,9 @@ let ``Should parse units from table headers``() =
                         </table>
                     </body>
                 </html>""">.GetSample().Tables.Table1
-    let distance = table.Rows.[0].Distance
+    let distance = table.Row.Distance
     distance |> should equal 1.5<metre>
-    let time = table.Rows.[0].Time
+    let time = table.Row.Time
     time |> should equal 30.5<second>
 
 [<Test>]
@@ -147,7 +147,7 @@ let ``Can handle a table with a single column``() =
                         </table>
                     </body>
                 </html>""">.GetSample().Tables.Table1
-    let percentage = table.Rows.[0]
+    let percentage = table.Rows.[0].Value
     percentage |> should equal 2
 
 [<Test>]
@@ -287,5 +287,5 @@ let ``Can handle a table with headers directly inside thead``() =
                     </body>
                 </html>""">.GetSample().Tables.Table1
     match table.Headers with
-    | None -> failwith "No headers found"
-    | Some headers -> headers |> should equal [ "Month"; "Savings" ]
+    | [||] -> failwith "No headers found"
+    | headers -> headers |> should equal [ "Month"; "Savings" ]

@@ -8,6 +8,16 @@ module FSharp.Data.Tests.HtmlProvider
 open System
 open FSharp.Data
 
+let simpleList = HtmlProvider<"""<html>
+                    <body>
+                        <ul>
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                        </ul>
+                    </body>
+                </html>""">.GetSample().Lists.List1
+
 let table = HtmlProvider<"""<html>
                 <body>
                     <table>

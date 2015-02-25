@@ -155,7 +155,7 @@ let ``Handles simple definition list``() =
     list.Count.Values |> should equal [1;2]
     list.Dates.Values |> should equal [DateTime(2014,1,1); DateTime(2014, 2,2)]
     list.Decimals.Values |> should equal [1.23M; 2.23M]
-    list.Missing.Values |> should equal [Some "Foobar"; None]
+    list.Missing.Values |> should equal ["Foobar"; ""]
 
 [<Test>]
 let ``Handles definition list correctly``() = 
@@ -173,11 +173,11 @@ let ``Handles definition list correctly``() =
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().DefinitionLists.DefinitionList1
     list.Authors.Values |> should equal ["Remy Sharp"; "Rich Clark"]
-    list.Category.Values |> should equal ["Comment"]
-    list.Editor.Values |> should equal ["Brandan Lennox"]
+    list.Category.Value |> should equal "Comment"
+    list.Editor.Value |> should equal "Brandan Lennox"
 
 [<Test>]
 let ``Handles SimpleListHtml file``() = 
     let list = HtmlProvider<"Data/SimpleHtmlLists.html">.GetSample()
-    list.Lists.SimpleCount.Values |> should equal [1;2;3]
-    list.DefinitionLists.MyDLLists.Count.Values |> should equal [1;2]
+    list.Lists.SimpleCount.Values |> should equal [|1;2;3|]
+    list.DefinitionLists.MyDLLists.Count.Values |> should equal [|1;2|]

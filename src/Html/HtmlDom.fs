@@ -778,15 +778,11 @@ module HtmlDom =
         member x.ToHtmlElement() = 
             let rows =
                 x.Values
-                |> Array.mapi (fun _ v ->
-                    let data =
-                        match v with 
-                        | HtmlElement(name,_,contents) -> 
-                            HtmlElement(name, [], HtmlNode.normalise contents)
-                        | HtmlText(t) -> HtmlText(t)
-                        | _ -> HtmlText("")
-                         
-                    HtmlElement("row",[], [data]))
+                |> Array.choose (function
+                        | HtmlElement(_,_,contents) -> 
+                            Some(HtmlElement("Value", [], HtmlNode.normalise contents))
+                        | HtmlText(_) as t -> Some(HtmlElement("Value", [], [t]))
+                        | _ -> None)
                 |> List.ofArray
             HtmlElement(x.Name, [], rows)
     
@@ -795,12 +791,8 @@ module HtmlDom =
           Definitions : HtmlList list
           Html : HtmlNode }
 
-        member x.ToHtmlElement() = 
-            let rows =
-                HtmlElement("Definitions", [],
-                        x.Definitions |> List.map (fun x -> x.ToHtmlElement())
-                )
-            HtmlElement(x.Name, [], [rows])
+        member x.ToHtmlElement() =
+            HtmlElement(x.Name, [], x.Definitions |> List.map (fun x -> x.ToHtmlElement()))
 
     
     type HtmlObject = 
@@ -933,7 +925,7 @@ module HtmlDom =
             |> List.ofSeq
             |> createDefinitionGroups
             |> List.map (fun (group, node, values) -> { Name = group
-                                                        Values = values |> List.toArray
+                                                        Values = values |> List.rev |> List.toArray
                                                         Html = node })
 
         if data.Length <= 1 then None else
@@ -943,30 +935,6 @@ module HtmlDom =
         { Name = name
           Definitions = data
           Html = definitionList } |> Some
-
-    let getTables inferenceParameters includeLayoutTables (doc:HtmlNode) =
-        let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
-        let tableElements = 
-            if includeLayoutTables
-            then tableElements
-            else tableElements |> List.filter (fun (e, _) -> not (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")))
-        tableElements
-        |> List.mapi (tryParseTable inferenceParameters includeLayoutTables)
-        |> List.choose id
-
-    let getLists (doc:HtmlNode) =        
-        doc
-        |> HtmlNode.descendantsNamedWithPath true ["ol"; "ul"]
-        |> List.ofSeq
-        |> List.mapi tryParseList
-        |> List.choose id
-
-    let getDefinitionLists (doc:HtmlNode) =                
-        doc
-        |> HtmlNode.descendantsNamedWithPath false ["dl"]
-        |> List.ofSeq
-        |> List.mapi tryParseDefinitionList
-        |> List.choose id
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
@@ -1214,12 +1182,33 @@ type HtmlDocument =
         | [] -> None
         | body:: _ -> Some body
 
+    member doc.Tables(inferenceParameters, includeLayoutTables) =
+        let tableElements = doc.DescendantsWithPath "table" |> List.ofSeq
+        let tableElements = 
+            if includeLayoutTables
+            then tableElements
+            else tableElements |> List.filter (fun (e, _) -> not (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")))
+        tableElements
+        |> List.mapi (HtmlDom.tryParseTable inferenceParameters includeLayoutTables)
+        |> List.choose id
+
+    member doc.Lists() =        
+        doc.DescendantsWithPath(["ol"; "ul"])
+        |> List.ofSeq
+        |> List.mapi HtmlDom.tryParseList
+        |> List.choose id
+
+    member doc.DefinitionLists() =                
+        doc.DescendantsWithPath(["dl"], false)
+        |> List.ofSeq
+        |> List.mapi HtmlDom.tryParseDefinitionList
+        |> List.choose id
+
     member doc.GetObjects(inferenceParameters, includeLayoutTables) = 
-        (fun doc -> 
-            (doc |> HtmlDom.getTables inferenceParameters includeLayoutTables |> List.map HtmlDom.Table) 
-            @ (doc |> HtmlDom.getLists |> List.map HtmlDom.List)
-            @ (doc |> HtmlDom.getDefinitionLists |> List.map HtmlDom.DefinitionList)
-        ) doc.Body
+        (doc.Tables(inferenceParameters,includeLayoutTables) |> List.map HtmlDom.Table) 
+        @ (doc.Lists() |> List.map HtmlDom.List)
+        @ (doc.DefinitionLists() |> List.map HtmlDom.DefinitionList)
+        
 
 // --------------------------------------------------------------------------------------
 
@@ -1297,6 +1286,15 @@ module HtmlDocument =
     /// Parameters:
     /// * x - The given document
     let inline tryGetBody (x:HtmlDocument) = x.TryGetBody()
+
+    let getTable inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
+        doc.Tables(inferenceParameters, includeLayoutTables)
+
+    let getLists (doc:HtmlDocument) = 
+        doc.Lists()
+
+    let getDefinitionLists (doc:HtmlDocument) =
+        doc.DefinitionLists()
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Provides the dynamic operator for getting attribute values from HTML elements

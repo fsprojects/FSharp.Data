@@ -12,21 +12,21 @@ namespace FSharp.Data.Tests.CSharp
         public void HtmlAttribute_Name_with_valid_attribute()
         {
             var attr = HtmlAttribute.New("id", "table_1");
-            Assert.AreEqual("id", attr.Name());
+            Assert.AreEqual("id", attr.Name);
         }
 
         [Test]
         public void HtmlAttribute_Value_with_valid_attribute()
         {
             var attr = HtmlAttribute.New("id", "table_1");
-            Assert.AreEqual("table_1", attr.Value());
+            Assert.AreEqual("table_1", attr.Value);
         }
 
         [Test]
         public void HtmlNode_Name_with_valid_element()
         {
             var node = CreateDivElement();
-            Assert.AreEqual("div", node.Name());
+            Assert.AreEqual("div", node.Name);
         }
 
         [Test]
