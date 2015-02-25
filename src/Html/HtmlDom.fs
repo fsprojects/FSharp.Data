@@ -177,12 +177,12 @@ type HtmlNode =
     /// Gets the given nodes name
     member n.Name =
         match n with
-        | HtmlElement(name = name) -> name
+        | HtmlElement(name = name) -> name |> toLower
         | _ -> ""
 
     member n.TryName = 
         match n with
-        | HtmlElement(name = name) -> Some name
+        | HtmlElement(name = name) -> Some (name |> toLower)
         | _ -> None
         
     /// Gets all of the nodes immediately under this node
@@ -191,12 +191,16 @@ type HtmlNode =
         | HtmlElement(elements = contents) -> contents
         | _ -> []
 
+    /// Gets all of the nodes immediately under this node
+    member n.Elements(f) = 
+        n.Elements() |> List.filter f
+
     /// Finds all of the elements nodes of this node that match the given set of names
     /// Parameters:
     ///  * names - The set of names to match
     member n.Elements(names) = 
         let nameSet = getNameSet names
-        n.Elements() |> List.filter (fun e -> e.Name |> nameSet.Contains)
+        n.Elements(fun e -> e.Name |> nameSet.Contains)
 
     /// Finds all of the elements nodes of this node that match the given name
     /// Parameters:
@@ -671,17 +675,17 @@ module HtmlNode =
 
             let getPath str = 
                 (match Uri.TryCreate(str, UriKind.Absolute) with 
-                 | true, uri -> uri.LocalPath 
+                 | true, uri -> NameUtils.nicePascalName uri.LocalPath 
                  | false, _ -> "").Trim('/')
 
             let rec walk state (n:HtmlNode) = 
                 match n with
                 | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->  
-                      (HtmlElement(prop, [], [HtmlElement(getPath scope, [], elements n |> List.fold walk [])])) :: state
+                      (HtmlElement(NameUtils.nicePascalName prop, [], [HtmlElement(getPath scope, [], elements n |> List.fold walk [])])) :: state
                 | Attr "itemtype" scope -> 
                       (HtmlElement(getPath scope, [], elements n |> List.fold walk [])) :: state
                 | Attr "itemprop" prop ->
-                      (HtmlElement(prop, [], normalise (elements n))) :: state
+                      (HtmlElement(NameUtils.nicePascalName prop, [], normalise (elements n))) :: state
                 | _ ->  elements n |> List.fold walk state
             
             match walk [] n with
@@ -702,7 +706,7 @@ module HtmlNode =
                 |> Option.map HtmlAttribute.value
             )
 
-        let rec tryFindPrevious f (x:HtmlNode) (parents:HtmlNode list)= 
+        let rec tryFindPrevious f (x:HtmlNode) (parents:HtmlNode list) = 
             match parents with
             | p::rest ->
                 let nearest = 
@@ -849,7 +853,7 @@ module HtmlDom =
         
         if rows.Length <= 1 then None 
         else
-
+        
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
         let rowLengths = cells |> List.map (fun x -> x.Length)
         let numberOfColumns = List.max rowLengths
@@ -1213,8 +1217,8 @@ type HtmlDocument =
     member doc.GetObjects(inferenceParameters, includeLayoutTables) = 
         (fun doc -> 
             (doc |> HtmlDom.getTables inferenceParameters includeLayoutTables |> List.map HtmlDom.Table) 
-          //  @ (doc |> HtmlDom.getLists |> List.map HtmlDom.List)
-          //  @ (doc |> HtmlDom.getDefinitionLists |> List.map HtmlDom.DefinitionList)
+            @ (doc |> HtmlDom.getLists |> List.map HtmlDom.List)
+            @ (doc |> HtmlDom.getDefinitionLists |> List.map HtmlDom.DefinitionList)
         ) doc.Body
 
 // --------------------------------------------------------------------------------------

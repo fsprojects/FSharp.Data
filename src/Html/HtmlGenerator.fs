@@ -14,6 +14,8 @@ open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 
+#nowarn "10001"
+
 type internal HtmlGenerationContext =
     { CultureStr : string
       TypeProviderType : ProvidedTypeDefinition
@@ -43,6 +45,8 @@ and internal HtmlGenerationResult =
       Converter : Expr -> Expr }
 
 module internal HtmlTypeBuilder = 
+    
+
 
     /// Recognizes different valid infered types of content:
     ///
@@ -103,7 +107,7 @@ module internal HtmlTypeBuilder =
                 let optional = optional || primitives.Length > 1
 
                 let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create("Value", typ, optional, unit)
-                let conv = fun xml -> conv <@ HtmlNode.TryGetInnerText(%%xml) @>
+                let conv = fun xml -> conv <@ HtmlRuntime.TryGetValue(%%xml) @>
                 
                 typ, name, ctx.Replacer.ToDesignTime >> conv, optionalJustBecauseThereAreMultiple
             
@@ -134,7 +138,7 @@ module internal HtmlTypeBuilder =
         | HeterogeneousRecords cases ->
        
             // Generate new choice type for the element
-            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<HtmlNode>), HideObjectMethods = true, NonNullable = true)
+            let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName "Choice", Some(ctx.Replacer.ToRuntime typeof<HtmlElement>), HideObjectMethods = true, NonNullable = true)
             ctx.TypeProviderType.AddMember objectTy
        
             // to nameclash property names
@@ -146,7 +150,7 @@ module internal HtmlTypeBuilder =
                 [ for name, case in cases ->
                 
                     let result = generateHtmlType ctx case
-                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlNode>)                            
+                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlElement>)                            
                     let name = makeUnique name
 
                     ProvidedProperty(name, ctx.MakeOptionType result.ConvertedType, GetterCode = fun (Singleton xml) ->               
@@ -176,7 +180,7 @@ module internal HtmlTypeBuilder =
                   [ProvidedParameter("Html",ctx.Replacer.ToRuntime typeof<HtmlNode>)], 
                   InvokeCode = fun (Singleton arg) -> 
                       let arg = ctx.Replacer.ToDesignTime arg
-                      <@@ %%arg @@> |> ctx.Replacer.ToRuntime)
+                      <@@ HtmlElement.Create(%%arg) @@> |> ctx.Replacer.ToRuntime)
 
             { ConvertedType = objectTy
               Converter = ctx.Replacer.ToRuntime }
@@ -184,7 +188,7 @@ module internal HtmlTypeBuilder =
         // If the element is more complicated, then we generate a type to represent it properly
         | InferedType.Record(Some name, props, false) -> 
             let objectTy = ProvidedTypeDefinition(ctx.UniqueNiceName name,
-                                                  Some(ctx.Replacer.ToRuntime typeof<HtmlNode>), 
+                                                  Some(ctx.Replacer.ToRuntime typeof<HtmlElement>), 
                                                   HideObjectMethods = true, NonNullable = true)
             ctx.TypeProviderType.AddMember objectTy
                        
@@ -284,9 +288,10 @@ module internal HtmlTypeBuilder =
                                    InferedType.Record(Some parentNameWithNS2,
                                                       [ { Type = InferedType.Collection (_, SingletonMap (InferedTypeTag.Record (Some childNameWithNS), 
                                                                                                          (_, InferedType.Record(Some childNameWithNS2, _, false) as multiplicityAndType))) } ], false)) 
-                                  when parentNameWithNS = parentNameWithNS2 && childNameWithNS = childNameWithNS2 && isListName (parentNameWithNS) (childNameWithNS) -> 
-                                      let combinedName = Some (parentNameWithNS + "|" + childNameWithNS)
-                                      InferedTypeTag.Record combinedName, multiplicityAndType
+                                   when parentNameWithNS = parentNameWithNS2 && childNameWithNS = childNameWithNS2 && isListName parentNameWithNS childNameWithNS
+                                  -> 
+                                      
+                                      InferedTypeTag.Record (Some parentNameWithNS), multiplicityAndType
                                 | x -> x
 
                             match child with
@@ -308,7 +313,7 @@ module internal HtmlTypeBuilder =
                                 // (because the child may be represented as primitive type - so we cannot just
                                 // return array of HtmlNode - it might be for example int[])
                                 | InferedMultiplicity.Multiple ->
-                                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlNode>)
+                                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlElement>)
                                     let name = makeUnique (NameUtils.pluralize names)
                                     let typ = result.ConvertedType.MakeArrayType()
                                     nameWithNS,
@@ -318,7 +323,7 @@ module internal HtmlTypeBuilder =
                                     ProvidedParameter(NameUtils.niceCamelName name, typ)
 
                                 | InferedMultiplicity.OptionalSingle ->
-                                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlNode>)
+                                    let convFunc = ReflectionHelpers.makeDelegate result.Converter (ctx.Replacer.ToRuntime typeof<HtmlElement>)
                                     let name = makeUnique names
                                     if result.ConvertedType.Name.StartsWith "FSharpOption`1" then                                      
                                         nameWithNS,
@@ -333,7 +338,6 @@ module internal HtmlTypeBuilder =
                                             let HtmlRuntime = ctx.Replacer.ToRuntime typeof<HtmlRuntime>
                                             HtmlRuntime?ConvertOptional (result.ConvertedType) (xml, nameWithNS, convFunc)),
                                         ProvidedParameter(NameUtils.niceCamelName name, typ)
-       
                             | _ -> failwithf "generateHtmlType: Child elements should be named record types, got %A" child ]
 
                     primitiveResults, childResults
@@ -391,7 +395,7 @@ module internal HtmlTypeBuilder =
                   [ProvidedParameter("Html", ctx.Replacer.ToRuntime typeof<HtmlNode>)], 
                   InvokeCode = fun (Singleton arg) -> 
                       let arg = ctx.Replacer.ToDesignTime arg
-                      <@@ %%arg @@> |> ctx.Replacer.ToRuntime)
+                      <@@ HtmlElement.Create(%%arg) @@> |> ctx.Replacer.ToRuntime)
 
             { ConvertedType = objectTy 
               Converter = ctx.Replacer.ToRuntime }
@@ -407,14 +411,15 @@ module internal HtmlGenerator =
             Utils.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
   
-    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.TableInferenceParameters, missingValuesStr, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
+    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.TableInferenceParameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
                
         let name, hasHeaders, headers = 
             match hobj with
             | HtmlDom.Table t -> t.Name, t.HasHeaders, (t.HeaderNamesAndUnits |> Array.map fst)
             | _ -> hobj.Name, false, [||]
             
-        let inferedType = HtmlInference.inferType true inferenceParameters.CultureInfo true (hobj.ToHtmlElement(hasHeaders, headers))
+        let htmlElement = hobj.ToHtmlElement(hasHeaders, headers)
+        let inferedType = HtmlInference.inferType true inferenceParameters.CultureInfo true htmlElement
         let ctx = HtmlGenerationContext.Create(cultureStr,tableType, replacer)
         let result = HtmlTypeBuilder.generateHtmlType ctx inferedType
         let runtimeTypeWrapper = replacer.ToRuntime (typeof<HtmlRuntimeWrapper>)

@@ -1,3 +1,10 @@
+#### 2.1.3 - Unreleased
+* Tidyied up Html operations. 
+* Changed behaviour of elements to only return HtmlElements, added Nodes variant to replace existing functionality - Breaking change. 
+All previous calls to element -> nodes to keep existing behaviour.
+* Complete rework of HtmlProvider. Will now support micro-schema and nested types. So lists within tables and tables within tables.
+ 
+
 #### 2.1.2 - Unreleased
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element

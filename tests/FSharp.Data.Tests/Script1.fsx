@@ -68,4 +68,4 @@ let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 
 let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.BirthDate) |> Seq.toList
 
-let zoopla = HtmlProvider<"http://www.zoopla.co.uk/for-sale/property/london/waterloo/?include_retirement_homes=true&include_shared_ownership=true&new_homes=include&q=Waterloo%2C%20London&results_sort=newest_listings&search_source=home">
+type zoopla = HtmlProvider<"http://www.zoopla.co.uk/for-sale/property/london/waterloo/?include_retirement_homes=true&include_shared_ownership=true&new_homes=include&q=Waterloo%2C%20London&results_sort=newest_listings&search_source=home">
