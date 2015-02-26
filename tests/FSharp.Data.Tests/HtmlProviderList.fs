@@ -35,7 +35,6 @@ let ``Can handle nested lists``() =
                                     <li>1</li>
                                     <li>2</li>
                                 </ul>
-                                Foo Bar
                             </li>
                             <li>2</li>
                             <li>3</li>
@@ -84,17 +83,25 @@ let ``Simple List infers date type correctly ``() =
     list.Values |> should equal [DateTime(2013,1,1);DateTime(2013,2,2);DateTime(2013,3,3)]
 
 [<Test>]
-let ``Simple List infers hetergenous list as string type correctly ``() = 
+let ``Simple List infers hetergenous list correctly ``() = 
     let list = HtmlProvider<"""<html>
                     <body>
                         <ul>
                             <li>01/01/2013</li>
+                            <li>4</li>
                             <li>1</li>
                             <li>Foobar</li>
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal ["01/01/2013";"1";"Foobar"]
+    list.Values 
+    |> Array.map (fun x -> x.DateTime, x.Number, x.String)
+    |> should equal [|
+                        (Some (DateTime(2013, 1, 1)), None, Some "01/01/2013");
+                        (None, Some 4, Some "4"); 
+                        (None, Some 1, Some "1"); 
+                        (None, None, Some "Foobar")
+                    |]
 
 [<Test>]
 let ``Should find the list as a header``() = 

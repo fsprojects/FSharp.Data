@@ -128,6 +128,13 @@ type InferedTypeTag with
     | Record (Some name) -> NameUtils.nicePascalName name
     | Json _ -> "Json"
   
+  member x.IsPrimitive = 
+    match x with
+    | Number | Boolean 
+    | String | DateTime  
+    | Guid  -> true
+    | _ -> false
+
   /// Converts tag to string code that can be passed to generated code
   member x.Code = 
     match x with

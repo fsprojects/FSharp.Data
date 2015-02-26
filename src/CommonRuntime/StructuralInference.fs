@@ -217,6 +217,7 @@ let inferCollectionType allowEmptyValues types =
           tag, (multiple, Seq.fold (subtypeInfered allowEmptyValues) InferedType.Top types))
       |> Seq.toList
   InferedType.Collection (List.map fst groupedTypes, Map.ofList groupedTypes)
+           
 
 [<AutoOpen>]
 module private Helpers =

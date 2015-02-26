@@ -16,7 +16,7 @@ open FSharp.Data.HtmlDocument
 open FSharp.Data.HtmlNode
 
 let getTables includeLayoutTables = 
-    let parameters : HtmlDom.TableInferenceParameters = 
+    let parameters : HtmlDom.InferenceParameters = 
         { MissingValues = TextConversions.DefaultMissingValues
           CultureInfo = CultureInfo.InvariantCulture
           UnitsOfMeasureProvider = StructuralInference.defaultUnitsOfMeasureProvider

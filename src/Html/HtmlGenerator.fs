@@ -288,7 +288,6 @@ module internal HtmlTypeBuilder =
                                                                                                          (_, InferedType.Record(Some childNameWithNS2, _, false) as multiplicityAndType))) } ], false)) 
                                    when parentNameWithNS = parentNameWithNS2 && childNameWithNS = childNameWithNS2 && isListName parentNameWithNS childNameWithNS
                                   -> 
-                                      
                                       InferedTypeTag.Record (Some parentNameWithNS), multiplicityAndType
                                 | x -> x
 
@@ -409,7 +408,7 @@ module internal HtmlGenerator =
             Utils.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
   
-    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.TableInferenceParameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
+    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.InferenceParameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
                
         let name, hasHeaders, headers, createExtensions = 
             match hobj with
@@ -423,7 +422,7 @@ module internal HtmlGenerator =
             | _ -> hobj.Name, false, [||], id
             
         let htmlElement = hobj.ToHtmlElement(hasHeaders, headers)
-        let inferedType = HtmlInference.inferType true inferenceParameters.CultureInfo true htmlElement
+        let inferedType = HtmlInference.inferNodeType true inferenceParameters true htmlElement
         let ctx = HtmlGenerationContext.Create(cultureStr,tableType, replacer)
         let result = HtmlTypeBuilder.generateHtmlType ctx inferedType
         let runtimeTypeWrapper = replacer.ToRuntime (typeof<HtmlRuntimeWrapper>)

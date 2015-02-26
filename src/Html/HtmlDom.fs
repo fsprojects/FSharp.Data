@@ -185,7 +185,12 @@ type HtmlNode =
         match n with
         | HtmlElement(name = name) -> Some (name |> toLower)
         | _ -> None
-        
+    
+    member n.NodeCount = 
+        match n with 
+        | HtmlElement(elements = nodes) -> nodes.Length
+        | _ -> 0
+       
     /// Gets all of the nodes immediately under this node
     member n.Elements() =
         match n with
@@ -507,6 +512,8 @@ type HtmlNode =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 /// Module with operations on HTML nodes
 module HtmlNode =
+    
+    let nodeCount (n:HtmlNode) = n.NodeCount
 
     /// Gets the given nodes name
     let name (n:HtmlNode) = n.Name
@@ -784,7 +791,7 @@ module HtmlDom =
                 |> Array.choose (function
                         | HtmlElement(_,_,contents) -> 
                             Some(HtmlElement("Value", [], normalise contents))
-                        | HtmlText(_) as t -> Some(HtmlElement("Value", [], [t]))
+                        | HtmlText(_) as t -> Some(t)
                         | _ -> None)
                 |> List.ofArray
             HtmlElement(x.Name, [], rows)
@@ -813,15 +820,15 @@ module HtmlDom =
             | List l -> l.ToHtmlElement()
             | DefinitionList l -> l.ToHtmlElement()
 
-    type TableInferenceParameters = {
+    type InferenceParameters = {
         MissingValues: string[]
         CultureInfo: CultureInfo
         UnitsOfMeasureProvider: IUnitsOfMeasureProvider
         PreferOptionals: bool }
 
-    let tryParseTable (ip:TableInferenceParameters option) includeLayoutTables index (table:HtmlNode, parents:HtmlNode list) = 
+    let tryParseTable (ip:InferenceParameters option) includeLayoutTables index (table:HtmlNode, parents:HtmlNode list) = 
         
-        let getTableHeaders (numberCols:int) (ip:TableInferenceParameters) (rows:(HtmlNode option)[][]) =
+        let getTableHeaders (numberCols:int) (ip:InferenceParameters) (rows:(HtmlNode option)[][]) =
             let nodeText = function
                 | Some n -> HtmlNode.innerText n
                 | None -> ""

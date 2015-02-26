@@ -8,15 +8,17 @@ module FSharp.Data.Tests.HtmlProvider
 open System
 open FSharp.Data
 
-let simpleList = HtmlProvider<"""<html>
-                    <body>
-                        <ul>
-                            <li>1</li>
-                            <li>2</li>
-                            <li>3</li>
-                        </ul>
-                    </body>
-                </html>""">.GetSample().Lists.List1
+ let list = HtmlProvider<"""<html>
+                 <body>
+                     <ul>
+                         <li>01/01/2013</li>
+                         <li>1</li>
+                         <li>Foobar</li>
+                     </ul>
+                 </body>
+             </html>""", PreferOptionals=true>.GetSample().Lists.List1
+let result = list.Values |> Array.map (fun x -> x.DateTime, x.Number, x.String)
+
 
 let table = HtmlProvider<"""<html>
                 <body>
