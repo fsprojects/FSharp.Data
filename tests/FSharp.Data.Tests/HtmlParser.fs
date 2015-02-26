@@ -305,11 +305,11 @@ let ``Extracts data and headers with thead and tbody``() =
         |> getTables true
     tables.Length |> should equal 1
     tables.[0].Name |> should equal "savings_table"
-    tables.[0].HasHeaders |> should equal (Some true)
-    tables.[0].Data |> should equal [ [ HtmlNode.NewText "Month" |> Some; HtmlNode.NewText "Savings" |> Some ]
-                                      [ HtmlNode.NewText "Sum" |> Some; HtmlNode.NewText "$180" |> Some ]
-                                      [ HtmlNode.NewText "January" |> Some; HtmlNode.NewText "$100" |> Some ]
-                                      [ HtmlNode.NewText "February" |> Some; HtmlNode.NewText "$80" |> Some ] ]
+    tables.[0].HasHeaders |> should equal true
+    tables.[0].Data |> should equal [ [ HtmlNode.NewElement("th",[HtmlNode.NewText "Month"]) |> Some; HtmlNode.NewElement("th",[HtmlNode.NewText "Savings"]) |> Some ]
+                                      [ HtmlNode.NewElement("td",[HtmlNode.NewText "Sum"]) |> Some; HtmlNode.NewElement("td",[ HtmlNode.NewText "$180"]) |> Some ]
+                                      [ HtmlNode.NewElement("td",[HtmlNode.NewText "January"]) |> Some; HtmlNode.NewElement("td",[HtmlNode.NewText "$100"]) |> Some ]
+                                      [ HtmlNode.NewElement("td",[HtmlNode.NewText "February"]) |> Some;HtmlNode.NewElement("td",[ HtmlNode.NewText "$80"]) |> Some ] ]
 
 [<Test>]
 let ``Extracts tables in malformed html``() = 
