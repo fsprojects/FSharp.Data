@@ -653,6 +653,30 @@ module HtmlNode =
 
 module HtmlDom = 
 
+    type InferenceParameters = {
+        MissingValues: string[]
+        CultureInfo: CultureInfo
+        UnitsOfMeasureProvider: IUnitsOfMeasureProvider
+        PreferOptionals: bool }
+
+    type HtmlList = 
+        { Name : string
+          Values : HtmlNode[]
+          Html : HtmlNode }
+
+    
+    type HtmlDefinitionList = 
+        { Name : string
+          Definitions : HtmlList list
+          Html : HtmlNode }
+
+    type HtmlTable = 
+         { Name : string
+           HeaderNamesAndUnits : (string * Type option)[] // always set
+           HasHeaders: bool // always set at designtime, never at runtime
+           Data :  HtmlNode option [][]
+           Html : HtmlNode }
+
     let getName defaultName (parents:HtmlNode list) (element:HtmlNode) = 
 
         let parents = parents |> Seq.truncate 2 |> Seq.toList
@@ -723,130 +747,72 @@ module HtmlDom =
                     | Some attr -> attr.Value
                     | None -> HtmlNode.innerText n
                 HtmlText(value)
+            | "table" -> 
+                match tryParseTable "Table" n with
+                | None -> HtmlText(HtmlNode.innerText n)
+                | Some t -> tableToHtmlElement t
+            | "dl" ->
+                match tryParseDefinitionList "DefinitionList" n with
+                | None -> HtmlText(HtmlNode.innerText n)
+                | Some t -> definitionListToHtmlElement t
+            | "ol" | "ul" ->
+                match tryParseList "List" n with
+                | None -> HtmlText(HtmlNode.innerText n)
+                | Some l -> listToHtmlElement l
             | _ -> 
                 match tryParseMicroSchema n with
                 | Some h -> h 
                 | None -> HtmlText(HtmlNode.innerText n)
 
-        and tryParseMicroSchema (n:HtmlNode) =
-            let (|Attr|_|) (name:string) (n:HtmlNode) = 
-                let attr = (HtmlNode.tryGetAttribute name n)
-                attr |> Option.map (fun x -> x.Value)
-
-            let getPath str = 
-                (match Uri.TryCreate(str, UriKind.Absolute) with 
-                 | true, uri -> NameUtils.nicePascalName uri.LocalPath 
-                 | false, _ -> "").Trim('/')
-
-            let rec walk state (n:HtmlNode) = 
-                match n with
-                | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->  
-                      (HtmlElement(NameUtils.nicePascalName prop, [], [HtmlElement(getPath scope, [], HtmlNode.elements n |> List.fold walk [])])) :: state
-                | Attr "itemtype" scope -> 
-                      (HtmlElement(getPath scope, [], HtmlNode.elements n |> List.fold walk [])) :: state
-                | Attr "itemprop" prop ->
-                      (HtmlElement(NameUtils.nicePascalName prop, [], normalise (HtmlNode.elements n))) :: state
-                | _ ->  HtmlNode.elements n |> List.fold walk state
-            
-            match walk [] n with
-            | [] -> None
-            | h :: _ -> Some h
-
         n |> List.map (fun n -> getValue' n)
-    
-    type HtmlTable = 
-         { Name : string
-           HeaderNamesAndUnits : (string * Type option)[] // always set
-           HasHeaders: bool // always set at designtime, never at runtime
-           Data :  HtmlNode option [][]
-           Html : HtmlNode }
-    
-         member x.ToHtmlElement(hasHeaders:bool, headers:string[]) = 
-             let headerMap = headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
-             let rows =
-                 if hasHeaders then x.Data.[1..] else x.Data
-                 |> Array.mapi (fun _ cols ->
-                     let data =
-                         cols |> Array.mapi (fun colI n -> 
-                             match n with 
-                             | Some (HtmlElement(_,_,contents)) -> 
-                                 HtmlElement(headerMap.[colI], [], normalise contents)
-                             | Some (HtmlText(t)) -> HtmlElement(headerMap.[colI], [], [HtmlText(t)])
-                             | Some _ | None -> HtmlElement(headerMap.[colI], [], [HtmlText("")])
-                          ) |> List.ofArray
-                     HtmlElement("row",[], data))
-                 |> List.ofArray
-             HtmlElement(x.Name, [], rows)
-         
-         override x.ToString() = x.Data.ToString()
 
-    type HtmlList = 
-        { Name : string
-          Values : HtmlNode[]
-          Html : HtmlNode }
+    and tryParseMicroSchema (n:HtmlNode) =
+        let (|Attr|_|) (name:string) (n:HtmlNode) = 
+            let attr = (HtmlNode.tryGetAttribute name n)
+            attr |> Option.map (fun x -> x.Value)
 
-        member x.ToHtmlElement() = 
-            let rows =
-                x.Values
-                |> Array.choose (function
-                        | HtmlElement(_,_,contents) -> 
-                            Some(HtmlElement("Value", [], normalise contents))
-                        | HtmlText(_) as t -> Some(t)
-                        | _ -> None)
-                |> List.ofArray
-            HtmlElement(x.Name, [], rows)
-    
-    type HtmlDefinitionList = 
-        { Name : string
-          Definitions : HtmlList list
-          Html : HtmlNode }
+        let getPath str = 
+            (match Uri.TryCreate(str, UriKind.Absolute) with 
+             | true, uri -> NameUtils.nicePascalName uri.LocalPath 
+             | false, _ -> "").Trim('/')
 
-        member x.ToHtmlElement() =
-            HtmlElement(x.Name, [], x.Definitions |> List.map (fun x -> x.ToHtmlElement()))
-
-    
-    type HtmlObject = 
-        | Table of HtmlTable
-        | List of HtmlList
-        | DefinitionList of HtmlDefinitionList
-        member x.Name = 
-            match x with
-            | Table t -> t.Name
-            | List l -> l.Name
-            | DefinitionList l -> l.Name
-        member x.ToHtmlElement(hasHeaders, headers) = 
-            match x with
-            | Table table -> table.ToHtmlElement(hasHeaders, headers)
-            | List l -> l.ToHtmlElement()
-            | DefinitionList l -> l.ToHtmlElement()
-
-    type InferenceParameters = {
-        MissingValues: string[]
-        CultureInfo: CultureInfo
-        UnitsOfMeasureProvider: IUnitsOfMeasureProvider
-        PreferOptionals: bool }
-
-    let tryParseTable (ip:InferenceParameters option) includeLayoutTables index (table:HtmlNode, parents:HtmlNode list) = 
+        let rec walk state (n:HtmlNode) = 
+            match n with
+            | Attr "itemscope" _ & Attr "itemtype" scope & Attr "itemprop" prop ->  
+                  (HtmlElement(NameUtils.nicePascalName prop, [], [HtmlElement(getPath scope, [], HtmlNode.elements n |> List.fold walk [])])) :: state
+            | Attr "itemtype" scope -> 
+                  (HtmlElement(getPath scope, [], HtmlNode.elements n |> List.fold walk [])) :: state
+            | Attr "itemprop" prop ->
+                  (HtmlElement(NameUtils.nicePascalName prop, [], normalise (HtmlNode.elements n))) :: state
+            | _ ->  HtmlNode.elements n |> List.fold walk state
         
-        let getTableHeaders (numberCols:int) (ip:InferenceParameters) (rows:(HtmlNode option)[][]) =
+        match walk [] n with
+        | [] -> None
+        | h :: _ -> Some h
+
+    and tryParseTable name (table:HtmlNode) = 
+        
+        let getTableHeaders (numberCols:int) (rows:(HtmlNode option)[][]) =
+            let firstRowIsTh = rows.[0] |> Array.forall (function | Some(HtmlElement("th",_,_)) -> true | _ -> false)
             let nodeText = function
                 | Some n -> HtmlNode.innerText n
                 | None -> ""
-            if rows.Length <= 2 then
-                if rows.[0] |> Array.forall (function | Some(HtmlElement("th",_,_)) -> true | _ -> false)
-                then Some (rows.[0] |> Array.map nodeText)
-                else None
+            if firstRowIsTh then
+                Some (rows.[0] |> Array.map nodeText)
+            elif (rows.Length <= 2) then None //Cannot infer anything with this so just assume it is data
             else
-
                 let headerRow, firstDataRow = rows.[0] |> Array.map nodeText, rows.[1..] |> Array.map (Array.map nodeText)
                 let headerNamesAndUnits = headerRow |> Array.map (fun x -> x,None)
                 let schema = Array.init numberCols (fun _ -> None)
-                
+                let missingValues = TextConversions.DefaultMissingValues
+                let cultureInfo = CultureInfo.InvariantCulture
+                let preferOptionals = false
+
                 let headerRowType = 
-                    CsvInference.inferColumnTypes headerNamesAndUnits schema [headerRow] 0 ip.MissingValues ip.CultureInfo false ip.PreferOptionals
+                    CsvInference.inferColumnTypes headerNamesAndUnits schema [headerRow] 0 missingValues cultureInfo false preferOptionals
 
                 let rowType = 
-                    CsvInference.inferColumnTypes headerNamesAndUnits schema firstDataRow 0 ip.MissingValues ip.CultureInfo false ip.PreferOptionals
+                    CsvInference.inferColumnTypes headerNamesAndUnits schema firstDataRow 0 missingValues cultureInfo false preferOptionals
 
                 if headerRowType = rowType
                 then None
@@ -870,7 +836,7 @@ module HtmlDom =
         let cells = rows |> List.map (fun (_,r) -> r.Elements ["td"; "th"] |> List.mapi (fun i e -> i, e))
         let rowLengths = cells |> List.map (fun x -> x.Length)
         let numberOfColumns = List.max rowLengths
-        if not includeLayoutTables && (numberOfColumns < 1) then None else
+        if (numberOfColumns < 1) then None else
         
         let tableData = Array.init rows.Length (fun _ -> Array.init numberOfColumns (fun _ -> None))
 
@@ -886,32 +852,22 @@ module HtmlDom =
                         if i < rows.Length && j < numberOfColumns
                         then tableData.[i].[j] <- (Some cell)
 
-        let tableName = (getName (sprintf "Table%d" (index + 1)) parents table)
+        
         let (hasHeaders, headers) = 
-            match ip with
-            | Some ip ->  
-                let headers = getTableHeaders numberOfColumns ip tableData
-                let (headerWithMeasure,_) = CsvInference.parseHeaders headers numberOfColumns "" ip.UnitsOfMeasureProvider
-                let headerWithMeasure = 
-                    headerWithMeasure 
-                    |> Array.map (fun (name, unit) -> 
-                                        match unit with
-                                        | Some _ -> name.Split('\n').[1].Replace(" ","_"), unit
-                                        | None -> name.Split('\n').[0].Replace(" ","_"), unit
-                                 )
-                match headers with
-                | Some _ -> true, headerWithMeasure
-                | None -> false, headerWithMeasure
+            match getTableHeaders numberOfColumns tableData with
+            | Some headers ->  
+                //Removed UoM support for the moment.
+                true, Array.map (fun h -> h,None) headers
             | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i), None)
                 
 
-        { Name = tableName
+        { Name = name
           HeaderNamesAndUnits = headers
           HasHeaders = hasHeaders
           Data = tableData
           Html = table } |> Some
 
-    let tryParseList index (list:HtmlNode, parents:HtmlNode list) =
+    and tryParseList name (list:HtmlNode) =
 
         let rows = 
             list.Descendants("li", false)
@@ -919,13 +875,11 @@ module HtmlDom =
     
         if rows.Length <= 1 then None else
 
-        let name = getName (sprintf "List%d" (index + 1)) parents list
-
         { Name = name
           Values = rows
           Html = list } |> Some
 
-    let tryParseDefinitionList index (definitionList:HtmlNode, parents:HtmlNode list) =
+    and tryParseDefinitionList name (definitionList:HtmlNode) =
         
         let rec createDefinitionGroups (nodes:HtmlNode list) =
             let rec loop state ((groupName, _, elements) as currentGroup) (nodes:HtmlNode list) =
@@ -951,11 +905,56 @@ module HtmlDom =
 
         if data.Length <= 1 then None else
 
-        let name = (getName (sprintf "DefinitionList%d" (index + 1)) parents definitionList)
-        
         { Name = name
           Definitions = data
           Html = definitionList } |> Some
+
+    and tableToHtmlElement (x:HtmlTable) = 
+        let headerMap = x.HeaderNamesAndUnits |> Array.mapi (fun i (c,_) -> i,c) |> Map.ofArray
+        let rows =
+            if x.HasHeaders then x.Data.[1..] else x.Data
+            |> Array.mapi (fun _ cols ->
+                let data =
+                    cols |> Array.mapi (fun colI n -> 
+                        match n with 
+                        | Some (HtmlElement(_,_,contents)) -> 
+                            HtmlElement(headerMap.[colI], [], normalise contents)
+                        | Some (HtmlText(t)) -> HtmlElement(headerMap.[colI], [], [HtmlText(t)])
+                        | Some _ | None -> HtmlElement(headerMap.[colI], [], [HtmlText("")])
+                     ) |> List.ofArray
+                HtmlElement("row",[], data))
+            |> List.ofArray
+        HtmlElement(x.Name, [], rows)
+
+
+    and listToHtmlElement (x:HtmlList) = 
+            let rows =
+                x.Values
+                |> Array.choose (function
+                        | HtmlElement(_,_,contents) -> 
+                            Some(HtmlElement("Value", [], normalise contents))
+                        | HtmlText(_) as t -> Some(t)
+                        | _ -> None)
+                |> List.ofArray
+            HtmlElement(x.Name, [], rows)
+
+    and definitionListToHtmlElement (x:HtmlDefinitionList) =
+        HtmlElement(x.Name, [], x.Definitions |> List.map listToHtmlElement)
+
+    type HtmlObject = 
+        | Table of HtmlTable
+        | List of HtmlList
+        | DefinitionList of HtmlDefinitionList
+        member x.Name = 
+            match x with
+            | Table t -> t.Name
+            | List l -> l.Name
+            | DefinitionList l -> l.Name
+        member x.ToHtmlElement() = 
+            match x with
+            | Table table -> tableToHtmlElement table
+            | List l -> listToHtmlElement l
+            | DefinitionList l -> definitionListToHtmlElement l
 
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
@@ -1203,30 +1202,36 @@ type HtmlDocument =
         | [] -> None
         | body:: _ -> Some body
 
-    member doc.Tables(inferenceParameters, includeLayoutTables) =
+    member doc.Tables(includeLayoutTables) =
         let tableElements = doc.DescendantsAndSelfWithPath "table" |> List.ofSeq
         let tableElements = 
             if includeLayoutTables
             then tableElements
             else tableElements |> List.filter (fun (e, _) -> not (e.HasAttribute("cellspacing", "0") && e.HasAttribute("cellpadding", "0")))
         tableElements
-        |> List.mapi (HtmlDom.tryParseTable inferenceParameters includeLayoutTables)
+        |> List.mapi (fun i (table, parents) ->
+                let name = HtmlDom.getName (sprintf "Table%d" (i + 1)) parents table
+                HtmlDom.tryParseTable name table)
         |> List.choose id
 
     member doc.Lists() =        
         doc.DescendantsAndSelfWithPath(["ol"; "ul"])
         |> List.ofSeq
-        |> List.mapi HtmlDom.tryParseList
+        |> List.mapi (fun i (list, parents) ->
+            let name = HtmlDom.getName (sprintf "List%d" (i + 1)) parents list
+            HtmlDom.tryParseList name list)
         |> List.choose id
 
     member doc.DefinitionLists() =                
         doc.DescendantsAndSelfWithPath(["dl"], false)
         |> List.ofSeq
-        |> List.mapi HtmlDom.tryParseDefinitionList
+        |> List.mapi (fun i (list, parents) ->
+            let name = HtmlDom.getName (sprintf "DefinitionList%d" (i + 1)) parents list
+            HtmlDom.tryParseDefinitionList name list)
         |> List.choose id
 
-    member doc.GetObjects(inferenceParameters, includeLayoutTables) = 
-        (doc.Tables(inferenceParameters,includeLayoutTables) |> List.map HtmlDom.Table) 
+    member doc.GetObjects(includeLayoutTables) = 
+        (doc.Tables(includeLayoutTables) |> List.map HtmlDom.Table) 
         @ (doc.Lists() |> List.map HtmlDom.List)
         @ (doc.DefinitionLists() |> List.map HtmlDom.DefinitionList)
         
@@ -1308,8 +1313,8 @@ module HtmlDocument =
     /// * x - The given document
     let inline tryGetBody (x:HtmlDocument) = x.TryGetBody()
 
-    let getTable inferenceParameters includeLayoutTables (doc:HtmlDocument) = 
-        doc.Tables(inferenceParameters, includeLayoutTables)
+    let getTable includeLayoutTables (doc:HtmlDocument) = 
+        doc.Tables(includeLayoutTables)
 
     let getLists (doc:HtmlDocument) = 
         doc.Lists()

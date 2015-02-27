@@ -43,7 +43,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
                       CultureInfo = TextRuntime.GetCulture cultureStr
                       UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider
                       PreferOptionals  = preferOptionals }
-                doc.GetObjects((Some inferenceParameters), includeLayoutTables)
+                doc.GetObjects(includeLayoutTables)
                 |> HtmlGenerator.generateHtmlTypes asm ns typeName (inferenceParameters, missingValuesStr, cultureStr) replacer
 
             using (IO.logTime "TypeGeneration" sample) <| fun _ ->

@@ -47,7 +47,11 @@ type HtmlRuntime =
     // want to get an array, option (if it may or may not be there) or 
     // just the value (if we think it is always there)  
     static member private GetChildrenArray(n:HtmlElement, name:string) =
-      n.Html.Descendants(name) |> Seq.map (fun x -> { Html = x }) |> Seq.toArray
+#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
+#else
+      System.Console.WriteLine("Node {1}: {0}", n, name)
+#endif
+      n.Html.Elements(name) |> Seq.map (fun x -> { Html = x }) |> Seq.toArray
     
     static member private GetChildOption(value:HtmlElement, name) =
       match HtmlRuntime.GetChildrenArray(value, name) with
@@ -143,7 +147,7 @@ type HtmlDocument internal (doc:FSharp.Data.HtmlDocument, htmlObjects:Map<string
             reader 
             |> HtmlDocument.Load
         let htmlObjects = 
-            doc.GetObjects(None,includeLayoutTables)
+            doc.GetObjects(includeLayoutTables)
             |> List.map (fun e -> e.Name, e) 
             |> Map.ofList
         HtmlDocument(doc, htmlObjects)
@@ -158,6 +162,6 @@ type HtmlRuntimeWrapper() =
     
     [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
     [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-    static member Create(doc:HtmlDocument, id:string, hasHeaders:bool, headers:string[]) =
-        HtmlElement.Create((doc.GetObject id).ToHtmlElement(hasHeaders, headers))
+    static member Create(doc:HtmlDocument, id:string) =
+        HtmlElement.Create((doc.GetObject id).ToHtmlElement())
         

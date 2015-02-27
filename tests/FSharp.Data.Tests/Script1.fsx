@@ -29,13 +29,20 @@ let table = HtmlProvider<"""<html>
                     </table>
                 </body>
             </html>""">.GetSample().Tables.Table1
-let velocity = table.Rows |> Seq.map (fun x -> x.Distance * x.Time) |> Seq.toList
+let velocity = table.Rows |> Seq.map (fun x -> x.DistanceM * x.TimeS) |> Seq.toList
 
 let [<Literal>] data= 
     """<html>
            <body>
                <table>
-                   <tr><td>Date</td><td>Distance (m)</td><td>Time (s)</td><td>Column 3</td><td>Column 4</td></tr>
+                   <tr>
+                        <td>Date</td>
+                        <td>Distance (m)</td>
+                        <td>Time (s)</td>
+                        <td>Column 3</td>
+                        <td>Column 4</td>
+                        <td>Results</td>
+                   </tr>
                    <tr>
                        <td>01/01/2013 12:00</td>
                        <td>2</td><td>30.5</td>
@@ -49,7 +56,27 @@ let [<Literal>] data=
                              <a href="../movies/avatar-theatrical-trailer.html" itemprop="trailer">Trailer</a>
                            </div>
                        </td>
-                       <td>2</td>
+                       <td>
+                            <ul>
+                                <li>1</li>
+                                <li>1</li>
+                                <li>1</li>
+                                <li>1</li>
+                            </ul>
+                       </td>
+                       <td>
+                            <table>
+                                <tr>
+                                    <th>TimePoint</th><th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td><td>1.234</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td><td>8.67</td>
+                                </tr>
+                            </table>
+                       </td>
                    </tr>
                    <tr>
                        <td>01/01/2013 12:00</td>
@@ -70,14 +97,35 @@ let [<Literal>] data=
                              </div>
                            </div>
                        </td>
-                       <td>2</td>
+                       <td>
+                            <ul>
+                                <li>1</li>
+                                <li>1</li>
+                                <li>1</li>
+                                <li>1</li>
+                            </ul>
+                       </td>
+                       <td>
+                            <table>
+                                <tr>
+                                    <th>TimePoint</th><th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>1</td><td>1.234</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td><td>8.67</td>
+                                </tr>
+                            </table>
+                       </td>
                    </tr>
                </table>
            </body>
        </html>"""
 
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
+let headers = table1.Headers
+let date = table1.Rows |> Seq.map (fun x -> x.Date) |> Seq.toList
+let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.Name) |> Seq.toList
 
-let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.BirthDate) |> Seq.toList
-
-type zoopla = HtmlProvider<"http://www.zoopla.co.uk/for-sale/property/london/waterloo/?include_retirement_homes=true&include_shared_ownership=true&new_homes=include&q=Waterloo%2C%20London&results_sort=newest_listings&search_source=home">
+let nestedTables = table1.Rows |> Seq.map (fun x -> x.Results.Table.Rows.[0].TimePoint) |> Seq.toList

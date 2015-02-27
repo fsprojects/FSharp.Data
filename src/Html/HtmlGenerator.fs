@@ -421,14 +421,14 @@ module internal HtmlGenerator =
                 )
             | _ -> hobj.Name, false, [||], id
             
-        let htmlElement = hobj.ToHtmlElement(hasHeaders, headers)
+        let htmlElement = hobj.ToHtmlElement()
         let inferedType = HtmlInference.inferNodeType true inferenceParameters true htmlElement
         let ctx = HtmlGenerationContext.Create(cultureStr,tableType, replacer)
         let result = HtmlTypeBuilder.generateHtmlType ctx inferedType
         let runtimeTypeWrapper = replacer.ToRuntime (typeof<HtmlRuntimeWrapper>)
         
         let create (htmlDoc:Expr) =
-            runtimeTypeWrapper?Create () (htmlDoc, name, hasHeaders, headers)
+            runtimeTypeWrapper?Create () (htmlDoc, name)
         
         (fun doc -> create doc |> result.Converter), ((result.ConvertedType :?> ProvidedTypeDefinition) |> createExtensions)
 
