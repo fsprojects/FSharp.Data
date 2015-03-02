@@ -408,18 +408,18 @@ module internal HtmlGenerator =
             Utils.invalidTypeNameRegex.Value.Replace(s, " ")
             |> NameUtils.nicePascalName
   
-    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlDom.InferenceParameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
+    let private createType (replacer:AssemblyReplacer) (inferenceParameters:HtmlInference.Parameters, _, cultureStr) tableType (hobj:HtmlDom.HtmlObject) = 
                
-        let name, hasHeaders, headers, createExtensions = 
+        let name, createExtensions = 
             match hobj with
             | HtmlDom.Table t -> 
-                let headers = (t.HeaderNamesAndUnits |> Array.map fst)
-                t.Name, t.HasHeaders, headers,
+                let headers = t.Headers
+                t.Name,
                 (fun (t:ProvidedTypeDefinition) ->
                     t.AddMember <| ProvidedProperty("Headers", typeof<string[]>, GetterCode = fun _ -> <@@ headers @@>)
                     t
                 )
-            | _ -> hobj.Name, false, [||], id
+            | _ -> hobj.Name, id
             
         let htmlElement = hobj.ToHtmlElement()
         let inferedType = HtmlInference.inferNodeType true inferenceParameters true htmlElement

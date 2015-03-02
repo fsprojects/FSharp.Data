@@ -47,10 +47,6 @@ type HtmlRuntime =
     // want to get an array, option (if it may or may not be there) or 
     // just the value (if we think it is always there)  
     static member private GetChildrenArray(n:HtmlElement, name:string) =
-#if FX_NO_DEFAULT_PARAMETER_VALUE_ATTRIBUTE
-#else
-      System.Console.WriteLine("Node {1}: {0}", n, name)
-#endif
       n.Html.Elements(name) |> Seq.map (fun x -> { Html = x }) |> Seq.toArray
     
     static member private GetChildOption(value:HtmlElement, name) =

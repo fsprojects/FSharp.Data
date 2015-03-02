@@ -126,6 +126,6 @@ let [<Literal>] data=
 let table1 = HtmlProvider<data>.GetSample().Tables.Table1
 let headers = table1.Headers
 let date = table1.Rows |> Seq.map (fun x -> x.Date) |> Seq.toList
-let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.Name) |> Seq.toList
+let movieName = table1.Rows |> Seq.map (fun x -> x.Column3.Movie.Director.Person.BirthDate) |> Seq.toList
 
-let nestedTables = table1.Rows |> Seq.map (fun x -> x.Results.Table.Rows.[0].TimePoint) |> Seq.toList
+let nestedTables = table1.Rows |> Seq.collect (fun x -> x.Results.Table.Rows |> Seq.map (fun r -> r.Value)) |> Seq.toList

@@ -38,7 +38,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
             let doc : FSharp.Data.HtmlDocument = Seq.exactlyOne samples
 
             let htmlType = using (IO.logTime "Inference" sample) <| fun _ ->
-                let inferenceParameters : HtmlDom.InferenceParameters = 
+                let inferenceParameters : HtmlInference.Parameters = 
                     { MissingValues = TextRuntime.GetMissingValues missingValuesStr
                       CultureInfo = TextRuntime.GetCulture cultureStr
                       UnitsOfMeasureProvider = ProviderHelpers.unitsOfMeasureProvider

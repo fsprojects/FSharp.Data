@@ -653,12 +653,6 @@ module HtmlNode =
 
 module HtmlDom = 
 
-    type InferenceParameters = {
-        MissingValues: string[]
-        CultureInfo: CultureInfo
-        UnitsOfMeasureProvider: IUnitsOfMeasureProvider
-        PreferOptionals: bool }
-
     type HtmlList = 
         { Name : string
           Values : HtmlNode[]
@@ -672,7 +666,7 @@ module HtmlDom =
 
     type HtmlTable = 
          { Name : string
-           HeaderNamesAndUnits : (string * Type option)[] // always set
+           Headers : string[] // always set
            HasHeaders: bool // always set at designtime, never at runtime
            Data :  HtmlNode option [][]
            Html : HtmlNode }
@@ -852,17 +846,13 @@ module HtmlDom =
                         if i < rows.Length && j < numberOfColumns
                         then tableData.[i].[j] <- (Some cell)
 
-        
         let (hasHeaders, headers) = 
             match getTableHeaders numberOfColumns tableData with
-            | Some headers ->  
-                //Removed UoM support for the moment.
-                true, Array.map (fun h -> h,None) headers
-            | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i), None)
-                
+            | Some headers -> true, headers
+            | None -> false, Array.init numberOfColumns (fun i -> "Column_" + (string i))
 
         { Name = name
-          HeaderNamesAndUnits = headers
+          Headers = headers
           HasHeaders = hasHeaders
           Data = tableData
           Html = table } |> Some
@@ -910,7 +900,7 @@ module HtmlDom =
           Html = definitionList } |> Some
 
     and tableToHtmlElement (x:HtmlTable) = 
-        let headerMap = x.HeaderNamesAndUnits |> Array.mapi (fun i (c,_) -> i,c) |> Map.ofArray
+        let headerMap = x.Headers |> Array.mapi (fun i c -> i,c) |> Map.ofArray
         let rows =
             if x.HasHeaders then x.Data.[1..] else x.Data
             |> Array.mapi (fun _ cols ->
