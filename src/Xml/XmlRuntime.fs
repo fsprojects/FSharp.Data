@@ -201,7 +201,7 @@ type XmlRuntime =
             | _ ->
                 match v with
                 | :? string        as v -> v
-                | :? DateTime      as v -> strWithCulture v
+                | :? DateTime      as v -> v.ToString("O", cultureInfo)
                 | :? int           as v -> strWithCulture v
                 | :? int64         as v -> strWithCulture v
                 | :? float         as v -> strWithCulture v
