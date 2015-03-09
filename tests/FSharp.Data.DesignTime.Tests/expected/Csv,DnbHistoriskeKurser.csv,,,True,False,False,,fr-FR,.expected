@@ -1,4 +1,29 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertDateTimeBack("fr-FR", Some (let t1,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,t5,_,_,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,t6,_,_,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_,_,_ = row in t8))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,t9,_,_ = row in t9))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,t10,_ = row in t10))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Dato"
+                                                           "USD"
+                                                           "EUR"
+                                                           "SEK"
+                                                           "DKK"
+                                                           "GBP"
+                                                           "CHF"
+                                                           "JPY"
+                                                           "CAD"
+                                                           "ISK"
+                                                           "AUD" |], 11, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -309,6 +334,19 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : System.DateTime * string * string * string * string * string * string * string * string * string * string
+    new : dato:System.DateTime -> usd:string -> eur:string -> sek:string -> dkk:string -> gbp:string -> chf:string -> jpy:string -> cad:string -> isk:string -> aud:string -> CsvProvider+Row
+    dato,
+    usd,
+    eur,
+    sek,
+    dkk,
+    gbp,
+    chf,
+    jpy,
+    cad,
+    isk,
+    aud
+
     member AUD: string with get
     (let _,_,_,_,_,_,_,_,_,_,t11 = this in t11)
 

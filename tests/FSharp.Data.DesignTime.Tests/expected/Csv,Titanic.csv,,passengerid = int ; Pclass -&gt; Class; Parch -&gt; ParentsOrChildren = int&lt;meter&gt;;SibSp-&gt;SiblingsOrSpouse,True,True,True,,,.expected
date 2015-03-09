@@ -1,4 +1,31 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertIntegerBack("", Some (let t1,_,_,_,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertBooleanBack((let _,t2,_,_,_,_,_,_,_,_,_,_ = row in t2), false)
+                                               TextRuntime.ConvertIntegerBack("", (let _,_,t3,_,_,_,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack((let _,_,_,t4,_,_,_,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertStringBack((let _,_,_,_,t5,_,_,_,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertDecimalBack("", (let _,_,_,_,_,t6,_,_,_,_,_,_ = row in t6))
+                                               TextRuntime.ConvertIntegerBack("", (let _,_,_,_,_,_,t7,_,_,_,_,_ = row in t7))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,t8,_,_,_,_ = row in t8))
+                                               TextRuntime.ConvertStringBack((let _,_,_,_,_,_,_,_,t9,_,_,_ = row in t9))
+                                               TextRuntime.ConvertDecimalBack("", (let _,_,_,_,_,_,_,_,_,t10,_,_ = row in t10))
+                                               TextRuntime.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,t11,_ = row in t11))
+                                               TextRuntime.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "PassengerId"
+                                                           "Survived"
+                                                           "Pclass"
+                                                           "Name"
+                                                           "Sex"
+                                                           "Age"
+                                                           "SibSp"
+                                                           "Parch"
+                                                           "Ticket"
+                                                           "Fare"
+                                                           "Cabin"
+                                                           "Embarked" |], 12, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -253,6 +280,20 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : int * bool option * int option * string option * string option * decimal option * int option * int * string option * decimal option * string option * string option
+    new : passengerId:int -> survived:bool option -> class:int option -> name:string option -> sex:string option -> age:decimal option -> siblingsOrSpouse:int option -> parentsOrChildren:int<meter> -> ticket:string option -> fare:decimal option -> cabin:string option -> embarked:string option -> CsvProvider+Row
+    passengerId,
+    survived,
+    class,
+    name,
+    sex,
+    age,
+    siblingsOrSpouse,
+    parentsOrChildren,
+    ticket,
+    fare,
+    cabin,
+    embarked
+
     member Age: decimal option with get
     (let _,_,_,_,_,t6,_,_,_,_,_,_ = this in t6)
 

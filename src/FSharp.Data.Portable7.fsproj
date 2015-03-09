@@ -63,10 +63,6 @@
     <Compile Include="Csv\CsvExtensions.fs" />
     <Compile Include="Csv\CsvInference.fs" />
     <Compile Include="WorldBank\WorldBankRuntime.fs" />
-    <Compile Include="Freebase\FreebaseRequests.fs" />
-    <Compile Include="Freebase\FreebaseSchema.fs" />
-    <Compile Include="Freebase\FreebaseRuntime.fs" />
-    <Compile Include="Freebase\FreebaseOperators.fs" />
     <Compile Include="Html\HtmlCharRefs.fs" />
     <Compile Include="Html\HtmlDom.fs" />
     <Compile Include="Html\HtmlParser.fs" />
@@ -82,17 +78,11 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="DefineConstants.targets" />
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">12</MinimumVisualStudioVersion>
   </PropertyGroup>
-  <Import Project="DefineConstants.targets" />
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.Portable.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.Portable.FSharp.Targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

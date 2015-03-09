@@ -1,4 +1,11 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _) -> 
+                                            [| TextRuntime.ConvertIntegerBack("", Some (let t1,_ = row in t1))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,t2 = row in t2)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Distance (metre)"
+                                                           "Time (second)" |], 2, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -93,6 +100,10 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : int * decimal
+    new : distance:int<metre> -> time:decimal<second> -> CsvProvider+Row
+    distance,
+    time
+
     member Distance: int<metre> with get
     (let t1,_ = this in t1)
 

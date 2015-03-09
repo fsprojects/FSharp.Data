@@ -217,6 +217,23 @@ let ``Global inference with empty elements doesn't crash``() =
     child1.Inner.Value.C |> should equal "foo"
     child2.Inner |> should equal None
 
+type Cars = XmlProvider<"Data/Cars.xml", SampleIsList=true, Global=true>
+
+[<Test>]
+let ``Global inference unifies element types across multiple samples``() =
+  let readCars str = 
+    let doc = Cars.Parse(str)
+    match doc.Car, doc.ArrayOfCar with
+    | Some car, _ -> [ car.Type ]
+    | _, Some cars -> [ for c in cars.Cars -> c.Type ]
+    | _ -> []
+  
+  readCars "<Car><Type>Audi</Type></Car>" 
+  |> should equal ["Audi"]
+
+  readCars "<ArrayOfCar><Car><Type>Audi</Type></Car><Car><Type>BMW</Type></Car></ArrayOfCar>" 
+  |> should equal ["Audi"; "BMW"]
+
 type OneLetterXML = XmlProvider<"<A><B></B></A>"> // see https://github.com/fsharp/FSharp.Data/issues/256
 
 // Acronyms are renamed correctly; see https://github.com/fsharp/FSharp.Data/issues/309
@@ -385,8 +402,8 @@ let ``Can construct collapsed non-primitive collections and elements with json``
         JsonInXml.PropertyBag(
             JsonInXml.BlahData(
                 [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
-                null, 
-                null, 
+                Unchecked.defaultof<_>, 
+                Unchecked.defaultof<_>, 
                 None))
     pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
   <BlahDataArray>
@@ -430,11 +447,11 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   <title>title</title>
   <subtitle>subtitle</subtitle>
   <id>id</id>
-  <updated>04/27/2014 00:00:00</updated>
+  <updated>2014-04-27T00:00:00.0000000</updated>
   <entry>
     <title>title2</title>
     <id>id2</id>
-    <updated>04/28/2014 00:00:00</updated>
+    <updated>2014-04-28T00:00:00.0000000</updated>
     <summary>summary</summary>
     <author>
       <name>name</name>
@@ -454,7 +471,7 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     let title = AtomSearch.Choice(title = "title")
     title.XElement.ToString() |> should equal """<title xmlns="http://www.w3.org/2005/Atom">title</title>"""
     let updated = AtomSearch.Choice(updated = DateTime(2000, 1, 1))
-    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">01/01/2000 00:00:00</updated>"""
+    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000</updated>"""
     let itemsPerPage = AtomSearch.Choice(2)
     itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
     let entry = AtomSearch.Entry("id", 
@@ -463,17 +480,17 @@ let ``Can construct elements with heterogeneous records with primitives``() =
                                  "title", 
                                  AtomSearch.Content("type", "value"),
                                  DateTime(2000, 3, 3),
-                                 null,
+                                 Unchecked.defaultof<_>,
                                  AtomSearch.Metadata("resultType"),
                                  "source",
                                  "lange",
                                  AtomSearch.Author("name", "uri"))
     entry.XElement.ToString() |> normalize |> should equal (normalize """<entry xmlns="http://www.w3.org/2005/Atom">
   <id>id</id>
-  <published>02/02/2000 00:00:00</published>
+  <published>2000-02-02T00:00:00.0000000</published>
   <title>title</title>
   <content type="type">value</content>
-  <updated>03/03/2000 00:00:00</updated>
+  <updated>2000-03-03T00:00:00.0000000</updated>
   <metadata xmlns="http://api.twitter.com/">
     <result_type>resultType</result_type>
   </metadata>

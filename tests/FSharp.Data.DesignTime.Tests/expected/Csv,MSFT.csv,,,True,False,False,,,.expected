@@ -1,4 +1,21 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertDateTimeBack("", Some (let t1,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,t2,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,t3,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,_,t4,_,_,_ = row in t4))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,t5,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_ = row in t6))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,t7 = row in t7)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Date"
+                                                           "Open"
+                                                           "High"
+                                                           "Low"
+                                                           "Close"
+                                                           "Volume"
+                                                           "Adj Close" |], 7, ",", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -213,6 +230,15 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal
+    new : date:System.DateTime -> open:decimal -> high:decimal -> low:decimal -> close:decimal -> volume:int -> adjClose:decimal -> CsvProvider+Row
+    date,
+    open,
+    high,
+    low,
+    close,
+    volume,
+    adjClose
+
     member ``Adj Close``: decimal with get
     (let _,_,_,_,_,_,t7 = this in t7)
 

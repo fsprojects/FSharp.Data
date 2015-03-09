@@ -95,9 +95,8 @@ of files, typically like this:
  * `JsonProvider.fs` - entry point that defines static properties of the type provider,
    registers the provided types etc.
 
-The WorldBank and Freebase providers are different. They do not need inference, but 
-they still distinguish between _runtime_ and _design-time_ components, so you'll find at least
-two files (and possibly some additional helpers).
+The WorldBank provider is different. It doesn't need inference, but it still distinguishes
+between _runtime_ and _design-time_ components, so you'll find at least two files (and possibly some additional helpers).
 
 ## Source code
 

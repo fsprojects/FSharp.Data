@@ -1,4 +1,19 @@
 class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertFloatBack("", "", Some (let t1,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,t2,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertDecimalBack("", Some (let _,_,t3,_,_,_ = row in t3))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,t4,_,_ = row in t4))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,t5,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6 = row in t6)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, Some [| "Ozone"
+                                                           "Solar.R"
+                                                           "Wind"
+                                                           "Temp"
+                                                           "Month"
+                                                           "Day" |], 6, ";", '"')
+
     new : () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
                                               let value = TextConversions.AsString(row.[0])
@@ -189,6 +204,14 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
 
 
 class CsvProvider+Row : float * float * decimal * int * int * int
+    new : ozone:float -> solarR:float -> wind:decimal -> temp:int -> month:int -> day:int -> CsvProvider+Row
+    ozone,
+    solarR,
+    wind,
+    temp,
+    month,
+    day
+
     member Day: int with get
     (let _,_,_,_,_,t6 = this in t6)
 

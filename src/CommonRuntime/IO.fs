@@ -197,7 +197,7 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 /// Opens a stream to the uri using the uriResolver resolution rules
 /// It the uri is a file, uses shared read, so it works when the file locked by Excel or similar tools,
 /// and sets up a filesystem watcher that calls the invalidate function whenever the file changes
-let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) formatName encodingStr (uri:Uri) =
+let internal asyncRead (_tp:(IDisposableTypeProvider*string) option) (uriResolver:UriResolver) formatName encodingStr (uri:Uri) =
   let uri, isWeb = uriResolver.Resolve uri
   if isWeb then
     async {
@@ -211,7 +211,9 @@ let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriRes
             @ [ HttpContentTypes.Any ]
         let headers = [ HttpRequestHeaders.UserAgent ("F# Data " + formatName + " Type Provider") 
                         HttpRequestHeaders.Accept (String.concat ", " contentTypes) ]
-        return! Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)
+        // Download the whole web resource at once, otherwise with some servers we won't get the full file
+        let! text = Http.AsyncRequestString(uri.OriginalString, headers = headers, responseEncodingOverride = encodingStr)
+        return new StringReader(text) :> TextReader
     }
   else
 #if FX_NO_LOCAL_FILESYSTEM
@@ -219,11 +221,10 @@ let internal asyncReadText (_tp:(IDisposableTypeProvider*string) option) (uriRes
 #else
     let path = uri.OriginalString.Replace(Uri.UriSchemeFile + "://", "")
     async {
-        use file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
+        let file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)
         _tp |> Option.iter (watchForChanges uri)
         let encoding = if encodingStr = "" then Encoding.UTF8 else HttpEncodings.getEncoding encodingStr
-        use sr = new StreamReader(file, encoding)
-        return sr.ReadToEnd()
+        return new StreamReader(file, encoding) :> TextReader
     }
 #endif
 
@@ -237,17 +238,11 @@ let asyncReadTextAtRuntime forFSI defaultResolutionFolder resolutionFolder forma
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create((if forFSI then RuntimeInFSI else Runtime), 
                                       defaultResolutionFolder, resolutionFolder)
-    async {
-        let! text = asyncReadText None resolver formatName encodingStr uri
-        return new StringReader(text) :> TextReader
-    }
+    asyncRead None resolver formatName encodingStr uri
 
 /// Returns a TextReader for the uri using the designtime resolution rules
 let asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr uri = 
   withUri uri <| fun uri ->
     let resolver = UriResolver.Create(DesignTime, defaultResolutionFolder, resolutionFolder)
-    async {
-        let! text = asyncReadText None resolver formatName encodingStr uri
-        return new StringReader(text) :> TextReader
-    }
+    asyncRead None resolver formatName encodingStr uri
 

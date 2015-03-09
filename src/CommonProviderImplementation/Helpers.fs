@@ -7,6 +7,7 @@ namespace ProviderImplementation
 open System
 open System.Collections.Generic
 open System.Reflection
+open System.Text
 open Microsoft.FSharp.Core.CompilerServices
 open Microsoft.FSharp.Quotations
 open FSharp.Data.Runtime
@@ -199,7 +200,7 @@ module ProviderHelpers =
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
-                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName =
+                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
@@ -241,8 +242,22 @@ module ProviderHelpers =
                   ResolutionFolder = resolutionFolder }
             
             let readText() = 
-                asyncReadText (Some (tp, fullTypeName)) resolver formatName encodingStr uri
-                |> Async.RunSynchronously
+                use reader = 
+                    asyncRead (Some (tp, fullTypeName)) resolver formatName encodingStr uri
+                    |> Async.RunSynchronously
+                match maxNumberOfRows with
+                | None -> reader.ReadToEnd()
+                | Some max ->
+                    let sb = StringBuilder()
+                    let max = ref max
+                    while !max > 0 do
+                        let line = reader.ReadLine() 
+                        if line = null then
+                            max := 0
+                        else
+                            line |> sb.AppendLine |> ignore
+                            decr max
+                    sb.ToString()
     
             try
               
@@ -323,7 +338,7 @@ module ProviderHelpers =
     /// * typeName -> the full name of the type provider, this will be used for caching
     let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
                      (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
-                     encodingStr resolutionFolder optResource fullTypeName =
+                     encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         let isRunningInFSI = cfg.IsHostedExecution
         let defaultResolutionFolder = cfg.ResolutionFolder
@@ -337,7 +352,7 @@ module ProviderHelpers =
         getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName
+        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
         
         let spec = getSpecFromSamples parseResult.TypedSamples
         

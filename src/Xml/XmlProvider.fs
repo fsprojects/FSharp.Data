@@ -8,6 +8,7 @@ open ProviderImplementation.ProvidedTypes
 open ProviderImplementation.ProviderHelpers
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.BaseTypes
+open FSharp.Data.Runtime.StructuralTypes
 
 // ----------------------------------------------------------------------------------------------
 
@@ -46,8 +47,9 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
 
       let inferedType = using (IO.logTime "Inference" sample) <| fun _ ->
         samples
-        |> Seq.map (fun sampleXml -> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference sampleXml)
-        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) StructuralTypes.Top
+        |> Array.ofSeq
+        |> XmlInference.inferType inferTypesFromValues cultureInfo (*allowEmptyValues*)false globalInference
+        |> Seq.fold (StructuralInference.subtypeInfered (*allowEmptyValues*)false) InferedType.Top
 
       using (IO.logTime "TypeGeneration" sample) <| fun _ ->
 
@@ -62,7 +64,7 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
           result.Converter <@@ XmlElement.CreateList(%reader) @@> }
 
     generateType "XML" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg replacer encodingStr resolutionFolder resource typeName
+                 version this cfg replacer encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
