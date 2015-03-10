@@ -261,12 +261,14 @@ module internal HtmlParser =
           CurrentTag : CharList ref
           Content : CharList ref
           InsertionMode : InsertionMode ref
+          Tokens : HtmlToken list ref
           Reader : TextReader }
         static member Create (reader:TextReader) = 
             { Attributes = ref []
               CurrentTag = ref CharList.Empty
               Content = ref CharList.Empty
               InsertionMode = ref DefaultMode
+              Tokens = ref []
               Reader = reader }
 
         member x.Pop() = x.Reader.Read() |> ignore
@@ -313,7 +315,7 @@ module internal HtmlParser =
             x.CurrentTag := CharList.Empty
             x.InsertionMode := DefaultMode
             x.Attributes := []
-            result 
+            x.Tokens := result :: !x.Tokens 
 
         member x.IsScriptTag 
             with get() = 
@@ -325,17 +327,20 @@ module internal HtmlParser =
             let name = (!x.CurrentTag).ToString().Trim()
             let result = 
                 if isEnd
-                then TagEnd(name)
-                else Tag(false, name, x.GetAttributes()) 
+                then 
+                    if x.ContentLength > 0
+                    then x.Emit(); TagEnd(name)
+                    else TagEnd(name)
+                else Tag(false, name, x.GetAttributes())
 
             x.InsertionMode :=
-                if x.IsScriptTag
+                if x.IsScriptTag && (not isEnd)
                 then ScriptMode
                 else DefaultMode
 
             x.CurrentTag := CharList.Empty
             x.Attributes := []
-            result
+            x.Tokens := result :: !x.Tokens 
     
         member x.EmitToAttributeValue() =
             assert (!x.InsertionMode = InsertionMode.CharRefMode)
@@ -345,7 +350,7 @@ module internal HtmlParser =
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
 
-        member x.Emit() =
+        member x.Emit() : unit =
             let result = 
                 let content = (!x.Content).ToString()
                 match !x.InsertionMode with
@@ -359,7 +364,9 @@ module internal HtmlParser =
                 | CDATAMode -> CData (content.Replace("<![CDATA[", "").Replace("]]>", ""))
             x.Content := CharList.Empty
             x.InsertionMode := DefaultMode
-            result
+            match result with
+            | Text t when String.IsNullOrWhiteSpace(t) -> ()
+            | _ -> x.Tokens := result :: !x.Tokens 
     
         member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
         member x.Cons(char) = (!x.Content).Cons(char)
@@ -380,7 +387,7 @@ module internal HtmlParser =
                 if state.ContentLength > 0
                 then state.Emit();
                 else state.Pop(); tagOpen state
-            | TextParser.EndOfFile _ -> EOF
+            | TextParser.EndOfFile _ -> state.Tokens := EOF :: !state.Tokens
             | '&' ->
                 if state.ContentLength > 0
                 then state.Emit();
@@ -461,7 +468,7 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.Whitespace _ when state.IsScriptTag -> state.Pop(); beforeAttributeName state
             | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
-            | '>' when state.IsScriptTag -> state.EmitTag(true)
+            | '>' when state.IsScriptTag -> state.Pop(); state.Emit();
             | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
             | _ -> state.Cons([|'<';'/'|]); state.Cons(); scriptDataEscaped state
         and scriptDataEscaped state = ifEofThenDataElse state <| fun c ->
@@ -477,11 +484,15 @@ module internal HtmlParser =
         and scriptEndTagOpen state = 
             match state.Peek() with
             | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
-            | _ -> script state
-        and scriptEndTagName state = ifNotClosingTagOrEof true state <| fun c ->
-            match c with
-            | TextParser.Whitespace _ -> state.Pop(); scriptEndTagName state
-            | _ -> state.ConsTag(); scriptEndTagName state
+            | _ -> state.Cons('<'); state.Cons('/'); script state
+        and scriptEndTagName state =
+            match state.Peek() with
+            | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
+            | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
+            | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
+            | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
+            | TextParser.EndOfFile _ -> data state
+            | _ -> state.Cons('<'); state.Cons('/'); script state
         and charRef state = 
             match state.Peek() with
             | ';' -> state.Cons(); state.Emit()
@@ -573,6 +584,8 @@ module internal HtmlParser =
         and beforeAttributeName state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
             | TextParser.Whitespace _ -> state.Pop(); beforeAttributeName state
+            | '/' -> state.Pop(); selfClosingStartTag state
+            | '>' -> state.Pop(); state.EmitTag(false)
             | _ -> attributeName state
         and attributeName state = ifNotClosingTagOrEof false state <| fun c ->
             match c with
@@ -634,12 +647,13 @@ module internal HtmlParser =
         and ifEofThenDataElse (state:HtmlState) f =
             match state.Peek() with
             | TextParser.EndOfFile _ -> data state
-            | c -> f c
-        [
-           while state.Reader.Peek() <> -1 do
-               yield data state
-        ]
-    
+            | c -> f c 
+        
+        while state.Reader.Peek() <> -1 do
+               data state
+
+        !state.Tokens |> List.rev
+
     let private parse reader =
         let canNotHaveChildren (name:string) = 
             match name with
@@ -659,16 +673,13 @@ module internal HtmlParser =
                let e = HtmlElement(name, attributes, [])
                parse' docType (e :: elements) expectedTagEnd rest
             | Tag(_, name, attributes) :: rest ->
-                printfn "open %s" name
                 let dt, tokens, content = parse' docType [] name rest
                 let e = HtmlElement(name, attributes, content)
                 parse' dt (e :: elements) expectedTagEnd tokens
             | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
-                printfn "close ignored %s" name
                 parse' docType elements expectedTagEnd rest
-            | TagEnd name :: rest -> 
-                printfn "close %s" name
+            | TagEnd _ :: rest -> 
                 docType, rest, List.rev elements
             | Text cont :: rest ->
                 if cont = "" then
