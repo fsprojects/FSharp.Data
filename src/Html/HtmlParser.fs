@@ -181,7 +181,7 @@ module private TextParser =
 
     let (|EndOfFile|_|) (c : char) =
         let value = c |> int
-        if (value = -1) then Some c else None
+        if (value = -1 || value = 65535) then Some c else None
 
     let (|Whitespace|_|) = toPattern Char.IsWhiteSpace
     let (|LetterDigit|_|) = toPattern Char.IsLetterOrDigit
@@ -372,6 +372,7 @@ module internal HtmlParser =
         member x.Cons() = (!x.Content).Cons(x.Reader.ReadChar())
         member x.Cons(char) = (!x.Content).Cons(char)
         member x.Cons(char) = Array.iter ((!x.Content).Cons) char
+        member x.Cons(char : string) = x.Cons(char.ToCharArray())
         member x.ConsTag() = 
             match x.Reader.ReadChar() with
             | TextParser.Whitespace _ -> ()
@@ -388,7 +389,7 @@ module internal HtmlParser =
                 if state.ContentLength > 0
                 then state.Emit();
                 else state.Pop(); tagOpen state
-            | TextParser.EndOfFile _ as a -> state.Tokens := EOF :: !state.Tokens
+            | TextParser.EndOfFile _ -> state.Tokens := EOF :: !state.Tokens
             | '&' ->
                 if state.ContentLength > 0
                 then state.Emit();
@@ -469,10 +470,10 @@ module internal HtmlParser =
             match state.Peek() with
             | TextParser.Whitespace _ when state.IsScriptTag -> state.Pop(); beforeAttributeName state
             | '/' when state.IsScriptTag -> state.Pop(); selfClosingStartTag state
-            | '>' when state.IsScriptTag -> state.Pop(); state.Emit();
+            | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
             | '>' -> 
                 state.Cons([|'<'; '/'|]); 
-                state.Cons(state.CurrentTagName() |> Seq.toArray); 
+                state.Cons(state.CurrentTagName()); 
                 (!state.CurrentTag).Clear()
                 script state
             | TextParser.Letter _ -> state.ConsTag(); scriptDataEscapedEndTagName state
@@ -498,7 +499,7 @@ module internal HtmlParser =
             | '>' when state.IsScriptTag -> state.Pop(); state.EmitTag(true);
             | '>' -> 
                 state.Cons([|'<'; '/'|]); 
-                state.Cons(state.CurrentTagName() |> Seq.toArray); 
+                state.Cons(state.CurrentTagName()); 
                 (!state.CurrentTag).Clear()
                 script state
             | TextParser.Letter _ -> state.ConsTag(); scriptEndTagName state
@@ -661,11 +662,9 @@ module internal HtmlParser =
         
         let next = ref (state.Reader.Peek())
         while !next <> -1 do
-               printfn "%d %c" !next (char !next)
                data state
                next := state.Reader.Peek()
         
-        printfn "Finshed tokenising"
         !state.Tokens |> List.rev
 
     let private parse reader =
@@ -675,7 +674,6 @@ module internal HtmlParser =
             | "source" | "track" | "wbr" -> true
             | _ -> false
         let rec parse' docType elements expectedTagEnd (tokens:HtmlToken list) =
-            let tokenArr = tokens |> List.toArray
             match tokens with
             | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd rest
             | Tag(_, "br", []) :: rest ->
