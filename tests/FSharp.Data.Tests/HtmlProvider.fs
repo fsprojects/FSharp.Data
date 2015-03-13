@@ -289,3 +289,25 @@ let ``Can handle a table with headers directly inside thead``() =
     match table.Headers with
     | None -> failwith "No headers found"
     | Some headers -> headers |> should equal [ "Month"; "Savings" ]
+
+[<Test>]
+let ``Handles closing tag with number in script (Bug 800)``() =
+    let html = HtmlProvider<"""
+            <html>
+                <head>
+                    <title>Title</title>
+                </head>
+                <body>
+                    <a href="www.google.com">0</a>
+                    <script type="text/javascript">
+                        var a = '</1>'
+                    </script>
+                    <a href="www.google.com">1</a>
+                    <a href="www.google.com">2</a>
+                    <a href="www.google.com">3</a>
+                </body>
+            </html>""">.GetSample()
+    let data = html.Html.Descendants ["a"] |> Seq.toList
+    data.Length |> should equal 4
+   
+   
