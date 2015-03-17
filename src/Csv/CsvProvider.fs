@@ -60,10 +60,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         if value = "" then 
           use reader = new StringReader(schema)
           let schemaStr = 
-              if fixedWidth
-              then FixedWidthReader.readFixedWidthFile reader quote
-              else CsvReader.readCsvFile reader separators quote
-              |> Seq.exactlyOne |> fst
+              CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
           Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
         else
           value
