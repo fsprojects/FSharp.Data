@@ -64,7 +64,7 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
           Array.zeroCreate schemaStr.Length |> String.concat (if String.IsNullOrEmpty separators then "," else separators.[0].ToString())
         else
           value
-      CsvFile.Parse(value, fixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows)
+      CsvFile.Parse(value, separators, quote, hasHeaders, ignoreErrors, skipRows, fixedWidth)
 
     let getSpecFromSamples samples = 
       
