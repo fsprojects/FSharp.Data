@@ -5,6 +5,7 @@
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
+* Fixes for issue 791
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.

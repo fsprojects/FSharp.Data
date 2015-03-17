@@ -220,8 +220,16 @@ module HtmlNode =
 
     let innerTextExcluding exclusions n = 
         let exclusions = "style" :: "script" :: exclusions
-        let rec innerText' = function
-            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) ->
+        let isAriaHidden (n:HtmlNode) = 
+            match tryGetAttribute "aria-hidden" n with
+            | Some a -> 
+                match bool.TryParse(a.Value()) with
+                | true, v -> v
+                | false, _ -> false 
+            | None -> false
+        let rec innerText' n =
+            match n with
+            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) && (not (isAriaHidden n)) ->
                 seq { for e in content do
                         match e with
                         | HtmlText(text) -> yield text
