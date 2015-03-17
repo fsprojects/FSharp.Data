@@ -1,0 +1,323 @@
+class CsvProvider : FDR.CsvFile<CsvProvider+Row>
+    new : rows:CsvProvider+Row seq -> CsvProvider
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.CreateEmpty(rowToStringArray, rows, true, Some [| "00846U1010000A"
+                                                                 "A"
+                                                                 "AGILENT TECHNOLOGIES, INC"
+                                                                 "41726005508L"
+                                                                 "000011999111820051228000000000000000010"
+                                                                 "00"
+                                                                 "A"
+                                                                 "Y114A03307920000001D119991118101"
+                                                                 "11111" |], 9, ",", '"')
+
+    new : () -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "nyse.txt")), true, ",", '"', true, false, 0, false)
+
+    static member AsyncGetSample: () -> CsvProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> 
+                             let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                                       let value = TextConversions.AsString(row.[0])
+                                                                       TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[1])
+                                                                       TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[2])
+                                                                       TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[3])
+                                                                       TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[4])
+                                                                       TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                                                       let value = TextConversions.AsString(row.[5])
+                                                                       TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                                                       let value = TextConversions.AsString(row.[6])
+                                                                       TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[7])
+                                                                       TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[8])
+                                                                       TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+                             let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                     [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                                                        TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                                                        TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                                                        TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, true, ",", '"', true, false, 0, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "nyse.txt"), f)
+
+    static member AsyncLoad: uri:string -> CsvProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> 
+                             let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                                                       let value = TextConversions.AsString(row.[0])
+                                                                       TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[1])
+                                                                       TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[2])
+                                                                       TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[3])
+                                                                       TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[4])
+                                                                       TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                                                       let value = TextConversions.AsString(row.[5])
+                                                                       TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                                                       let value = TextConversions.AsString(row.[6])
+                                                                       TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[7])
+                                                                       TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                                                       let value = TextConversions.AsString(row.[8])
+                                                                       TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+                             let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                                                     [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                                                        TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                                                        TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                                                        TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                                                        TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+                             CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, true, ",", '"', true, false, 0, false))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri), f)
+
+    static member GetSample: () -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "nyse.txt")), true, ",", '"', true, false, 0, false)
+
+    static member Load: stream:System.IO.Stream -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StreamReader(stream)) :> TextReader), true, ",", '"', true, false, 0, false)
+
+    static member Load: reader:System.IO.TextReader -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, reader, true, ",", '"', true, false, 0, false)
+
+    static member Load: uri:string -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), true, ",", '"', true, false, 0, false)
+
+    static member Parse: text:string -> CsvProvider
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("00846U1010000A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("A", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("AGILENT TECHNOLOGIES, INC", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("41726005508L", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("000011999111820051228000000000000000010", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("00", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("A2", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Y114A03307920000001D119991118101", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("11111", TextRuntime.ConvertInteger("", value), value))
+    let rowToStringArray = new Func<_,_>(fun (row:_ * _ * _ * _ * _ * _ * _ * _) -> 
+                                            [| TextRuntime.ConvertStringBack(Some (let t1,_,_,_,_,_,_,_,_ = row in t1))
+                                               TextRuntime.ConvertStringBack(Some (let _,t2,_,_,_,_,_,_,_ = row in t2))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,t3,_,_,_,_,_,_ = row in t3))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,t4,_,_,_,_,_ = row in t4))
+                                               TextRuntime.ConvertFloatBack("", "", Some (let _,_,_,_,t5,_,_,_,_ = row in t5))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6,_,_,_ = row in t6))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,t7,_,_ = row in t7))
+                                               TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,t8,_ = row in t8))
+                                               TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,_,_,_,t9 = row in t9)) |])
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), true, ",", '"', true, false, 0, false)
+
+
+class CsvProvider+Row : string * string * string * string * float * int * string * string * int
+    new : 00846U010000A:string -> a:string -> agilentTechnologiesInc:string -> 41726005508L:string -> 000011999111820051228000000000000000010:float -> 00:int -> a:string -> y14A3307920000001D19991118101:string -> 11111:int -> CsvProvider+Row
+    00846U010000A,
+    a,
+    agilentTechnologiesInc,
+    41726005508L,
+    000011999111820051228000000000000000010,
+    00,
+    a,
+    y14A3307920000001D19991118101,
+    11111
+
+    member 00: int with get
+    (let _,_,_,_,_,t6,_,_,_ = this in t6)
+
+    member 000011999111820051228000000000000000010: float with get
+    (let _,_,_,_,t5,_,_,_,_ = this in t5)
+
+    member 00846U1010000A: string with get
+    (let t1,_,_,_,_,_,_,_,_ = this in t1)
+
+    member 11111: int with get
+    (let _,_,_,_,_,_,_,_,t9 = this in t9)
+
+    member 41726005508L: string with get
+    (let _,_,_,t4,_,_,_,_,_ = this in t4)
+
+    member A: string with get
+    (let _,t2,_,_,_,_,_,_,_ = this in t2)
+
+    member A2: string with get
+    (let _,_,_,_,_,_,t7,_,_ = this in t7)
+
+    member ``AGILENT TECHNOLOGIES, INC``: string with get
+    (let _,_,t3,_,_,_,_,_,_ = this in t3)
+
+    member Y114A03307920000001D119991118101: string with get
+    (let _,_,_,_,_,_,_,t8,_ = this in t8)
+
+
