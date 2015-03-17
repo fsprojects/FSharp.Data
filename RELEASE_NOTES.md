@@ -5,7 +5,8 @@
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
-* Fixes for issue 791
+* Fixes for issue 791 (stack overflow in Html Parser)
+* Adding support for Fixed width files (Issue #801)
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
