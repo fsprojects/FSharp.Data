@@ -402,4 +402,18 @@ type CsvUom = CsvProvider<"Data/SmallTest.csv">
 let ``Can create new csv row with units of measure``() =
   let row = new CsvUom.Row("name", 3.5M<metre>, 27M<Data.UnitSystems.SI.UnitSymbols.s>)
   row.Distance |> should equal 3.5M<metre>
+
+type FixedWidth = CsvProvider<"Data/nyse.txt", HasHeaders=false, FixedWidth=true>
+
+[<Test>]
+let ``Can handle fixed width files``() =
+    let data = 
+        FixedWidth.GetSample().Rows
+        |> Seq.map (fun r -> r.Column1, r.Column3) 
+        |> Seq.toArray
+    data |> should equal [|
+        "00846U1010000A", "AGILENT TECHNOLOGIES, INC";
+        "0138171010000AA", "ALCOA INC"
+        "00768Y2060020AADR", "ADVISORSHARES TR WCM/BNY MELLON FOCUSED GROWTH ARD ETF"
+    |]
   

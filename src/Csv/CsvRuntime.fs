@@ -72,6 +72,63 @@ module internal CsvReader =
 
     readLines 0
 
+module internal FixedWidthReader = 
+
+  let readFixedWidthFile (reader:TextReader) quote =
+
+    let inline (|Char|) (n:int) = char n
+    let inline (|Whitespace|_|) (n:int) = if Char.IsWhiteSpace(char n) then Some() else None
+    let inline (|Quote|_|) (n:int) = if char n = quote then Some() else None
+
+
+    let rec readString (chars:StringBuilder) = 
+      match reader.Read() with
+      | -1 -> chars
+      | Quote when reader.Peek() = int quote ->
+          reader.Read() |> ignore
+          readString (chars.Append quote)
+      | Quote -> chars
+      | Char c -> readString (chars.Append c)
+
+    
+    let rec delimitedState data (chars:StringBuilder) = 
+        match reader.Read() with
+        | Whitespace -> 
+            let item = chars.ToString()
+            let data = if String.IsNullOrWhiteSpace(item) then data else (item.Trim() :: data)
+            readLine data (StringBuilder())
+        | Quote ->
+            let chars = chars.Append ' '
+            readLine data (readString chars)
+        | Char c ->
+            let chars = chars.Append ' '
+            readLine data (chars.Append c)
+            
+
+    and readLine data (chars:StringBuilder) = 
+      match reader.Read() with
+      | -1 | Char '\r' | Char '\n' -> 
+          let item = chars.ToString()
+          if String.IsNullOrWhiteSpace(item) then data else (item.Trim() :: data)
+      | Whitespace -> delimitedState data chars
+      | Quote ->
+          readLine data (readString chars)
+      | Char c ->
+          readLine data (chars.Append c)
+
+    /// Reads multiple lines from the input, skipping newline characters
+    let rec readLines lineNumber = seq {
+      match reader.Peek() with
+      | -1 -> ()
+      | Char '\r' | Char '\n' -> 
+          reader.Read() |> ignore
+          yield! readLines lineNumber
+      | _ -> 
+          yield readLine [] (StringBuilder()) |> List.rev |> Array.ofList, lineNumber
+          yield! readLines (lineNumber + 1) }
+
+    readLines 0
+
 // --------------------------------------------------------------------------------------
 
 [<AutoOpen>]
@@ -100,12 +157,12 @@ module private CsvHelpers =
     interface System.Collections.IEnumerable with
       member x.GetEnumerator() = (x :> seq<'T>).GetEnumerator() :> System.Collections.IEnumerator
     
-  let parseIntoLines newReader separators quote hasHeaders skipRows =
+  let parseIntoLines newReader (lineIterator : _ -> _ -> _ -> seq<string[] * int>)  separators quote hasHeaders skipRows =
 
     // Get the first iterator and read the first line
     let firstReader : TextReader = newReader()
 
-    let linesIterator = (CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+    let linesIterator = (lineIterator firstReader separators quote).GetEnumerator() //(CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
 
     for i = 1 to skipRows do
       linesIterator.MoveNext() |> ignore
@@ -196,7 +253,7 @@ module private CsvHelpers =
 // --------------------------------------------------------------------------------------
 
 /// [omit]
-type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =
+type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, disposer:IDisposable, rows:seq<'RowType>, isFixedWidth, headers, numberOfColumns, separators, quote) =
 
   /// The rows with data
   member __.Rows = rows
@@ -208,6 +265,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   member __.Separators = separators
   /// The quotation mark use for surrounding values containing separator chars
   member __.Quote = quote
+  /// Whether the file format being considered is fixed width. 
+  member __.FixedWidth = isFixedWidth
   
   interface IDisposable with
     member __.Dispose() = disposer.Dispose()
@@ -215,18 +274,18 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, headers, numberOfColumns, separators, quote) =    
-    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, headers, numberOfColumns, separators, quote)
+  static member CreateEmpty (rowToStringArray, rows:seq<'RowType>, isFixedWidth, headers, numberOfColumns, separators, quote) =    
+    new CsvFile<'RowType>(rowToStringArray, { new IDisposable with member x.Dispose() = () }, rows, isFixedWidth, headers, numberOfColumns, separators, quote)
     
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
-    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows)
+  static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
+    let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
 
   /// [omit]
-  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
+  new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, isFixedWidth, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =
 
     // Track created Readers so that we can dispose of all of them
     let disposeFuncs = new ResizeArray<_>()
@@ -248,7 +307,12 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
     let noSeparatorsSpecified = String.IsNullOrEmpty separators
     let separators = if noSeparatorsSpecified then "," else separators
 
-    let parsedCsvLines = parseIntoLines newReader separators quote hasHeaders skipRows
+    let lineIterator =
+        if isFixedWidth
+        then (fun reader _ quote -> FixedWidthReader.readFixedWidthFile reader quote)
+        else CsvReader.readCsvFile 
+
+    let parsedCsvLines = parseIntoLines newReader lineIterator separators quote hasHeaders skipRows
 
     // Auto-Detect tab separated files that may not have .TSV extension when no explicit separators defined
     let probablyTabSeparated =
@@ -257,7 +321,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     let parsedCsvLines =
       if probablyTabSeparated
-      then parseIntoLines newReader "\t" quote hasHeaders skipRows
+      then parseIntoLines newReader lineIterator "\t" quote hasHeaders skipRows
       else parsedCsvLines
 
     // Detect header that has empty trailing column name that doesn't correspond to a column in
@@ -289,7 +353,8 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
 
     new CsvFile<'RowType>(rowToStringArray,
                           disposer, 
-                          rows, 
+                          rows,
+                          isFixedWidth,
                           parsedCsvLines.Headers, 
                           parsedCsvLines.ColumnCount, 
                           parsedCsvLines.Separators, 
@@ -344,7 +409,7 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
      writer.ToString()
 
   member inline private x.withRows rows =
-    new CsvFile<'RowType>(rowToStringArray, disposer, rows, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
+    new CsvFile<'RowType>(rowToStringArray, disposer, rows, x.FixedWidth, x.Headers, x.NumberOfColumns, x.Separators, x.Quote)
 
   member inline private x.mapRows f = x.withRows (f x.Rows)
   
