@@ -306,6 +306,7 @@
     <Compile Include="JsonParserProperties.fs" />
     <Compile Include="JsonConversions.fs" />
     <Compile Include="CsvReader.fs" />
+    <Compile Include="FixedWidthReader.fs" />
     <Compile Include="CsvProvider.fs" />
     <Compile Include="XmlProvider.fs" />
     <Compile Include="JsonProvider.fs" />
