@@ -287,6 +287,9 @@
     <None Include="Data\SimpleHtmlLists.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\nyse.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="Data/TypeInference.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
