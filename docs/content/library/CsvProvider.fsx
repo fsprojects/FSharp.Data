@@ -358,6 +358,30 @@ let stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT", Cac
 stocks.Take(10).Cache()
 
 (**
+## Handling Fixed width files
+
+As well as files delimited by a separator the CSV Provider also supports Fixed width file formats. 
+
+    [lang=text]
+    00846U1010000A           A              AGILENT TECHNOLOGIES, INC                                   41726005508L  
+    0138171010000AA          AA             ALCOA INC                                                   41726005508A  
+    00768Y2060020AADR        AADR           ADVISORSHARES TR WCM/BNY MELLON FOCUSED GROWTH ARD ETF      400000000     
+*)
+
+let fixedWidth = CsvProvider<"../data/nyse.txt", HasHeaders=false, FixedWidth=true>.GetSample()
+for row in fixedWidth.Rows do
+  printfn "Column 1 = %s Column 2 = %s Column 3 = %s" row.Column1 row.Column2 row.Column3
+
+(**
+This is all well a good, but as you can see this file doesn't have any headers. So the column names have been inferred for us. 
+With the CSV provider in fixed width mode this can be fixed by supplying a schema. To give better column names.  
+*)
+
+let fixedWidthWithSchema = CsvProvider<"../data/nyse.txt", Schema="id (string), symbol (string), name (string), code (string),,,,,", HasHeaders=false, FixedWidth=true>.GetSample()
+for row in fixedWidthWithSchema.Rows do
+  printfn "Id = %s Symbol = %s Name = %s" row.Id row.Symbol row.Name
+
+(**
 ## Related articles
 
  * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to CSV type provider

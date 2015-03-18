@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{78CB4667-C
 	ProjectSection(SolutionItems) = preProject
 		docs\content\data\AirQuality.csv = docs\content\data\AirQuality.csv
 		docs\content\data\MSFT.csv = docs\content\data\MSFT.csv
+		docs\content\data\nyse.txt = docs\content\data\nyse.txt
 		docs\content\data\SmallTest.csv = docs\content\data\SmallTest.csv
 		docs\content\data\Titanic.csv = docs\content\data\Titanic.csv
 		docs\content\data\TwitterStream.json = docs\content\data\TwitterStream.json
