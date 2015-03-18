@@ -93,6 +93,9 @@ module internal FixedWidthReader =
     
     let rec delimitedState data (chars:StringBuilder) = 
         match reader.Read() with
+        | -1 | Char '\r' | Char '\n' -> 
+          let item = chars.ToString()
+          if String.IsNullOrWhiteSpace(item) then data else (item.Trim() :: data)
         | Whitespace -> 
             let item = chars.ToString()
             let data = if String.IsNullOrWhiteSpace(item) then data else (item.Trim() :: data)
@@ -162,7 +165,7 @@ module private CsvHelpers =
     // Get the first iterator and read the first line
     let firstReader : TextReader = newReader()
 
-    let linesIterator = (lineIterator firstReader separators quote).GetEnumerator() //(CsvReader.readCsvFile firstReader separators quote).GetEnumerator()  
+    let linesIterator = (lineIterator firstReader separators quote).GetEnumerator()
 
     for i = 1 to skipRows do
       linesIterator.MoveNext() |> ignore
