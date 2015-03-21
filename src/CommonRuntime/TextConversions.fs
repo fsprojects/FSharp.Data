@@ -39,13 +39,13 @@ module private Helpers =
 type TextConversions private() = 
 
   /// `NaN` `NA` `#N/A` `:` `-` `TBA` `TBD`
-  static member DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
+  static member val DefaultMissingValues = [| "NaN"; "NA"; "#N/A"; ":"; "-"; "TBA"; "TBD" |]
   
   /// `%` `‰` `‱`
-  static member DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
+  static member val DefaultNonCurrencyAdorners = [| '%'; '‰'; '‱' |] |> Set.ofArray
   
   /// `¤` `$` `¢` `£` `¥` `₱` `﷼` `₤` `₭` `₦` `₨` `₩` `₮` `€` `฿` `₡` `៛` `؋` `₴` `₪` `₫` `₹` `ƒ`
-  static member DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
+  static member val DefaultCurrencyAdorners = [| '¤'; '$'; '¢'; '£'; '¥'; '₱'; '﷼'; '₤'; '₭'; '₦'; '₨'; '₩'; '₮'; '€'; '฿'; '₡'; '៛'; '؋'; '₴'; '₪'; '₫'; '₹'; 'ƒ' |] |> Set.ofArray
 
   static member val private DefaultRemovableAdornerCharacters = 
     Set.union TextConversions.DefaultNonCurrencyAdorners TextConversions.DefaultCurrencyAdorners
