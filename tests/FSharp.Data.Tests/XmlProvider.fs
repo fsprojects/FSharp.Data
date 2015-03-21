@@ -502,3 +502,13 @@ let ``Can construct elements with heterogeneous records with primitives``() =
   </author>
 </entry>""")
     AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())
+
+type TranslationsTP = XmlProvider<"""<translations>
+        <translation language='nl'>some text</translation>
+        <translation language='en'>more text</translation>
+</translations>""">
+
+[<Test>]
+let ``Serializing arrays do not introduce multiple outer tags``() =
+    let xml = TranslationsTP.Translations([| TranslationsTP.Translation("nl", "some text"); TranslationsTP.Translation("en", "more text") |])
+    xml.XElement.ToString(SaveOptions.DisableFormatting) |> should equal "<translations><translation language=\"nl\">some text</translation><translation language=\"en\">more text</translation></translations>"
