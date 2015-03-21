@@ -9,6 +9,7 @@
 * Exclude elements with aria-hidden attribute when parsing tables in HtmlProvider.
 * Use ISO-8601 format when outputing dates.
 * Fix parsing of HTML closing tags with numbers.
+* Fixed handling of URI's with fragment but no query.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
