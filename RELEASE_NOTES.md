@@ -5,7 +5,10 @@
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
-* Fixes for issue 791
+* Fix possible stack overflow in HTML parser.
+* Exclude elements with aria-hidden attribute when parsing tables in HtmlProvider.
+* Use ISO-8601 format when outputing dates.
+* Fix parsing of HTML closing tags with numbers.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
