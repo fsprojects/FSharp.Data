@@ -47,7 +47,8 @@ Columns are delimited by one of the chars passed by <code>separators</code> (def
 to escape the separator chars, the <code>quote</code> character will be used (defaults to <code>"</code>).
 If <code>hasHeaders</code> is true (the default), the first line read by <code>reader</code> will not be considered part of data.
 If <code>ignoreErrors</code> is true (the default is false), rows with a different number of columns from the header row
-(or the first row if headers are not present) will be ignored.</p>
+(or the first row if headers are not present) will be ignored.
+The first <code>skipRows</code> lines will be skipped.</p>
 </div>
   <h3>Instance members</h3>
   <table class="table table-bordered member-list">
@@ -58,15 +59,34 @@ If <code>ignoreErrors</code> is true (the default is false), rows with a differe
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
+          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
+            Append(rows)
+          </code>
+          <div class="tip" id="180">
+            <strong>Signature:</strong> rows:seq&lt;&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L397-397" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a csv with the same rows as the original plus the provided rows appended</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '181', 181)" onmouseover="showTip(event, '181', 181)">
             Cache()
           </code>
-          <div class="tip" id="174">
+          <div class="tip" id="181">
             <strong>Signature:</strong> unit -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L303-303" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L363-363" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -78,15 +98,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
+          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
             Filter(predicate)
           </code>
-          <div class="tip" id="175">
+          <div class="tip" id="182">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L307-307" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L371-371" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -97,152 +117,19 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
-            Headers
-          </code>
-          <div class="tip" id="176">
-            <strong>Signature:</strong> string [] option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L191-191" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The names of the columns</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
-            Headers
-          </code>
-          <div class="tip" id="177">
-            <strong>Signature:</strong> string [] option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L191-191" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The names of the columns</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
-            NumberOfColumns
-          </code>
-          <div class="tip" id="178">
-            <strong>Signature:</strong> int<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L193-193" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The number of columns</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
-            NumberOfColumns
-          </code>
-          <div class="tip" id="179">
-            <strong>Signature:</strong> int<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L193-193" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The number of columns</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
-            Quote
-          </code>
-          <div class="tip" id="180">
-            <strong>Signature:</strong> char<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L197-197" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The quotation mark use for surrounding values containing separator chars</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '181', 181)" onmouseover="showTip(event, '181', 181)">
-            Quote
-          </code>
-          <div class="tip" id="181">
-            <strong>Signature:</strong> char<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L197-197" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The quotation mark use for surrounding values containing separator chars</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '182', 182)" onmouseover="showTip(event, '182', 182)">
-            Rows
-          </code>
-          <div class="tip" id="182">
-            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L189-189" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The rows with data</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '183', 183)" onmouseover="showTip(event, '183', 183)">
-            Rows
+            Headers
           </code>
           <div class="tip" id="183">
-            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
+            <strong>Signature:</strong> string [] option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L189-189" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L206-206" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The rows with data</p>
+          <p>The names of the columns</p>
 
         </td>
       </tr>
@@ -250,14 +137,90 @@ that each row will be only be read and parsed from the input at most once.</p>
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '184', 184)" onmouseover="showTip(event, '184', 184)">
-            Save(path, separator, quote)
+            Map(mapping)
           </code>
           <div class="tip" id="184">
+            <strong>Signature:</strong> mapping:Func&lt;&#39;RowType,&#39;RowType&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L367-367" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Returns a new csv where every row has been transformed by the provided mapping function.</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
+            NumberOfColumns
+          </code>
+          <div class="tip" id="185">
+            <strong>Signature:</strong> int<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L208-208" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The number of columns</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+            Quote
+          </code>
+          <div class="tip" id="186">
+            <strong>Signature:</strong> char<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L212-212" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The quotation mark use for surrounding values containing separator chars</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
+            Rows
+          </code>
+          <div class="tip" id="187">
+            <strong>Signature:</strong> seq&lt;&#39;RowType&gt;<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L204-204" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>The rows with data</p>
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+            Save(path, separator, quote)
+          </code>
+          <div class="tip" id="188">
             <strong>Signature:</strong> (path:string * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L287-287" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L345-345" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -268,15 +231,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '185', 185)" onmouseover="showTip(event, '185', 185)">
+          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
             Save(stream, separator, quote)
           </code>
-          <div class="tip" id="185">
+          <div class="tip" id="189">
             <strong>Signature:</strong> (stream:Stream * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L280-280" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L338-338" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -287,15 +250,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '186', 186)" onmouseover="showTip(event, '186', 186)">
+          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
             Save(writer, separator, quote)
           </code>
-          <div class="tip" id="186">
+          <div class="tip" id="190">
             <strong>Signature:</strong> (writer:TextWriter * separator:char option * quote:char option) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L251-251" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L309-309" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -306,15 +269,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '187', 187)" onmouseover="showTip(event, '187', 187)">
+          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
             SaveToString(separator, quote)
           </code>
-          <div class="tip" id="187">
+          <div class="tip" id="191">
             <strong>Signature:</strong> (separator:char option * quote:char option) -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L293-293" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L351-351" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -325,15 +288,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '188', 188)" onmouseover="showTip(event, '188', 188)">
+          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
             Separators
           </code>
-          <div class="tip" id="188">
+          <div class="tip" id="192">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L195-195" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L210-210" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -344,34 +307,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '189', 189)" onmouseover="showTip(event, '189', 189)">
-            Separators
-          </code>
-          <div class="tip" id="189">
-            <strong>Signature:</strong> string<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L195-195" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The character(s) used as column separator(s)</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '190', 190)" onmouseover="showTip(event, '190', 190)">
+          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
             Skip(count)
           </code>
-          <div class="tip" id="190">
+          <div class="tip" id="193">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L320-320" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L384-384" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -382,15 +326,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '191', 191)" onmouseover="showTip(event, '191', 191)">
+          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
             SkipWhile(predicate)
           </code>
-          <div class="tip" id="191">
+          <div class="tip" id="194">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L325-325" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L389-389" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -402,15 +346,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '192', 192)" onmouseover="showTip(event, '192', 192)">
+          <code onmouseout="hideTip(event, '195', 195)" onmouseover="showTip(event, '195', 195)">
             Take(count)
           </code>
-          <div class="tip" id="192">
+          <div class="tip" id="195">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L311-311" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L375-375" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -421,15 +365,15 @@ that each row will be only be read and parsed from the input at most once.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '193', 193)" onmouseover="showTip(event, '193', 193)">
+          <code onmouseout="hideTip(event, '196', 196)" onmouseover="showTip(event, '196', 196)">
             TakeWhile(predicate)
           </code>
-          <div class="tip" id="193">
+          <div class="tip" id="196">
             <strong>Signature:</strong> predicate:Func&lt;&#39;RowType,bool&gt; -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L316-316" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L380-380" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -441,15 +385,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '194', 194)" onmouseover="showTip(event, '194', 194)">
+          <code onmouseout="hideTip(event, '197', 197)" onmouseover="showTip(event, '197', 197)">
             Truncate(count)
           </code>
-          <div class="tip" id="194">
+          <div class="tip" id="197">
             <strong>Signature:</strong> count:int -&gt; CsvFile&lt;&#39;RowType&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L329-329" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvRuntime.fs#L393-393" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -468,15 +412,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
+          <code onmouseout="hideTip(event, '198', 198)" onmouseover="showTip(event, '198', 198)">
             AsyncLoad(...)
           </code>
-          <div class="tip" id="203">
-            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; Async&lt;CsvFile&gt;<br />
+          <div class="tip" id="198">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; Async&lt;CsvFile&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L94-94" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L96-96" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -487,15 +431,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
+          <code onmouseout="hideTip(event, '199', 199)" onmouseover="showTip(event, '199', 199)">
             Load(...)
           </code>
-          <div class="tip" id="204">
-            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
+          <div class="tip" id="199">
+            <strong>Signature:</strong> (uri:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L85-85" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L87-87" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -506,15 +450,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
+          <code onmouseout="hideTip(event, '200', 200)" onmouseover="showTip(event, '200', 200)">
             Load(...)
           </code>
-          <div class="tip" id="205">
-            <strong>Signature:</strong> (reader:TextReader * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
+          <div class="tip" id="200">
+            <strong>Signature:</strong> (reader:TextReader * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L72-72" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L74-74" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -525,15 +469,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
+          <code onmouseout="hideTip(event, '201', 201)" onmouseover="showTip(event, '201', 201)">
             Load(...)
           </code>
-          <div class="tip" id="206">
-            <strong>Signature:</strong> (stream:Stream * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
+          <div class="tip" id="201">
+            <strong>Signature:</strong> (stream:Stream * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L63-63" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L65-65" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -544,15 +488,15 @@ returns <c>true</c>, and then returns no further rows.</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
+          <code onmouseout="hideTip(event, '202', 202)" onmouseover="showTip(event, '202', 202)">
             Parse(...)
           </code>
-          <div class="tip" id="207">
-            <strong>Signature:</strong> (text:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option) -&gt; CsvFile<br />
+          <div class="tip" id="202">
+            <strong>Signature:</strong> (text:string * separators:string option * quote:char option * hasHeaders:bool option * ignoreErrors:bool option * skipRows:int option) -&gt; CsvFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L58-58" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvFile.fs#L60-60" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -579,7 +523,7 @@ returns <c>true</c>, and then returns no further rows.</p>
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -591,17 +535,18 @@ returns <c>true</c>, and then returns no further rows.</p>
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

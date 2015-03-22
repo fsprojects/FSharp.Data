@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>F# Data: HTML Parser
+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files, and for sending HTTP requests.">
+    <meta name="author" content="Tomas Petricek; Gustavo Guerra">
+
+    <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.8.23/jquery-ui.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/style.css" />
+    <link type="text/css" rel="stylesheet" href="/FSharp.Data/content/fsdata.css" />
+    <script type="text/javascript" src="/FSharp.Data/content/tips.js"></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="http://fsharp.org">fsharp.org</a></li>
+          <li><a href="http://bluemountaincapital.github.io/Deedle"><img height="16" width="16" src="http://fsharp.org/images/thumbs/Deedle.png" /> Deedle</a></li>
+          <li><a href="http://bluemountaincapital.github.io/FSharpRProvider"><img height=" 16" width="16" src="http://fsharp.org/images/thumbs/FSharpRProvider.png" /> R Provider</a></li>
+          <li><a href="http://fsharp.github.io/FSharp.Charting/"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Charting.png" /> F# Charting</a></li>
+          <li><a href="http://fsprojects.github.io/FSharp.Data.Toolbox"><img height="16" width="16" src="http://fsharp.org/images/thumbs/FSharp.Data.Toolbox.png" /> F# Data Toolbox</a></li>
+        </ul>
+        <h3 class="muted"><a href="/FSharp.Data/index.html">F# Data</a></h3>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="span9" id="main">
+          
+<h1>F# Data: HTML Parser</h1>
+
+<p>This article demonstrates how to use the HTML Parser to parse HTML files.</p>
+
+<p>The HTML parser takes any fragment of HTML, uri or a stream and trys to parse it into a DOM. 
+The parser is based on the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/index.html#contents">HTML Living Standard</a>
+Once a document/fragment has been parsed, a set of extension methods over the HTML DOM elements allow you to extract information from a web page
+independently of the actual HTML Type provider.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
+</pre>
+</td>
+</tr>
+</table>
+
+<p>The following example uses Google to search for <code>FSharp.Data</code> then parses the first set of
+search results from the page, extracting the URL and Title of the link.</p>
+
+<p>To achieve this we must first parse the webpage into our DOM. We can do this using
+the <code>HtmlDocument.Load</code> method. This method will take a URL and make a synchronous web call
+to extract the data from the page. Note: an asynchronous variant <code>HtmlDocument.AsyncLoad</code> is also available</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">results</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">HtmlDocument</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="f">Load</span>(<span class="s">&quot;http://www.google.co.uk/search?q=FSharp.Data&quot;</span>)
+</pre>
+</td>
+</tr>
+</table>
+
+<p>Now that we have a loaded HTML document we can begin to extract data from it. 
+Firstly we want to extract all of the anchor tags <code>a</code> out of the document, then
+inspect the links to see if it has a <code>href</code> attribute. If it does, extract the value,
+which in this case is the url that the search result is pointing to, and additionally the 
+<code>InnerText</code> of the anchor tag to provide the name of the web page for the search result
+we are looking at.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">links</span> <span class="o">=</span> 
+    <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">results</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">Descendants</span> [<span class="s">&quot;a&quot;</span>]
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="f">choose</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">x</span> <span class="k">-&gt;</span> 
+           <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="f">TryGetAttribute</span>(<span class="s">&quot;href&quot;</span>)
+           <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs14', 16)" onmouseover="showTip(event, 'fs14', 16)" class="i">a</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 18)" onmouseover="showTip(event, 'fs15', 18)" class="f">InnerText</span>(), <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">a</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 20)" onmouseover="showTip(event, 'fs16', 20)" class="f">Value</span>())
+    )
+</pre>
+</td>
+</tr>
+</table>
+
+<p>Now that we have extracted our search results you will notice that there are lots of
+other links to various Google services and cached/similar results. Ideally we would 
+like to filter these results as we are probably not interested in them.
+At this point we simply have a sequence of Tuples, so F# makes this trivial using <code>Seq.filter</code>
+and <code>Seq.map</code>.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 21)" onmouseover="showTip(event, 'fs17', 21)" class="i">searchResults</span> <span class="o">=</span>
+    <span onmouseout="hideTip(event, 'fs6', 22)" onmouseover="showTip(event, 'fs6', 22)" class="i">links</span>
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 23)" onmouseover="showTip(event, 'fs8', 23)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="f">filter</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs19', 25)" onmouseover="showTip(event, 'fs19', 25)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 26)" onmouseover="showTip(event, 'fs20', 26)" class="i">url</span>) <span class="k">-&gt;</span> 
+                    <span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="i">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Cached&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs19', 28)" onmouseover="showTip(event, 'fs19', 28)" class="i">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Similar&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs20', 29)" onmouseover="showTip(event, 'fs20', 29)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 30)" onmouseover="showTip(event, 'fs21', 30)" class="f">StartsWith</span>(<span class="s">&quot;/url?&quot;</span>))
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 31)" onmouseover="showTip(event, 'fs8', 31)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 32)" onmouseover="showTip(event, 'fs22', 32)" class="f">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 34)" onmouseover="showTip(event, 'fs20', 34)" class="i">url</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs19', 35)" onmouseover="showTip(event, 'fs19', 35)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 36)" onmouseover="showTip(event, 'fs20', 36)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="f">Substring</span>(<span class="n">0</span>, <span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 39)" onmouseover="showTip(event, 'fs24', 39)" class="f">IndexOf</span>(<span class="s">&quot;&amp;sa=&quot;</span>))<span class="o">.</span><span class="f">Replace</span>(<span class="s">&quot;/url?q=&quot;</span>, <span class="s">&quot;&quot;</span>))
+    <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 40)" onmouseover="showTip(event, 'fs8', 40)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 41)" onmouseover="showTip(event, 'fs25', 41)" class="f">toArray</span>
+</pre>
+</td>
+</tr>
+</table>
+
+<p>Putting this all together yields the following:</p>
+
+<table class="pre"><tr><td><pre><code>[|("F# Data: Library for Data Access", "http://fsharp.github.io/FSharp.Data/");
+  ("CSV Type Provider",
+   "http://fsharp.github.io/FSharp.Data/library/CsvProvider.html");
+  ("JSON Type Provider",
+   "http://fsharp.github.io/FSharp.Data/library/JsonProvider.html");
+  ("Freebase Provider",
+   "http://fsharp.github.io/FSharp.Data/library/Freebase.html");
+  ("WorldBank Provider",
+   "http://fsharp.github.io/FSharp.Data/library/WorldBank.html");
+  ("fsharp/FSharp.Data · GitHub", "https://github.com/fsharp/FSharp.Data");
+  ("Src", "https://github.com/fsharp/FSharp.Data/tree/master/src");
+  ("560", "https://github.com/fsharp/FSharp.Data/issues/560");
+  ("1627 commits", "https://github.com/fsharp/FSharp.Data/commits/master");
+  ("RELEASE_NOTES.md",
+   "https://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md");
+  ("NuGet Gallery | F# Data 2.1.1", "https://www.nuget.org/packages/FSharp.Data");
+  ("Microsoft.FSharp.Data.TypeProviders Namespace (F#) - MSDN",
+   "https://msdn.microsoft.com/en-us/library/hh362324.aspx");
+  ("Guide - Data Access | The F# Software Foundation",
+   "http://fsharp.org/guides/data-access/");
+  ("Guide - Data Science | The F# Software Foundation",
+   "http://fsharp.org/data-science/");
+  ("F# Data: New type provider library - Tomas Petricek",
+   "http://tomasp.net/blog/fsharp-data.aspx/");
+  ("Newest 'f#-data' Questions - Stack Overflow",
+   "http://stackoverflow.com/questions/tagged/f%2523-data");
+  ("FSharp.Data (@FSharpData) | Twitter", "https://twitter.com/fsharpdata");
+  ("FSharp.Data.SqlClient: Seamlessly integrating T-SQL and F# in the ...",
+   "http://blogs.msdn.com/b/fsharpteam/archive/2014/05/23/fsharp-data-sqlclient-seamlessly-integrating-sql-and-f-in-the-same-code-base-guest-post.aspx")|]</code></pre></td></tr></table>
+
+<div class="tip" id="fs1">namespace FSharp</div>
+<div class="tip" id="fs2">namespace FSharp.Data</div>
+<div class="tip" id="fs3">val results : HtmlDocument<br /><br />Full name: HtmlParser.results</div>
+<div class="tip" id="fs4">Multiple items<br />module HtmlDocument<br /><br />from FSharp.Data<br /><br />--------------------<br />type HtmlDocument =<br />&#160;&#160;private | HtmlDocument of docType: string * elements: HtmlNode list<br />&#160;&#160;override ToString : unit -&gt; string<br />&#160;&#160;member _Print : string<br />&#160;&#160;static member AsyncLoad : uri:string -&gt; Async&lt;HtmlDocument&gt;<br />&#160;&#160;static member Load : uri:string -&gt; HtmlDocument<br />&#160;&#160;static member Load : reader:TextReader -&gt; HtmlDocument<br />&#160;&#160;static member Load : stream:Stream -&gt; HtmlDocument<br />&#160;&#160;static member New : children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member New : docType:string * children:seq&lt;HtmlNode&gt; -&gt; HtmlDocument<br />&#160;&#160;static member Parse : text:string -&gt; HtmlDocument<br /><br />Full name: FSharp.Data.HtmlDocument</div>
+<div class="tip" id="fs5">static member HtmlDocument.Load : uri:string -&gt; HtmlDocument<br />static member HtmlDocument.Load : reader:System.IO.TextReader -&gt; HtmlDocument<br />static member HtmlDocument.Load : stream:System.IO.Stream -&gt; HtmlDocument</div>
+<div class="tip" id="fs6">val links : seq&lt;string * string&gt;<br /><br />Full name: HtmlParser.links</div>
+<div class="tip" id="fs7">static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * predicate:(HtmlNode -&gt; bool) -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * names:seq&lt;string&gt; -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * name:string -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * predicate:(HtmlNode -&gt; bool) * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * names:seq&lt;string&gt; * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;<br />static member HtmlDocumentExtensions.Descendants : doc:HtmlDocument * name:string * recurseOnMatch:bool -&gt; seq&lt;HtmlNode&gt;</div>
+<div class="tip" id="fs8">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs9">val choose : chooser:(&#39;T -&gt; &#39;U option) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.choose</div>
+<div class="tip" id="fs10">val x : HtmlNode</div>
+<div class="tip" id="fs11">static member HtmlNodeExtensions.TryGetAttribute : n:HtmlNode * name:string -&gt; HtmlAttribute option</div>
+<div class="tip" id="fs12">module Option<br /><br />from Microsoft.FSharp.Core</div>
+<div class="tip" id="fs13">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; option:&#39;T option -&gt; &#39;U option<br /><br />Full name: Microsoft.FSharp.Core.Option.map</div>
+<div class="tip" id="fs14">val a : HtmlAttribute</div>
+<div class="tip" id="fs15">static member HtmlNodeExtensions.InnerText : n:HtmlNode -&gt; string</div>
+<div class="tip" id="fs16">static member HtmlAttributeExtensions.Value : attr:HtmlAttribute -&gt; string</div>
+<div class="tip" id="fs17">val searchResults : (string * string) []<br /><br />Full name: HtmlParser.searchResults</div>
+<div class="tip" id="fs18">val filter : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.filter</div>
+<div class="tip" id="fs19">val name : string</div>
+<div class="tip" id="fs20">val url : string</div>
+<div class="tip" id="fs21">System.String.StartsWith(value: string) : bool<br />System.String.StartsWith(value: string, comparisonType: System.StringComparison) : bool<br />System.String.StartsWith(value: string, ignoreCase: bool, culture: System.Globalization.CultureInfo) : bool</div>
+<div class="tip" id="fs22">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs23">System.String.Substring(startIndex: int) : string<br />System.String.Substring(startIndex: int, length: int) : string</div>
+<div class="tip" id="fs24">System.String.IndexOf(value: string) : int<br />System.String.IndexOf(value: char) : int<br />System.String.IndexOf(value: string, comparisonType: System.StringComparison) : int<br />System.String.IndexOf(value: string, startIndex: int) : int<br />System.String.IndexOf(value: char, startIndex: int) : int<br />System.String.IndexOf(value: string, startIndex: int, comparisonType: System.StringComparison) : int<br />System.String.IndexOf(value: string, startIndex: int, count: int) : int<br />System.String.IndexOf(value: char, startIndex: int, count: int) : int<br />System.String.IndexOf(value: string, startIndex: int, count: int, comparisonType: System.StringComparison) : int</div>
+<div class="tip" id="fs25">val toArray : source:seq&lt;&#39;T&gt; -&gt; &#39;T []<br /><br />Full name: Microsoft.FSharp.Collections.Seq.toArray</div>
+
+        </div>
+        <div class="span3">
+          <a href="/FSharp.Data/index.html">
+            <img src="/FSharp.Data/images/logo.png" style="width:140px;height:140px;margin:10px 0px 0px 35px;border-style:none;" />
+          </a>
+
+          <ul class="nav nav-list" id="menu">
+
+            <li class="nav-header">
+              <a href="/FSharp.Data/ja/index.html" class="nflag"><img src="/FSharp.Data/images/ja.png" /></a>
+              <a href="/FSharp.Data/index.html" class="nflag nflag2"><img src="/FSharp.Data/images/en.png" /></a>
+              F# Data
+            </li>
+
+            <li class="divider"></li>
+
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
+            <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/CONTRIBUTING.md">Contributing to F# Data</a></li>
+            
+            <li class="nav-header">Documentation</li>
+
+            <li><a href="/FSharp.Data/index.html">Introduction</a></li>
+
+            <li class="divider"></li>
+
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
+
+            <li class="divider"></li>
+
+            <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
+
+            <li class="nav-header">Tutorials</li>
+
+            <li><a href="/FSharp.Data/tutorials/JsonToXml.html">Converting between JSON and XML</a></li>
+            <li><a href="/FSharp.Data/tutorials/JsonAnonymizer.html">Anonymizing JSON</a></li>
+
+            <li class="nav-header">Reference</li>
+
+            <li><a href="/FSharp.Data/reference/index.html">API Reference</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="http://github.com/fsharp/FSharp.Data"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+  </body>
+  </html>

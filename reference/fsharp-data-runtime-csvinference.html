@@ -47,6 +47,41 @@
 
 <!-- Render nested types and modules, if there are any -->
 
+  <h3>Type extensions</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Type extension</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '153', 153)" onmouseover="showTip(event, '153', 153)">
+            InferColumnTypes(...)
+          </code>
+          <div class="tip" id="153">
+            <strong>Signature:</strong> (inferRows:int * missingValues:string [] * cultureInfo:CultureInfo * schema:string * assumeMissingValues:bool * preferOptionals:bool * unitsOfMeasureProvider:IUnitsOfMeasureProvider option) -&gt; PrimitiveInferedProperty list<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvInference.fs#L336-336" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Infers the types of the columns of a CSV file
+Parameters:
+<em> inferRows - Number of rows to use for inference. If this is zero, all rows are used
+</em> missingValues - The set of strings recogized as missing values
+<em> cultureInfo - The culture used for parsing numbers and dates
+</em> schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&amp;lt;unit&amp;gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
+<em> assumeMissingValues - Assumes all columns can have missing values
+</em> preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
+* unitsOfMeasureProvider - optional function to resolve Units of Measure</p>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">
@@ -64,7 +99,7 @@
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -76,17 +111,18 @@
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

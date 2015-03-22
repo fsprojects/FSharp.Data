@@ -5,7 +5,7 @@
     <title>F# Data: Library for Data Access
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files, and for sending HTTP requests.">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
@@ -42,9 +42,9 @@
 
 <p>The F# Data library implements everything you need to 
 access data in your F# applications and scripts. It contains F# type 
-providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank and Freebase services. It also includes helpers for parsing 
-JSON and CSV files and for sending HTTP requests.</p>
+providers for working with structured file formats (CSV, HTML, JSON and XML) 
+and for accessing the WorldBank data. It also includes helpers for parsing 
+CSV, HTML and JSON files and for sending HTTP requests.</p>
 
 <p>This library focuses on providing a simple, mostly read-only, access to the structured documents 
 and other data sources. It does not aim to be a comprehensive collection of F# type providers 
@@ -82,10 +82,10 @@ $(function(){
 <h3>How to get F# Data</h3>
 
 <ul>
-<li><p>The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
-In addition to the official releases, you can also get NuGet packages from the <a href="https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782">Continuous Integration
+<li><p>The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>. <a href="https://www.nuget.org/packages/FSharp.Data/"><img src="//img.shields.io/nuget/v/FSharp.Data.svg?style=flat" alt="NuGet Status" /></a></p></li>
+<li><p>In addition to the official releases, you can also get NuGet packages from the <a href="https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782">Continuous Integration 
 package source</a>.</p></li>
-<li><p>Alternatively, you can download the <a href="https://github.com/fsharp/FSharp.Data/zipball/master">source as a ZIP file</a> or download the <a href="https://github.com/fsharp/FSharp.Data/zipball/release">compiled binaries</a> as a ZIP. <br /> Please note that on windows when downloading a zip file with <code>dll</code> files the files will be blocked, and you have to manually unblock them in the file properties.</p></li>
+<li>Alternatively, you can download the <a href="https://github.com/fsharp/FSharp.Data/zipball/master">source as a ZIP file</a> or download the <a href="https://github.com/fsharp/FSharp.Data/zipball/release">compiled binaries</a> as a ZIP. <br /> Please note that on windows when downloading a zip file with <code>dll</code> files the files will be blocked, and you have to manually unblock them in the file properties.</li>
 </ul>
 
 <h2>F# Data documentation and tutorials</h2>
@@ -96,32 +96,33 @@ package source</a>.</p></li>
 document (or a document containing multiple samples). The structure is then used
 to provide easy to use type-safe access to documents that follow the same structure.
 The library also implements a type provider for accessing data from 
-<a href="http://data.worldbank.org/">the WorldBank</a> and <a href="http://www.freebase.com/">Freebase graph database</a>.</p>
+<a href="http://data.worldbank.org/">the WorldBank</a>.</p>
 
 <ul>
-<li><a href="library/XmlProvider.html">XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
-<li><a href="library/JsonProvider.html">JSON Type Provider</a> - discusses the <code>JsonProvider&lt;..&gt;</code> type</li>
 <li><a href="library/CsvProvider.html">CSV Type Provider</a> - discusses the <code>CsvProvider&lt;..&gt;</code> type</li>
+<li><a href="library/HtmlProvider.html">HTML Type Provider</a> - discusses the <code>HtmlProvider&lt;...&gt;</code> type</li>
+<li><a href="library/JsonProvider.html">JSON Type Provider</a> - discusses the <code>JsonProvider&lt;..&gt;</code> type</li>
+<li><a href="library/XmlProvider.html">XML Type Provider</a> - discusses the <code>XmlProvider&lt;..&gt;</code> type</li>
 <li><a href="library/WorldBank.html">WorldBank Provider</a> - discusses the <code>WorldBankData</code> type 
 and the <code>WorldBankDataProvider&lt;..&gt;</code> type</li>
-<li><a href="library/Freebase.html">Freebase Provider</a> - discusses the <code>FreebaseData</code> type 
-and the <code>FreebaseDataProvider&lt;..&gt;</code> type</li>
 </ul>
 
 <h3>Data access tools</h3>
 
 <p>In addition to the F# type providers, the library also defines several types that 
-simplify data access. In particular, it includes tools for HTTP web requests and a 
-JSON and CSV parsers with simple dynamic API. For more information about these types, see the 
+simplify data access. In particular, it includes tools for HTTP web requests and 
+CSV, HTML, and JSON parsers with simple dynamic API. For more information about these types, see the 
 following topics:</p>
 
 <ul>
-<li><a href="library/JsonValue.html">JSON Parser and Reader</a> - introduces the JSON parser 
-(without using the type provider)</li>
-<li><a href="library/CsvFile.html">CSV Parser and Reader</a> - introduces the CSV parser 
-(without using the type provider)</li>
 <li><a href="library/Http.html">HTTP Utilities</a> - discusses the <code>Http</code> type that can be used
 to send HTTP web requests.</li>
+<li><a href="library/CsvFile.html">CSV Parser</a> - introduces the CSV parser 
+(without using the type provider)</li>
+<li><a href="library/HtmlParser.html">HTML Parser</a> - introduces the HTML parser 
+(without using the type provider)</li>
+<li><a href="library/JsonValue.html">JSON Parser</a> - introduces the JSON parser 
+(without using the type provider)</li>
 </ul>
 
 <h3>Tutorials</h3>
@@ -183,7 +184,7 @@ send an email to the <a href="http://groups.google.com/group/fsharp-opensource">
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -195,17 +196,18 @@ send an email to the <a href="http://groups.google.com/group/fsharp-opensource">
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

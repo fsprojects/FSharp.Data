@@ -56,10 +56,28 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '69', 69)" onmouseover="showTip(event, '69', 69)">
+          <code onmouseout="hideTip(event, '163', 163)" onmouseover="showTip(event, '163', 163)">
+            capitalizeFirstLetter s
+          </code>
+          <div class="tip" id="163">
+            <strong>Signature:</strong> s:string -&gt; string<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L96-96" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '164', 164)" onmouseover="showTip(event, '164', 164)">
             niceCamelName s
           </code>
-          <div class="tip" id="69">
+          <div class="tip" id="164">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -75,10 +93,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '107', 107)" onmouseover="showTip(event, '107', 107)">
+          <code onmouseout="hideTip(event, '165', 165)" onmouseover="showTip(event, '165', 165)">
             nicePascalName s
           </code>
-          <div class="tip" id="107">
+          <div class="tip" id="165">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -94,15 +112,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '108', 108)" onmouseover="showTip(event, '108', 108)">
+          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
             pluralize s
           </code>
-          <div class="tip" id="108">
+          <div class="tip" id="166">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L117-117" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L126-126" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -113,15 +131,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '109', 109)" onmouseover="showTip(event, '109', 109)">
+          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
             singularize s
           </code>
-          <div class="tip" id="109">
+          <div class="tip" id="167">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L121-121" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L130-130" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -132,15 +150,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '110', 110)" onmouseover="showTip(event, '110', 110)">
+          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
             trimHtml s
           </code>
-          <div class="tip" id="110">
+          <div class="tip" id="168">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L96-96" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L105-105" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -153,12 +171,12 @@ implementation that is somewhat faster than regular expression.)</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '111', 111)" onmouseover="showTip(event, '111', 111)">
+          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
             uniqueGenerator niceName
           </code>
-          <div class="tip" id="111">
-            <strong>Signature:</strong> niceName:(&#39;?134647 -&gt; string) -&gt; &#39;?134647 -&gt; string<br />
-                          <strong>Type parameters:</strong> '?134647          </div>
+          <div class="tip" id="169">
+            <strong>Signature:</strong> niceName:(&#39;?6934 -&gt; string) -&gt; &#39;?6934 -&gt; string<br />
+                          <strong>Type parameters:</strong> '?6934          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/NameUtils.fs#L75-75" class="github-link">
@@ -173,8 +191,7 @@ index to already used names)</p>
 
 <pre><code>let makeUnique = uniqueGenerator nicePascalName
 let n1 = makeUnique "sample-name"
-let n2 = makeUnique "sample-name"
-</code></pre>
+let n2 = makeUnique "sample-name"</code></pre>
 
         </td>
       </tr>
@@ -197,7 +214,7 @@ let n2 = makeUnique "sample-name"
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -209,17 +226,18 @@ let n2 = makeUnique "sample-name"
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

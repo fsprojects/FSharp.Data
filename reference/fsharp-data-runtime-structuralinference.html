@@ -46,6 +46,23 @@
 </div>
 
 <!-- Render nested types and modules, if there are any -->
+  <h2>Nested types and modules</h2>
+  <div>
+      <table class="table table-bordered type-list">
+    <thead>
+      <tr><td>Type or Module</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td class="type-name">
+            <a href="fsharp-data-runtime-structuralinference-iunitsofmeasureprovider.html">IUnitsOfMeasureProvider</a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
 
   <h3>Functions and values</h3>
   <table class="table table-bordered member-list">
@@ -56,15 +73,33 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '58', 58)" onmouseover="showTip(event, '58', 58)">
+          <code onmouseout="hideTip(event, '170', 170)" onmouseover="showTip(event, '170', 170)">
+            defaultUnitsOfMeasureProvider 
+          </code>
+          <div class="tip" id="170">
+            <strong>Signature:</strong> IUnitsOfMeasureProvider<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L303-303" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '171', 171)" onmouseover="showTip(event, '171', 171)">
             getInferedTypeFromString (...)
           </code>
-          <div class="tip" id="58">
+          <div class="tip" id="171">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; unit:Type option -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L291-291" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L293-293" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -75,15 +110,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '62', 62)" onmouseover="showTip(event, '62', 62)">
+          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
             inferCollectionType (...)
           </code>
-          <div class="tip" id="62">
+          <div class="tip" id="172">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; types:seq&lt;InferedType&gt; -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L210-210" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L211-211" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -95,15 +130,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '63', 63)" onmouseover="showTip(event, '63', 63)">
+          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
             inferPrimitiveType cultureInfo value
           </code>
-          <div class="tip" id="63">
+          <div class="tip" id="173">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; Type<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L241-241" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L242-242" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -115,15 +150,33 @@ Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<in
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '64', 64)" onmouseover="showTip(event, '64', 64)">
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
+            parseUnitOfMeasure provider str
+          </code>
+          <div class="tip" id="174">
+            <strong>Signature:</strong> provider:IUnitsOfMeasureProvider -&gt; str:string -&gt; Type option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L314-314" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
             subtypeInfered allowEmptyValues ot1 ot2
           </code>
-          <div class="tip" id="64">
+          <div class="tip" id="175">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; ot1:InferedType -&gt; ot2:InferedType -&gt; InferedType<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L119-119" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L120-120" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -148,15 +201,15 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '65', 65)" onmouseover="showTip(event, '65', 65)">
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
             supportsUnitsOfMeasure typ
           </code>
-          <div class="tip" id="65">
+          <div class="tip" id="176">
             <strong>Signature:</strong> typ:Type -&gt; bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L36-36" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L37-37" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -167,15 +220,15 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '66', 66)" onmouseover="showTip(event, '66', 66)">
+          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
             typeTag _arg1
           </code>
-          <div class="tip" id="66">
+          <div class="tip" id="177">
             <strong>Signature:</strong> _arg1:InferedType -&gt; InferedTypeTag<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L41-41" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L42-42" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -187,15 +240,15 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '67', 67)" onmouseover="showTip(event, '67', 67)">
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
             unionCollectionOrder order1 order2
           </code>
-          <div class="tip" id="67">
+          <div class="tip" id="178">
             <strong>Signature:</strong> order1:InferedTypeTag list -&gt; order2:InferedTypeTag list -&gt; InferedTypeTag list<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L187-187" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L188-188" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -205,15 +258,15 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '68', 68)" onmouseover="showTip(event, '68', 68)">
+          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
             unionRecordTypes allowEmptyValues t1 t2
           </code>
-          <div class="tip" id="68">
+          <div class="tip" id="179">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; t1:InferedProperty list -&gt; t2:InferedProperty list -&gt; InferedProperty list<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L193-193" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/StructuralInference.fs#L194-194" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -242,7 +295,7 @@ if one may be missing. It also returns subtype of their types.</p>
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -254,17 +307,18 @@ if one may be missing. It also returns subtype of their types.</p>
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

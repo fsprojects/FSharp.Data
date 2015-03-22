@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>TextConversions - F# Data</title>
+    <title>StringExtensions - F# Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
@@ -40,9 +40,9 @@
 
 
 
-<h1>TextConversions</h1>
+<h1>StringExtensions</h1>
 <div class="xmldoc">
-<p>Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options</p>
+<p>Extension methods with conversions from strings to other types</p>
 </div>
   <h3>Static members</h3>
   <table class="table table-bordered member-list">
@@ -53,15 +53,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '264', 264)" onmouseover="showTip(event, '264', 264)">
-            AsBoolean(_cultureInfo text)
+          <code onmouseout="hideTip(event, '377', 377)" onmouseover="showTip(event, '377', 377)">
+            AsBoolean(x)
           </code>
-          <div class="tip" id="264">
-            <strong>Signature:</strong> _cultureInfo:IFormatProvider -&gt; text:string -&gt; bool option<br />
+          <div class="tip" id="377">
+            <strong>Signature:</strong> x:String -&gt; bool<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L65-65" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L46-46" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -71,36 +71,15 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '265', 265)" onmouseover="showTip(event, '265', 265)">
-            AsDateTime(cultureInfo text)
+          <code onmouseout="hideTip(event, '378', 378)" onmouseover="showTip(event, '378', 378)">
+            AsDateTime(x, cultureInfo)
           </code>
-          <div class="tip" id="265">
-            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; DateTime option<br />
+          <div class="tip" id="378">
+            <strong>Signature:</strong> (x:String * cultureInfo:CultureInfo option) -&gt; DateTime<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L74-74" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Parse date time using either the JSON milliseconds format or using ISO 8601
-that is, either "\/Date(<msec-since-1/1/1970>)\/" or something
-along the lines of "2013-01-28T00:37Z"</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '266', 266)" onmouseover="showTip(event, '266', 266)">
-            AsDecimal(cultureInfo text)
-          </code>
-          <div class="tip" id="266">
-            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; decimal option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L53-53" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L52-52" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -110,34 +89,15 @@ along the lines of "2013-01-28T00:37Z"</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '267', 267)" onmouseover="showTip(event, '267', 267)">
-            AsFloat(...)
+          <code onmouseout="hideTip(event, '379', 379)" onmouseover="showTip(event, '379', 379)">
+            AsDecimal(x, cultureInfo)
           </code>
-          <div class="tip" id="267">
-            <strong>Signature:</strong> (missingValues:string []) -&gt; useNoneForMissingValues:bool -&gt; cultureInfo:IFormatProvider -&gt; text:string -&gt; float option<br />
+          <div class="tip" id="379">
+            <strong>Signature:</strong> (x:String * cultureInfo:CultureInfo option) -&gt; decimal<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L57-57" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '268', 268)" onmouseover="showTip(event, '268', 268)">
-            AsGuid(text)
-          </code>
-          <div class="tip" id="268">
-            <strong>Signature:</strong> text:string -&gt; Guid option<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L93-93" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L31-31" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -147,15 +107,15 @@ along the lines of "2013-01-28T00:37Z"</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '269', 269)" onmouseover="showTip(event, '269', 269)">
-            AsInteger(cultureInfo text)
+          <code onmouseout="hideTip(event, '380', 380)" onmouseover="showTip(event, '380', 380)">
+            AsFloat(x, cultureInfo, missingValues)
           </code>
-          <div class="tip" id="269">
-            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; int option<br />
+          <div class="tip" id="380">
+            <strong>Signature:</strong> (x:String * cultureInfo:CultureInfo option * missingValues:string [] option) -&gt; float<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L47-47" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L38-38" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -165,15 +125,15 @@ along the lines of "2013-01-28T00:37Z"</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '270', 270)" onmouseover="showTip(event, '270', 270)">
-            AsInteger64(cultureInfo text)
+          <code onmouseout="hideTip(event, '381', 381)" onmouseover="showTip(event, '381', 381)">
+            AsGuid(x)
           </code>
-          <div class="tip" id="270">
-            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; int64 option<br />
+          <div class="tip" id="381">
+            <strong>Signature:</strong> x:String -&gt; Guid<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L50-50" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L59-59" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -183,34 +143,15 @@ along the lines of "2013-01-28T00:37Z"</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '271', 271)" onmouseover="showTip(event, '271', 271)">
-            AsString(str)
+          <code onmouseout="hideTip(event, '382', 382)" onmouseover="showTip(event, '382', 382)">
+            AsInteger(x, cultureInfo)
           </code>
-          <div class="tip" id="271">
-            <strong>Signature:</strong> str:string -&gt; string option<br />
+          <div class="tip" id="382">
+            <strong>Signature:</strong> (x:String * cultureInfo:CultureInfo option) -&gt; int<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L44-44" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Turns empty or null string value into None, otherwise returns Some</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '272', 272)" onmouseover="showTip(event, '272', 272)">
-            DefaultMissingValues
-          </code>
-          <div class="tip" id="272">
-            <strong>Signature:</strong> string []<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L41-41" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L17-17" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -220,15 +161,15 @@ along the lines of "2013-01-28T00:37Z"</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '273', 273)" onmouseover="showTip(event, '273', 273)">
-            DefaultMissingValues
+          <code onmouseout="hideTip(event, '383', 383)" onmouseover="showTip(event, '383', 383)">
+            AsInteger64(x, cultureInfo)
           </code>
-          <div class="tip" id="273">
-            <strong>Signature:</strong> string []<br />
+          <div class="tip" id="383">
+            <strong>Signature:</strong> (x:String * cultureInfo:CultureInfo option) -&gt; int64<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L41-41" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/Csv/CsvExtensions.fs#L24-24" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -254,7 +195,7 @@ along the lines of "2013-01-28T00:37Z"</p>
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -266,17 +207,18 @@ along the lines of "2013-01-28T00:37Z"</p>
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

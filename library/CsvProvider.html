@@ -5,7 +5,7 @@
     <title>F# Data: CSV Type Provider
 </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks.">
+    <meta name="description" content="The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files, and for sending HTTP requests.">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
@@ -59,8 +59,9 @@ is located in the <code>../../../bin</code> directory, we can load it in F# Inte
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">bin</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Data</span><span class="s">.</span><span class="s">dll</span><span class="s">&quot;</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span></pre>
+<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -74,7 +75,8 @@ following structure (you can find a larger example in the <a href="../data/MSFT.
 2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
 2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50
 2012-01-25,29.07,29.65,29.07,29.56,59231700,29.56
-2012-01-24,29.47,29.57,29.18,29.34,51703300,29.34</pre></td></tr></table>
+2012-01-24,29.47,29.57,29.18,29.34,51703300,29.34
+</pre></td></tr></table>
 
 <p>As usual with CSV files, the first row contains the headers (names of individual columns) 
 and the next rows define the data. We can pass reference to the file to <code>CsvProvider</code> to 
@@ -85,7 +87,8 @@ get a strongly typed view of the file:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Stocks</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">MSFT</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span><span class="o">&gt;</span></pre>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Stocks</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/MSFT.csv&quot;</span><span class="o">&gt;</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -93,7 +96,7 @@ get a strongly typed view of the file:</p>
 <p>The generated type provides two static methods for loading data. The <code>Parse</code> method can be
 used if we have the data in a <code>string</code> value. The <code>Load</code> method allows reading the data from
 a file or from a web resource (and there's also an asynchronous <code>AsyncLoad</code> version). We could also
-have used a web url instead of a local file in the sample parameter of the type provider.
+have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the <code>Load</code> method with an URL that points to a live CSV file on the Yahoo finance web site:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
@@ -113,17 +116,18 @@ The following sample calls the <code>Load</code> method with an URL that points 
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Download the stock prices</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="i">Stocks</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="i">Load</span>(<span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">ichart</span><span class="s">.</span><span class="s">finance</span><span class="s">.</span><span class="s">yahoo</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">table</span><span class="s">.</span><span class="s">csv</span><span class="s">?</span><span class="s">s</span><span class="s">=</span><span class="s">MSFT</span><span class="s">&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">Stocks</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="f">Load</span>(<span class="s">&quot;http://ichart.finance.yahoo.com/table.csv?s=MSFT&quot;</span>)
 
 <span class="c">// Look at the most recent row. Note the &#39;Date&#39; property</span>
 <span class="c">// is of type &#39;DateTime&#39; and &#39;Open&#39; has a type &#39;decimal&#39;</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">firstRow</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">head</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">firstRow</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="f">head</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="i">lastDate</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 14)" onmouseover="showTip(event, 'fs7', 14)" class="i">firstRow</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 15)" onmouseover="showTip(event, 'fs12', 15)" class="i">Date</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 16)" onmouseover="showTip(event, 'fs13', 16)" class="i">lastOpen</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs7', 17)" onmouseover="showTip(event, 'fs7', 17)" class="i">firstRow</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 18)" onmouseover="showTip(event, 'fs14', 18)" class="i">Open</span>
 
 <span class="c">// Print the prices in the HLOC format</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 19)" onmouseover="showTip(event, 'fs15', 19)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs5', 20)" onmouseover="showTip(event, 'fs5', 20)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 21)" onmouseover="showTip(event, 'fs8', 21)" class="i">Rows</span> <span class="k">do</span>
-  <span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">HLOC</span><span class="s">:</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">A</span><span class="s">,</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s">,</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s">,</span><span class="s"> </span><span class="s">%</span><span class="s">A</span><span class="s">)</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 23)" onmouseover="showTip(event, 'fs15', 23)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">High</span> <span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="i">Low</span> <span onmouseout="hideTip(event, 'fs15', 27)" onmouseover="showTip(event, 'fs15', 27)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 28)" onmouseover="showTip(event, 'fs14', 28)" class="i">Open</span> <span onmouseout="hideTip(event, 'fs15', 29)" onmouseover="showTip(event, 'fs15', 29)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 30)" onmouseover="showTip(event, 'fs19', 30)" class="i">Close</span></pre>
+  <span onmouseout="hideTip(event, 'fs16', 22)" onmouseover="showTip(event, 'fs16', 22)" class="f">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%A</span><span class="s">, </span><span class="pf">%A</span><span class="s">, </span><span class="pf">%A</span><span class="s">, </span><span class="pf">%A</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs15', 23)" onmouseover="showTip(event, 'fs15', 23)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 24)" onmouseover="showTip(event, 'fs17', 24)" class="i">High</span> <span onmouseout="hideTip(event, 'fs15', 25)" onmouseover="showTip(event, 'fs15', 25)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 26)" onmouseover="showTip(event, 'fs18', 26)" class="i">Low</span> <span onmouseout="hideTip(event, 'fs15', 27)" onmouseover="showTip(event, 'fs15', 27)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 28)" onmouseover="showTip(event, 'fs14', 28)" class="i">Open</span> <span onmouseout="hideTip(event, 'fs15', 29)" onmouseover="showTip(event, 'fs15', 29)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 30)" onmouseover="showTip(event, 'fs19', 30)" class="i">Close</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -151,9 +155,10 @@ of MSFT stocks changes since the company was founded:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Load the FSharp.Charting library</span>
-<span class="prep">#load</span> <span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">packages</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">0</span><span class="s">.</span><span class="s">90</span><span class="s">.</span><span class="s">6</span><span class="s">/</span><span class="s">FSharp</span><span class="s">.</span><span class="s">Charting</span><span class="s">.</span><span class="s">fsx</span><span class="s">&quot;</span>
+<span class="prep">#load</span> <span class="s">&quot;../../../packages/FSharp.Charting/FSharp.Charting.fsx&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs20', 31)" onmouseover="showTip(event, 'fs20', 31)" class="i">System</span>
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 32)" onmouseover="showTip(event, 'fs1', 32)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">Charting</span></pre>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 32)" onmouseover="showTip(event, 'fs1', 32)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 33)" onmouseover="showTip(event, 'fs21', 33)" class="i">Charting</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -167,14 +172,15 @@ of MSFT stocks changes since the company was founded:</p>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Visualize the stock prices</span>
 [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 34)" onmouseover="showTip(event, 'fs15', 34)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs5', 35)" onmouseover="showTip(event, 'fs5', 35)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 36)" onmouseover="showTip(event, 'fs8', 36)" class="i">Rows</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs15', 37)" onmouseover="showTip(event, 'fs15', 37)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 38)" onmouseover="showTip(event, 'fs22', 38)" class="i">Date</span>, <span onmouseout="hideTip(event, 'fs15', 39)" onmouseover="showTip(event, 'fs15', 39)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 40)" onmouseover="showTip(event, 'fs14', 40)" class="i">Open</span> ]
-<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 42)" onmouseover="showTip(event, 'fs24', 42)" class="i">FastLine</span></pre>
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs23', 41)" onmouseover="showTip(event, 'fs23', 41)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 42)" onmouseover="showTip(event, 'fs24', 42)" class="f">FastLine</span>
+</pre>
 </td>
 </tr>
 </table>
 
-<p><img src="/FSharp.Data/images/chart1.png" alt="Chart" /></p>
+<p><img src="/FSharp.Data/images/chart5.png" alt="Chart" /></p>
 
-<p>As a one more example, we use the <code>Candlestick</code> chart to get a more detailed look at the
+<p>As one more example, we use the <code>Candlestick</code> chart to get a more detailed look at the
 data over the last month:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
@@ -189,8 +195,9 @@ data over the last month:</p>
 <span class="c">// Get last months&#39; prices in HLOC format </span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs25', 43)" onmouseover="showTip(event, 'fs25', 43)" class="i">recent</span> <span class="o">=</span> 
   [ <span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 44)" onmouseover="showTip(event, 'fs15', 44)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs5', 45)" onmouseover="showTip(event, 'fs5', 45)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 46)" onmouseover="showTip(event, 'fs8', 46)" class="i">Rows</span> <span class="k">do</span>
-      <span class="k">if</span> <span onmouseout="hideTip(event, 'fs15', 47)" onmouseover="showTip(event, 'fs15', 47)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 48)" onmouseover="showTip(event, 'fs22', 48)" class="i">Date</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="i">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="i">Now</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 51)" onmouseover="showTip(event, 'fs28', 51)" class="i">AddDays</span>(<span class="o">-</span><span class="n">30.0</span>) <span class="k">then</span>
-        <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs15', 52)" onmouseover="showTip(event, 'fs15', 52)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="i">Date</span>, <span onmouseout="hideTip(event, 'fs15', 54)" onmouseover="showTip(event, 'fs15', 54)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 55)" onmouseover="showTip(event, 'fs17', 55)" class="i">High</span>, <span onmouseout="hideTip(event, 'fs15', 56)" onmouseover="showTip(event, 'fs15', 56)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 57)" onmouseover="showTip(event, 'fs18', 57)" class="i">Low</span>, <span onmouseout="hideTip(event, 'fs15', 58)" onmouseover="showTip(event, 'fs15', 58)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 59)" onmouseover="showTip(event, 'fs14', 59)" class="i">Open</span>, <span onmouseout="hideTip(event, 'fs15', 60)" onmouseover="showTip(event, 'fs15', 60)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 61)" onmouseover="showTip(event, 'fs19', 61)" class="i">Close</span> ]</pre>
+      <span class="k">if</span> <span onmouseout="hideTip(event, 'fs15', 47)" onmouseover="showTip(event, 'fs15', 47)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 48)" onmouseover="showTip(event, 'fs22', 48)" class="i">Date</span> <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs26', 49)" onmouseover="showTip(event, 'fs26', 49)" class="t">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 50)" onmouseover="showTip(event, 'fs27', 50)" class="i">Now</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs28', 51)" onmouseover="showTip(event, 'fs28', 51)" class="f">AddDays</span>(<span class="o">-</span><span class="n">30.0</span>) <span class="k">then</span>
+        <span class="k">yield</span> <span onmouseout="hideTip(event, 'fs15', 52)" onmouseover="showTip(event, 'fs15', 52)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="i">Date</span>, <span onmouseout="hideTip(event, 'fs15', 54)" onmouseover="showTip(event, 'fs15', 54)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 55)" onmouseover="showTip(event, 'fs17', 55)" class="i">High</span>, <span onmouseout="hideTip(event, 'fs15', 56)" onmouseover="showTip(event, 'fs15', 56)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 57)" onmouseover="showTip(event, 'fs18', 57)" class="i">Low</span>, <span onmouseout="hideTip(event, 'fs15', 58)" onmouseover="showTip(event, 'fs15', 58)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 59)" onmouseover="showTip(event, 'fs14', 59)" class="i">Open</span>, <span onmouseout="hideTip(event, 'fs15', 60)" onmouseover="showTip(event, 'fs15', 60)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 61)" onmouseover="showTip(event, 'fs19', 61)" class="i">Close</span> ]
+</pre>
 </td>
 </tr>
 </table>
@@ -202,12 +209,13 @@ data over the last month:</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Visualize prices using Candlestick chart</span>
-<span onmouseout="hideTip(event, 'fs23', 62)" onmouseover="showTip(event, 'fs23', 62)" class="i">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 63)" onmouseover="showTip(event, 'fs29', 63)" class="i">Candlestick</span>(<span onmouseout="hideTip(event, 'fs25', 64)" onmouseover="showTip(event, 'fs25', 64)" class="i">recent</span>)<span class="o">.</span><span class="i">WithYAxis</span>(<span class="i">Min</span> <span class="o">=</span> <span class="n">35.0</span>, <span class="i">Max</span> <span class="o">=</span> <span class="n">45.0</span>)</pre>
+<span onmouseout="hideTip(event, 'fs23', 62)" onmouseover="showTip(event, 'fs23', 62)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs29', 63)" onmouseover="showTip(event, 'fs29', 63)" class="f">Candlestick</span>(<span onmouseout="hideTip(event, 'fs25', 64)" onmouseover="showTip(event, 'fs25', 64)" class="i">recent</span>)<span class="o">.</span><span class="f">WithYAxis</span>(<span class="i">Min</span> <span class="o">=</span> <span class="n">40.0</span>, <span class="i">Max</span> <span class="o">=</span> <span class="n">50.0</span>)
+</pre>
 </td>
 </tr>
 </table>
 
-<p><img src="/FSharp.Data/images/chart2.png" alt="Chart" /></p>
+<p><img src="/FSharp.Data/images/chart6.png" alt="Chart" /></p>
 
 <h2>Using units of measure</h2>
 
@@ -219,7 +227,8 @@ returns values annotated with the appropriate unit.</p>
 looks as follows:</p>
 
 <table class="pre"><tr><td><pre lang="text">Name,  Distance (metre), Time (s)
-First, 50.0,             3.7</pre></td></tr></table>
+First, 50.0,             3.7
+</pre></td></tr></table>
 
 <p>As you can see, the second and third columns are annotated with <code>metre</code> and <code>s</code>,
 respectively. To use units of measure in our code, we need to open the namespace with
@@ -232,7 +241,8 @@ so we use the <code>GetSample</code> method instead of calling <code>Load</code>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 65)" onmouseover="showTip(event, 'fs30', 65)" class="i">small</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 66)" onmouseover="showTip(event, 'fs4', 66)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">SmallTest</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs30', 65)" onmouseover="showTip(event, 'fs30', 65)" class="i">small</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 66)" onmouseover="showTip(event, 'fs4', 66)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/SmallTest.csv&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
+</pre>
 </td>
 </tr>
 </table>
@@ -244,12 +254,13 @@ so we use the <code>GetSample</code> method instead of calling <code>Load</code>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="i">small2</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 68)" onmouseover="showTip(event, 'fs4', 68)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">SmallTest</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span><span class="o">&gt;</span>()</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs31', 67)" onmouseover="showTip(event, 'fs31', 67)" class="i">small2</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 68)" onmouseover="showTip(event, 'fs4', 68)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/SmallTest.csv&quot;</span><span class="o">&gt;</span>()
+</pre>
 </td>
 </tr>
 </table>
 
-<p>but the VisualStudio intellisense for the type provider parameters doesn't work when we use a default
+<p>but the VisualStudio IntelliSense for the type provider parameters doesn't work when we use a default
 constructor for a type provider, so we'll keep using <code>GetSample</code> instead.</p>
 
 <p>As in the previous example, the <code>small</code> value exposes the rows using the <code>Rows</code> property.
@@ -270,14 +281,15 @@ following simple calculation:</p>
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 75)" onmouseover="showTip(event, 'fs15', 75)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs30', 76)" onmouseover="showTip(event, 'fs30', 76)" class="i">small</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 77)" onmouseover="showTip(event, 'fs8', 77)" class="i">Rows</span> <span class="k">do</span>
   <span class="k">let</span> <span onmouseout="hideTip(event, 'fs38', 78)" onmouseover="showTip(event, 'fs38', 78)" class="i">speed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 79)" onmouseover="showTip(event, 'fs15', 79)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 80)" onmouseover="showTip(event, 'fs39', 80)" class="i">Distance</span> <span class="o">/</span> <span onmouseout="hideTip(event, 'fs15', 81)" onmouseover="showTip(event, 'fs15', 81)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 82)" onmouseover="showTip(event, 'fs40', 82)" class="i">Time</span>
-  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs38', 83)" onmouseover="showTip(event, 'fs38', 83)" class="i">speed</span> <span class="o">&gt;</span> <span class="n">15.0M</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs41', 84)" onmouseover="showTip(event, 'fs41', 84)" class="i">metre</span><span class="o">/</span><span onmouseout="hideTip(event, 'fs42', 85)" onmouseover="showTip(event, 'fs42', 85)" class="i">second</span><span class="o">&gt;</span> <span class="k">then</span> 
-    <span onmouseout="hideTip(event, 'fs16', 86)" onmouseover="showTip(event, 'fs16', 86)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">A</span><span class="s"> </span><span class="s">m</span><span class="s">/</span><span class="s">s</span><span class="s">)</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 87)" onmouseover="showTip(event, 'fs15', 87)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 88)" onmouseover="showTip(event, 'fs43', 88)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs38', 89)" onmouseover="showTip(event, 'fs38', 89)" class="i">speed</span></pre>
+  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs38', 83)" onmouseover="showTip(event, 'fs38', 83)" class="i">speed</span> <span class="o">&gt;</span> <span class="n">15.0M</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs41', 84)" onmouseover="showTip(event, 'fs41', 84)" class="t">metre</span><span class="o">/</span><span onmouseout="hideTip(event, 'fs42', 85)" onmouseover="showTip(event, 'fs42', 85)" class="t">second</span><span class="o">&gt;</span> <span class="k">then</span> 
+    <span onmouseout="hideTip(event, 'fs16', 86)" onmouseover="showTip(event, 'fs16', 86)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%A</span><span class="s"> m/s)&quot;</span> <span onmouseout="hideTip(event, 'fs15', 87)" onmouseover="showTip(event, 'fs15', 87)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 88)" onmouseover="showTip(event, 'fs43', 88)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs38', 89)" onmouseover="showTip(event, 'fs38', 89)" class="i">speed</span>
+</pre>
 </td>
 </tr>
 </table>
 
 <p>The numerical values of <code>Distance</code> and <code>Time</code> are both inferred as <code>decimal</code> (because they
-are small enough). Thus the type of <code>speed</code> becomes <code>decimal&lt;meter/second&gt;</code>. The compiler
+are small enough). Thus the type of <code>speed</code> becomes <code>decimal&lt;metre/second&gt;</code>. The compiler
 can then statically check that we're not comparing incompatible values - e.g. number in
 meters per second against a value in kilometres per hour.</p>
 
@@ -296,14 +308,19 @@ any textual tabular format. Here is an example using <code>;</code> as a separat
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 90)" onmouseover="showTip(event, 'fs44', 90)" class="i">airQuality</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 91)" onmouseover="showTip(event, 'fs4', 91)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">AirQuality</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="s">&quot;</span><span class="s">;</span><span class="s">&quot;</span><span class="o">&gt;</span>()
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs44', 90)" onmouseover="showTip(event, 'fs44', 90)" class="t">AirQuality</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 91)" onmouseover="showTip(event, 'fs4', 91)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/AirQuality.csv&quot;</span>, <span class="s">&quot;;&quot;</span><span class="o">&gt;</span>
 
-<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 92)" onmouseover="showTip(event, 'fs15', 92)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs44', 93)" onmouseover="showTip(event, 'fs44', 93)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 94)" onmouseover="showTip(event, 'fs8', 94)" class="i">Rows</span> <span class="k">do</span>
-  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs15', 95)" onmouseover="showTip(event, 'fs15', 95)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 96)" onmouseover="showTip(event, 'fs45', 96)" class="i">Month</span> <span class="o">&gt;</span> <span class="n">6</span> <span class="k">then</span> 
-    <span onmouseout="hideTip(event, 'fs16', 97)" onmouseover="showTip(event, 'fs16', 97)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">Temp</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">i</span><span class="s"> </span><span class="s">Ozone</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s"> </span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 98)" onmouseover="showTip(event, 'fs15', 98)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 99)" onmouseover="showTip(event, 'fs46', 99)" class="i">Temp</span> <span onmouseout="hideTip(event, 'fs15', 100)" onmouseover="showTip(event, 'fs15', 100)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 101)" onmouseover="showTip(event, 'fs47', 101)" class="i">Ozone</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs45', 92)" onmouseover="showTip(event, 'fs45', 92)" class="i">airQuality</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs44', 93)" onmouseover="showTip(event, 'fs44', 93)" class="t">AirQuality</span>()
+
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 94)" onmouseover="showTip(event, 'fs15', 94)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs45', 95)" onmouseover="showTip(event, 'fs45', 95)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 96)" onmouseover="showTip(event, 'fs8', 96)" class="i">Rows</span> <span class="k">do</span>
+  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs15', 97)" onmouseover="showTip(event, 'fs15', 97)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 98)" onmouseover="showTip(event, 'fs46', 98)" class="i">Month</span> <span class="o">&gt;</span> <span class="n">6</span> <span class="k">then</span> 
+    <span onmouseout="hideTip(event, 'fs16', 99)" onmouseover="showTip(event, 'fs16', 99)" class="f">printfn</span> <span class="s">&quot;Temp: </span><span class="pf">%i</span><span class="s"> Ozone: </span><span class="pf">%f</span><span class="s"> &quot;</span> <span onmouseout="hideTip(event, 'fs15', 100)" onmouseover="showTip(event, 'fs15', 100)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 101)" onmouseover="showTip(event, 'fs47', 101)" class="i">Temp</span> <span onmouseout="hideTip(event, 'fs15', 102)" onmouseover="showTip(event, 'fs15', 102)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 103)" onmouseover="showTip(event, 'fs48', 103)" class="i">Ozone</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -334,18 +351,19 @@ are automatically skipped (the sample file (<a href="../data/MortalityNY.tsv"><c
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs48', 102)" onmouseover="showTip(event, 'fs48', 102)" class="i">mortalityNy</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 103)" onmouseover="showTip(event, 'fs4', 103)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">MortalityNY</span><span class="s">.</span><span class="s">tsv</span><span class="s">&quot;</span>, <span class="i">IgnoreErrors</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 104)" onmouseover="showTip(event, 'fs49', 104)" class="i">mortalityNy</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 105)" onmouseover="showTip(event, 'fs4', 105)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/MortalityNY.tsv&quot;</span>, <span class="i">IgnoreErrors</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
 
 <span class="c">// Find the name of a cause based on code</span>
 <span class="c">// (Pedal cyclist injured in an accident)</span>
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs49', 104)" onmouseover="showTip(event, 'fs49', 104)" class="i">cause</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs48', 105)" onmouseover="showTip(event, 'fs48', 105)" class="i">mortalityNy</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 106)" onmouseover="showTip(event, 'fs8', 106)" class="i">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 107)" onmouseover="showTip(event, 'fs9', 107)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 108)" onmouseover="showTip(event, 'fs50', 108)" class="i">find</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs51', 109)" onmouseover="showTip(event, 'fs51', 109)" class="i">r</span> <span class="k">-&gt;</span> 
-  <span onmouseout="hideTip(event, 'fs51', 110)" onmouseover="showTip(event, 'fs51', 110)" class="i">r</span><span class="o">.</span><span class="i">``Cause of death Code``</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">V13</span><span class="s">.</span><span class="s">4</span><span class="s">&quot;</span>)
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 106)" onmouseover="showTip(event, 'fs50', 106)" class="i">cause</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs49', 107)" onmouseover="showTip(event, 'fs49', 107)" class="i">mortalityNy</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 108)" onmouseover="showTip(event, 'fs8', 108)" class="i">Rows</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 109)" onmouseover="showTip(event, 'fs9', 109)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 110)" onmouseover="showTip(event, 'fs51', 110)" class="f">find</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs52', 111)" onmouseover="showTip(event, 'fs52', 111)" class="i">r</span> <span class="k">-&gt;</span> 
+  <span onmouseout="hideTip(event, 'fs52', 112)" onmouseover="showTip(event, 'fs52', 112)" class="i">r</span><span class="o">.</span><span class="i">``Cause of death Code``</span> <span class="o">=</span> <span class="s">&quot;V13.4&quot;</span>)
 
 <span class="c">// Print the number of injured cyclists </span>
-<span onmouseout="hideTip(event, 'fs16', 111)" onmouseover="showTip(event, 'fs16', 111)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">CAUSE</span><span class="s">:</span><span class="s"> </span><span class="s">%</span><span class="s">s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs49', 112)" onmouseover="showTip(event, 'fs49', 112)" class="i">cause</span><span class="o">.</span><span class="i">``Cause of death``</span>
-<span class="k">for</span> <span onmouseout="hideTip(event, 'fs51', 113)" onmouseover="showTip(event, 'fs51', 113)" class="i">r</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs48', 114)" onmouseover="showTip(event, 'fs48', 114)" class="i">mortalityNy</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 115)" onmouseover="showTip(event, 'fs8', 115)" class="i">Rows</span> <span class="k">do</span>
-  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs51', 116)" onmouseover="showTip(event, 'fs51', 116)" class="i">r</span><span class="o">.</span><span class="i">``Cause of death Code``</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">V13</span><span class="s">.</span><span class="s">4</span><span class="s">&quot;</span> <span class="k">then</span> 
-    <span onmouseout="hideTip(event, 'fs16', 117)" onmouseover="showTip(event, 'fs16', 117)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">(</span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">cases</span><span class="s">)</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs51', 118)" onmouseover="showTip(event, 'fs51', 118)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs52', 119)" onmouseover="showTip(event, 'fs52', 119)" class="i">County</span> <span onmouseout="hideTip(event, 'fs51', 120)" onmouseover="showTip(event, 'fs51', 120)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 121)" onmouseover="showTip(event, 'fs53', 121)" class="i">Count</span></pre>
+<span onmouseout="hideTip(event, 'fs16', 113)" onmouseover="showTip(event, 'fs16', 113)" class="f">printfn</span> <span class="s">&quot;CAUSE: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs50', 114)" onmouseover="showTip(event, 'fs50', 114)" class="i">cause</span><span class="o">.</span><span class="i">``Cause of death``</span>
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs52', 115)" onmouseover="showTip(event, 'fs52', 115)" class="i">r</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs49', 116)" onmouseover="showTip(event, 'fs49', 116)" class="i">mortalityNy</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 117)" onmouseover="showTip(event, 'fs8', 117)" class="i">Rows</span> <span class="k">do</span>
+  <span class="k">if</span> <span onmouseout="hideTip(event, 'fs52', 118)" onmouseover="showTip(event, 'fs52', 118)" class="i">r</span><span class="o">.</span><span class="i">``Cause of death Code``</span> <span class="o">=</span> <span class="s">&quot;V13.4&quot;</span> <span class="k">then</span> 
+    <span onmouseout="hideTip(event, 'fs16', 119)" onmouseover="showTip(event, 'fs16', 119)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s"> cases)&quot;</span> <span onmouseout="hideTip(event, 'fs52', 120)" onmouseover="showTip(event, 'fs52', 120)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs53', 121)" onmouseover="showTip(event, 'fs53', 121)" class="i">County</span> <span onmouseout="hideTip(event, 'fs52', 122)" onmouseover="showTip(event, 'fs52', 122)" class="i">r</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs54', 123)" onmouseover="showTip(event, 'fs54', 123)" class="i">Count</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -359,8 +377,8 @@ rows separated by either semicolon or a colon. You can use:
 
 <p>It is quite common in statistical datasets for some values to be missing. If
 you open the <a href="../data/AirQuality.csv"><code>data/AirQuality.csv</code></a> file you will see
-that some values for the Ozone observations are marked <code>#N/A</code>. Such values are
-parsed as float and will in F# be marked with <code>Double.NaN</code>. The values <code>#N/A</code>, <code>NA</code>,
+that some values for the ozone observations are marked <code>#N/A</code>. Such values are
+parsed as float and will be marked with <code>Double.NaN</code> in F#. The values <code>#N/A</code>, <code>NA</code>,
 and <code>:</code> are recognized as missing values by default, but you can customize it by specifying
 the <code>MissingValues</code> static parameter of <code>CsvProvider</code>.</p>
 
@@ -377,11 +395,12 @@ each row, then remove missing values and then use the standard <code>Seq.average
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 122)" onmouseover="showTip(event, 'fs54', 122)" class="i">mean</span> <span class="o">=</span> 
-  <span onmouseout="hideTip(event, 'fs44', 123)" onmouseover="showTip(event, 'fs44', 123)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 124)" onmouseover="showTip(event, 'fs8', 124)" class="i">Rows</span> 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 125)" onmouseover="showTip(event, 'fs9', 125)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 126)" onmouseover="showTip(event, 'fs55', 126)" class="i">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs15', 127)" onmouseover="showTip(event, 'fs15', 127)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs15', 128)" onmouseover="showTip(event, 'fs15', 128)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 129)" onmouseover="showTip(event, 'fs47', 129)" class="i">Ozone</span>) 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 130)" onmouseover="showTip(event, 'fs9', 130)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 131)" onmouseover="showTip(event, 'fs56', 131)" class="i">filter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs57', 132)" onmouseover="showTip(event, 'fs57', 132)" class="i">elem</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs58', 133)" onmouseover="showTip(event, 'fs58', 133)" class="i">not</span> (<span onmouseout="hideTip(event, 'fs59', 134)" onmouseover="showTip(event, 'fs59', 134)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 135)" onmouseover="showTip(event, 'fs60', 135)" class="i">IsNaN</span> <span onmouseout="hideTip(event, 'fs57', 136)" onmouseover="showTip(event, 'fs57', 136)" class="i">elem</span>)) 
-  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 137)" onmouseover="showTip(event, 'fs9', 137)" class="i">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 138)" onmouseover="showTip(event, 'fs61', 138)" class="i">average</span> </pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs55', 124)" onmouseover="showTip(event, 'fs55', 124)" class="i">mean</span> <span class="o">=</span> 
+  <span onmouseout="hideTip(event, 'fs45', 125)" onmouseover="showTip(event, 'fs45', 125)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 126)" onmouseover="showTip(event, 'fs8', 126)" class="i">Rows</span> 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 127)" onmouseover="showTip(event, 'fs9', 127)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 128)" onmouseover="showTip(event, 'fs56', 128)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs15', 129)" onmouseover="showTip(event, 'fs15', 129)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs15', 130)" onmouseover="showTip(event, 'fs15', 130)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 131)" onmouseover="showTip(event, 'fs48', 131)" class="i">Ozone</span>) 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 132)" onmouseover="showTip(event, 'fs9', 132)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 133)" onmouseover="showTip(event, 'fs57', 133)" class="f">filter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs58', 134)" onmouseover="showTip(event, 'fs58', 134)" class="i">elem</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs59', 135)" onmouseover="showTip(event, 'fs59', 135)" class="f">not</span> (<span onmouseout="hideTip(event, 'fs60', 136)" onmouseover="showTip(event, 'fs60', 136)" class="t">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 137)" onmouseover="showTip(event, 'fs61', 137)" class="f">IsNaN</span> <span onmouseout="hideTip(event, 'fs58', 138)" onmouseover="showTip(event, 'fs58', 138)" class="i">elem</span>)) 
+  <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs9', 139)" onmouseover="showTip(event, 'fs9', 139)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs62', 140)" onmouseover="showTip(event, 'fs62', 140)" class="f">average</span> 
+</pre>
 </td>
 </tr>
 </table>
@@ -398,7 +417,7 @@ it by specifying the <code>InferRows</code> static parameter of <code>CsvProvide
 <p>Columns with only <code>0</code>, <code>1</code>, <code>Yes</code>, <code>No</code>, <code>True</code>, or <code>False</code> will be set to <code>bool</code>. Columns with numerical values
 will be set to either <code>int</code>, <code>int64</code>, <code>decimal</code>, or <code>float</code>, in that order of preference.</p>
 
-<p>If in any row a value is missing, by default the CSV type provider will infer a nullable (for <code>int</code> and <code>int64</code>) or an optional
+<p>If a value is missing in any row, by default the CSV type provider will infer a nullable (for <code>int</code> and <code>int64</code>) or an optional
 (for <code>bool</code>, <code>DateTime</code> and <code>Guid</code>). When a <code>decimal</code> would be inferred but there are missing values, we will infer a
 <code>float</code> instead, and use <code>Double.NaN</code> to represent those missing values. The <code>string</code> type is already inherently nullable,
 so by default we won't generate a <code>string option</code>. If you prefer to use optionals in all cases, you can set the static parameter
@@ -437,7 +456,8 @@ specify the units of measure. This will override both <code>AssumeMissingValues<
 <p>You can also specify both the type and a unit (e.g <code>float&lt;metre&gt;</code>). Example:</p>
 
 <table class="pre"><tr><td><pre lang="text">Name,  Distance (decimal?&lt;metre&gt;), Time (float)
-First, 50,                        3</pre></td></tr></table>
+First, 50,                        3
+</pre></td></tr></table>
 
 <p>Additionally, you can also specify some or all the types in the <code>Schema</code> static parameter of <code>CsvProvider</code>. Valid formats are:</p>
 
@@ -462,9 +482,10 @@ and still have the provider infer the type for you. Example:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs62', 139)" onmouseover="showTip(event, 'fs62', 139)" class="i">csv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 140)" onmouseover="showTip(event, 'fs4', 140)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">1</span><span class="s">,</span><span class="s">2</span><span class="s">,</span><span class="s">3</span><span class="s">&quot;</span>, <span class="i">HasHeaders</span> <span class="o">=</span> <span class="k">false</span>, <span class="i">Schema</span> <span class="o">=</span> <span class="s">&quot;</span><span class="s">Duration</span><span class="s"> </span><span class="s">(</span><span class="s">float</span><span class="s">&lt;</span><span class="s">second</span><span class="s">&gt;</span><span class="s">)</span><span class="s">,</span><span class="s">foo</span><span class="s">,</span><span class="s">float</span><span class="s"> </span><span class="s">option</span><span class="s">&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()
-<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 141)" onmouseover="showTip(event, 'fs15', 141)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs62', 142)" onmouseover="showTip(event, 'fs62', 142)" class="i">csv</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 143)" onmouseover="showTip(event, 'fs8', 143)" class="i">Rows</span> <span class="k">do</span>
-  <span onmouseout="hideTip(event, 'fs16', 144)" onmouseover="showTip(event, 'fs16', 144)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">f</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">%</span><span class="s">f</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs15', 145)" onmouseover="showTip(event, 'fs15', 145)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs63', 146)" onmouseover="showTip(event, 'fs63', 146)" class="i">Duration</span><span class="o">/</span><span class="n">1.0</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs42', 147)" onmouseover="showTip(event, 'fs42', 147)" class="i">second</span><span class="o">&gt;</span>) <span onmouseout="hideTip(event, 'fs15', 148)" onmouseover="showTip(event, 'fs15', 148)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 149)" onmouseover="showTip(event, 'fs64', 149)" class="i">foo</span> (<span onmouseout="hideTip(event, 'fs65', 150)" onmouseover="showTip(event, 'fs65', 150)" class="i">defaultArg</span> <span onmouseout="hideTip(event, 'fs15', 151)" onmouseover="showTip(event, 'fs15', 151)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs66', 152)" onmouseover="showTip(event, 'fs66', 152)" class="i">Column3</span> <span class="n">1.0</span>)</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs63', 141)" onmouseover="showTip(event, 'fs63', 141)" class="i">csv</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 142)" onmouseover="showTip(event, 'fs4', 142)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;1,2,3&quot;</span>, <span class="i">HasHeaders</span> <span class="o">=</span> <span class="k">false</span>, <span class="i">Schema</span> <span class="o">=</span> <span class="s">&quot;Duration (float&lt;second&gt;),foo,float option&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 143)" onmouseover="showTip(event, 'fs15', 143)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs63', 144)" onmouseover="showTip(event, 'fs63', 144)" class="i">csv</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 145)" onmouseover="showTip(event, 'fs8', 145)" class="i">Rows</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs16', 146)" onmouseover="showTip(event, 'fs16', 146)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%f</span><span class="s"> </span><span class="pf">%d</span><span class="s"> </span><span class="pf">%f</span><span class="s">&quot;</span> (<span onmouseout="hideTip(event, 'fs15', 147)" onmouseover="showTip(event, 'fs15', 147)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs64', 148)" onmouseover="showTip(event, 'fs64', 148)" class="i">Duration</span><span class="o">/</span><span class="n">1.0</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs42', 149)" onmouseover="showTip(event, 'fs42', 149)" class="t">second</span><span class="o">&gt;</span>) <span onmouseout="hideTip(event, 'fs15', 150)" onmouseover="showTip(event, 'fs15', 150)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs65', 151)" onmouseover="showTip(event, 'fs65', 151)" class="i">Foo</span> (<span onmouseout="hideTip(event, 'fs66', 152)" onmouseover="showTip(event, 'fs66', 152)" class="f">defaultArg</span> <span onmouseout="hideTip(event, 'fs15', 153)" onmouseover="showTip(event, 'fs15', 153)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 154)" onmouseover="showTip(event, 'fs67', 154)" class="i">Column3</span> <span class="n">1.0</span>)
+</pre>
 </td>
 </tr>
 </table>
@@ -482,9 +503,10 @@ the other columns blank in the schema (you also don't need to add all the traili
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs67', 153)" onmouseover="showTip(event, 'fs67', 153)" class="i">titanic1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 154)" onmouseover="showTip(event, 'fs4', 154)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">Titanic</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="i">Schema</span><span class="o">=</span><span class="s">&quot;</span><span class="s">,</span><span class="s">,</span><span class="s">Passenger</span><span class="s"> </span><span class="s">Class</span><span class="s">,</span><span class="s">,</span><span class="s">,</span><span class="s">float</span><span class="s">&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()
-<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 155)" onmouseover="showTip(event, 'fs15', 155)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs67', 156)" onmouseover="showTip(event, 'fs67', 156)" class="i">titanic1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 157)" onmouseover="showTip(event, 'fs8', 157)" class="i">Rows</span> <span class="k">do</span>
-  <span onmouseout="hideTip(event, 'fs16', 158)" onmouseover="showTip(event, 'fs16', 158)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">Class</span><span class="s"> </span><span class="s">=</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">Fare</span><span class="s"> </span><span class="s">=</span><span class="s"> </span><span class="s">%</span><span class="s">g</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 159)" onmouseover="showTip(event, 'fs15', 159)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 160)" onmouseover="showTip(event, 'fs43', 160)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs15', 161)" onmouseover="showTip(event, 'fs15', 161)" class="i">row</span><span class="o">.</span><span class="i">``Passenger Class``</span> <span onmouseout="hideTip(event, 'fs15', 162)" onmouseover="showTip(event, 'fs15', 162)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 163)" onmouseover="showTip(event, 'fs68', 163)" class="i">Fare</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs68', 155)" onmouseover="showTip(event, 'fs68', 155)" class="i">titanic1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 156)" onmouseover="showTip(event, 'fs4', 156)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/Titanic.csv&quot;</span>, <span class="i">Schema</span><span class="o">=</span><span class="s">&quot;,,Passenger Class,,,float&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 157)" onmouseover="showTip(event, 'fs15', 157)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs68', 158)" onmouseover="showTip(event, 'fs68', 158)" class="i">titanic1</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 159)" onmouseover="showTip(event, 'fs8', 159)" class="i">Rows</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs16', 160)" onmouseover="showTip(event, 'fs16', 160)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> Class = </span><span class="pf">%d</span><span class="s"> Fare = </span><span class="pf">%g</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 161)" onmouseover="showTip(event, 'fs15', 161)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 162)" onmouseover="showTip(event, 'fs43', 162)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs15', 163)" onmouseover="showTip(event, 'fs15', 163)" class="i">row</span><span class="o">.</span><span class="i">``Passenger Class``</span> <span onmouseout="hideTip(event, 'fs15', 164)" onmouseover="showTip(event, 'fs15', 164)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 165)" onmouseover="showTip(event, 'fs69', 165)" class="i">Fare</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -498,9 +520,10 @@ the other columns blank in the schema (you also don't need to add all the traili
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs69', 164)" onmouseover="showTip(event, 'fs69', 164)" class="i">titanic2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 165)" onmouseover="showTip(event, 'fs4', 165)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">.</span><span class="s">.</span><span class="s">/</span><span class="s">data</span><span class="s">/</span><span class="s">Titanic</span><span class="s">.</span><span class="s">csv</span><span class="s">&quot;</span>, <span class="i">Schema</span><span class="o">=</span><span class="s">&quot;</span><span class="s">Fare</span><span class="s">=</span><span class="s">float</span><span class="s">,</span><span class="s">PClass</span><span class="s">-</span><span class="s">&gt;</span><span class="s">Passenger</span><span class="s"> </span><span class="s">Class</span><span class="s">&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()
-<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 166)" onmouseover="showTip(event, 'fs15', 166)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs69', 167)" onmouseover="showTip(event, 'fs69', 167)" class="i">titanic2</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 168)" onmouseover="showTip(event, 'fs8', 168)" class="i">Rows</span> <span class="k">do</span>
-  <span onmouseout="hideTip(event, 'fs16', 169)" onmouseover="showTip(event, 'fs16', 169)" class="i">printfn</span> <span class="s">&quot;</span><span class="s">%</span><span class="s">s</span><span class="s"> </span><span class="s">Class</span><span class="s"> </span><span class="s">=</span><span class="s"> </span><span class="s">%</span><span class="s">d</span><span class="s"> </span><span class="s">Fare</span><span class="s"> </span><span class="s">=</span><span class="s"> </span><span class="s">%</span><span class="s">g</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 170)" onmouseover="showTip(event, 'fs15', 170)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 171)" onmouseover="showTip(event, 'fs43', 171)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs15', 172)" onmouseover="showTip(event, 'fs15', 172)" class="i">row</span><span class="o">.</span><span class="i">``Passenger Class``</span> <span onmouseout="hideTip(event, 'fs15', 173)" onmouseover="showTip(event, 'fs15', 173)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs70', 174)" onmouseover="showTip(event, 'fs70', 174)" class="i">Fare</span></pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs70', 166)" onmouseover="showTip(event, 'fs70', 166)" class="i">titanic2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 167)" onmouseover="showTip(event, 'fs4', 167)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/Titanic.csv&quot;</span>, <span class="i">Schema</span><span class="o">=</span><span class="s">&quot;Fare=float,PClass-&gt;Passenger Class&quot;</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
+<span class="k">for</span> <span onmouseout="hideTip(event, 'fs15', 168)" onmouseover="showTip(event, 'fs15', 168)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs70', 169)" onmouseover="showTip(event, 'fs70', 169)" class="i">titanic2</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 170)" onmouseover="showTip(event, 'fs8', 170)" class="i">Rows</span> <span class="k">do</span>
+  <span onmouseout="hideTip(event, 'fs16', 171)" onmouseover="showTip(event, 'fs16', 171)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> Class = </span><span class="pf">%d</span><span class="s"> Fare = </span><span class="pf">%g</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs15', 172)" onmouseover="showTip(event, 'fs15', 172)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 173)" onmouseover="showTip(event, 'fs43', 173)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs15', 174)" onmouseover="showTip(event, 'fs15', 174)" class="i">row</span><span class="o">.</span><span class="i">``Passenger Class``</span> <span onmouseout="hideTip(event, 'fs15', 175)" onmouseover="showTip(event, 'fs15', 175)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 176)" onmouseover="showTip(event, 'fs71', 176)" class="i">Fare</span>
+</pre>
 </td>
 </tr>
 </table>
@@ -509,12 +532,10 @@ the other columns blank in the schema (you also don't need to add all the traili
 
 <h2>Transforming CSV files</h2>
 
-<p>In addition to reading, <code>CsvProvider</code> also has support for transforming CSV files. The operations
+<p>In addition to reading, <code>CsvProvider</code> also has support for transforming the row collection of CSV files. The operations
 available are <code>Filter</code>, <code>Take</code>, <code>TakeWhile</code>, <code>Skip</code>, <code>SkipWhile</code>, and <code>Truncate</code>. All these operations
 preserve the schema, so after transforming you can save the results by using one of the overloads of
-the <code>Save</code> method. If you don't need to save the results in the CSV format, or if your transformations
-need to change the shape of the data, you can also use the operations available in the <code>Seq</code> module on the the 
-sequence of rows exposed via the <code>Rows</code> property directly.</p>
+the <code>Save</code> method. You can also use the <code>SaveToString()</code> to get the output directly as a string.</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
@@ -526,10 +547,76 @@ sequence of rows exposed via the <code>Rows</code> property directly.</p>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="c">// Saving the first 10 rows that don&#39;t have missing values to a new csv file</span>
-<span onmouseout="hideTip(event, 'fs44', 175)" onmouseover="showTip(event, 'fs44', 175)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs71', 176)" onmouseover="showTip(event, 'fs71', 176)" class="i">Filter</span>(<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs15', 177)" onmouseover="showTip(event, 'fs15', 177)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs58', 178)" onmouseover="showTip(event, 'fs58', 178)" class="i">not</span> (<span onmouseout="hideTip(event, 'fs59', 179)" onmouseover="showTip(event, 'fs59', 179)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 180)" onmouseover="showTip(event, 'fs60', 180)" class="i">IsNaN</span> <span onmouseout="hideTip(event, 'fs15', 181)" onmouseover="showTip(event, 'fs15', 181)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 182)" onmouseover="showTip(event, 'fs47', 182)" class="i">Ozone</span>) <span class="o">&amp;&amp;</span> 
-                             <span onmouseout="hideTip(event, 'fs58', 183)" onmouseover="showTip(event, 'fs58', 183)" class="i">not</span> (<span onmouseout="hideTip(event, 'fs59', 184)" onmouseover="showTip(event, 'fs59', 184)" class="i">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 185)" onmouseover="showTip(event, 'fs60', 185)" class="i">IsNaN</span> <span onmouseout="hideTip(event, 'fs15', 186)" onmouseover="showTip(event, 'fs15', 186)" class="i">row</span><span class="o">.</span><span class="i">``Solar.R``</span>))
-          <span class="o">.</span><span class="i">Truncate</span>(<span class="n">10</span>)
-          <span class="o">.</span><span class="i">SaveToString</span>()</pre>
+<span onmouseout="hideTip(event, 'fs45', 177)" onmouseover="showTip(event, 'fs45', 177)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs72', 178)" onmouseover="showTip(event, 'fs72', 178)" class="f">Filter</span>(<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs15', 179)" onmouseover="showTip(event, 'fs15', 179)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs59', 180)" onmouseover="showTip(event, 'fs59', 180)" class="f">not</span> (<span onmouseout="hideTip(event, 'fs60', 181)" onmouseover="showTip(event, 'fs60', 181)" class="t">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 182)" onmouseover="showTip(event, 'fs61', 182)" class="f">IsNaN</span> <span onmouseout="hideTip(event, 'fs15', 183)" onmouseover="showTip(event, 'fs15', 183)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 184)" onmouseover="showTip(event, 'fs48', 184)" class="i">Ozone</span>) <span class="o">&amp;&amp;</span> 
+                             <span onmouseout="hideTip(event, 'fs59', 185)" onmouseover="showTip(event, 'fs59', 185)" class="f">not</span> (<span onmouseout="hideTip(event, 'fs60', 186)" onmouseover="showTip(event, 'fs60', 186)" class="t">Double</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 187)" onmouseover="showTip(event, 'fs61', 187)" class="f">IsNaN</span> <span onmouseout="hideTip(event, 'fs15', 188)" onmouseover="showTip(event, 'fs15', 188)" class="i">row</span><span class="o">.</span><span class="i">``Solar.R``</span>))
+          <span class="o">.</span><span class="f">Truncate</span>(<span class="n">10</span>)
+          <span class="o">.</span><span class="f">SaveToString</span>()
+</pre>
+</td>
+</tr>
+</table>
+
+<p>It's also possible to transform the columns themselves by using <code>Map</code> and the constructor for the <code>Row</code> type.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs73', 189)" onmouseover="showTip(event, 'fs73', 189)" class="i">doubleOzone</span> <span class="o">=</span> 
+    <span onmouseout="hideTip(event, 'fs45', 190)" onmouseover="showTip(event, 'fs45', 190)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 191)" onmouseover="showTip(event, 'fs74', 191)" class="f">Map</span>(<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs15', 192)" onmouseover="showTip(event, 'fs15', 192)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs44', 193)" onmouseover="showTip(event, 'fs44', 193)" class="t">AirQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs75', 194)" onmouseover="showTip(event, 'fs75', 194)" class="t">Row</span>(<span onmouseout="hideTip(event, 'fs15', 195)" onmouseover="showTip(event, 'fs15', 195)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 196)" onmouseover="showTip(event, 'fs48', 196)" class="i">Ozone</span> <span class="o">*</span> <span class="n">2.0</span>, 
+                                             <span onmouseout="hideTip(event, 'fs15', 197)" onmouseover="showTip(event, 'fs15', 197)" class="i">row</span><span class="o">.</span><span class="i">``Solar.R``</span>, 
+                                             <span onmouseout="hideTip(event, 'fs15', 198)" onmouseover="showTip(event, 'fs15', 198)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs76', 199)" onmouseover="showTip(event, 'fs76', 199)" class="i">Wind</span>, 
+                                             <span onmouseout="hideTip(event, 'fs15', 200)" onmouseover="showTip(event, 'fs15', 200)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 201)" onmouseover="showTip(event, 'fs47', 201)" class="i">Temp</span>, 
+                                             <span onmouseout="hideTip(event, 'fs15', 202)" onmouseover="showTip(event, 'fs15', 202)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 203)" onmouseover="showTip(event, 'fs46', 203)" class="i">Month</span>, 
+                                             <span onmouseout="hideTip(event, 'fs15', 204)" onmouseover="showTip(event, 'fs15', 204)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs77', 205)" onmouseover="showTip(event, 'fs77', 205)" class="i">Day</span>))
+</pre>
+</td>
+</tr>
+</table>
+
+<p>You can also append new rows, either by creating them directly as in the previous example, or by parsing them from a string.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs78', 206)" onmouseover="showTip(event, 'fs78', 206)" class="i">newRows</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs44', 207)" onmouseover="showTip(event, 'fs44', 207)" class="t">AirQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs79', 208)" onmouseover="showTip(event, 'fs79', 208)" class="f">ParseRows</span>(<span class="s">&quot;&quot;&quot;1.0, 2.0, 3M, 20, 1, 1</span>
+<span class="s">                                      1.3, 2.1, 3M, 21, 1, 2\n&quot;&quot;&quot;</span>)
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs80', 209)" onmouseover="showTip(event, 'fs80', 209)" class="i">airQualityWithExtraRows</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs45', 210)" onmouseover="showTip(event, 'fs45', 210)" class="i">airQuality</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 211)" onmouseover="showTip(event, 'fs81', 211)" class="f">Append</span> <span onmouseout="hideTip(event, 'fs78', 212)" onmouseover="showTip(event, 'fs78', 212)" class="i">newRows</span>
+</pre>
+</td>
+</tr>
+</table>
+
+<p>It's even possible to create csv files without parsing at all:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs82', 213)" onmouseover="showTip(event, 'fs82', 213)" class="t">MyCsvType</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 214)" onmouseover="showTip(event, 'fs4', 214)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="i">Schema</span> <span class="o">=</span> <span class="s">&quot;A (int), B (string), C (date option)&quot;</span>, <span class="i">HasHeaders</span><span class="o">=</span><span class="k">false</span><span class="o">&gt;</span>
+
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs83', 215)" onmouseover="showTip(event, 'fs83', 215)" class="i">myCsv</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs82', 216)" onmouseover="showTip(event, 'fs82', 216)" class="t">MyCsvType</span>( [ <span onmouseout="hideTip(event, 'fs82', 217)" onmouseover="showTip(event, 'fs82', 217)" class="t">MyCsvType</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs84', 218)" onmouseover="showTip(event, 'fs84', 218)" class="t">Row</span>(<span class="n">1</span>, <span class="s">&quot;a&quot;</span>, <span onmouseout="hideTip(event, 'fs85', 219)" onmouseover="showTip(event, 'fs85', 219)" class="p">None</span>)
+                             <span onmouseout="hideTip(event, 'fs82', 220)" onmouseover="showTip(event, 'fs82', 220)" class="t">MyCsvType</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs84', 221)" onmouseover="showTip(event, 'fs84', 221)" class="t">Row</span>(<span class="n">2</span>, <span class="s">&quot;B&quot;</span>, <span onmouseout="hideTip(event, 'fs86', 222)" onmouseover="showTip(event, 'fs86', 222)" class="p">Some</span> <span onmouseout="hideTip(event, 'fs26', 223)" onmouseover="showTip(event, 'fs26', 223)" class="t">DateTime</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 224)" onmouseover="showTip(event, 'fs27', 224)" class="i">Now</span>) ])
+<span onmouseout="hideTip(event, 'fs83', 225)" onmouseover="showTip(event, 'fs83', 225)" class="i">myCsv</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs87', 226)" onmouseover="showTip(event, 'fs87', 226)" class="f">SaveToString</span>()
+</pre>
 </td>
 </tr>
 </table>
@@ -538,7 +625,7 @@ sequence of rows exposed via the <code>Rows</code> property directly.</p>
 
 <p>By default, the rows are cached so you can iterate over the <code>Rows</code> property multiple times without worrying.
 But if you will only iterate once, you can disable caching by setting the <code>CacheRows</code> static parameter of <code>CsvProvider</code>
-to <code>false</code> . If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
+to <code>false</code>. If the number of rows is very big, you have to do this otherwise you may exhaust the memory.
 You can still cache the data at some point by using the <code>Cache</code> method, but only do that if you have already
 transformed the dataset to be smaller:</p>
 
@@ -548,8 +635,9 @@ transformed the dataset to be smaller:</p>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs72', 187)" onmouseover="showTip(event, 'fs72', 187)" class="i">stocks</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 188)" onmouseover="showTip(event, 'fs4', 188)" class="i">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;</span><span class="s">http</span><span class="s">:</span><span class="s">/</span><span class="s">/</span><span class="s">ichart</span><span class="s">.</span><span class="s">finance</span><span class="s">.</span><span class="s">yahoo</span><span class="s">.</span><span class="s">com</span><span class="s">/</span><span class="s">table</span><span class="s">.</span><span class="s">csv</span><span class="s">?</span><span class="s">s</span><span class="s">=</span><span class="s">MSFT</span><span class="s">&quot;</span>, <span class="i">CacheRows</span><span class="o">=</span><span class="k">false</span><span class="o">&gt;</span><span class="o">.</span><span class="i">GetSample</span>()
-<span onmouseout="hideTip(event, 'fs72', 189)" onmouseover="showTip(event, 'fs72', 189)" class="i">stocks</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 190)" onmouseover="showTip(event, 'fs73', 190)" class="i">Take</span>(<span class="n">10</span>)<span class="o">.</span><span class="i">Cache</span>()</pre>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs88', 227)" onmouseover="showTip(event, 'fs88', 227)" class="i">stocks</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 228)" onmouseover="showTip(event, 'fs4', 228)" class="t">CsvProvider</span><span class="o">&lt;</span><span class="s">&quot;http://ichart.finance.yahoo.com/table.csv?s=MSFT&quot;</span>, <span class="i">CacheRows</span><span class="o">=</span><span class="k">false</span><span class="o">&gt;</span><span class="o">.</span><span class="f">GetSample</span>()
+<span onmouseout="hideTip(event, 'fs88', 229)" onmouseover="showTip(event, 'fs88', 229)" class="i">stocks</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs89', 230)" onmouseover="showTip(event, 'fs89', 230)" class="f">Take</span>(<span class="n">10</span>)<span class="o">.</span><span class="f">Cache</span>()
+</pre>
 </td>
 </tr>
 </table>
@@ -558,7 +646,7 @@ transformed the dataset to be smaller:</p>
 
 <ul>
 <li><a href="JsonProvider.html#jsonlib">Using JSON provider in a library</a> also applies to CSV type provider</li>
-<li><a href="CsvFile.html">F# Data: CSV Parser and Reader</a> - provides more information about 
+<li><a href="CsvFile.html">F# Data: CSV Parser</a> - provides more information about 
 working with CSV documents dynamically.</li>
 <li><a href="../reference/fsharp-data-csvprovider.html">API Reference: CsvProvider type provider</a></li>
 </ul>
@@ -566,7 +654,7 @@ working with CSV documents dynamically.</li>
 <div class="tip" id="fs1">namespace FSharp</div>
 <div class="tip" id="fs2">namespace FSharp.Data</div>
 <div class="tip" id="fs3">type Stocks = CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.Stocks</div>
-<div class="tip" id="fs4">type CsvProvider<br /><br />Full name: FSharp.Data.CsvProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a CSV file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a CSV sample file or a string containing a sample CSV document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Separators&#39;&gt;Column delimiter(s). Defaults to `,`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;InferRows&#39;&gt;Number of rows to use for inference. Defaults to `1000`. If this is zero, all rows are used.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Schema&#39;&gt;Optional column types, in a comma separated list. Valid types are `int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`, `guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option` and `string option`.<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;You can also specify a unit and the name of the column like this: `Name (type&amp;lt;unit&amp;gt;)`, or you can override only the name. If you don&#39;t want to specify all the columns, you can reference the columns by name like this: `ColumnName=type`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;HasHeaders&#39;&gt;Whether the sample contains the names of the columns as its first line.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;IgnoreErrors&#39;&gt;Whether to ignore rows that have the wrong number of columns or which can&#39;t be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;AssumeMissingValues&#39;&gt;When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;PreferOptionals&#39;&gt;When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `&quot;&quot;` for missing values. Defaults to false.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Quote&#39;&gt;The quotation mark (for surrounding values containing the delimiter). Defaults to `&quot;`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;MissingValues&#39;&gt;The set of strings recogized as missing values. Defaults to `NaN,NA,#N/A,:,-`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;CacheRows&#39;&gt;Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(e.g. &#39;MyCompany.MyAssembly, resource_name.csv&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;</em></div>
+<div class="tip" id="fs4">type CsvProvider<br /><br />Full name: FSharp.Data.CsvProvider<br /><em><br /><br />&lt;summary&gt;Typed representation of a CSV file.&lt;/summary&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Sample&#39;&gt;Location of a CSV sample file or a string containing a sample CSV document.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Separators&#39;&gt;Column delimiter(s). Defaults to `,`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;InferRows&#39;&gt;Number of rows to use for inference. Defaults to `1000`. If this is zero, all rows are used.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Schema&#39;&gt;Optional column types, in a comma separated list. Valid types are `int`, `int64`, `bool`, `float`, `decimal`, `date`, `guid`, `string`, `int?`, `int64?`, `bool?`, `float?`, `decimal?`, `date?`, `guid?`, `int option`, `int64 option`, `bool option`, `float option`, `decimal option`, `date option`, `guid option` and `string option`.<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;You can also specify a unit and the name of the column like this: `Name (type&amp;lt;unit&amp;gt;)`, or you can override only the name. If you don&#39;t want to specify all the columns, you can reference the columns by name like this: `ColumnName=type`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;HasHeaders&#39;&gt;Whether the sample contains the names of the columns as its first line.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;IgnoreErrors&#39;&gt;Whether to ignore rows that have the wrong number of columns or which can&#39;t be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;SkipRows&#39;&gt;SKips the first n rows of the CSV file.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;AssumeMissingValues&#39;&gt;When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;PreferOptionals&#39;&gt;When set to true, inference will prefer to use the option type instead of nullable types, `double.NaN` or `&quot;&quot;` for missing values. Defaults to false.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Quote&#39;&gt;The quotation mark (for surrounding values containing the delimiter). Defaults to `&quot;`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;MissingValues&#39;&gt;The set of strings recogized as missing values. Defaults to `NaN,NA,#N/A,:,-,TBA,TBD`.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;CacheRows&#39;&gt;Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Culture&#39;&gt;The culture used for parsing numbers and dates. Defaults to the invariant culture.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;Encoding&#39;&gt;The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless `charset` is specified in the `Content-Type` response header.&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;ResolutionFolder&#39;&gt;A directory that is used when resolving relative file references (at design time and in hosted execution).&lt;/param&gt;<br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&lt;param name=&#39;EmbeddedResource&#39;&gt;When specified, the type provider first attempts to load the sample from the specified resource <br />&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(e.g. &#39;MyCompany.MyAssembly, resource_name.csv&#39;). This is useful when exposing types generated by the type provider.&lt;/param&gt;</em></div>
 <div class="tip" id="fs5">val msft : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.msft</div>
 <div class="tip" id="fs6">CsvProvider&lt;...&gt;.Load(uri: string) : CsvProvider&lt;...&gt;<br /><em><br /><br />Loads CSV from the specified uri</em><br />CsvProvider&lt;...&gt;.Load(reader: System.IO.TextReader) : CsvProvider&lt;...&gt;<br /><em><br /><br />Loads CSV from the specified reader</em><br />CsvProvider&lt;...&gt;.Load(stream: System.IO.Stream) : CsvProvider&lt;...&gt;<br /><em><br /><br />Loads CSV from the specified stream</em></div>
 <div class="tip" id="fs7">val firstRow : CsvProvider&lt;...&gt;.Row<br /><br />Full name: CsvProvider.firstRow</div>
@@ -606,36 +694,52 @@ working with CSV documents dynamically.</li>
 <div class="tip" id="fs41">[&lt;Measure&gt;]<br />type metre<br /><br />Full name: Microsoft.FSharp.Data.UnitSystems.SI.UnitNames.metre</div>
 <div class="tip" id="fs42">[&lt;Measure&gt;]<br />type second<br /><br />Full name: Microsoft.FSharp.Data.UnitSystems.SI.UnitNames.second</div>
 <div class="tip" id="fs43">property CsvProvider&lt;...&gt;.Row.Name: string</div>
-<div class="tip" id="fs44">val airQuality : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.airQuality</div>
-<div class="tip" id="fs45">property CsvProvider&lt;...&gt;.Row.Month: int</div>
-<div class="tip" id="fs46">property CsvProvider&lt;...&gt;.Row.Temp: int</div>
-<div class="tip" id="fs47">property CsvProvider&lt;...&gt;.Row.Ozone: float</div>
-<div class="tip" id="fs48">val mortalityNy : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.mortalityNy</div>
-<div class="tip" id="fs49">val cause : CsvProvider&lt;...&gt;.Row<br /><br />Full name: CsvProvider.cause</div>
-<div class="tip" id="fs50">val find : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Collections.Seq.find</div>
-<div class="tip" id="fs51">val r : CsvProvider&lt;...&gt;.Row</div>
-<div class="tip" id="fs52">property CsvProvider&lt;...&gt;.Row.County: string</div>
-<div class="tip" id="fs53">property CsvProvider&lt;...&gt;.Row.Count: int</div>
-<div class="tip" id="fs54">val mean : float<br /><br />Full name: CsvProvider.mean</div>
-<div class="tip" id="fs55">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
-<div class="tip" id="fs56">val filter : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.filter</div>
-<div class="tip" id="fs57">val elem : float</div>
-<div class="tip" id="fs58">val not : value:bool -&gt; bool<br /><br />Full name: Microsoft.FSharp.Core.Operators.not</div>
-<div class="tip" id="fs59">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
-<div class="tip" id="fs60">Double.IsNaN(d: float) : bool</div>
-<div class="tip" id="fs61">val average : source:seq&lt;&#39;T&gt; -&gt; &#39;T (requires member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.average</div>
-<div class="tip" id="fs62">val csv : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.csv</div>
-<div class="tip" id="fs63">property CsvProvider&lt;...&gt;.Row.Duration: float&lt;second&gt;</div>
-<div class="tip" id="fs64">property CsvProvider&lt;...&gt;.Row.foo: int</div>
-<div class="tip" id="fs65">val defaultArg : arg:&#39;T option -&gt; defaultValue:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.defaultArg</div>
-<div class="tip" id="fs66">property CsvProvider&lt;...&gt;.Row.Column3: Option&lt;float&gt;</div>
-<div class="tip" id="fs67">val titanic1 : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.titanic1</div>
-<div class="tip" id="fs68">property CsvProvider&lt;...&gt;.Row.Fare: decimal</div>
-<div class="tip" id="fs69">val titanic2 : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.titanic2</div>
-<div class="tip" id="fs70">property CsvProvider&lt;...&gt;.Row.Fare: float</div>
-<div class="tip" id="fs71">member Runtime.CsvFile.Filter : predicate:Func&lt;&#39;RowType,bool&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
-<div class="tip" id="fs72">val stocks : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.stocks</div>
-<div class="tip" id="fs73">member Runtime.CsvFile.Take : count:int -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
+<div class="tip" id="fs44">type AirQuality = CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.AirQuality</div>
+<div class="tip" id="fs45">val airQuality : AirQuality<br /><br />Full name: CsvProvider.airQuality</div>
+<div class="tip" id="fs46">property CsvProvider&lt;...&gt;.Row.Month: int</div>
+<div class="tip" id="fs47">property CsvProvider&lt;...&gt;.Row.Temp: int</div>
+<div class="tip" id="fs48">property CsvProvider&lt;...&gt;.Row.Ozone: float</div>
+<div class="tip" id="fs49">val mortalityNy : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.mortalityNy</div>
+<div class="tip" id="fs50">val cause : CsvProvider&lt;...&gt;.Row<br /><br />Full name: CsvProvider.cause</div>
+<div class="tip" id="fs51">val find : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Collections.Seq.find</div>
+<div class="tip" id="fs52">val r : CsvProvider&lt;...&gt;.Row</div>
+<div class="tip" id="fs53">property CsvProvider&lt;...&gt;.Row.County: string</div>
+<div class="tip" id="fs54">property CsvProvider&lt;...&gt;.Row.Count: int</div>
+<div class="tip" id="fs55">val mean : float<br /><br />Full name: CsvProvider.mean</div>
+<div class="tip" id="fs56">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs57">val filter : predicate:(&#39;T -&gt; bool) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;T&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.filter</div>
+<div class="tip" id="fs58">val elem : float</div>
+<div class="tip" id="fs59">val not : value:bool -&gt; bool<br /><br />Full name: Microsoft.FSharp.Core.Operators.not</div>
+<div class="tip" id="fs60">type Double =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;member CompareTo : value:obj -&gt; int + 1 overload<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool + 1 overload<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member GetTypeCode : unit -&gt; TypeCode<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string + 3 overloads<br />&#160;&#160;&#160;&#160;static val MinValue : float<br />&#160;&#160;&#160;&#160;static val MaxValue : float<br />&#160;&#160;&#160;&#160;static val Epsilon : float<br />&#160;&#160;&#160;&#160;static val NegativeInfinity : float<br />&#160;&#160;&#160;&#160;static val PositiveInfinity : float<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Double</div>
+<div class="tip" id="fs61">Double.IsNaN(d: float) : bool</div>
+<div class="tip" id="fs62">val average : source:seq&lt;&#39;T&gt; -&gt; &#39;T (requires member ( + ) and member DivideByInt and member get_Zero)<br /><br />Full name: Microsoft.FSharp.Collections.Seq.average</div>
+<div class="tip" id="fs63">val csv : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.csv</div>
+<div class="tip" id="fs64">property CsvProvider&lt;...&gt;.Row.Duration: float&lt;second&gt;</div>
+<div class="tip" id="fs65">property CsvProvider&lt;...&gt;.Row.Foo: int</div>
+<div class="tip" id="fs66">val defaultArg : arg:&#39;T option -&gt; defaultValue:&#39;T -&gt; &#39;T<br /><br />Full name: Microsoft.FSharp.Core.Operators.defaultArg</div>
+<div class="tip" id="fs67">property CsvProvider&lt;...&gt;.Row.Column3: Option&lt;float&gt;</div>
+<div class="tip" id="fs68">val titanic1 : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.titanic1</div>
+<div class="tip" id="fs69">property CsvProvider&lt;...&gt;.Row.Fare: decimal</div>
+<div class="tip" id="fs70">val titanic2 : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.titanic2</div>
+<div class="tip" id="fs71">property CsvProvider&lt;...&gt;.Row.Fare: float</div>
+<div class="tip" id="fs72">member Runtime.CsvFile.Filter : predicate:Func&lt;&#39;RowType,bool&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
+<div class="tip" id="fs73">val doubleOzone : Runtime.CsvFile&lt;CsvProvider&lt;...&gt;.Row&gt;<br /><br />Full name: CsvProvider.doubleOzone</div>
+<div class="tip" id="fs74">member Runtime.CsvFile.Map : mapping:Func&lt;&#39;RowType,&#39;RowType&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
+<div class="tip" id="fs75">type Row =<br />&#160;&#160;inherit float * float * decimal * int * int * int<br />&#160;&#160;new : ozone: float * solarR: float * wind: decimal * temp: int * month: int * day: int -&gt; Row<br />&#160;&#160;member Day : int<br />&#160;&#160;member Month : int<br />&#160;&#160;member Ozone : float<br />&#160;&#160;member ``Solar.R`` : float<br />&#160;&#160;member Temp : int<br />&#160;&#160;member Wind : decimal<br /><br />Full name: FSharp.Data.CsvProvider,Sample=&quot;../data/AirQuality.csv&quot;,Separators=&quot;;&quot;.Row</div>
+<div class="tip" id="fs76">property CsvProvider&lt;...&gt;.Row.Wind: decimal</div>
+<div class="tip" id="fs77">property CsvProvider&lt;...&gt;.Row.Day: int</div>
+<div class="tip" id="fs78">val newRows : CsvProvider&lt;...&gt;.Row []<br /><br />Full name: CsvProvider.newRows</div>
+<div class="tip" id="fs79">CsvProvider&lt;...&gt;.ParseRows(text: string) : CsvProvider&lt;...&gt;.Row []</div>
+<div class="tip" id="fs80">val airQualityWithExtraRows : Runtime.CsvFile&lt;CsvProvider&lt;...&gt;.Row&gt;<br /><br />Full name: CsvProvider.airQualityWithExtraRows</div>
+<div class="tip" id="fs81">member Runtime.CsvFile.Append : rows:seq&lt;&#39;RowType&gt; -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
+<div class="tip" id="fs82">type MyCsvType = CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.MyCsvType</div>
+<div class="tip" id="fs83">val myCsv : MyCsvType<br /><br />Full name: CsvProvider.myCsv</div>
+<div class="tip" id="fs84">type Row =<br />&#160;&#160;inherit int * string * Option&lt;DateTime&gt;<br />&#160;&#160;new : a: int * b: string * c: Option&lt;DateTime&gt; -&gt; Row<br />&#160;&#160;member A : int<br />&#160;&#160;member B : string<br />&#160;&#160;member C : Option&lt;DateTime&gt;<br /><br />Full name: FSharp.Data.CsvProvider,Schema=&quot;A (int), B (string), C (date option)&quot;,HasHeaders=&quot;False&quot;.Row</div>
+<div class="tip" id="fs85">union case Option.None: Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs86">union case Option.Some: Value: &#39;T -&gt; Option&lt;&#39;T&gt;</div>
+<div class="tip" id="fs87">member Runtime.CsvFile.SaveToString : ?separator:char * ?quote:char -&gt; string</div>
+<div class="tip" id="fs88">val stocks : CsvProvider&lt;...&gt;<br /><br />Full name: CsvProvider.stocks</div>
+<div class="tip" id="fs89">member Runtime.CsvFile.Take : count:int -&gt; Runtime.CsvFile&lt;&#39;RowType&gt;</div>
 
         </div>
         <div class="span3">
@@ -653,7 +757,7 @@ working with CSV documents dynamically.</li>
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -665,17 +769,18 @@ working with CSV documents dynamically.</li>
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 

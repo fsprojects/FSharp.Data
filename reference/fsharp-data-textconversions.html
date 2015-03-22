@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>FreebaseDataProvider - F# Data</title>
+    <title>TextConversions - F# Data</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="Tomas Petricek; Gustavo Guerra">
@@ -40,184 +40,219 @@
 
 
 
-<h1>FreebaseDataProvider</h1>
+<h1>TextConversions</h1>
 <div class="xmldoc">
-<p>Typed representation of Freebase data with additional configuration parameters. See <a href="http://www.freebase.com">http://www.freebase.com</a> for terms and conditions.</p>
+<p>Conversions from string to string/int/int64/decimal/float/boolean/datetime/guid options</p>
 </div>
-  <h3>Static parameters</h3>
+  <h3>Static members</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Static parameters</td><td>Description</td></tr>
+      <tr><td>Static member</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '139', 139)" onmouseover="showTip(event, '139', 139)">
-            Key
+          <code onmouseout="hideTip(event, '384', 384)" onmouseover="showTip(event, '384', 384)">
+            AsBoolean(text)
           </code>
-          <div class="tip" id="139">
-            <strong>Signature:</strong> string (optional, default = &quot;none&quot;)<br />
+          <div class="tip" id="384">
+            <strong>Signature:</strong> text:string -&gt; bool option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L81-81" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The API key for the MQL metadata service.</p>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '385', 385)" onmouseover="showTip(event, '385', 385)">
+            AsDateTime(cultureInfo text)
+          </code>
+          <div class="tip" id="385">
+            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; DateTime option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L90-90" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Parse date time using either the JSON milliseconds format or using ISO 8601
+that is, either <code>/Date(&lt;msec-since-1/1/1970&gt;)/</code> or something
+along the lines of <code>2013-01-28T00:37Z</code></p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '140', 140)" onmouseover="showTip(event, '140', 140)">
-            ServiceUrl
+          <code onmouseout="hideTip(event, '386', 386)" onmouseover="showTip(event, '386', 386)">
+            AsDecimal(cultureInfo text)
           </code>
-          <div class="tip" id="140">
-            <strong>Signature:</strong> string (optional, default = &quot;https://www.googleapis.com/freebase/v1&quot;)<br />
+          <div class="tip" id="386">
+            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; decimal option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L70-70" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The service URL for the MQL metadata service (default: <code>https://www.googleapis.com/freebase/v1</code>).</p>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '387', 387)" onmouseover="showTip(event, '387', 387)">
+            AsFloat(...)
+          </code>
+          <div class="tip" id="387">
+            <strong>Signature:</strong> (missingValues:string []) -&gt; useNoneForMissingValues:bool -&gt; cultureInfo:IFormatProvider -&gt; text:string -&gt; float option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L74-74" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>if useNoneForMissingValues is true, NAs are returned as None, otherwise Some Double.NaN is used</p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '141', 141)" onmouseover="showTip(event, '141', 141)">
-            NumIndividuals
+          <code onmouseout="hideTip(event, '388', 388)" onmouseover="showTip(event, '388', 388)">
+            AsGuid(text)
           </code>
-          <div class="tip" id="141">
-            <strong>Signature:</strong> int (optional, default = 1000)<br />
+          <div class="tip" id="388">
+            <strong>Signature:</strong> text:string -&gt; Guid option<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L109-109" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The maximum number of sample individuals for each Freebase type (default: <code>1000</code>).</p>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '389', 389)" onmouseover="showTip(event, '389', 389)">
+            AsInteger(cultureInfo text)
+          </code>
+          <div class="tip" id="389">
+            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; int option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L64-64" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '390', 390)" onmouseover="showTip(event, '390', 390)">
+            AsInteger64(cultureInfo text)
+          </code>
+          <div class="tip" id="390">
+            <strong>Signature:</strong> cultureInfo:IFormatProvider -&gt; text:string -&gt; int64 option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L67-67" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '391', 391)" onmouseover="showTip(event, '391', 391)">
+            AsString(str)
+          </code>
+          <div class="tip" id="391">
+            <strong>Signature:</strong> str:string -&gt; string option<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L61-61" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Turns empty or null string value into None, otherwise returns Some</p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '142', 142)" onmouseover="showTip(event, '142', 142)">
-            UseUnitsOfMeasure
+          <code onmouseout="hideTip(event, '392', 392)" onmouseover="showTip(event, '392', 392)">
+            DefaultCurrencyAdorners
           </code>
-          <div class="tip" id="142">
-            <strong>Signature:</strong> bool (optional, default = true)<br />
+          <div class="tip" id="392">
+            <strong>Signature:</strong> Set&lt;char&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L48-48" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Use the unit-of-measure annotations from the data source metadata (default: true).</p>
+          <p><code>¤</code> <code>$</code> <code>¢</code> <code>£</code> <code>¥</code> <code>₱</code> <code>﷼</code> <code>₤</code> <code>₭</code> <code>₦</code> <code>₨</code> <code>₩</code> <code>₮</code> <code>€</code> <code>฿</code> <code>₡</code> <code>៛</code> <code>؋</code> <code>₴</code> <code>₪</code> <code>₫</code> <code>₹</code> <code>ƒ</code></p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '143', 143)" onmouseover="showTip(event, '143', 143)">
-            Pluralize
+          <code onmouseout="hideTip(event, '393', 393)" onmouseover="showTip(event, '393', 393)">
+            DefaultMissingValues
           </code>
-          <div class="tip" id="143">
-            <strong>Signature:</strong> bool (optional, default = true)<br />
+          <div class="tip" id="393">
+            <strong>Signature:</strong> string []<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L42-42" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Use adhoc rules to pluralize the names of types when forming names of collections (default: true).</p>
+          <p><code>NaN</code> <code>NA</code> <code>#N/A</code> <code>:</code> <code>-</code> <code>TBA</code> <code>TBD</code></p>
 
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '144', 144)" onmouseover="showTip(event, '144', 144)">
-            SnapshotDate
+          <code onmouseout="hideTip(event, '394', 394)" onmouseover="showTip(event, '394', 394)">
+            DefaultNonCurrencyAdorners
           </code>
-          <div class="tip" id="144">
-            <strong>Signature:</strong> string (optional, default = &quot;none&quot;)<br />
+          <div class="tip" id="394">
+            <strong>Signature:</strong> Set&lt;char&gt;<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master//src/CommonRuntime/TextConversions.fs#L45-45" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Use a snapshot of the web data store at the given date and/or time in ISO8601 format, e.g., 2012-01-18, 2012-09-15T21:11:32. A value of <code>now</code> indicates the compile time of the code. (default: no snapshot).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '145', 145)" onmouseover="showTip(event, '145', 145)">
-            LocalCache
-          </code>
-          <div class="tip" id="145">
-            <strong>Signature:</strong> bool (optional, default = true)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Use a persistent local cache for schema requests. Also provides the default for whether a persistent local cache is used at runtime. A per-session cache is always used for schema data but it will not persist if this is set to false (default: true).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '146', 146)" onmouseover="showTip(event, '146', 146)">
-            AllowLocalQueryEvaluation
-          </code>
-          <div class="tip" id="146">
-            <strong>Signature:</strong> bool (optional, default = true)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Allow local evalution of some parts of a query. If false, then an exception will be raised if a query can't be evaluated fully on the server. If true, data sets may be implicitly brought to the client for processing (default: true).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '147', 147)" onmouseover="showTip(event, '147', 147)">
-            UseRefinedTypes
-          </code>
-          <div class="tip" id="147">
-            <strong>Signature:</strong> bool (optional, default = true)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master//docs/content/tutorials/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Use refined types for individual entities (default: true).</p>
+          <p><code>%</code> <code>‰</code> <code>‱</code></p>
 
         </td>
       </tr>
@@ -240,7 +275,7 @@
 
             <li class="divider"></li>
 
-            <li><a href="https://nuget.org/packages/FSharp.Data">Get F# Data package via NuGet</a></li>
+            <li><a href="https://nuget.org/packages/FSharp.Data"><img src="http://img.shields.io/nuget/v/FSharp.Data.svg?style=flat" /></a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data">Source Code on GitHub</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md">License (Apache 2.0)</a></li>
             <li><a href="http://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md">Release Notes</a></li>
@@ -252,17 +287,18 @@
 
             <li class="divider"></li>
 
+            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
+            <li><a href="/FSharp.Data/library/HtmlProvider.html">HTML Type Provider</a></li>
             <li><a href="/FSharp.Data/library/JsonProvider.html">JSON Type Provider</a></li>
             <li><a href="/FSharp.Data/library/XmlProvider.html">XML Type Provider</a></li>
-            <li><a href="/FSharp.Data/library/CsvProvider.html">CSV Type Provider</a></li>
             <li><a href="/FSharp.Data/library/WorldBank.html">WorldBank Provider</a></li>
-            <li><a href="/FSharp.Data/library/Freebase.html">Freebase Provider</a></li>
 
             <li class="divider"></li>
 
-            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser and Reader</a></li>
-            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser and Reader</a></li>
             <li><a href="/FSharp.Data/library/Http.html">HTTP Utilities</a></li>
+            <li><a href="/FSharp.Data/library/CsvFile.html">CSV Parser</a></li>
+            <li><a href="/FSharp.Data/library/HtmlParser.html">HTML Parser</a></li>
+            <li><a href="/FSharp.Data/library/JsonValue.html">JSON Parser</a></li>
 
             <li class="nav-header">Tutorials</li>
 
