@@ -22,18 +22,13 @@ let info =
 // --------------------------------------------------------------------------------------
 
 #I "../../packages/FSharp.Charting/lib/net40"
-#I "../../packages/FSharp.Compiler.Service/lib/net40"
-#I "../../packages/FSharp.Formatting/lib/net40"
-#I "../../packages/RazorEngine/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FAKE/tools/FakeLib.dll"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.Markdown.dll"
-#r "FSharp.MetadataFormat.dll"
+
+#r "../../packages/FAKE/tools/FakeLib.dll"
+
+#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+
 open System.IO
 open Fake
 open Fake.FileHelper
