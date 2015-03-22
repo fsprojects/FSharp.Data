@@ -124,6 +124,16 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Distance", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Time", TextRuntime.ConvertDecimal("", value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : string * decimal * decimal
     new : name:string -> distance:decimal<metre> -> time:decimal<s> -> CsvProvider+Row

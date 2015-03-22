@@ -4,6 +4,8 @@
 
 namespace FSharp.Data.Runtime
 
+#nowarn "10001"
+
 open System
 open System.ComponentModel
 open System.Collections.Generic
@@ -228,8 +230,10 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   /// [omit]
   [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
   [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
-  static member ParseRow (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote) =    
-    CsvReader.readCsvFile (new StringReader(text) :> TextReader) separators quote |> Seq.exactlyOne |> fst |> (fun x -> stringArrayToRow.Invoke(null, x))
+  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors) =    
+    let reader = new StringReader(text) :> TextReader
+    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false)
+    csv.Rows |> Seq.toArray
 
   /// [omit]
   new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =

@@ -228,6 +228,24 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,_,_,_,_,t7 = row in t7)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Date", TextRuntime.ConvertDateTime("", value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Open", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("High", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("Low", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("Close", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("Volume", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("Adj Close", TextRuntime.ConvertDecimal("", value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : System.DateTime * decimal * decimal * decimal * decimal * int * decimal
     new : date:System.DateTime -> open:decimal -> high:decimal -> low:decimal -> close:decimal -> volume:int -> adjClose:decimal -> CsvProvider+Row

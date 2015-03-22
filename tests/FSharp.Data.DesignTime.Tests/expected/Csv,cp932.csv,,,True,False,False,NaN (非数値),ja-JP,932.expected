@@ -98,6 +98,14 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertFloatBack("ja-JP", "NaN (非数値)", Some (let _,t2 = row in t2)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("id", TextRuntime.ConvertInteger("ja-JP", value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("value", TextRuntime.ConvertFloat("ja-JP", "NaN (非数値)", value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : int * float
     new : id:int -> value:float -> CsvProvider+Row

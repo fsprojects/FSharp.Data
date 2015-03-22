@@ -168,7 +168,9 @@ where you can specify what to use as separator. This means that you can consume
 any textual tabular format. Here is an example using `;` as a separator:
 *)
 
-let airQuality = new CsvProvider<"../data/AirQuality.csv", ";">()
+type AirQuality = CsvProvider<"../data/AirQuality.csv", ";">
+
+let airQuality = new AirQuality()
 
 for row in airQuality.Rows do
   if row.Month > 6 then 
@@ -329,12 +331,11 @@ You can even mix and match the two syntaxes like this `Schema="int64,DidSurvive,
 
 ## Transforming CSV files
 
-In addition to reading, `CsvProvider` also has support for transforming CSV files. The operations
+In addition to reading, `CsvProvider` also has support for transforming the row collection of CSV files. The operations
 available are `Filter`, `Take`, `TakeWhile`, `Skip`, `SkipWhile`, and `Truncate`. All these operations
 preserve the schema, so after transforming you can save the results by using one of the overloads of
-the `Save` method. If you don't need to save the results in the CSV format, or if your transformations
-need to change the shape of the data, you can also use the operations available in the `Seq` module on the the 
-sequence of rows exposed via the `Rows` property directly.
+the `Save` method. You can also use the `SaveToString()` to get the output directly as a string.
+
 *)
 
 // Saving the first 10 rows that don't have missing values to a new csv file
@@ -342,6 +343,43 @@ airQuality.Filter(fun row -> not (Double.IsNaN row.Ozone) &&
                              not (Double.IsNaN row.``Solar.R``))
           .Truncate(10)
           .SaveToString()
+
+(** 
+
+It's also possible to transform the columns themselves by using `Map` and the constructor for the `Row` type.
+
+*)
+
+let doubleOzone = 
+    airQuality.Map(fun row -> AirQuality.Row(row.Ozone * 2.0, 
+                                             row.``Solar.R``, 
+                                             row.Wind, 
+                                             row.Temp, 
+                                             row.Month, 
+                                             row.Day))
+
+(**
+
+You can also append new rows, either by creating them directly as in the previous example, or by parsing them from a string.
+
+*)
+
+let newRows = AirQuality.ParseRows("""1.0, 2.0, 3M, 20, 1, 1
+                                      1.3, 2.1, 3M, 21, 1, 2\n""")
+
+let airQualityWithExtraRows = airQuality.Append newRows
+
+(**
+
+It's even possible to create csv files without parsing at all:
+
+*)
+
+type MyCsvType = CsvProvider<Schema = "A (int), B (string), C (date option)", HasHeaders=false>
+
+let myCsv = new MyCsvType( [ MyCsvType.Row(1, "a", None)
+                             MyCsvType.Row(2, "B", Some DateTime.Now) ])
+myCsv.SaveToString()
 
 (**
 

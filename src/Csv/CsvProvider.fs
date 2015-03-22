@@ -93,18 +93,18 @@ type public CsvProvider(cfg:TypeProviderConfig) as this =
         Expr.Let(rowToStringArrayVar, rowToStringArray, body)))
       csvType.AddMember(ctor) 
 
-      let parse = ProvidedMethod("Parse", [ProvidedParameter("text", typeof<string>)], rowType, IsStaticMethod = true)
-      parse.InvokeCode <- fun (Singleton text) -> 
-        let body = csvErasedType?ParseRow() (text, Expr.Var stringArrayToRowVar, separators, quote)
+      let parseRows = ProvidedMethod("ParseRows", [ProvidedParameter("text", typeof<string>)], rowType.MakeArrayType(), IsStaticMethod = true)
+      parseRows.InvokeCode <- fun (Singleton text) ->         
+        let body = csvErasedType?ParseRows () (text, Expr.Var stringArrayToRowVar, separators, quote, ignoreErrors)
         Expr.Let(stringArrayToRowVar, stringArrayToRow, body)
-      rowType.AddMember parse
-       
+      csvType.AddMember parseRows
+
       { GeneratedType = csvType
         RepresentationType = csvType
         CreateFromTextReader = fun reader ->
           let body = 
             csvErasedType?Create () (Expr.Var stringArrayToRowVar, Expr.Var rowToStringArrayVar, replacer.ToRuntime reader, 
-                                              separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
+                                     separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows)
           Expr.Let(stringArrayToRowVar, stringArrayToRow, Expr.Let(rowToStringArrayVar, rowToStringArray, body))
         CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 

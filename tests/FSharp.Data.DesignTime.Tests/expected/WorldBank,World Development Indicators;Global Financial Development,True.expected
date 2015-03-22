@@ -3563,9 +3563,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Mortality rate, under-5, male (per 1,000)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.DYN.MORT.MA")
 
-    member ``Motor vehicles (per 1,000 people)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.VEH.NVEH.P3")
-
     member ``Multilateral debt (% of total external debt)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.DOD.MLAT.ZS")
 
@@ -4262,9 +4259,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Part time employment, total (% of total employment)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SL.TLF.PART.ZS")
 
-    member ``Passenger cars (per 1,000 people)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.VEH.PCAR.P3")
-
     member ``Patent applications, nonresidents``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IP.PAT.NRES")
 
@@ -4682,9 +4676,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Risk premium on lending (lending rate minus treasury bill rate, %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FR.INR.RISK")
 
-    member ``Road density (km of road per 100 sq. km of land area)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.ROD.DNST.K2")
-
     member ``Road sector diesel fuel consumption (kt of oil equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IS.ROD.DESL.KT")
 
@@ -4705,18 +4696,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Road sector gasoline fuel consumption per capita (kg of oil equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IS.ROD.SGAS.PC")
-
-    member ``Roads, goods transported (million ton-km)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.ROD.GOOD.MT.K6")
-
-    member ``Roads, passengers carried (million passenger-km)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.ROD.PSGR.K6")
-
-    member ``Roads, paved (% of total roads)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.ROD.PAVE.ZS")
-
-    member ``Roads, total network (km)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.ROD.TOTL.KM")
 
     member ``Rural population``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL")
@@ -5332,9 +5311,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Value traded excluding top 10 traded companies to total value traded (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.AM.01")
-
-    member ``Vehicles (per km of road)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("IS.VEH.ROAD.K1")
 
     member ``Vitamin A supplementation coverage rate (% of children ages 6-59 months)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SN.ITK.VITA.ZS")
@@ -7951,9 +7927,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Mortality rate, under-5, male (per 1,000)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.DYN.MORT.MA")
 
-    member ``Motor vehicles (per 1,000 people)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.VEH.NVEH.P3")
-
     member ``Multilateral debt (% of total external debt)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.DOD.MLAT.ZS")
 
@@ -8650,9 +8623,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Part time employment, total (% of total employment)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SL.TLF.PART.ZS")
 
-    member ``Passenger cars (per 1,000 people)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.VEH.PCAR.P3")
-
     member ``Patent applications, nonresidents``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IP.PAT.NRES")
 
@@ -9070,9 +9040,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Risk premium on lending (lending rate minus treasury bill rate, %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FR.INR.RISK")
 
-    member ``Road density (km of road per 100 sq. km of land area)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.DNST.K2")
-
     member ``Road sector diesel fuel consumption (kt of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.DESL.KT")
 
@@ -9093,18 +9060,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Road sector gasoline fuel consumption per capita (kg of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.SGAS.PC")
-
-    member ``Roads, goods transported (million ton-km)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.GOOD.MT.K6")
-
-    member ``Roads, passengers carried (million passenger-km)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.PSGR.K6")
-
-    member ``Roads, paved (% of total roads)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.PAVE.ZS")
-
-    member ``Roads, total network (km)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.ROD.TOTL.KM")
 
     member ``Rural population``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL")
@@ -9720,9 +9675,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Value traded excluding top 10 traded companies to total value traded (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.AM.01")
-
-    member ``Vehicles (per km of road)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("IS.VEH.ROAD.K1")
 
     member ``Vitamin A supplementation coverage rate (% of children ages 6-59 months)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SN.ITK.VITA.ZS")
