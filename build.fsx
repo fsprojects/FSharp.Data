@@ -224,11 +224,11 @@ let createRelease() =
     // Commit assembly info and RELEASE_NOTES.md
     StageAll ""
     Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
-    Branches.pushBranch "" "origin" "master"
+    Branches.pushBranch "" "upstream" "master"
 
     // Create tag
     Branches.tag "" release.NugetVersion
-    Branches.pushTag "" "origin" release.NugetVersion
+    Branches.pushTag "" "upstream" release.NugetVersion
 
     // Create github release
     let user = getBuildParamOrDefault "github-user" ""
