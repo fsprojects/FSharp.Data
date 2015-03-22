@@ -332,6 +332,32 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,t11 = row in t11)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Dato", TextRuntime.ConvertDateTime("fr-FR", value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("USD", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("EUR", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("SEK", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("DKK", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("GBP", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("CHF", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("JPY", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("CAD", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[9])
+                                              TextRuntime.GetNonOptionalValue("ISK", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[10])
+                                              TextRuntime.GetNonOptionalValue("AUD", TextRuntime.ConvertString(value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : System.DateTime * string * string * string * string * string * string * string * string * string * string
     new : dato:System.DateTime -> usd:string -> eur:string -> sek:string -> dkk:string -> gbp:string -> chf:string -> jpy:string -> cad:string -> isk:string -> aud:string -> CsvProvider+Row

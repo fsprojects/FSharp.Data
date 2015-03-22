@@ -308,4 +308,9 @@ Target "All" DoNothing
 "RunTests" ==> "All"
 "RunConsoleTests" ==> "All"
 
+Target "BuildAndRunTests" DoNothing
+
+"BuildTests" ==> "BuildAndRunTests"
+"RunTests" ==> "BuildAndRunTests"
+
 RunTargetOrDefault "Help"

@@ -278,6 +278,24 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack((let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
+                                              TextRuntime.ConvertBoolean(TextConversions.AsString(row.[1])),
+                                              TextRuntime.ConvertInteger("", TextConversions.AsString(row.[2])),
+                                              TextRuntime.ConvertString(TextConversions.AsString(row.[3])),
+                                              TextRuntime.ConvertString(TextConversions.AsString(row.[4])),
+                                              TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[5])),
+                                              TextRuntime.ConvertInteger("", TextConversions.AsString(row.[6])),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("ParentsOrChildren", TextRuntime.ConvertInteger("", value), value),
+                                              TextRuntime.ConvertString(TextConversions.AsString(row.[8])),
+                                              TextRuntime.ConvertDecimal("", TextConversions.AsString(row.[9])),
+                                              TextRuntime.ConvertString(TextConversions.AsString(row.[10])),
+                                              TextRuntime.ConvertString(TextConversions.AsString(row.[11])))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : int * bool option * int option * string option * string option * decimal option * int option * int * string option * decimal option * string option * string option
     new : passengerId:int -> survived:bool option -> class:int option -> name:string option -> sex:string option -> age:decimal option -> siblingsOrSpouse:int option -> parentsOrChildren:int<meter> -> ticket:string option -> fare:decimal option -> cabin:string option -> embarked:string option -> CsvProvider+Row

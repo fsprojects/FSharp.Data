@@ -403,3 +403,24 @@ let ``Can create new csv row with units of measure``() =
   let row = new CsvUom.Row("name", 3.5M<metre>, 27M<Data.UnitSystems.SI.UnitSymbols.s>)
   row.Distance |> should equal 3.5M<metre>
   
+[<Test>]
+let ``Parse single row``() = 
+  let rows = SimpleWithStrCsv.ParseRows("""false,"Quoted, col", 31""")
+  rows.Length |> should equal 1
+  rows.[0].Column1 |> should equal false
+  rows.[0].ColumnB |> should equal "Quoted, col"
+  rows.[0].Column3 |> should equal 31
+
+[<Test>]
+let ``Parse single row with trailing newline``() = 
+  let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\n")
+  rows.Length |> should equal 1
+  rows.[0].Column1 |> should equal false
+  rows.[0].ColumnB |> should equal "abc"
+  rows.[0].Column3 |> should equal 31
+
+[<Test>]
+let ``Parse two rows``() = 
+  let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\ntrue, def, 42")
+  rows.Length |> should equal 2
+  (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + Environment.NewLine + "false,abc,31" + Environment.NewLine + "true, def,42" + Environment.NewLine)

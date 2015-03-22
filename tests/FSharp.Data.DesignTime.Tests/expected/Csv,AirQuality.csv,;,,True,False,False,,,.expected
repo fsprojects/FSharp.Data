@@ -202,6 +202,22 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertIntegerBack("", Some (let _,_,_,_,_,t6 = row in t6)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ";", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("Ozone", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Solar.R", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Wind", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("Temp", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("Month", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("Day", TextRuntime.ConvertInteger("", value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ";", '"', false)
+
 
 class CsvProvider+Row : float * float * decimal * int * int * int
     new : ozone:float -> solarR:float -> wind:decimal -> temp:int -> month:int -> day:int -> CsvProvider+Row
