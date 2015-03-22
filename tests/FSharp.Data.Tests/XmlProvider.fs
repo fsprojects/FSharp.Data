@@ -503,12 +503,9 @@ let ``Can construct elements with heterogeneous records with primitives``() =
 </entry>""")
     AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())
 
-type TranslationsTP = XmlProvider<"""<translations>
-        <translation language='nl'>some text</translation>
-        <translation language='en'>more text</translation>
-</translations>""">
-
 [<Test>]
-let ``Serializing arrays do not introduce multiple outer tags``() =
-    let xml = TranslationsTP.Translations([| TranslationsTP.Translation("nl", "some text"); TranslationsTP.Translation("en", "more text") |])
-    xml.XElement.ToString(SaveOptions.DisableFormatting) |> should equal "<translations><translation language=\"nl\">some text</translation><translation language=\"en\">more text</translation></translations>"
+let ``Serializing nested arrays do not introduce multiple outer tags``() =
+    let t1 = Runtime.XmlRuntime.CreateRecord("translation", [| "language", "nl" :> obj |], [| "", "some text" :> obj |], "")
+    let t2 = Runtime.XmlRuntime.CreateRecord("translation", [| "language", "en" :> obj |], [| "", "more text" :> obj |], "")
+    let root = Runtime.XmlRuntime.CreateRecord("root", [| |], [| "translations|translation", [|t1; t2|] :> obj |], "")
+    root.XElement.ToString(SaveOptions.DisableFormatting) |> should equal "<root><translations><translation language=\"nl\">some text</translation><translation language=\"en\">more text</translation></translations></root>"

@@ -10,6 +10,7 @@
 * Use ISO-8601 format when outputing dates.
 * Fix parsing of HTML closing tags with numbers.
 * Fixed handling of URI's with fragment but no query.
+* Fixed arrays created with XML provider having unneeded parent tags on some situations.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.
