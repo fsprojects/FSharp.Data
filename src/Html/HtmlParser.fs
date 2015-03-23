@@ -235,7 +235,7 @@ module internal HtmlParser =
     type CharList = 
         { mutable Contents : char list }
         static member Empty = { Contents = [] }
-        override x.ToString() = String(x.Contents |> List.rev |> Seq.toArray)
+        override x.ToString() = String(x.Contents |> List.rev |> List.toArray)
         member x.Cons(c) = x.Contents <- c :: x.Contents
         member x.Length = x.Contents.Length
         member x.Clear() = x.Contents <- []

@@ -142,7 +142,7 @@ type private Watcher(uri:Uri) =
         if !lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
-            let typeProviders = Seq.toArray typeProviders
+            let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
                 tp.Invalidate typeName
 
