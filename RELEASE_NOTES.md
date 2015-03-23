@@ -1,3 +1,6 @@
+#### 2.2.1 - Unreleased
+* Improved performance of JsonValue.Parse().
+
 #### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element.
