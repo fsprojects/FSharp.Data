@@ -1,7 +1,7 @@
 NUGET
   remote: http://nuget.org/api/v2
   specs:
-    FAKE (3.24.0)
+    FAKE (3.26.1)
     FsCheck (0.9.2.0)
     FSharp.Charting (0.90.9)
     FSharp.Compiler.Service (0.0.86)
@@ -29,5 +29,5 @@ NUGET
 GITHUB
   remote: fsharp/FAKE
   specs:
-    modules/Octokit/Octokit.fsx (91bc57badb88b7adb163fb8d26db85ef270fd8bb)
+    modules/Octokit/Octokit.fsx (60e49f7c915a8134a5f07ca408249e4bd7cc4a63)
       Octokit

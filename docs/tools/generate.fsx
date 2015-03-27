@@ -87,7 +87,7 @@ let buildReference () =
       layoutRootsEn, 
       parameters = ("root", root)::info,
       sourceRepo = repo,
-      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
+      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "../")
 
 let createFsiEvaluator root output =
 
