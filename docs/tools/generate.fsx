@@ -130,7 +130,7 @@ let buildDocumentation () =
     let layoutRoots = if dir.Contains "ja" then layoutRootsJa else layoutRootsEn
     Literate.ProcessDirectory
       ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator )
+        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator, processRecursive = false )
 
 // Generate
 copyFiles()
