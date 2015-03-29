@@ -156,7 +156,7 @@ open SourceLink
 Target "SourceLink" <| fun () ->
     use repo = new GitRepo(__SOURCE_DIRECTORY__)
     for file in !! "src/*.fsproj" do
-        let proj = VsProj.LoadRelease file
+        let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
         logfn "source linking %s" proj.OutputFilePdb
         let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
         repo.VerifyChecksums files
