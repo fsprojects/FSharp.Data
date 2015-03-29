@@ -189,10 +189,7 @@ let ``all of the response headers are available`` () =
         response.Headers.[Server] |> should equal "Microsoft-HTTPAPI/2.0"
     response.Headers.[StrictTransportSecurity] |> should equal "max-age=16070400; includeSubDomains"
     response.Headers.[Trailer] |> should equal "Max-Forwards"
-    if runningOnMono then
-        response.Headers.[TransferEncoding] |> should equal "chunked,chunked"
-    else
-        response.Headers.[TransferEncoding] |> should equal "chunked"
+    response.Headers.[TransferEncoding] |> should equal "chunked"
     response.Headers.[Vary] |> should equal "*"
     response.Headers.[Via] |> should equal "1.0 fred, 1.1 example.com (Apache/1.1)"
     response.Headers.[Warning] |> should equal "199 Miscellaneous warning"
