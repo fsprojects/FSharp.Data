@@ -1,5 +1,6 @@
 #### 2.2.1 - Unreleased
 * Improved performance of JsonValue.Parse().
+* Fixed crash processing HTTP responses without content type.
 
 #### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
