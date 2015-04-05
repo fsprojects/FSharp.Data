@@ -782,6 +782,8 @@ type Http private() =
 
             let cookies = Map.ofList [ for cookie in cookieContainer.GetCookies uri |> Seq.cast<Cookie> -> cookie.Name, cookie.Value ]  
 
+            let contentType = if resp.ContentType = null then "application/octet-stream" else resp.ContentType
+
             let statusCode, characterSet = 
                 match resp with
                 | :? HttpWebResponse as resp -> 
@@ -801,7 +803,7 @@ type Http private() =
 
             let stream = resp.GetResponseStream()
 
-            return! toHttpResponse resp.ResponseUri.OriginalString statusCode resp.ContentType contentEncoding characterSet responseEncodingOverride cookies headers stream
+            return! toHttpResponse resp.ResponseUri.OriginalString statusCode contentType contentEncoding characterSet responseEncodingOverride cookies headers stream
         }
 
     /// Download an HTTP web resource from the specified URL asynchronously
