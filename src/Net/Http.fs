@@ -87,6 +87,12 @@ module HttpRequestHeaders =
     let Allow (methods:string) = "Allow", methods
     /// Authentication credentials for HTTP authentication
     let Authorization (credentials:string) = "Authorization", credentials
+    /// Authentication header using Basic Auth encoding
+    let BasicAuth (username:string) (password:string) = 
+        let base64Encode (s:string) = 
+            let bytes = Encoding.UTF8.GetBytes(s)
+            Convert.ToBase64String(bytes)
+        sprintf "%s:%s" username password |> base64Encode |> sprintf "Basic %s" |>  Authorization 
     /// Used to specify directives that MUST be obeyed by all caching mechanisms along the request/response chain 
     let CacheControl (control:string) = "Cache-Control", control
     /// What type of connection the user-agent would prefer 
