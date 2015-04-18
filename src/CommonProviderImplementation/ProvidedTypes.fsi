@@ -217,6 +217,7 @@ type ProvidedField =
 
 /// FSharp.Data addition: SymbolKind is used by AssemblyReplacer.fs
 /// Represents the type constructor in a provided symbol type.
+[<NoComparison>]
 type SymbolKind = 
     | SDArray 
     | Array of int 
@@ -379,6 +380,9 @@ type ProvidedTypeDefinition =
     /// case of generics all the generic type arguments are also recursively
     /// replaced with the erased-to types
     static member EraseType : t:Type -> Type
+
+    /// FSharp.Data addition: this is used to log the creation of root Provided Types to be able to debug caching/invalidation
+    static member Logger : (string -> unit) option ref
 
 /// A provided generated assembly
 type ProvidedAssembly =

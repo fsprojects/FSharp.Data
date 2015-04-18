@@ -15,7 +15,7 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Reflection
 open ProviderImplementation.ProvidedTypes
 
-module Debug = 
+module internal Debug = 
 
     /// Simulates a real instance of TypeProviderConfig and then creates an instance of the last
     /// type provider added to a namespace by the type provider constructor
@@ -35,7 +35,12 @@ module Debug =
         match args with
         | [||] -> providedTypeDefinition
         | args ->
-            let typeName = providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
+            let typeName =
+                if providedTypeDefinition.IsErased then
+                    providedTypeDefinition.Name + (args |> Seq.map (fun s -> ",\"" + (if s = null then "" else s.ToString()) + "\"") |> Seq.reduce (+))
+                else
+                    // The type name ends up quite mangled in the dll output if we combine the name using static parameters, so for generated types we don't do that
+                    providedTypeDefinition.Name 
             providedTypeDefinition.MakeParametricType(typeName, args)
 
     /// Returns a string representation of the signature (and optionally also the body) of all the
@@ -124,7 +129,7 @@ module Debug =
                 | :? ProvidedTypeDefinition -> ""
                 | t when t.IsGenericType -> defaultArg (t.GetGenericArguments() |> Seq.map warnIfWrongAssembly |> Seq.tryFind (fun s -> s <> "")) ""
                 | t when t.IsArray -> warnIfWrongAssembly <| t.GetElementType()
-                | t -> if not t.IsGenericParameter && t.Assembly.FullName.Contains "DesignTime" then " [DESIGNTIME]" else ""
+                | t -> if not t.IsGenericParameter && t.Assembly = Assembly.GetExecutingAssembly() then " [DESIGNTIME]" else ""
 
             if ignoreOutput then
                 ""
@@ -160,7 +165,7 @@ module Debug =
 
             let inline getAttrs attrName m = 
                 ( ^a : (member GetCustomAttributesData : unit -> IList<CustomAttributeData>) m)
-                |> Seq.filter (fun attr -> attr.AttributeType.Name = attrName) 
+                |> Seq.filter (fun attr -> attr.Constructor.DeclaringType.Name = attrName) 
 
             let inline hasAttr attrName m = 
                 not (Seq.isEmpty (getAttrs attrName m))
