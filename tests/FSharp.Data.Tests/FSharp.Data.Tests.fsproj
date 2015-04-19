@@ -312,6 +312,7 @@
     <Compile Include="HtmlOperations.fs" />
     <Compile Include="HtmlProvider.fs" />
     <Compile Include="HtmlProviderList.fs" />
+    <None Include="app.config" />
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
