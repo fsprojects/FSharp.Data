@@ -129,7 +129,7 @@ let runTestTask name =
             { p with
                 DisableShadowCopy = true
                 TimeOut = TimeSpan.FromMinutes 20.
-                Framework = "4.0"
+                Framework = "4.5"
                 Domain = MultipleDomainModel
                 OutputFile = "TestResults.xml" })
     taskName ==> "RunTests" |> ignore

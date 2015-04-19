@@ -5,11 +5,13 @@ nuget FSharp.Charting
 nuget FSharp.Formatting
 nuget NUnit
 nuget NUnit.Runners
-nuget FsCheck 0.9.2.0
+nuget FsCheck
 nuget Nancy.Hosting.Self
 nuget FAKE
 nuget SourceLink.Fake
 nuget Nuget.CommandLine
+
+nuget FSharpVSPowerTools.Core 1.7.0
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi

@@ -122,18 +122,8 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="CommandLine">
-          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\CommandLine.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="FSharp.CodeFormat">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.CodeFormat.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="FSharp.Compiler.Service">
-          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharp.Compiler.Service.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -152,11 +142,6 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-        <Reference Include="FSharpVSPowerTools.Core">
-          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\FSharpVSPowerTools.Core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
         <Reference Include="RazorEngine">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\RazorEngine.dll</HintPath>
           <Private>True</Private>
@@ -164,11 +149,6 @@
         </Reference>
         <Reference Include="System.Web.Razor">
           <HintPath>..\..\packages\FSharp.Formatting\lib\net40\System.Web.Razor.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="fsformatting">
-          <HintPath>..\..\packages\FSharp.Formatting\lib\net40\fsformatting.exe</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
