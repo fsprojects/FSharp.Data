@@ -41,6 +41,18 @@
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fsi</Link>
+    </Content>
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\DebugProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/DebugProvidedTypes.fs</Link>
+    </Compile>
     <Compile Include="Net\UriUtils.fs" />
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
@@ -51,14 +63,11 @@
     <Compile Include="CommonRuntime\NameUtils.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
-    <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
-    <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyReplacer.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
-    <Compile Include="CommonProviderImplementation\DebugProvidedTypes.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
