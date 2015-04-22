@@ -141,6 +141,16 @@ let ``all of the manually-set request headers get sent to the server`` ()=
     MockServer.recordedRequest.Value.Headers.["X-Greeting"] |> should equal ["Happy Birthday"]
 
 [<Test>]
+let ``Encoding from content-type used`` () =
+    Http.Request("http://localhost:1235/TestServer/RecordRequest", body = TextRequest "Hi Müm", headers = [
+        ContentType "application/bike; charset=utf-8"
+    ]) |> ignore
+    MockServer.recordedRequest.Value |> should notEqual null
+    use bodyStream = new StreamReader(MockServer.recordedRequest.Value.Body,Encoding.GetEncoding("utf-8"))
+    bodyStream.ReadToEnd() |> should equal "Hi Müm"
+    MockServer.recordedRequest.Value.Headers.ContentLength |> should equal 7
+
+[<Test>]
 let ``Content-Length header is set automatically for Posts with a body`` () =
     Http.Request("http://localhost:1235/TestServer/RecordRequest", body = TextRequest "Hi Mum") |> ignore
     MockServer.recordedRequest.Value |> should notEqual null

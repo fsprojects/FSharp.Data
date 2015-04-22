@@ -688,7 +688,9 @@ module private HttpHelpers =
 /// Utilities for working with network via HTTP. Includes methods for downloading 
 /// resources with specified headers, query parameters and HTTP body
 [<AbstractClass>]
-type Http private() = 
+type Http private() =
+
+    static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Singleline)
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
@@ -739,23 +741,34 @@ type Http private() =
             if cookies.IsSome then
                 failwith "Cookies not supported by this platform"
 
+        let getEncoding contentType =
+            let charset = charsetRegex.Match(contentType)
+            if charset.Success then
+                Encoding.GetEncoding charset.Groups.[1].Value
+            else
+                HttpEncodings.PostDefaultEncoding
+
         let body = body |> Option.map (fun body ->
 
-            let defaultContentType, bytes =
+            let defaultContentType, (bytes: Encoding -> byte[]) =
                 match body with
-                | TextRequest text -> HttpContentTypes.Text, HttpEncodings.PostDefaultEncoding.GetBytes(text)
-                | BinaryUpload bytes -> HttpContentTypes.Binary, bytes
-                | FormValues values -> 
-                    let bytes = 
+                | TextRequest text -> HttpContentTypes.Text, (fun e -> e.GetBytes(text))
+                | BinaryUpload bytes -> HttpContentTypes.Binary, (fun _ -> bytes)
+                | FormValues values ->
+                    let bytes (e:Encoding) =
                         [ for k, v in values -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
                         |> String.concat "&"
-                        |> HttpEncodings.PostDefaultEncoding.GetBytes
+                        |> e.GetBytes
                     HttpContentTypes.FormValues, bytes
 
             // Set default content type if it is not specified by the user
-            if not hasContentType then req.ContentType <- defaultContentType
+            let encoding =
+                if not hasContentType then
+                    req.ContentType <- defaultContentType
 
-            bytes)
+                getEncoding req.ContentType
+
+            bytes encoding)
 
         // Send the request and get the response
         augmentWebExceptionsWithDetails <| fun () -> async {
@@ -838,11 +851,11 @@ type Http private() =
         let toHttpResponse responseUrl statusCode _contentType contentEncoding _characterSet _responseEncodingOverride cookies headers stream = async {
             let! stream = async {
                 // this only applies when automatic decompression is off
-                if contentEncoding = "gzip" then 
+                if contentEncoding = "gzip" then
                     use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressGZip memoryStream :> Stream
-                elif contentEncoding = "deflate" then 
+                elif contentEncoding = "deflate" then
                     use stream = stream
                     let! memoryStream = asyncRead stream
                     return decompressDeflate memoryStream :> Stream
@@ -854,7 +867,7 @@ type Http private() =
                      Headers = headers
                      Cookies = cookies }
         }
-        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer, 
+        Http.InnerRequest(url, toHttpResponse, ?query=query, ?headers=headers, ?httpMethod=httpMethod, ?body=body, ?cookies=cookies, ?cookieContainer=cookieContainer,
                           ?silentHttpErrors=silentHttpErrors, ?customizeHttpRequest=customizeHttpRequest)
 
     /// Download an HTTP web resource from the specified URL synchronously
