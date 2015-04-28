@@ -143,7 +143,15 @@ let init (cfg : TypeProviderConfig) =
         // the following parameter is just here to force System.Xml.Linq to load
         init SaveOptions.None
     
-    let useReflectionOnly = true
+    let useReflectionOnly = 
+        // Using `ReflectionOnlyLoad` is preferred, but it ignores binding redirects, so when 
+        // runtime assembly references `FSharp.Core.dll` that's not available, it will not work
+        // and we need to fall back to ordinary `Load` (we do a check here, in advance, because
+        // `Assembly.ReflectionOnlyLoad` does not throw, but it throws later when we call `GetType`.
+        try
+          (Assembly.ReflectionOnlyLoad cfg.RuntimeAssembly).GetTypes() |> ignore
+          true
+        with _ -> false
 
     let runtimeAssembly = 
         if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
