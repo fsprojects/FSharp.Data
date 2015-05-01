@@ -1,6 +1,8 @@
 #### 2.2.1 - Unreleased
 * Improved performance of JsonValue.Parse().
 * Fixed crash processing HTTP responses without content type.
+* Fixed encoding from content type not being used on the POST requests.
+* Improved compatibility with different versions of FSharp.Core.
 
 #### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
