@@ -268,7 +268,7 @@ module HttpContentTypes =
     /// */*
     let [<Literal>] Any = "*/*"
     /// plain/text
-    let [<Literal>] Text = "plain/text"
+    let [<Literal>] Text = "text/plain"
     /// application/octet-stream
     let [<Literal>] Binary = "application/octet-stream"
     /// application/octet-stream
