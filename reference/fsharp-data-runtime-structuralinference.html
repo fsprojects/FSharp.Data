@@ -43,6 +43,8 @@
 <h1>StructuralInference</h1>
 <div class="xmldoc">
 <p>Implements type inference for unstructured documents like XML or JSON</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -73,10 +75,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '170', 170)" onmouseover="showTip(event, '170', 170)">
+          <code onmouseout="hideTip(event, '171', 171)" onmouseover="showTip(event, '171', 171)">
             defaultUnitsOfMeasureProvider 
           </code>
-          <div class="tip" id="170">
+          <div class="tip" id="171">
             <strong>Signature:</strong> IUnitsOfMeasureProvider<br />
                       </div>
         </td>
@@ -91,10 +93,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '171', 171)" onmouseover="showTip(event, '171', 171)">
+          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
             getInferedTypeFromString (...)
           </code>
-          <div class="tip" id="171">
+          <div class="tip" id="172">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; unit:Type option -&gt; InferedType<br />
                       </div>
         </td>
@@ -105,15 +107,17 @@
             </a>
           <p>Infers the type of a simple string value</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '172', 172)" onmouseover="showTip(event, '172', 172)">
+          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
             inferCollectionType (...)
           </code>
-          <div class="tip" id="172">
+          <div class="tip" id="173">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; types:seq&lt;InferedType&gt; -&gt; InferedType<br />
                       </div>
         </td>
@@ -125,15 +129,17 @@
           <p>Infer the type of the collection based on multiple sample types
 (group the types by tag, count their multiplicity)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '173', 173)" onmouseover="showTip(event, '173', 173)">
+          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
             inferPrimitiveType cultureInfo value
           </code>
-          <div class="tip" id="173">
+          <div class="tip" id="174">
             <strong>Signature:</strong> cultureInfo:CultureInfo -&gt; value:string -&gt; Type<br />
                       </div>
         </td>
@@ -145,15 +151,17 @@
           <p>Infers the type of a simple string value
 Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<int64>|typeof<decimal>|typeof<float>|typeof<Guid>|typeof<DateTime>|typeof<string></p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '174', 174)" onmouseover="showTip(event, '174', 174)">
+          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
             parseUnitOfMeasure provider str
           </code>
-          <div class="tip" id="174">
+          <div class="tip" id="175">
             <strong>Signature:</strong> provider:IUnitsOfMeasureProvider -&gt; str:string -&gt; Type option<br />
                       </div>
         </td>
@@ -168,10 +176,10 @@ Returns one of null|typeof<Bit0>|typeof<Bit1>|typeof<bool>|typeof<int>|typeof<in
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '175', 175)" onmouseover="showTip(event, '175', 175)">
+          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
             subtypeInfered allowEmptyValues ot1 ot2
           </code>
-          <div class="tip" id="175">
+          <div class="tip" id="176">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; ot1:InferedType -&gt; ot2:InferedType -&gt; InferedType<br />
                       </div>
         </td>
@@ -196,15 +204,17 @@ Otherwise, we return bottom.</li>
 <p>The contract that should hold about the function is that given two types with the
 same <code>InferedTypeTag</code>, the result also has the same <code>InferedTypeTag</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '176', 176)" onmouseover="showTip(event, '176', 176)">
+          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
             supportsUnitsOfMeasure typ
           </code>
-          <div class="tip" id="176">
+          <div class="tip" id="177">
             <strong>Signature:</strong> typ:Type -&gt; bool<br />
                       </div>
         </td>
@@ -215,15 +225,17 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
             </a>
           <p>Checks whether a type supports unit of measure</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '177', 177)" onmouseover="showTip(event, '177', 177)">
+          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
             typeTag _arg1
           </code>
-          <div class="tip" id="177">
+          <div class="tip" id="178">
             <strong>Signature:</strong> _arg1:InferedType -&gt; InferedTypeTag<br />
                       </div>
         </td>
@@ -235,15 +247,17 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
           <p>Returns a tag of a type - a tag represents a 'kind' of type 
 (essentially it describes the different bottom types we have)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '178', 178)" onmouseover="showTip(event, '178', 178)">
+          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
             unionCollectionOrder order1 order2
           </code>
-          <div class="tip" id="178">
+          <div class="tip" id="179">
             <strong>Signature:</strong> order1:InferedTypeTag list -&gt; order2:InferedTypeTag list -&gt; InferedTypeTag list<br />
                       </div>
         </td>
@@ -258,10 +272,10 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '179', 179)" onmouseover="showTip(event, '179', 179)">
+          <code onmouseout="hideTip(event, '180', 180)" onmouseover="showTip(event, '180', 180)">
             unionRecordTypes allowEmptyValues t1 t2
           </code>
-          <div class="tip" id="179">
+          <div class="tip" id="180">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; t1:InferedProperty list -&gt; t2:InferedProperty list -&gt; InferedProperty list<br />
                       </div>
         </td>
@@ -273,6 +287,8 @@ same <code>InferedTypeTag</code>, the result also has the same <code>InferedType
           <p>Get the union of record types (merge their properties)
 This matches the corresponding members and marks them as <code>Optional</code>
 if one may be missing. It also returns subtype of their types.</p>
+
+
 
         </td>
       </tr>

@@ -57,6 +57,8 @@ of multiple different possibilities</p></li>
 <p>Why is collection not simply a list of Heterogeneous types? If we used that
 we would lose information about multiplicity and so we would not be able
 to generate nicer types!</p>
+
+
 </div>
   <h3>Union Cases</h3>
   <table class="table table-bordered member-list">
@@ -67,10 +69,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '518', 518)" onmouseover="showTip(event, '518', 518)">
+          <code onmouseout="hideTip(event, '519', 519)" onmouseover="showTip(event, '519', 519)">
             Collection(order,types)
           </code>
-          <div class="tip" id="518">
+          <div class="tip" id="519">
             <strong>Signature:</strong> InferedTypeTag list * Map&lt;InferedTypeTag,(InferedMultiplicity * InferedType)&gt;<br />
                       </div>
         </td>
@@ -85,10 +87,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '519', 519)" onmouseover="showTip(event, '519', 519)">
+          <code onmouseout="hideTip(event, '520', 520)" onmouseover="showTip(event, '520', 520)">
             Heterogeneous(types)
           </code>
-          <div class="tip" id="519">
+          <div class="tip" id="520">
             <strong>Signature:</strong> Map&lt;InferedTypeTag,InferedType&gt;<br />
                       </div>
         </td>
@@ -103,10 +105,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '520', 520)" onmouseover="showTip(event, '520', 520)">
+          <code onmouseout="hideTip(event, '521', 521)" onmouseover="showTip(event, '521', 521)">
             Json(typ,optional)
           </code>
-          <div class="tip" id="520">
+          <div class="tip" id="521">
             <strong>Signature:</strong> InferedType * bool<br />
                       </div>
         </td>
@@ -121,10 +123,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '521', 521)" onmouseover="showTip(event, '521', 521)">
+          <code onmouseout="hideTip(event, '522', 522)" onmouseover="showTip(event, '522', 522)">
             Null
           </code>
-          <div class="tip" id="521">
+          <div class="tip" id="522">
             <strong>Signature:</strong> <br />
                       </div>
         </td>
@@ -139,10 +141,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '522', 522)" onmouseover="showTip(event, '522', 522)">
+          <code onmouseout="hideTip(event, '523', 523)" onmouseover="showTip(event, '523', 523)">
             Primitive(typ,unit,optional)
           </code>
-          <div class="tip" id="522">
+          <div class="tip" id="523">
             <strong>Signature:</strong> Type * Type option * bool<br />
                       </div>
         </td>
@@ -157,10 +159,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '523', 523)" onmouseover="showTip(event, '523', 523)">
+          <code onmouseout="hideTip(event, '524', 524)" onmouseover="showTip(event, '524', 524)">
             Record(name,fields,optional)
           </code>
-          <div class="tip" id="523">
+          <div class="tip" id="524">
             <strong>Signature:</strong> string option * InferedProperty list * bool<br />
                       </div>
         </td>
@@ -175,10 +177,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '524', 524)" onmouseover="showTip(event, '524', 524)">
+          <code onmouseout="hideTip(event, '525', 525)" onmouseover="showTip(event, '525', 525)">
             Top
           </code>
-          <div class="tip" id="524">
+          <div class="tip" id="525">
             <strong>Signature:</strong> <br />
                       </div>
         </td>
@@ -201,10 +203,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '525', 525)" onmouseover="showTip(event, '525', 525)">
+          <code onmouseout="hideTip(event, '526', 526)" onmouseover="showTip(event, '526', 526)">
             DropOptionality()
           </code>
-          <div class="tip" id="525">
+          <div class="tip" id="526">
             <strong>Signature:</strong> unit -&gt; InferedType<br />
                       </div>
         </td>
@@ -219,10 +221,10 @@ to generate nicer types!</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '526', 526)" onmouseover="showTip(event, '526', 526)">
+          <code onmouseout="hideTip(event, '527', 527)" onmouseover="showTip(event, '527', 527)">
             EnsuresHandlesMissingValues(...)
           </code>
-          <div class="tip" id="526">
+          <div class="tip" id="527">
             <strong>Signature:</strong> allowEmptyValues:bool -&gt; InferedType<br />
                       </div>
         </td>
@@ -235,15 +237,17 @@ to generate nicer types!</p>
 we make the type optional and use None instead.
 It's currently only true in CsvProvider when PreferOptionals is set to false</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '527', 527)" onmouseover="showTip(event, '527', 527)">
+          <code onmouseout="hideTip(event, '528', 528)" onmouseover="showTip(event, '528', 528)">
             IsOptional
           </code>
-          <div class="tip" id="527">
+          <div class="tip" id="528">
             <strong>Signature:</strong> bool<br />
                       </div>
         </td>
@@ -266,10 +270,10 @@ It's currently only true in CsvProvider when PreferOptionals is set to false</p>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '528', 528)" onmouseover="showTip(event, '528', 528)">
+          <code onmouseout="hideTip(event, '529', 529)" onmouseover="showTip(event, '529', 529)">
             CanHaveEmptyValues(typ)
           </code>
-          <div class="tip" id="528">
+          <div class="tip" id="529">
             <strong>Signature:</strong> typ:Type -&gt; bool<br />
                       </div>
         </td>

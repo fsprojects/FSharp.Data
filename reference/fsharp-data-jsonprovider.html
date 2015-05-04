@@ -43,6 +43,8 @@
 <h1>JsonProvider</h1>
 <div class="xmldoc">
 <p>Typed representation of a JSON document.</p>
+
+
 </div>
   <h3>Static parameters</h3>
   <table class="table table-bordered member-list">
@@ -53,10 +55,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '348', 348)" onmouseover="showTip(event, '348', 348)">
+          <code onmouseout="hideTip(event, '349', 349)" onmouseover="showTip(event, '349', 349)">
             Sample
           </code>
-          <div class="tip" id="348">
+          <div class="tip" id="349">
             <strong>Signature:</strong> string<br />
                       </div>
         </td>
@@ -67,15 +69,17 @@
             </a>
           <p>Location of a JSON sample file or a string containing a sample JSON document.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '349', 349)" onmouseover="showTip(event, '349', 349)">
+          <code onmouseout="hideTip(event, '350', 350)" onmouseover="showTip(event, '350', 350)">
             SampleIsList
           </code>
-          <div class="tip" id="349">
+          <div class="tip" id="350">
             <strong>Signature:</strong> bool (optional, default = false)<br />
                       </div>
         </td>
@@ -86,15 +90,17 @@
             </a>
           <p>If true, sample should be a list of individual samples for the inference.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '350', 350)" onmouseover="showTip(event, '350', 350)">
+          <code onmouseout="hideTip(event, '351', 351)" onmouseover="showTip(event, '351', 351)">
             RootName
           </code>
-          <div class="tip" id="350">
+          <div class="tip" id="351">
             <strong>Signature:</strong> string (optional, default = &quot;Root&quot;)<br />
                       </div>
         </td>
@@ -105,24 +111,7 @@
             </a>
           <p>The name to be used to the root type. Defaults to <code>Root</code>.</p>
 
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '351', 351)" onmouseover="showTip(event, '351', 351)">
-            Culture
-          </code>
-          <div class="tip" id="351">
-            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
 
         </td>
       </tr>
@@ -130,7 +119,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '352', 352)" onmouseover="showTip(event, '352', 352)">
-            Encoding
+            Culture
           </code>
           <div class="tip" id="352">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -141,7 +130,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
+
+
 
         </td>
       </tr>
@@ -149,7 +140,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '353', 353)" onmouseover="showTip(event, '353', 353)">
-            ResolutionFolder
+            Encoding
           </code>
           <div class="tip" id="353">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -160,7 +151,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+
+
 
         </td>
       </tr>
@@ -168,9 +161,30 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '354', 354)" onmouseover="showTip(event, '354', 354)">
-            EmbeddedResource
+            ResolutionFolder
           </code>
           <div class="tip" id="354">
+            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '355', 355)" onmouseover="showTip(event, '355', 355)">
+            EmbeddedResource
+          </code>
+          <div class="tip" id="355">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
                       </div>
         </td>
@@ -182,15 +196,17 @@
           <p>When specified, the type provider first attempts to load the sample from the specified resource 
           (e.g. 'MyCompany.MyAssembly, resource_name.json'). This is useful when exposing types generated by the type provider.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '355', 355)" onmouseover="showTip(event, '355', 355)">
+          <code onmouseout="hideTip(event, '356', 356)" onmouseover="showTip(event, '356', 356)">
             InferTypesFromValues
           </code>
-          <div class="tip" id="355">
+          <div class="tip" id="356">
             <strong>Signature:</strong> bool (optional, default = true)<br />
                       </div>
         </td>
@@ -201,6 +217,8 @@
             </a>
           <p>If true, turns on additional type inference from values. 
           (e.g. type inference infers string values such as "123" as ints and values constrained to 0 and 1 as booleans.)</p>
+
+
 
         </td>
       </tr>

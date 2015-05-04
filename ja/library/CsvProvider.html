@@ -77,7 +77,13 @@ F# Interactiveでアセンブリを読み込むには以下のようにします
 (より大きな例としては <a href="../../data/MSFT.csv"><code>data/MSFT.csv</code></a> ファイルを
 参照してください)：</p>
 
-<table class="pre"><tr><td><pre lang="text">Date,Open,High,Low,Close,Volume,Adj Close
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</td>
+<td class="snippet"><pre lang="text">Date,Open,High,Low,Close,Volume,Adj Close
 2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
 2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50
 2012-01-25,29.07,29.65,29.07,29.56,59231700,29.56
@@ -242,7 +248,10 @@ URLを使って <code>Load</code> メソッドを呼び出しています：</p>
 <p>このセクションでは以下のような単純なデータが含まれた
 <a href="../../data/SmallTest.csv"><code>data/SmallTest.csv</code></a> を使います：</p>
 
-<table class="pre"><tr><td><pre lang="text">Name,  Distance (metre), Time (s)
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+</td>
+<td class="snippet"><pre lang="text">Name,  Distance (metre), Time (s)
 First, 50.0,             3.7
 </pre></td></tr></table>
 
@@ -481,7 +490,10 @@ static引数 <code>PreferOptionals</code> を <code>true</code> にします。
 <p>型と測定単位の両方を( <code>float&lt;metre&gt;</code> のようにして)指定することもできます。
 たとえば以下の通りです：</p>
 
-<table class="pre"><tr><td><pre lang="text">Name,  Distance (decimal?&lt;metre&gt;), Time (float)
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+</td>
+<td class="snippet"><pre lang="text">Name,  Distance (decimal?<metre>), Time (float)
 First, 50,                        3
 </pre></td></tr></table>
 

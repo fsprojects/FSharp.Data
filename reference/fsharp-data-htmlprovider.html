@@ -43,6 +43,8 @@
 <h1>HtmlProvider</h1>
 <div class="xmldoc">
 <p>Typed representation of an HTML file.</p>
+
+
 </div>
   <h3>Static parameters</h3>
   <table class="table table-bordered member-list">
@@ -53,10 +55,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '303', 303)" onmouseover="showTip(event, '303', 303)">
+          <code onmouseout="hideTip(event, '304', 304)" onmouseover="showTip(event, '304', 304)">
             Sample
           </code>
-          <div class="tip" id="303">
+          <div class="tip" id="304">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
                       </div>
         </td>
@@ -67,24 +69,7 @@
             </a>
           <p>Location of an HTML sample file or a string containing a sample HTML document.</p>
 
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '304', 304)" onmouseover="showTip(event, '304', 304)">
-            PreferOptionals
-          </code>
-          <div class="tip" id="304">
-            <strong>Signature:</strong> bool (optional, default = false)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>When set to true, inference will prefer to use the option type instead of nullable types, <code>double.NaN</code> or <code>""</code> for missing values. Defaults to false.</p>
 
         </td>
       </tr>
@@ -92,7 +77,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '305', 305)" onmouseover="showTip(event, '305', 305)">
-            IncludeLayoutTables
+            PreferOptionals
           </code>
           <div class="tip" id="305">
             <strong>Signature:</strong> bool (optional, default = false)<br />
@@ -103,7 +88,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Includes tables that are potentially layout tables (with cellpadding=0 and cellspacing=0 attributes)</p>
+          <p>When set to true, inference will prefer to use the option type instead of nullable types, <code>double.NaN</code> or <code>""</code> for missing values. Defaults to false.</p>
+
+
 
         </td>
       </tr>
@@ -111,10 +98,10 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '306', 306)" onmouseover="showTip(event, '306', 306)">
-            MissingValues
+            IncludeLayoutTables
           </code>
           <div class="tip" id="306">
-            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
+            <strong>Signature:</strong> bool (optional, default = false)<br />
                       </div>
         </td>
         <td class="xmldoc">
@@ -122,7 +109,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The set of strings recogized as missing values. Defaults to <code>NaN,NA,#N/A,:,-,TBA,TBD</code>.</p>
+          <p>Includes tables that are potentially layout tables (with cellpadding=0 and cellspacing=0 attributes)</p>
+
+
 
         </td>
       </tr>
@@ -130,7 +119,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '307', 307)" onmouseover="showTip(event, '307', 307)">
-            Culture
+            MissingValues
           </code>
           <div class="tip" id="307">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -141,7 +130,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
+          <p>The set of strings recogized as missing values. Defaults to <code>NaN,NA,#N/A,:,-,TBA,TBD</code>.</p>
+
+
 
         </td>
       </tr>
@@ -149,7 +140,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '308', 308)" onmouseover="showTip(event, '308', 308)">
-            Encoding
+            Culture
           </code>
           <div class="tip" id="308">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -160,7 +151,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
+
+
 
         </td>
       </tr>
@@ -168,7 +161,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '309', 309)" onmouseover="showTip(event, '309', 309)">
-            ResolutionFolder
+            Encoding
           </code>
           <div class="tip" id="309">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -179,7 +172,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+
+
 
         </td>
       </tr>
@@ -187,7 +182,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '310', 310)" onmouseover="showTip(event, '310', 310)">
-            EmbeddedResource
+            ResolutionFolder
           </code>
           <div class="tip" id="310">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -198,8 +193,31 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
+          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '311', 311)" onmouseover="showTip(event, '311', 311)">
+            EmbeddedResource
+          </code>
+          <div class="tip" id="311">
+            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
           <p>When specified, the type provider first attempts to load the sample from the specified resource 
               (e.g. 'MyCompany.MyAssembly, resource_name.html'). This is useful when exposing types generated by the type provider.</p>
+
+
 
         </td>
       </tr>

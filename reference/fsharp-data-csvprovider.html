@@ -43,6 +43,8 @@
 <h1>CsvProvider</h1>
 <div class="xmldoc">
 <p>Typed representation of a CSV file.</p>
+
+
 </div>
   <h3>Static parameters</h3>
   <table class="table table-bordered member-list">
@@ -53,27 +55,8 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '203', 203)" onmouseover="showTip(event, '203', 203)">
-            Sample
-          </code>
-          <div class="tip" id="203">
-            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Location of a CSV sample file or a string containing a sample CSV document.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
           <code onmouseout="hideTip(event, '204', 204)" onmouseover="showTip(event, '204', 204)">
-            Separators
+            Sample
           </code>
           <div class="tip" id="204">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -84,7 +67,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Column delimiter(s). Defaults to <code>,</code>.</p>
+          <p>Location of a CSV sample file or a string containing a sample CSV document.</p>
+
+
 
         </td>
       </tr>
@@ -92,9 +77,30 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '205', 205)" onmouseover="showTip(event, '205', 205)">
-            InferRows
+            Separators
           </code>
           <div class="tip" id="205">
+            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>Column delimiter(s). Defaults to <code>,</code>.</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
+            InferRows
+          </code>
+          <div class="tip" id="206">
             <strong>Signature:</strong> int (optional, default = 1000)<br />
                       </div>
         </td>
@@ -105,15 +111,17 @@
             </a>
           <p>Number of rows to use for inference. Defaults to <code>1000</code>. If this is zero, all rows are used.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '206', 206)" onmouseover="showTip(event, '206', 206)">
+          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
             Schema
           </code>
-          <div class="tip" id="206">
+          <div class="tip" id="207">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
                       </div>
         </td>
@@ -125,15 +133,17 @@
           <p>Optional column types, in a comma separated list. Valid types are <code>int</code>, <code>int64</code>, <code>bool</code>, <code>float</code>, <code>decimal</code>, <code>date</code>, <code>guid</code>, <code>string</code>, <code>int?</code>, <code>int64?</code>, <code>bool?</code>, <code>float?</code>, <code>decimal?</code>, <code>date?</code>, <code>guid?</code>, <code>int option</code>, <code>int64 option</code>, <code>bool option</code>, <code>float option</code>, <code>decimal option</code>, <code>date option</code>, <code>guid option</code> and <code>string option</code>.
        You can also specify a unit and the name of the column like this: <code>Name (type&lt;unit&gt;)</code>, or you can override only the name. If you don't want to specify all the columns, you can reference the columns by name like this: <code>ColumnName=type</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '207', 207)" onmouseover="showTip(event, '207', 207)">
+          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
             HasHeaders
           </code>
-          <div class="tip" id="207">
+          <div class="tip" id="208">
             <strong>Signature:</strong> bool (optional, default = true)<br />
                       </div>
         </td>
@@ -144,15 +154,17 @@
             </a>
           <p>Whether the sample contains the names of the columns as its first line.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '208', 208)" onmouseover="showTip(event, '208', 208)">
+          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
             IgnoreErrors
           </code>
-          <div class="tip" id="208">
+          <div class="tip" id="209">
             <strong>Signature:</strong> bool (optional, default = false)<br />
                       </div>
         </td>
@@ -163,15 +175,17 @@
             </a>
           <p>Whether to ignore rows that have the wrong number of columns or which can't be parsed using the inferred or specified schema. Otherwise an exception is thrown when these rows are encountered.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '209', 209)" onmouseover="showTip(event, '209', 209)">
+          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
             SkipRows
           </code>
-          <div class="tip" id="209">
+          <div class="tip" id="210">
             <strong>Signature:</strong> int (optional, default = 0)<br />
                       </div>
         </td>
@@ -182,24 +196,7 @@
             </a>
           <p>SKips the first n rows of the CSV file.</p>
 
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '210', 210)" onmouseover="showTip(event, '210', 210)">
-            AssumeMissingValues
-          </code>
-          <div class="tip" id="210">
-            <strong>Signature:</strong> bool (optional, default = false)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</p>
 
         </td>
       </tr>
@@ -207,7 +204,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '211', 211)" onmouseover="showTip(event, '211', 211)">
-            PreferOptionals
+            AssumeMissingValues
           </code>
           <div class="tip" id="211">
             <strong>Signature:</strong> bool (optional, default = false)<br />
@@ -218,7 +215,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>When set to true, inference will prefer to use the option type instead of nullable types, <code>double.NaN</code> or <code>""</code> for missing values. Defaults to false.</p>
+          <p>When set to true, the type provider will assume all columns can have missing values, even if in the provided sample all values are present. Defaults to false.</p>
+
+
 
         </td>
       </tr>
@@ -226,9 +225,30 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '212', 212)" onmouseover="showTip(event, '212', 212)">
-            Quote
+            PreferOptionals
           </code>
           <div class="tip" id="212">
+            <strong>Signature:</strong> bool (optional, default = false)<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          <p>When set to true, inference will prefer to use the option type instead of nullable types, <code>double.NaN</code> or <code>""</code> for missing values. Defaults to false.</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
+            Quote
+          </code>
+          <div class="tip" id="213">
             <strong>Signature:</strong> char (optional, default = &#39;&quot;&#39;)<br />
                       </div>
         </td>
@@ -239,15 +259,17 @@
             </a>
           <p>The quotation mark (for surrounding values containing the delimiter). Defaults to <code>"</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '213', 213)" onmouseover="showTip(event, '213', 213)">
+          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
             MissingValues
           </code>
-          <div class="tip" id="213">
+          <div class="tip" id="214">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
                       </div>
         </td>
@@ -258,15 +280,17 @@
             </a>
           <p>The set of strings recogized as missing values. Defaults to <code>NaN,NA,#N/A,:,-,TBA,TBD</code>.</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '214', 214)" onmouseover="showTip(event, '214', 214)">
+          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
             CacheRows
           </code>
-          <div class="tip" id="214">
+          <div class="tip" id="215">
             <strong>Signature:</strong> bool (optional, default = true)<br />
                       </div>
         </td>
@@ -277,24 +301,7 @@
             </a>
           <p>Whether the rows should be caches so they can be iterated multiple times. Defaults to true. Disable for large datasets.</p>
 
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
 
-          <code onmouseout="hideTip(event, '215', 215)" onmouseover="showTip(event, '215', 215)">
-            Culture
-          </code>
-          <div class="tip" id="215">
-            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
 
         </td>
       </tr>
@@ -302,7 +309,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '216', 216)" onmouseover="showTip(event, '216', 216)">
-            Encoding
+            Culture
           </code>
           <div class="tip" id="216">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -313,7 +320,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+          <p>The culture used for parsing numbers and dates. Defaults to the invariant culture.</p>
+
+
 
         </td>
       </tr>
@@ -321,7 +330,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '217', 217)" onmouseover="showTip(event, '217', 217)">
-            ResolutionFolder
+            Encoding
           </code>
           <div class="tip" id="217">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -332,7 +341,9 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+          <p>The encoding used to read the sample. You can specify either the character set name or the codepage number. Defaults to UTF8 for files, and to ISO-8859-1 the for HTTP requests, unless <code>charset</code> is specified in the <code>Content-Type</code> response header.</p>
+
+
 
         </td>
       </tr>
@@ -340,7 +351,7 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '218', 218)" onmouseover="showTip(event, '218', 218)">
-            EmbeddedResource
+            ResolutionFolder
           </code>
           <div class="tip" id="218">
             <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
@@ -351,8 +362,31 @@
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
+          <p>A directory that is used when resolving relative file references (at design time and in hosted execution).</p>
+
+
+
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
+
+          <code onmouseout="hideTip(event, '219', 219)" onmouseover="showTip(event, '219', 219)">
+            EmbeddedResource
+          </code>
+          <div class="tip" id="219">
+            <strong>Signature:</strong> string (optional, default = &quot;&quot;)<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="https://github.com/fsharp/FSharp.Data/tree/master/docs/tools/startup#L1-1" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
           <p>When specified, the type provider first attempts to load the sample from the specified resource 
           (e.g. 'MyCompany.MyAssembly, resource_name.csv'). This is useful when exposing types generated by the type provider.</p>
+
+
 
         </td>
       </tr>

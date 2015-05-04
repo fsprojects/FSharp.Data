@@ -43,6 +43,8 @@
 <h1>NameUtils</h1>
 <div class="xmldoc">
 <p>Tools for generating nice member names that follow F# &amp; .NET naming conventions</p>
+
+
 </div>
 
 <!-- Render nested types and modules, if there are any -->
@@ -56,10 +58,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '163', 163)" onmouseover="showTip(event, '163', 163)">
+          <code onmouseout="hideTip(event, '164', 164)" onmouseover="showTip(event, '164', 164)">
             capitalizeFirstLetter s
           </code>
-          <div class="tip" id="163">
+          <div class="tip" id="164">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -74,10 +76,10 @@
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '164', 164)" onmouseover="showTip(event, '164', 164)">
+          <code onmouseout="hideTip(event, '165', 165)" onmouseover="showTip(event, '165', 165)">
             niceCamelName s
           </code>
-          <div class="tip" id="164">
+          <div class="tip" id="165">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -88,15 +90,17 @@
             </a>
           <p>Turns a given non-empty string into a nice 'camelCase' identifier</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '165', 165)" onmouseover="showTip(event, '165', 165)">
+          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
             nicePascalName s
           </code>
-          <div class="tip" id="165">
+          <div class="tip" id="166">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -107,15 +111,17 @@
             </a>
           <p>Turns a given non-empty string into a nice 'PascalCase' identifier</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '166', 166)" onmouseover="showTip(event, '166', 166)">
+          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
             pluralize s
           </code>
-          <div class="tip" id="166">
+          <div class="tip" id="167">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -126,15 +132,17 @@
             </a>
           <p>Return the plural of an English word</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '167', 167)" onmouseover="showTip(event, '167', 167)">
+          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
             singularize s
           </code>
-          <div class="tip" id="167">
+          <div class="tip" id="168">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -145,15 +153,17 @@
             </a>
           <p>Return the singular of an English word</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '168', 168)" onmouseover="showTip(event, '168', 168)">
+          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
             trimHtml s
           </code>
-          <div class="tip" id="168">
+          <div class="tip" id="169">
             <strong>Signature:</strong> s:string -&gt; string<br />
                       </div>
         </td>
@@ -166,17 +176,19 @@
 Multiple tags are replaced with just a single space. (This is a recursive 
 implementation that is somewhat faster than regular expression.)</p>
 
+
+
         </td>
       </tr>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '169', 169)" onmouseover="showTip(event, '169', 169)">
+          <code onmouseout="hideTip(event, '170', 170)" onmouseover="showTip(event, '170', 170)">
             uniqueGenerator niceName
           </code>
-          <div class="tip" id="169">
-            <strong>Signature:</strong> niceName:(&#39;?6934 -&gt; string) -&gt; &#39;?6934 -&gt; string<br />
-                          <strong>Type parameters:</strong> '?6934          </div>
+          <div class="tip" id="170">
+            <strong>Signature:</strong> niceName:(&#39;?7725 -&gt; string) -&gt; &#39;?7725 -&gt; string<br />
+                          <strong>Type parameters:</strong> '?7725          </div>
         </td>
         <td class="xmldoc">
             <a href="https://github.com/fsharp/FSharp.Data/tree/master/src/CommonRuntime/NameUtils.fs#L75-75" class="github-link">
@@ -189,9 +201,25 @@ index to already used names)</p>
 
 <p>This function is curried and should be used with partial function application:</p>
 
-<pre><code>let makeUnique = uniqueGenerator nicePascalName
-let n1 = makeUnique "sample-name"
-let n2 = makeUnique "sample-name"</code></pre>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="f">makeUnique</span> <span class="o">=</span> <span class="i">uniqueGenerator</span> <span class="i">nicePascalName</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">n1</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 3)" onmouseover="showTip(event, 'fs1', 3)" class="f">makeUnique</span> <span class="s">&quot;sample-name&quot;</span>
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 4)" onmouseover="showTip(event, 'fs3', 4)" class="i">n2</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs1', 5)" onmouseover="showTip(event, 'fs1', 5)" class="f">makeUnique</span> <span class="s">&quot;sample-name&quot;</span>
+</pre>
+</td>
+</tr>
+</table>
+
+<div class="tip" id="fs1">val makeUnique : (string -&gt; obj)<br /><br />Full name: docs.makeUnique</div>
+<div class="tip" id="fs2">val n1 : obj<br /><br />Full name: docs.n1</div>
+<div class="tip" id="fs3">val n2 : obj<br /><br />Full name: docs.n2</div>
+
 
         </td>
       </tr>

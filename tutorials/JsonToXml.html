@@ -84,7 +84,13 @@ In particular, XML distinguishes between <em>attributes</em> and <em>child eleme
 all XML elements have a name, while JSON arrays or records are anonymous (but records
 have named fields). Consider, for example, the following XML:</p>
 
-<table class="pre"><tr><td><pre lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</td>
+<td class="snippet"><pre lang="xml"><span class="k">&lt;</span><span class="i">channel</span> <span class="o">version</span><span class="k">="1.0"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">title</span> <span class="o">text</span><span class="k">="Sample input"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="First"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">item</span> <span class="o">value</span><span class="k">="Second"</span> <span class="k">/&gt;</span>
@@ -95,7 +101,12 @@ have named fields). Consider, for example, the following XML:</p>
 a record that contains a unique field for every attribute and a name of a child element.
 If an element appears multiple times, it is turned into an array:</p>
 
-<table class="pre"><tr><td><pre lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</td>
+<td class="snippet"><pre lang="js">{ <span class="s">"version"</span>: <span class="s">"1.0"</span>,
   <span class="s">"title"</span>: { <span class="s">"text"</span>: <span class="s">"Sample input"</span> },
   <span class="s">"items"</span>: [ { <span class="s">"value"</span>: <span class="s">"First"</span> }, 
              { <span class="s">"value"</span>: <span class="s">"Second"</span> } ]  }
@@ -179,7 +190,11 @@ attributes to a corresponding JSON type:</p>
 
 <p>When converting JSON value to XML, we fact the same mismatch. Consider the following JSON value:</p>
 
-<table class="pre"><tr><td><pre lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+</td>
+<td class="snippet"><pre lang="js">{ <span class="s">"title"</span> : <span class="s">"Sample input"</span>,
   <span class="s">"paging"</span> : { <span class="s">"current"</span>: 1 },
   <span class="s">"items"</span> : [ <span class="s">"First"</span>, <span class="s">"Second"</span> ] }
 </pre></td></tr></table>
@@ -189,7 +204,15 @@ values that can be wrapped into an <code>XElement</code> by the user (who has to
 name). Record fields that are a primitive value are turned into attributes, while 
 complex values (array or record) become objects:</p>
 
-<table class="pre"><tr><td><pre lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
+<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+</td>
+<td class="snippet"><pre lang="xml"><span class="k">&lt;</span><span class="i">root</span> <span class="o">title</span><span class="k">="Sample input"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">items</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>First<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">item</span><span class="k">&gt;</span>Second<span class="k">&lt;/</span><span class="i">item</span><span class="k">&gt;</span>
