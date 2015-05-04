@@ -11,8 +11,6 @@ nuget FAKE
 nuget SourceLink.Fake
 nuget Nuget.CommandLine
 
-nuget FSharpVSPowerTools.Core 1.7.0
-
 github fsharp/FAKE modules/Octokit/Octokit.fsx
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
 github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs

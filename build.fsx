@@ -161,7 +161,7 @@ Target "SourceLink" <| fun () ->
         let files = proj.Compiles -- "**/AssemblyInfo*.fs" 
         repo.VerifyChecksums files
         proj.VerifyPdbChecksums files
-        proj.CreateSrcSrv (sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName) repo.Revision (repo.Paths files)
+        proj.CreateSrcSrv (sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName) repo.Commit (repo.Paths files)
         Pdbstr.exec proj.OutputFilePdb proj.OutputFilePdbSrcSrv
     CopyFiles "bin" (!! "src/bin/Release/FSharp.Data.*")
     CopyFiles "bin/portable7" (!! "src/bin/portable7/Release/FSharp.Data.*")
