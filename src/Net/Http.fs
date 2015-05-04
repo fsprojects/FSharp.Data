@@ -691,7 +691,14 @@ module private HttpHelpers =
 [<AbstractClass>]
 type Http private() =
 
-    static let charsetRegex = Regex("charset=([^;\s]*)", RegexOptions.Singleline)
+    static let regexOptions = 
+#if FX_NO_REGEX_COMPILATION
+        RegexOptions.None
+#else
+        RegexOptions.Compiled
+#endif
+
+    static let charsetRegex = Regex("charset=([^;\s]*)", regexOptions)
 
     /// Appends the query parameters to the url, taking care of proper escaping
     static member internal AppendQueryToUrl(url:string, query) =
