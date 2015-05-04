@@ -21,6 +21,7 @@ open System.Globalization
 open System.IO
 open System.Net
 open System.Text
+open System.Text.RegularExpressions
 open System.Reflection
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
