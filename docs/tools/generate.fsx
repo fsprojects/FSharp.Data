@@ -113,7 +113,7 @@ let createFsiEvaluator root output =
     | _ -> None 
     
   // Create FSI evaluator, register transformations & return
-  let fsiEvaluator = FsiEvaluator()
+  let fsiEvaluator = FsiEvaluator(fsiObj = FsiEvaluatorConfig.CreateNoOpFsiObject())
   fsiEvaluator.RegisterTransformation(transformation)
   fsiEvaluator
 
