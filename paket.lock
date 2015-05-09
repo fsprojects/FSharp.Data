@@ -1,11 +1,11 @@
 NUGET
   remote: http://nuget.org/api/v2
   specs:
-    FAKE (3.30.3)
+    FAKE (3.31.2)
     FsCheck (1.0.4)
     FSharp.Charting (0.90.10)
     FSharp.Compiler.Service (0.0.89)
-    FSharp.Formatting (2.9.4)
+    FSharp.Formatting (2.9.6)
       FSharp.Compiler.Service (>= 0.0.87)
       FSharpVSPowerTools.Core (1.8.0)
     FSharpVSPowerTools.Core (1.8.0)
@@ -22,14 +22,14 @@ NUGET
     NuGet.CommandLine (2.8.5)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
-    Octokit (0.10.0)
+    Octokit (0.11.0)
       Microsoft.Net.Http
     SourceLink.Fake (0.5.0)
     Zlib.Portable (1.10.0)
 GITHUB
   remote: fsharp/FAKE
   specs:
-    modules/Octokit/Octokit.fsx (9e0a19f04df4de2a895de6a7c8c459cbde8498f6)
+    modules/Octokit/Octokit.fsx (90eb5c7821ee95a7902d2d88ca9773561b9113c9)
       Octokit
   remote: fsprojects/FSharp.TypeProviders.StarterPack
   specs:
