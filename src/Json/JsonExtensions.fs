@@ -16,7 +16,7 @@ open Microsoft.FSharp.Core
 type JsonExtensions =
 
   /// Get a sequence of key-value pairs representing the properties of an object
-  [<Extension;CompilerMessageAttribute("This method is intended for use from C# only.", 10001, IsHidden=true)>]
+  [<Extension>]
   static member Properties(x:JsonValue) =
     match x with
       | JsonValue.Record properties -> properties
