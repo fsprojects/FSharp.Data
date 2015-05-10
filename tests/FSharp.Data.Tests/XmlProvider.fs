@@ -290,10 +290,22 @@ let ``Collections are collapsed into just one element``() =
     x.Persons.[0] |> should equal "John"
     x.Persons.[1] |> should equal "Doe"
 
+[<Test>]
+let ``Collections are collapsed into just one element 2``() =
+    let x = XmlProvider<"<Root><Persons><P>John</P><P>Doe</P></Persons></Root>">.GetSample()
+    x.Persons.[0] |> should equal "John"
+    x.Persons.[1] |> should equal "Doe"
+
+[<Test>]
+let ``Collections are collapsed into just one element 3``() =
+    let x = XmlProvider<"<Root><PersonList><Person>John</Person><Person>Doe</Person></PersonList></Root>">.GetSample()
+    x.PersonList.[0] |> should equal "John"
+    x.PersonList.[1] |> should equal "Doe"
+
 type SampleAzureServiceManagement = XmlProvider<"Data/SampleAzureServiceManagement.xml">
 
 [<Test>]
-let ``Collections are collapsed into just one element 2``() =
+let ``Collections are collapsed into just one element 4``() =
     let x = SampleAzureServiceManagement.GetSample()
     x.Locations.[0].AvailableServices |> should equal ["Compute"; "Storage"]
     x.Locations.[1].AvailableServices |> should equal ["Compute"; "Storage"; "PersistentVMRole"; "HighMemory"]

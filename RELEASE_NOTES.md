@@ -1,5 +1,6 @@
 #### 2.2.2 - Unreleased
 * Allow arrays in addition to objects when detecting Json values inside Xml documents.
+* Simplify generated API for collections in XmlProvider in more cases.
 
 #### 2.2.1 - May 4 2015
 * Improved performance of JsonValue.Parse().
