@@ -38,10 +38,12 @@ class XmlProvider+PropertyBag : FDR.BaseTypes.XmlElement
 
 
 class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
-    new : blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
+    new : x:XmlProvider+X[] -> blahDataSomethingFoos:XmlProvider+BlahDataSomethingFoo[] -> blahDataSomethingFoo2:XmlProvider+BlahDataSomethingFoo2 -> blahDataSomethingFoo3:XmlProvider+BlahDataSomethingFoo4 -> blahDataSomethingFoo4:XmlProvider+BlahDataSomethingFoo3 option -> XmlProvider+BlahData
     XmlRuntime.CreateRecord("BlahData", 
                             [| |], 
-                            [| ("BlahDataSomethingFoo",
+                            [| ("X",
+                                (x :> obj))
+                               ("BlahDataSomethingFoo",
                                 (blahDataSomethingFoos :> obj))
                                ("BlahDataSomethingFoo2",
                                 (blahDataSomethingFoo2 :> obj))
@@ -64,6 +66,9 @@ class XmlProvider+BlahData : FDR.BaseTypes.XmlElement
 
     member BlahDataSomethingFoos: XmlProvider+BlahDataSomethingFoo[] with get
     XmlRuntime.ConvertArray(this, "BlahDataSomethingFoo", new Func<_,_>(fun (t:XmlElement) -> XmlRuntime.GetJsonValue(t, "")))
+
+    member X: XmlProvider+X[] with get
+    JsonRuntime.ConvertArray(XmlRuntime.GetJsonValue(XmlRuntime.GetChild(this, "X"), ""), new Func<_,_>(id)))
 
 
 class XmlProvider+BlahDataSomethingFoo : FDR.BaseTypes.IJsonDocument
@@ -142,6 +147,25 @@ class XmlProvider+BlahDataSomethingFoo4 : FDR.BaseTypes.XmlElement
 
     member Value: XmlProvider+BlahDataSomethingFoo3 with get
     XmlRuntime.GetJsonValue(this, "")
+
+
+class XmlProvider+X : FDR.BaseTypes.IJsonDocument
+    new : t:int -> val:string -> XmlProvider+X
+    JsonRuntime.CreateRecord([| ("T",
+                                 (t :> obj))
+                                ("Val",
+                                 (val :> obj)) |], "")
+
+    new : jsonValue:JsonValue -> XmlProvider+X
+    JsonDocument.Create(jsonValue, "")
+
+    member T: int with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "T")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertInteger("", value.JsonOpt), value.JsonOpt)
+
+    member Val: string with get
+    let value = JsonRuntime.TryGetPropertyUnpackedWithPath(this, "Val")
+    JsonRuntime.GetNonOptionalValue(value.Path, JsonRuntime.ConvertString("", value.JsonOpt), value.JsonOpt)
 
 
 class XmlProvider+Results : FDR.BaseTypes.IJsonDocument

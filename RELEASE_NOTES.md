@@ -1,3 +1,6 @@
+#### 2.2.2 - Unreleased
+* Allow arrays in addition to objects when detecting Json values inside Xml documents.
+
 #### 2.2.1 - May 4 2015
 * Improved performance of JsonValue.Parse().
 * Fixed crash processing HTTP responses without content type.
