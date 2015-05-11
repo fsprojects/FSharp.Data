@@ -71,13 +71,15 @@ is located in the <code>../../../bin</code> directory, we can load it in F# Inte
 <p>The Yahoo Finance web site provides daily stock prices in a CSV format that has the
 following structure (you can find a larger example in the <a href="../data/MSFT.csv"><code>data/MSFT.csv</code></a> file):</p>
 
-<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
+</pre>
 </td>
-<td class="snippet"><pre lang="text">Date,Open,High,Low,Close,Volume,Adj Close
+<td class="snippet"><pre class="fssnip" lang="text">Date,Open,High,Low,Close,Volume,Adj Close
 2012-01-27,29.45,29.53,29.17,29.23,44187700,29.23
 2012-01-26,29.61,29.70,29.40,29.50,49102800,29.50
 2012-01-25,29.07,29.65,29.07,29.56,59231700,29.56
@@ -232,10 +234,12 @@ returns values annotated with the appropriate unit.</p>
 <p>In this section, we use a simple file <a href="../data/SmallTest.csv"><code>data/SmallTest.csv</code></a> which
 looks as follows:</p>
 
-<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
+</pre>
 </td>
-<td class="snippet"><pre lang="text">Name,  Distance (metre), Time (s)
+<td class="snippet"><pre class="fssnip" lang="text">Name,  Distance (metre), Time (s)
 First, 50.0,             3.7
 </pre></td></tr></table>
 
@@ -464,10 +468,12 @@ specify the units of measure. This will override both <code>AssumeMissingValues<
 
 <p>You can also specify both the type and a unit (e.g <code>float&lt;metre&gt;</code>). Example:</p>
 
-<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
+</pre>
 </td>
-<td class="snippet"><pre lang="text">Name,  Distance (decimal?<metre>), Time (float)
+<td class="snippet"><pre class="fssnip" lang="text">Name,  Distance (decimal?<metre>), Time (float)
 First, 50,                        3
 </pre></td></tr></table>
 

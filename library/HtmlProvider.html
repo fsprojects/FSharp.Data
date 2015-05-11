@@ -69,13 +69,15 @@ is located in the <code>../../../bin</code> directory, we can load it in F# Inte
 <p>The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format,
  (you can see an example of the raw HTML document this data was extracted from in <a href="../data/MarketDepth.htm"><code>data/MarketDepth.htm</code></a>):</p>
 
-<table class="pre"><tr><td class="lines"><span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
+</pre>
 </td>
-<td class="snippet"><pre lang="text">Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
+<td class="snippet"><pre class="fssnip" lang="text">Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
 2014-01-14,1,877.000,52378.500,-53779.500,348.200,-654.374,0.000,0.000,348.200,-654.374 
 2014-01-14,2,196.000,52598.000,-53559.500,349.601,-310.862,0.000,0.000,316.701,-310.862 
 2014-01-14,3,-190.000,52575.000,-53283.500,186.183,-2.426,0.000,0.000,162.767,-1.917 
