@@ -174,7 +174,15 @@ module private CsvHelpers =
     // Return data with parsed columns
     seq {
       for untypedRow, lineNumber in untypedRows do
-        if untypedRow.Length <> numberOfColumns then
+        let hasCorrectNumberOfColumns, untypedRow =
+          match untypedRow.Length with
+          | length when length = numberOfColumns -> true, untypedRow
+          //row is also valid when it ends with single separator 
+          | length when length = numberOfColumns + 1 && String.IsNullOrEmpty(untypedRow.[untypedRow.Length-1])
+            -> true, untypedRow.[..numberOfColumns-1]
+          | _ -> false, untypedRow
+       
+        if not hasCorrectNumberOfColumns then
           // Ignore rows with different number of columns when ignoreErrors is set to true
           if not ignoreErrors then
             let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
