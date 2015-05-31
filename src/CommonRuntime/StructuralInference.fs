@@ -253,13 +253,38 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 #else
     let runningOnMono = Type.GetType("Mono.Runtime") <> null
     if runningOnMono then
-      let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
-      let eraIndex =
-        match era with
-        | 0 -> (abbreviatedEraNames |> Array.length) // 0 mean current, last of array
-        | x when x > 0 && x <= abbreviatedEraNames.Length -> era
-        | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
-      abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
+
+      let getNet45Era() = 
+        let dateTimeFormatProp = cultureInfo.GetType().GetProperty( "DateTimeFormat" )
+
+        if dateTimeFormatProp <> null then
+          let dateTimeFormat = dateTimeFormatProp.GetValue( cultureInfo, [| |] )
+
+          if dateTimeFormat <> null then
+            let getEraMethod = dateTimeFormat.GetType().GetMethod( "GetAbbreviatedEraName" )
+
+            if getEraMethod <> null then
+              Some ((getEraMethod.Invoke( dateTimeFormat, [| era |] )) :?> string)
+            else
+              None
+          else
+            None
+        else
+          None
+      
+      let oldGetEra() =
+        let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
+        let eraIndex =
+          match era with
+          | 0 -> (abbreviatedEraNames |> Array.length) // 0 mean current, last of array
+          | x when x > 0 && x <= abbreviatedEraNames.Length -> era
+          | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
+        abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
+      
+      match getNet45Era() with
+      | Some e -> e
+      | _ -> oldGetEra()
+
     else
       cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #endif
