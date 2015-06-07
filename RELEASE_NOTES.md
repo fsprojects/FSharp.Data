@@ -1,5 +1,6 @@
 #### 2.2.3 - Unreleased
 * Fixed compatibility with Mono 4.0.
+* Support for trailing empty columns in CsvProvider.
 
 #### 2.2.2 - May 11 2015
 * Allow arrays in addition to objects when detecting Json values inside Xml documents.
