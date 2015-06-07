@@ -4664,9 +4664,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Pupil-teacher ratio, primary``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.PRM.ENRL.TC.ZS")
 
-    member ``Pupil-teacher ratio, secondary``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.TC.ZS")
-
     member ``Quality of port infrastructure, WEF (1=extremely underdeveloped to 7=well developed and efficient by international standards)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IQ.WEF.PORT.XQ")
 
@@ -4859,21 +4856,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Scientific and technical journal articles``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IP.JRN.ARTC.SC")
 
-    member ``Secondary education, duration (years)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.DURS")
-
-    member ``Secondary education, general pupils``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.GC")
-
-    member ``Secondary education, general pupils (% female)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.GC.FE.ZS")
-
-    member ``Secondary education, pupils``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL")
-
-    member ``Secondary education, pupils (% female)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.FE.ZS")
-
     member ``Secondary education, teachers``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.SEC.TCHR")
 
@@ -4882,9 +4864,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Secondary education, teachers, female``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.SEC.TCHR.FE")
-
-    member ``Secondary education, vocational pupils``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.VO")
 
     member ``Secondary education, vocational pupils (% female)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SE.SEC.ENRL.VO.FE.ZS")
@@ -9085,9 +9064,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Pupil-teacher ratio, primary``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.PRM.ENRL.TC.ZS")
 
-    member ``Pupil-teacher ratio, secondary``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.TC.ZS")
-
     member ``Quality of port infrastructure, WEF (1=extremely underdeveloped to 7=well developed and efficient by international standards)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IQ.WEF.PORT.XQ")
 
@@ -9280,21 +9256,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Scientific and technical journal articles``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IP.JRN.ARTC.SC")
 
-    member ``Secondary education, duration (years)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.DURS")
-
-    member ``Secondary education, general pupils``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.GC")
-
-    member ``Secondary education, general pupils (% female)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.GC.FE.ZS")
-
-    member ``Secondary education, pupils``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL")
-
-    member ``Secondary education, pupils (% female)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.FE.ZS")
-
     member ``Secondary education, teachers``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.TCHR")
 
@@ -9303,9 +9264,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Secondary education, teachers, female``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.TCHR.FE")
-
-    member ``Secondary education, vocational pupils``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.VO")
 
     member ``Secondary education, vocational pupils (% female)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SE.SEC.ENRL.VO.FE.ZS")
