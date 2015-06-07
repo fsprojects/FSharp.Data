@@ -424,3 +424,39 @@ let ``Parse two rows``() =
   let rows = SimpleWithStrCsv.ParseRows("false,abc, 31\ntrue, def, 42")
   rows.Length |> should equal 2
   (new SimpleWithStrCsv(rows)).SaveToString() |> should equal ("Column1,ColumnB,Column3" + Environment.NewLine + "false,abc,31" + Environment.NewLine + "true, def,42" + Environment.NewLine)
+
+let [<Literal>] csvWithDataEndingWithSeparator = """
+Name|Company |Email|Password
+Johnson|ABC|johnson@abc.com|12345i|
+Yoda|XYZ|yoda@xyz.com|98123"""
+
+[<Test>]    
+let ``Accepts data rows ending with separator when header length matches to the row length``() = 
+  let csv = CsvProvider<csvWithDataEndingWithSeparator, Separators="|", IgnoreErrors=true>.GetSample()
+  let row1 = csv.Rows |> Seq.head
+  row1 |> should equal ("Johnson","ABC","johnson@abc.com","12345i")
+  let row2 = csv.Rows |> Seq.skip 1 |> Seq.head
+  row2 |> should equal ("Yoda","XYZ","yoda@xyz.com","98123")
+
+let [<Literal>] csvWithDataEndingWithSeparatorFollowedByContent = """
+Name|Company |Email|Password
+Doe|QWE|johnson@abc.com|32167|x@y.z
+Yoda|XYZ|yoda@xyz.com|98123"""
+
+[<Test>]
+let ``Rejects data rows ending with extra non-empty content``() = 
+  let csv = CsvProvider<csvWithDataEndingWithSeparatorFollowedByContent, Separators="|", IgnoreErrors=true>.GetSample()
+  let row = csv.Rows |> Seq.exactlyOne
+  row |> should equal ("Yoda","XYZ","yoda@xyz.com", 98123)
+
+let [<Literal>] csvWithDataEndingWithSeparatorFollowedBySeparators = """
+Name|Company |Email|Password
+Johnson|ABC|johnson@abc.com|12345i||||
+Doe|QWE|johnson@abc.com|32167|x@y.z||
+Yoda|XYZ|yoda@xyz.com|98123|"""
+
+[<Test>]
+let ``Rejects data rows ending with two or more separators when header length matches to the rest of the row length``() = 
+  let csv = CsvProvider<csvWithDataEndingWithSeparatorFollowedBySeparators, Separators="|", IgnoreErrors=true>.GetSample()
+  let row = csv.Rows |> Seq.exactlyOne
+  row |> should equal ("Yoda","XYZ","yoda@xyz.com", 98123)
