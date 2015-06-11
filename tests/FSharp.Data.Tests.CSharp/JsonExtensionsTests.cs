@@ -95,6 +95,22 @@ namespace FSharp.Data.Tests.CSharp
         }
 
         [Test]
+        public void AsDateTime_with_valid_epoch_date_and_negative_timezone()
+        {
+            JsonValue jsonValue = JsonValue.NewString(@"/Date(1434067200000-0000)/");
+            DateTime result = jsonValue.AsDateTime();
+            Assert.AreEqual(new DateTime(2015, 6, 12), result);
+        }
+
+        [Test]
+        public void AsDateTime_with_valid_epoch_date_and_positive_timezone()
+        {
+            JsonValue jsonValue = JsonValue.NewString(@"/Date(1434067200000+0000)/");
+            DateTime result = jsonValue.AsDateTime();
+            Assert.AreEqual(new DateTime(2015, 6, 12), result);
+        }
+
+        [Test]
         public void AsGuid_with_valid_guid()
         {
             const string guidStr = "4D36E965-E325-11CE-BFC1-08002BE10318";
