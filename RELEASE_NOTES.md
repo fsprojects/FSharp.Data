@@ -1,10 +1,32 @@
-#### 2.2.0 - Unreleased
+#### 2.2.3 - Unreleased
+* Fixed compatibility with Mono 4.0.
+* Support for trailing empty columns in CsvProvider.
+
+#### 2.2.2 - May 11 2015
+* Allow arrays in addition to objects when detecting Json values inside Xml documents.
+* Simplify generated API for collections in XmlProvider in more cases.
+
+#### 2.2.1 - May 4 2015
+* Improved performance of JsonValue.Parse().
+* Fixed crash processing HTTP responses without content type.
+* Fixed encoding from content type not being used on the POST requests.
+* Improved compatibility with different versions of FSharp.Core.
+* Added BasicAuth helper to HttpRequestHeaders.
+
+#### 2.2.0 - March 22 2015
 * Added constants for more HTTP methods.
 * Added fix for `thead` element without nested `tr` element.
 * Improved global inference in XmlProvider.
 * Write API for CsvProvider.
 * Remove Freebase provider.
 * Improve support for loading big CSV files in CsvProvider.
+* Fix possible stack overflow in HTML parser.
+* Exclude elements with aria-hidden attribute when parsing tables in HtmlProvider.
+* Use ISO-8601 format when outputing dates.
+* Fix parsing of HTML closing tags with numbers.
+* Fixed handling of URI's with fragment but no query.
+* Fixed arrays created with XML provider having unneeded parent tags on some situations.
+* Allow to parse rows in CsvProvider without having to create a CsvFile.
 
 #### 2.1.1 - December 24 2014
 * Add SkipRows parameter to CsvProvider.

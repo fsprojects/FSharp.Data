@@ -358,6 +358,34 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                TextRuntime.ConvertStringBack(Some (let _,_,_,_,_,_,_,_,_,_,_,t12 = row in t12)) |])
     CsvFile<_>.Create(stringArrayToRow, rowToStringArray, ((new StringReader(text)) :> TextReader), ",", '"', true, false, 0, false)
 
+    static member ParseRows: text:string -> CsvProvider+Row[]
+    let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
+                                              let value = TextConversions.AsString(row.[0])
+                                              TextRuntime.GetNonOptionalValue("PassengerId", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[1])
+                                              TextRuntime.GetNonOptionalValue("Survived", TextRuntime.ConvertBoolean(value), value),
+                                              let value = TextConversions.AsString(row.[2])
+                                              TextRuntime.GetNonOptionalValue("Pclass", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[3])
+                                              TextRuntime.GetNonOptionalValue("Name", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[4])
+                                              TextRuntime.GetNonOptionalValue("Sex", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[5])
+                                              TextRuntime.GetNonOptionalValue("Age", TextRuntime.ConvertFloat("", "", value), value),
+                                              let value = TextConversions.AsString(row.[6])
+                                              TextRuntime.GetNonOptionalValue("SibSp", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[7])
+                                              TextRuntime.GetNonOptionalValue("Parch", TextRuntime.ConvertInteger("", value), value),
+                                              let value = TextConversions.AsString(row.[8])
+                                              TextRuntime.GetNonOptionalValue("Ticket", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[9])
+                                              TextRuntime.GetNonOptionalValue("Fare", TextRuntime.ConvertDecimal("", value), value),
+                                              let value = TextConversions.AsString(row.[10])
+                                              TextRuntime.GetNonOptionalValue("Cabin", TextRuntime.ConvertString(value), value),
+                                              let value = TextConversions.AsString(row.[11])
+                                              TextRuntime.GetNonOptionalValue("Embarked", TextRuntime.ConvertString(value), value))
+    CsvFile<_>.ParseRows(text, stringArrayToRow, ",", '"', false)
+
 
 class CsvProvider+Row : int * bool * int * string * string * float * int * int * string * decimal * string * string
     new : passengerId:int -> survived:bool -> pclass:int -> name:string -> sex:string -> age:float -> sibSp:int -> parch:int -> ticket:string -> fare:decimal -> cabin:string -> embarked:string -> CsvProvider+Row

@@ -16,4 +16,5 @@ log.txt
 .paket/paket.exe
 paket-files
 *.ide
+*.bak
 .vs

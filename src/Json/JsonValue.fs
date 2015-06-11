@@ -297,7 +297,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = '}')
         i <- i + 1
-        JsonValue.Record(pairs |> Array.ofSeq)
+        JsonValue.Record(pairs.ToArray())
 
     and parseArray() =
         ensure(i < s.Length && s.[i] = '[')
@@ -316,7 +316,7 @@ type private JsonParser(jsonText:string, cultureInfo, tolerateErrors) =
             parseEllipsis() // tolerate ... or {...}
         ensure(i < s.Length && s.[i] = ']')
         i <- i + 1
-        JsonValue.Array(vals |> Seq.toArray)
+        JsonValue.Array(vals.ToArray())
 
     and parseLiteral(expected, r) =
         ensure(i+expected.Length < s.Length)

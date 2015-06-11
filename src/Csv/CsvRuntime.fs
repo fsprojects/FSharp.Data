@@ -4,6 +4,8 @@
 
 namespace FSharp.Data.Runtime
 
+#nowarn "10001"
+
 open System
 open System.ComponentModel
 open System.Collections.Generic
@@ -172,7 +174,15 @@ module private CsvHelpers =
     // Return data with parsed columns
     seq {
       for untypedRow, lineNumber in untypedRows do
-        if untypedRow.Length <> numberOfColumns then
+        let hasCorrectNumberOfColumns, untypedRow =
+          match untypedRow.Length with
+          | length when length = numberOfColumns -> true, untypedRow
+          //row is also valid when it ends with single separator 
+          | length when length = numberOfColumns + 1 && String.IsNullOrEmpty(untypedRow.[untypedRow.Length-1])
+            -> true, untypedRow.[..numberOfColumns-1]
+          | _ -> false, untypedRow
+       
+        if not hasCorrectNumberOfColumns then
           // Ignore rows with different number of columns when ignoreErrors is set to true
           if not ignoreErrors then
             let lineNumber = if hasHeaders then lineNumber else lineNumber + 1
@@ -224,6 +234,14 @@ type CsvFile<'RowType> private (rowToStringArray:Func<'RowType,string[]>, dispos
   static member Create (stringArrayToRow, rowToStringArray, reader:TextReader, separators, quote, hasHeaders, ignoreErrors, skipRows, cacheRows) =    
     let uncachedCsv = new CsvFile<'RowType>(stringArrayToRow, rowToStringArray, Func<_>(fun _ -> reader), separators, quote, hasHeaders, ignoreErrors, skipRows)
     if cacheRows then uncachedCsv.Cache() else uncachedCsv
+
+  /// [omit]
+  [<EditorBrowsableAttribute(EditorBrowsableState.Never)>]
+  [<CompilerMessageAttribute("This method is intended for use in generated code only.", 10001, IsHidden=true, IsError=false)>]
+  static member ParseRows (text, stringArrayToRow: Func<obj,string[],'RowType>, separators, quote, ignoreErrors) =    
+    let reader = new StringReader(text) :> TextReader
+    let csv = CsvFile<_>.Create (stringArrayToRow, null, reader, separators, quote, hasHeaders=false, ignoreErrors=ignoreErrors, skipRows=0, cacheRows=false)
+    csv.Rows |> Seq.toArray
 
   /// [omit]
   new (stringArrayToRow:Func<obj,string[],'RowType>, rowToStringArray, readerFunc:Func<TextReader>, separators, quote, hasHeaders, ignoreErrors, skipRows) as this =

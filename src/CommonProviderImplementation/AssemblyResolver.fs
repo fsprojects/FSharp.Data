@@ -115,7 +115,9 @@ let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths =
     match asm with 
     | Some asm -> asm
     | None -> 
-        if reflectionOnly then Assembly.ReflectionOnlyLoad asmName.FullName
+        if reflectionOnly then 
+          let redirectedName = AppDomain.CurrentDomain.ApplyPolicy(asmName.FullName)
+          Assembly.ReflectionOnlyLoad redirectedName
         else null
 
 let mutable private initialized = false    
@@ -136,11 +138,12 @@ let init (cfg : TypeProviderConfig) =
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false [])
         AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true [])
+        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
     if not initialized then
-      initialized <- true
-      // the following parameter is just here to force System.Xml.Linq to load
-      init SaveOptions.None
+        initialized <- true
+        // the following parameter is just here to force System.Xml.Linq to load
+        init SaveOptions.None
     
     let useReflectionOnly = true
 

@@ -201,7 +201,7 @@ type XmlRuntime =
             | _ ->
                 match v with
                 | :? string        as v -> v
-                | :? DateTime      as v -> strWithCulture v
+                | :? DateTime      as v -> v.ToString("O", cultureInfo)
                 | :? int           as v -> strWithCulture v
                 | :? int64         as v -> strWithCulture v
                 | :? float         as v -> strWithCulture v
@@ -249,6 +249,7 @@ type XmlRuntime =
         | [| |] -> ()
         | [| v |] when v :? string && element.Attribute(xname) = null -> element.SetAttributeValue(xname, v)
         | _ -> failwithf "Unexpected attribute value: %A" value
+    let parents = System.Collections.Generic.Dictionary()
     for nameWithNS, value in elements do
         if nameWithNS = "" then // it's the value
             match toXmlContent value with
@@ -263,17 +264,24 @@ type XmlRuntime =
                     if v.Name.ToString() <> parentNames.[0] then
                         failwithf "Unexpected element: %O" v
                     let v = 
-                        (v, Seq.skip 1 parentNames)
-                        ||> Seq.fold (fun element nameWithNS -> 
+                        (v, Seq.skip 1 parentNames |> Seq.mapi (fun x i -> x, i))
+                        ||> Seq.fold (fun element ((_, nameWithNS) as key) -> 
                             if element.Parent = null then 
-                                let parent = createElement null nameWithNS 
+                                let parent = 
+                                    match parents.TryGetValue key with
+                                    | true, parent -> parent
+                                    | false, _ -> 
+                                        let parent = createElement null nameWithNS 
+                                        parents.Add(key, parent)
+                                        parent
                                 parent.Add element
                                 parent
                             else 
                                 if element.Parent.Name.ToString() <> nameWithNS then
                                     failwithf "Unexpected element: %O" v
                                 element.Parent)
-                    element.Add v
+                    if v.Parent = null then
+                        element.Add v
                 | :? string as v -> 
                     let child = createElement element nameWithNS 
                     child.Value <- v

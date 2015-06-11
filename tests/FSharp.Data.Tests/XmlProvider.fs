@@ -290,10 +290,22 @@ let ``Collections are collapsed into just one element``() =
     x.Persons.[0] |> should equal "John"
     x.Persons.[1] |> should equal "Doe"
 
+[<Test>]
+let ``Collections are collapsed into just one element 2``() =
+    let x = XmlProvider<"<Root><Persons><P>John</P><P>Doe</P></Persons></Root>">.GetSample()
+    x.Persons.[0] |> should equal "John"
+    x.Persons.[1] |> should equal "Doe"
+
+[<Test>]
+let ``Collections are collapsed into just one element 3``() =
+    let x = XmlProvider<"<Root><PersonList><Person>John</Person><Person>Doe</Person></PersonList></Root>">.GetSample()
+    x.PersonList.[0] |> should equal "John"
+    x.PersonList.[1] |> should equal "Doe"
+
 type SampleAzureServiceManagement = XmlProvider<"Data/SampleAzureServiceManagement.xml">
 
 [<Test>]
-let ``Collections are collapsed into just one element 2``() =
+let ``Collections are collapsed into just one element 4``() =
     let x = SampleAzureServiceManagement.GetSample()
     x.Locations.[0].AvailableServices |> should equal ["Compute"; "Storage"]
     x.Locations.[1].AvailableServices |> should equal ["Compute"; "Storage"; "PersistentVMRole"; "HighMemory"]
@@ -304,6 +316,10 @@ type JsonInXml = XmlProvider<"Data/JsonInXml.xml", SampleIsList=true>
 let ``Json inside Xml``() =
     let x = JsonInXml.GetSamples()
 
+    x.Length |> should equal 2
+
+    x.[0].BlahData.X |> should equal [||]
+    x.[0].BlahData.BlahDataSomethingFoos.Length |> should equal 2
     x.[0].BlahData.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
     x.[0].BlahData.BlahDataSomethingFoos.[0].Results.Query |> should equal None
     x.[0].BlahData.BlahDataSomethingFoos.[0].Results.SomethingSchema |> should equal "xpto.Foo"
@@ -323,6 +339,10 @@ let ``Json inside Xml``() =
     x.[0].BlahData.BlahDataSomethingFoo4.Value.Results.Query |> should equal "fsharp"
     x.[0].BlahData.BlahDataSomethingFoo4.Value.Results.SomethingSchema |> should equal "xpto.Foo"
 
+    x.[1].BlahData.X.Length |> should equal 1
+    x.[1].BlahData.X.[0].T |> should equal 2
+    x.[1].BlahData.X.[0].Val |> should equal "foo"
+    x.[1].BlahData.BlahDataSomethingFoos.Length |> should equal 2
     x.[1].BlahData.BlahDataSomethingFoos.[0].SomethingSchema |> should equal "Something.Bar"
     x.[1].BlahData.BlahDataSomethingFoos.[0].Results.Query |> should equal (Some "fsharp")
     x.[1].BlahData.BlahDataSomethingFoos.[0].Results.SomethingSchema |> should equal "xpto.Foo"
@@ -401,6 +421,7 @@ let ``Can construct collapsed non-primitive collections and elements with json``
     let pb = 
         JsonInXml.PropertyBag(
             JsonInXml.BlahData(
+                [| JsonInXml.X(2, "bar") |],
                 [| JsonInXml.BlahDataSomethingFoo("schema", JsonInXml.Results("schema2", Some "query")) |], 
                 Unchecked.defaultof<_>, 
                 Unchecked.defaultof<_>, 
@@ -408,6 +429,10 @@ let ``Can construct collapsed non-primitive collections and elements with json``
     pb.ToString() |> normalize |> should equal (normalize """<PropertyBag>
   <BlahDataArray>
     <BlahData>
+      <X>{
+  "T": 2,
+  "Val": "bar"
+}</X>
       <BlahDataSomethingFoo>{
   "Something.Schema": "schema",
   "results": {
@@ -447,11 +472,11 @@ let ``Can construct elements with namespaces and heterogeneous records``() =
   <title>title</title>
   <subtitle>subtitle</subtitle>
   <id>id</id>
-  <updated>04/27/2014 00:00:00</updated>
+  <updated>2014-04-27T00:00:00.0000000</updated>
   <entry>
     <title>title2</title>
     <id>id2</id>
-    <updated>04/28/2014 00:00:00</updated>
+    <updated>2014-04-28T00:00:00.0000000</updated>
     <summary>summary</summary>
     <author>
       <name>name</name>
@@ -471,7 +496,7 @@ let ``Can construct elements with heterogeneous records with primitives``() =
     let title = AtomSearch.Choice(title = "title")
     title.XElement.ToString() |> should equal """<title xmlns="http://www.w3.org/2005/Atom">title</title>"""
     let updated = AtomSearch.Choice(updated = DateTime(2000, 1, 1))
-    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">01/01/2000 00:00:00</updated>"""
+    updated.XElement.ToString() |> should equal """<updated xmlns="http://www.w3.org/2005/Atom">2000-01-01T00:00:00.0000000</updated>"""
     let itemsPerPage = AtomSearch.Choice(2)
     itemsPerPage.XElement.ToString() |> should equal """<itemsPerPage xmlns="http://a9.com/-/spec/opensearch/1.1/">2</itemsPerPage>"""
     let entry = AtomSearch.Entry("id", 
@@ -487,10 +512,10 @@ let ``Can construct elements with heterogeneous records with primitives``() =
                                  AtomSearch.Author("name", "uri"))
     entry.XElement.ToString() |> normalize |> should equal (normalize """<entry xmlns="http://www.w3.org/2005/Atom">
   <id>id</id>
-  <published>02/02/2000 00:00:00</published>
+  <published>2000-02-02T00:00:00.0000000</published>
   <title>title</title>
   <content type="type">value</content>
-  <updated>03/03/2000 00:00:00</updated>
+  <updated>2000-03-03T00:00:00.0000000</updated>
   <metadata xmlns="http://api.twitter.com/">
     <result_type>resultType</result_type>
   </metadata>
@@ -502,3 +527,10 @@ let ``Can construct elements with heterogeneous records with primitives``() =
   </author>
 </entry>""")
     AtomSearch.Choice(entry).XElement.ToString() |> should equal (entry.XElement.ToString())
+
+[<Test>]
+let ``Serializing nested arrays do not introduce multiple outer tags``() =
+    let t1 = Runtime.XmlRuntime.CreateRecord("translation", [| "language", "nl" :> obj |], [| "", "some text" :> obj |], "")
+    let t2 = Runtime.XmlRuntime.CreateRecord("translation", [| "language", "en" :> obj |], [| "", "more text" :> obj |], "")
+    let root = Runtime.XmlRuntime.CreateRecord("root", [| |], [| "translations|translation", [|t1; t2|] :> obj |], "")
+    root.XElement.ToString(SaveOptions.DisableFormatting) |> should equal "<root><translations><translation language=\"nl\">some text</translation><translation language=\"en\">more text</translation></translations></root>"

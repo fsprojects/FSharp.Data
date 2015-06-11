@@ -109,9 +109,9 @@ let internal logTime category (instance:string) =
 #else
 
 let internal dummyDisposable = { new IDisposable with member __.Dispose() = () }
-let inline internal log _ = ()
-let inline internal logWithStackTrace _ = ()
-let inline internal logTime _ _ = dummyDisposable
+let inline internal log (_:string) = ()
+let inline internal logWithStackTrace (_:string) = ()
+let inline internal logTime (_:string) (_:string) = dummyDisposable
 
 #endif
 #endif
@@ -142,7 +142,7 @@ type private Watcher(uri:Uri) =
         if !lastWrite <> curr then
             log ("Invalidated " + uri.OriginalString)
             lastWrite := curr
-            let typeProviders = Seq.toArray typeProviders
+            let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
                 tp.Invalidate typeName
 
