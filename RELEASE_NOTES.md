@@ -1,4 +1,4 @@
-#### 2.2.3 - Unreleased
+#### 2.2.3 - June 13 2015
 * Fixed compatibility with Mono 4.0.
 * Support for trailing empty columns in CsvProvider.
 * Fix datetime convertion when epoch date contains positive in timezone part.
