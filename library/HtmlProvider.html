@@ -51,16 +51,12 @@ present in the columns of that sample. The column names are obtained from the fi
 <p>The type provider is located in the <code>FSharp.Data.dll</code> assembly. Assuming the assembly 
 is located in the <code>../../../bin</code> directory, we can load it in F# Interactive as follows:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -69,32 +65,26 @@ is located in the <code>../../../bin</code> directory, we can load it in F# Inte
 <p>The Elexon - BM Reports website provides market data about the U.K's current power system. For simplicity, an example of this data below is shown in CSV format,
  (you can see an example of the raw HTML document this data was extracted from in <a href="../data/MarketDepth.htm"><code>data/MarketDepth.htm</code></a>):</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="text">Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="text">Settlement Day,Period,IMBALNGC,Offer Volume Bid Volume,Accepted Offer Vol,Accepted Bid Vol,UAOV,UABV,PAOV,PABV
 2014-01-14,1,877.000,52378.500,-53779.500,348.200,-654.374,0.000,0.000,348.200,-654.374 
 2014-01-14,2,196.000,52598.000,-53559.500,349.601,-310.862,0.000,0.000,316.701,-310.862 
 2014-01-14,3,-190.000,52575.000,-53283.500,186.183,-2.426,0.000,0.000,162.767,-1.917 
 2014-01-14,4,-61.000,52576.000,-53454.500,18.000,-24.158,0.000,0.000,18.000,-24.158 
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>Usually with HTML files headers are demarked by using the <th> tag, however in this file this is not the case, so the provider assumes that the
 first row is headers. (This behaviour is likely to get smarter in later releases). But it highlights a general problem about HTML's strictness.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">MarketDepth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">HtmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/MarketDepth.htm&quot;</span><span class="o">&gt;</span>
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">MarketDepth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">HtmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/MarketDepth.htm&quot;</span><span class="o">&gt;</span>
+</code></pre></td>
 </tr>
 </table>
 
@@ -104,8 +94,7 @@ entities exist then the table will simply be named <code>Tablexx</code> where xx
 The <code>Load</code> method allows reading the data from a file or web resource. We could also have used a web URL instead of a local file in the sample parameter of the type provider.
 The following sample calls the <code>Load</code> method with an URL that points to a live market depth servlet on the BM Reports website.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -118,10 +107,8 @@ The following sample calls the <code>Load</code> method with an URL that points 
 <span class="l">11: </span>
 <span class="l">12: </span>
 <span class="l">13: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Download the latest market depth information</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Download the latest market depth information</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">mrktDepth</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">MarketDepth</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="f">Load</span>(<span class="s">&quot;http://www.bmreports.com/servlet/com.logica.neta.bwp_MarketDepthServlet&quot;</span>)<span class="o">.</span><span class="i">Tables</span><span class="o">.</span><span class="i">Table1</span>
 
 <span class="c">// Look at the most recent row. Note the &#39;Date&#39; property</span>
@@ -134,8 +121,7 @@ The following sample calls the <code>Load</code> method with an URL that points 
 <span class="c">// Print the bid / offer volumes for each row</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs5', 20)" onmouseover="showTip(event, 'fs5', 20)" class="i">mrktDepth</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 21)" onmouseover="showTip(event, 'fs8', 21)" class="i">Rows</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs15', 22)" onmouseover="showTip(event, 'fs15', 22)" class="f">printfn</span> <span class="s">&quot;Bid/Offer: (</span><span class="pf">%A</span><span class="s">, </span><span class="pf">%A</span><span class="s">, </span><span class="pf">%A</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs14', 23)" onmouseover="showTip(event, 'fs14', 23)" class="i">row</span><span class="o">.</span><span class="i">``Settlement Day``</span> <span onmouseout="hideTip(event, 'fs14', 24)" onmouseover="showTip(event, 'fs14', 24)" class="i">row</span><span class="o">.</span><span class="i">``Bid Volume``</span> <span onmouseout="hideTip(event, 'fs14', 25)" onmouseover="showTip(event, 'fs14', 25)" class="i">row</span><span class="o">.</span><span class="i">``Offer Volume``</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -153,8 +139,7 @@ be parsed as dates) while other columns are inferred as <code>decimal</code> or 
 <p>This small sample shows how the HTML Type Provider can be used to scrape data from a website. In this example we analyze the download counts of the FSharp.Data package on NuGet.
 Note that we're using the live URL as the sample, so we can just use the default constructor as the runtime data will be the same as the compile time data.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -175,10 +160,8 @@ Note that we're using the live URL as the sample, so we can just use the default
 <span class="l">19: </span>
 <span class="l">20: </span>
 <span class="l">21: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Configure the type provider</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Configure the type provider</span>
 <span class="k">type</span> <span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="t">NugetStats</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 27)" onmouseover="showTip(event, 'fs4', 27)" class="t">HtmlProvider</span><span class="o">&lt;</span><span class="s">&quot;https://www.nuget.org/packages/FSharp.Data&quot;</span><span class="o">&gt;</span>
 
 <span class="c">// load the live package stats for FSharp.Data</span>
@@ -199,8 +182,7 @@ Note that we're using the live URL as the sample, so we can just use the default
 
 <span class="c">// Visualize the package stats</span>
 <span onmouseout="hideTip(event, 'fs37', 60)" onmouseover="showTip(event, 'fs37', 60)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 61)" onmouseover="showTip(event, 'fs38', 61)" class="f">Bar</span> <span onmouseout="hideTip(event, 'fs25', 62)" onmouseover="showTip(event, 'fs25', 62)" class="i">stats</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -208,8 +190,7 @@ Note that we're using the live URL as the sample, so we can just use the default
 
 <h3>Getting statistics on Doctor Who</h3>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -219,10 +200,8 @@ Note that we're using the live URL as the sample, so we can just use the default
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 63)" onmouseover="showTip(event, 'fs39', 63)" class="i">doctorWho</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 64)" onmouseover="showTip(event, 'fs4', 64)" class="t">HtmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials&quot;</span><span class="o">&gt;</span>()
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 63)" onmouseover="showTip(event, 'fs39', 63)" class="i">doctorWho</span> <span class="o">=</span> <span class="k">new</span> <span onmouseout="hideTip(event, 'fs4', 64)" onmouseover="showTip(event, 'fs4', 64)" class="t">HtmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://en.wikipedia.org/wiki/List_of_Doctor_Who_serials&quot;</span><span class="o">&gt;</span>()
 
 <span class="c">// Get the average number of viewers for each doctor</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 65)" onmouseover="showTip(event, 'fs40', 65)" class="i">viewersByDoctor</span> <span class="o">=</span> 
@@ -232,8 +211,7 @@ Note that we're using the live URL as the sample, so we can just use the default
 
 <span class="c">// Visualize it</span>
 (<span onmouseout="hideTip(event, 'fs37', 83)" onmouseover="showTip(event, 'fs37', 83)" class="t">Chart</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 84)" onmouseover="showTip(event, 'fs47', 84)" class="f">Column</span> <span onmouseout="hideTip(event, 'fs40', 85)" onmouseover="showTip(event, 'fs40', 85)" class="i">viewersByDoctor</span>)<span class="o">.</span><span class="f">WithYAxis</span>(<span class="i">Title</span> <span class="o">=</span> <span class="s">&quot;Millions&quot;</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

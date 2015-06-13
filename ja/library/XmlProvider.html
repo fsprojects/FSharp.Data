@@ -63,18 +63,14 @@ F# Interactive内で読み込むためには以下のようにします
 (なおこの型プロバイダーは内部で <code>XDocument</code> を使用しているため、
 <code>System.Xml.Linq</code> への参照も必要になる点に注意してください)：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
 <span class="prep">#r</span> <span class="s">&quot;System.Xml.Linq.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -90,20 +86,16 @@ F# Interactive内で読み込むためには以下のようにします
 <p>以下のサンプルではルートノードに2つの属性を持ったXMLドキュメントを
 読み取ることができるような型を生成しています：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Paul Feyerabend&quot; born=&quot;1924&quot; /&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Paul Feyerabend&quot; born=&quot;1924&quot; /&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">sample</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">Author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot;&lt;author name=&quot;Karl Popper&quot; born=&quot;1902&quot; /&gt;&quot;&quot;&quot;</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs5', 11)" onmouseover="showTip(event, 'fs5', 11)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">Born</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -117,22 +109,18 @@ F# Interactive内で読み込むためには以下のようにします
 具体的には属性を使用する代わりに、値を直接含むようなネストされたノードとして
 表現できます( <code>&lt;author&gt;</code> 以下に <code>&lt;name&gt;</code> および <code>&lt;born&gt;</code> をネストさせます)</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">AuthorAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;author&gt;&lt;name&gt;Karl Popper&lt;/name&gt;&lt;born&gt;1902&lt;/born&gt;&lt;/author&gt;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">AuthorAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;author&gt;&lt;name&gt;Karl Popper&lt;/name&gt;&lt;born&gt;1902&lt;/born&gt;&lt;/author&gt;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="i">doc</span> <span class="o">=</span> <span class="s">&quot;&lt;author&gt;&lt;name&gt;Paul Feyerabend&lt;/name&gt;&lt;born&gt;1924&lt;/born&gt;&lt;/author&gt;&quot;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">sampleAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="t">AuthorAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="f">Parse</span>(<span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="i">doc</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 20)" onmouseover="showTip(event, 'fs7', 20)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs12', 21)" onmouseover="showTip(event, 'fs12', 21)" class="i">sampleAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="i">sampleAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 24)" onmouseover="showTip(event, 'fs9', 24)" class="i">Born</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -149,20 +137,16 @@ F# Interactive内で読み込むためには以下のようにします
 <p>もう少し興味深い構造を持った例をいくつか見ていくことにしましょう。
 まず、ノードが同じ値を持つものの、属性の値が異なる場合にはどうなるでしょうか？</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="t">Detailed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;true&quot;&gt;Karl Popper&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="t">Detailed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;true&quot;&gt;Karl Popper&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 27)" onmouseover="showTip(event, 'fs14', 27)" class="i">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="t">Detailed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;false&quot;&gt;Thomas Kuhn&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 30)" onmouseover="showTip(event, 'fs7', 30)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (full=</span><span class="pf">%b</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs14', 31)" onmouseover="showTip(event, 'fs14', 31)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 32)" onmouseover="showTip(event, 'fs15', 32)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 33)" onmouseover="showTip(event, 'fs16', 33)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 35)" onmouseover="showTip(event, 'fs15', 35)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 36)" onmouseover="showTip(event, 'fs17', 36)" class="i">Full</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -180,20 +164,16 @@ F# Interactive内で読み込むためには以下のようにします
 サンプルとして指定しています( <code>Parse</code> メソッドにパラメータを指定しなかった場合、
 スキーマ用に指定したものと同じテキストが実行時の値に反映されます)。</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="t">Test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;root&gt;&lt;value&gt;1&lt;/value&gt;&lt;value&gt;3&lt;/value&gt;&lt;/root&gt;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="t">Test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;root&gt;&lt;value&gt;1&lt;/value&gt;&lt;value&gt;3&lt;/value&gt;&lt;/root&gt;&quot;</span><span class="o">&gt;</span>
 
 <span onmouseout="hideTip(event, 'fs18', 39)" onmouseover="showTip(event, 'fs18', 39)" class="t">Test</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 40)" onmouseover="showTip(event, 'fs19', 40)" class="f">GetSample</span>()<span class="o">.</span><span class="i">Values</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 41)" onmouseover="showTip(event, 'fs20', 41)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 42)" onmouseover="showTip(event, 'fs21', 42)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs7', 43)" onmouseover="showTip(event, 'fs7', 43)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -208,41 +188,35 @@ F# Interactive内で読み込むためには以下のようにします
 サンプルとなるドキュメント <a href="../../data/Writers.xml"><code>data/Writers.xml</code></a> は
 以下のようになっています：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Paul Feyerabend"</span> <span class="o">born</span><span class="k">="1924"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Thomas Kuhn"</span> <span class="k">/&gt;</span>
 <span class="k">&lt;/</span><span class="i">authors</span><span class="k">&gt;</span> 
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>実行時には型プロバイダーから生成された型を使用して、以下のような文字列を
 解析します(構造としてはサンプルのドキュメントと同じですが、
 <code>author</code> ノードに <code>died</code> 属性が含まれているという違いがあります)：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="i">authors</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="i">authors</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">  &lt;authors topic=&quot;Philosophy of Mathematics&quot;&gt;</span>
 <span class="s">    &lt;author name=&quot;Bertrand Russell&quot; /&gt;</span>
 <span class="s">    &lt;author name=&quot;Ludwig Wittgenstein&quot; born=&quot;1889&quot; /&gt;</span>
 <span class="s">    &lt;author name=&quot;Alfred North Whitehead&quot; died=&quot;1947&quot; /&gt;</span>
 <span class="s">  &lt;/authors&gt; &quot;&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -252,8 +226,7 @@ F# Interactive内で読み込むためには以下のようにします
 <code>Parse</code> メソッドの場合はデータとして文字列を指定できるため、以下のようにすると
 データ内の情報を表示することができます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -261,10 +234,8 @@ F# Interactive内で読み込むためには以下のようにします
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="t">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/Writers.xml&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="t">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/Writers.xml&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="i">topic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="t">Authors</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 49)" onmouseover="showTip(event, 'fs25', 49)" class="f">Parse</span>(<span onmouseout="hideTip(event, 'fs22', 50)" onmouseover="showTip(event, 'fs22', 50)" class="i">authors</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">topic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="i">Topic</span>
@@ -272,8 +243,7 @@ F# Interactive内で読み込むためには以下のようにします
   <span onmouseout="hideTip(event, 'fs29', 57)" onmouseover="showTip(event, 'fs29', 57)" class="f">printf</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 58)" onmouseover="showTip(event, 'fs27', 58)" class="i">author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 59)" onmouseover="showTip(event, 'fs8', 59)" class="i">Name</span> 
   <span onmouseout="hideTip(event, 'fs27', 60)" onmouseover="showTip(event, 'fs27', 60)" class="i">author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 61)" onmouseover="showTip(event, 'fs30', 61)" class="i">Born</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 62)" onmouseover="showTip(event, 'fs31', 62)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 63)" onmouseover="showTip(event, 'fs32', 63)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs29', 64)" onmouseover="showTip(event, 'fs29', 64)" class="f">printf</span> <span class="s">&quot; (</span><span class="pf">%d</span><span class="s">)&quot;</span>)
   <span onmouseout="hideTip(event, 'fs7', 65)" onmouseover="showTip(event, 'fs7', 65)" class="f">printfn</span> <span class="s">&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -298,38 +268,32 @@ F# Interactive内で読み込むためには以下のようにします
 例として以下のようなサンプルドキュメントがあるとしましょう
 (単純化したバージョンが <a href="../../data/HtmlBody.xml"><code>data/HtmlBody.xml</code></a> にあります)：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">span</span><span class="k">&gt;</span>Main text<span class="k">&lt;/</span><span class="i">span</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="first"</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">div</span><span class="k">&gt;</span>Second text<span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
   <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
 <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>この例では <code>&lt;div&gt;</code> 要素内に <code>&lt;div&gt;</code> 要素がありますが、いずれも同じ型として
 扱われるべきであることは明らかです。
 <code>&lt;div&gt;</code> 要素を処理する再帰関数を作成できるようになっていてもらいたいはずです。
 このような場合には引数 <code>Global</code> に <code>true</code> を指定します：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="t">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/HtmlBody.xml&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="t">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/HtmlBody.xml&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 68)" onmouseover="showTip(event, 'fs34', 68)" class="i">html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs33', 69)" onmouseover="showTip(event, 'fs33', 69)" class="t">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 70)" onmouseover="showTip(event, 'fs35', 70)" class="f">GetSample</span>()
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -342,8 +306,7 @@ F# Interactive内で読み込むためには以下のようにします
 したがって、<code>Html.Div</code> を引数にとり、
 各 <code>&lt;div&gt;</code> 要素を処理するような <code>printDiv</code> 関数を以下のようにして作成できます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -352,10 +315,8 @@ F# Interactive内で読み込むためには以下のようにします
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">/// &lt;div&gt; 要素のコンテンツを表示します</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">/// &lt;div&gt; 要素のコンテンツを表示します</span>
 <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="f">printDiv</span> (<span onmouseout="hideTip(event, 'fs37', 72)" onmouseover="showTip(event, 'fs37', 72)" class="i">div</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs33', 73)" onmouseover="showTip(event, 'fs33', 73)" class="i">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="t">Div</span>) <span class="o">=</span>
   <span onmouseout="hideTip(event, 'fs37', 75)" onmouseover="showTip(event, 'fs37', 75)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 76)" onmouseover="showTip(event, 'fs39', 76)" class="i">Spans</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 77)" onmouseover="showTip(event, 'fs20', 77)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 78)" onmouseover="showTip(event, 'fs21', 78)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs7', 79)" onmouseover="showTip(event, 'fs7', 79)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span>)
   <span onmouseout="hideTip(event, 'fs37', 80)" onmouseover="showTip(event, 'fs37', 80)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 81)" onmouseover="showTip(event, 'fs40', 81)" class="i">Divs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 82)" onmouseover="showTip(event, 'fs20', 82)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 83)" onmouseover="showTip(event, 'fs21', 83)" class="f">iter</span> <span onmouseout="hideTip(event, 'fs36', 84)" onmouseover="showTip(event, 'fs36', 84)" class="f">printDiv</span>
@@ -364,8 +325,7 @@ F# Interactive内で読み込むためには以下のようにします
 
 <span class="c">// すべての子要素と共にルートの &lt;div&gt; 要素を表示します</span>
 <span onmouseout="hideTip(event, 'fs36', 96)" onmouseover="showTip(event, 'fs36', 96)" class="f">printDiv</span> <span onmouseout="hideTip(event, 'fs34', 97)" onmouseover="showTip(event, 'fs34', 97)" class="i">html</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -380,14 +340,10 @@ F# Interactive内で読み込むためには以下のようにします
 <p>今回の総まとめとして、もう少し実用的な例としてRSSフィードを解析してみましょう。
 既に説明した通り、型プロバイダーには相対パスあるいはWebページのアドレスを指定できます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs43', 98)" onmouseover="showTip(event, 'fs43', 98)" class="t">Rss</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://tomasp.net/blog/rss.aspx&quot;</span><span class="o">&gt;</span>
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs43', 98)" onmouseover="showTip(event, 'fs43', 98)" class="t">Rss</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://tomasp.net/blog/rss.aspx&quot;</span><span class="o">&gt;</span>
+</code></pre></td>
 </tr>
 </table>
 
@@ -398,14 +354,10 @@ F# Interactive内で読み込むためには以下のようにします
 今回の場合、スキーマとして指定したものと同じURIを再利用したいので、
 staticメソッド <code>GetSample</code> を使用します：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 100)" onmouseover="showTip(event, 'fs44', 100)" class="i">blog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs43', 101)" onmouseover="showTip(event, 'fs43', 101)" class="t">Rss</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 102)" onmouseover="showTip(event, 'fs45', 102)" class="f">GetSample</span>()
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 100)" onmouseover="showTip(event, 'fs44', 100)" class="i">blog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs43', 101)" onmouseover="showTip(event, 'fs43', 101)" class="t">Rss</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 102)" onmouseover="showTip(event, 'fs45', 102)" class="f">GetSample</span>()
+</code></pre></td>
 </tr>
 </table>
 
@@ -413,24 +365,20 @@ staticメソッド <code>GetSample</code> を使用します：</p>
 単に <code>blog</code> に続けて <code>.</code> と入力すれば、自動補完の候補一覧が確認できるでしょう。
 コードとしては以下のようにします：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Title は文字列を返すプロパティです</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Title は文字列を返すプロパティです</span>
 <span onmouseout="hideTip(event, 'fs7', 103)" onmouseover="showTip(event, 'fs7', 103)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs44', 104)" onmouseover="showTip(event, 'fs44', 104)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 105)" onmouseover="showTip(event, 'fs46', 105)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 106)" onmouseover="showTip(event, 'fs47', 106)" class="i">Title</span>
 
 <span class="c">// すべてのitemノードを取得して、それぞれのタイトルとリンクを表示します</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs48', 107)" onmouseover="showTip(event, 'fs48', 107)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs44', 108)" onmouseover="showTip(event, 'fs44', 108)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 110)" onmouseover="showTip(event, 'fs49', 110)" class="i">Items</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs7', 111)" onmouseover="showTip(event, 'fs7', 111)" class="f">printfn</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%s</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs48', 112)" onmouseover="showTip(event, 'fs48', 112)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 113)" onmouseover="showTip(event, 'fs50', 113)" class="i">Title</span> <span onmouseout="hideTip(event, 'fs48', 114)" onmouseover="showTip(event, 'fs48', 114)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 115)" onmouseover="showTip(event, 'fs51', 115)" class="i">Link</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

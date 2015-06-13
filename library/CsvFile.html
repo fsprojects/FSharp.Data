@@ -52,16 +52,12 @@ quick and simple scripts, the parser might be a simpler option.</p>
 <p>To load a sample CSV document, we first need to reference the <code>FSharp.Data.dll</code> library
 (when using F# Interactive) or to add reference to a project.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -71,24 +67,20 @@ The <code>Load</code> method allows reading the data from a file or from a web r
 also an asynchronous <code>AsyncLoad</code> version). The following sample calls <code>Load</code> with a URL that
 points to a live CSV file on the Yahoo finance web site:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Download the stock prices</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Download the stock prices</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">CsvFile</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="f">Load</span>(<span class="s">&quot;http://ichart.finance.yahoo.com/table.csv?s=MSFT&quot;</span>)<span class="o">.</span><span class="f">Cache</span>()
 
 <span class="c">// Print the prices in the HLOC format</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="i">Rows</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="f">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%s</span><span class="s">, </span><span class="pf">%s</span><span class="s">, </span><span class="pf">%s</span><span class="s">)&quot;</span> (<span onmouseout="hideTip(event, 'fs6', 10)" onmouseover="showTip(event, 'fs6', 10)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 11)" onmouseover="showTip(event, 'fs9', 11)" class="f">GetColumn</span> <span class="s">&quot;High&quot;</span>) (<span onmouseout="hideTip(event, 'fs6', 12)" onmouseover="showTip(event, 'fs6', 12)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 13)" onmouseover="showTip(event, 'fs9', 13)" class="f">GetColumn</span> <span class="s">&quot;Low&quot;</span>) (<span onmouseout="hideTip(event, 'fs6', 14)" onmouseover="showTip(event, 'fs6', 14)" class="i">row</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="f">GetColumn</span> <span class="s">&quot;Date&quot;</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -119,20 +111,16 @@ converted to an integer; <code>value.AsInteger64()</code>, <code>value.AsDecimal
 
 <p>The following example shows how to process the sample previous CSV sample using these extensions:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 16)" onmouseover="showTip(event, 'fs1', 16)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 17)" onmouseover="showTip(event, 'fs2', 17)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">CsvExtensions</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 16)" onmouseover="showTip(event, 'fs1', 16)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 17)" onmouseover="showTip(event, 'fs2', 17)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">CsvExtensions</span>
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 20)" onmouseover="showTip(event, 'fs3', 20)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 21)" onmouseover="showTip(event, 'fs7', 21)" class="i">Rows</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="f">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%f</span><span class="s">, </span><span class="pf">%M</span><span class="s">, </span><span class="pf">%O</span><span class="s">)&quot;</span> (<span onmouseout="hideTip(event, 'fs6', 23)" onmouseover="showTip(event, 'fs6', 23)" class="i">row</span><span class="o">.</span>[<span class="s">&quot;High&quot;</span>]<span class="o">.</span><span class="f">AsFloat</span>()) (<span onmouseout="hideTip(event, 'fs6', 24)" onmouseover="showTip(event, 'fs6', 24)" class="i">row</span><span class="o">?</span><span class="i">Low</span><span class="o">.</span><span class="f">AsDecimal</span>()) (<span onmouseout="hideTip(event, 'fs6', 25)" onmouseover="showTip(event, 'fs6', 25)" class="i">row</span><span class="o">?</span><span class="i">Date</span><span class="o">.</span><span class="f">AsDateTime</span>())
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -143,20 +131,16 @@ available are <code>Filter</code>, <code>Take</code>, <code>TakeWhile</code>, <c
 you can save the results by using one of the overloads of the <code>Save</code> method. You can choose different
 separator and quote characters when saving.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Saving the first 10 stock prices where the closing price is higher than the opening price in TSV format:</span>
 <span onmouseout="hideTip(event, 'fs3', 26)" onmouseover="showTip(event, 'fs3', 26)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 27)" onmouseover="showTip(event, 'fs11', 27)" class="f">Filter</span>(<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs6', 28)" onmouseover="showTip(event, 'fs6', 28)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="i">row</span><span class="o">?</span><span class="i">Close</span><span class="o">.</span><span class="f">AsFloat</span>() <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs6', 30)" onmouseover="showTip(event, 'fs6', 30)" class="i">row</span><span class="o">?</span><span class="i">Open</span><span class="o">.</span><span class="f">AsFloat</span>())
     <span class="o">.</span><span class="f">Truncate</span>(<span class="n">10</span>)
     <span class="o">.</span><span class="f">SaveToString</span>(<span class="s">&#39;\t&#39;</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

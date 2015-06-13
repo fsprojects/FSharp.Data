@@ -61,16 +61,12 @@
 このアセンブリが <code>../../../../bin</code> ディレクトリにあるとすると、
 以下のようにするとF# Interactive上でアセンブリをロードできます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -84,20 +80,16 @@
 
 <p>以下のコードでは小さなJSON文字列をプロバイダーに渡しています：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; { &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 } &quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; { &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 } &quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">simple</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">Simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot; { &quot;name&quot;:&quot;Tomas&quot;, &quot;age&quot;:4 } &quot;&quot;&quot;</span>)
 <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 9)" onmouseover="showTip(event, 'fs7', 9)" class="i">Age</span>
 <span onmouseout="hideTip(event, 'fs5', 10)" onmouseover="showTip(event, 'fs5', 10)" class="i">simple</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="i">Name</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -115,18 +107,14 @@
 厳密に一致しないことがあります。
 たとえば以下のように integer と float が混ざったリストがあるとします：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="t">Numbers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 13)" onmouseover="showTip(event, 'fs4', 13)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, 3, 3.14] &quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="t">Numbers</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 13)" onmouseover="showTip(event, 'fs4', 13)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, 3, 3.14] &quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="i">nums</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs9', 15)" onmouseover="showTip(event, 'fs9', 15)" class="t">Numbers</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 16)" onmouseover="showTip(event, 'fs11', 16)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot; [1.2, 45.1, 98.2, 5] &quot;&quot;&quot;</span>)
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 17)" onmouseover="showTip(event, 'fs12', 17)" class="i">total</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">nums</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 19)" onmouseover="showTip(event, 'fs13', 19)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 20)" onmouseover="showTip(event, 'fs14', 20)" class="f">sum</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -142,22 +130,18 @@
 この場合、プロバイダーはいずれか一方の型に一致するような値を取得できるように
 2種類のメソッドを生成します：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="t">Mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, &quot;hello&quot;, &quot;world&quot;] &quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs15', 21)" onmouseover="showTip(event, 'fs15', 21)" class="t">Mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [1, 2, &quot;hello&quot;, &quot;world&quot;] &quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs16', 23)" onmouseover="showTip(event, 'fs16', 23)" class="i">mixed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="t">Mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 25)" onmouseover="showTip(event, 'fs6', 25)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot; [4, 5, &quot;hello&quot;, &quot;world&quot; ] &quot;&quot;&quot;</span>)
 
 <span onmouseout="hideTip(event, 'fs16', 26)" onmouseover="showTip(event, 'fs16', 26)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 27)" onmouseover="showTip(event, 'fs17', 27)" class="i">Numbers</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 29)" onmouseover="showTip(event, 'fs14', 29)" class="f">sum</span>
 <span onmouseout="hideTip(event, 'fs16', 30)" onmouseover="showTip(event, 'fs16', 30)" class="i">mixed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 31)" onmouseover="showTip(event, 'fs18', 31)" class="i">Strings</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs19', 32)" onmouseover="showTip(event, 'fs19', 32)" class="t">String</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 33)" onmouseover="showTip(event, 'fs20', 33)" class="f">concat</span> <span class="s">&quot;, &quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -180,24 +164,20 @@
 <p>また、スキーマと同じテキストを実行時にも使いたい場合には
 <code>GetSamples</code> メソッドを使います：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="t">People</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [{ &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 }, { &quot;name&quot;:&quot;Tomas&quot; }] &quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs21', 34)" onmouseover="showTip(event, 'fs21', 34)" class="t">People</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 35)" onmouseover="showTip(event, 'fs4', 35)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [{ &quot;name&quot;:&quot;John&quot;, &quot;age&quot;:94 }, { &quot;name&quot;:&quot;Tomas&quot; }] &quot;&quot;&quot;</span><span class="o">&gt;</span>
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 36)" onmouseover="showTip(event, 'fs22', 36)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs21', 37)" onmouseover="showTip(event, 'fs21', 37)" class="t">People</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 38)" onmouseover="showTip(event, 'fs23', 38)" class="f">GetSamples</span>() <span class="k">do</span> 
   <span onmouseout="hideTip(event, 'fs24', 39)" onmouseover="showTip(event, 'fs24', 39)" class="f">printf</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> &quot;</span> <span onmouseout="hideTip(event, 'fs22', 40)" onmouseover="showTip(event, 'fs22', 40)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 41)" onmouseover="showTip(event, 'fs8', 41)" class="i">Name</span> 
   <span onmouseout="hideTip(event, 'fs22', 42)" onmouseover="showTip(event, 'fs22', 42)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 43)" onmouseover="showTip(event, 'fs25', 43)" class="i">Age</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 44)" onmouseover="showTip(event, 'fs26', 44)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 45)" onmouseover="showTip(event, 'fs27', 45)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs24', 46)" onmouseover="showTip(event, 'fs24', 46)" class="f">printf</span> <span class="s">&quot;(</span><span class="pf">%d</span><span class="s">)&quot;</span>)
   <span onmouseout="hideTip(event, 'fs28', 47)" onmouseover="showTip(event, 'fs28', 47)" class="f">printfn</span> <span class="s">&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -213,26 +193,22 @@
 しかしレコードのプロパティに複数の異なる型が使われていた場合にはどうなるでしょう？
 この場合、型プロバイダーは以下のように動作します：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="t">Values</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [{&quot;value&quot;:94 }, {&quot;value&quot;:&quot;Tomas&quot; }] &quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs29', 48)" onmouseover="showTip(event, 'fs29', 48)" class="t">Values</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot; [{&quot;value&quot;:94 }, {&quot;value&quot;:&quot;Tomas&quot; }] &quot;&quot;&quot;</span><span class="o">&gt;</span>
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs22', 50)" onmouseover="showTip(event, 'fs22', 50)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs29', 51)" onmouseover="showTip(event, 'fs29', 51)" class="t">Values</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 52)" onmouseover="showTip(event, 'fs23', 52)" class="f">GetSamples</span>() <span class="k">do</span> 
   <span class="k">match</span> <span onmouseout="hideTip(event, 'fs22', 53)" onmouseover="showTip(event, 'fs22', 53)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 54)" onmouseover="showTip(event, 'fs30', 54)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs31', 55)" onmouseover="showTip(event, 'fs31', 55)" class="i">Number</span>, <span onmouseout="hideTip(event, 'fs22', 56)" onmouseover="showTip(event, 'fs22', 56)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 57)" onmouseover="showTip(event, 'fs30', 57)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 58)" onmouseover="showTip(event, 'fs32', 58)" class="i">String</span> <span class="k">with</span>
   | <span onmouseout="hideTip(event, 'fs33', 59)" onmouseover="showTip(event, 'fs33', 59)" class="p">Some</span> <span onmouseout="hideTip(event, 'fs34', 60)" onmouseover="showTip(event, 'fs34', 60)" class="i">num</span>, _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 61)" onmouseover="showTip(event, 'fs28', 61)" class="f">printfn</span> <span class="s">&quot;数値: </span><span class="pf">%d</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs34', 62)" onmouseover="showTip(event, 'fs34', 62)" class="i">num</span>
   | _, <span onmouseout="hideTip(event, 'fs33', 63)" onmouseover="showTip(event, 'fs33', 63)" class="p">Some</span> <span onmouseout="hideTip(event, 'fs35', 64)" onmouseover="showTip(event, 'fs35', 64)" class="i">str</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 65)" onmouseover="showTip(event, 'fs28', 65)" class="f">printfn</span> <span class="s">&quot;テキスト: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs35', 66)" onmouseover="showTip(event, 'fs35', 66)" class="i">str</span>
   | _ <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs28', 67)" onmouseover="showTip(event, 'fs28', 67)" class="f">printfn</span> <span class="s">&quot;何かその他の値です！&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -253,24 +229,22 @@
 受信したデータセットを使います。
 このデータは以下のような構造になっています：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="js">[ { <span class="s">"page"</span>: 1, <span class="s">"pages"</span>: 1, <span class="s">"total"</span>: 53 },
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="js">[ { <span class="s">"page"</span>: 1, <span class="s">"pages"</span>: 1, <span class="s">"total"</span>: 53 },
   [ { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
       <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
       <span class="s">"value"</span>:<span class="k">null</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2000"</span>},
     { <span class="s">"indicator"</span>: {<span class="s">"value"</span>: <span class="s">"Central government debt, total (% of GDP)"</span>},
       <span class="s">"country"</span>: {<span class="s">"id"</span>:<span class="s">"CZ"</span>,<span class="s">"value"</span>:<span class="s">"Czech Republic"</span>},
       <span class="s">"value"</span>:<span class="s">"16.6567773464055"</span>,<span class="s">"decimal"</span>:<span class="s">"1"</span>,<span class="s">"date"</span>:<span class="s">"2010"</span>} ] ]
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>2つの要素を含んだ1つの配列がレスポンスとして返されます。
 1つめの要素にはレスポンスに関する一般的な情報(ページ数、総ページ数など)があり、
@@ -283,16 +257,12 @@
 <p>以下では <a href="../../data/WorldBank.json"><code>data/WorldBank.json</code></a> をサンプルファイルにして
 型を生成した後、同じファイルを読み込んでいます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="t">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/WorldBank.json&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs36', 68)" onmouseover="showTip(event, 'fs36', 68)" class="t">WorldBank</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 69)" onmouseover="showTip(event, 'fs4', 69)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/WorldBank.json&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs37', 70)" onmouseover="showTip(event, 'fs37', 70)" class="i">doc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="t">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 72)" onmouseover="showTip(event, 'fs38', 72)" class="f">GetSample</span>()
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -300,14 +270,10 @@
 Web上のURLを指定して直接データを読み取ることができることに注意してください。
 また、非同期バージョンの <code>AsyncLoad</code> メソッドもあります：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 73)" onmouseover="showTip(event, 'fs39', 73)" class="i">docAsync</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 74)" onmouseover="showTip(event, 'fs36', 74)" class="t">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 75)" onmouseover="showTip(event, 'fs40', 75)" class="f">AsyncLoad</span>(<span class="s">&quot;http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json&quot;</span>)
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs39', 73)" onmouseover="showTip(event, 'fs39', 73)" class="i">docAsync</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 74)" onmouseover="showTip(event, 'fs36', 74)" class="t">WorldBank</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 75)" onmouseover="showTip(event, 'fs40', 75)" class="f">AsyncLoad</span>(<span class="s">&quot;http://api.worldbank.org/country/cz/indicator/GC.DOD.TOTL.GD.ZS?format=json&quot;</span>)
+</code></pre></td>
 </tr>
 </table>
 
@@ -320,8 +286,7 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 単に <code>Record</code> や <code>Array</code> というプロパティが生成されます。
 したがって以下のようにすればデータセットを表示できます：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -330,10 +295,8 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// 一般的な情報を表示</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// 一般的な情報を表示</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs41', 76)" onmouseover="showTip(event, 'fs41', 76)" class="i">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs37', 77)" onmouseover="showTip(event, 'fs37', 77)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs42', 78)" onmouseover="showTip(event, 'fs42', 78)" class="i">Record</span>
 <span onmouseout="hideTip(event, 'fs28', 79)" onmouseover="showTip(event, 'fs28', 79)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s"> ページ中 </span><span class="pf">%d</span><span class="s"> ページ目を表示中。総レコード数 </span><span class="pf">%d</span><span class="s">&quot;</span> 
   <span onmouseout="hideTip(event, 'fs41', 80)" onmouseover="showTip(event, 'fs41', 80)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs43', 81)" onmouseover="showTip(event, 'fs43', 81)" class="i">Pages</span> <span onmouseout="hideTip(event, 'fs41', 82)" onmouseover="showTip(event, 'fs41', 82)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs44', 83)" onmouseover="showTip(event, 'fs44', 83)" class="i">Page</span> <span onmouseout="hideTip(event, 'fs41', 84)" onmouseover="showTip(event, 'fs41', 84)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 85)" onmouseover="showTip(event, 'fs45', 85)" class="i">Total</span>
@@ -342,8 +305,7 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs46', 86)" onmouseover="showTip(event, 'fs46', 86)" class="i">record</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs37', 87)" onmouseover="showTip(event, 'fs37', 87)" class="i">doc</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 88)" onmouseover="showTip(event, 'fs47', 88)" class="i">Array</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs46', 89)" onmouseover="showTip(event, 'fs46', 89)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 90)" onmouseover="showTip(event, 'fs48', 90)" class="i">Value</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs26', 91)" onmouseover="showTip(event, 'fs26', 91)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs27', 92)" onmouseover="showTip(event, 'fs27', 92)" class="f">iter</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs49', 93)" onmouseover="showTip(event, 'fs49', 93)" class="i">value</span> <span class="k">-&gt;</span>
     <span onmouseout="hideTip(event, 'fs28', 94)" onmouseover="showTip(event, 'fs28', 94)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">: </span><span class="pf">%f</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs46', 95)" onmouseover="showTip(event, 'fs46', 95)" class="i">record</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 96)" onmouseover="showTip(event, 'fs50', 96)" class="i">Date</span> <span onmouseout="hideTip(event, 'fs49', 97)" onmouseover="showTip(event, 'fs49', 97)" class="i">value</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -366,24 +328,20 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 <a href="../../data/TwitterStream.json"><code>data/TwitterStream.json</code></a>
 ファイルを使います：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs51', 98)" onmouseover="showTip(event, 'fs51', 98)" class="t">Tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/TwitterStream.json&quot;</span>, <span class="i">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs51', 98)" onmouseover="showTip(event, 'fs51', 98)" class="t">Tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;../../data/TwitterStream.json&quot;</span>, <span class="i">SampleIsList</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs52', 100)" onmouseover="showTip(event, 'fs52', 100)" class="i">text</span> <span class="o">=</span> <span id="fst53" onmouseout="hideTip(event, 'fs53', 101)" onmouseover="showTip(event, 'fs53', 101, document.getElementById('fst53'))" class="omitted">(omitted)</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 102)" onmouseover="showTip(event, 'fs54', 102)" class="i">tweet</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs51', 103)" onmouseover="showTip(event, 'fs51', 103)" class="t">Tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 104)" onmouseover="showTip(event, 'fs6', 104)" class="f">Parse</span>(<span onmouseout="hideTip(event, 'fs52', 105)" onmouseover="showTip(event, 'fs52', 105)" class="i">text</span>)
 
 <span onmouseout="hideTip(event, 'fs28', 106)" onmouseover="showTip(event, 'fs28', 106)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s"> 回リツイートされました)</span><span class="e">\n</span><span class="s">:</span><span class="pf">%s</span><span class="s">&quot;</span>
   <span onmouseout="hideTip(event, 'fs54', 107)" onmouseover="showTip(event, 'fs54', 107)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs55', 108)" onmouseover="showTip(event, 'fs55', 108)" class="i">User</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs56', 109)" onmouseover="showTip(event, 'fs56', 109)" class="i">Value</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs57', 110)" onmouseover="showTip(event, 'fs57', 110)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs54', 111)" onmouseover="showTip(event, 'fs54', 111)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs58', 112)" onmouseover="showTip(event, 'fs58', 112)" class="i">RetweetCount</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs59', 113)" onmouseover="showTip(event, 'fs59', 113)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs54', 114)" onmouseover="showTip(event, 'fs54', 114)" class="i">tweet</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs60', 115)" onmouseover="showTip(event, 'fs60', 115)" class="i">Text</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs61', 116)" onmouseover="showTip(event, 'fs61', 116)" class="i">Value</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -402,8 +360,7 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 まず FSharp.Data リポジトリのオープンされているIssuesのうちで
 直近の5つを取得してみましょう。</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -413,10 +370,8 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs62', 117)" onmouseover="showTip(event, 'fs62', 117)" class="t">GitHub</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 118)" onmouseover="showTip(event, 'fs4', 118)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;https://api.github.com/repos/fsharp/FSharp.Data/issues&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs62', 117)" onmouseover="showTip(event, 'fs62', 117)" class="t">GitHub</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 118)" onmouseover="showTip(event, 'fs4', 118)" class="t">JsonProvider</span><span class="o">&lt;</span><span class="s">&quot;https://api.github.com/repos/fsharp/FSharp.Data/issues&quot;</span><span class="o">&gt;</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs63', 119)" onmouseover="showTip(event, 'fs63', 119)" class="i">topRecentlyUpdatedIssues</span> <span class="o">=</span> 
     <span onmouseout="hideTip(event, 'fs62', 120)" onmouseover="showTip(event, 'fs62', 120)" class="t">GitHub</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 121)" onmouseover="showTip(event, 'fs23', 121)" class="f">GetSamples</span>()
@@ -426,8 +381,7 @@ Web上のURLを指定して直接データを読み取ることができるこ�
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs65', 137)" onmouseover="showTip(event, 'fs65', 137)" class="i">issue</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs63', 138)" onmouseover="showTip(event, 'fs63', 138)" class="i">topRecentlyUpdatedIssues</span> <span class="k">do</span>
     <span onmouseout="hideTip(event, 'fs28', 139)" onmouseover="showTip(event, 'fs28', 139)" class="f">printfn</span> <span class="s">&quot;#</span><span class="pf">%d</span><span class="s"> </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs65', 140)" onmouseover="showTip(event, 'fs65', 140)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs73', 141)" onmouseover="showTip(event, 'fs73', 141)" class="i">Number</span> <span onmouseout="hideTip(event, 'fs65', 142)" onmouseover="showTip(event, 'fs65', 142)" class="i">issue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs74', 143)" onmouseover="showTip(event, 'fs74', 143)" class="i">Title</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -436,8 +390,7 @@ GitHubのドキュメント <a href="http://developer.github.com/v3/issues/#crea
 を見てみると、以下のようなJSON値をポストすればいいことがわかります：">http://developer.github.com/v3/issues/#create-an-issue
 を見てみると、以下のようなJSON値をポストすればいいことがわかります：</a></p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -450,10 +403,8 @@ GitHubのドキュメント <a href="http://developer.github.com/v3/issues/#crea
 <span class="l">11: </span>
 <span class="l">12: </span>
 <span class="l">13: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-[&lt;<span onmouseout="hideTip(event, 'fs75', 144)" onmouseover="showTip(event, 'fs75', 144)" class="t">Literal</span>&gt;]
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp">[&lt;<span onmouseout="hideTip(event, 'fs75', 144)" onmouseover="showTip(event, 'fs75', 144)" class="t">Literal</span>&gt;]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs76', 145)" onmouseover="showTip(event, 'fs76', 145)" class="i">issueSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">{</span>
 <span class="s">  &quot;title&quot;: &quot;Found a bug&quot;,</span>
@@ -466,8 +417,7 @@ GitHubのドキュメント <a href="http://developer.github.com/v3/issues/#crea
 <span class="s">  ]</span>
 <span class="s">}</span>
 <span class="s">&quot;&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -476,8 +426,7 @@ Issueそれぞれに対応するものとは異なります。
 そのため、このサンプルデータを元にして新しい型を定義し、
 そのインスタンスを作成してリクエストをPOSTします：</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -485,10 +434,8 @@ Issueそれぞれに対応するものとは異なります。
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs77', 146)" onmouseover="showTip(event, 'fs77', 146)" class="t">GitHubIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 147)" onmouseover="showTip(event, 'fs4', 147)" class="t">JsonProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs76', 148)" onmouseover="showTip(event, 'fs76', 148)" class="i">issueSample</span>, <span class="i">RootName</span><span class="o">=</span><span class="s">&quot;issue&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs77', 146)" onmouseover="showTip(event, 'fs77', 146)" class="t">GitHubIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 147)" onmouseover="showTip(event, 'fs4', 147)" class="t">JsonProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs76', 148)" onmouseover="showTip(event, 'fs76', 148)" class="i">issueSample</span>, <span class="i">RootName</span><span class="o">=</span><span class="s">&quot;issue&quot;</span><span class="o">&gt;</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs78', 149)" onmouseover="showTip(event, 'fs78', 149)" class="i">newIssue</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs77', 150)" onmouseover="showTip(event, 'fs77', 150)" class="t">GitHubIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs79', 151)" onmouseover="showTip(event, 'fs79', 151)" class="t">Issue</span>(<span class="s">&quot;Test issue&quot;</span>,
                                  <span class="s">&quot;This is a test issue created in F# Data documentation&quot;</span>, 
@@ -496,8 +443,7 @@ Issueそれぞれに対応するものとは異なります。
                                  <span class="i">labels</span> <span class="o">=</span> [| |], 
                                  <span class="i">milestone</span> <span class="o">=</span> <span class="n">0</span>)
 <span onmouseout="hideTip(event, 'fs78', 152)" onmouseover="showTip(event, 'fs78', 152)" class="i">newIssue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs80', 153)" onmouseover="showTip(event, 'fs80', 153)" class="i">JsonValue</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs81', 154)" onmouseover="showTip(event, 'fs81', 154)" class="f">Request</span> <span class="s">&quot;https://api.github.com/repos/fsharp/FSharp.Data/issues&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

@@ -57,18 +57,14 @@ is located in the <code>../../bin</code> directory, we can load it in F# Interac
 (note we also need a reference to <code>System.Xml.Linq</code>, because the provider uses the
 <code>XDocument</code> type internally):</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
 <span class="prep">#r</span> <span class="s">&quot;System.Xml.Linq.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -81,20 +77,16 @@ accessible via <code>http</code> or <code>https</code>). It is not likely that t
 <p>The following sample generates a type that can read simple XML documents with a root node
 containing two attributes:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Paul Feyerabend&quot; born=&quot;1924&quot; /&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Author</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author name=&quot;Paul Feyerabend&quot; born=&quot;1924&quot; /&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">sample</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 6)" onmouseover="showTip(event, 'fs3', 6)" class="t">Author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot;&lt;author name=&quot;Karl Popper&quot; born=&quot;1902&quot; /&gt;&quot;&quot;&quot;</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs5', 9)" onmouseover="showTip(event, 'fs5', 9)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 10)" onmouseover="showTip(event, 'fs8', 10)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs5', 11)" onmouseover="showTip(event, 'fs5', 11)" class="i">sample</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">Born</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -107,22 +99,18 @@ has a type <code>string</code> and <code>Born</code> is <code>int</code>.</p>
 Instead of using attributes, we could use nested nodes (<code>&lt;name&gt;</code> and <code>&lt;born&gt;</code> nested
 under <code>&lt;author&gt;</code>) that directly contain the values:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">AuthorAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;author&gt;&lt;name&gt;Karl Popper&lt;/name&gt;&lt;born&gt;1902&lt;/born&gt;&lt;/author&gt;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs10', 13)" onmouseover="showTip(event, 'fs10', 13)" class="t">AuthorAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 14)" onmouseover="showTip(event, 'fs4', 14)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;author&gt;&lt;name&gt;Karl Popper&lt;/name&gt;&lt;born&gt;1902&lt;/born&gt;&lt;/author&gt;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="i">doc</span> <span class="o">=</span> <span class="s">&quot;&lt;author&gt;&lt;name&gt;Paul Feyerabend&lt;/name&gt;&lt;born&gt;1924&lt;/born&gt;&lt;/author&gt;&quot;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">sampleAlt</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="t">AuthorAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 18)" onmouseover="showTip(event, 'fs6', 18)" class="f">Parse</span>(<span onmouseout="hideTip(event, 'fs11', 19)" onmouseover="showTip(event, 'fs11', 19)" class="i">doc</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 20)" onmouseover="showTip(event, 'fs7', 20)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%d</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs12', 21)" onmouseover="showTip(event, 'fs12', 21)" class="i">sampleAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="i">Name</span> <span onmouseout="hideTip(event, 'fs12', 23)" onmouseover="showTip(event, 'fs12', 23)" class="i">sampleAlt</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 24)" onmouseover="showTip(event, 'fs9', 24)" class="i">Born</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -138,20 +126,16 @@ a primitive value and has no children or attributes.</p>
 <p>Now let's look at a number of examples that have more interesting structure. First of 
 all, what if a node contains some value, but also has some attributes?</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="t">Detailed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;true&quot;&gt;Karl Popper&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs13', 25)" onmouseover="showTip(event, 'fs13', 25)" class="t">Detailed</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;true&quot;&gt;Karl Popper&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs14', 27)" onmouseover="showTip(event, 'fs14', 27)" class="i">info</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="t">Detailed</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="f">Parse</span>(<span class="s">&quot;&quot;&quot;&lt;author&gt;&lt;name full=&quot;false&quot;&gt;Thomas Kuhn&lt;/name&gt;&lt;/author&gt;&quot;&quot;&quot;</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 30)" onmouseover="showTip(event, 'fs7', 30)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s"> (full=</span><span class="pf">%b</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs14', 31)" onmouseover="showTip(event, 'fs14', 31)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 32)" onmouseover="showTip(event, 'fs15', 32)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 33)" onmouseover="showTip(event, 'fs16', 33)" class="i">Value</span> <span onmouseout="hideTip(event, 'fs14', 34)" onmouseover="showTip(event, 'fs14', 34)" class="i">info</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 35)" onmouseover="showTip(event, 'fs15', 35)" class="i">Name</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 36)" onmouseover="showTip(event, 'fs17', 36)" class="i">Full</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -167,20 +151,16 @@ primitive value. The following example shows what happens when the root node
 contains multiple <code>&lt;value&gt;</code> nodes (note that if we leave out the parameter to the 
 <code>Parse</code> method, the same text used for the schema will be used as the runtime value).</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="t">Test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;root&gt;&lt;value&gt;1&lt;/value&gt;&lt;value&gt;3&lt;/value&gt;&lt;/root&gt;&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="t">Test</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 38)" onmouseover="showTip(event, 'fs4', 38)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;&lt;root&gt;&lt;value&gt;1&lt;/value&gt;&lt;value&gt;3&lt;/value&gt;&lt;/root&gt;&quot;</span><span class="o">&gt;</span>
 
 <span onmouseout="hideTip(event, 'fs18', 39)" onmouseover="showTip(event, 'fs18', 39)" class="t">Test</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 40)" onmouseover="showTip(event, 'fs19', 40)" class="f">GetSample</span>()<span class="o">.</span><span class="i">Values</span>
 <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 41)" onmouseover="showTip(event, 'fs20', 41)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 42)" onmouseover="showTip(event, 'fs21', 42)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs7', 43)" onmouseover="showTip(event, 'fs7', 43)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%d</span><span class="s">&quot;</span>)
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -194,41 +174,35 @@ are turned into <code>int</code> values and so the <code>Values</code> property 
 on a simple document that lists authors that write about a specific topic. The 
 sample document <a href="../data/Writers.xml"><code>data/Writers.xml</code></a> looks as follows:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="xml"><span class="k">&lt;</span><span class="i">authors</span> <span class="o">topic</span><span class="k">="Philosophy of Science"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Paul Feyerabend"</span> <span class="o">born</span><span class="k">="1924"</span> <span class="k">/&gt;</span>
   <span class="k">&lt;</span><span class="i">author</span> <span class="o">name</span><span class="k">="Thomas Kuhn"</span> <span class="k">/&gt;</span>
 <span class="k">&lt;/</span><span class="i">authors</span><span class="k">&gt;</span> 
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>At runtime, we use the generated type provider to parse the following string
 (which has the same structure as the sample document with the exception that 
 one of the <code>author</code> nodes also contains a <code>died</code> attribute):</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="i">authors</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs22', 44)" onmouseover="showTip(event, 'fs22', 44)" class="i">authors</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">  &lt;authors topic=&quot;Philosophy of Mathematics&quot;&gt;</span>
 <span class="s">    &lt;author name=&quot;Bertrand Russell&quot; /&gt;</span>
 <span class="s">    &lt;author name=&quot;Ludwig Wittgenstein&quot; born=&quot;1889&quot; /&gt;</span>
 <span class="s">    &lt;author name=&quot;Alfred North Whitehead&quot; died=&quot;1947&quot; /&gt;</span>
 <span class="s">  &lt;/authors&gt; &quot;&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -236,8 +210,7 @@ one of the <code>author</code> nodes also contains a <code>died</code> attribute
 The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data from a file or from a web resource. The
 <code>Parse</code> method takes the data as a string, so we can now print the information as follows:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -245,10 +218,8 @@ The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="t">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/Writers.xml&quot;</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs23', 45)" onmouseover="showTip(event, 'fs23', 45)" class="t">Authors</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/Writers.xml&quot;</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="i">topic</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs23', 48)" onmouseover="showTip(event, 'fs23', 48)" class="t">Authors</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 49)" onmouseover="showTip(event, 'fs25', 49)" class="f">Parse</span>(<span onmouseout="hideTip(event, 'fs22', 50)" onmouseover="showTip(event, 'fs22', 50)" class="i">authors</span>)
 
 <span onmouseout="hideTip(event, 'fs7', 51)" onmouseover="showTip(event, 'fs7', 51)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs24', 52)" onmouseover="showTip(event, 'fs24', 52)" class="i">topic</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="i">Topic</span>
@@ -256,8 +227,7 @@ The <code>Load</code> and <code>AsyncLoad</code> methods allows reading the data
   <span onmouseout="hideTip(event, 'fs29', 57)" onmouseover="showTip(event, 'fs29', 57)" class="f">printf</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs27', 58)" onmouseover="showTip(event, 'fs27', 58)" class="i">author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 59)" onmouseover="showTip(event, 'fs8', 59)" class="i">Name</span> 
   <span onmouseout="hideTip(event, 'fs27', 60)" onmouseover="showTip(event, 'fs27', 60)" class="i">author</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs30', 61)" onmouseover="showTip(event, 'fs30', 61)" class="i">Born</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs31', 62)" onmouseover="showTip(event, 'fs31', 62)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs32', 63)" onmouseover="showTip(event, 'fs32', 63)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs29', 64)" onmouseover="showTip(event, 'fs29', 64)" class="f">printf</span> <span class="s">&quot; (</span><span class="pf">%d</span><span class="s">)&quot;</span>)
   <span onmouseout="hideTip(event, 'fs7', 65)" onmouseover="showTip(event, 'fs7', 65)" class="f">printfn</span> <span class="s">&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -278,38 +248,32 @@ However, when we work with documents such as XHTML files, this can often be the 
 Consider for example, the following sample (a simplified version of 
 <a href="../data/HtmlBody.xml"><code>data/HtmlBody.xml</code></a>):</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip" lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip"><code lang="xml"><span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="root"</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">span</span><span class="k">&gt;</span>Main text<span class="k">&lt;/</span><span class="i">span</span><span class="k">&gt;</span>
   <span class="k">&lt;</span><span class="i">div</span> <span class="o">id</span><span class="k">="first"</span><span class="k">&gt;</span>
     <span class="k">&lt;</span><span class="i">div</span><span class="k">&gt;</span>Second text<span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
   <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
 <span class="k">&lt;/</span><span class="i">div</span><span class="k">&gt;</span>
-</pre></td></tr></table>
+</code></pre></td></tr></table>
 
 <p>Here, a <code>&lt;div&gt;</code> element can contain other <code>&lt;div&gt;</code> elements and it is quite clear that
 they should all have the same type - we want to be able to write a recursive function
 that processes <code>&lt;div&gt;</code> elements. To make this possible, you need to set an optional
 parameter <code>Global</code> to <code>true</code>:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="t">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/HtmlBody.xml&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="t">Html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 67)" onmouseover="showTip(event, 'fs4', 67)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;../data/HtmlBody.xml&quot;</span>, <span class="i">Global</span><span class="o">=</span><span class="k">true</span><span class="o">&gt;</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs34', 68)" onmouseover="showTip(event, 'fs34', 68)" class="i">html</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs33', 69)" onmouseover="showTip(event, 'fs33', 69)" class="t">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs35', 70)" onmouseover="showTip(event, 'fs35', 70)" class="f">GetSample</span>()
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -320,8 +284,7 @@ of all attributes and all possible children nodes that appear in the sample docu
 <p>The type is located under a type <code>Html</code>, so we can write a <code>printDiv</code> function
 that takes <code>Html.Div</code> and acts as follows:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -330,10 +293,8 @@ that takes <code>Html.Div</code> and acts as follows:</p>
 <span class="l">7: </span>
 <span class="l">8: </span>
 <span class="l">9: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">/// Prints the content of a &lt;div&gt; element</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">/// Prints the content of a &lt;div&gt; element</span>
 <span class="k">let</span> <span class="k">rec</span> <span onmouseout="hideTip(event, 'fs36', 71)" onmouseover="showTip(event, 'fs36', 71)" class="f">printDiv</span> (<span onmouseout="hideTip(event, 'fs37', 72)" onmouseover="showTip(event, 'fs37', 72)" class="i">div</span><span class="o">:</span><span onmouseout="hideTip(event, 'fs33', 73)" onmouseover="showTip(event, 'fs33', 73)" class="i">Html</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs38', 74)" onmouseover="showTip(event, 'fs38', 74)" class="t">Div</span>) <span class="o">=</span>
   <span onmouseout="hideTip(event, 'fs37', 75)" onmouseover="showTip(event, 'fs37', 75)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs39', 76)" onmouseover="showTip(event, 'fs39', 76)" class="i">Spans</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 77)" onmouseover="showTip(event, 'fs20', 77)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 78)" onmouseover="showTip(event, 'fs21', 78)" class="f">iter</span> (<span onmouseout="hideTip(event, 'fs7', 79)" onmouseover="showTip(event, 'fs7', 79)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span>)
   <span onmouseout="hideTip(event, 'fs37', 80)" onmouseover="showTip(event, 'fs37', 80)" class="i">div</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs40', 81)" onmouseover="showTip(event, 'fs40', 81)" class="i">Divs</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs20', 82)" onmouseover="showTip(event, 'fs20', 82)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 83)" onmouseover="showTip(event, 'fs21', 83)" class="f">iter</span> <span onmouseout="hideTip(event, 'fs36', 84)" onmouseover="showTip(event, 'fs36', 84)" class="f">printDiv</span>
@@ -342,8 +303,7 @@ that takes <code>Html.Div</code> and acts as follows:</p>
 
 <span class="c">// Print the root &lt;div&gt; element with all children  </span>
 <span onmouseout="hideTip(event, 'fs36', 96)" onmouseover="showTip(event, 'fs36', 96)" class="f">printDiv</span> <span onmouseout="hideTip(event, 'fs34', 97)" onmouseover="showTip(event, 'fs34', 97)" class="i">html</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -358,14 +318,10 @@ then we print the <code>Value</code> (inner text).</p>
 RSS feed. As discussed earlier, we can use relative paths or web addresses when calling
 the type provider:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs43', 98)" onmouseover="showTip(event, 'fs43', 98)" class="t">Rss</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://tomasp.net/blog/rss.aspx&quot;</span><span class="o">&gt;</span>
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs43', 98)" onmouseover="showTip(event, 'fs43', 98)" class="t">Rss</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 99)" onmouseover="showTip(event, 'fs4', 99)" class="t">XmlProvider</span><span class="o">&lt;</span><span class="s">&quot;http://tomasp.net/blog/rss.aspx&quot;</span><span class="o">&gt;</span>
+</code></pre></td>
 </tr>
 </table>
 
@@ -374,14 +330,10 @@ on <code>http://tomasp.net</code>). The type <code>Rss</code> provides static me
 to construct it - here, we just want to reuse the same URI of the schema, so we
 use the <code>GetSample</code> static method:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 100)" onmouseover="showTip(event, 'fs44', 100)" class="i">blog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs43', 101)" onmouseover="showTip(event, 'fs43', 101)" class="t">Rss</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 102)" onmouseover="showTip(event, 'fs45', 102)" class="f">GetSample</span>()
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs44', 100)" onmouseover="showTip(event, 'fs44', 100)" class="i">blog</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs43', 101)" onmouseover="showTip(event, 'fs43', 101)" class="t">Rss</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs45', 102)" onmouseover="showTip(event, 'fs45', 102)" class="f">GetSample</span>()
+</code></pre></td>
 </tr>
 </table>
 
@@ -389,24 +341,20 @@ use the <code>GetSample</code> static method:</p>
 easy - you can simply type <code>blog</code> followed by <code>.</code> and see what the autocompletion
 offers. The code looks like this:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="c">// Title is a property returning string </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Title is a property returning string </span>
 <span onmouseout="hideTip(event, 'fs7', 103)" onmouseover="showTip(event, 'fs7', 103)" class="f">printfn</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs44', 104)" onmouseover="showTip(event, 'fs44', 104)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 105)" onmouseover="showTip(event, 'fs46', 105)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 106)" onmouseover="showTip(event, 'fs47', 106)" class="i">Title</span>
 
 <span class="c">// Get all item nodes and print title with link</span>
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs48', 107)" onmouseover="showTip(event, 'fs48', 107)" class="i">item</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs44', 108)" onmouseover="showTip(event, 'fs44', 108)" class="i">blog</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs46', 109)" onmouseover="showTip(event, 'fs46', 109)" class="i">Channel</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 110)" onmouseover="showTip(event, 'fs49', 110)" class="i">Items</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs7', 111)" onmouseover="showTip(event, 'fs7', 111)" class="f">printfn</span> <span class="s">&quot; - </span><span class="pf">%s</span><span class="s"> (</span><span class="pf">%s</span><span class="s">)&quot;</span> <span onmouseout="hideTip(event, 'fs48', 112)" onmouseover="showTip(event, 'fs48', 112)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs50', 113)" onmouseover="showTip(event, 'fs50', 113)" class="i">Title</span> <span onmouseout="hideTip(event, 'fs48', 114)" onmouseover="showTip(event, 'fs48', 114)" class="i">item</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs51', 115)" onmouseover="showTip(event, 'fs51', 115)" class="i">Link</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -415,8 +363,7 @@ offers. The code looks like this:</p>
 <p>In this example we will now also create XML in addition to consuming it.
 Consider the problem of flattening a data set. Let's say you have xml data that looks like this:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -434,10 +381,8 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 <span class="l">16: </span>
 <span class="l">17: </span>
 <span class="l">18: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-[&lt;<span onmouseout="hideTip(event, 'fs52', 116)" onmouseover="showTip(event, 'fs52', 116)" class="t">Literal</span>&gt;]
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp">[&lt;<span onmouseout="hideTip(event, 'fs52', 116)" onmouseover="showTip(event, 'fs52', 116)" class="t">Literal</span>&gt;]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs53', 117)" onmouseover="showTip(event, 'fs53', 117)" class="i">customersXmlSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">  &lt;Customers&gt;</span>
 <span class="s">    &lt;Customer name=&quot;ACME&quot;&gt;</span>
@@ -455,15 +400,13 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 <span class="s">      &lt;/Order&gt;</span>
 <span class="s">    &lt;/Customer&gt;</span>
 <span class="s">  &lt;/Customers&gt;&quot;&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <p>and you want to transform it into something like this:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
@@ -471,10 +414,8 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-[&lt;<span onmouseout="hideTip(event, 'fs52', 118)" onmouseover="showTip(event, 'fs52', 118)" class="t">Literal</span>&gt;]
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp">[&lt;<span onmouseout="hideTip(event, 'fs52', 118)" onmouseover="showTip(event, 'fs52', 118)" class="t">Literal</span>&gt;]
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs54', 119)" onmouseover="showTip(event, 'fs54', 119)" class="i">orderLinesXmlSample</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
 <span class="s">  &lt;OrderLines&gt;</span>
 <span class="s">    &lt;OrderLine Customer=&quot;ACME&quot; Order=&quot;A012345&quot; Item=&quot;widget&quot; Quantity=&quot;1&quot;/&gt;</span>
@@ -482,15 +423,13 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 <span class="s">    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;skyhook&quot; Quantity=&quot;3&quot;/&gt;</span>
 <span class="s">    &lt;OrderLine Customer=&quot;Southwind&quot; Order=&quot;A012347&quot; Item=&quot;gizmo&quot; Quantity=&quot;4&quot;/&gt;</span>
 <span class="s">  &lt;/OrderLines&gt;&quot;&quot;&quot;</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <p>We'll create types from both the input and output samples and use the constructors on the types generated by the XmlProvider:</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l"> 1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
 <span class="l"> 4: </span>
@@ -502,10 +441,8 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
 <span class="l">10: </span>
 <span class="l">11: </span>
 <span class="l">12: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs55', 120)" onmouseover="showTip(event, 'fs55', 120)" class="t">InputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 121)" onmouseover="showTip(event, 'fs4', 121)" class="t">XmlProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs53', 122)" onmouseover="showTip(event, 'fs53', 122)" class="i">customersXmlSample</span><span class="o">&gt;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">type</span> <span onmouseout="hideTip(event, 'fs55', 120)" onmouseover="showTip(event, 'fs55', 120)" class="t">InputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 121)" onmouseover="showTip(event, 'fs4', 121)" class="t">XmlProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs53', 122)" onmouseover="showTip(event, 'fs53', 122)" class="i">customersXmlSample</span><span class="o">&gt;</span>
 <span class="k">type</span> <span onmouseout="hideTip(event, 'fs56', 123)" onmouseover="showTip(event, 'fs56', 123)" class="t">OutputXml</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 124)" onmouseover="showTip(event, 'fs4', 124)" class="t">XmlProvider</span><span class="o">&lt;</span><span onmouseout="hideTip(event, 'fs54', 125)" onmouseover="showTip(event, 'fs54', 125)" class="i">orderLinesXmlSample</span><span class="o">&gt;</span>
 
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs57', 126)" onmouseover="showTip(event, 'fs57', 126)" class="i">orderLines</span> <span class="o">=</span> 
@@ -517,8 +454,7 @@ Consider the problem of flattening a data set. Let's say you have xml data that 
                                     <span onmouseout="hideTip(event, 'fs61', 142)" onmouseover="showTip(event, 'fs61', 142)" class="i">order</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs67', 143)" onmouseover="showTip(event, 'fs67', 143)" class="i">Number</span>,
                                     <span onmouseout="hideTip(event, 'fs63', 144)" onmouseover="showTip(event, 'fs63', 144)" class="i">line</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs68', 145)" onmouseover="showTip(event, 'fs68', 145)" class="i">Item</span>,
                                     <span onmouseout="hideTip(event, 'fs63', 146)" onmouseover="showTip(event, 'fs63', 146)" class="i">line</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs69', 147)" onmouseover="showTip(event, 'fs69', 147)" class="i">Quantity</span>) |]
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 

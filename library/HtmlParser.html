@@ -47,16 +47,12 @@ The parser is based on the <a href="http://www.whatwg.org/specs/web-apps/current
 Once a document/fragment has been parsed, a set of extension methods over the HTML DOM elements allow you to extract information from a web page
 independently of the actual HTML Type provider.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -67,14 +63,10 @@ search results from the page, extracting the URL and Title of the link.</p>
 the <code>HtmlDocument.Load</code> method. This method will take a URL and make a synchronous web call
 to extract the data from the page. Note: an asynchronous variant <code>HtmlDocument.AsyncLoad</code> is also available</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">results</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">HtmlDocument</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="f">Load</span>(<span class="s">&quot;http://www.google.co.uk/search?q=FSharp.Data&quot;</span>)
-</pre>
-</td>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">results</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">HtmlDocument</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="f">Load</span>(<span class="s">&quot;http://www.google.co.uk/search?q=FSharp.Data&quot;</span>)
+</code></pre></td>
 </tr>
 </table>
 
@@ -85,24 +77,20 @@ which in this case is the url that the search result is pointing to, and additio
 <code>InnerText</code> of the anchor tag to provide the name of the web page for the search result
 we are looking at.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">links</span> <span class="o">=</span> 
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">links</span> <span class="o">=</span> 
     <span onmouseout="hideTip(event, 'fs3', 7)" onmouseover="showTip(event, 'fs3', 7)" class="i">results</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 8)" onmouseover="showTip(event, 'fs7', 8)" class="f">Descendants</span> [<span class="s">&quot;a&quot;</span>]
     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 9)" onmouseover="showTip(event, 'fs8', 9)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs9', 10)" onmouseover="showTip(event, 'fs9', 10)" class="f">choose</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs10', 11)" onmouseover="showTip(event, 'fs10', 11)" class="i">x</span> <span class="k">-&gt;</span> 
            <span onmouseout="hideTip(event, 'fs10', 12)" onmouseover="showTip(event, 'fs10', 12)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 13)" onmouseover="showTip(event, 'fs11', 13)" class="f">TryGetAttribute</span>(<span class="s">&quot;href&quot;</span>)
            <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 14)" onmouseover="showTip(event, 'fs12', 14)" class="t">Option</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 15)" onmouseover="showTip(event, 'fs13', 15)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs14', 16)" onmouseover="showTip(event, 'fs14', 16)" class="i">a</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs10', 17)" onmouseover="showTip(event, 'fs10', 17)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 18)" onmouseover="showTip(event, 'fs15', 18)" class="f">InnerText</span>(), <span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">a</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs16', 20)" onmouseover="showTip(event, 'fs16', 20)" class="f">Value</span>())
     )
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
@@ -112,52 +100,49 @@ like to filter these results as we are probably not interested in them.
 At this point we simply have a sequence of Tuples, so F# makes this trivial using <code>Seq.filter</code>
 and <code>Seq.map</code>.</p>
 
-<table class="pre"><tr><td class="lines"><pre class="fssnip">
-<span class="l">1: </span>
+<table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</pre>
-</td>
-<td class="snippet"><pre class="fssnip">
-<span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 21)" onmouseover="showTip(event, 'fs17', 21)" class="i">searchResults</span> <span class="o">=</span>
+</code></td>
+<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs17', 21)" onmouseover="showTip(event, 'fs17', 21)" class="i">searchResults</span> <span class="o">=</span>
     <span onmouseout="hideTip(event, 'fs6', 22)" onmouseover="showTip(event, 'fs6', 22)" class="i">links</span>
     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 23)" onmouseover="showTip(event, 'fs8', 23)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs18', 24)" onmouseover="showTip(event, 'fs18', 24)" class="f">filter</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs19', 25)" onmouseover="showTip(event, 'fs19', 25)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 26)" onmouseover="showTip(event, 'fs20', 26)" class="i">url</span>) <span class="k">-&gt;</span> 
                     <span onmouseout="hideTip(event, 'fs19', 27)" onmouseover="showTip(event, 'fs19', 27)" class="i">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Cached&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs19', 28)" onmouseover="showTip(event, 'fs19', 28)" class="i">name</span> <span class="o">&lt;&gt;</span> <span class="s">&quot;Similar&quot;</span> <span class="o">&amp;&amp;</span> <span onmouseout="hideTip(event, 'fs20', 29)" onmouseover="showTip(event, 'fs20', 29)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs21', 30)" onmouseover="showTip(event, 'fs21', 30)" class="f">StartsWith</span>(<span class="s">&quot;/url?&quot;</span>))
     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 31)" onmouseover="showTip(event, 'fs8', 31)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs22', 32)" onmouseover="showTip(event, 'fs22', 32)" class="f">map</span> (<span class="k">fun</span> (<span onmouseout="hideTip(event, 'fs19', 33)" onmouseover="showTip(event, 'fs19', 33)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 34)" onmouseover="showTip(event, 'fs20', 34)" class="i">url</span>) <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs19', 35)" onmouseover="showTip(event, 'fs19', 35)" class="i">name</span>, <span onmouseout="hideTip(event, 'fs20', 36)" onmouseover="showTip(event, 'fs20', 36)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs23', 37)" onmouseover="showTip(event, 'fs23', 37)" class="f">Substring</span>(<span class="n">0</span>, <span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="i">url</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs24', 39)" onmouseover="showTip(event, 'fs24', 39)" class="f">IndexOf</span>(<span class="s">&quot;&amp;sa=&quot;</span>))<span class="o">.</span><span class="f">Replace</span>(<span class="s">&quot;/url?q=&quot;</span>, <span class="s">&quot;&quot;</span>))
     <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs8', 40)" onmouseover="showTip(event, 'fs8', 40)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs25', 41)" onmouseover="showTip(event, 'fs25', 41)" class="f">toArray</span>
-</pre>
-</td>
+</code></pre></td>
 </tr>
 </table>
 
 <p>Putting this all together yields the following:</p>
 
 <table class="pre"><tr><td><pre><code>[|("F# Data: Library for Data Access", "http://fsharp.github.io/FSharp.Data/");
-  ("JSON Type Provider",
-   "http://fsharp.github.io/FSharp.Data/library/JsonProvider.html");
-  ("CSV Parser", "http://fsharp.github.io/FSharp.Data/library/CsvFile.html");
   ("CSV Type Provider",
    "http://fsharp.github.io/FSharp.Data/library/CsvProvider.html");
   ("XML Type Provider",
    "http://fsharp.github.io/FSharp.Data/library/XmlProvider.html");
+  ("JSON Type Provider",
+   "http://fsharp.github.io/FSharp.Data/library/JsonProvider.html");
+  ("JSON Parser", "http://fsharp.github.io/FSharp.Data/library/JsonValue.html");
+  ("CSV Parser", "http://fsharp.github.io/FSharp.Data/library/CsvFile.html");
+  ("HTML Type Provider",
+   "http://fsharp.github.io/FSharp.Data/library/HtmlProvider.html");
   ("fsharp/FSharp.Data · GitHub", "https://github.com/fsharp/FSharp.Data");
   ("Src", "https://github.com/fsharp/FSharp.Data/tree/master/src");
   ("560", "https://github.com/fsharp/FSharp.Data/issues/560");
-  ("1673 commits", "https://github.com/fsharp/FSharp.Data/commits/master");
+  ("1706 commits", "https://github.com/fsharp/FSharp.Data/commits/master");
   ("RELEASE_NOTES.md",
    "https://github.com/fsharp/FSharp.Data/blob/master/RELEASE_NOTES.md");
-  ("NuGet Gallery | F# Data 2.2.1", "https://www.nuget.org/packages/FSharp.Data");
+  ("NuGet Gallery | F# Data 2.2.2", "https://www.nuget.org/packages/FSharp.Data");
   ("Microsoft.FSharp.Data.TypeProviders Namespace (F#) - MSDN",
    "https://msdn.microsoft.com/en-gb/library/hh362324.aspx");
   ("Guide - Data Access | The F# Software Foundation - FSharp.org",
    "http://fsharp.org/guides/data-access/");
   ("F# Data: New type provider library - Tomas Petricek",
    "http://tomasp.net/blog/fsharp-data.aspx/");
-  ("F# Charting: Library for Data Visualization - FsLab",
-   "http://fslab.org/FSharp.Charting/");
   ("f# - scripts don't recognize FSharp.Data - Stack Overflow",
    "http://stackoverflow.com/questions/16343876/scripts-dont-recognize-fsharp-data")|]</code></pre></td></tr></table>
 
