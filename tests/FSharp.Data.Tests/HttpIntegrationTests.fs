@@ -142,9 +142,10 @@ let ``all of the manually-set request headers get sent to the server`` ()=
 
 [<Test>]
 let ``Encoding from content-type used`` () =
-    Http.Request("http://localhost:1235/TestServer/RecordRequest", body = TextRequest "Hi Müm", headers = [
-        ContentType "application/bike; charset=utf-8"
-    ]) |> ignore
+    Http.Request(
+        "http://localhost:1235/TestServer/RecordRequest", 
+        body = TextRequest "Hi Müm", 
+        headers = [ ContentType "application/bike; charset=utf-8"]) |> ignore
     MockServer.recordedRequest.Value |> should notEqual null
     use bodyStream = new StreamReader(MockServer.recordedRequest.Value.Body,Encoding.GetEncoding("utf-8"))
     bodyStream.ReadToEnd() |> should equal "Hi Müm"
