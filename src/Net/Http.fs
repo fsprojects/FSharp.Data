@@ -620,7 +620,9 @@ module private HttpHelpers =
                 let encoding =
                     match (defaultArg responseEncodingOverride ""), characterSet with
                     | "", "" -> HttpEncodings.ResponseDefaultEncoding
-                    | "", characterSet -> Encoding.GetEncoding characterSet
+                    // some web servers respond with broken things like Content-Type: text/xml; charset="UTF-8"
+                    // this goes against rfc2616, but it breaks Encoding.GetEncoding, so let us strip this char out
+                    | "", characterSet -> Encoding.GetEncoding (characterSet.Replace("\"",""))
                     | responseEncodingOverride, _ -> HttpEncodings.getEncoding responseEncodingOverride
                 use sr = new StreamReader(memoryStream, encoding)
                 sr.ReadToEnd() |> Text
