@@ -171,15 +171,13 @@ module internal HtmlGenerator =
 
         definitionListType
 
-    let generateTypes asm ns typeName parameters (replacer:AssemblyReplacer) (htmlObjects:HtmlObject list) =
+    let generateTypes asm ns typeName parameters (replacer:AssemblyReplacer) htmlObjects =
 
         let htmlType = ProvidedTypeDefinition(asm, ns, typeName, Some (replacer.ToRuntime typeof<HtmlDocument>), HideObjectMethods = true, NonNullable = true)
         
         let containerTypes = Dictionary<string, ProvidedTypeDefinition>()
 
-        let getTableTypeName = typeNameGenerator()
-        let getListTypeName = typeNameGenerator()
-        let getDefinitionListTypeName = typeNameGenerator()
+        let getTypeName = typeNameGenerator()
 
         let getOrCreateContainer name = 
             match containerTypes.TryGetValue(name) with
@@ -195,17 +193,17 @@ module internal HtmlGenerator =
             match htmlObj with
             | Table table ->
                  let containerType = getOrCreateContainer "Tables"
-                 let create, tableType = createTableType replacer getTableTypeName parameters table
+                 let create, tableType = createTableType replacer getTypeName parameters table
                  htmlType.AddMember tableType
                  containerType.AddMember <| ProvidedProperty(getPropertyName table.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | List list ->
                 let containerType = getOrCreateContainer "Lists"
-                let create, tableType = createListType replacer getListTypeName parameters list
+                let create, tableType = createListType replacer getTypeName parameters list
                 htmlType.AddMember tableType
                 containerType.AddMember <| ProvidedProperty(getPropertyName list.Name, tableType, GetterCode = fun (Singleton doc) -> create doc)
             | DefinitionList definitionList ->
                 let containerType = getOrCreateContainer "DefinitionLists"
-                let tableType = createDefinitionListType replacer getDefinitionListTypeName parameters definitionList
+                let tableType = createDefinitionListType replacer getTypeName parameters definitionList
                 htmlType.AddMember tableType
                 containerType.AddMember <| ProvidedProperty(getPropertyName definitionList.Name, tableType, GetterCode = fun (Singleton doc) -> doc)
 

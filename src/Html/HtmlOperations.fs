@@ -52,7 +52,7 @@ module HtmlNode =
     let name n =
         match n with
         | HtmlElement(name = name) -> name
-        | _ -> String.Empty
+        | _ -> ""
         
     /// Gets all of the nodes immediately under this node
     let elements n =
@@ -227,18 +227,19 @@ module HtmlNode =
                 | true, v -> v
                 | false, _ -> false 
             | None -> false
-        let rec innerText' n =
+        let rec innerText' inRoot n =
+            let exclusions = if inRoot then ["style"; "script"] else exclusions
             match n with
-            | HtmlElement(name, _, content) when exclusions |> List.forall ((<>) name) && (not (isAriaHidden n)) ->
+            | HtmlElement(name, _, content) when List.forall ((<>) name) exclusions && not (isAriaHidden n) ->
                 seq { for e in content do
                         match e with
                         | HtmlText(text) -> yield text
-                        | HtmlComment(_) -> yield String.Empty
-                        | elem -> yield innerText' elem }
+                        | HtmlComment(_) -> yield ""
+                        | elem -> yield innerText' false elem }
                 |> String.Concat
             | HtmlText(text) -> text
-            | _ -> String.Empty
-        innerText' n
+            | _ -> ""
+        innerText' true n
 
     /// Returns the inner text of the current node
     /// Parameters:

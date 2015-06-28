@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -42,7 +42,7 @@ let ``Can handle nested lists``() =
                         </ul>
                     </body>
                 </html>""", PreferOptionals=true>.GetSample().Lists.List1
-    list.Values |> should equal ["1";"Foo Bar";"2";"2";"3"]
+    list.Values |> should equal ["Foo Bar";"1";"2";"2";"3"]
 
 [<Test>]
 let ``Simple List handles missing values``() = 
