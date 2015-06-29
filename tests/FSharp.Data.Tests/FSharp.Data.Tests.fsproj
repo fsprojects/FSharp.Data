@@ -166,6 +166,9 @@
     <None Include="Data\doctor_who.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\doctor_who2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Data\zoopla.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

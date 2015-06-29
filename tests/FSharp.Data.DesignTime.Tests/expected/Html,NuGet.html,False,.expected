@@ -13,6 +13,9 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     static member GetSample: () -> HtmlProvider
     HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "NuGet.html")))
 
+    member Lists: HtmlProvider+ListsContainer with get
+    this
+
     static member Load: stream:System.IO.Stream -> HtmlProvider
     HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
 
@@ -29,6 +32,44 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     this
 
 
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
+    member Dependencies: HtmlProvider+Dependencies with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Dependencies")
+
+    member List2: HtmlProvider+List2 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List2")
+
+    member List6: HtmlProvider+List6 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List6")
+
+    member Menu: HtmlProvider+Menu with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "menu")
+
+    member Owners: HtmlProvider+Owners with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Owners")
+
+    member Tags: HtmlProvider+Tags with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Tags")
+
+
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
     member ``Version History``: HtmlProvider+VersionHistory with get
     let rowConverter = new Func<_,_>(fun (row:string[]) -> 
@@ -40,6 +81,18 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
                                         TextRuntime.GetNonOptionalValue("Last updated", TextRuntime.ConvertDateTime("", value), value))
     HtmlTable<_>.Create(rowConverter, this, "Version History", true)
 
+
+class HtmlProvider+Dependencies : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List2 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List6 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Menu : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Owners : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Tags : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+VersionHistory : FDR.BaseTypes.HtmlTable<HtmlProvider+VersionHistory+Row>
 

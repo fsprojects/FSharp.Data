@@ -39,11 +39,35 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "consumer_main_nav")
 
-    member ``Top 250``: HtmlProvider+Top250 with get
+    member ``GET DISCOVERED``: HtmlProvider+GetDiscovered with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "GET DISCOVERED")
+
+    member ``IMDb Charts``: HtmlProvider+ImDbCharts with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "IMDb Charts")
+
+    member ``Top 250``: HtmlProvider+Top251 with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Top 250")
+
+    member ``Top Movies by Genre``: HtmlProvider+TopMoviesByGenre with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Top Movies by Genre")
+
+    member ``YOUR WATCHLIST``: HtmlProvider+YourWatchlist with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "YOUR WATCHLIST")
 
 
 class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
@@ -84,11 +108,19 @@ class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
 
 class HtmlProvider+ConsumerMainNav : FDR.BaseTypes.HtmlList<string>
 
+class HtmlProvider+GetDiscovered : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+ImDbCharts : FDR.BaseTypes.HtmlList<string>
+
 class HtmlProvider+TakeTheQuiz : FDR.BaseTypes.HtmlTable<HtmlProvider+TakeTheQuiz+Row>
 
-class HtmlProvider+Top250 : FDR.BaseTypes.HtmlList<string>
-
 class HtmlProvider+Top250 : FDR.BaseTypes.HtmlTable<HtmlProvider+Top250+Row>
+
+class HtmlProvider+Top251 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+TopMoviesByGenre : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+YourWatchlist : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+TakeTheQuiz+Row : string * string * string * string * string * string * string * string
     member Column1: string with get

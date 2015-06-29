@@ -34,10 +34,10 @@ let dumpAll inst =
     //dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "doctor_who.html"
+Html { Sample = "doctor_who2.html"
        PreferOptionals = false
        IncludeLayoutTables = false
-       MissingValues = "NaN,NA,#N/A,:"
+       MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
        Culture = "" 
        Encoding = ""
        ResolutionFolder = ""
@@ -74,7 +74,7 @@ Csv { Sample = "AirQuality.csv"
       AssumeMissingValues = false
       PreferOptionals = false
       Quote = '"'
-      MissingValues = "NaN,NA,#N/A,:"
+      MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
       CacheRows = true
       Culture = ""
       Encoding = ""
@@ -109,6 +109,13 @@ let printTables includeLayout (url:string) =
     |> HtmlRuntime.getTables (Some parameters) includeLayout
     |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
 
+let printLists (url:string) = 
+    url
+    |> HtmlDocument.Load
+    |> HtmlRuntime.getLists
+    |> List.iter (printfn "+++++++++++++++++++++++++++++++++++++\n%O")
+
+printLists "https://en.wikipedia.org/wiki/Doctor_Who"
 printTables false "http://en.wikipedia.org/wiki/List_of_Presidents_of_the_United_States"
 printTables false "http://en.wikipedia.org/wiki/The_Championships,_Wimbledon"
 printTables false "http://www.fifa.com/u17womensworldcup/statistics/index.html"

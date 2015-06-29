@@ -1,7 +1,7 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
 #r "../../bin/FSharp.Data.Experimental.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "System.Xml.Linq.dll"
 #load "../Common/FsUnit.fs"
 #else
