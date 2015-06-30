@@ -1,4 +1,5 @@
 source http://nuget.org/api/v2
+source https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
 
 nuget Zlib.Portable
 nuget FSharp.Charting
@@ -8,7 +9,7 @@ nuget NUnit.Runners
 nuget FsCheck
 nuget Nancy.Hosting.Self
 nuget FAKE
-nuget SourceLink.Fake
+nuget SourceLink.Fake 0.6.0-b239
 nuget Nuget.CommandLine
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
