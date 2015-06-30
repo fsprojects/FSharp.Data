@@ -7,7 +7,7 @@ type Stocks = CsvProvider<"http://ichart.finance.yahoo.com/table.csv?s=MSFT">
 
 type RSS = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 
-type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
+//type GitHub = JsonProvider<"https://api.github.com/repos/fsharp/FSharp.Data/issues">
 
 let getTestData() = async {
     do! Http.AsyncRequest("https://accounts.coursera.org/api/v1/login",
@@ -23,19 +23,19 @@ let getTestData() = async {
         |> Async.Ignore
     let! stocks = Stocks.AsyncGetSample()
     let! rss = RSS.AsyncGetSample()
-    let! issues = async {
-        try
-            // doesn't work on Win8 (#548)
-            return! GitHub.AsyncGetSamples()
-        with _ -> 
-            return [| |]
-    }
+//    let! issues = async {
+//        try
+//            // doesn't work on Win8 (#548)
+//            return! GitHub.AsyncGetSamples()
+//        with _ -> 
+//            return [| |]
+//    }
     let! indicator = WorldBankDataProvider<Asynchronous=true>.GetDataContext().Countries.``United Kingdom``.Indicators.``School enrollment, tertiary (% gross)``
     let result = 
         [ 
           [ for row in Seq.truncate 5 stocks.Rows -> sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close ]
           [ for item in Seq.truncate 5 rss.Channel.Items -> item.Title ]
-          [ for issue in Seq.truncate 5 issues -> sprintf "#%d %s" issue.Number issue.Title ]
+//          [ for issue in Seq.truncate 5 issues -> sprintf "#%d %s" issue.Number issue.Title ]
           [ for year, value in Seq.truncate 5 indicator -> sprintf "%d %f" year value ]
         ]
         |> List.collect id
