@@ -156,7 +156,7 @@ open SourceLink
 Target "SourceLink" <| fun () ->
     use repo = new GitRepo(__SOURCE_DIRECTORY__)
     for file in !! "src/*.fsproj" do
-        let proj = VsProj.LoadRelease file
+        let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
         let files = SetBaseDir __SOURCE_DIRECTORY__ proj.Compiles -- "**/paket-files/**"
         let url = sprintf "%s/%s/{0}/%%var2%%" gitRaw gitName
         SourceLink.Index files proj.OutputFilePdb __SOURCE_DIRECTORY__ url
