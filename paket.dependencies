@@ -9,7 +9,7 @@ nuget NUnit.Runners
 nuget FsCheck
 nuget Nancy.Hosting.Self
 nuget FAKE
-nuget SourceLink.Fake 0.6.0-b239
+nuget SourceLink.Fake
 nuget Nuget.CommandLine
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
