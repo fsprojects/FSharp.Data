@@ -26,10 +26,8 @@ NUGET
     NUnit.Runners (2.6.4)
     Octokit (0.13.0)
       Microsoft.Net.Http
+    SourceLink.Fake (0.6.1)
     Zlib.Portable (1.11.0)
-  remote: https://ci.appveyor.com/nuget/sourcelink-helmesfwai2a
-  specs:
-    SourceLink.Fake (0.6.0-b239)
 GITHUB
   remote: fsharp/FAKE
   specs:
