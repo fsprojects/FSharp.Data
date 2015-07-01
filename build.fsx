@@ -154,7 +154,6 @@ Target "SourceLink" <| id
 open SourceLink
 
 Target "SourceLink" <| fun () ->
-    use repo = new GitRepo(__SOURCE_DIRECTORY__)
     for file in !! "src/*.fsproj" do
         let proj = VsProj.Load file ["Configuration","Release"; "VisualStudioVersion","12.0"]
         let files = SetBaseDir __SOURCE_DIRECTORY__ proj.Compiles -- "**/paket-files/**"
