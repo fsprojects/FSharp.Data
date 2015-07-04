@@ -512,12 +512,18 @@ let ``Can parse national rail mobile site correctly``() =
     |> should equal 17
 
 [<Test>]
-let ``Can parse zoopla site correctly``() = 
+let ``Can parse old zoopla site correctly``() = 
     HtmlDocument.Load "data/zoopla.html"
-    |> HtmlDocument.descendantsNamed true ["li"]
-    |> Seq.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
+    |> HtmlDocument.descendantsNamed false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Place" x)
     |> Seq.length 
     |> should equal 100
+
+[<Test>]
+let ``Can parse new zoopla site correctly``() = 
+    HtmlDocument.Load "data/zoopla2.html"
+    |> HtmlDocument.descendantsNamed false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Residence" x)
+    |> Seq.length 
+    |> should equal 10
 
 [<Test>]
 let ``Doesn't insert whitespace on attribute name when there are two whitespace characters before an attribute``() = 
