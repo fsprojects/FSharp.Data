@@ -2,7 +2,7 @@
 * Relax the parsing of the charset field in HTTP response headers to accommodate servers not 100% compliant with RFC2616.
 * Fix parsing of HTML lists with links.
 * Fix parsing of HTML pages with tables and lists with the same name.
-* Fix parsing of HTML documents with missing close tags.
+* Fix parsing of HTML documents with missing closing tags.
 
 #### 2.2.3 - June 13 2015
 * Fixed compatibility with Mono 4.0.
