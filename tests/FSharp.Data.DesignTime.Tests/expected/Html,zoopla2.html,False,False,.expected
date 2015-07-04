@@ -51,6 +51,12 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "Furnishing")
 
+    member ``Home buying resources``: HtmlProvider+HomeBuyingResources with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Home buying resources")
+
     member Keywords: HtmlProvider+Keywords with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
                                         let value = TextConversions.AsString(row)
@@ -68,6 +74,54 @@ class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
                                         let value = TextConversions.AsString(row)
                                         TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
     HtmlList<_>.Create(rowConverter, this, "List1")
+
+    member List11: HtmlProvider+List11 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List11")
+
+    member List12: HtmlProvider+List12 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List12")
+
+    member List13: HtmlProvider+List13 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List13")
+
+    member List14: HtmlProvider+List14 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List14")
+
+    member List15: HtmlProvider+List15 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List15")
+
+    member List16: HtmlProvider+List16 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List16")
+
+    member List8: HtmlProvider+List8 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List8")
+
+    member List9: HtmlProvider+List9 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List9")
 
     member ``Property type``: HtmlProvider+PropertyType with get
     let rowConverter = new Func<_,_>(fun (row:string) -> 
@@ -100,11 +154,29 @@ class HtmlProvider+Features : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+Furnishing : FDR.BaseTypes.HtmlList<string>
 
+class HtmlProvider+HomeBuyingResources : FDR.BaseTypes.HtmlList<string>
+
 class HtmlProvider+Keywords : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+LettingType : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+List1 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List11 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List12 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List13 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List14 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List15 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List16 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List8 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List9 : FDR.BaseTypes.HtmlList<string>
 
 class HtmlProvider+PropertyType : FDR.BaseTypes.HtmlList<string>
 
