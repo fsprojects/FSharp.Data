@@ -719,6 +719,9 @@ class WorldBankDataProvider+ServiceTypes+Countries : FDR.WorldBank.CountryCollec
     member ``Syrian Arab Republic``: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("SYR", "Syrian Arab Republic")
 
+    member ``Taiwan, China``: WorldBankDataProvider+ServiceTypes+Country with get
+    (this :> ICountryCollection).GetCountry("TWN", "Taiwan, China")
+
     member Tajikistan: WorldBankDataProvider+ServiceTypes+Country with get
     (this :> ICountryCollection).GetCountry("TJK", "Tajikistan")
 
@@ -1010,41 +1013,8 @@ class WorldBankDataProvider+ServiceTypes+Topic : FDR.WorldBank.Topic
 
 
 class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
-    member ``(%) Benefits held by 1st 20% population - All Social Insurance``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsi.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - All Social Protection``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsp.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - All Social Safety Nets``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsa.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - Unemp benefits and ALMP``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("lm_ub.bi_q1")
-
-    member ``(%) Generosity of All Social Insurance``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsi.gen_pop")
-
-    member ``(%) Generosity of All Social Protection``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsp.gen_pop")
-
-    member ``(%) Generosity of All Social Safety Nets``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsa.gen_pop")
-
-    member ``(%) Generosity of Unemp benefits and ALMP``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("lm_ub.gen_pop")
-
-    member ``(%) Program participation - All Social Insurance``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsi.cov_pop")
-
     member ``(%) Program participation - All Social Protection``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("allsp.cov_pop")
-
-    member ``(%) Program participation - All Social Safety Nets``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsa.cov_pop")
-
-    member ``(%) Program participation - Unemp benefits and ALMP``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("lm_ub.cov_pop")
 
     member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("PA.NUS.PPP.05")
@@ -1487,11 +1457,11 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Bird species, threatened``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.BIR.THRD.NO")
 
+    member ``Birth attended by Skilled Health worker (in % of total birth)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SH.STA.BRTC.ZS")
+
     member ``Birth rate, crude (per 1,000 people)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DYN.CBRT.IN")
-
-    member ``Births attended by skilled health staff (% of total)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SH.STA.BRTC.ZS")
 
     member ``Boone indicator``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.OI.05")
@@ -4319,6 +4289,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Pension fund assets to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.DI.13")
 
+    member ``Percentage of Population in Rural Areas (in % of Total Population)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL.ZS")
+
     member ``Periodicity and timeliness assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IQ.SCI.PRDC")
 
@@ -4396,9 +4369,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Population, female (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.POP.TOTL.FE.ZS")
-
-    member ``Population, total``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.POP.TOTL")
 
     member ``Portfolio Investment, net (BoP, current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("BN.KLT.PTXL.CD")
@@ -4729,9 +4699,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Rural population``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL")
-
-    member ``Rural population (% of total population)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL.ZS")
 
     member ``Rural population growth (annual %)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.RUR.TOTL.ZG")
@@ -5144,6 +5111,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Time to resolve insolvency (years)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IC.ISV.DURS")
 
+    member ``Total Population (in number of people)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SP.POP.TOTL")
+
     member ``Total amount of debt rescheduled (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.TXR.DPPG.CD")
 
@@ -5392,41 +5362,8 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
 
 class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.IndicatorsDescriptions
-    member ``(%) Benefits held by 1st 20% population - All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsi.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - All Social Protection``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsp.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - All Social Safety Nets``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsa.bi_q1")
-
-    member ``(%) Benefits held by 1st 20% population - Unemp benefits and ALMP``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("lm_ub.bi_q1")
-
-    member ``(%) Generosity of All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsi.gen_pop")
-
-    member ``(%) Generosity of All Social Protection``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsp.gen_pop")
-
-    member ``(%) Generosity of All Social Safety Nets``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsa.gen_pop")
-
-    member ``(%) Generosity of Unemp benefits and ALMP``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("lm_ub.gen_pop")
-
-    member ``(%) Program participation - All Social Insurance``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsi.cov_pop")
-
     member ``(%) Program participation - All Social Protection``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("allsp.cov_pop")
-
-    member ``(%) Program participation - All Social Safety Nets``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsa.cov_pop")
-
-    member ``(%) Program participation - Unemp benefits and ALMP``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("lm_ub.cov_pop")
 
     member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("PA.NUS.PPP.05")
@@ -5869,11 +5806,11 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Bird species, threatened``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.BIR.THRD.NO")
 
+    member ``Birth attended by Skilled Health worker (in % of total birth)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BRTC.ZS")
+
     member ``Birth rate, crude (per 1,000 people)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DYN.CBRT.IN")
-
-    member ``Births attended by skilled health staff (% of total)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BRTC.ZS")
 
     member ``Boone indicator``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.OI.05")
@@ -8701,6 +8638,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Pension fund assets to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.13")
 
+    member ``Percentage of Population in Rural Areas (in % of Total Population)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL.ZS")
+
     member ``Periodicity and timeliness assessment of statistical capacity (scale 0 - 100)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IQ.SCI.PRDC")
 
@@ -8778,9 +8718,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Population, female (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.POP.TOTL.FE.ZS")
-
-    member ``Population, total``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.POP.TOTL")
 
     member ``Portfolio Investment, net (BoP, current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("BN.KLT.PTXL.CD")
@@ -9111,9 +9048,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Rural population``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL")
-
-    member ``Rural population (% of total population)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL.ZS")
 
     member ``Rural population growth (annual %)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.RUR.TOTL.ZG")
@@ -9525,6 +9459,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Time to resolve insolvency (years)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IC.ISV.DURS")
+
+    member ``Total Population (in number of people)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SP.POP.TOTL")
 
     member ``Total amount of debt rescheduled (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.TXR.DPPG.CD")
