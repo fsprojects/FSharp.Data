@@ -1,0 +1,199 @@
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
+    new : () -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "zoopla2.html")))
+
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "zoopla2.html"), f)
+
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "zoopla2.html")))
+
+    member Lists: HtmlProvider+ListsContainer with get
+    this
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    HtmlDocument.Create(false, reader)
+
+    static member Load: uri:string -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+
+    member Tables: HtmlProvider+TablesContainer with get
+    this
+
+
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
+    member ``1 bedroom property to rent in London``: HtmlProvider+1BedroomPropertyToRentInLondon with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "1 bedroom property to rent in London")
+
+    member Features: HtmlProvider+Features with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Features")
+
+    member Furnishing: HtmlProvider+Furnishing with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Furnishing")
+
+    member ``Home buying resources``: HtmlProvider+HomeBuyingResources with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Home buying resources")
+
+    member Keywords: HtmlProvider+Keywords with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Keywords")
+
+    member ``Letting type``: HtmlProvider+LettingType with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Letting type")
+
+    member List1: HtmlProvider+List1 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List1")
+
+    member List11: HtmlProvider+List11 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List11")
+
+    member List12: HtmlProvider+List12 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List12")
+
+    member List13: HtmlProvider+List13 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List13")
+
+    member List14: HtmlProvider+List14 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List14")
+
+    member List15: HtmlProvider+List15 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List15")
+
+    member List16: HtmlProvider+List16 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List16")
+
+    member List8: HtmlProvider+List8 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List8")
+
+    member List9: HtmlProvider+List9 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List9")
+
+    member ``Property type``: HtmlProvider+PropertyType with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "Property type")
+
+
+class HtmlProvider+TablesContainer : FDR.BaseTypes.HtmlDocument
+    member ``Currently available to rent in London``: HtmlProvider+CurrentlyAvailableToRentInLondon with get
+    let rowConverter = new Func<_,_>(fun (row:string[]) -> 
+                                        let value = TextConversions.AsString(row.[0])
+                                        TextRuntime.GetNonOptionalValue("Type", TextRuntime.ConvertString(value), value),
+                                        let value = TextConversions.AsString(row.[1])
+                                        TextRuntime.GetNonOptionalValue("1 bed", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[2])
+                                        TextRuntime.GetNonOptionalValue("2 bed", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[3])
+                                        TextRuntime.GetNonOptionalValue("3 bed", TextRuntime.ConvertInteger("", value), value),
+                                        let value = TextConversions.AsString(row.[4])
+                                        TextRuntime.GetNonOptionalValue("4 bed", TextRuntime.ConvertFloat("", "", value), value))
+    HtmlTable<_>.Create(rowConverter, this, "Currently available to rent in London", true)
+
+
+class HtmlProvider+1BedroomPropertyToRentInLondon : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+CurrentlyAvailableToRentInLondon : FDR.BaseTypes.HtmlTable<HtmlProvider+CurrentlyAvailableToRentInLondon+Row>
+
+class HtmlProvider+Features : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Furnishing : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+HomeBuyingResources : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Keywords : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+LettingType : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List1 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List11 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List12 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List13 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List14 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List15 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List16 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List8 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List9 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+PropertyType : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+CurrentlyAvailableToRentInLondon+Row : string * int * int * int * float
+    member ``1 bed``: int with get
+    (let _,t2,_,_,_ = this in t2)
+
+    member ``2 bed``: int with get
+    (let _,_,t3,_,_ = this in t3)
+
+    member ``3 bed``: int with get
+    (let _,_,_,t4,_ = this in t4)
+
+    member ``4 bed``: float with get
+    (let _,_,_,_,t5 = this in t5)
+
+    member Type: string with get
+    (let t1,_,_,_,_ = this in t1)
+
+

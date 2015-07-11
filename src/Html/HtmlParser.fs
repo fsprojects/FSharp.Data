@@ -14,7 +14,7 @@ open FSharp.Data.Runtime
 /// Represents an HTML attribute. The name is always normalized to lowercase
 type HtmlAttribute = 
 
-    private | HtmlAttribute of name:string * value:string    
+    internal | HtmlAttribute of name:string * value:string    
 
     /// <summary>
     /// Creates an html attribute
@@ -28,10 +28,10 @@ type HtmlAttribute =
 /// Represents an HTML node. The names of elements are always normalized to lowercase
 type HtmlNode =
 
-    private | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
-            | HtmlText of content:string
-            | HtmlComment of content:string
-            | HtmlCData of content:string
+    internal | HtmlElement of name:string * attributes:HtmlAttribute list * elements:HtmlNode list
+             | HtmlText of content:string
+             | HtmlComment of content:string
+             | HtmlCData of content:string
     
     /// <summary>
     /// Creates an html element
@@ -144,7 +144,7 @@ type HtmlNode =
 [<StructuredFormatDisplay("{_Print}")>]
 /// Represents an HTML document
 type HtmlDocument = 
-    private | HtmlDocument of docType:string * elements:HtmlNode list
+    internal | HtmlDocument of docType:string * elements:HtmlNode list
   
     /// <summary>
     /// Creates an html document
@@ -686,44 +686,47 @@ module internal HtmlParser =
             | "area" | "base" | "br" | "col" | "embed"| "hr" | "img" | "input" | "keygen" | "link" | "menuitem" | "meta" | "param" 
             | "source" | "track" | "wbr" -> true
             | _ -> false
-        let rec parse' docType elements expectedTagEnd (tokens:HtmlToken list) =
+        let rec parse' docType elements expectedTagEnd parentTagName (tokens:HtmlToken list) =
             match tokens with
-            | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd rest
+            | DocType dt :: rest -> parse' (dt.Trim()) elements expectedTagEnd parentTagName rest
             | Tag(_, "br", []) :: rest ->
                 let t = HtmlText Environment.NewLine
-                parse' docType (t :: elements) expectedTagEnd rest
+                parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Tag(true, name, attributes) :: rest ->
                let e = HtmlElement(name, attributes, [])
-               parse' docType (e :: elements) expectedTagEnd rest
+               parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag(false, name, attributes) :: rest when canNotHaveChildren name ->
                let e = HtmlElement(name, attributes, [])
-               parse' docType (e :: elements) expectedTagEnd rest
+               parse' docType (e :: elements) expectedTagEnd parentTagName rest
             | Tag(_, name, attributes) :: rest ->
-                let dt, tokens, content = parse' docType [] name rest
+                let dt, tokens, content = parse' docType [] name expectedTagEnd rest
                 let e = HtmlElement(name, attributes, content)
-                parse' dt (e :: elements) expectedTagEnd tokens
+                parse' dt (e :: elements) expectedTagEnd parentTagName tokens
+            | TagEnd name :: _ when name <> expectedTagEnd && name = parentTagName ->
+                // insert missing closing tag
+                parse' docType elements expectedTagEnd parentTagName (TagEnd expectedTagEnd :: tokens)
             | TagEnd name :: rest when name <> expectedTagEnd && (name <> (new String(expectedTagEnd.ToCharArray() |> Array.rev))) -> 
                 // ignore this token if not the expected end tag (or it's reverse, eg: <li></il>)
-                parse' docType elements expectedTagEnd rest
+                parse' docType elements expectedTagEnd parentTagName rest
             | TagEnd _ :: rest -> 
                 docType, rest, List.rev elements
             | Text cont :: rest ->
                 if cont = "" then
                     // ignore this token
-                    parse' docType elements expectedTagEnd rest
+                    parse' docType elements expectedTagEnd parentTagName rest
                 else
                     let t = HtmlText cont
-                    parse' docType (t :: elements) expectedTagEnd rest
+                    parse' docType (t :: elements) expectedTagEnd parentTagName rest
             | Comment cont :: rest -> 
                 let c = HtmlComment cont
-                parse' docType (c :: elements) expectedTagEnd rest
+                parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | CData cont :: rest -> 
                 let c = HtmlCData cont
-                parse' docType (c :: elements) expectedTagEnd rest
+                parse' docType (c :: elements) expectedTagEnd parentTagName rest
             | EOF :: _ -> docType, [], List.rev elements
             | [] -> docType, [], List.rev elements
         let tokens = tokenise reader 
-        let docType, _, elements = tokens |> parse' "" [] ""
+        let docType, _, elements = tokens |> parse' "" [] "" ""
         if List.isEmpty elements then
             failwith "Invalid HTML" 
         docType, elements

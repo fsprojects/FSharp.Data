@@ -153,6 +153,7 @@ type TypeProviderInstantiation =
             ["Html"
              x.Sample
              x.PreferOptionals.ToString()
+             x.IncludeLayoutTables.ToString()
              x.Culture]
         | WorldBank x -> 
             ["WorldBank"

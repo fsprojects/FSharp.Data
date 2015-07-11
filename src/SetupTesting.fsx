@@ -34,7 +34,8 @@ let generateSetupScript dir proj =
         fsProjXml.Document.Descendants(getElemName "Compile")
         |> Seq.choose (fun elem -> getAttrValue "Include" elem)
         |> Seq.filter (Path.GetExtension >> (<>) ".fsi")
-        |> Seq.map (fun path -> "#load \"" + path + "\"")
+        |> Seq.filter (Path.GetFileName >> (<>) "Test.fs")
+        |> Seq.map (fun path -> "#load \"" + path.Replace(@"\", @"\\") + "\"")
         |> Seq.toList
     
     let tempFile = Path.Combine(dir, "__setup__" + proj + "__.fsx")

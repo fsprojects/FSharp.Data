@@ -1547,9 +1547,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``CO2 emissions from electricity and heat production, total (% of total fuel combustion)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CO2.ETOT.ZS")
 
-    member ``CO2 emissions from electricity and heat production, total (million metric tons)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.CO2.ETOT.MT")
-
     member ``CO2 emissions from gaseous fuel consumption (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.GF.ZS")
 
@@ -1565,20 +1562,11 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``CO2 emissions from manufacturing industries and construction (% of total fuel combustion)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CO2.MANF.ZS")
 
-    member ``CO2 emissions from manufacturing industries and construction (million metric tons)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.CO2.MANF.MT")
-
     member ``CO2 emissions from other sectors, excluding residential buildings and commercial and public services (% of total fuel combustion)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CO2.OTHX.ZS")
 
-    member ``CO2 emissions from other sectors, excluding residential buildings and commercial and public services (million metric tons)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.CO2.OTHX.MT")
-
     member ``CO2 emissions from residential buildings and commercial and public services (% of total fuel combustion)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CO2.BLDG.ZS")
-
-    member ``CO2 emissions from residential buildings and commercial and public services (million metric tons)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.CO2.BLDG.MT")
 
     member ``CO2 emissions from solid fuel consumption (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.SF.ZS")
@@ -1588,9 +1576,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``CO2 emissions from transport (% of total fuel combustion)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.CO2.TRAN.ZS")
-
-    member ``CO2 emissions from transport (million metric tons)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.CO2.TRAN.MT")
 
     member ``CO2 intensity (kg per kg of oil equivalent energy use)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.CO2E.EG.ZS")
@@ -1823,9 +1808,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Combustible renewables and waste (% of total energy)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.CRNW.ZS")
 
-    member ``Combustible renewables and waste (metric tons of oil equivalent)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.USE.CRNW.KT.OE")
-
     member ``Commercial bank branches (per 100,000 adults)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FB.CBK.BRCH.P5")
 
@@ -1876,6 +1858,9 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Completeness of birth registration, urban (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.REG.BRTH.UR.ZS")
+
+    member ``Completeness of death registration with cause-of-death information (%)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("SP.REG.DTHS.ZS")
 
     member ``Completeness of infant death reporting (% of reported infant deaths to estimated infant deaths)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SP.DTH.INFR.ZS")
@@ -2135,53 +2120,26 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Electric power consumption (kWh per capita)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.ELEC.KH.PC")
 
-    member ``Electric power consumption (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.USE.ELEC.KH")
-
     member ``Electric power transmission and distribution losses (% of output)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.LOSS.ZS")
-
-    member ``Electric power transmission and distribution losses (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.LOSS.KH")
-
-    member ``Electricity production (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.PROD.KH")
 
     member ``Electricity production from coal sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.COAL.ZS")
 
-    member ``Electricity production from coal sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.COAL.KH")
-
     member ``Electricity production from hydroelectric sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.HYRO.ZS")
-
-    member ``Electricity production from hydroelectric sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.HYRO.KH")
 
     member ``Electricity production from natural gas sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.NGAS.ZS")
 
-    member ``Electricity production from natural gas sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.NGAS.KH")
-
     member ``Electricity production from nuclear sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.NUCL.ZS")
-
-    member ``Electricity production from nuclear sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.NUCL.KH")
 
     member ``Electricity production from oil sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.PETR.ZS")
 
-    member ``Electricity production from oil sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.PETR.KH")
-
     member ``Electricity production from oil, gas and coal sources (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.FOSL.ZS")
-
-    member ``Electricity production from renewable sources (kWh)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.ELC.RNEW.KH")
 
     member ``Electricity production from renewable sources, excluding hydroelectric (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.ELC.RNWX.ZS")
@@ -2270,8 +2228,8 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Energy imports, net (% of energy use)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.IMP.CONS.ZS")
 
-    member ``Energy production (kt of oil equivalent)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.EGY.PROD.KT.OE")
+    member ``Energy intensity level of primary energy (MJ/$2011 PPP GDP)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.EGY.PRIM.PP.KD")
 
     member ``Energy related methane emissions (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.METH.EG.ZS")
@@ -2281,9 +2239,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2011 PPP)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.COMM.GD.PP.KD")
-
-    member ``Energy use (kt of oil equivalent)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EG.USE.COMM.KT.OE")
 
     member ``Exclusive breastfeeding (% of children under 6 months)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("SH.STA.BFED.ZS")
@@ -4721,6 +4676,12 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``Remittance inflows to GDP (%)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("GFDD.OI.13")
 
+    member ``Renewable electricity output (% of total electricity output)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.ELC.RNEW.ZS")
+
+    member ``Renewable energy consumption (% of total final energy consumption)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("EG.FEC.RNEW.ZS")
+
     member ``Renewable internal freshwater resources per capita (cubic meters)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("ER.H2O.INTR.PC")
 
@@ -5968,9 +5929,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``CO2 emissions from electricity and heat production, total (% of total fuel combustion)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.ETOT.ZS")
 
-    member ``CO2 emissions from electricity and heat production, total (million metric tons)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.ETOT.MT")
-
     member ``CO2 emissions from gaseous fuel consumption (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.GF.ZS")
 
@@ -5986,20 +5944,11 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``CO2 emissions from manufacturing industries and construction (% of total fuel combustion)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.MANF.ZS")
 
-    member ``CO2 emissions from manufacturing industries and construction (million metric tons)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.MANF.MT")
-
     member ``CO2 emissions from other sectors, excluding residential buildings and commercial and public services (% of total fuel combustion)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.OTHX.ZS")
 
-    member ``CO2 emissions from other sectors, excluding residential buildings and commercial and public services (million metric tons)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.OTHX.MT")
-
     member ``CO2 emissions from residential buildings and commercial and public services (% of total fuel combustion)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.BLDG.ZS")
-
-    member ``CO2 emissions from residential buildings and commercial and public services (million metric tons)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.BLDG.MT")
 
     member ``CO2 emissions from solid fuel consumption (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.SF.ZS")
@@ -6009,9 +5958,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``CO2 emissions from transport (% of total fuel combustion)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.TRAN.ZS")
-
-    member ``CO2 emissions from transport (million metric tons)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.CO2.TRAN.MT")
 
     member ``CO2 intensity (kg per kg of oil equivalent energy use)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.CO2E.EG.ZS")
@@ -6244,9 +6190,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Combustible renewables and waste (% of total energy)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.CRNW.ZS")
 
-    member ``Combustible renewables and waste (metric tons of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.CRNW.KT.OE")
-
     member ``Commercial bank branches (per 100,000 adults)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FB.CBK.BRCH.P5")
 
@@ -6297,6 +6240,9 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Completeness of birth registration, urban (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.REG.BRTH.UR.ZS")
+
+    member ``Completeness of death registration with cause-of-death information (%)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("SP.REG.DTHS.ZS")
 
     member ``Completeness of infant death reporting (% of reported infant deaths to estimated infant deaths)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SP.DTH.INFR.ZS")
@@ -6556,53 +6502,26 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Electric power consumption (kWh per capita)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.ELEC.KH.PC")
 
-    member ``Electric power consumption (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.ELEC.KH")
-
     member ``Electric power transmission and distribution losses (% of output)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.LOSS.ZS")
-
-    member ``Electric power transmission and distribution losses (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.LOSS.KH")
-
-    member ``Electricity production (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.PROD.KH")
 
     member ``Electricity production from coal sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.COAL.ZS")
 
-    member ``Electricity production from coal sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.COAL.KH")
-
     member ``Electricity production from hydroelectric sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.HYRO.ZS")
-
-    member ``Electricity production from hydroelectric sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.HYRO.KH")
 
     member ``Electricity production from natural gas sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.NGAS.ZS")
 
-    member ``Electricity production from natural gas sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.NGAS.KH")
-
     member ``Electricity production from nuclear sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.NUCL.ZS")
-
-    member ``Electricity production from nuclear sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.NUCL.KH")
 
     member ``Electricity production from oil sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.PETR.ZS")
 
-    member ``Electricity production from oil sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.PETR.KH")
-
     member ``Electricity production from oil, gas and coal sources (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.FOSL.ZS")
-
-    member ``Electricity production from renewable sources (kWh)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.RNEW.KH")
 
     member ``Electricity production from renewable sources, excluding hydroelectric (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.RNWX.ZS")
@@ -6691,8 +6610,8 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     member ``Energy imports, net (% of energy use)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.IMP.CONS.ZS")
 
-    member ``Energy production (kt of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.EGY.PROD.KT.OE")
+    member ``Energy intensity level of primary energy (MJ/$2011 PPP GDP)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.EGY.PRIM.PP.KD")
 
     member ``Energy related methane emissions (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.METH.EG.ZS")
@@ -6702,9 +6621,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Energy use (kg of oil equivalent) per $1,000 GDP (constant 2011 PPP)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.COMM.GD.PP.KD")
-
-    member ``Energy use (kt of oil equivalent)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.COMM.KT.OE")
 
     member ``Exclusive breastfeeding (% of children under 6 months)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("SH.STA.BFED.ZS")
@@ -9141,6 +9057,12 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Remittance inflows to GDP (%)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.OI.13")
+
+    member ``Renewable electricity output (% of total electricity output)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.ELC.RNEW.ZS")
+
+    member ``Renewable energy consumption (% of total final energy consumption)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("EG.FEC.RNEW.ZS")
 
     member ``Renewable internal freshwater resources per capita (cubic meters)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("ER.H2O.INTR.PC")

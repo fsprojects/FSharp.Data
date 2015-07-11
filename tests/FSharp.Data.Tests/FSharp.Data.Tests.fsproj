@@ -172,6 +172,9 @@
     <None Include="Data\zoopla.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\zoopla2.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Data\charrefs-full.json" />
     <None Include="Data\charrefs.json" />
     <Content Include="Data/JsonInXml.xml">

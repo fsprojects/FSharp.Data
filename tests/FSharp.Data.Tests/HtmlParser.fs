@@ -68,6 +68,18 @@ let ``Can handle unclosed tags correctly``() =
     result |> should equal expected
 
 [<Test>]
+let ``Can handle unclosed divs inside lis correctly``() = 
+    let simpleHtml = "<ul><li><div></li><li></li></ul>"
+    let result = HtmlDocument.Parse simpleHtml    
+    let expected = 
+        HtmlDocument.New 
+            [ HtmlNode.NewElement
+                  ("ul", 
+                   [ HtmlNode.NewElement("li", [ HtmlNode.NewElement("div")])
+                     HtmlNode.NewElement("li")]) ]
+    result |> should equal expected
+
+[<Test>]
 let ``Can handle multiple char refs in a text run``() = 
     let html = HtmlNode.Parse "<div>&quot;Foo&quot;</div>"
     let result = html.Head.InnerText()
@@ -512,12 +524,18 @@ let ``Can parse national rail mobile site correctly``() =
     |> should equal 17
 
 [<Test>]
-let ``Can parse zoopla site correctly``() = 
+let ``Can parse old zoopla site correctly``() = 
     HtmlDocument.Load "data/zoopla.html"
-    |> HtmlDocument.descendantsNamed true ["li"]
-    |> Seq.filter (HtmlNode.hasAttribute "itemtype" "http://schema.org/Place")
+    |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Place" x)
     |> Seq.length 
     |> should equal 100
+
+[<Test>]
+let ``Can parse new zoopla site correctly``() = 
+    HtmlDocument.Load "data/zoopla2.html"
+    |> HtmlDocument.descendants false (fun x -> HtmlNode.hasName "li" x && HtmlNode.hasAttribute "itemtype" "http://schema.org/Residence" x)
+    |> Seq.length 
+    |> should equal 10
 
 [<Test>]
 let ``Doesn't insert whitespace on attribute name when there are two whitespace characters before an attribute``() = 
