@@ -57,8 +57,8 @@ or add reference to a project. The type is located in <code>FSharp.Net</code> na
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
 </code></pre></td>
 </tr>
@@ -76,8 +76,8 @@ can use <code>Http.RequestString</code> and <code>Http.AsyncRequestString</code>
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Download the content of a web site</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Download the content of a web site</span>
 <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="f">RequestString</span>(<span class="s">&quot;http://tomasp.net&quot;</span>)
 
 <span class="c">// Download web site asynchronously</span>
@@ -99,8 +99,8 @@ can pass them using the optional parameter <code>query</code>. The following exa
 specifies the GET method, but it will be set automatically for you if you omit it:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 14)" onmouseover="showTip(event, 'fs3', 14)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 15)" onmouseover="showTip(event, 'fs4', 15)" class="f">RequestString</span>(<span class="s">&quot;http://httpbin.org/get&quot;</span>, <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">query</span><span class="o">=</span>[<span class="s">&quot;test&quot;</span>, <span class="s">&quot;foo&quot;</span>], <span class="i">httpMethod</span><span class="o">=</span><span class="s">&quot;GET&quot;</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 14)" onmouseover="showTip(event, 'fs3', 14)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 15)" onmouseover="showTip(event, 'fs4', 15)" class="f">RequestString</span>(<span class="s">&quot;http://httpbin.org/get&quot;</span>, <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">query</span><span class="o">=</span>[<span class="s">&quot;test&quot;</span>, <span class="s">&quot;foo&quot;</span>], <span class="i">httpMethod</span><span class="o">=</span><span class="s">&quot;GET&quot;</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -121,8 +121,8 @@ provide your API key:</p>
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// API key for http://www.themoviedb.org</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// API key for http://www.themoviedb.org</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="i">apiKey</span> <span class="o">=</span> <span class="s">&quot;&lt;please register to get a key&gt;&quot;</span>
 
 <span class="c">// Run the HTTP web request</span>
@@ -142,8 +142,8 @@ use the full name <code>HttpRequestHeaders.Accept</code>, or open the module and
 well known content types:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 22)" onmouseover="showTip(event, 'fs1', 22)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 23)" onmouseover="showTip(event, 'fs2', 23)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 24)" onmouseover="showTip(event, 'fs14', 24)" class="i">HttpRequestHeaders</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 22)" onmouseover="showTip(event, 'fs1', 22)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 23)" onmouseover="showTip(event, 'fs2', 23)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs14', 24)" onmouseover="showTip(event, 'fs14', 24)" class="i">HttpRequestHeaders</span>
 </code></pre></td>
 </tr>
 </table>
@@ -153,8 +153,8 @@ well known content types:</p>
 <span class="l">3: </span>
 <span class="l">4: </span>
 <span class="l">5: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Run the HTTP web request</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Run the HTTP web request</span>
 <span onmouseout="hideTip(event, 'fs3', 25)" onmouseover="showTip(event, 'fs3', 25)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 26)" onmouseover="showTip(event, 'fs4', 26)" class="f">RequestString</span>
   ( <span class="s">&quot;http://api.themoviedb.org/3/search/movie&quot;</span>,
     <span onmouseout="hideTip(event, 'fs12', 27)" onmouseover="showTip(event, 'fs12', 27)" class="i">query</span>   <span class="o">=</span> [ <span class="s">&quot;api_key&quot;</span>, <span onmouseout="hideTip(event, 'fs13', 28)" onmouseover="showTip(event, 'fs13', 28)" class="i">apiKey</span>; <span class="s">&quot;query&quot;</span>, <span class="s">&quot;batman&quot;</span> ],
@@ -172,8 +172,8 @@ the response content, so it's easier to debug in F# interactive when the server 
 <p>You can also opt out of the exception by specifying the <code>silentHttpErrors</code> parameter:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 32)" onmouseover="showTip(event, 'fs3', 32)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 33)" onmouseover="showTip(event, 'fs4', 33)" class="f">RequestString</span>(<span class="s">&quot;http://api.themoviedb.org/3/search/movie&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 32)" onmouseover="showTip(event, 'fs3', 32)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 33)" onmouseover="showTip(event, 'fs4', 33)" class="f">RequestString</span>(<span class="s">&quot;http://api.themoviedb.org/3/search/movie&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)
 </code></pre></td>
 </tr>
 </table>
@@ -194,8 +194,8 @@ the url you passed when there are redirects), you can use the <code>Request</cod
 <span class="l">5: </span>
 <span class="l">6: </span>
 <span class="l">7: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 34)" onmouseover="showTip(event, 'fs18', 34)" class="i">response</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 35)" onmouseover="showTip(event, 'fs3', 35)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 36)" onmouseover="showTip(event, 'fs19', 36)" class="f">Request</span>(<span class="s">&quot;http://api.themoviedb.org/3/search/movie&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs18', 34)" onmouseover="showTip(event, 'fs18', 34)" class="i">response</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 35)" onmouseover="showTip(event, 'fs3', 35)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs19', 36)" onmouseover="showTip(event, 'fs19', 36)" class="f">Request</span>(<span class="s">&quot;http://api.themoviedb.org/3/search/movie&quot;</span>, <span class="i">silentHttpErrors</span> <span class="o">=</span> <span class="k">true</span>)
 
 <span class="c">// Examine information about the response</span>
 <span onmouseout="hideTip(event, 'fs18', 37)" onmouseover="showTip(event, 'fs18', 37)" class="i">response</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs20', 38)" onmouseover="showTip(event, 'fs20', 38)" class="i">Headers</span>
@@ -224,8 +224,8 @@ is a discriminated union with three cases:</p>
 returns the request details:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 45)" onmouseover="showTip(event, 'fs3', 45)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="f">RequestString</span>(<span class="s">&quot;http://httpbin.org/post&quot;</span>, <span class="i">body</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="p">FormValues</span> [<span class="s">&quot;test&quot;</span>, <span class="s">&quot;foo&quot;</span>])
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 45)" onmouseover="showTip(event, 'fs3', 45)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 46)" onmouseover="showTip(event, 'fs4', 46)" class="f">RequestString</span>(<span class="s">&quot;http://httpbin.org/post&quot;</span>, <span class="i">body</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs24', 47)" onmouseover="showTip(event, 'fs24', 47)" class="p">FormValues</span> [<span class="s">&quot;test&quot;</span>, <span class="s">&quot;foo&quot;</span>])
 </code></pre></td>
 </tr>
 </table>
@@ -238,8 +238,8 @@ this behaviour by adding <code>content-type</code> to the list of headers using 
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 48)" onmouseover="showTip(event, 'fs3', 48)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="f">RequestString</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span onmouseout="hideTip(event, 'fs3', 48)" onmouseover="showTip(event, 'fs3', 48)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs4', 49)" onmouseover="showTip(event, 'fs4', 49)" class="f">RequestString</span>
   ( <span class="s">&quot;http://httpbin.org/post&quot;</span>, 
     <span class="i">headers</span> <span class="o">=</span> [ <span onmouseout="hideTip(event, 'fs25', 50)" onmouseover="showTip(event, 'fs25', 50)" class="f">ContentType</span> <span onmouseout="hideTip(event, 'fs16', 51)" onmouseover="showTip(event, 'fs16', 51)" class="t">HttpContentTypes</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs17', 52)" onmouseover="showTip(event, 'fs17', 52)" class="i">Json</span> ],
     <span class="i">body</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs26', 53)" onmouseover="showTip(event, 'fs26', 53)" class="p">TextRequest</span> <span class="s">&quot;&quot;&quot; {&quot;test&quot;: 42} &quot;&quot;&quot;</span>)
@@ -261,8 +261,8 @@ parameter. The following example will request the MSDN documentation for the
 <span class="l">6: </span>
 <span class="l">7: </span>
 <span class="l">8: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// Build URL with documentation for a given class</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// Build URL with documentation for a given class</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs27', 54)" onmouseover="showTip(event, 'fs27', 54)" class="f">msdnUrl</span> <span onmouseout="hideTip(event, 'fs28', 55)" onmouseover="showTip(event, 'fs28', 55)" class="i">className</span> <span class="o">=</span> 
   <span class="k">let</span> <span onmouseout="hideTip(event, 'fs29', 56)" onmouseover="showTip(event, 'fs29', 56)" class="i">root</span> <span class="o">=</span> <span class="s">&quot;http://msdn.microsoft.com&quot;</span>
   <span onmouseout="hideTip(event, 'fs30', 57)" onmouseover="showTip(event, 'fs30', 57)" class="f">sprintf</span> <span class="s">&quot;</span><span class="pf">%s</span><span class="s">/en-gb/library/</span><span class="pf">%s</span><span class="s">.aspx&quot;</span> <span onmouseout="hideTip(event, 'fs29', 58)" onmouseover="showTip(event, 'fs29', 58)" class="i">root</span> <span onmouseout="hideTip(event, 'fs28', 59)" onmouseover="showTip(event, 'fs28', 59)" class="i">className</span>
@@ -293,8 +293,8 @@ we will be presented with the F# code snippets:</p>
 <span class="l">13: </span>
 <span class="l">14: </span>
 <span class="l">15: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 67)" onmouseover="showTip(event, 'fs34', 67)" class="i">Net</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs33', 66)" onmouseover="showTip(event, 'fs33', 66)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs34', 67)" onmouseover="showTip(event, 'fs34', 67)" class="i">Net</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs35', 68)" onmouseover="showTip(event, 'fs35', 68)" class="i">cc</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs36', 69)" onmouseover="showTip(event, 'fs36', 69)" class="t">CookieContainer</span>()
 
 <span class="c">// Send a request to switch the language</span>
@@ -325,8 +325,8 @@ we will be presented with the F# code snippets:</p>
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="i">logoUrl</span> <span class="o">=</span> <span class="s">&quot;https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">let</span> <span onmouseout="hideTip(event, 'fs40', 83)" onmouseover="showTip(event, 'fs40', 83)" class="i">logoUrl</span> <span class="o">=</span> <span class="s">&quot;https://raw.github.com/fsharp/FSharp.Data/master/misc/logo.png&quot;</span>
 <span class="k">match</span> <span onmouseout="hideTip(event, 'fs3', 84)" onmouseover="showTip(event, 'fs3', 84)" class="t">Http</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs41', 85)" onmouseover="showTip(event, 'fs41', 85)" class="f">Request</span>(<span onmouseout="hideTip(event, 'fs40', 86)" onmouseover="showTip(event, 'fs40', 86)" class="i">logoUrl</span>)<span class="o">.</span><span class="i">Body</span> <span class="k">with</span>
 | <span onmouseout="hideTip(event, 'fs42', 87)" onmouseover="showTip(event, 'fs42', 87)" class="p">Text</span> <span onmouseout="hideTip(event, 'fs43', 88)" onmouseover="showTip(event, 'fs43', 88)" class="i">text</span> <span class="k">-&gt;</span> 
     <span onmouseout="hideTip(event, 'fs8', 89)" onmouseover="showTip(event, 'fs8', 89)" class="f">printfn</span> <span class="s">&quot;Got text content: </span><span class="pf">%s</span><span class="s">&quot;</span> <span onmouseout="hideTip(event, 'fs43', 90)" onmouseover="showTip(event, 'fs43', 90)" class="i">text</span>
@@ -357,8 +357,8 @@ create a <code>X509ClientCertificate2</code> value, and add it to the <code>Clie
 <span class="l"> 8: </span>
 <span class="l"> 9: </span>
 <span class="l">10: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs33', 96)" onmouseover="showTip(event, 'fs33', 96)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 97)" onmouseover="showTip(event, 'fs47', 97)" class="i">Security</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 98)" onmouseover="showTip(event, 'fs48', 98)" class="i">Cryptography</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 99)" onmouseover="showTip(event, 'fs49', 99)" class="i">X509Certificates</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs33', 96)" onmouseover="showTip(event, 'fs33', 96)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs47', 97)" onmouseover="showTip(event, 'fs47', 97)" class="i">Security</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs48', 98)" onmouseover="showTip(event, 'fs48', 98)" class="i">Cryptography</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs49', 99)" onmouseover="showTip(event, 'fs49', 99)" class="i">X509Certificates</span>
 
 <span class="c">// Load the certificate from local file</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs50', 100)" onmouseover="showTip(event, 'fs50', 100)" class="i">clientCert</span> <span class="o">=</span> 

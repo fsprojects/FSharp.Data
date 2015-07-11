@@ -58,8 +58,8 @@
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="prep">#r</span> <span class="s">&quot;../../../../bin/FSharp.Data.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Data</span>
 </code></pre></td>
 </tr>
@@ -79,8 +79,8 @@
 <span class="l">4: </span>
 <span class="l">5: </span>
 <span class="l">6: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// 株価データをダウンロード</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// 株価データをダウンロード</span>
 <span class="k">let</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">msft</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">CsvFile</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="f">Load</span>(<span class="s">&quot;http://ichart.finance.yahoo.com/table.csv?s=MSFT&quot;</span>)<span class="o">.</span><span class="f">Cache</span>()
 
 <span class="c">// HLOC形式で株価を表示</span>
@@ -128,8 +128,8 @@
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 16)" onmouseover="showTip(event, 'fs1', 16)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 17)" onmouseover="showTip(event, 'fs2', 17)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">CsvExtensions</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 16)" onmouseover="showTip(event, 'fs1', 16)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 17)" onmouseover="showTip(event, 'fs2', 17)" class="i">Data</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 18)" onmouseover="showTip(event, 'fs10', 18)" class="i">CsvExtensions</span>
 
 <span class="k">for</span> <span onmouseout="hideTip(event, 'fs6', 19)" onmouseover="showTip(event, 'fs6', 19)" class="i">row</span> <span class="k">in</span> <span onmouseout="hideTip(event, 'fs3', 20)" onmouseover="showTip(event, 'fs3', 20)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs7', 21)" onmouseover="showTip(event, 'fs7', 21)" class="i">Rows</span> <span class="k">do</span>
   <span onmouseout="hideTip(event, 'fs8', 22)" onmouseover="showTip(event, 'fs8', 22)" class="f">printfn</span> <span class="s">&quot;HLOC: (</span><span class="pf">%f</span><span class="s">, </span><span class="pf">%M</span><span class="s">, </span><span class="pf">%O</span><span class="s">)&quot;</span> (<span onmouseout="hideTip(event, 'fs6', 23)" onmouseover="showTip(event, 'fs6', 23)" class="i">row</span><span class="o">.</span>[<span class="s">&quot;High&quot;</span>]<span class="o">.</span><span class="f">AsFloat</span>()) (<span onmouseout="hideTip(event, 'fs6', 24)" onmouseover="showTip(event, 'fs6', 24)" class="i">row</span><span class="o">?</span><span class="i">Low</span><span class="o">.</span><span class="f">AsDecimal</span>()) (<span onmouseout="hideTip(event, 'fs6', 25)" onmouseover="showTip(event, 'fs6', 25)" class="i">row</span><span class="o">?</span><span class="i">Date</span><span class="o">.</span><span class="f">AsDateTime</span>())
@@ -148,8 +148,8 @@
 <span class="l">2: </span>
 <span class="l">3: </span>
 <span class="l">4: </span>
-</code></td>
-<td class="snippet"><pre class="fssnip"><code lang="fsharp"><span class="c">// 終値が始値よりも高いもののうち、上位10位の株価をTSV(タブ区切り)形式で保存します：</span>
+</pre></td>
+<td class="snippet"><pre class="fssnip highlighted"><code lang="fsharp"><span class="c">// 終値が始値よりも高いもののうち、上位10位の株価をTSV(タブ区切り)形式で保存します：</span>
 <span onmouseout="hideTip(event, 'fs3', 26)" onmouseover="showTip(event, 'fs3', 26)" class="i">msft</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 27)" onmouseover="showTip(event, 'fs11', 27)" class="f">Filter</span>(<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs6', 28)" onmouseover="showTip(event, 'fs6', 28)" class="i">row</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs6', 29)" onmouseover="showTip(event, 'fs6', 29)" class="i">row</span><span class="o">?</span><span class="i">Close</span><span class="o">.</span><span class="f">AsFloat</span>() <span class="o">&gt;</span> <span onmouseout="hideTip(event, 'fs6', 30)" onmouseover="showTip(event, 'fs6', 30)" class="i">row</span><span class="o">?</span><span class="i">Open</span><span class="o">.</span><span class="f">AsFloat</span>())
     <span class="o">.</span><span class="f">Truncate</span>(<span class="n">10</span>)
     <span class="o">.</span><span class="f">SaveToString</span>(<span class="s">&#39;\t&#39;</span>)
