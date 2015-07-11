@@ -345,9 +345,9 @@ module private HttpHelpers =
         return output 
     }
 
-    let getProperty (typ:Type) obj prop =
+    let getProperty (typ:Type) obj prop =        
 #if FX_NET_CORE_REFLECTION
-        let prop = typ.GetRuntimeProperty(prop)
+        let prop = try typ.GetRuntimeProperty prop with _ -> null
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj) |> unbox |> Some
@@ -356,7 +356,7 @@ module private HttpHelpers =
         else
             None
 #else
-        let prop = typ.GetProperty(prop)
+        let prop = try typ.GetProperty prop with _ -> null
         if prop <> null && prop.CanRead then
             try
                 prop.GetValue(obj, [| |]) |> unbox |> Some
