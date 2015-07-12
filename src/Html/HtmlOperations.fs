@@ -215,8 +215,10 @@ module HtmlNode =
         hasAttribute "id" id n
 
     /// Returns true if the current node has the specified class
-    let inline hasClass cssClass n = 
-        hasAttribute "class" cssClass n
+    let inline hasClass (cssClass:string) n = 
+        let presentClasses = (attributeValue "class" n).Split [|' '|] 
+        let classesToLookFor = cssClass.Split [|' '|]
+        classesToLookFor |> Array.forall (fun cssClass -> presentClasses |> Array.exists ((=) cssClass))
 
     let innerTextExcluding exclusions n = 
         let exclusions = "style" :: "script" :: exclusions

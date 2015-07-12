@@ -1,3 +1,6 @@
+#### 2.2.5 - Unreleased
+* Fix HtmlNode.hasClass to work on multi class elements.
+
 #### 2.2.4 - July 11 2015
 * Relax the parsing of the charset field in HTTP response headers to accommodate servers not 100% compliant with RFC2616.
 * Fix parsing of HTML lists with links.
