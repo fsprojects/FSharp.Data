@@ -1,4 +1,4 @@
-#### 2.2.5 - Unreleased
+#### 2.2.5 - July 12 2015
 * Fix HtmlNode.hasClass to work on multi class elements.
 
 #### 2.2.4 - July 11 2015
