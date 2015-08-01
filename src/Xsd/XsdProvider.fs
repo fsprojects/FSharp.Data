@@ -23,7 +23,6 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XsdProvider", Some typeof<obj>)
 
   let buildTypes (typeName:string) (args:obj[]) =
-    try
         let elements = ref []
         let types = ref  StructuralTypes.InferedType.Top
         // Generate the required type
@@ -65,8 +64,12 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                               failwith "Could not find a file and could not interprete as valid XML either"
               let schema = read reader
               schema.SourceUri <- path
+              let schemaSet = new XmlSchemaSet()
+              schemaSet.Add(schema) |> ignore
               elements := [for e in schema.Elements do yield e:?>XmlSchemaElement]
-              schema |> XsdBuilder.generateType <| includeMetadata <| failOnUnsupported |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              let xsdtypes = schemaSet |> XsdBuilder.generateType <| includeMetadata <| failOnUnsupported 
+              let consolidatedTypes = xsdtypes |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              consolidatedTypes
             types := ts
             ts
           | _ -> !types
@@ -105,15 +108,21 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
         
         let inferedType = getTypes sample
         
-        match inferedType with
-          StructuralTypes.InferedType.Heterogeneous types ->
-            for (_,t) in types |> Map.toList do
+        let typeList = 
+          match inferedType with
+            StructuralTypes.InferedType.Heterogeneous types ->
+                types |>  Map.fold(fun st _ t -> t::st) []
+          | StructuralTypes.InferedType.Record _ -> [inferedType]
+          | _ as t -> failwithf "Did not expect %A" t
+        for t in typeList do
               match t with
               StructuralTypes.InferedType.Record(Some _, [{Name = ""; Type = StructuralTypes.InferedType.Primitive(_)}],_) ->
                   ()
-              | StructuralTypes.InferedType.Record(Some n, _,_)  ->
+              | StructuralTypes.InferedType.Record(Some qn, _,_)  ->
                 //For each top level type create a method to parse that type
-                let n = NameUtils.nicePascalName n
+                let n = match qn.Split('}') with 
+                        | [|n|] | [|_;n|] -> NameUtils.nicePascalName  n
+                        | _ -> failwithf "can't parse name %s" qn
                 let res = providedType.GetMember(n) 
                 match res with
                   [||] -> 
@@ -147,10 +156,8 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                   | [|res|] -> failwithf "%s is not a provided type but a " res.Name (res.GetType().Name)
                   | _ as res -> failwithf "Found several nested types (%A) with the name %s" res n
               | _ -> ()
-          | _ as t -> failwithf "Did not expect %A" t
+          
         providedType
-    with e ->
-       failwith (e.ToString())
     
 
   // Add static parameter that specifies the API we want to get (compile-time) 

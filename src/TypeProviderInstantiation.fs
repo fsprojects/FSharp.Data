@@ -29,6 +29,12 @@ type XmlProviderArgs =
       Culture : string
       ResolutionFolder : string }
 
+type XsdProviderArgs = 
+    { SchemaFile : string
+      IncludeMetadata : bool
+      FailOnUnsupported : bool
+      ResolutionFolder : string }
+
 type JsonProviderArgs = 
     { Sample : string
       SampleIsList : bool
@@ -57,10 +63,13 @@ type TypeProviderInstantiation =
     | Json of JsonProviderArgs
     | WorldBank of WorldBankProviderArgs
     | Freebase of FreebaseProviderArgs
+    | Xsd of XsdProviderArgs
+    | Comment of string
 
     member x.GenerateType resolutionFolder runtimeAssembly =
         let f, args =
             match x with
+            | Comment _ -> failwith "Can't instantiate a comment"
             | Csv x -> 
                 (fun cfg -> new CsvProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -83,6 +92,12 @@ type TypeProviderInstantiation =
                    box x.Global
                    box x.Culture
                    box x.ResolutionFolder |] 
+            | Xsd x ->
+                (fun cfg -> new XsdProvider(cfg) :> TypeProviderForNamespaces),
+                [| box x.SchemaFile
+                   box resolutionFolder
+                   box x.IncludeMetadata
+                   box x.FailOnUnsupported |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -109,6 +124,7 @@ type TypeProviderInstantiation =
 
     override x.ToString() =
         match x with
+        | Comment c -> [c]
         | Csv x -> 
             ["Csv"
              x.Sample
@@ -134,11 +150,18 @@ type TypeProviderInstantiation =
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString()]
+        | Xsd x ->
+           ["Xsd"
+            x.SchemaFile
+            x.FailOnUnsupported.ToString()
+            x.ResolutionFolder
+            x.IncludeMetadata.ToString()]
         | Freebase x -> 
             ["Freebase"
              x.NumIndividuals.ToString()
              x.UseUnitsOfMeasure.ToString()
              x.Pluralize.ToString()]
+        
         |> String.concat ","
 
     member x.ExpectedPath outputFolder = 
@@ -147,12 +170,15 @@ type TypeProviderInstantiation =
     member x.Dump resolutionFolder outputFolder runtimeAssembly signatureOnly ignoreOutput =
         let replace (oldValue:string) (newValue:string) (str:string) = str.Replace(oldValue, newValue)        
         let output = 
-            x.GenerateType resolutionFolder runtimeAssembly
-            |> match x with
-               | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
-               | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
-            |> replace "FSharp.Data.Runtime." "FDR."
-            |> replace resolutionFolder "<RESOLUTION_FOLDER>"
+            match x with
+            | Comment _ -> ""
+            | _ ->
+               x.GenerateType resolutionFolder runtimeAssembly
+               |> match x with
+                  | Freebase _ -> Debug.prettyPrint signatureOnly ignoreOutput 5 10
+                  | _ -> Debug.prettyPrint signatureOnly ignoreOutput 10 100
+               |> replace "FSharp.Data.Runtime." "FDR."
+               |> replace resolutionFolder "<RESOLUTION_FOLDER>"
         if outputFolder <> "" then
             File.WriteAllText(x.ExpectedPath outputFolder, output)
         output
@@ -160,6 +186,7 @@ type TypeProviderInstantiation =
     static member Parse (line:string) =
         let args = line.Split [|','|]
         match args.[0] with
+        | _ as token when token.StartsWith("//") ->  args |> String.Concat |> Comment
         | "Csv" ->
             Csv { Sample = args.[1]
                   Separators = args.[2]
@@ -199,6 +226,13 @@ type TypeProviderInstantiation =
                        LocalCache = true
                        AllowLocalQueryEvaluation = true 
                        UseRefinedTypes = true }
+        | "Xsd" ->
+            Xsd {
+               SchemaFile = args.[1]
+               IncludeMetadata = args.[2] |> bool.Parse
+               FailOnUnsupported = args.[3] |> bool.Parse
+               ResolutionFolder = ""
+            }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices

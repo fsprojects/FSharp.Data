@@ -14,10 +14,10 @@ open System.Linq
 
 module debug = 
     let print = System.Diagnostics.Debug.Print
-//This and the following SIMple and complex are simple wrappers
+//This and the following Simple and complex are simple wrappers
 //for the types from System.Xml.SChema namespace that adds a little stricter typing
 //an only exposes the properties required for the provider
-type internal SchemaType(this : System.Xml.Schema.XmlSchemaType, failOnUnsupported : bool) =
+type internal SchemaType(xmlSchemaType : System.Xml.Schema.XmlSchemaType, set:Schema, failOnUnsupported : bool) =
       
    let uniqueNiceName = NameUtils.uniqueGenerator NameUtils.nicePascalName
    let getParentElement node =
@@ -41,10 +41,10 @@ type internal SchemaType(this : System.Xml.Schema.XmlSchemaType, failOnUnsupport
        def
    member private x._typeName = 
        new Lazy<string>( fun () ->
-            match this.QualifiedName with
+            match xmlSchemaType.QualifiedName with
             name when name = null || String.IsNullOrWhiteSpace(name.Name) ->
-                if String.IsNullOrEmpty(this.Name) then
-                  let p = this |> getParentElement
+                if String.IsNullOrEmpty(xmlSchemaType.Name) then
+                  let p = xmlSchemaType |> getParentElement
                   match p with
                   :? XmlSchemaElement as p ->
                       p.Name |> uniqueNiceName
@@ -52,14 +52,14 @@ type internal SchemaType(this : System.Xml.Schema.XmlSchemaType, failOnUnsupport
                       a.Name |> uniqueNiceName
                   | _ -> failwith "Expected an element or an attribute"
                 else 
-                   this.Name
-            | name -> name.ToString())
+                   xmlSchemaType.Name
+            | name -> sprintf "{%s}%s" name.Namespace name.Name)
 
-   static member Create(this : System.Xml.Schema.XmlSchemaType, failOnUnsupported:bool) =
-        match this with
+   static member Create(xmlSchemaType : System.Xml.Schema.XmlSchemaType, set:Schema, failOnUnsupported:bool) =
+        match xmlSchemaType with
         null -> failwith "Can't create anything from null" 
-        | :? XmlSchemaSimpleType as t -> new simpleType(t, failOnUnsupported) :> SchemaType
-        | :? XmlSchemaComplexType as t -> new complexType(t,failOnUnsupported) :> SchemaType
+        | :? XmlSchemaSimpleType as t -> new simpleType(t, set, failOnUnsupported) :> SchemaType
+        | :? XmlSchemaComplexType as t -> new complexType(t,set, failOnUnsupported) :> SchemaType
         | _ as typeDeclaration -> failwithf "Can't create type. Unknown type definition %s %s" (typeDeclaration.Name.ToString()) (typeDeclaration.GetType().Name)
 
    member x.Schema 
@@ -68,14 +68,14 @@ type internal SchemaType(this : System.Xml.Schema.XmlSchemaType, failOnUnsupport
                 match node.Parent with
                 | :? XmlSchema as s ->  s
                 |_ as p -> _inner p 
-            _inner this
+            _inner xmlSchemaType
 
    member x.Name 
        with get() = x._typeName.Value
-   member internal x.FindType = Schema(x.Schema, failOnUnsupported).FindType
+   member internal x.FindType = set.FindType
 
-and internal complexType(this : System.Xml.Schema.XmlSchemaComplexType, failOnUnsupported :bool) =
-   inherit SchemaType(this, failOnUnsupported)
+and internal complexType(xmlSchemaType : System.Xml.Schema.XmlSchemaComplexType, set : Schema, failOnUnsupported :bool) =
+   inherit SchemaType(xmlSchemaType, set, failOnUnsupported)
    let fromAttributesCollection (collection:XmlSchemaObjectCollection) = 
                [ for a in collection
                    do 
@@ -94,11 +94,11 @@ and internal complexType(this : System.Xml.Schema.XmlSchemaComplexType, failOnUn
                                               yield el]
                           | _ -> []
    member private x.contentElements mapper =
-         match this.ContentModel with
+         match xmlSchemaType.ContentModel with
          | null -> []
          | :? XmlSchemaComplexContent
          | :? XmlSchemaSimpleContent ->
-             match this.ContentModel.Content with
+             match xmlSchemaType.ContentModel.Content with
              | null -> []
              | :? XmlSchemaSimpleContentExtension ->
                  x.fail "ContentExtensions not supported" []
@@ -107,7 +107,7 @@ and internal complexType(this : System.Xml.Schema.XmlSchemaComplexType, failOnUn
              | :? XmlSchemaComplexContentExtension as extension ->
                  (extension.Particle,extension.Attributes,extension.BaseTypeName.ToString()) |> mapper
              | _ as content -> x.failf "Unexpected content type %A" content [] 
-         | _ -> x.failf "Unsupported content model %A" this.ContentModel []
+         | _ -> x.failf "Unsupported content model %A" xmlSchemaType.ContentModel []
 
    member  x.Elements 
        with get() : XmlSchemaElement list = 
@@ -123,12 +123,12 @@ and internal complexType(this : System.Xml.Schema.XmlSchemaComplexType, failOnUn
                    inheritedElements@fromExtension
                 | _ -> x.fail "can't extend a simple type" fromExtension
 
-            let elements = elementsFromParticle this.Particle
+            let elements = elementsFromParticle xmlSchemaType.Particle
             (x.contentElements fromComplexContent)@(elements)
 
    member x.Attributes
        with get() : XmlSchemaAttribute list =
-           let attributes = fromAttributesCollection this.Attributes
+           let attributes = fromAttributesCollection xmlSchemaType.Attributes
            let fromComplexContent (_,attributes,baseName) =
                       let t:SchemaType = baseName |> x.FindType
                       let fromExtension =  fromAttributesCollection attributes
@@ -143,27 +143,27 @@ and internal complexType(this : System.Xml.Schema.XmlSchemaComplexType, failOnUn
 
            ((x.contentElements fromComplexContent))@(attributes)
 
-   member x.IsChoice with get() = this.Particle :? XmlSchemaChoice 
+   member x.IsChoice with get() = xmlSchemaType.Particle :? XmlSchemaChoice 
 
-and internal simpleType(this : System.Xml.Schema.XmlSchemaSimpleType, failOnUnsupported:bool) =
-   inherit SchemaType(this,  failOnUnsupported )
+and internal simpleType(xmlSchemaType : System.Xml.Schema.XmlSchemaSimpleType, set:Schema, failOnUnsupported:bool) =
+   inherit SchemaType(xmlSchemaType,  set, failOnUnsupported )
    
    member x.Restrictions 
        with get () = 
-            match this.Content with
+            match xmlSchemaType.Content with
             :? XmlSchemaSimpleTypeRestriction as content -> 
                   match content.Facets with
                   null -> []
                   | content ->
                       [for restriction in content
                            do yield restriction]
-            | _ -> x.failf "simple type definition not supported (%A)" (this.LineNumber,this.LinePosition) []
+            | _ -> x.failf "simple type definition not supported (%A)" (xmlSchemaType.LineNumber,xmlSchemaType.LinePosition) []
              
    member x.BaseTypeName 
        with get() = 
-            match this.BaseXmlSchemaType with
+            match xmlSchemaType.BaseXmlSchemaType with
             null ->
-                match this.Content with
+                match xmlSchemaType.Content with
                 :? XmlSchemaSimpleTypeRestriction as restriction -> 
                    restriction.BaseTypeName
                 | :? XmlSchemaSimpleTypeUnion as extension ->
@@ -174,10 +174,12 @@ and internal simpleType(this : System.Xml.Schema.XmlSchemaSimpleType, failOnUnsu
                 | _ -> failwith "Type could not be determine"
             | t -> t.QualifiedName
 
-and internal Schema(this:System.Xml.Schema.XmlSchema, failOnUnsupported : bool) =
+and internal Schema(xmlSchemaSet:System.Xml.Schema.XmlSchemaSet, failOnUnsupported : bool) =
     static member Read (un,path)  = 
              use reader = new StreamReader(File.OpenRead(path))
-             new Schema(System.Xml.Schema.XmlSchema.Read(reader, (fun o (e:ValidationEventArgs) -> failwith e.Message)),un)
+             let s = new System.Xml.Schema.XmlSchemaSet()
+             s.Add(System.Xml.Schema.XmlSchema.Read(reader, (fun o (e:ValidationEventArgs) -> failwith e.Message))) |> ignore
+             new Schema(s ,un)
 
     static member Namespace = "http://www.w3.org/2001/XMLSchema"
     static member NativeTypes 
@@ -196,18 +198,25 @@ and internal Schema(this:System.Xml.Schema.XmlSchema, failOnUnsupported : bool) 
                      ("date"        , typeof<DateTime>);
                      ("duration"    , typeof<TimeSpan>);
                      ("boolean"     , typeof<bool>);
+                     ("{http://www.w3.org/2001/XMLSchema}string"      , typeof<string>);
+                     ("{http://www.w3.org/2001/XMLSchema}anyURI"      , typeof<string>);
+                     ("{http://www.w3.org/2001/XMLSchema}base64string", typeof<string>);
+                     ("{http://www.w3.org/2001/XMLSchema}hexBinary"   , typeof<string>);
+                     ("{http://www.w3.org/2001/XMLSchema}integer"     , typeof<int>);
+                     ("{http://www.w3.org/2001/XMLSchema}int"         , typeof<int>);
+                     ("{http://www.w3.org/2001/XMLSchema}byte"        , typeof<System.Int16>);
+                     ("{http://www.w3.org/2001/XMLSchema}double"      , typeof<System.Double>);
+                     ("{http://www.w3.org/2001/XMLSchema}decimal"     , typeof<System.Decimal>);
+                     ("{http://www.w3.org/2001/XMLSchema}float"       , typeof<System.Single>);
+                     ("{http://www.w3.org/2001/XMLSchema}dateTime"    , typeof<DateTime>);
+                     ("{http://www.w3.org/2001/XMLSchema}time"        , typeof<DateTime>);
+                     ("{http://www.w3.org/2001/XMLSchema}date"        , typeof<DateTime>);
+                     ("{http://www.w3.org/2001/XMLSchema}duration"    , typeof<TimeSpan>);
+                     ("{http://www.w3.org/2001/XMLSchema}boolean"     , typeof<bool>);
                      ] 
-    
-    member private x.Read (external:XmlSchemaExternal) =
-        try
-            let root = Path.GetDirectoryName(this.SourceUri)
-            let path = Path.Combine(root,external.SchemaLocation)    
-            Schema.Read (failOnUnsupported,path)
-        with e ->
-            failwith (this.SourceUri)
 
     member internal x.FindType (name:string) =
-        //this implementation does not work across namespaces
+        //xmlSchemaType implementation does not work across namespaces
         match x.Types |> List.filter (fun t-> 
                                        match name.Contains ":" with
                                        true -> t.Name = name || ((name.Split(':').Last() = t.Name) && t.Name.Contains(":") |> not)
@@ -215,42 +224,29 @@ and internal Schema(this:System.Xml.Schema.XmlSchema, failOnUnsupported : bool) 
         [t] -> t
         | [] -> failwithf "Type '%s' not found %A" name x.Types
         | _ -> failwithf "multiple types with the name '%s' found" name
-    member X.Elements
+    member private x.Items
         with get() =
-           [for i in this.Items do if i :? XmlSchemaElement then yield i :?> XmlSchemaElement]
+           [for sch in xmlSchemaSet.Schemas() do
+               if sch:? XmlSchema then
+                   let sch = sch :?> XmlSchema
+                   for i in sch.Items do yield i]
+
+    member x.Elements
+        with get() =
+           [for i in x.Items do if i :? XmlSchemaElement then yield i :?> XmlSchemaElement]
+   
+
     member x.Types
         with get() : SchemaType list = 
-             if this = null then failwith "The schema can't be null"
-             let types =
-               match this.Items with
-               null -> []
-               | items ->
-                 [for t in items 
-                     do 
-                       if t :? XmlSchemaType then yield SchemaType.Create(t :?> XmlSchemaType, failOnUnsupported)
-                 ]
-             match this.Includes with
-             null -> types
-             | includes -> 
-               types@[for i in includes 
-                          do
-                            match i with
-                            :? XmlSchemaInclude as incl ->
-                                  for t in x.Read(incl).Types do yield t
-                            | _ -> ()]
-
-    member x.ImportedTypes 
-        with get() = 
-             [for imported  in this.Includes
-                 do
-                    match imported with
-                    :? XmlSchemaImport as imported ->
-                         for t in x.Read(imported).Types do yield t
-                    | _ -> ()]
+             if xmlSchemaSet = null then failwith "The schema can't be null"
+             [for t in x.Items 
+                   do 
+                     if t :? XmlSchemaType then yield SchemaType.Create(t :?> XmlSchemaType, x, failOnUnsupported)
+               ]
 
 module XsdBuilder = 
-  let generateType (schema:System.Xml.Schema.XmlSchema) includeMetadata failOnUnsupported =
-    let elementFormIsDefault = schema.ElementFormDefault = XmlSchemaForm.Qualified    
+  let generateType (schema:System.Xml.Schema.XmlSchemaSet) includeMetadata failOnUnsupported =
+    schema.Compile()
     let schema = Schema(schema, failOnUnsupported)
     let _types = new System.Collections.Generic.Dictionary<string, InferedType>()
 
@@ -262,8 +258,6 @@ module XsdBuilder =
                                                Type = InferedType.Primitive(t,None,false)}],false)
                                 
          _types.Add(name,p)
-         let qualified = Schema.Namespace + ":" + name
-         _types.Add(qualified.ToString(),p)
          
     let findType = schema.FindType
     let rec getTypeFromAnnotated (el:XmlSchemaAnnotated) =
@@ -272,26 +266,41 @@ module XsdBuilder =
               :? XmlSchemaElement as e -> 
                    e.SchemaTypeName,e.SchemaType
               | :? XmlSchemaAttribute as e -> e.SchemaTypeName,e.SchemaType :> XmlSchemaType
-              |_ -> failwithf "Expected an element or an attribute but got %A" el
-         let typeName =  
-             schemaTypeName.ToString()
-         let t = 
-             typeName |> getType 
+              |_ -> failwithf "Expected an element or an attribute but got %A" el 
+
+         if schemaTypeName.Name = "" then
+                 match schemaType with
+                 :? XmlSchemaSimpleType as simpleT ->
+                         SchemaType.Create(simpleT, schema, failOnUnsupported)
+                         |> createType
+                         |> Some
+                 | :? XmlSchemaComplexType as complexT ->
+                         SchemaType.Create(complexT, schema, failOnUnsupported)
+                         |> createType
+                         |> Some
+                 | _ ->
+                     if failOnUnsupported then
+                          failwithf "Couldn't find type for %A" el
+                     else
+                         None
+         else
+            let t = sprintf "{%s}%s" (schemaTypeName.Namespace) (schemaTypeName.Name)
+                    |> getType
          
-         match t,schemaType with
-         None, null ->
-             //This can happen if it's a restriction that doesn't change the type
-             match el.Parent with
-             :? XmlSchemaSimpleContentRestriction
-             | :? XmlSchemaComplexContentRestriction ->
-                  None 
-             | _ -> 
-                 failwithf "Couldn't find type %s. node was %A and parent %A" typeName el (el.Parent)
-         | None, _ -> 
-             //The element/attribute has an anonymous type 
-             SchemaType.Create(schemaType, failOnUnsupported)
-             |> createType |> Some
-         | Some(t), _ -> Some(t)
+            match t, schemaType with
+            None, null ->
+                //xmlSchemaType can happen if it's a restriction that doesn't change the type
+                match el.Parent with
+                :? XmlSchemaSimpleContentRestriction
+                | :? XmlSchemaComplexContentRestriction ->
+                     None 
+                | _ -> 
+                    failwithf "Couldn't find type. node was %A and parent %A"  el (el.Parent)
+            | None, _ -> 
+                //The element/attribute has an anonymous type 
+                SchemaType.Create(schemaType,schema, failOnUnsupported)
+                |> createType |> Some
+            | Some(t), _ -> Some(t)
 
     and createElements (elements:XmlSchemaElement list) = 
            elements
@@ -321,32 +330,31 @@ module XsdBuilder =
         if String.IsNullOrWhiteSpace(typeName) then
             None
         else 
+            let filter (t:SchemaType) = t.Name = typeName
             match _types.TryGetValue(typeName) with
             true,t -> 
                Some(t)
             | false,_ -> 
                 //might violate namespaces
                 //lookup already build types and XSD native types
-                match (_types.Keys |> Seq.filter (fun key -> key.Split(':').Last() = typeName)).SingleOrDefault() with
-                null -> 
+                match _types.TryGetValue typeName with
+                false,_ -> 
                     //It's not native and it's not created already
-                    match schema.Types |> List.filter(fun t -> t.Name = typeName), typeName.Contains(":") with
+                    let typeDecl = schema.Types |> List.filter filter
+
+                    match typeDecl with
                     //we found one matching without namespace
-                    t::_,_ -> Some(t |> createType)
-                    | _ , true when typeName.IndexOf(Schema.Namespace,StringComparison.InvariantCultureIgnoreCase) >= 0 -> 
-                        //we've already searched for build in types so default to string
-                        getType (Schema.Namespace + ":string")
-                    | _ , true when not elementFormIsDefault ->
-                        match schema.Types |> List.filter(fun t -> t.Name = typeName.Split(':').Last()) with
+                    t::_ -> Some(t |> createType)
+                    | [] ->
+                        match schema.Types |> List.filter filter with
                         t::_ -> Some(t |> createType)
-                        | [] -> getType (Schema.Namespace + ":string")
-                    | _ , false when elementFormIsDefault ->
-                        match schema.Types |> List.filter(fun t -> t.Name.Split(':').Last() = typeName) with
-                        t::_ -> Some(t |> createType)
-                        | [] -> getType (Schema.Namespace + ":string")
-                    | _ -> failwithf "Unknown type %s %A" typeName (schema.Types |> List.map(fun e -> e.Name))             
-                | key -> 
-                    Some(_types.[key])
+                        | [] -> 
+                           if failOnUnsupported then
+                               failwithf "unknown type %s" typeName
+                           else
+                               Some(_types.[sprintf "{%s}string" Schema.Namespace])
+                | true,t -> 
+                    Some(t)
 
     and createType (typeDeclaration:SchemaType) =
       let n = typeDeclaration.Name
@@ -355,9 +363,8 @@ module XsdBuilder =
       else
           let t = 
                match typeDeclaration with
-                 _ when _types.ContainsKey (n) -> _types.[n]
-                 | :? simpleType as simple -> 
-                      let typeName = simple.BaseTypeName.ToString()
+               | :? simpleType as simple -> 
+                      let typeName = sprintf "{%s}%s" (simple.BaseTypeName.Namespace) (simple.BaseTypeName.Name)
                       let t = 
                           let t =
                               match typeName |> getType with
@@ -372,8 +379,8 @@ module XsdBuilder =
                           Some n,
                             [{Name = "";
                               Type =  t}],false)
-                 | :? complexType as typeDeclaration -> 
-                      let elements = 
+               | :? complexType as typeDeclaration -> 
+                      let els = 
                          typeDeclaration.Elements 
                          |> createElements
                          
@@ -390,7 +397,7 @@ module XsdBuilder =
 
                              createConstant("TargetNamespace",typeDeclaration.Schema.TargetNamespace)
                              ::createConstant("TypeName", typeDeclaration.Name)
-                             ::elements 
+                             ::els 
                              |> List.map (
                                   fun element -> 
                                     match element with
@@ -406,7 +413,7 @@ module XsdBuilder =
                                                                     Type = InferedType.Collection(props)}],o)))) 
                                     | e -> e    )
                          else
-                              elements
+                              els
                       let attributes = 
                             typeDeclaration.Attributes 
                             |> List.map( fun a ->
@@ -431,7 +438,7 @@ module XsdBuilder =
                             {Name = "";
                               Type = InferedType.Collection(elements |> Map.ofList)}::attributes,false)
                       
-                 | _ -> failwithf "unknown type definition %s %s" (typeDeclaration.Name.ToString()) (typeDeclaration.GetType().Name)
+               | _ -> failwithf "unknown type definition %s %s" (typeDeclaration.Name.ToString()) (typeDeclaration.GetType().Name)
           try
             _types.Add(n,t)
           with e ->
@@ -439,11 +446,6 @@ module XsdBuilder =
             :? ArgumentException -> failwithf "duplication of type '%s'" n
             | _ -> raise e
           t
-
-    //Make all the imported types available.
-    //They will all be added to _types but only those used will be provided
-    schema.ImportedTypes |>
-    List.iter (fun t -> _types.Add(t.Name,createType t)) 
 
     //define all the types of the schema
     let types = schema.Types 
@@ -454,12 +456,12 @@ module XsdBuilder =
                    |> createElements
                    |> List.zip schema.Elements
                    //For the free elements we want them to be named after the element and not have the type name only
-                   //This is essentially to have the xtra Parse methods named after the elements
-                   //since the implementation relies on this
+                   //xmlSchemaType is essentially to have the extra Parse methods named after the elements
+                   //since the implementation relies on xmlSchemaType
                    |> List.map (fun (e,(_,(_,typ)) as t) -> 
                                   match typ with
                                   InferedType.Record(Some _, p, o) ->
-                                      InferedType.Record(Some (e.Name),p,o)
+                                      InferedType.Record(Some (e.Name.Replace(":","__")),p,o)
                                   | _ -> failwithf "Elements must be represented with a record %A" t)
     types@elements
     

@@ -294,7 +294,7 @@ module internal XmlTypeBuilder =
        
                     match node with
                     | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
-       
+                        
                         let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
                         let result = generateXmlType ctx typ 
        

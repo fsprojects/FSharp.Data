@@ -104,8 +104,8 @@ let ``Simple schema``() =
     root.AnonymousTyped.Covert    |> should equal true
     root.AnonymousTyped.Attr      |> should equal "fish"
     root.AnonymousTyped.Windy     |> should equal "strong"
-//    root.Metadata.TargetNamespace |> should equal "https://github.com/FSharp.Data/"
-//    root.Metadata.TypeName        |> should equal "root"
+    root.TargetNamespace          |> should equal "https://github.com/FSharp.Data/"
+    root.TypeName                 |> should equal "root"
 
 [<Test>]
 let ``Invalid xml for schema``() =
@@ -226,9 +226,84 @@ let ``Extension on complex types``() =
                <color value="string"/>
              </shirt>
            </items>"""
+
     let items = schemaWithExtension.ParseItems xml
     items.Hat.IsSome             |> should equal true
     items.Hat.Value.Number       |> should equal 100
     items.Hat.Value.Name         |> should equal "string"
     items.Shirt.Value.Sleeve     |> should equal 100
     items.Umbrella.Value.EffDate |> should equal <| new System.DateTime(1900,1,1)
+
+type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" >
+        <annotation>
+          <documentation>This is an identification of the preferred language</documentation>
+        </annotation>
+      </element>
+      <element name="elem1" type="tns:foo" />
+      <element name="anonymousTyped">
+        <complexType>
+          <sequence>
+            <element name="covert">
+            <complexType>
+                <choice>
+                   <element name="truth" type="string" />
+                   <element name="lie"   type="string" />
+                   <element ref="tns:elem1" />
+                </choice>
+            </complexType>
+            </element>
+          </sequence>
+          <attribute name="attr" type="string" />
+          <attribute name="windy">
+            <simpleType>
+              <restriction base="string">
+                <maxLength value="10" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="ISO639Code">
+        <annotation>
+          <documentation>This is an ISO 639-1 or 639-2 identifier</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="10" />
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+</schema>""", IncludeMetadata = true>
+
+
+[<Test>]
+let ``nested anonymous types and ref elements``() =
+    let xml = 
+         """<?xml version="1.0" encoding="utf-8"?>
+            <schema>
+              <root>
+                <elem>it starts with a number</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <ISO639Code>dk-DA</ISO639Code>
+                </elem1>
+                <anonymousTyped attr="fish" windy="strong" >
+                  <covert><truth>true</truth></covert>
+                </anonymousTyped>
+              </root>
+            </schema>
+         """ 
+    let data = anonymousTypes.Parse xml
+    let root = data.Root
+
+    root.AnonymousTyped.Covert.Elem1 |> should equal ""
