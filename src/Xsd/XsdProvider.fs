@@ -29,10 +29,10 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
         let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
         
         let sample = args.[0] :?> string
-        let resolutionFolder = args.[1] :?> string
-        let includeMetadata = args.[2] :?> bool
-        let failOnUnsupported = args.[3] :?>  bool
-        
+        let resolutionFolder = 
+            match args.[1] :?> string with
+            "" -> cfg.ResolutionFolder
+            | _ as str -> str
         let parseSingle _ value = XDocument.Parse(value).Root
         let parseList _ value = XDocument.Parse(value).Root.Elements()
         
@@ -61,14 +61,15 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                            if  exists then
                               path, new StreamReader(File.OpenRead(path)) :> TextReader
                            else
-                              failwith "Could not find a file and could not interprete as valid XML either"
+                              failwithf "Could not find a file at %s and could not interprete as valid XML either" (Path.Combine(resolutionFolder,sample))
               let schema = read reader
               schema.SourceUri <- path
               let schemaSet = new XmlSchemaSet()
               schemaSet.Add(schema) |> ignore
-              elements := [for e in schema.Elements do yield e:?>XmlSchemaElement]
-              let xsdtypes = schemaSet |> XsdBuilder.generateType <| includeMetadata <| failOnUnsupported 
-              let consolidatedTypes = xsdtypes |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              elements := [for e in schema.Elements 
+                            do if e:? XmlSchemaElement then yield e:?>XmlSchemaElement]
+              let xsdtypes = schemaSet |> XsdBuilder.generateType
+              let consolidatedTypes = xsdtypes |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.InferedType.Top 
               consolidatedTypes
             types := ts
             ts
@@ -163,16 +164,12 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("SchemaFile", typeof<string>)
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("IncludeMetadata", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("FailOnUnsupported", typeof<bool>, parameterDefaultValue = true)]
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")]
 
   let helpText = 
     """<summary>Typed representation of a XML file based on a xml schema definition (XSD)</summary>
        <param name='SchemaFile'>Location of a XSD file or a string containing the XSD</param>                    
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
-       <param name='IncludeMetadata'>If true XSD metadata such as target namespace will be included and accessible from each generated type</param>
-       <param name='FailOnUnsupported'>If false then the provider will ignore unsupported features and do it's best to generate a type hierachie</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do xmlProvTy.AddXmlDoc helpText
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)

@@ -31,8 +31,6 @@ type XmlProviderArgs =
 
 type XsdProviderArgs = 
     { SchemaFile : string
-      IncludeMetadata : bool
-      FailOnUnsupported : bool
       ResolutionFolder : string }
 
 type JsonProviderArgs = 
@@ -93,11 +91,15 @@ type TypeProviderInstantiation =
                    box x.Culture
                    box x.ResolutionFolder |] 
             | Xsd x ->
+                let file = x.SchemaFile
+                let schema =
+                    if System.IO.File.Exists file then
+                        System.IO.File.ReadAllText(file)
+                    else
+                        file
                 (fun cfg -> new XsdProvider(cfg) :> TypeProviderForNamespaces),
-                [| box x.SchemaFile
-                   box resolutionFolder
-                   box x.IncludeMetadata
-                   box x.FailOnUnsupported |] 
+                [| box schema
+                   box resolutionFolder |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -153,9 +155,7 @@ type TypeProviderInstantiation =
         | Xsd x ->
            ["Xsd"
             x.SchemaFile
-            x.FailOnUnsupported.ToString()
-            x.ResolutionFolder
-            x.IncludeMetadata.ToString()]
+            x.ResolutionFolder]
         | Freebase x -> 
             ["Freebase"
              x.NumIndividuals.ToString()
@@ -229,8 +229,6 @@ type TypeProviderInstantiation =
         | "Xsd" ->
             Xsd {
                SchemaFile = args.[1]
-               IncludeMetadata = args.[2] |> bool.Parse
-               FailOnUnsupported = args.[3] |> bool.Parse
                ResolutionFolder = ""
             }
         | _ -> failwithf "Unknown: %s" args.[0]

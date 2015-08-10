@@ -273,7 +273,8 @@ module internal XmlTypeBuilder =
                         | _ -> failwithf "generateXmlType: A choice type of an attribute can only contain primitive types, got %A" typ
                 
                 | InferedType.Primitive(typ, unit, optional) -> createMemberForAttribute typ unit optional
-                | InferedType.Null -> createMemberForAttribute typeof<string> None false 
+                | InferedType.Null -> 
+                createMemberForAttribute typeof<string> None false 
                 
                 | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type
        

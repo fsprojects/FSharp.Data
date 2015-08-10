@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
+  <element name="elem1" type="tns:foo" />
+  <complexType name="root">
+    <sequence>
+      <element name="elem" type="string" >
+        <annotation>
+          <documentation>This is an identification of the preferred language</documentation>
+        </annotation>
+      </element>
+      
+      <element name="anonymousTyped">
+        <complexType>
+          <sequence>
+            <element name="covert">
+              <complexType>
+                <choice>
+                  <element name="truth" type="string" />
+                  <element name="lie"   type="string" />
+                  <element ref="tns:elem1" />
+                </choice>
+              </complexType>
+            </element>
+          </sequence>
+          <attribute name="attr" type="string" />
+          <attribute name="windy">
+            <simpleType>
+              <restriction base="string">
+                <maxLength value="10" />
+              </restriction>
+            </simpleType>
+          </attribute>
+        </complexType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="foo">
+    <sequence>
+      <element name="fooElem" type="boolean" />
+      <element name="ISO639Code">
+        <annotation>
+          <documentation>This is an ISO 639-1 or 639-2 identifier</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="10" />
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+</schema>
