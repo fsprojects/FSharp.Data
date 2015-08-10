@@ -33,7 +33,6 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                 match args.[1] :?> string with
                 "" -> cfg.ResolutionFolder
                 | _ as str -> str
-        
         let parseSingle _ value = XDocument.Parse(value).Root
         let parseList _ value = XDocument.Parse(value).Root.Elements()
         
@@ -62,7 +61,7 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                            if  exists then
                               path, new StreamReader(File.OpenRead(path)) :> TextReader
                            else
-                              failwith "Could not find a file and could not interprete as valid XML either"
+                              failwithf "Could not find a file at %s and could not interprete as valid XML either" (Path.Combine(resolutionFolder,sample))
               let schema = read reader
               schema.SourceUri <- path
               let schemaSet = new XmlSchemaSet()

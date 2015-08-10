@@ -298,7 +298,6 @@ module internal XmlTypeBuilder =
                       
                             match typ with
                             | InferedType.Primitive(primTyp, unit, false) ->
-                        
                                 let typ, conv = ctx.ConvertValue <| PrimitiveInferedProperty.Create(tag.NiceName, primTyp, true, unit)
                                 choiceTy.AddMember <|
                                     ProvidedProperty(tag.NiceName, typ, GetterCode = fun (Singleton attrVal) -> 

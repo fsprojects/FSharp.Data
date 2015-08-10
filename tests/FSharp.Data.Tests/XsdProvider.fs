@@ -12,6 +12,7 @@ open FSharp.Data
 open FsUnit
 open System.Xml.Linq
 
+<<<<<<< HEAD
 type schema = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
   <complexType name="root">
     <sequence>
@@ -72,6 +73,9 @@ type schema = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSchema" ta
     </sequence>
   </complexType>
 </schema>""">
+=======
+type schema = XsdProvider<"""data/schema.xsd""">
+>>>>>>> Using compiled schema sets
 
 [<Test>]
 let ``Simple schema``() =
@@ -144,12 +148,19 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
       <xs:element name="description"
                    type="xs:string" minOccurs="0"/>
     </xs:sequence>
+<<<<<<< HEAD
     <xs:anyAttribute />
+=======
+>>>>>>> Using compiled schema sets
   </xs:complexType>
   <!--Complex Content Restriction-->
   <xs:complexType name="RestrictedProductType">
     <xs:complexContent>
+<<<<<<< HEAD
       <xs:restriction base="ProductType">
+=======
+      <xs:restriction base="ProductType" >
+>>>>>>> Using compiled schema sets
         <xs:sequence>
           <xs:element name="number" type="xs:integer"/>
           <xs:element name="name" type="xs:token"/>
@@ -180,7 +191,11 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
   <!--Simple Content Restriction-->
   <xs:complexType name="SmallSizeType">
     <xs:simpleContent>
+<<<<<<< HEAD
       <xs:restriction base="SizeType">
+=======
+        <xs:restriction base="SizeType">
+>>>>>>> Using compiled schema sets
         <xs:minInclusive value="2"/>
         <xs:maxInclusive value="6"/>
         <xs:attribute  name="system" type="xs:token"
@@ -192,8 +207,12 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
     <xs:attribute name="value" type="xs:string"/>
   </xs:complexType>
 </xs:schema>""">
+<<<<<<< HEAD
 //setting FailOnUnsupported = true should create a compile error
 //because restrictions are not supported
+=======
+
+>>>>>>> Using compiled schema sets
 
 
 [<Test>]
@@ -236,17 +255,21 @@ type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSc
           <documentation>This is an identification of the preferred language</documentation>
         </annotation>
       </element>
+<<<<<<< HEAD
+=======
+      
+>>>>>>> Using compiled schema sets
       <element name="anonymousTyped">
         <complexType>
           <sequence>
             <element name="covert">
-            <complexType>
+              <complexType>
                 <choice>
-                   <element name="truth" type="string" />
-                   <element name="lie"   type="string" />
-                   <element ref="tns:elem1" />
+                  <element name="truth" type="string" />
+                  <element name="lie"   type="string" />
+                  <element ref="tns:elem1" />
                 </choice>
-            </complexType>
+              </complexType>
             </element>
           </sequence>
           <attribute name="attr" type="string" />
