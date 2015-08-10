@@ -319,15 +319,13 @@ module internal XmlTypeBuilder =
                 
                     | InferedType.Primitive(typ, unit, optional) -> createPrimitiveMember typ unit optional
                     | InferedType.Null -> createPrimitiveMember typeof<string> None false 
-                
                     | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type]                 
 
             // Add properties that can be used to access content of the element
             // (either child elements or primitive values if the element contains only simple values)
             let primitiveResults, childResults = 
                 match content with 
-                | [ContentType(primitives, children)] ->
-       
+                | [ContentType(primitives, children)] ->       
                     // If there may be other children, make it optional
                     let forceOptional = children.Length > 0
        

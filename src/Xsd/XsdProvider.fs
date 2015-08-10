@@ -23,16 +23,16 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XsdProvider", Some typeof<obj>)
 
   let buildTypes (typeName:string) (args:obj[]) =
-    try
         let elements = ref []
         let types = ref  StructuralTypes.InferedType.Top
         // Generate the required type
         let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
         
         let sample = args.[0] :?> string
-        let resolutionFolder = args.[1] :?> string
-        let includeMetadata = args.[2] :?> bool
-        let failOnUnsupported = args.[3] :?>  bool
+        let resolutionFolder = 
+                match args.[1] :?> string with
+                "" -> cfg.ResolutionFolder
+                | _ as str -> str
         
         let parseSingle _ value = XDocument.Parse(value).Root
         let parseList _ value = XDocument.Parse(value).Root.Elements()
@@ -65,8 +65,12 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                               failwith "Could not find a file and could not interprete as valid XML either"
               let schema = read reader
               schema.SourceUri <- path
+              let schemaSet = new XmlSchemaSet()
+              schemaSet.Add(schema) |> ignore
               elements := [for e in schema.Elements do yield e:?>XmlSchemaElement]
-              schema |> XsdBuilder.generateType <| includeMetadata <| failOnUnsupported |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              let xsdtypes = schemaSet |> XsdBuilder.generateType
+              let consolidatedTypes = xsdtypes |> List.fold (StructuralInference.subtypeInfered (*allowNulls*)true) StructuralTypes.Top 
+              consolidatedTypes
             types := ts
             ts
           | _ -> !types
@@ -105,15 +109,21 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
         
         let inferedType = getTypes sample
         
-        match inferedType with
-          StructuralTypes.InferedType.Heterogeneous types ->
-            for (_,t) in types |> Map.toList do
+        let typeList = 
+          match inferedType with
+            StructuralTypes.InferedType.Heterogeneous types ->
+                types |>  Map.fold(fun st _ t -> t::st) []
+          | StructuralTypes.InferedType.Record _ -> [inferedType]
+          | _ as t -> failwithf "Did not expect %A" t
+        for t in typeList do
               match t with
               StructuralTypes.InferedType.Record(Some _, [{Name = ""; Type = StructuralTypes.InferedType.Primitive(_)}],_) ->
                   ()
-              | StructuralTypes.InferedType.Record(Some n, _,_)  ->
+              | StructuralTypes.InferedType.Record(Some qn, _,_)  ->
                 //For each top level type create a method to parse that type
-                let n = NameUtils.nicePascalName n
+                let n = match qn.Split('}') with 
+                        | [|n|] | [|_;n|] -> NameUtils.nicePascalName  n
+                        | _ -> failwithf "can't parse name %s" qn
                 let res = providedType.GetMember(n) 
                 match res with
                   [||] -> 
@@ -147,25 +157,19 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
                   | [|res|] -> failwithf "%s is not a provided type but a " res.Name (res.GetType().Name)
                   | _ as res -> failwithf "Found several nested types (%A) with the name %s" res n
               | _ -> ()
-          | _ as t -> failwithf "Did not expect %A" t
+          
         providedType
-    with e ->
-       failwith (e.ToString())
     
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 
     [ ProvidedStaticParameter("SchemaFile", typeof<string>)
-      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")
-      ProvidedStaticParameter("IncludeMetadata", typeof<bool>, parameterDefaultValue = false)
-      ProvidedStaticParameter("FailOnUnsupported", typeof<bool>, parameterDefaultValue = true)]
+      ProvidedStaticParameter("ResolutionFolder", typeof<string>, parameterDefaultValue = "")]
 
   let helpText = 
     """<summary>Typed representation of a XML file based on a xml schema definition (XSD)</summary>
        <param name='SchemaFile'>Location of a XSD file or a string containing the XSD</param>                    
-       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>
-       <param name='IncludeMetadata'>If true XSD metadata such as target namespace will be included and accessible from each generated type</param>
-       <param name='FailOnUnsupported'>If false then the provider will ignore unsupported features and do it's best to generate a type hierachie</param>"""
+       <param name='ResolutionFolder'>A directory that is used when resolving relative file references (at design time and in hosted execution)</param>"""
 
   do xmlProvTy.AddXmlDoc helpText
   do xmlProvTy.DefineStaticParameters(parameters, buildTypes)
