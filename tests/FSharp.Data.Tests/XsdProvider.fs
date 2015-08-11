@@ -85,12 +85,19 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
       <xs:element name="description"
                    type="xs:string" minOccurs="0"/>
     </xs:sequence>
+<<<<<<< HEAD
     <xs:anyAttribute />
+=======
+>>>>>>> origin/master
   </xs:complexType>
   <!--Complex Content Restriction-->
   <xs:complexType name="RestrictedProductType">
     <xs:complexContent>
+<<<<<<< HEAD
       <xs:restriction base="ProductType">
+=======
+      <xs:restriction base="ProductType" >
+>>>>>>> origin/master
         <xs:sequence>
           <xs:element name="number" type="xs:integer"/>
           <xs:element name="name" type="xs:token"/>
@@ -121,7 +128,11 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
   <!--Simple Content Restriction-->
   <xs:complexType name="SmallSizeType">
     <xs:simpleContent>
+<<<<<<< HEAD
       <xs:restriction base="SizeType">
+=======
+        <xs:restriction base="SizeType">
+>>>>>>> origin/master
         <xs:minInclusive value="2"/>
         <xs:maxInclusive value="6"/>
         <xs:attribute  name="system" type="xs:token"
@@ -133,6 +144,11 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
     <xs:attribute name="value" type="xs:string"/>
   </xs:complexType>
 </xs:schema>""">
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> origin/master
 
 [<Test>]
 let ``Extension on complex types``() =
@@ -174,6 +190,10 @@ type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSc
           <documentation>This is an identification of the preferred language</documentation>
         </annotation>
       </element>
+<<<<<<< HEAD
+=======
+      
+>>>>>>> origin/master
       <element name="anonymousTyped">
         <complexType>
           <sequence>

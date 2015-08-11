@@ -100,7 +100,7 @@
     <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
-    <None Include="Test.fsx" />
+    <Compile Include="Test.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

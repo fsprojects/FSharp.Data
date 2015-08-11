@@ -129,6 +129,7 @@ module ProviderHelpers =
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
         let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
+<<<<<<< HEAD
         Expr.Let(f, convFunc, body) |> replacer.ToRuntime
 
     let some (typ:Type) arg =
@@ -136,6 +137,9 @@ module ProviderHelpers =
             FSharpType.GetUnionCases(typedefof<option<_>>.MakeGenericType typ)
             |> Seq.find (fun x -> x.Name = "Some")
         Expr.NewUnionCase(unionCase, [ arg ])
+=======
+        Expr.Let(f, convFunc, replacer.ToRuntime body)
+>>>>>>> origin/master
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set

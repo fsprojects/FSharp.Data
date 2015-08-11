@@ -385,7 +385,11 @@ module XsdBuilder =
                          InferedType.Record(
                                   Some typeName,
                                     {Name = "";
+<<<<<<< HEAD
                                       Type = InferedType.Collection(elements |> List.map(fun (tag,_) -> tag) , elements |> Map.ofList)}::attributes,false)
+=======
+                                      Type = InferedType.Collection(elements |> Map.ofList)}::attributes,false)
+>>>>>>> origin/master
              _types.Add(typeName,t) |> ignore
              t
     
@@ -429,4 +433,9 @@ module XsdBuilder =
                           | InferedType.Primitive (_) ->
                              false
                           | _ -> true
+<<<<<<< HEAD
         )
+=======
+        )
+        
+>>>>>>> origin/master

@@ -47,6 +47,7 @@ module AssemblyReplacer =
   // In the originalsAsms list the first assembly has to be the assembly of the outer type
   // We use a lazy type for the original to avoid doing unneeded work in the discriminated unions case
   let private replaceLazy asmMappings (lazyOriginal : 'a Lazy, originalAsms) f =
+<<<<<<< HEAD
     let sameAsm (a1:Assembly) (a2:Assembly) = 
         // when we query .Assembly on System.Xml.Linq.XElement from profile 7, it returns System.Xml.Linq,
         // even though the assembly is System.Xml.XDocument
@@ -57,6 +58,12 @@ module AssemblyReplacer =
       asmMappings
       |> List.choose (fun (fromAsm, toAsm) ->
         if originalAsms |> Array.exists (sameAsm fromAsm) && sameAsm fromAsm originalAsms.[0] then
+=======
+    let toAsmCandidates = 
+      asmMappings
+      |> List.choose (fun (fromAsm, toAsm) ->
+        if originalAsms |> Array.exists (fun originalAsm -> originalAsm = fromAsm) && fromAsm = originalAsms.[0] then
+>>>>>>> origin/master
           // if we found a replacement for the outer type assembly, return it
           Some toAsm
         else
@@ -66,7 +73,11 @@ module AssemblyReplacer =
       | [] ->
           asmMappings
           |> List.tryPick (fun (fromAsm, _) -> 
+<<<<<<< HEAD
             if originalAsms |> Array.exists (sameAsm fromAsm) then
+=======
+            if originalAsms |> Array.exists (fun originalAsm -> originalAsm = fromAsm) then
+>>>>>>> origin/master
               // if we found a replacement for a inner type, just return the original
               // assembly of the outer type to signal that it needs to be visited, but it
               // doesn't make sense to replace it with toAsm
@@ -293,8 +304,11 @@ module AssemblyReplacer =
         rr t (List.map re exprs)
     | NewArray (t, exprs) ->
         Expr.NewArray (rt t, List.map re exprs)
+<<<<<<< HEAD
     | NewTuple (exprs) ->
         Expr.NewTuple (List.map re exprs)
+=======
+>>>>>>> origin/master
     | TupleGet (expr, i) ->
         Expr.TupleGet (re expr, i)
     | NewDelegate (t, vars, expr) ->

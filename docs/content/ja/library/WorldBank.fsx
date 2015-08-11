@@ -52,10 +52,8 @@ data
 
 *)
 
-#load "../../../../packages/FSharp.Charting/FSharp.Charting.fsx"
+#load "../../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
 open FSharp.Charting
-
-(*** define-output:chart1 ***)
 
 data.Countries.``United Kingdom``
     .Indicators.``School enrollment, tertiary (% gross)``
@@ -66,11 +64,6 @@ data.Countries.``United Kingdom``
 そのため、世界銀行から受信したデータセットをそのまま渡せば
 Xが年、Yがその年の値になったチャートが作成できます。
 
-*)
-
-(*** include-it:chart1 ***)
-
-(**
 ## 世界銀行のデータを非同期的に使う
 
 非常に大量のデータをダウンロードする必要がある場合、
@@ -128,8 +121,6 @@ let countries =
 (1つになった)計算を実行してすべてのダウンロード処理を行います：
 *)
 
-(*** define-output:chart2 ***)
-
 [ for c in countries ->
     c.Indicators.``School enrollment, tertiary (% gross)`` ]
 |> Async.Parallel
@@ -142,16 +133,11 @@ let countries =
 それぞれのデータセットから1つの折れ線チャートを出力して、
 各チャートを `Chart.Combine` で1つの総合チャートにしています。
 
-*)
-
-(*** include-it:chart2 ***)
-
-(**
 ## 関連する記事
 
+ * [F# Data: 型プロバイダー](../fsharpdata.html) -
+   `FSharp.Data` パッケージ内の型プロバイダーについての説明があります。
  * [Try F#: Data Science](http://www.tryfsharp.org/Learn/data-science) -
    Try F# の Data Science チュートリアルにはFreebase 型プロバイダーを使った
    様々な例があります。
- * [API リファレンス: WorldBankDataProvider 型プロバイダー](../../reference/fsharp-data-worldbankdataprovider.html)
-
 *)

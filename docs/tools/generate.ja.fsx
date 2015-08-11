@@ -3,11 +3,8 @@
 // (the generated documentation is stored in the 'docs/output' directory)
 // --------------------------------------------------------------------------------------
 
-// Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "FSharp.Data.dll" ]
 // Web site location for the generated documentation
-let repo = "https://github.com/fsharp/FSharp.Data/tree/master/"
-let website = "/FSharp.Data"
+let website = "/FSharp.Data/ja"
 
 // Specify more information about your project
 let info =
@@ -41,16 +38,17 @@ open FSharp.MetadataFormat
 #if RELEASE
 let root = website
 #else
-let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
+let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output/ja")
 #endif
 
 // Paths with template/source/output locations
 let bin        = __SOURCE_DIRECTORY__ @@ "../../bin"
-let content    = __SOURCE_DIRECTORY__ @@ "../content"
+let content    = __SOURCE_DIRECTORY__ @@ "../content/ja"
 let output     = __SOURCE_DIRECTORY__ @@ "../output"
+let outputJa   = __SOURCE_DIRECTORY__ @@ "../output/ja"
 let files      = __SOURCE_DIRECTORY__ @@ "../files"
 let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
-let templates  = __SOURCE_DIRECTORY__ @@ "templates"
+let templates  = __SOURCE_DIRECTORY__ @@ "templates/ja"
 let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.4/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
@@ -66,30 +64,19 @@ let copyFiles () =
   CopyRecursive data (output @@ "data") true |> Log "Copying data files: "
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
-  CopyRecursive (content @@ "styles") (output @@ "content") true 
+  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
-
-// Build API reference from XML comments
-let buildReference () =
-  CleanDir (output @@ "reference")
-  MetadataFormat.Generate
-    ( referenceBinaries |> List.map ((@@) bin),
-      output @@ "reference", layoutRoots, 
-      parameters = ("root", root)::info,
-      sourceRepo = repo,
-      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
-                |> Seq.filter (fun x -> not <| x.Contains "ja")
+                |> Seq.filter (fun x -> x.Contains "ja")
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
     Literate.ProcessDirectory
-      ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
+      ( dir, docTemplate, outputJa @@ sub, replacements = ("root", root)::info,
         layoutRoots = layoutRoots )
 
 // Generate
 copyFiles()
 buildDocumentation()
-buildReference()
