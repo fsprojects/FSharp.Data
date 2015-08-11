@@ -22,8 +22,8 @@ module XsdBuilder =
        | Empty
     
     type XmlType = 
-       Complex of XmlSchemaComplexType * string option
-       | Simple of XmlSchemaSimpleType * string option
+       Complex of XmlSchemaComplexType
+       | Simple of XmlSchemaSimpleType
     let qnToString (qn:System.Xml.XmlQualifiedName) =
         if String.IsNullOrWhiteSpace(qn.Namespace) then
             qn.Name
@@ -41,8 +41,7 @@ module XsdBuilder =
        | :? XmlSchemaSimpleContentRestriction as c -> 
            SimpleRestriction c
        | _ -> failwith "Content unknown"
-    let (|Schema|Type|Element|Particle|Restriction|Unknown|Attribute|) (obj:XmlSchemaObject)  =
-       let rec getName (t:XmlSchemaType) = 
+    let rec private getSchemaTypeName (t:XmlSchemaType) = 
            let name =
               match t.QualifiedName, t.Name with
               null, str when String.IsNullOrWhiteSpace str -> None
@@ -60,7 +59,7 @@ module XsdBuilder =
                    :? XmlSchemaSimpleType as t when (t.Content :? XmlSchemaSimpleTypeRestriction) -> 
                           let restriction = t.Content :?> XmlSchemaSimpleTypeRestriction 
                           if restriction.BaseType <> null then 
-                                restriction.BaseType |> getName
+                                restriction.BaseType |> getSchemaTypeName
                           else
                                restriction.BaseTypeName |> qnToString |> Some
                    | _ ->  name
@@ -68,9 +67,11 @@ module XsdBuilder =
                     name
            assert (name.IsNone || name.Value |>  String.IsNullOrWhiteSpace |> not)
            name
+    let (|Schema|Type|Element|Particle|Restriction|Unknown|Attribute|) (obj:XmlSchemaObject)  =
+       
        match obj with
-       | :? XmlSchemaSimpleType as t -> Type(Simple (t, t |> getName ))
-       | :? XmlSchemaComplexType as t -> Type(Complex (t, t |> getName ))
+       | :? XmlSchemaSimpleType as t -> Type(Simple t)
+       | :? XmlSchemaComplexType as t -> Type(Complex t)
        | :? XmlSchemaElement as e -> Element e
        | :? XmlSchemaSequence as sequence ->  Particle(Sequence(sequence))
        | :? XmlSchemaChoice as choice->  Particle(Choice(choice))
@@ -100,7 +101,7 @@ module XsdBuilder =
               | _ -> failwithf "Unsupported particle %A" particle
             |> Seq.cast<XmlSchemaObject>
         match item with
-          Type(Complex  (t,_)) when t.BaseXmlSchemaType <> null && t.Particle <> null -> 
+          Type(Complex  t) when t.BaseXmlSchemaType <> null && t.Particle <> null -> 
               t.BaseXmlSchemaType 
               |> getElementsFromObject
               |> Seq.append (match t.Particle with
@@ -108,13 +109,13 @@ module XsdBuilder =
                              | _ -> failwith "not a particle")
               |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
               |> getItemsFromCollection 
-          | Type(Complex  (t,_)) when t.Particle <> null -> 
+          | Type(Complex  t) when t.Particle <> null -> 
               (match t.Particle with
                              | Particle(p) -> fromParticle p
                              | _ -> failwith "not a particle")
               |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
               |> getItemsFromCollection
-          | Type(Complex  (t,_)) when t.BaseXmlSchemaType <> null -> 
+          | Type(Complex  t) when t.BaseXmlSchemaType <> null -> 
               t.BaseXmlSchemaType
               |> getElementsFromObject
               |> Seq.cast<XmlSchemaObject>
@@ -133,7 +134,7 @@ module XsdBuilder =
           | _ -> failwithf "Unsupported item %A" item
         |> List.append (
           match item with
-          Type(Complex (t, _ )) when t.ContentModel <> null -> 
+          Type(Complex t) when t.ContentModel <> null -> 
               match t.ContentModel.Content with
               | Extension ex ->
                   ex.Attributes
@@ -231,6 +232,7 @@ module XsdBuilder =
              ("anyURI"      , typeof<string>);
              ("base64string", typeof<string>);
              ("hexBinary"   , typeof<string>);
+             ("NMTOKEN"     , typeof<string>);
              ("integer"     , typeof<int>);
              ("int"         , typeof<int>);
              ("byte"        , typeof<System.Int16>);
@@ -246,6 +248,7 @@ module XsdBuilder =
              ("{http://www.w3.org/2001/XMLSchema}anyURI"      , typeof<string>);
              ("{http://www.w3.org/2001/XMLSchema}base64string", typeof<string>);
              ("{http://www.w3.org/2001/XMLSchema}hexBinary"   , typeof<string>);
+             ("http://www.w3.org/2001/XMLSchema}NMTOKEN"      , typeof<string>);
              ("{http://www.w3.org/2001/XMLSchema}integer"     , typeof<int>);
              ("{http://www.w3.org/2001/XMLSchema}int"         , typeof<int>);
              ("{http://www.w3.org/2001/XMLSchema}byte"        , typeof<System.Int16>);
@@ -263,8 +266,8 @@ module XsdBuilder =
     let private getName (typ:XmlType) =
         let typeDeclaration, name  =
             match typ with
-            Simple(typeDeclatation,n) -> typeDeclatation :> XmlSchemaType, n
-            | Complex(typeDeclatation,n) -> typeDeclatation  :> XmlSchemaType, n
+            Simple(typeDeclatation) -> typeDeclatation :> XmlSchemaType, typeDeclatation |> getSchemaTypeName
+            | Complex(typeDeclatation) -> typeDeclatation  :> XmlSchemaType, typeDeclatation |> getSchemaTypeName
         let name = 
             match name with
             | Some n -> 
@@ -316,14 +319,13 @@ module XsdBuilder =
               | Attribute  e -> e.AttributeSchemaType :> XmlSchemaType
               | Type(t) ->
                   match t with
-                  Complex  (t,_) -> t :> XmlSchemaType
-                  | Simple (t,_) -> t :> XmlSchemaType
+                  Complex  t -> t :> XmlSchemaType
+                  | Simple t -> t :> XmlSchemaType
               |_ -> failwithf "Expected an element or an attribute but got %A" el 
          let typeName, typ = 
               let typ =
                   match schemaType with
-                  Type(Simple(_) as s) 
-                  | Type(Complex(_) as s) ->
+                  | Type(s) ->
                        s
                   | _ -> failwithf "unknown type declaration for %A. Type declaration was %A" el schemaType
               typ |> getName, typ
@@ -332,22 +334,26 @@ module XsdBuilder =
          | _ ->
              let t = 
                  match typ with
-                 Simple(typeDeclaration, _) as t->
+                 Simple(typeDeclaration) as t->
                       let name = t |> getName 
                       match name |> NativeTypes.TryFind with
                       None -> 
-                          let t = 
-                              match typeDeclaration |> getTypeFromAnnotated with 
-                              InferedType.Primitive(_) as t -> t 
-                              | InferedType.Record(Some _,[{Name = "";Type = t}], _) -> t 
-                              | _ as t-> failwithf "Can't use %A for a simple type" t 
-                          assert not (String.IsNullOrWhiteSpace typeName)
-                          InferedType.Record( 
-                              Some typeName, 
-                                [{Name = ""; 
-                                  Type =  t}],false) 
+                          //if it's an undeclared XSD native type use string as the representation
+                          if (typeDeclaration.QualifiedName.Namespace = XsdNamespace) then 
+                             NativeTypes.["string"]
+                          else
+                             let t = 
+                                 match typeDeclaration |> getTypeFromAnnotated with 
+                                 InferedType.Primitive(_) as t -> t 
+                                 | InferedType.Record(Some _,[{Name = "";Type = t}], _) -> t 
+                                 | _ as t-> failwithf "Can't use %A for a simple type" t 
+                             assert not (String.IsNullOrWhiteSpace typeName)
+                             InferedType.Record( 
+                                 Some typeName, 
+                                   [{Name = ""; 
+                                     Type =  t}],false) 
                      | Some t -> t
-                 | Complex(typeDeclaration, _) ->
+                 | Complex(typeDeclaration) ->
                          let objs = 
                              typeDeclaration
                             |> getElementsFromObject 
@@ -363,11 +369,11 @@ module XsdBuilder =
                  
                          let attributes = 
                                attrs 
-                               |> List.map (fun a -> a :?> XmlSchemaAnnotated)
+                               |> List.map (fun a -> a :?> XmlSchemaAttribute)
                                |> List.map( fun a ->
                                              let typ = a |> getTypeFromAnnotated
-                                             (a :?> XmlSchemaAttribute, typ))
-                               |> List.map (fun (a,t) -> 
+                                             (a.Name, a.Use = XmlSchemaUse.Optional, typ))
+                               |> List.map (fun (name,opt,t) -> 
                                     let t = 
                                         match t with
                                         InferedType.Record
@@ -375,11 +381,11 @@ module XsdBuilder =
                                                   [{Name = _;
                                                     Type = pt}], _) -> 
                                                         match pt with
-                                                        InferedType.Primitive(t,u,_) -> InferedType.Primitive(t,u,a.Use = XmlSchemaUse.Optional)
+                                                        InferedType.Primitive(t,u,_) -> InferedType.Primitive(t,u,opt)
                                                         | _ -> failwithf "Primitive type expected for attribute %A" pt      
                                         | InferedType.Primitive(_) as t -> t
                                         | _ as t -> failwithf "Unexpected type %A " t
-                                    {Name = a.Name;
+                                    {Name = name;
                                      Type = t}) 
                          assert not (String.IsNullOrWhiteSpace typeName)
                          InferedType.Record(

@@ -36,7 +36,10 @@ type XmlProviderArgs =
 
 type XsdProviderArgs = 
     { SchemaFile : string
-      ResolutionFolder : string }
+      ResolutionFolder : string
+      Culture : string
+      EmbeddedResource : string
+       }
 
 type JsonProviderArgs = 
     { Sample : string
@@ -110,7 +113,9 @@ type TypeProviderInstantiation =
                         file
                 (fun cfg -> new XsdProvider(cfg) :> TypeProviderForNamespaces),
                 [| box schema
-                   box resolutionFolder |] 
+                   box resolutionFolder
+                   box x.Culture
+                   box x.EmbeddedResource |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -249,6 +254,8 @@ type TypeProviderInstantiation =
             Xsd {
                SchemaFile = args.[1]
                ResolutionFolder = ""
+               Culture = ""
+               EmbeddedResource = ""
             }
         | _ -> failwithf "Unknown: %s" args.[0]
 

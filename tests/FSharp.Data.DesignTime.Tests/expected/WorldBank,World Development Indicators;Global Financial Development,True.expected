@@ -1013,9 +1013,6 @@ class WorldBankDataProvider+ServiceTypes+Topic : FDR.WorldBank.Topic
 
 
 class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
-    member ``(%) Program participation - All Social Protection``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("allsp.cov_pop")
-
     member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("PA.NUS.PPP.05")
 
@@ -1093,6 +1090,12 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
     member ``Adjusted net national income (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.ADJ.NNTY.CD")
+
+    member ``Adjusted net national income per capita (annual % growth)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("NY.ADJ.NNTY.PC.KD.ZG")
+
+    member ``Adjusted net national income per capita (constant 2005 US$)``: FDR.WorldBank.Indicator async with get
+    (this :> IIndicators).AsyncGetIndicator("NY.ADJ.NNTY.PC.KD")
 
     member ``Adjusted net national income per capita (current US$)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("NY.ADJ.NNTY.PC.CD")
@@ -3995,9 +3998,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     member ``PFC gas emissions (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.PFCG.KT.CE")
 
-    member ``PM10, country level (micrograms per cubic meter)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("EN.ATM.PM10.MC.M3")
-
     member ``PM2.5 pollution, mean annual exposure (micrograms per cubic meter)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EN.ATM.PM25.MC.M3")
 
@@ -5362,9 +5362,6 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
 
 
 class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.IndicatorsDescriptions
-    member ``(%) Program participation - All Social Protection``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("allsp.cov_pop")
-
     member ``2005 PPP conversion factor, GDP (LCU per international $)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("PA.NUS.PPP.05")
 
@@ -5442,6 +5439,12 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``Adjusted net national income (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.ADJ.NNTY.CD")
+
+    member ``Adjusted net national income per capita (annual % growth)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.ADJ.NNTY.PC.KD.ZG")
+
+    member ``Adjusted net national income per capita (constant 2005 US$)``: FDR.WorldBank.IndicatorDescription with get
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.ADJ.NNTY.PC.KD")
 
     member ``Adjusted net national income per capita (current US$)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("NY.ADJ.NNTY.PC.CD")
@@ -8343,9 +8346,6 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
 
     member ``PFC gas emissions (thousand metric tons of CO2 equivalent)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PFCG.KT.CE")
-
-    member ``PM10, country level (micrograms per cubic meter)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PM10.MC.M3")
 
     member ``PM2.5 pollution, mean annual exposure (micrograms per cubic meter)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EN.ATM.PM25.MC.M3")
