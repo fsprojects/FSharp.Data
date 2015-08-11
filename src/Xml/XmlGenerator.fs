@@ -297,8 +297,6 @@ module internal XmlTypeBuilder =
                         choiceTy.AddMember defaultCtor
 
                         createMember choiceTy ctx.Replacer.ToRuntime
-                
-<<<<<<< HEAD
                     | InferedType.Primitive(typ, unit, optional) -> createPrimitiveMember typ unit optional
                     | InferedType.Null -> createPrimitiveMember typeof<string> None false 
                 
@@ -309,43 +307,6 @@ module internal XmlTypeBuilder =
             let primitiveResults, childResults = 
                 match content with 
                 | [ContentType(primitives, children)] ->
-=======
-                | InferedType.Primitive(typ, unit, optional) -> createMemberForAttribute typ unit optional
-                | InferedType.Null -> 
-                createMemberForAttribute typeof<string> None false 
-                
-                | _ -> failwithf "generateXmlType: Expected Primitive or Choice type, got %A" attr.Type
-       
-            // Add properties that can be used to access content of the node
-            // (either child nodes or primitive values - if the node contains simple values)
-            match content with 
-            | [ContentType(primitives, nodes)] ->
-       
-                // If there may be other nodes, make it optional
-                let forceOptional = nodes.Count > 0
-       
-                for typ, name, conv in getTypesForPrimitves ctx forceOptional primitives do
-                    objectTy.AddMember <| ProvidedProperty(makeUnique name, typ, GetterCode = fun (Singleton xml) -> conv xml)
-       
-                // For every possible child node, generate 'GetXyz()' method (if there
-                // is multiple of them) or just a getter property if there is one or none
-                [ for node in nodes ->
-       
-                    match node with
-                    | KeyValue(InferedTypeTag.Record(Some nameWithNS), (multiplicity, typ)) ->
-                        
-                        let names = nameWithNS.Split [| '|' |] |> Array.map (fun nameWithNS -> XName.Get(nameWithNS).LocalName)
-                        let result = generateXmlType ctx typ 
-       
-                        match multiplicity with
-                        | InferedMultiplicity.Single ->
-                            ProvidedProperty(makeUnique names.[0], 
-                                             result.ConvertedType,
-                                             GetterCode = fun (Singleton xml) -> 
-                                                 let xml = ctx.Replacer.ToDesignTime xml
-                                                 result.Converter <@@ XmlRuntime.GetChild(%%xml, nameWithNS) @@>)
->>>>>>> origin/master
-       
                     // If there may be other children, make it optional
                     let forceOptional = children.Length > 0
        

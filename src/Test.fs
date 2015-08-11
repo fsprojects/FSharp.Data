@@ -71,5 +71,3 @@ let testCases =
 
 for testCase in testCases do
     dump false false Net40 true testCase
-System.Console.WriteLine("Press enter to quit...")
-System.Console.ReadLine() |> ignore

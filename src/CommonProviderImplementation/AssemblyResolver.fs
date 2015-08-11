@@ -168,13 +168,9 @@ let init (cfg : TypeProviderConfig) =
         |> Seq.choose (fun asmName -> 
             let designTimeAsmName =
                 match asmName.Name with
-<<<<<<< HEAD
                 | "FSharp.Data" -> "FSharp.Data.DesignTime" // this applies when this code is being used by another assembly that depends on FSharp.Data, like ApiaryProvider
                 | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
                 | "System.Xml.XDocument" -> "System.Xml.Linq"
-=======
-                | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
->>>>>>> origin/master
                 | asmName -> asmName
             designTimeAssemblies.TryFind designTimeAsmName
             |> Option.bind (fun designTimeAsm ->
