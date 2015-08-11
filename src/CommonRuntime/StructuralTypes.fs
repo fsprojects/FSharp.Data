@@ -1,8 +1,6 @@
 ﻿namespace FSharp.Data.Runtime.StructuralTypes
 
 open System
-open System.Diagnostics
-open System.Collections.Generic
 open FSharp.Data.Runtime
 
 // --------------------------------------------------------------------------------------
@@ -40,7 +38,6 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
   | Heterogeneous
   // Possibly named record
   | Record of string option
-  | Constant of string
 
 /// Represents inferred structural type. A type may be either primitive type
 /// (one of those listed by `primitiveTypes`) or it can be collection, 
@@ -57,7 +54,6 @@ and [<RequireQualifiedAccess>] InferedTypeTag =
 /// we would lose information about multiplicity and so we would not be able
 /// to generate nicer types!
 and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
-  | Constant of name:string * typ:System.Type * value:obj
   | Primitive of typ:Type * unit:option<System.Type> * optional:bool
   | Record of name:string option * fields:InferedProperty list * optional:bool
   | Json of typ:InferedType * optional:bool
@@ -79,7 +75,7 @@ and [<CustomEquality; NoComparison; RequireQualifiedAccess>] InferedType =
   /// It's currently only true in CsvProvider when PreferOptionals is set to false
   member x.EnsuresHandlesMissingValues allowEmptyValues =
     match x with
-    | Null | Constant _ | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> x
+    | Null | Heterogeneous _ | Primitive(optional = true) | Record(optional = true) | Json(optional = true) -> x
     | Primitive(typ, _, false) when allowEmptyValues && InferedType.CanHaveEmptyValues typ -> x    
     | Primitive(typ, unit, false) -> Primitive(typ, unit, true)
     | Record(name, props, false) -> Record(name, props, true)
@@ -129,8 +125,7 @@ type InferedTypeTag with
     | Collection -> "Array"
     | Heterogeneous -> "Choice"
     | Record None -> "Record"
-    | Constant (name)
-    | Record (Some name) -> FSharp.Data.Runtime.NameUtils.nicePascalName name
+    | Record (Some name) -> NameUtils.nicePascalName name
     | Json _ -> "Json"
   
   /// Converts tag to string code that can be passed to generated code
@@ -143,7 +138,6 @@ type InferedTypeTag with
   static member ParseCode(str:string) =
     match str with
     | s when s.StartsWith("Record@") -> Record(Some(s.Substring("Record@".Length)))
-    | s when s.StartsWith("Constant@") -> Constant(s.Substring("Constant@".Length))
     | "Record" -> Record None
     | "Json" -> Json
     | "Number" -> Number 

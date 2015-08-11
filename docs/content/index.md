@@ -3,9 +3,9 @@ F# Data: Library for Data Access
 
 The F# Data library implements everything you need to 
 access data in your F# applications and scripts. It contains F# type 
-providers for working with structured file formats (CSV, JSON and XML) 
-and for accessing the WorldBank and Freebase services. It also includes helpers for parsing 
-JSON and CSV files and for sending HTTP requests.
+providers for working with structured file formats (CSV, HTML, JSON and XML) 
+and for accessing the WorldBank data. It also includes helpers for parsing 
+CSV, HTML and JSON files and for sending HTTP requests.
 
 This library focuses on providing a simple, mostly read-only, access to the structured documents 
 and other data sources. It does not aim to be a comprehensive collection of F# type providers 
@@ -43,8 +43,9 @@ $(function(){
 
 ### How to get F# Data
 
-* The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>.
-  In addition to the official releases, you can also get NuGet packages from the [Continuous Integration 
+* The F# Data Library is available as <a href="https://nuget.org/packages/FSharp.Data">FSharp.Data on NuGet</a>. [![NuGet Status](//img.shields.io/nuget/v/FSharp.Data.svg?style=flat)](https://www.nuget.org/packages/FSharp.Data/)
+
+* In addition to the official releases, you can also get NuGet packages from the [Continuous Integration 
   package source](https://ci.appveyor.com/nuget/fsharp-data-q9vtdm6ej782).
 
 * Alternatively, you can download the [source as a ZIP file][source] or download the [compiled binaries][compiled] as a ZIP. <br /> Please note that on windows when downloading a zip file with `dll` files the files will be blocked, and you have to manually unblock them in the file properties.
@@ -59,30 +60,31 @@ The type providers for structured file formats infer the structure of a sample
 document (or a document containing multiple samples). The structure is then used
 to provide easy to use type-safe access to documents that follow the same structure.
 The library also implements a type provider for accessing data from 
-[the WorldBank](http://data.worldbank.org/) and [Freebase graph database](http://www.freebase.com/).
+[the WorldBank](http://data.worldbank.org/).
 
 
- * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
- * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
  * [CSV Type Provider](library/CsvProvider.html) - discusses the `CsvProvider<..>` type
+ * [HTML Type Provider](library/HtmlProvider.html) - discusses the `HtmlProvider<...>` type
+ * [JSON Type Provider](library/JsonProvider.html) - discusses the `JsonProvider<..>` type
+ * [XML Type Provider](library/XmlProvider.html) - discusses the `XmlProvider<..>` type
  * [WorldBank Provider](library/WorldBank.html) - discusses the `WorldBankData` type 
    and the `WorldBankDataProvider<..>` type
- * [Freebase Provider](library/Freebase.html) - discusses the `FreebaseData` type 
-   and the `FreebaseDataProvider<..>` type
 
 ### Data access tools
  
 In addition to the F# type providers, the library also defines several types that 
-simplify data access. In particular, it includes tools for HTTP web requests and a 
-JSON and CSV parsers with simple dynamic API. For more information about these types, see the 
+simplify data access. In particular, it includes tools for HTTP web requests and 
+CSV, HTML, and JSON parsers with simple dynamic API. For more information about these types, see the 
 following topics:
 
- * [JSON Parser and Reader](library/JsonValue.html) - introduces the JSON parser 
-   (without using the type provider)
- * [CSV Parser and Reader](library/CsvFile.html) - introduces the CSV parser 
-   (without using the type provider)
  * [HTTP Utilities](library/Http.html) - discusses the `Http` type that can be used
    to send HTTP web requests.
+ * [CSV Parser](library/CsvFile.html) - introduces the CSV parser 
+   (without using the type provider)
+ * [HTML Parser](library/HtmlParser.html) - introduces the HTML parser 
+   (without using the type provider)
+ * [JSON Parser](library/JsonValue.html) - introduces the JSON parser 
+   (without using the type provider)
 
 ### Tutorials
 

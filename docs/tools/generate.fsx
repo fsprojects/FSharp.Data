@@ -13,7 +13,7 @@ let website = "/FSharp.Data"
 let info =
   [ "project-name", "F# Data"
     "project-author", "Tomas Petricek; Gustavo Guerra"
-    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, JSON and XML) and for accessing the WorldBank and Freebase services. It also includes helpers for other data-related tasks."
+    "project-summary", "The F# Data library implements type providers for working with structured file formats (CSV, HTML, JSON and XML) and for accessing the WorldBank data. It also includes helpers for parsing CSV, HTML and JSON files, and for sending HTTP requests."
     "project-github", "http://github.com/fsharp/FSharp.Data"
     "project-nuget", "https://nuget.org/packages/FSharp.Data" ]
 
@@ -21,24 +21,18 @@ let info =
 // For typical project, no changes are needed below
 // --------------------------------------------------------------------------------------
 
-#I "../../packages/FSharp.Charting.0.90.6/lib/net40"
-#I "../../packages/FSharp.Compiler.Service.0.0.44/lib/net40"
-#I "../../packages/FSharp.Formatting.2.4.8/lib/net40"
-#I "../../packages/RazorEngine.3.3.0/lib/net40/"
-#r "../../packages/Microsoft.AspNet.Razor.2.0.30506.0/lib/net40/System.Web.Razor.dll"
-#r "../../packages/FAKE/tools/FakeLib.dll"
+#I "../../packages/FSharp.Charting/lib/net40"
 #r "Fsharp.Charting.dll"
 #r "System.Windows.Forms.DataVisualization.dll"
-#r "RazorEngine.dll"
-#r "FSharp.Literate.dll"
-#r "FSharp.CodeFormat.dll"
-#r "FSharp.Markdown.dll"
-#r "FSharp.MetadataFormat.dll"
+
+#r "../../packages/FAKE/tools/FakeLib.dll"
+
+#load "../../packages/FSharp.Formatting/FSharp.Formatting.fsx"
+
 open System.IO
 open Fake
 open Fake.FileHelper
 open FSharp.Charting
-open System.Drawing
 open System.Drawing.Imaging
 open System.Windows.Forms
 open FSharp.Literate
@@ -54,18 +48,24 @@ let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
 #endif
 
 // Paths with template/source/output locations
-let bin        = __SOURCE_DIRECTORY__ @@ "../../bin"
-let content    = __SOURCE_DIRECTORY__ @@ "../content"
-let output     = __SOURCE_DIRECTORY__ @@ "../output"
-let files      = __SOURCE_DIRECTORY__ @@ "../files"
-let data       = __SOURCE_DIRECTORY__ @@ "../content/data"
-let templates  = __SOURCE_DIRECTORY__ @@ "templates"
-let formatting = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting.2.4.8/"
+let bin         = __SOURCE_DIRECTORY__ @@ "../../bin"
+let content     = __SOURCE_DIRECTORY__ @@ "../content"
+let output      = __SOURCE_DIRECTORY__ @@ "../output"
+let files       = __SOURCE_DIRECTORY__ @@ "../files"
+let data        = __SOURCE_DIRECTORY__ @@ "../content/data"
+let templatesEn = __SOURCE_DIRECTORY__ @@ "templates"
+let templatesJa = __SOURCE_DIRECTORY__ @@ "templates/ja"
+let formatting  = __SOURCE_DIRECTORY__ @@ "../../packages/FSharp.Formatting/"
 let docTemplate = formatting @@ "templates/docpage.cshtml"
 
 // Where to look for *.cshtml templates (in this order)
-let layoutRoots =
-  [ templates
+let layoutRootsEn =
+  [ templatesEn
+    formatting @@ "templates" 
+    formatting @@ "templates/reference" ]
+
+let layoutRootsJa =
+  [ templatesJa
     formatting @@ "templates" 
     formatting @@ "templates/reference" ]
 
@@ -73,7 +73,7 @@ let layoutRoots =
 let copyFiles () =
   ensureDirectory (output @@ "data")
   CopyRecursive data (output @@ "data") true |> Log "Copying data files: "
-  CopyRecursive files output true |> Log "Copying file: "
+  CopyRecursive files output true |> Log "Copying files: "
   ensureDirectory (output @@ "content")
   CopyRecursive (formatting @@ "styles") (output @@ "content") true 
     |> Log "Copying styles and scripts: "
@@ -84,10 +84,10 @@ let buildReference () =
   MetadataFormat.Generate
     ( referenceBinaries |> List.map ((@@) bin),
       output @@ "reference",
-      layoutRoots, 
+      layoutRootsEn, 
       parameters = ("root", root)::info,
       sourceRepo = repo,
-      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..")
+      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "../")
 
 let createFsiEvaluator root output =
 
@@ -96,7 +96,7 @@ let createFsiEvaluator root output =
     let count = ref 0
     (fun () -> incr count; !count)
 
-  let transformation (value:obj, typ:System.Type) =
+  let transformation (value:obj, _:System.Type) =
     match value with 
     | :? ChartTypes.GenericChart as ch ->
         // Pretty print F# Chart - save the chart to the "images" directory 
@@ -113,14 +113,13 @@ let createFsiEvaluator root output =
     | _ -> None 
     
   // Create FSI evaluator, register transformations & return
-  let fsiEvaluator = FsiEvaluator()
+  let fsiEvaluator = FsiEvaluator(fsiObj = FsiEvaluatorConfig.CreateNoOpFsiObject())
   fsiEvaluator.RegisterTransformation(transformation)
   fsiEvaluator
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
   let subdirs = Directory.EnumerateDirectories(content, "*", SearchOption.AllDirectories)
-                |> Seq.filter (fun x -> not <| x.Contains "ja")
   
   // FSI evaluator will put images into 'output/images' and 
   // reference them as 'root/images/image1.png' in the HTML
@@ -128,11 +127,12 @@ let buildDocumentation () =
 
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
+    let layoutRoots = if dir.Contains "ja" then layoutRootsJa else layoutRootsEn
     Literate.ProcessDirectory
       ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator )
+        layoutRoots = layoutRoots, fsiEvaluator = fsiEvaluator, processRecursive = false )
 
 // Generate
 copyFiles()
-buildDocumentation()
 buildReference()
+buildDocumentation()

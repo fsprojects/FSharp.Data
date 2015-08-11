@@ -1,22 +1,22 @@
 ﻿(** 
 # F# Data: XML Type Provider
 
-This article demonstrates how to use the XML type provider to access XML documents
-in a statically typed way. We first look how the structure is inferred and then 
-demonstrate the provider by parsing RSS feed.
+This article demonstrates how to use the XML Type Provider to access XML documents
+in a statically typed way. We first look at how the structure is inferred and then 
+demonstrate the provider by parsing a RSS feed.
 
-The XML type provider provides a statically typed access to XML documents.
+The XML Type Provider provides statically typed access to XML documents.
 It takes a sample document as an input (or document containing a root XML node with
 multiple child nodes that are used as samples). The generated type can then be used 
 to read files with the same structure. If the loaded file does not match the structure 
-of the sample, an runtime error may occur (but only when accessing e.g. non-existing element).
+of the sample, a runtime error may occur (but only when accessing e.g. non-existing element).
 
 ## Introducing the provider
 
 The type provider is located in the `FSharp.Data.dll` assembly. Assuming the assembly 
 is located in the `../../bin` directory, we can load it in F# Interactive as follows:
 (note we also need a reference to `System.Xml.Linq`, because the provider uses the
-`XDocument` type under the cover): *)
+`XDocument` type internally): *)
 
 #r "../../../bin/FSharp.Data.dll"
 #r "System.Xml.Linq.dll"
@@ -26,11 +26,11 @@ open FSharp.Data
 ### Inferring type from sample
 
 The `XmlProvider<...>` takes one static parameter of type `string`. The parameter can 
-be _either_ a sample XML string _or_ a sample file (relatively to the current folder or online 
+be _either_ a sample XML string _or_ a sample file (relative to the current folder or online 
 accessible via `http` or `https`). It is not likely that this could lead to ambiguities. 
 
 The following sample generates a type that can read simple XML documents with a root node
-containing a two attributes:
+containing two attributes:
 *)
 
 type Author = XmlProvider<"""<author name="Paul Feyerabend" born="1924" />""">
@@ -44,7 +44,7 @@ attributes of the root element of the XML document. The types of the properties 
 inferred based on the values in the sample document. In this case, the `Name` property
 has a type `string` and `Born` is `int`.
 
-XML is quite flexible format, so we could represent the same document differently.
+XML is a quite flexible format, so we could represent the same document differently.
 Instead of using attributes, we could use nested nodes (`<name>` and `<born>` nested
 under `<author>`) that directly contain the values:*)
 
@@ -84,7 +84,7 @@ adds a property with a (special) name `Value` that returns the content of the el
 Another interesting case is when there are multiple nodes that contain just a 
 primitive value. The following example shows what happens when the root node
 contains multiple `<value>` nodes (note that if we leave out the parameter to the 
-`Parse` method, the same text used for the schema will be used as the runtime value)
+`Parse` method, the same text used for the schema will be used as the runtime value).
 *)
 
 type Test = XmlProvider<"<root><value>1</value><value>3</value></root>">
@@ -111,7 +111,7 @@ sample document [`data/Writers.xml`](../data/Writers.xml) looks as follows:
 
 At runtime, we use the generated type provider to parse the following string
 (which has the same structure as the sample document with the exception that 
-one of the `author` nodes also contains `died` attribute):
+one of the `author` nodes also contains a `died` attribute):
 *)
 
 let authors = """
@@ -122,7 +122,7 @@ let authors = """
   </authors> """
 
 (**
-When initializing the `XmlProvider`, we can pass it a file name or a web url.
+When initializing the `XmlProvider`, we can pass it a file name or a web URL.
 The `Load` and `AsyncLoad` methods allows reading the data from a file or from a web resource. The
 `Parse` method takes the data as a string, so we can now print the information as follows:
 *)
@@ -209,7 +209,7 @@ type Rss = XmlProvider<"http://tomasp.net/blog/rss.aspx">
 (**
 This code builds a type `Rss` that represents RSS feeds (with the features that are used
 on `http://tomasp.net`). The type `Rss` provides static methods `Parse`, `Load` and `AsyncLoad`
-to construct it - here, we just want to reuse the same uri of the schema, so we
+to construct it - here, we just want to reuse the same URI of the schema, so we
 use the `GetSample` static method:
 *)
 
@@ -288,6 +288,7 @@ let orderLines =
 (**
 ## Related articles
 
+ * [Using JSON provider in a library](JsonProvider.html#jsonlib) also applies to XML type provider
  * [API Reference: XmlProvider type provider](../reference/fsharp-data-xmlprovider.html)
  * [API Reference: XElementExtensions module](../reference/fsharp-data-xelementextensions.html)
 

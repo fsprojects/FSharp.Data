@@ -5,10 +5,10 @@ The [World Bank](http://www.worldbank.org) is an international organization that
 financial and technical assistance to developing countries around the world. As one of the
 activities, the World Bank also collects development indicators and other data about
 countries in the world. The [data catalog](http://data.worldbank.org/) contains over
-8000 indicators that can be programmatically accessed.
+8,000 indicators that can be programmatically accessed.
 
-The WorldBank type provider makes the WorldBank data easily accessible to F# programs and
-scripts in a type safe way. This article provides an introduction. The type provider
+The WorldBank Type Provider makes the WorldBank data easily accessible to F# programs and
+scripts in a type-safe manner. This article provides an introduction. The type provider
 is also used on the [Try F#](http://www.tryfsharp.org) web site in the "Data Science" tutorial,
 so you can find more examples there.
 
@@ -30,10 +30,10 @@ data
 |> Seq.maxBy fst
 
 (**
-When generating the data context, the WorldBank type provider retrieves the list of all
+When generating the data context, the WorldBank Type Provider retrieves the list of all
 countries known to the WorldBank and the list of all supported indicators. Both of these
 dimensions are provided as properties, so you can use autocomplete to easily discover
-various data sources. Most of the indicators use longer name, so we need to wrap the name
+various data sources. Most of the indicators use longer names, so we need to wrap the name
 in `\`\``.
 
 The result of the `School enrollment, tertiary (% gross)` property is a sequence with 
@@ -46,7 +46,7 @@ We can easily see how the university enrollment changes over time by using the
 
 *)
 
-#load "../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
+#load "../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open FSharp.Charting
 
 (*** define-output:chart1 ***)
@@ -67,7 +67,7 @@ value as a Y value.
 (**
 ## Using World Bank data asynchronously
 
-If you need to download large amount of data or if you need to run the operation without
+If you need to download large amounts of data or run the operation without
 blocking the caller, then you probably want to use F# asynchronous workflows to perform
 the operation. The F# Data Library also provides the `WorldBankDataProvider` type which takes
 a number of static parameters. If the `Asynchronous` parameter is set to `true` then the
@@ -88,7 +88,7 @@ produce the data.
 ### Downloading data in parallel
 
 To demonstrate the asynchronous version of the type provider, let's write code that
-downloads the university enrollement data about a number of countries in parallel.
+downloads the university enrollment data about a number of countries in parallel.
 We first create a data context and then define an array with some countries we want to 
 process:
 *)

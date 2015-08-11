@@ -31,19 +31,12 @@ let getTestData() = async {
             return [| |]
     }
     let! indicator = WorldBankDataProvider<Asynchronous=true>.GetDataContext().Countries.``United Kingdom``.Indicators.``School enrollment, tertiary (% gross)``
-    let freebaseResults = 
-        try
-            // doesn't work on Win8 (#549)
-            [ for reader in Seq.truncate 5 <| FreebaseData.GetDataContext().``Arts and Entertainment``.Books.``Audio book readers`` -> sprintf "%s" reader.Name ]
-        with _ ->
-            []
     let result = 
         [ 
           [ for row in Seq.truncate 5 stocks.Rows -> sprintf "HLOC: (%A, %A, %A, %A)" row.High row.Low row.Open row.Close ]
           [ for item in Seq.truncate 5 rss.Channel.Items -> item.Title ]
           [ for issue in Seq.truncate 5 issues -> sprintf "#%d %s" issue.Number issue.Title ]
           [ for year, value in Seq.truncate 5 indicator -> sprintf "%d %f" year value ]
-          freebaseResults
         ]
         |> List.collect id
         |> String.concat "\n"

@@ -1,17 +1,17 @@
 (**
 # F# Data: HTTP Utilities
 
-The .NET library provides powerful API for creating and sending HTTP web requests.
+The .NET library provides a powerful API for creating and sending HTTP web requests.
 There is a simple `WebClient` type (see [MSDN][1]) and a more flexible `HttpWebRequest`
 type (see [MSDN][2]). However, these two types are quite difficult to use if you
 want to quickly run a simple HTTP request and specify parameters such as method,
-HTTP POST data or additional headers.
+HTTP POST data, or additional headers.
 
 The F# Data Library provides a simple `Http` type with four overloaded methods:
 `RequestString` and `AsyncRequestString`, that can be used to create a simple request and
 perform it synchronously or asynchronously, and `Request` and it's async companion `AsyncRequest` if
 you want to request binary files or you want to know more about the response like the status code,
-the response url, or the returned headers and cookies.
+the response URL, or the returned headers and cookies.
 
  [1]: http://msdn.microsoft.com/en-us/library/system.net.webclient.aspx
  [2]: http://msdn.microsoft.com/en-us/library/system.net.httpwebrequest.aspx
@@ -39,7 +39,7 @@ async { let! html = Http.AsyncRequestString("http://tomasp.net")
 |> Async.Start
 
 (** 
-In the rest of the documentation, we focus at the `RequestString` method, because
+In the rest of the documentation, we focus on the `RequestString` method, because
 the use of `AsyncRequestString` is exactly the same.
 
 ## Query parameters and headers
@@ -74,7 +74,7 @@ Http.RequestString
     headers = [ "Accept", "application/json" ])
 
 (**
-The library supports simple and unchecked string based API (used in the previous example),
+The library supports a simple and unchecked string based API (used in the previous example),
 but you can also use pre-defined header names to avoid spelling mistakes. The named headers
 are available in `HttpRequestHeaders` (and `HttpResponseHeaders`) modules, so you can either
 use the full name `HttpRequestHeaders.Accept`, or open the module and use just the short name
@@ -155,7 +155,7 @@ Http.RequestString
     body = TextRequest """ {"test": 42} """)
 
 (**
-## Maintaing cookies across requests
+## Maintaining cookies across requests
 
 If you want to maintain cookies between requests, you can specify the `cookieContainer` 
 parameter. The following example will request the MSDN documentation for the 
@@ -173,7 +173,7 @@ docInCSharp.Contains "<a>F#</a>"
 
 (**
 
-If we now go to another MSDN page and click on a F# code sample, and then go 
+If we go to another MSDN page and click on a F# code sample, and then go 
 back to the `HttpRequest` class documentation, while maintaining the same `cookieContainer`, 
 we will be presented with the F# code snippets:
 *)

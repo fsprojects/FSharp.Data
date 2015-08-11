@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>false</Tailcalls>
+    <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -41,25 +41,33 @@
     <OtherFlags>--warnon:1182</OtherFlags>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fsi">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fsi</Link>
+    </Content>
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\ProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/ProvidedTypes.fs</Link>
+    </Compile>
+    <Compile Include="..\paket-files\fsprojects\FSharp.TypeProviders.StarterPack\src\DebugProvidedTypes.fs">
+      <Paket>True</Paket>
+      <Link>paket-files/DebugProvidedTypes.fs</Link>
+    </Compile>
     <Compile Include="Net\UriUtils.fs" />
     <Compile Include="Net\Http.fs" />
     <Compile Include="CommonRuntime\IO.fs" />
     <Compile Include="CommonRuntime\Caching.fs" />
-    <Compile Include="CommonRuntime\HttpUtils.fs" />
     <Compile Include="CommonRuntime\TextConversions.fs" />
     <Compile Include="CommonRuntime\TextRuntime.fs" />
     <Compile Include="CommonRuntime\Pluralizer.fs" />
     <Compile Include="CommonRuntime\NameUtils.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
-    <Compile Include="CommonProviderImplementation\ProvidedTypes.fsi" />
-    <Compile Include="CommonProviderImplementation\ProvidedTypes.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyReplacer.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
     <Compile Include="CommonProviderImplementation\Helpers.fs" />
     <Compile Include="CommonProviderImplementation\ConversionsGenerator.fs" />
-    <Compile Include="CommonProviderImplementation\Debug.fs" />
     <Compile Include="Json\JsonValue.fs" />
     <Compile Include="Json\JsonConversions.fs" />
     <Compile Include="Json\JsonExtensions.fs" />
@@ -83,14 +91,16 @@
     <Compile Include="Csv\CsvProvider.fs" />
     <Compile Include="WorldBank\WorldBankRuntime.fs" />
     <Compile Include="WorldBank\WorldBankProvider.fs" />
-    <Compile Include="Freebase\FreebaseRequests.fs" />
-    <Compile Include="Freebase\FreebaseSchema.fs" />
-    <Compile Include="Freebase\FreebaseRuntime.fs" />
-    <Compile Include="Freebase\FreebaseProvider.fs" />
-    <Compile Include="Freebase\FreebaseOperators.fs" />
+    <Compile Include="Html\HtmlCharRefs.fs" />
+    <Compile Include="Html\HtmlParser.fs" />
+    <Compile Include="Html\HtmlOperations.fs" />
+    <Compile Include="Html\HtmlInference.fs" />
+    <Compile Include="Html\HtmlRuntime.fs" />
+    <Compile Include="Html\HtmlGenerator.fs" />
+    <Compile Include="Html\HtmlProvider.fs" />
     <Compile Include="TypeProviderInstantiation.fs" />
     <Compile Include="AssemblyInfo.DesignTime.fs" />
-    <Compile Include="Test.fsx" />
+    <None Include="Test.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -102,16 +112,22 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
+  <Import Project="DefineConstants.targets" />
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
-  <Import Project="DefineConstants.targets" />
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets')">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
-  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets')">
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -5,6 +5,7 @@ open System
 open System.Diagnostics
 open System.Collections.Generic
 open System.Globalization
+open FSharp.Data
 open FSharp.Data.Runtime
 open FSharp.Data.Runtime.StructuralTypes
 
@@ -39,7 +40,6 @@ let supportsUnitsOfMeasure typ =
 /// Returns a tag of a type - a tag represents a 'kind' of type 
 /// (essentially it describes the different bottom types we have)
 let typeTag = function
-  | InferedType.Constant(name = n)->InferedTypeTag.Constant n
   | InferedType.Record(name = n)-> InferedTypeTag.Record n
   | InferedType.Collection _ -> InferedTypeTag.Collection
   | InferedType.Null | InferedType.Top -> InferedTypeTag.Null
@@ -50,11 +50,6 @@ let typeTag = function
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
-      elif typ = typeof<Single> then InferedTypeTag.Number
-      elif typ = typeof<Int16>  then InferedTypeTag.Number
-      elif typ = typeof<Int32>  then InferedTypeTag.Number
-      elif typ = typeof<int8>   then InferedTypeTag.Number
-      elif typ = typeof<Int64>  then InferedTypeTag.Number
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
 
@@ -248,6 +243,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 
   // Helper for calling TextConversions.AsXyz functions
   let (|Parse|_|) func value = func cultureInfo value
+  let (|ParseNoCulture|_|) func value = func value
 
   let asGuid _ value = TextConversions.AsGuid value
 
@@ -255,8 +251,12 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
 #if FX_NET_CORE_REFLECTION
     cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #else
-    let runningOnMono = Type.GetType("Mono.Runtime") <> null
-    if runningOnMono then
+    try
+      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
+    with :? ArgumentOutOfRangeException when Type.GetType("Mono.Runtime") <> null ->
+      // In Mono before 4.0, the above call was throwing ArgumentOurOfRange exception (see #426)
+      // Since Mono 4.0, the above method works, but the following workaround stopps working.
+      // So, we try the workaround *only* on Mono and *only* when we get out of range exception.
       let abbreviatedEraNames = cultureInfo.Calendar.GetType().GetProperty("AbbreviatedEraNames", Reflection.BindingFlags.Instance ||| Reflection.BindingFlags.NonPublic).GetValue(cultureInfo.Calendar, [| |]) :?> string[]
       let eraIndex =
         match era with
@@ -264,8 +264,6 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
         | x when x > 0 && x <= abbreviatedEraNames.Length -> era
         | invalid -> failwith (sprintf "invalid era %i (culture = '%s')" invalid cultureInfo.NativeName)
       abbreviatedEraNames.[eraIndex - 1]  //era are 1 based
-    else
-      cultureInfo.DateTimeFormat.GetAbbreviatedEraName(era)
 #endif
 
   let isFakeDate (date:DateTime) value =
@@ -284,7 +282,7 @@ let inferPrimitiveType (cultureInfo:CultureInfo) (value : string) =
   | "" -> null
   | Parse TextConversions.AsInteger 0 -> typeof<Bit0>
   | Parse TextConversions.AsInteger 1 -> typeof<Bit1>
-  | Parse TextConversions.AsBoolean _ -> typeof<bool>
+  | ParseNoCulture TextConversions.AsBoolean _ -> typeof<bool>
   | Parse TextConversions.AsInteger _ -> typeof<int>
   | Parse TextConversions.AsInteger64 _ -> typeof<int64>
   | Parse TextConversions.AsDecimal _ -> typeof<decimal>
@@ -298,3 +296,39 @@ let getInferedTypeFromString cultureInfo value unit =
     match inferPrimitiveType cultureInfo value with
     | null -> InferedType.Null
     | typ -> InferedType.Primitive(typ, unit, false)
+
+type IUnitsOfMeasureProvider =
+    abstract SI : str:string -> System.Type
+    abstract Product : measure1: System.Type * measure2: System.Type  -> System.Type
+    abstract Inverse : denominator: System.Type -> System.Type
+
+let defaultUnitsOfMeasureProvider = 
+    { new IUnitsOfMeasureProvider with
+        member x.SI(_): Type = null
+        member x.Product(_, _) = failwith "Not implemented yet"
+        member x.Inverse(_) = failwith "Not implemented yet" }
+
+let private uomTransformations = [
+    ["²"; "^2"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Product(t, t)
+    ["³"; "^3"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Product(provider.Product(t, t), t)
+    ["^-1"], fun (provider:IUnitsOfMeasureProvider) t -> provider.Inverse(t) ]
+
+let parseUnitOfMeasure (provider:IUnitsOfMeasureProvider) (str:string) = 
+    let unit =
+        uomTransformations
+        |> List.collect (fun (suffixes, trans) -> suffixes |> List.map (fun suffix -> suffix, trans))
+        |> List.tryPick (fun (suffix, trans) ->
+            if str.EndsWith suffix then
+                let baseUnitStr = str.[..str.Length - suffix.Length - 1]
+                let baseUnit = provider.SI baseUnitStr
+                if baseUnit = null then 
+                    None 
+                else 
+                    baseUnit |> trans provider |> Some
+            else
+                None)
+    match unit with
+    | Some _ -> unit
+    | None ->
+        let unit = provider.SI str
+        if unit = null then None else Some unit

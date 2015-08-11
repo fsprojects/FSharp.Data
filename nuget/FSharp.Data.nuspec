@@ -13,15 +13,15 @@
     <summary>@summary@</summary>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2015</copyright>
     <tags>@tags@</tags>
     <dependencies>
       <group targetFramework="portable-net40+sl5+wp8+win8">
-        <dependency id="Zlib.Portable" version="1.9.2" />
+        <dependency id="Zlib.Portable" version="1.10.0" />
       </group>
-      <group targetFramework="portable-net45+win8">
+      <!--<group targetFramework="portable-net45+win8">
         <dependency id="Zlib.Portable" version="1.9.2" />
-      </group>
+      </group>-->
       <group targetFramework="net40" />
     </dependencies>
     <references>

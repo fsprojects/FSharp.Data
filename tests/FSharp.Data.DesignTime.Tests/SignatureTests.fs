@@ -1,5 +1,5 @@
 ﻿#if INTERACTIVE
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #r "../../bin/FSharp.Data.DesignTime.dll"
 #load "../Common/FsUnit.fs"
 #else
@@ -15,14 +15,17 @@ let (++) a b = Path.Combine(a, b)
 
 let sourceDirectory = __SOURCE_DIRECTORY__
 
-let testCases = 
+let testCasesTuple = 
     sourceDirectory ++ "SignatureTestCases.config" 
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
-let testCasesForUSA =
-    testCases
-    |> Array.filter (function Freebase _ | WorldBank _ -> false | _ -> true)
+let testCases = 
+    testCasesTuple
+#if BUILD_SERVER
+    |> Array.filter (snd >> function | WorldBank _ -> false | _ -> true)
+#endif
+    |> Array.map snd
 
 let expectedDirectory = sourceDirectory ++ "expected" 
 
@@ -35,19 +38,17 @@ let portable7RuntimeAssembly = sourceDirectory ++ ".." ++ ".." ++ "bin" ++ "port
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore
-    for testCase in testCases do
-        testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
-        |> ignore
+    for (sample, testCase) in testCasesTuple do
+        try
+            testCase.Dump resolutionFolder expectedDirectory runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false
+            |> ignore
+        with e -> 
+            raise(new System.Exception(sprintf "Failed generating: %s" sample, e))
 
 let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
-[<Test>]
-#if TEAM_CITY
-[<TestCaseSource "testCasesForUSA">]
-#else
 [<TestCaseSource "testCases">]
-#endif
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let expected = testCase.ExpectedPath expectedDirectory |> File.ReadAllText |> normalize
     let output = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize

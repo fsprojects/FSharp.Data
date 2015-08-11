@@ -8,6 +8,7 @@ open System
 open Microsoft.FSharp.Quotations
 open FSharp.Data
 open FSharp.Data.Runtime
+open FSharp.Data.Runtime.BaseTypes
 open FSharp.Data.Runtime.StructuralTypes
 open ProviderImplementation
 open ProviderImplementation.QuotationBuilder
@@ -20,7 +21,7 @@ let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<JsonValue
   elif typ = typeof<int64> then <@@ JsonRuntime.ConvertInteger64(cultureStr, %value) @@>
   elif typ = typeof<decimal> then <@@ JsonRuntime.ConvertDecimal(cultureStr, %value) @@>
   elif typ = typeof<float> then <@@ JsonRuntime.ConvertFloat(cultureStr, missingValuesStr, %value) @@>
-  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(cultureStr, %value) @@>
+  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ JsonRuntime.ConvertBoolean(%value) @@>
   elif typ = typeof<DateTime> then <@@ JsonRuntime.ConvertDateTime(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ JsonRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"

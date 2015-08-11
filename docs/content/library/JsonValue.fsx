@@ -1,5 +1,5 @@
 ﻿(**
-# F# Data: JSON Parser and Reader
+# F# Data: JSON Parser
 
 The F# [JSON Type Provider](JsonProvider.html) is built on top of an efficient JSON parser written
 in F#. This parser is based on a JSON parser available in [F# 3.0 Sample Pack](http://fsharp3sample.codeplex.com), 
@@ -30,7 +30,7 @@ let info =
 
 (**
 The parsed value can be processed using pattern matching - the `JsonValue` type
-is a discriminated union with cases such as `Record`, `Collection` and other that
+is a discriminated union with cases such as `Record`, `Collection` and others that
 can be used to examine the structure.
 
 ## Using JSON extensions
@@ -39,15 +39,15 @@ We do not cover this technique in this introduction. Instead, we look at a numbe
 of extensions that become available after opening the `FSharp.Data.JsonExtensions` 
 namespace. Once opened, we can write:
 
- * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`
+ * `value.AsBoolean()` returns the value as boolean if it is either `true` or `false`.
  * `value.AsInteger()` returns the value as integer if it is numeric and can be
    converted to an integer; `value.AsInteger64()`, `value.AsDecimal()` and
    `value.AsFloat()` behave similarly.
- * `value.AsString()` returns the value as a string
- * `value.AsDateTime()` parse the string as a `DateTime` value using either the
+ * `value.AsString()` returns the value as a string.
+ * `value.AsDateTime()` parses the string as a `DateTime` value using either the
     [ISO 8601](http://en.wikipedia.org/wiki/ISO_8601) format, or using the 
     `\/Date(...)\/` JSON format containing number of milliseconds since 1/1/1970.
- * `value.AsGuid()` parse the string as a `Guid` value.
+ * `value.AsGuid()` parses the string as a `Guid` value.
  * `value?child` uses the dynamic operator to obtain a record member named `child`;
     alternatively, you can also use `value.GetProperty(child)` or an indexer
     `value.[child]`.
@@ -55,11 +55,11 @@ namespace. Once opened, we can write:
     (if the member is missing or the value is not a record then, `TryGetProperty` 
     returns `None`).
  * `[ for v in value -> v ]` treats `value` as a collection and iterates over it;
-   alternatively, it is possible to cobtain all elements as an array using 
+   alternatively, it is possible to obtain all elements as an array using 
    `value.AsArray()`.
- * `value.Properties` returns a list of all properties of a record node
- * `value.InnerText` concatenates all text or text in an array 
-   (representing e.g. multi-line string)
+ * `value.Properties()` returns a list of all properties of a record node.
+ * `value.InnerText()` concatenates all text or text in an array 
+   (representing e.g. multi-line string).
 
 Methods that may need to parse a numeric value or date (such as `AsFloat` and
 `AsDateTime`) receive an optional culture parameter.
@@ -101,7 +101,7 @@ a WorldBank request (you can access the WorldBank data more conveniently using
           "country": {"id":"CZ","value":"Czech Republic"},
           "value":"16.6567773464055","decimal":"1","date":"2010"} ] ]
 
-The document is formed by an array that contains record as the first element
+The document is formed by an array that contains a record as the first element
 and a collection of data points as the second element. The following code
 reads the document and parses it:
 *)

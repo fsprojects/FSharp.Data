@@ -18,7 +18,7 @@ let getConversionQuotation missingValuesStr cultureStr typ (value:Expr<string op
   elif typ = typeof<int64> then <@@ TextRuntime.ConvertInteger64(cultureStr, %value) @@>
   elif typ = typeof<decimal> then <@@ TextRuntime.ConvertDecimal(cultureStr, %value) @@>
   elif typ = typeof<float> then <@@ TextRuntime.ConvertFloat(cultureStr, missingValuesStr, %value) @@>
-  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ TextRuntime.ConvertBoolean(cultureStr, %value) @@>
+  elif typ = typeof<bool> || typ = typeof<Bit> then <@@ TextRuntime.ConvertBoolean(%value) @@>
   elif typ = typeof<DateTime> then <@@ TextRuntime.ConvertDateTime(cultureStr, %value) @@>
   elif typ = typeof<Guid> then  <@@ TextRuntime.ConvertGuid(%value) @@>
   else failwith "getConversionQuotation: Unsupported primitive type"
@@ -29,8 +29,7 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
   elif typ = typeof<decimal> then <@ TextRuntime.ConvertDecimalBack(cultureStr, %%value) @>
   elif typ = typeof<float> then <@ TextRuntime.ConvertFloatBack(cultureStr, missingValuesStr, %%value) @>
   elif typ = typeof<string> then <@ TextRuntime.ConvertStringBack(%%value) @>
-  elif typ = typeof<bool> then <@ TextRuntime.ConvertBooleanBack(cultureStr, %%value, false) @>
-  elif typ = typeof<Bit> then <@ TextRuntime.ConvertBooleanBack(cultureStr, %%value, true) @>
+  elif typ = typeof<bool> || typ = typeof<Bit> then <@ TextRuntime.ConvertBooleanBack(%%value, false) @>
   elif typ = typeof<Guid> then <@ TextRuntime.ConvertGuidBack(%%value) @>
   elif typ = typeof<DateTime> then <@ TextRuntime.ConvertDateTimeBack(cultureStr, %%value) @>
   else failwith "getBackConversionQuotation: Unsupported primitive type"

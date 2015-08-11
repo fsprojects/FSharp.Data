@@ -3,6 +3,7 @@ module FSharp.Data.Runtime.CsvInference
 
 open System
 open System.IO
+open System.Runtime.InteropServices
 open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Data.Runtime
@@ -44,9 +45,9 @@ let private regexOptions =
 #else
   RegexOptions.Compiled ||| RegexOptions.RightToLeft
 #endif
-let private nameAndTypeRegex = new Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
-let private typeAndUnitRegex = new Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
-let private overrideByNameRegex = new Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
+let private nameAndTypeRegex = lazy Regex(@"^(?<name>.+)\((?<type>.+)\)$", regexOptions)
+let private typeAndUnitRegex = lazy Regex(@"^(?<type>.+)<(?<unit>.+)>$", regexOptions)
+let private overrideByNameRegex = lazy Regex(@"^(?<name>.+)(->(?<newName>.+)(=(?<type>.+))?|=(?<type>.+))$", regexOptions)
   
 [<RequireQualifiedAccess>]
 type private SchemaParseResult =
@@ -60,8 +61,8 @@ let private asOption = function true, x -> Some x | false, _ -> None
 
 /// Parses type specification in the schema for a single column. 
 /// This can be of the form: type|measure|type<measure>
-let private parseTypeAndUnit tryGetUnit str = 
-  let m = typeAndUnitRegex.Match(str)
+let private parseTypeAndUnit unitsOfMeasureProvider str = 
+  let m = typeAndUnitRegex.Value.Match(str)
   if m.Success then
     // type<unit> case, both type and unit have to be valid
     let typ = m.Groups.["type"].Value.TrimEnd().ToLowerInvariant() |> nameToType.TryGetValue |> asOption
@@ -69,10 +70,11 @@ let private parseTypeAndUnit tryGetUnit str =
     | None -> None, None
     | Some typ ->
         let unitName = m.Groups.["unit"].Value.Trim()
-        let unit = tryGetUnit unitName
-        match unit with
-        | null -> failwithf "Invalid unit of measure %s" unitName
-        | unit -> Some typ, Some unit
+        let unit = StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider unitName
+        if unit.IsNone then
+            failwithf "Invalid unit of measure %s" unitName
+        else
+            Some typ, unit
   else 
     // it is not a full type with unit, so it can be either type or a unit
     let typ = str.ToLowerInvariant() |> nameToType.TryGetValue |> asOption
@@ -81,40 +83,37 @@ let private parseTypeAndUnit tryGetUnit str =
         // Just type
         Some (typ, typWrapper), None
     | None -> 
-        // Just unit
-        let unit = tryGetUnit str
-        match unit with
-        | null -> None, None
-        | unit -> None, Some unit
+        // Just unit (or nothing)
+        None, StructuralInference.parseUnitOfMeasure unitsOfMeasureProvider str
     
 /// Parse schema specification for column. This can either be a name
 /// with type or just type: name (typeInfo)|typeInfo.
 /// If forSchemaOverride is set to true, only Full or Name is returne
 /// (if we succeed we override the inferred schema, otherwise, we just
 /// override the header name)
-let private parseSchemaItem tryGetUnit str forSchemaOverride =     
+let private parseSchemaItem unitsOfMeasureProvider str forSchemaOverride =     
   let name, typ, unit, isOverrideByName, originalName = 
-    let m = overrideByNameRegex.Match str
+    let m = overrideByNameRegex.Value.Match str
     if m.Success && forSchemaOverride then
       // name=type|type<measure>
       let originalName = m.Groups.["name"].Value.TrimEnd()
       let newName = m.Groups.["newName"].Value.Trim()
       let typeAndUnit = m.Groups.["type"].Value.Trim()
-      let typ, unit = parseTypeAndUnit tryGetUnit typeAndUnit
+      let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
       if typ.IsNone && typeAndUnit <> "" then
         failwithf "Invalid type: %s" typeAndUnit
       newName, typ, unit, true, originalName
     else
-      let m = nameAndTypeRegex.Match(str)
+      let m = nameAndTypeRegex.Value.Match(str)
       if m.Success then
         // name (type|measure|type<measure>)
         let name = m.Groups.["name"].Value.TrimEnd()
         let typeAndUnit = m.Groups.["type"].Value.Trim()
-        let typ, unit = parseTypeAndUnit tryGetUnit typeAndUnit
+        let typ, unit = parseTypeAndUnit unitsOfMeasureProvider typeAndUnit
         name, typ, unit, false, ""
       elif forSchemaOverride then
         // type|type<measure>
-        let typ, unit = parseTypeAndUnit tryGetUnit str
+        let typ, unit = parseTypeAndUnit unitsOfMeasureProvider str
         match typ, unit with
         | None, _ -> str, None, None, false, ""
         | typ, unit -> "", typ, unit, false, ""
@@ -133,23 +132,28 @@ let private parseSchemaItem tryGetUnit str forSchemaOverride =
   | None, Some _ when forSchemaOverride -> SchemaParseResult.Name str
   | None, Some unit -> SchemaParseResult.NameAndUnit(name, unit)
 
-/// Infers the type of a CSV file using the specified number of rows
-/// (This handles units in the same way as the original MiniCSV provider)
-let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo schema assumeMissingValues preferOptionals =
+let internal inferCellType preferOptionals missingValues cultureInfo unit value = 
+    // If there's only whitespace between commas, treat it as a missing value and not as a string
+    if String.IsNullOrWhiteSpace value then InferedType.Null
+    // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
+    elif Array.exists ((=) <| value.Trim()) missingValues then 
+        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit, false)
+    else getInferedTypeFromString cultureInfo value unit
 
-  // This has to be done now otherwise subtypeInfered will get confused
+let internal parseHeaders headers numberOfColumns schema unitsOfMeasureProvider =
+
   let makeUnique = NameUtils.uniqueGenerator id
 
   // If we do not have header names, then automatically generate names
   let headers = 
-    match csv.Headers with
+    match headers with
     | Some headers ->
         headers |> Array.mapi (fun i header -> 
           if String.IsNullOrWhiteSpace header then 
             "Column" + (i+1).ToString()
           else
             header)
-    | None -> Array.init csv.NumberOfColumns (fun i -> "Column" + (i+1).ToString())
+    | None -> Array.init numberOfColumns (fun i -> "Column" + (i+1).ToString())
 
   // If the schema is specified explicitly, then parse the schema
   // (This can specify just types, names of columns or a mix of both)
@@ -160,14 +164,14 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
       use reader = new StringReader(schema)
       let schemaStr = CsvReader.readCsvFile reader "," '"' |> Seq.exactlyOne |> fst
       if schemaStr.Length > headers.Length then
-        failwithf "Schema was expected to have at most %d items, but has %d" headers.Length schemaStr.Length
+        failwithf "The provided schema contains %d columns, the inference found %d columns - please check the number of columns and the separator " schemaStr.Length headers.Length 
       let schema = Array.zeroCreate headers.Length
       for index = 0 to schemaStr.Length-1 do
         let item = schemaStr.[index].Trim()
         match item with
         | "" -> ()
         | item -> 
-            let parseResult = parseSchemaItem tryGetUnit item true
+            let parseResult = parseSchemaItem unitsOfMeasureProvider item true
             match parseResult with
             | SchemaParseResult.Name name ->
                 headers.[index] <- name
@@ -201,7 +205,7 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
     match schema.[index] with
     | Some prop -> prop.Name, None
     | None ->
-        let parseResult = parseSchemaItem tryGetUnit item false
+        let parseResult = parseSchemaItem unitsOfMeasureProvider item false
         match parseResult with
         | SchemaParseResult.Name name -> 
             makeUnique name, None
@@ -214,9 +218,15 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
             prop.Name, None
         | _ -> failwithf "inferType: Unexpected SchemaParseResult for header: %A" parseResult)
 
+  headerNamesAndUnits, schema
+
+/// Infers the type of a CSV file using the specified number of rows
+/// (This handles units in the same way as the original MiniCSV provider)
+let internal inferType (headerNamesAndUnits:_[]) schema (rows:seq<_>) inferRows missingValues cultureInfo assumeMissingValues preferOptionals =
+
   // If we have no data, generate one empty row with empty strings, 
   // so that we get a type with all the properties (returning string values)
-  let rowsIterator = csv.Rows.GetEnumerator()
+  let rowsIterator = rows.GetEnumerator()
   let rows = 
     if rowsIterator.MoveNext() then
       seq {
@@ -227,28 +237,22 @@ let internal inferType tryGetUnit (csv:CsvFile) count missingValues cultureInfo 
         finally
           rowsIterator.Dispose()
         if assumeMissingValues then
-          yield CsvRow(csv, Array.create headers.Length "")
+          yield Array.create headerNamesAndUnits.Length ""
       }
     else
-      CsvRow(csv, Array.create headers.Length "") |> Seq.singleton 
+      Array.create headerNamesAndUnits.Length "" |> Seq.singleton 
   
-  let rows = if count > 0 then Seq.truncate (if assumeMissingValues && count < Int32.MaxValue then count + 1 else count) rows else rows
+  let rows = if inferRows > 0 then Seq.truncate (if assumeMissingValues && inferRows < Int32.MaxValue then inferRows + 1 else inferRows) rows else rows
 
   // Infer the type of collection using structural inference
   let types = 
     [ for row in rows ->
         let fields = 
-          [ for (name, unit), index, value in Array.zip3 headerNamesAndUnits [| 0..headerNamesAndUnits.Length-1 |] row.Columns ->
+          [ for (name, unit), schema, value in Array.zip3 headerNamesAndUnits schema row ->
               let typ = 
-                match schema.[index] with
+                match schema with
                 | Some _ -> InferedType.Null // this will be ignored, so just return anything
-                | None ->
-                    // If there's only whitespace between commas, treat it as a missing value and not as a string
-                    if String.IsNullOrWhiteSpace value then InferedType.Null
-                    // Explicit missing values (NaN, NA, etc.) will be treated as float unless the preferOptionals is set to true
-                    elif Array.exists ((=) <| value.Trim()) missingValues then 
-                        if preferOptionals then InferedType.Null else InferedType.Primitive(typeof<float>, unit, false)
-                    else getInferedTypeFromString cultureInfo value unit
+                | None -> inferCellType preferOptionals missingValues cultureInfo unit value
               { Name = name
                 Type = typ } ]
         InferedType.Record(None, fields, false) ]
@@ -315,6 +319,10 @@ let internal getFields preferOptionals inferedType schema =
           
   | _ -> failwithf "inferFields: Expected record type, got %A" inferedType
 
+let internal inferColumnTypes headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals =
+    inferType headerNamesAndUnits schema rows inferRows missingValues cultureInfo assumeMissingValues preferOptionals
+    ||> getFields preferOptionals
+
 type CsvFile with
     /// Infers the types of the columns of a CSV file
     /// Parameters:
@@ -324,8 +332,15 @@ type CsvFile with
     /// * schema - Optional column types, in a comma separated list. Valid types are "int", "int64", "bool", "float", "decimal", "date", "guid", "string", "int?", "int64?", "bool?", "float?", "decimal?", "date?", "guid?", "int option", "int64 option", "bool option", "float option", "decimal option", "date option", "guid option" and "string option". You can also specify a unit and the name of the column like this: Name (type&lt;unit&gt;). You can also override only the name. If you don't want to specify all the columns, you can specify by name like this: 'ColumnName=type'
     /// * assumeMissingValues - Assumes all columns can have missing values
     /// * preferOptionals - when set to true, inference will prefer to use the option type instead of nullable types, double.NaN or "" for missing values
-    /// * getUnitOfMeasure - optional function to resolve Units of Measure
-    member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, ?getUnitOfMeasure) =
-        let tryGetUnit = defaultArg getUnitOfMeasure (fun (_:string) -> null:Type) 
-        inferType tryGetUnit x inferRows missingValues cultureInfo schema assumeMissingValues preferOptionals
-        ||> getFields preferOptionals
+    /// * unitsOfMeasureProvider - optional function to resolve Units of Measure
+    member x.InferColumnTypes(inferRows, missingValues, cultureInfo, schema, assumeMissingValues, preferOptionals, [<Optional>] ?unitsOfMeasureProvider) =
+        let unitsOfMeasureProvider = defaultArg unitsOfMeasureProvider defaultUnitsOfMeasureProvider
+        let headerNamesAndUnits, schema = parseHeaders x.Headers x.NumberOfColumns schema unitsOfMeasureProvider
+        inferColumnTypes headerNamesAndUnits
+                         schema
+                         (x.Rows |> Seq.map (fun row -> row.Columns))
+                         inferRows 
+                         missingValues 
+                         cultureInfo 
+                         assumeMissingValues 
+                         preferOptionals 

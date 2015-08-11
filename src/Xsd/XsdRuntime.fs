@@ -6,6 +6,7 @@ open System.IO
 open System.Xml.Schema
 open System.Xml.Linq
 open System.Globalization
+open FSharp.Data.Runtime.BaseTypes
 
 type XsdSchema = 
   

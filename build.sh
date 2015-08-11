@@ -1,8 +1,14 @@
 #!/bin/bash
-if [ ! -f packages/FAKE/tools/Fake.exe ]; then
-  mono --runtime=v4.0 .nuget/NuGet.exe install FAKE -OutputDirectory packages -ExcludeVersion
+mono .paket/paket.bootstrapper.exe
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+	exit $exit_code
 fi
-#if [ ! -f packages/SourceLink.Fake/tools/Fake.fsx ]; then
-#  mono --runtime=v4.0 .nuget/NuGet.exe install SourceLink.Fake -OutputDirectory packages -ExcludeVersion
-#fi
+
+mono .paket/paket.exe restore
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+	exit $exit_code
+fi
+
 mono --runtime=v4.0 packages/FAKE/tools/FAKE.exe build.fsx -d:MONO $@

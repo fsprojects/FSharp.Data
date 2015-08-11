@@ -20,7 +20,7 @@ let private (|Lower|_|) = sat Char.IsLower
 
 /// Turns a given non-empty string into a nice 'PascalCase' identifier
 let nicePascalName (s:string) = 
-  if s.Length = 1 then s.ToUpper() else
+  if s.Length = 1 then s.ToUpperInvariant() else
   // Starting to parse a new segment 
   let rec restart i = seq {
     match tryAt s i with 
@@ -52,8 +52,8 @@ let nicePascalName (s:string) =
   seq { for i1, i2 in restart 0 do 
           let sub = s.Substring(i1, i2 - i1) 
           if Array.forall Char.IsLetterOrDigit (sub.ToCharArray()) then
-            yield sub.[0].ToString().ToUpper() + sub.ToLower().Substring(1) }
-  |> String.concat ""
+            yield sub.[0].ToString().ToUpperInvariant() + sub.ToLowerInvariant().Substring(1) }
+  |> String.Concat
 
 /// Turns a given non-empty string into a nice 'camelCase' identifier
 let niceCamelName (s:string) = 
@@ -81,7 +81,10 @@ let uniqueGenerator niceName =
       while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
         lastLetterPos <- lastLetterPos - 1
       if lastLetterPos = name.Length - 1 then
-        name <- name + "2"
+        if name.Contains " " then
+            name <- name + " 2"
+        else
+            name <- name + "2"
       elif lastLetterPos = 0 && name.Length = 1 then
         name <- (UInt64.Parse name + 1UL).ToString()
       else
@@ -89,6 +92,12 @@ let uniqueGenerator niceName =
         name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
     set.Add name |> ignore
     name
+
+let capitalizeFirstLetter (s:string) =    
+    match s.Length with
+        | 0 -> ""
+        | 1 -> (Char.ToUpperInvariant s.[0]).ToString()                
+        | _ -> (Char.ToUpperInvariant s.[0]).ToString() + s.Substring(1)
 
 /// Trim HTML tags from a given string and replace all of them with spaces
 /// Multiple tags are replaced with just a single space. (This is a recursive 

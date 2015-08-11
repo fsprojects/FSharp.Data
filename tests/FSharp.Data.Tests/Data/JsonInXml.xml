@@ -1,6 +1,7 @@
 <PropertyBag>
       <BlahDataArray>
         <BlahData>
+          <X><![CDATA[[]]]></X>
           <BlahDataSomethingFoo><![CDATA[{
     "Something.Schema" : "Something.Bar",
     "results" :
@@ -51,6 +52,7 @@
 <PropertyBag>
       <BlahDataArray>
         <BlahData>
+          <X><![CDATA[[{"T":2,"Val":"foo"}]]]></X>
           <BlahDataSomethingFoo><![CDATA[{
     "Something.Schema" : "Something.Bar",
     "results" :

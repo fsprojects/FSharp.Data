@@ -92,7 +92,7 @@ for row in msft.Rows do
 *)
 
 // FSharp.Chartingの読み込み
-#load "../../../../packages/FSharp.Charting.0.90.6/FSharp.Charting.fsx"
+#load "../../../../packages/FSharp.Charting/FSharp.Charting.fsx"
 open System
 open FSharp.Charting
 
@@ -118,7 +118,7 @@ let recent =
 (*** define-output:chart2 ***)
 
 // ローソクチャートを使って株価をビジュアル化
-Chart.Candlestick(recent).WithYAxis(Min = 35.0, Max = 45.0)
+Chart.Candlestick(recent).WithYAxis(Min = 40.0, Max = 50.0)
 
 (*** include-it:chart2 ***)
 
@@ -338,7 +338,7 @@ static引数 `PreferOptionals` を `true` にします。
 
 let csv = CsvProvider<"1,2,3", HasHeaders = false, Schema = "Duration (float<second>),foo,float option">.GetSample()
 for row in csv.Rows do
-  printfn "%f %d %f" (row.Duration/1.0<second>) row.foo (defaultArg row.Column3 1.0)
+  printfn "%f %d %f" (row.Duration/1.0<second>) row.Foo (defaultArg row.Column3 1.0)
 
 (**
 

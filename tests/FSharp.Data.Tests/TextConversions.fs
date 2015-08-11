@@ -2,18 +2,18 @@
 
 #if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #endif
 
 open NUnit.Framework
 open FsUnit
 open System.Globalization
-open FSharp.Data.Runtime
+open FSharp.Data
 
 [<Test>]
 let ``Boolean conversions``() = 
-  let asBoolean = TextConversions.AsBoolean CultureInfo.InvariantCulture
+  let asBoolean = TextConversions.AsBoolean
 
   asBoolean "yEs"  |> should equal (Some true)
   asBoolean "trUe" |> should equal (Some true)
@@ -29,4 +29,5 @@ let ``Boolean conversions``() =
 let ``Decimal conversions``() = 
   TextConversions.AsDecimal CultureInfo.InvariantCulture "¤50" |> should equal (Some 50M)
   TextConversions.AsDecimal (CultureInfo "en-GB") "£50" |> should equal (Some 50M)
-  TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal None
+  TextConversions.AsDecimal (CultureInfo "en-GB") "$50" |> should equal (Some 50M)
+  TextConversions.AsDecimal CultureInfo.InvariantCulture "(10,000,000.99)" |> should equal (Some -10000000.99M)

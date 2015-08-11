@@ -12,7 +12,7 @@ type ICache<'T> =
 let createNonCachingCache() = 
   { new ICache<'T> with
       member __.Set(_, _) = ()
-      member __.TryRetrieve(_) = None }   
+      member __.TryRetrieve(_) = None }
 
 #if FX_NO_CONCURRENT
 
@@ -70,7 +70,11 @@ let private hashString (plainText:string) =
 let createInternetFileCache prefix expiration =
 
   // %UserProfile%\AppData\Local\Microsoft\Windows\INetCache
-  let cacheFolder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
+  let cacheFolder =
+    if Environment.OSVersion.Platform = PlatformID.Unix
+    then Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.cache/fsharp-data"
+    else Environment.GetFolderPath(Environment.SpecialFolder.InternetCache)
+
   let downloadCache = Path.Combine(cacheFolder, prefix)
 
   // Get file name for a given string (using hash)

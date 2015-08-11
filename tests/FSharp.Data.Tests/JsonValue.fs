@@ -1,6 +1,6 @@
 ﻿#if INTERACTIVE
 #r "../../bin/FSharp.Data.dll"
-#r "../../packages/NUnit.2.6.3/lib/nunit.framework.dll"
+#r "../../packages/NUnit/lib/nunit.framework.dll"
 #load "../Common/FsUnit.fs"
 #else
 module FSharp.Data.Tests.JsonValue
@@ -95,6 +95,11 @@ let ``Can parse completely invalid, but close, date as string``() =
     j?anniversary.AsString() |> should equal "2010-02-18T16.5:23.35:4"
 
 [<Test>]
+let ``Can parse UTF-32 unicode characters`` () = 
+  let j = JsonValue.Parse """{ "value": "\U00010343\U00010330\U0001033F\U00010339\U0001033B" }"""
+  j?value.AsString() |> should equal "\U00010343\U00010330\U0001033F\U00010339\U0001033B"
+
+[<Test>]
 [<SetCulture("pt-PT")>]
 let ``Can parse floats in different cultures``() =
     let j = JsonValue.Parse "{ \"age\": 25.5}"
@@ -174,7 +179,7 @@ let ``Can parse array of numbers``() =
     j.[2] |> should equal (JsonValue.Number 3m)
 
 [<Test>]
-let ``Quotes in strings are property escaped``() =
+let ``Quotes in strings are properly escaped``() =
     let jsonStr = "{\"short_description\":\"This a string with \\\"quotes\\\"\"}"
     let j = JsonValue.Parse jsonStr
     j.ToString(JsonSaveOptions.DisableFormatting) |> should equal jsonStr
@@ -305,6 +310,7 @@ let ``Can parse various JSON documents``() =
             """["Test\t"]"""                        , Some <| Array [|String "Test\t"|]
             """["\""]"""                            , Some <| Array [|String "\""|]
             """["\"\\\//\b\f\n\r\t\u2665"]"""       , Some <| Array [|String "\"\\//\b\f\n\r\t\u2665"|]
+            """["\ud83d\udc36"]"""                  , Some <| Array [|String "\ud83d\udc36"|]
             """[0]"""                               , Some <| Array [|Float 0.|]
             """[0.5]"""                             , Some <| Array [|Float 0.5|]
             """[1234]"""                            , Some <| Array [|Float 1234.|]
@@ -387,3 +393,27 @@ let ``Can parse various JSON documents``() =
 
     if failures.Length > 0 then
         Assert.Fail <| failures.ToString ()
+
+[<Test>]
+let ``Basic special characters encoded correctly`` () = 
+  let input = " \"quoted\" and \'quoted\' and \r\n and \uABCD "
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = " \\\"quoted\\\" and 'quoted' and \\r\\n and \uABCD "
+  (w.GetStringBuilder().ToString()) |> should equal expected
+
+[<Test>]
+let ``Encoding of simple string is valid JSON`` () = 
+  let input = "sample \"json\" with \t\r\n \' quotes etc."
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = "sample \\\"json\\\" with \\t\\r\\n ' quotes etc."
+  (w.GetStringBuilder().ToString()) |> should equal expected
+
+[<Test>]
+let ``Encoding of markup is not overzealous`` () =
+  let input = "<SecurityLabel><MOD>ModelAdministrators</MOD></SecurityLabel>"
+  let w = new IO.StringWriter()
+  JsonValue.JsonStringEncodeTo w input
+  let expected = input // Should not escape </>
+  (w.GetStringBuilder().ToString()) |> should equal expected

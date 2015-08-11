@@ -1,0 +1,113 @@
+class HtmlProvider : FDR.BaseTypes.HtmlDocument
+    new : () -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
+
+    static member AsyncGetSample: () -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm"), f)
+
+    static member AsyncLoad: uri:string -> HtmlProvider async
+    let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+
+    static member GetSample: () -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "ebay_cars.htm")))
+
+    member Lists: HtmlProvider+ListsContainer with get
+    this
+
+    static member Load: stream:System.IO.Stream -> HtmlProvider
+    HtmlDocument.Create(false, ((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> HtmlProvider
+    HtmlDocument.Create(false, reader)
+
+    static member Load: uri:string -> HtmlProvider
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+
+    static member Parse: text:string -> HtmlProvider
+    HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
+
+
+class HtmlProvider+ListsContainer : FDR.BaseTypes.HtmlDocument
+    member ``2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!.``: HtmlProvider+2002Rover75ClubSeANiceOne with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!.")
+
+    member ``2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!. 2``: HtmlProvider+2002Rover75ClubSeANiceOne2 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "2002 ROVER 75,CLUB SE.A NICE ONE.!!!!!!!!. 2")
+
+    member Gf-l: HtmlProvider+GfL with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "gf-l")
+
+    member Gh-eb: HtmlProvider+GhEb with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "gh-eb")
+
+    member Gh-topl: HtmlProvider+GhTopl with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "gh-topl")
+
+    member List3: HtmlProvider+List3 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "List3")
+
+    member Menu3: HtmlProvider+Menu3 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "menu3")
+
+    member Menu4: HtmlProvider+Menu4 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "menu4")
+
+    member Menu5: HtmlProvider+Menu5 with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertInteger("", value), value))
+    HtmlList<_>.Create(rowConverter, this, "menu5")
+
+    member ``See also``: HtmlProvider+SeeAlso with get
+    let rowConverter = new Func<_,_>(fun (row:string) -> 
+                                        let value = TextConversions.AsString(row)
+                                        TextRuntime.GetNonOptionalValue("", TextRuntime.ConvertString(value), value))
+    HtmlList<_>.Create(rowConverter, this, "See also")
+
+
+class HtmlProvider+2002Rover75ClubSeANiceOne : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+2002Rover75ClubSeANiceOne2 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+GfL : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+GhEb : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+GhTopl : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+List3 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Menu3 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Menu4 : FDR.BaseTypes.HtmlList<string>
+
+class HtmlProvider+Menu5 : FDR.BaseTypes.HtmlList<int>
+
+class HtmlProvider+SeeAlso : FDR.BaseTypes.HtmlList<string>
+
