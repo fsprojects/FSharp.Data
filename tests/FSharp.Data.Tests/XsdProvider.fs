@@ -20,27 +20,27 @@ let ``Simple schema``() =
          """<?xml version="1.0" encoding="utf-8"?>
             <schema xmlns:tns="https://github.com/FSharp.Data/">
               <tns:root>
-                <tns:elem>it starts with a number</tns:elem>
-                <tns:elem1>
-                  <tns:fooElem>false</tns:fooElem>
-                  <tns:ISO639Code>dk-DA</tns:ISO639Code>
-                </tns:elem1>
+                <elem>it starts with a number</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <ISO639Code>dk-DA</ISO639Code>
+                </elem1>
                 <choice>
                   <language>Danish</language>
                 </choice>
                 <choice>
                   <country>1</country>
                 </choice>
-                <tns:anonymousTyped attr="fish" windy="strong" >
-                  <tns:covert>True</tns:covert>
-                </tns:anonymousTyped>
+                <anonymousTyped attr="fish" windy="strong" >
+                  <covert>True</covert>
+                </anonymousTyped>
               </tns:root>
             </schema>
          """ 
     let data = schema.Parse xml
     let root = data.Root
     let choices = root.Choices
-    choices.[0].Country.Value     |> should equal 1 
+    choices.[1].Country.Value     |> should equal 1 
     choices.[0].Language.Value    |> should equal "Danish"
     root.AnonymousTyped.Covert    |> should equal true
     root.AnonymousTyped.Attr      |> should equal "fish"
@@ -221,23 +221,23 @@ type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSc
 let ``nested anonymous types and ref elements``() =
     let xml = 
          """<?xml version="1.0" encoding="utf-8"?>
-            <schema xmlns:tns="https://github.com/FSharp.Data">
+            <schema xmlns:tns="https://github.com/FSharp.Data/">
               <tns:root>
-                <tns:elem>it starts with a number</tns:elem>
-                <tns:elem1>
-                  <tns:fooElem>false</tns:fooElem>
-                  <tns:ISO639Code>dk-DA</tns:ISO639Code>
-                </tns:elem1>
-                <tns:anonymousTyped attr="fish" windy="strong" >
-                  <tns:covert><truth>true</truth></tns:covert>
-                </tns:anonymousTyped>
+                <elem>it starts with a number</elem>
+                <elem1>
+                  <fooElem>false</fooElem>
+                  <ISO639Code>dk-DA</ISO639Code>
+                </elem1>
+                <anonymousTyped attr="fish" windy="strong" >
+                  <covert><truth>true</truth></covert>
+                </anonymousTyped>
               </tns:root>
             </schema>
          """ 
     let data = anonymousTypes.Parse xml
     let root = data.Root
 
-    root.AnonymousTyped.Covert.Elem1 |> should equal ""
+    root.AnonymousTyped.Covert.Elem1 |> should equal null
 
 type msdn = XsdProvider<"""data\msdnSampleSchema.xsd""">
 
