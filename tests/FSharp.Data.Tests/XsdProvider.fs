@@ -18,29 +18,29 @@ type schema = XsdProvider<"""data/schema.xsd""">
 let ``Simple schema``() =
     let xml = 
          """<?xml version="1.0" encoding="utf-8"?>
-            <schema>
-              <root>
-                <elem>it starts with a number</elem>
-                <elem1>
-                  <fooElem>false</fooElem>
-                  <ISO639Code>dk-DA</ISO639Code>
-                </elem1>
+            <schema xmlns:tns="https://github.com/FSharp.Data/">
+              <tns:root>
+                <tns:elem>it starts with a number</tns:elem>
+                <tns:elem1>
+                  <tns:fooElem>false</tns:fooElem>
+                  <tns:ISO639Code>dk-DA</tns:ISO639Code>
+                </tns:elem1>
                 <choice>
                   <language>Danish</language>
                 </choice>
                 <choice>
                   <country>1</country>
                 </choice>
-                <anonymousTyped attr="fish" windy="strong" >
-                  <covert>True</covert>
-                </anonymousTyped>
-              </root>
+                <tns:anonymousTyped attr="fish" windy="strong" >
+                  <tns:covert>True</tns:covert>
+                </tns:anonymousTyped>
+              </tns:root>
             </schema>
          """ 
     let data = schema.Parse xml
     let root = data.Root
     let choices = root.Choices
-    choices.[1].Country.Value     |> should equal 1
+    choices.[0].Country.Value     |> should equal 1 
     choices.[0].Language.Value    |> should equal "Danish"
     root.AnonymousTyped.Covert    |> should equal true
     root.AnonymousTyped.Attr      |> should equal "fish"
@@ -85,19 +85,12 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
       <xs:element name="description"
                    type="xs:string" minOccurs="0"/>
     </xs:sequence>
-<<<<<<< HEAD
     <xs:anyAttribute />
-=======
->>>>>>> origin/master
   </xs:complexType>
   <!--Complex Content Restriction-->
   <xs:complexType name="RestrictedProductType">
     <xs:complexContent>
-<<<<<<< HEAD
       <xs:restriction base="ProductType">
-=======
-      <xs:restriction base="ProductType" >
->>>>>>> origin/master
         <xs:sequence>
           <xs:element name="number" type="xs:integer"/>
           <xs:element name="name" type="xs:token"/>
@@ -128,11 +121,7 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
   <!--Simple Content Restriction-->
   <xs:complexType name="SmallSizeType">
     <xs:simpleContent>
-<<<<<<< HEAD
       <xs:restriction base="SizeType">
-=======
-        <xs:restriction base="SizeType">
->>>>>>> origin/master
         <xs:minInclusive value="2"/>
         <xs:maxInclusive value="6"/>
         <xs:attribute  name="system" type="xs:token"
@@ -144,11 +133,6 @@ type schemaWithExtension = XsdProvider<"""<xs:schema xmlns:xs="http://www.w3.org
     <xs:attribute name="value" type="xs:string"/>
   </xs:complexType>
 </xs:schema>""">
-<<<<<<< HEAD
-=======
-
-
->>>>>>> origin/master
 
 [<Test>]
 let ``Extension on complex types``() =
@@ -190,10 +174,6 @@ type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSc
           <documentation>This is an identification of the preferred language</documentation>
         </annotation>
       </element>
-<<<<<<< HEAD
-=======
-      
->>>>>>> origin/master
       <element name="anonymousTyped">
         <complexType>
           <sequence>
@@ -241,20 +221,51 @@ type anonymousTypes = XsdProvider<"""<schema xmlns="http://www.w3.org/2001/XMLSc
 let ``nested anonymous types and ref elements``() =
     let xml = 
          """<?xml version="1.0" encoding="utf-8"?>
-            <schema>
-              <root>
-                <elem>it starts with a number</elem>
-                <elem1>
-                  <fooElem>false</fooElem>
-                  <ISO639Code>dk-DA</ISO639Code>
-                </elem1>
-                <anonymousTyped attr="fish" windy="strong" >
-                  <covert><truth>true</truth></covert>
-                </anonymousTyped>
-              </root>
+            <schema xmlns:tns="https://github.com/FSharp.Data">
+              <tns:root>
+                <tns:elem>it starts with a number</tns:elem>
+                <tns:elem1>
+                  <tns:fooElem>false</tns:fooElem>
+                  <tns:ISO639Code>dk-DA</tns:ISO639Code>
+                </tns:elem1>
+                <tns:anonymousTyped attr="fish" windy="strong" >
+                  <tns:covert><truth>true</truth></tns:covert>
+                </tns:anonymousTyped>
+              </tns:root>
             </schema>
          """ 
     let data = anonymousTypes.Parse xml
     let root = data.Root
 
     root.AnonymousTyped.Covert.Elem1 |> should equal ""
+
+type msdn = XsdProvider<"""data\msdnSampleSchema.xsd""">
+
+[<Test>]
+let ``Test using msdn sample schema``() =
+
+    let country = "US"
+    let name    = "Mr. F. Sharp"
+    let city    = "Copenhagen"
+    let street  = "Downtown 1"
+    let state   = "N/A"
+    let zip     = 1354
+    
+    let xml = msdn.ParsePurchaseOrder (sprintf """
+    <PurchaseOrder xmlns:tns="http://tempuri.org/PurchaseOrderSchema.xsd">
+      <tns:BillTo country="%s">
+         <tns:name>%s</tns:name>
+         <tns:street>%s</tns:street>
+         <tns:city>%s</tns:city>
+         <tns:state>%s</tns:state>
+         <tns:zip>%d</tns:zip>
+      </tns:BillTo>
+    </PurchaseOrder>
+    """  country name street city state zip)
+    
+    xml.BillTo.Country  |> should equal country 
+    xml.BillTo.Name     |> should equal name    
+    xml.BillTo.City     |> should equal city    
+    xml.BillTo.Street   |> should equal street  
+    xml.BillTo.State    |> should equal state   
+    xml.BillTo.Zip      |> should equal zip     

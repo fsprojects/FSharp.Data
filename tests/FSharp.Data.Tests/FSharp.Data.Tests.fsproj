@@ -320,6 +320,7 @@
     <Compile Include="HtmlProviderList.fs" />
     <None Include="app.config" />
     <None Include="paket.references" />
+    <Compile Include="XsdProvider.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

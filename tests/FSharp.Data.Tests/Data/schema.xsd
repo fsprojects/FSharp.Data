@@ -1,21 +1,5 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/FSharp.Data/" xmlns:tns="https://github.com/FSharp.Data/" attributeFormDefault="unqualified" >
   <complexType name="root">
-    <!--
-#r """C:\Users\Rune\Dropbox\Projects\FSharp.Data\src\bin\debug\FSharp.Data.DesignTime.dll"""
-open ProviderImplementation
-open System.IO
-open System.Xml.Schema
-open System.Text
-let createSet file =
-                let reader = new StreamReader(File.OpenRead(file))
-                let schema = XmlSchema.Read(reader,(fun o (e:ValidationEventArgs) -> failwith e.Message))
-                reader.Dispose()
-                let set = new XmlSchemaSet()
-                set.Add(schema) |> ignore
-                set
-let set = createSet """C:\Users\Rune\Dropbox\Projects\FSharp.Data\tests\FSharp.Data.Tests\Data\schema.xsd"""
-XsdBuilder.generateType set true true;;
-    -->
      <sequence>
       <element name="elem" type="string" >
         <annotation>
