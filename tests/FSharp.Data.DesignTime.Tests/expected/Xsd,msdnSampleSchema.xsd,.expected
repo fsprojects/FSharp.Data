@@ -119,7 +119,7 @@ class XsdProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
                             [| ("{http://tempuri.org/PurchaseOrderSchema.xsd}ShipTo",
                                 (shipToes :> obj))
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}BillTo",
-                                (billTo :> obj)) |], "da-DK")
+                                (billTo :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+PurchaseOrder
     XmlElement.Create(xElement)
@@ -129,7 +129,7 @@ class XsdProvider+PurchaseOrder : FDR.BaseTypes.XmlElement
 
     member OrderDate: System.DateTime with get
     let value = XmlRuntime.TryGetAttribute(this, "OrderDate")
-    TextRuntime.GetNonOptionalValue("Attribute OrderDate", TextRuntime.ConvertDateTime("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Attribute OrderDate", TextRuntime.ConvertDateTime("en-US", value), value)
 
     member ShipToes: XsdProvider+UsAddress[] with get
     XmlRuntime.ConvertArray(this, "{http://tempuri.org/PurchaseOrderSchema.xsd}ShipTo", new Func<_,_>(id)))
@@ -143,7 +143,7 @@ class XsdProvider+PurchaseOrderType : FDR.BaseTypes.XmlElement
                             [| ("{http://tempuri.org/PurchaseOrderSchema.xsd}ShipTo",
                                 (shipToes :> obj))
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}BillTo",
-                                (billTo :> obj)) |], "da-DK")
+                                (billTo :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+PurchaseOrderType
     XmlElement.Create(xElement)
@@ -153,7 +153,7 @@ class XsdProvider+PurchaseOrderType : FDR.BaseTypes.XmlElement
 
     member OrderDate: System.DateTime with get
     let value = XmlRuntime.TryGetAttribute(this, "OrderDate")
-    TextRuntime.GetNonOptionalValue("Attribute OrderDate", TextRuntime.ConvertDateTime("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Attribute OrderDate", TextRuntime.ConvertDateTime("en-US", value), value)
 
     member ShipToes: XsdProvider+UsAddress[] with get
     XmlRuntime.ConvertArray(this, "{http://tempuri.org/PurchaseOrderSchema.xsd}ShipTo", new Func<_,_>(id)))
@@ -168,7 +168,7 @@ class XsdProvider+Schema : FDR.BaseTypes.XmlElement
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}PurchaseOrderType",
                                 (purchaseOrderType :> obj))
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}USAddress",
-                                (usAddress :> obj)) |], "da-DK")
+                                (usAddress :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
     XmlElement.Create(xElement)
@@ -197,7 +197,7 @@ class XsdProvider+UsAddress : FDR.BaseTypes.XmlElement
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}state",
                                 (state :> obj))
                                ("{http://tempuri.org/PurchaseOrderSchema.xsd}zip",
-                                (zip :> obj)) |], "da-DK")
+                                (zip :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+UsAddress
     XmlElement.Create(xElement)
@@ -224,6 +224,6 @@ class XsdProvider+UsAddress : FDR.BaseTypes.XmlElement
 
     member Zip: int with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "{http://tempuri.org/PurchaseOrderSchema.xsd}zip"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-US", value), value)
 
 

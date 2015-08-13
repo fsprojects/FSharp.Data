@@ -114,7 +114,7 @@ class XsdProvider+Bar : FDR.XmlElement
     member Country: int option with get
     XmlRuntime.ConvertOptional(this, "country", new Func<_,_>(fun (t:XmlElement) -> 
                                                                  let value = XmlRuntime.TryGetValue(t)
-                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)))
+                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-US", value), value)))
 
     member Language: string option with get
     XmlRuntime.ConvertOptional(this, "language", new Func<_,_>(fun (t:XmlElement) -> 
@@ -128,7 +128,7 @@ class XsdProvider+Bar : FDR.XmlElement
 class XsdProvider+Foo : FDR.XmlElement
     member FooElem: bool with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "fooElem"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean("en-US", value), value)
 
     member Iso639Code: string with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "ISO639Code"))
@@ -168,7 +168,7 @@ class XsdProvider+AnonymousTyped : FDR.XmlElement
 
     member Covert: bool with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "covert"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean("en-US", value), value)
 
     member Windy: string with get
     let value = XmlRuntime.TryGetAttribute(this, "windy")

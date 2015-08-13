@@ -121,7 +121,7 @@ class XsdProvider+Bar : FDR.BaseTypes.XmlElement
                                ("snur",
                                 (snur :> obj))
                                ("baz",
-                                (baz :> obj)) |], "da-DK")
+                                (baz :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Bar
     XmlElement.Create(xElement)
@@ -133,7 +133,7 @@ class XsdProvider+Bar : FDR.BaseTypes.XmlElement
     member Country: int option with get
     XmlRuntime.ConvertOptional(this, "country", new Func<_,_>(fun (t:XmlElement) -> 
                                                                  let value = XmlRuntime.TryGetValue(t)
-                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)))
+                                                                 TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-US", value), value)))
 
     member Language: string option with get
     XmlRuntime.ConvertOptional(this, "language", new Func<_,_>(fun (t:XmlElement) -> 
@@ -151,7 +151,7 @@ class XsdProvider+Foo : FDR.BaseTypes.XmlElement
                             [| ("fooElem",
                                 (fooElem :> obj))
                                ("ISO639Code",
-                                (iso639Code :> obj)) |], "da-DK")
+                                (iso639Code :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Foo
     XmlElement.Create(xElement)
@@ -181,7 +181,7 @@ class XsdProvider+Root : FDR.BaseTypes.XmlElement
                                ("anonymousTyped",
                                 (anonymousTyped :> obj))
                                ("covert",
-                                (covert :> obj)) |], "da-DK")
+                                (covert :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Root
     XmlElement.Create(xElement)
@@ -221,7 +221,7 @@ class XsdProvider+Schema : FDR.BaseTypes.XmlElement
                                ("{https://github.com/FSharp.Data/}foo",
                                 (foo :> obj))
                                ("{https://github.com/FSharp.Data/}root",
-                                (root :> obj)) |], "da-DK")
+                                (root :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
     XmlElement.Create(xElement)
@@ -244,7 +244,7 @@ class XsdProvider+AnonymousTyped : FDR.BaseTypes.XmlElement
                                ("windy",
                                 (windy :> obj)) |], 
                             [| ("covert",
-                                (covert :> obj)) |], "da-DK")
+                                (covert :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+AnonymousTyped
     XmlElement.Create(xElement)
@@ -267,7 +267,7 @@ class XsdProvider+Snur : FDR.BaseTypes.XmlElement
     XmlRuntime.CreateRecord("snur", 
                             [| |], 
                             [| ("baz",
-                                (baz :> obj)) |], "da-DK")
+                                (baz :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Snur
     XmlElement.Create(xElement)
