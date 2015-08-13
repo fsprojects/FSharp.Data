@@ -39,6 +39,9 @@ Json { Sample = "optionals.json"
        SampleIsList = false
        RootName = ""
        Culture = "" 
+       Encoding = ""
+       EmbeddedResource = ""
+       InferTypesFromValues = true
        ResolutionFolder = "" }
 |> dumpAll
 
@@ -46,6 +49,9 @@ Xml { Sample = "JsonInXml.xml"
       SampleIsList = true
       Global = false
       Culture = "" 
+      Encoding = ""
+      EmbeddedResource = ""
+      InferTypesFromValues = true
       ResolutionFolder = "" }
 |> dumpAll
 
@@ -61,6 +67,9 @@ Csv { Sample = "AirQuality.csv"
       Quote = '"'
       MissingValues = "NaN,NA,#N/A,:"
       CacheRows = true
+      Encoding = ""
+      EmbeddedResource = ""
+      SkipRows = 0
       ResolutionFolder = "" }
 |> dumpAll
 
@@ -69,5 +78,5 @@ let testCases =
     |> File.ReadAllLines
     |> Array.map TypeProviderInstantiation.Parse
 
-for testCase in testCases do
+for _,testCase in testCases do
     dump false false Net40 true testCase
