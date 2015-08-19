@@ -9,7 +9,6 @@ open FSharp.Data.Runtime
 type CsvProviderArgs = 
     { Sample : string
       Separators : string
-      Culture : string
       InferRows : int
       Schema : string
       HasHeaders : bool
@@ -20,6 +19,7 @@ type CsvProviderArgs =
       Quote : char
       MissingValues : string
       CacheRows : bool
+      Culture : string
       Encoding : string
       ResolutionFolder : string
       EmbeddedResource : string }
@@ -33,13 +33,6 @@ type XmlProviderArgs =
       ResolutionFolder : string
       EmbeddedResource : string 
       InferTypesFromValues : bool }
-
-type XsdProviderArgs = 
-    { SchemaFile : string
-      ResolutionFolder : string
-      Culture : string
-      EmbeddedResource : string
-       }
 
 type JsonProviderArgs = 
     { Sample : string
@@ -71,7 +64,6 @@ type TypeProviderInstantiation =
     | Json of JsonProviderArgs
     | Html of HtmlProviderArgs
     | WorldBank of WorldBankProviderArgs
-    | Xsd of XsdProviderArgs
 
     member x.GenerateType resolutionFolder runtimeAssembly =
         let f, args =
@@ -104,18 +96,6 @@ type TypeProviderInstantiation =
                    box x.ResolutionFolder 
                    box x.EmbeddedResource
                    box x.InferTypesFromValues |] 
-            | Xsd x ->
-                let file = x.SchemaFile
-                let schema =
-                    if System.IO.File.Exists file then
-                        System.IO.File.ReadAllText(file)
-                    else
-                        file
-                (fun cfg -> new XsdProvider(cfg) :> TypeProviderForNamespaces),
-                [| box schema
-                   box resolutionFolder
-                   box x.Culture
-                   box x.EmbeddedResource |] 
             | Json x -> 
                 (fun cfg -> new JsonProvider(cfg) :> TypeProviderForNamespaces),
                 [| box x.Sample
@@ -143,12 +123,11 @@ type TypeProviderInstantiation =
         Debug.generate resolutionFolder runtimeAssembly f args
 
     override x.ToString() =
-       match x with
+        match x with
         | Csv x -> 
             ["Csv"
              x.Sample
              x.Separators
-             x.Culture
              x.Schema.Replace(',', ';')
              x.HasHeaders.ToString()
              x.AssumeMissingValues.ToString()
@@ -180,11 +159,8 @@ type TypeProviderInstantiation =
             ["WorldBank"
              x.Sources
              x.Asynchronous.ToString()]
-        | Xsd x ->
-           ["Xsd"
-            x.SchemaFile
-            x.ResolutionFolder]
-       |> String.concat ","
+        |> String.concat ","
+
     member x.ExpectedPath outputFolder = 
         Path.Combine(outputFolder, (x.ToString().Replace(">", "&gt;").Replace("<", "&lt;").Replace("://", "_").Replace("/", "_") + ".expected"))
 
@@ -250,13 +226,6 @@ type TypeProviderInstantiation =
         | "WorldBank" ->
             WorldBank { Sources = args.[1]
                         Asynchronous = args.[2] |> bool.Parse }
-        | "Xsd" ->
-            Xsd {
-               SchemaFile = args.[1]
-               ResolutionFolder = ""
-               Culture = ""
-               EmbeddedResource = ""
-            }
         | _ -> failwithf "Unknown: %s" args.[0]
 
 open System.Runtime.CompilerServices

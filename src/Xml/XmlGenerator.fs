@@ -297,6 +297,7 @@ module internal XmlTypeBuilder =
                         choiceTy.AddMember defaultCtor
 
                         createMember choiceTy ctx.Replacer.ToRuntime
+                
                     | InferedType.Primitive(typ, unit, optional) -> createPrimitiveMember typ unit optional
                     | InferedType.Null -> createPrimitiveMember typeof<string> None false 
                 
@@ -307,6 +308,7 @@ module internal XmlTypeBuilder =
             let primitiveResults, childResults = 
                 match content with 
                 | [ContentType(primitives, children)] ->
+       
                     // If there may be other children, make it optional
                     let forceOptional = children.Length > 0
        

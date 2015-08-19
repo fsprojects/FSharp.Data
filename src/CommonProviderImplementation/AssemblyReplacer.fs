@@ -66,8 +66,7 @@ module AssemblyReplacer =
       | [] ->
           asmMappings
           |> List.tryPick (fun (fromAsm, _) -> 
-
-            if originalAsms |> Array.exists (fun originalAsm -> originalAsm = fromAsm) then
+            if originalAsms |> Array.exists (sameAsm fromAsm) then
               // if we found a replacement for a inner type, just return the original
               // assembly of the outer type to signal that it needs to be visited, but it
               // doesn't make sense to replace it with toAsm
@@ -294,6 +293,8 @@ module AssemblyReplacer =
         rr t (List.map re exprs)
     | NewArray (t, exprs) ->
         Expr.NewArray (rt t, List.map re exprs)
+    | NewTuple (exprs) ->
+        Expr.NewTuple (List.map re exprs)
     | TupleGet (expr, i) ->
         Expr.TupleGet (re expr, i)
     | NewDelegate (t, vars, expr) ->

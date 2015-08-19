@@ -133,6 +133,10 @@
     <None Include="Data\MarketDepth.htm">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Data\msdnSampleSchema.xsd" />
+    <None Include="Data\refElementsAndAnonymousTypes.xsd" />
+    <None Include="Data\restrictionAndExtensions.xsd" />
+    <None Include="Data\schema.xsd" />
     <None Include="Data\SimpleHtmlTablesWithTr.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

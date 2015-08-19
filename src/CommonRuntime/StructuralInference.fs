@@ -50,11 +50,6 @@ let typeTag = function
       elif typ = typeof<string> then InferedTypeTag.String
       elif typ = typeof<DateTime> then InferedTypeTag.DateTime
       elif typ = typeof<Guid> then InferedTypeTag.Guid
-      elif typ = typeof<Single> then InferedTypeTag.Number
-      elif typ = typeof<Int16>  then InferedTypeTag.Number
-      elif typ = typeof<Int32>  then InferedTypeTag.Number
-      elif typ = typeof<int8>   then InferedTypeTag.Number
-      elif typ = typeof<Int64>  then InferedTypeTag.Number
       else failwith "typeTag: Unknown primitive type"
   | InferedType.Json _ -> InferedTypeTag.Json
 
@@ -189,6 +184,7 @@ and private unionCollectionTypes allowEmptyValues cases1 cases2 =
           tag, (m, t)
       | _ -> failwith "unionHeterogeneousTypes: pairBy returned None, None")
   |> Map.ofList
+
 and unionCollectionOrder order1 order2 =
     order1 @ (order2 |> List.filter (fun x -> not (List.exists ((=) x) order1)))
 
