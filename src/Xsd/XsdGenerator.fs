@@ -20,9 +20,25 @@ module XsdBuilder =
        Sequence of XmlSchemaSequence
        | Choice of XmlSchemaChoice
        | Empty
-    
+    type ComplexType =
+        Extended of XmlSchemaComplexType * XmlSchemaComplexContentExtension
+        | Restricted of XmlSchemaComplexType * XmlSchemaComplexContentRestriction
+        | Basic of XmlSchemaComplexType
+        member x.TypeDeclaration 
+           with get() =
+              match x with
+               Extended (t,_)
+               | Restricted (t,_)
+               | Basic t -> t
+        member x.QualifiedName  
+            with get() =
+               x.TypeDeclaration.QualifiedName
+    type SimpleType =
+        Extended of XmlSchemaSimpleType * XmlSchemaSimpleContentExtension
+        | Restricted of XmlSchemaSimpleType * XmlSchemaSimpleContentRestriction
+        | Basic of XmlSchemaSimpleType
     type XmlType = 
-       Complex of XmlSchemaComplexType
+       Complex of ComplexType
        | Simple of XmlSchemaSimpleType
     let qnToString (qn:System.Xml.XmlQualifiedName) =
         if String.IsNullOrWhiteSpace(qn.Namespace) then
@@ -71,11 +87,19 @@ module XsdBuilder =
        
        match obj with
        | :? XmlSchemaSimpleType as t -> Type(Simple t)
-       | :? XmlSchemaComplexType as t -> Type(Complex t)
+       | :? XmlSchemaComplexType as t -> 
+              match t.ContentModel with
+              null -> Type(Complex (ComplexType.Basic t))
+              | _ -> match t.ContentModel.Content with
+                     :? XmlSchemaComplexContentExtension -> Type(Complex (ComplexType.Extended (t, t.ContentModel.Content :?> XmlSchemaComplexContentExtension)))
+                     | :? XmlSchemaComplexContentRestriction -> Type(Complex (ComplexType.Restricted (t, t.ContentModel.Content :?> XmlSchemaComplexContentRestriction)))
+                     | _ -> failwith "Invalid content model"
+              
        | :? XmlSchemaElement as e -> Element e
        | :? XmlSchemaSequence as sequence ->  Particle(Sequence(sequence))
        | :? XmlSchemaChoice as choice->  Particle(Choice(choice))
-       | :? XmlSchemaSimpleTypeRestriction as restriction -> Restriction restriction
+       | :? XmlSchemaSimpleTypeRestriction as restriction -> Type(Simple restriction.BaseType)
+       | :? XmlSchemaComplexContentRestriction as restriction -> Restriction restriction
        | :? XmlSchemaAttribute as attribute -> Attribute attribute
        | :? XmlSchema as schema -> Schema schema
        | _ as n -> Unknown n
@@ -90,8 +114,8 @@ module XsdBuilder =
     let rec private getItemsFromCollection (collection:seq<XmlSchemaObject>) = 
         [for item in collection do 
             yield item
-            for elem in getElementsFromObject item do
-               yield elem]
+            for i in getElementsFromObject item do
+               yield i]
 
     and private getElementsFromObject (item:XmlSchemaObject) =
         let fromParticle (particle:Particle) =
@@ -101,27 +125,58 @@ module XsdBuilder =
               | _ -> failwithf "Unsupported particle %A" particle
             |> Seq.cast<XmlSchemaObject>
         match item with
-          Type(Complex  t) when t.BaseXmlSchemaType <> null && t.Particle <> null -> 
-              t.BaseXmlSchemaType 
-              |> getElementsFromObject
-              |> Seq.append (match t.Particle with
-                             | Particle(p) -> fromParticle p
-                             | _ -> failwith "not a particle")
-              |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
-              |> getItemsFromCollection 
-          | Type(Complex  t) when t.Particle <> null -> 
-              (match t.Particle with
-                             | Particle(p) -> fromParticle p
-                             | _ -> failwith "not a particle")
-              |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
-              |> getItemsFromCollection
-          | Type(Complex  t) when t.BaseXmlSchemaType <> null -> 
-              t.BaseXmlSchemaType
-              |> getElementsFromObject
-              |> Seq.cast<XmlSchemaObject>
-              |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
-              |> getItemsFromCollection
-          | Type(Complex _ )
+          Type(Complex t) ->
+              match t with 
+              ComplexType.Extended(t,ext) -> 
+                 let extensions = 
+                     ext.Attributes
+                     |> Seq.cast<XmlSchemaObject>
+                     |> Seq.append (
+                            ext.Particle 
+                            |> getElementsFromObject 
+                     )
+                     |> List.ofSeq
+                 t.BaseXmlSchemaType 
+                 |> getElementsFromObject
+                 |> Seq.append (match t.Particle with
+                                | Particle(p) -> fromParticle p
+                                | _ -> [] |> Seq.ofList)
+                 |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
+                 |> getItemsFromCollection 
+                 |> List.append extensions
+             | ComplexType.Basic(t) -> 
+                 (match t.Particle with
+                                | Particle(p) -> fromParticle p
+                                | _ -> failwith "not a particle")
+                 |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
+                 |> getItemsFromCollection
+             | ComplexType.Restricted(t,res) -> 
+                 let getName a = 
+                      match a with
+                        Type (Complex (t)) -> t.QualifiedName
+                        | Type (Simple (t)) ->  t.QualifiedName
+                        | Element e -> e.QualifiedName
+                        | Attribute a -> a.QualifiedName
+                        | _ -> failwith "Unamed element"
+                      |> qnToString
+                 let restrictions = 
+                    res.Attributes
+                    |> Seq.cast<XmlSchemaAttribute>
+                    |> Seq.map (fun a -> a.QualifiedName |> qnToString, a :> XmlSchemaObject)
+                    |> Seq.append (
+                       match res.Particle with
+                       Particle(p) -> 
+                          p |> fromParticle
+                          |> Seq.map (fun a -> a |> getName , a)
+                       | _ -> Seq.empty
+                    )
+                    |> Map.ofSeq
+                 t.BaseXmlSchemaType
+                 |> getElementsFromObject
+                 |> Seq.filter (fun e -> (e |> getName |> restrictions.TryFind).IsNone)
+                 |> Seq.cast<XmlSchemaObject>
+                 |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
+                 |> getItemsFromCollection
           | Type(Simple _ ) ->
               []
           | Element element -> 
@@ -129,26 +184,8 @@ module XsdBuilder =
               null -> []
               | t -> t |> getElementsFromObject
           | Attribute _ -> []
-          | Particle (p) 
           | Particle (p) -> p |> fromParticle |> List.ofSeq
           | _ -> failwithf "Unsupported item %A" item
-        |> List.append (
-          match item with
-          Type(Complex t) when t.ContentModel <> null -> 
-              match t.ContentModel.Content with
-              | Extension ex ->
-                  ex.Attributes
-                  |> Seq.cast<XmlSchemaObject>
-                  |> Seq.append (
-                         ex.Particle 
-                         |> getElementsFromObject 
-                  )
-                  |> List.ofSeq
-              | _ -> []
-          | _ -> []
-          
-        )
-
 
     let private getParentElement node =
           let rec _inner (node:System.Xml.Schema.XmlSchemaObject) = 
@@ -267,7 +304,8 @@ module XsdBuilder =
         let typeDeclaration, name  =
             match typ with
             Simple(typeDeclatation) -> typeDeclatation :> XmlSchemaType, typeDeclatation |> getSchemaTypeName
-            | Complex(typeDeclatation) -> typeDeclatation  :> XmlSchemaType, typeDeclatation |> getSchemaTypeName
+            | Complex(t) -> 
+                  t.TypeDeclaration  :> XmlSchemaType, t.TypeDeclaration |> getSchemaTypeName
         let name = 
             match name with
             | Some n -> 
@@ -319,7 +357,7 @@ module XsdBuilder =
               | Attribute  e -> e.AttributeSchemaType :> XmlSchemaType
               | Type(t) ->
                   match t with
-                  Complex  t -> t :> XmlSchemaType
+                  Complex  t -> t.TypeDeclaration :> XmlSchemaType
                   | Simple t -> t :> XmlSchemaType
               |_ -> failwithf "Expected an element or an attribute but got %A" el 
          let typeName, typ = 
@@ -353,45 +391,44 @@ module XsdBuilder =
                                    [{Name = ""; 
                                      Type =  t}],false) 
                      | Some t -> t
-                 | Complex(typeDeclaration) ->
-                         let objs = 
-                             typeDeclaration
-                            |> getElementsFromObject 
-                         let (els, attrs) = 
-                            objs
-                            |> List.filter (fun e -> e :? XmlSchemaAttribute || e :? XmlSchemaElement)
-                            |> List.partition (fun e -> e :? XmlSchemaElement) 
-                 
-                         let elements =
-                            els
-                            |> List.map (fun e -> e :?> XmlSchemaElement)
-                            |> createElements
-                 
-                         let attributes = 
-                               attrs 
-                               |> List.map (fun a -> a :?> XmlSchemaAttribute)
-                               |> List.map( fun a ->
-                                             let typ = a |> getTypeFromAnnotated
-                                             (a.Name, a.Use = XmlSchemaUse.Optional, typ))
-                               |> List.map (fun (name,opt,t) -> 
-                                    let t = 
-                                        match t with
-                                        InferedType.Record
-                                                 (Some _,
-                                                  [{Name = _;
-                                                    Type = pt}], _) -> 
-                                                        match pt with
-                                                        InferedType.Primitive(t,u,_) -> InferedType.Primitive(t,u,opt)
-                                                        | _ -> failwithf "Primitive type expected for attribute %A" pt      
-                                        | InferedType.Primitive(_) as t -> t
-                                        | _ as t -> failwithf "Unexpected type %A " t
-                                    {Name = name;
-                                     Type = t}) 
-                         assert not (String.IsNullOrWhiteSpace typeName)
-                         InferedType.Record(
-                                  Some typeName,
-                                    {Name = "";
-                                      Type = InferedType.Collection(elements |> List.map(fun (tag,_) -> tag) , elements |> Map.ofList)}::attributes,false)
+                 | Complex(t) ->
+                     let objs = 
+                        t.TypeDeclaration
+                        |> getElementsFromObject 
+                     let (elements, attributes) = 
+                        objs
+                        |> List.fold (fun (els,attrs) e -> 
+                                        match e with
+                                        Attribute a -> (els,a::attrs)
+                                        | Element e -> (e::els,attrs)
+                                        | _ ->  els,attrs) ([],[])
+                        |> (fun (els,attrs) ->
+                             els
+                             |> createElements,
+                              attrs 
+                              |> List.map( 
+                                  fun a ->
+                                      let typ = a |> getTypeFromAnnotated
+                                      let name = a.Name 
+                                      let opt = a.Use = XmlSchemaUse.Optional 
+                                      let t =
+                                          match typ with
+                                          InferedType.Record
+                                                   (Some _,
+                                                    [{Name = _;
+                                                      Type = pt}], _) -> 
+                                                          match pt with
+                                                          InferedType.Primitive(t,u,_) -> InferedType.Primitive(t,u,opt)
+                                                          | _ -> failwithf "Primitive type expected for attribute %A" pt      
+                                          | InferedType.Primitive(_) as t -> t
+                                          | _ as t -> failwithf "Unexpected type %A " t
+                                      {Name = name;
+                                       Type = t}))
+                     assert not (String.IsNullOrWhiteSpace typeName)
+                     InferedType.Record(
+                              Some typeName,
+                                {Name = "";
+                                  Type = InferedType.Collection(elements |> List.map(fun (tag,_) -> tag) , elements |> Map.ofList)}::attributes,false)
              _types.Add(typeName,t) |> ignore
              t
     
@@ -408,27 +445,27 @@ module XsdBuilder =
            parsedSchema.Types
            |> List.map (fun (_, t) -> t)
            |> List.map getType 
-        //The can be zero or many elements defined as well as types
+        //There can be zero or many elements defined as well as types
         //We'll essentially treat each as a type
         let elements =
-          parsedSchema.Elements
-          |> createElements
-          |> List.zip parsedSchema.Elements
-          //For the free elements we want them to be named after the element and not have the type name only
-          //xmlSchemaType is essentially to have the extra Parse methods named after the elements
-          //since the implementation relies on xmlSchemaType
-          |> List.fold (fun st (e,(_,(_,typ)) as t) -> 
-                         match typ with
-                         | InferedType.Primitive (_) ->
-                             st
-                         | InferedType.Record(Some _, p, o) ->
-                             let name = e.Name.Replace(":","__")
-
-                             assert not (String.IsNullOrWhiteSpace name)
-
-                             let typ = InferedType.Record(Some (name),p,o)
-                             typ::st
-                         | _ -> failwithf "Elements must be represented with a record %A" t) []
+           parsedSchema.Elements
+           |> createElements
+           |> List.zip parsedSchema.Elements
+           //For the free elements we want them to be named after the element and not have the type name only
+           //xmlSchemaType is essentially to have the extra Parse methods named after the elements
+           //since the implementation relies on xmlSchemaType
+           |> List.fold (fun st (e,(_,(_,typ)) as t) -> 
+                          match typ with
+                          | InferedType.Primitive (_) ->
+                              st
+                          | InferedType.Record(Some _, p, o) ->
+                              let name = e.Name.Replace(":","__")
+           
+                              assert not (String.IsNullOrWhiteSpace name)
+           
+                              let typ = InferedType.Record(Some (name),p,o)
+                              typ::st
+                          | _ -> failwithf "Elements must be represented with a record %A" t) []
         types@elements
         |> List.filter (fun t -> 
                           match t with
