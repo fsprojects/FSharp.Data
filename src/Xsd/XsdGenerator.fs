@@ -148,7 +148,7 @@ module XsdBuilder =
                  (match t.Particle with
                                 | Particle(p) -> fromParticle p
                                 | null -> Seq.empty
-                                | _ -> failwith "not a particle")
+                                | _ -> failwithf "not a particle %A" t.Particle)
                  |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
                  |> getItemsFromCollection
              | ComplexType.Restricted(t,res) -> 
