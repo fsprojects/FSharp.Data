@@ -147,6 +147,7 @@ module XsdBuilder =
              | ComplexType.Basic(t) -> 
                  (match t.Particle with
                                 | Particle(p) -> fromParticle p
+                                | null -> Seq.empty
                                 | _ -> failwith "not a particle")
                  |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
                  |> getItemsFromCollection
