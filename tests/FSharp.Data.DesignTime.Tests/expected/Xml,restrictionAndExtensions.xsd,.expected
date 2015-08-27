@@ -1,0 +1,315 @@
+class XsdProvider
+    static member AsyncGetSample: () -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" "restrictionAndExtensions.xsd"), f)
+
+    static member AsyncLoad: uri:string -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" uri), f)
+
+    static member GetSample: () -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" "restrictionAndExtensions.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XsdProvider+Schema
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XsdProvider+Schema
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" uri)))
+
+    static member Parse: text:string -> XsdProvider+Schema
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseColorType: text:string -> XsdProvider+ColorType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("colortype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseProductType: text:string -> XsdProvider+ProductType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("producttype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseShirtType: text:string -> XsdProvider+ShirtType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("shirttype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseSizeType: text:string -> XsdProvider+SizeType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("sizetype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseSmallSizeType: text:string -> XsdProvider+SmallSizeType
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("smallsizetype")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+
+class XsdProvider+ColorType : FDR.BaseTypes.XmlElement
+    new : value:string -> XsdProvider+ColorType
+    XmlRuntime.CreateRecord("ColorType", 
+                            [| ("value",
+                                (value :> obj)) |], 
+                            [| |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+ColorType
+    XmlElement.Create(xElement)
+
+    member Value: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "value")
+    TextRuntime.GetNonOptionalValue("Attribute value", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+ProductType : FDR.BaseTypes.XmlElement
+    new : description:string option -> name:string -> number:int -> XsdProvider+ProductType
+    XmlRuntime.CreateRecord("ProductType", 
+                            [| |], 
+                            [| ("description",
+                                (description :> obj))
+                               ("name",
+                                (name :> obj))
+                               ("number",
+                                (number :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+ProductType
+    XmlElement.Create(xElement)
+
+    member Description: string option with get
+    XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                     let value = XmlRuntime.TryGetValue(t)
+                                                                     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Number: int with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "number"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)
+
+
+class XsdProvider+Schema : FDR.BaseTypes.XmlElement
+    new : colorType:XsdProvider+ColorType -> productType:XsdProvider+ProductType -> shirtType:XsdProvider+ShirtType -> sizeType:XsdProvider+SizeType -> smallSizeType:XsdProvider+SmallSizeType -> XsdProvider+Schema
+    XmlRuntime.CreateRecord("Schema", 
+                            [| |], 
+                            [| ("ColorType",
+                                (colorType :> obj))
+                               ("ProductType",
+                                (productType :> obj))
+                               ("ShirtType",
+                                (shirtType :> obj))
+                               ("SizeType",
+                                (sizeType :> obj))
+                               ("SmallSizeType",
+                                (smallSizeType :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
+    XmlElement.Create(xElement)
+
+    member ColorType: XsdProvider+ColorType with get
+    XmlRuntime.GetChild(this, "ColorType")
+
+    member ProductType: XsdProvider+ProductType with get
+    XmlRuntime.GetChild(this, "ProductType")
+
+    member ShirtType: XsdProvider+ShirtType with get
+    XmlRuntime.GetChild(this, "ShirtType")
+
+    member SizeType: XsdProvider+SizeType with get
+    XmlRuntime.GetChild(this, "SizeType")
+
+    member SmallSizeType: XsdProvider+SmallSizeType with get
+    XmlRuntime.GetChild(this, "SmallSizeType")
+
+
+class XsdProvider+ShirtType : FDR.BaseTypes.XmlElement
+    new : sleeve:int -> description:string option -> name:string -> number:int -> color:XsdProvider+ColorType option -> size:XsdProvider+SmallSizeType option -> XsdProvider+ShirtType
+    XmlRuntime.CreateRecord("ShirtType", 
+                            [| ("sleeve",
+                                (sleeve :> obj)) |], 
+                            [| ("description",
+                                (description :> obj))
+                               ("name",
+                                (name :> obj))
+                               ("number",
+                                (number :> obj))
+                               ("color",
+                                (color :> obj))
+                               ("size",
+                                (size :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+ShirtType
+    XmlElement.Create(xElement)
+
+    member Color: XsdProvider+ColorType option with get
+    XmlRuntime.ConvertOptional(this, "color", new Func<_,_>(id)))
+
+    member Description: string option with get
+    XmlRuntime.ConvertOptional(this, "description", new Func<_,_>(fun (t:XmlElement) -> 
+                                                                     let value = XmlRuntime.TryGetValue(t)
+                                                                     TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Name: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "name"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Number: int with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "number"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)
+
+    member Size: XsdProvider+SmallSizeType option with get
+    XmlRuntime.ConvertOptional(this, "size", new Func<_,_>(id)))
+
+    member Sleeve: int with get
+    let value = XmlRuntime.TryGetAttribute(this, "sleeve")
+    TextRuntime.GetNonOptionalValue("Attribute sleeve", TextRuntime.ConvertInteger("da-DK", value), value)
+
+
+class XsdProvider+SizeType : FDR.BaseTypes.XmlElement
+    new : system:string -> XsdProvider+SizeType
+    XmlRuntime.CreateRecord("SizeType", 
+                            [| ("system",
+                                (system :> obj)) |], 
+                            [| |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+SizeType
+    XmlElement.Create(xElement)
+
+    member System: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "system")
+    TextRuntime.GetNonOptionalValue("Attribute system", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+SmallSizeType : FDR.BaseTypes.XmlElement
+    new : () -> XsdProvider+SmallSizeType
+    XmlRuntime.CreateRecord("SmallSizeType", 
+                            [| |], 
+                            [| |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+SmallSizeType
+    XmlElement.Create(xElement)
+
+

@@ -1,0 +1,305 @@
+class XsdProvider
+    static member AsyncGetSample: () -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" "refElementsAndAnonymousTypes.xsd"), f)
+
+    static member AsyncLoad: uri:string -> XsdProvider+Schema async
+    let f = new Func<_,_>(fun (t:TextReader) -> XmlElement.Create(t))
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" uri), f)
+
+    static member GetSample: () -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" "refElementsAndAnonymousTypes.xsd")))
+
+    static member Load: stream:System.IO.Stream -> XsdProvider+Schema
+    XmlElement.Create(((new StreamReader(stream)) :> TextReader))
+
+    static member Load: reader:System.IO.TextReader -> XsdProvider+Schema
+    XmlElement.Create(reader)
+
+    static member Load: uri:string -> XsdProvider+Schema
+    XmlElement.Create(FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" @"<RESOLUTION_FOLDER>" "XSD" "" uri)))
+
+    static member Parse: text:string -> XsdProvider+Schema
+    XmlElement.Create(((new StringReader(text)) :> TextReader))
+
+    static member ParseElem1: text:string -> XsdProvider+Elem1
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("elem1")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseFoo: text:string -> XsdProvider+Foo
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("foo")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+    static member ParseRoot: text:string -> XsdProvider+Root
+    XmlElement.Create(let t = text
+                      let doc = XDocument.Parse(t)
+                      let t = IfThenElse (Call (None, op_Equality,
+                  [Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                             get_Root, [])),
+                                                 get_Name, [])), get_LocalName,
+                                     [])), ToLower, []), Value ("root")]),
+            Let (newRoot,
+                 NewObject (XElement,
+                            Call (Some (Call (Some (Call (Some (Call (Some (doc),
+                                                                      get_Root,
+                                                                      [])),
+                                                          get_Name, [])),
+                                              get_Namespace, [])), GetName,
+                                  [Value ("root__")])),
+                 Sequential (Call (Some (newRoot), Add,
+                                   [Coerce (Call (Some (doc), get_Root, []),
+                                            Object)]),
+                             Let (newDoc,
+                                  NewObject (XDocument,
+                                             Call (Some (doc), get_Declaration,
+                                                   []), NewArray (Object)),
+                                  Sequential (Call (Some (newDoc), Add,
+                                                    [Coerce (newRoot, Object)]),
+                                              Call (Some (doc), ToString, []))))),
+            t)
+                      ((new StringReader(t)) :> TextReader))
+
+
+class XsdProvider+Elem1 : FDR.BaseTypes.XmlElement
+    new : iso639Code:string -> fooElem:bool -> XsdProvider+Elem1
+    XmlRuntime.CreateRecord("elem1", 
+                            [| |], 
+                            [| ("ISO639Code",
+                                (iso639Code :> obj))
+                               ("fooElem",
+                                (fooElem :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Elem1
+    XmlElement.Create(xElement)
+
+    member FooElem: bool with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "fooElem"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean(value), value)
+
+    member Iso639Code: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "ISO639Code"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+Foo : FDR.BaseTypes.XmlElement
+    new : iso639Code:string -> fooElem:bool -> XsdProvider+Foo
+    XmlRuntime.CreateRecord("{https://github.com/FSharp.Data/}foo", 
+                            [| |], 
+                            [| ("ISO639Code",
+                                (iso639Code :> obj))
+                               ("fooElem",
+                                (fooElem :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Foo
+    XmlElement.Create(xElement)
+
+    member FooElem: bool with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "fooElem"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertBoolean(value), value)
+
+    member Iso639Code: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "ISO639Code"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+Root : FDR.BaseTypes.XmlElement
+    new : windy:string -> attr:string -> elem1:XsdProvider+Foo option -> lie:string option -> truth:string option -> covert:XsdProvider+AnonymousTypedcovert -> anonymousTyped:XsdProvider+AnonymousTyped -> elem:string -> XsdProvider+Root
+    XmlRuntime.CreateRecord("{https://github.com/FSharp.Data/}root", 
+                            [| ("windy",
+                                (windy :> obj))
+                               ("attr",
+                                (attr :> obj)) |], 
+                            [| ("{https://github.com/FSharp.Data/}elem1",
+                                (elem1 :> obj))
+                               ("lie",
+                                (lie :> obj))
+                               ("truth",
+                                (truth :> obj))
+                               ("covert",
+                                (covert :> obj))
+                               ("anonymousTyped",
+                                (anonymousTyped :> obj))
+                               ("elem",
+                                (elem :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Root
+    XmlElement.Create(xElement)
+
+    member AnonymousTyped: XsdProvider+AnonymousTyped with get
+    XmlRuntime.GetChild(this, "anonymousTyped")
+
+    member Attr: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "attr")
+    TextRuntime.GetNonOptionalValue("Attribute attr", TextRuntime.ConvertString(value), value)
+
+    member Covert: XsdProvider+AnonymousTypedcovert with get
+    XmlRuntime.GetChild(this, "covert")
+
+    member Elem: string with get
+    let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "elem"))
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)
+
+    member Elem1: XsdProvider+Foo option with get
+    XmlRuntime.ConvertOptional(this, "{https://github.com/FSharp.Data/}elem1", new Func<_,_>(id)))
+
+    member Lie: string option with get
+    XmlRuntime.ConvertOptional(this, "lie", new Func<_,_>(fun (t:XmlElement) -> 
+                                                             let value = XmlRuntime.TryGetValue(t)
+                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Truth: string option with get
+    XmlRuntime.ConvertOptional(this, "truth", new Func<_,_>(fun (t:XmlElement) -> 
+                                                               let value = XmlRuntime.TryGetValue(t)
+                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Windy: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "windy")
+    TextRuntime.GetNonOptionalValue("Attribute windy", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+Schema : FDR.BaseTypes.XmlElement
+    new : elem1:XsdProvider+Elem1 -> foo:XsdProvider+Foo -> root:XsdProvider+Root -> XsdProvider+Schema
+    XmlRuntime.CreateRecord("Schema", 
+                            [| |], 
+                            [| ("elem1",
+                                (elem1 :> obj))
+                               ("{https://github.com/FSharp.Data/}foo",
+                                (foo :> obj))
+                               ("{https://github.com/FSharp.Data/}root",
+                                (root :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
+    XmlElement.Create(xElement)
+
+    member Elem1: XsdProvider+Elem1 with get
+    XmlRuntime.GetChild(this, "elem1")
+
+    member Foo: XsdProvider+Foo with get
+    XmlRuntime.GetChild(this, "{https://github.com/FSharp.Data/}foo")
+
+    member Root: XsdProvider+Root with get
+    XmlRuntime.GetChild(this, "{https://github.com/FSharp.Data/}root")
+
+
+class XsdProvider+AnonymousTyped : FDR.BaseTypes.XmlElement
+    new : windy:string -> attr:string -> elem1:XsdProvider+Foo option -> lie:string option -> truth:string option -> covert:XsdProvider+AnonymousTypedcovert -> XsdProvider+AnonymousTyped
+    XmlRuntime.CreateRecord("anonymousTyped", 
+                            [| ("windy",
+                                (windy :> obj))
+                               ("attr",
+                                (attr :> obj)) |], 
+                            [| ("{https://github.com/FSharp.Data/}elem1",
+                                (elem1 :> obj))
+                               ("lie",
+                                (lie :> obj))
+                               ("truth",
+                                (truth :> obj))
+                               ("covert",
+                                (covert :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+AnonymousTyped
+    XmlElement.Create(xElement)
+
+    member Attr: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "attr")
+    TextRuntime.GetNonOptionalValue("Attribute attr", TextRuntime.ConvertString(value), value)
+
+    member Covert: XsdProvider+AnonymousTypedcovert with get
+    XmlRuntime.GetChild(this, "covert")
+
+    member Elem1: XsdProvider+Foo option with get
+    XmlRuntime.ConvertOptional(this, "{https://github.com/FSharp.Data/}elem1", new Func<_,_>(id)))
+
+    member Lie: string option with get
+    XmlRuntime.ConvertOptional(this, "lie", new Func<_,_>(fun (t:XmlElement) -> 
+                                                             let value = XmlRuntime.TryGetValue(t)
+                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Truth: string option with get
+    XmlRuntime.ConvertOptional(this, "truth", new Func<_,_>(fun (t:XmlElement) -> 
+                                                               let value = XmlRuntime.TryGetValue(t)
+                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Windy: string with get
+    let value = XmlRuntime.TryGetAttribute(this, "windy")
+    TextRuntime.GetNonOptionalValue("Attribute windy", TextRuntime.ConvertString(value), value)
+
+
+class XsdProvider+AnonymousTypedcovert : FDR.BaseTypes.XmlElement
+    new : elem1:XsdProvider+Foo option -> lie:string option -> truth:string option -> XsdProvider+AnonymousTypedcovert
+    XmlRuntime.CreateRecord("anonymousTypedcovert", 
+                            [| |], 
+                            [| ("{https://github.com/FSharp.Data/}elem1",
+                                (elem1 :> obj))
+                               ("lie",
+                                (lie :> obj))
+                               ("truth",
+                                (truth :> obj)) |], "da-DK")
+
+    new : xElement:System.Xml.Linq.XElement -> XsdProvider+AnonymousTypedcovert
+    XmlElement.Create(xElement)
+
+    member Elem1: XsdProvider+Foo option with get
+    XmlRuntime.ConvertOptional(this, "{https://github.com/FSharp.Data/}elem1", new Func<_,_>(id)))
+
+    member Lie: string option with get
+    XmlRuntime.ConvertOptional(this, "lie", new Func<_,_>(fun (t:XmlElement) -> 
+                                                             let value = XmlRuntime.TryGetValue(t)
+                                                             TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+    member Truth: string option with get
+    XmlRuntime.ConvertOptional(this, "truth", new Func<_,_>(fun (t:XmlElement) -> 
+                                                               let value = XmlRuntime.TryGetValue(t)
+                                                               TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertString(value), value)))
+
+

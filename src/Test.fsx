@@ -85,7 +85,12 @@ Csv { Sample = "AirQuality.csv"
 let testCases =
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
     |> File.ReadAllLines
-    |> Array.map (TypeProviderInstantiation.Parse >> snd)
+    |> Array.fold ( 
+      fun lst line -> 
+         let _,res = TypeProviderInstantiation.Parse  line
+         match res with
+         Comment -> lst
+         | _ -> res::lst)[]
 
 for testCase in testCases do
     dump false false Net40 true testCase

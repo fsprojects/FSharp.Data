@@ -20,9 +20,15 @@ module XsdBuilder =
        Sequence of XmlSchemaSequence
        | Choice of XmlSchemaChoice
        | Empty
+    type Extension = 
+       Simple    of XmlSchemaSimpleContentExtension
+       | Complex of XmlSchemaComplexContentExtension
+    type Restriction = 
+       Simple    of  XmlSchemaSimpleContentRestriction
+       | Complex of XmlSchemaComplexContentRestriction
     type ComplexType =
-        Extended of XmlSchemaComplexType * XmlSchemaComplexContentExtension
-        | Restricted of XmlSchemaComplexType * XmlSchemaComplexContentRestriction
+        Extended of XmlSchemaComplexType * Extension
+        | Restricted of XmlSchemaComplexType * Restriction
         | Basic of XmlSchemaComplexType
         member x.TypeDeclaration 
            with get() =
@@ -91,8 +97,14 @@ module XsdBuilder =
               match t.ContentModel with
               null -> Type(Complex (ComplexType.Basic t))
               | _ -> match t.ContentModel.Content with
-                     :? XmlSchemaComplexContentExtension -> Type(Complex (ComplexType.Extended (t, t.ContentModel.Content :?> XmlSchemaComplexContentExtension)))
-                     | :? XmlSchemaComplexContentRestriction -> Type(Complex (ComplexType.Restricted (t, t.ContentModel.Content :?> XmlSchemaComplexContentRestriction)))
+                     :? XmlSchemaComplexContentExtension as model -> 
+                         Type(Complex (ComplexType.Extended (t, Extension.Complex(model))))
+                     | :? XmlSchemaComplexContentRestriction as model -> 
+                         Type(Complex (ComplexType.Restricted (t, Restriction.Complex(model))))
+                     | :? XmlSchemaSimpleContentExtension as model -> 
+                         Type(Complex(ComplexType.Extended(t,Extension.Simple(model))))
+                     | :? XmlSchemaSimpleContentRestriction as model -> 
+                         Type(Complex(ComplexType.Restricted(t,Restriction.Simple(model))))
                      | _ -> failwith "Invalid content model"
               
        | :? XmlSchemaElement as e -> Element e
@@ -129,12 +141,17 @@ module XsdBuilder =
               match t with 
               ComplexType.Extended(t,ext) -> 
                  let extensions = 
-                     ext.Attributes
-                     |> Seq.cast<XmlSchemaObject>
-                     |> Seq.append (
-                            ext.Particle 
-                            |> getElementsFromObject 
-                     )
+                     match ext with
+                        Extension.Complex(ext) -> 
+                            ext.Attributes
+                            |> Seq.cast<XmlSchemaObject>
+                            |> Seq.append (
+                                   ext.Particle 
+                                   |> getElementsFromObject 
+                            )
+                        | Extension.Simple(ext) ->
+                            ext.Attributes
+                            |> Seq.cast<XmlSchemaObject>
                      |> List.ofSeq
                  t.BaseXmlSchemaType 
                  |> getElementsFromObject
@@ -161,22 +178,30 @@ module XsdBuilder =
                         | _ -> failwith "Unamed element"
                       |> qnToString
                  let restrictions = 
-                    res.Attributes
-                    |> Seq.cast<XmlSchemaAttribute>
-                    |> Seq.map (fun a -> a.QualifiedName |> qnToString, a :> XmlSchemaObject)
-                    |> Seq.append (
-                       match res.Particle with
-                       Particle(p) -> 
-                          p |> fromParticle
-                          |> Seq.map (fun a -> a |> getName , a)
-                       | _ -> Seq.empty
-                    )
-                    |> Map.ofSeq
+                     let attributeMapper (attrs:XmlSchemaObjectCollection) = 
+                         attrs
+                         |> Seq.cast<XmlSchemaAttribute>
+                         |> Seq.map (fun a -> a.QualifiedName |> qnToString, a :> XmlSchemaObject)
+                     match res with
+                       Restriction.Complex (res) ->
+                          res.Attributes
+                          |> attributeMapper
+                          |> Seq.append (
+                             match res.Particle with
+                             Particle(p) -> 
+                                p |> fromParticle
+                                |> Seq.map (fun a -> a |> getName , a)
+                             | _ -> Seq.empty
+                          )
+                       | Restriction.Simple (res) ->
+                          res.Attributes
+                          |> attributeMapper
+                     |> Map.ofSeq
                  t.BaseXmlSchemaType
                  |> getElementsFromObject
+                 |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
                  |> Seq.filter (fun e -> (e |> getName |> restrictions.TryFind).IsNone)
                  |> Seq.cast<XmlSchemaObject>
-                 |> Seq.append (t.Attributes |> Seq.cast<XmlSchemaObject>)
                  |> getItemsFromCollection
           | Type(Simple _ ) ->
               []
