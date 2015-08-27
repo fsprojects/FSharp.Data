@@ -117,7 +117,7 @@ class XsdProvider+Elem1 : FDR.BaseTypes.XmlElement
                             [| ("ISO639Code",
                                 (iso639Code :> obj))
                                ("fooElem",
-                                (fooElem :> obj)) |], "da-DK")
+                                (fooElem :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Elem1
     XmlElement.Create(xElement)
@@ -138,7 +138,7 @@ class XsdProvider+Foo : FDR.BaseTypes.XmlElement
                             [| ("ISO639Code",
                                 (iso639Code :> obj))
                                ("fooElem",
-                                (fooElem :> obj)) |], "da-DK")
+                                (fooElem :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Foo
     XmlElement.Create(xElement)
@@ -170,7 +170,7 @@ class XsdProvider+Root : FDR.BaseTypes.XmlElement
                                ("anonymousTyped",
                                 (anonymousTyped :> obj))
                                ("elem",
-                                (elem :> obj)) |], "da-DK")
+                                (elem :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Root
     XmlElement.Create(xElement)
@@ -216,7 +216,7 @@ class XsdProvider+Schema : FDR.BaseTypes.XmlElement
                                ("{https://github.com/FSharp.Data/}foo",
                                 (foo :> obj))
                                ("{https://github.com/FSharp.Data/}root",
-                                (root :> obj)) |], "da-DK")
+                                (root :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
     XmlElement.Create(xElement)
@@ -245,7 +245,7 @@ class XsdProvider+AnonymousTyped : FDR.BaseTypes.XmlElement
                                ("truth",
                                 (truth :> obj))
                                ("covert",
-                                (covert :> obj)) |], "da-DK")
+                                (covert :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+AnonymousTyped
     XmlElement.Create(xElement)
@@ -284,7 +284,7 @@ class XsdProvider+AnonymousTypedcovert : FDR.BaseTypes.XmlElement
                                ("lie",
                                 (lie :> obj))
                                ("truth",
-                                (truth :> obj)) |], "da-DK")
+                                (truth :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+AnonymousTypedcovert
     XmlElement.Create(xElement)

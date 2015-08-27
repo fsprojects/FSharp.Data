@@ -173,7 +173,7 @@ class XsdProvider+ColorType : FDR.BaseTypes.XmlElement
     XmlRuntime.CreateRecord("ColorType", 
                             [| ("value",
                                 (value :> obj)) |], 
-                            [| |], "da-DK")
+                            [| |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+ColorType
     XmlElement.Create(xElement)
@@ -192,7 +192,7 @@ class XsdProvider+ProductType : FDR.BaseTypes.XmlElement
                                ("name",
                                 (name :> obj))
                                ("number",
-                                (number :> obj)) |], "da-DK")
+                                (number :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+ProductType
     XmlElement.Create(xElement)
@@ -208,7 +208,7 @@ class XsdProvider+ProductType : FDR.BaseTypes.XmlElement
 
     member Number: int with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "number"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-US", value), value)
 
 
 class XsdProvider+Schema : FDR.BaseTypes.XmlElement
@@ -224,7 +224,7 @@ class XsdProvider+Schema : FDR.BaseTypes.XmlElement
                                ("SizeType",
                                 (sizeType :> obj))
                                ("SmallSizeType",
-                                (smallSizeType :> obj)) |], "da-DK")
+                                (smallSizeType :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+Schema
     XmlElement.Create(xElement)
@@ -259,7 +259,7 @@ class XsdProvider+ShirtType : FDR.BaseTypes.XmlElement
                                ("color",
                                 (color :> obj))
                                ("size",
-                                (size :> obj)) |], "da-DK")
+                                (size :> obj)) |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+ShirtType
     XmlElement.Create(xElement)
@@ -278,14 +278,14 @@ class XsdProvider+ShirtType : FDR.BaseTypes.XmlElement
 
     member Number: int with get
     let value = XmlRuntime.TryGetValue(XmlRuntime.GetChild(this, "number"))
-    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Value", TextRuntime.ConvertInteger("en-US", value), value)
 
     member Size: XsdProvider+SmallSizeType option with get
     XmlRuntime.ConvertOptional(this, "size", new Func<_,_>(id)))
 
     member Sleeve: int with get
     let value = XmlRuntime.TryGetAttribute(this, "sleeve")
-    TextRuntime.GetNonOptionalValue("Attribute sleeve", TextRuntime.ConvertInteger("da-DK", value), value)
+    TextRuntime.GetNonOptionalValue("Attribute sleeve", TextRuntime.ConvertInteger("en-US", value), value)
 
 
 class XsdProvider+SizeType : FDR.BaseTypes.XmlElement
@@ -293,7 +293,7 @@ class XsdProvider+SizeType : FDR.BaseTypes.XmlElement
     XmlRuntime.CreateRecord("SizeType", 
                             [| ("system",
                                 (system :> obj)) |], 
-                            [| |], "da-DK")
+                            [| |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+SizeType
     XmlElement.Create(xElement)
@@ -307,7 +307,7 @@ class XsdProvider+SmallSizeType : FDR.BaseTypes.XmlElement
     new : () -> XsdProvider+SmallSizeType
     XmlRuntime.CreateRecord("SmallSizeType", 
                             [| |], 
-                            [| |], "da-DK")
+                            [| |], "en-US")
 
     new : xElement:System.Xml.Linq.XElement -> XsdProvider+SmallSizeType
     XmlElement.Create(xElement)
