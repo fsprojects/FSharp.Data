@@ -11,8 +11,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{993a6eef-6e82-4964-8f91-be72cc63d000}</ProjectGuid>
+    <ProjectGuid>{993A6EEF-6E82-4964-8F91-BE72CC63D000}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>FSharp.Data</RootNamespace>
     <AssemblyName>FSharp.Data</AssemblyName>
@@ -22,7 +21,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\portable47\Debug</OutputPath>
@@ -40,6 +38,7 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\portable47\Release\FSharp.Data.xml</DocumentationFile>
     <OtherFlags>--warnon:1182</OtherFlags>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Net\UriUtils.fs" />

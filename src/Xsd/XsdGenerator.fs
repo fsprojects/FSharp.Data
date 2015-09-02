@@ -39,13 +39,26 @@ module XsdBuilder =
         member x.QualifiedName  
             with get() =
                x.TypeDeclaration.QualifiedName
+    type SimpleContent =
+         Restriction of XmlSchemaSimpleTypeRestriction
+         | Union of XmlSchemaSimpleTypeUnion
+         | List of XmlSchemaSimpleTypeList
     type SimpleType =
-        Extended of XmlSchemaSimpleType * XmlSchemaSimpleContentExtension
-        | Restricted of XmlSchemaSimpleType * XmlSchemaSimpleContentRestriction
+        | Restricted of XmlSchemaSimpleType * SimpleContent
         | Basic of XmlSchemaSimpleType
+
+         member x.TypeDeclaration 
+           with get() =
+              match x with
+               | Restricted (t,_)
+               | Basic t -> t
+        member x.QualifiedName  
+            with get() =
+               x.TypeDeclaration.QualifiedName
+                
     type XmlType = 
        Complex of ComplexType
-       | Simple of XmlSchemaSimpleType
+       | Simple of SimpleType
     let qnToString (qn:System.Xml.XmlQualifiedName) =
         if String.IsNullOrWhiteSpace(qn.Namespace) then
             qn.Name
@@ -89,29 +102,44 @@ module XsdBuilder =
                     name
            assert (name.IsNone || name.Value |>  String.IsNullOrWhiteSpace |> not)
            name
-    let (|Schema|Type|Element|Particle|Restriction|Unknown|Attribute|) (obj:XmlSchemaObject)  =
+    let (|Schema|Type|Element|Particle|Unknown|Attribute|) (obj:XmlSchemaObject)  =
        
        match obj with
-       | :? XmlSchemaSimpleType as t -> Type(Simple t)
+       | :? XmlSchemaSimpleType as t -> 
+           let content = 
+                match t.Content with
+                null -> Basic t
+                | _ as model -> 
+                    match model with
+                    :? XmlSchemaSimpleTypeRestriction as restriction ->
+                      SimpleType.Restricted(t, SimpleContent.Restriction(restriction))
+                    | :? XmlSchemaSimpleTypeUnion as union -> 
+                      SimpleType.Restricted(t, SimpleContent.Union(union))
+                    | :? XmlSchemaSimpleTypeList as list -> 
+                      SimpleType.Restricted(t, SimpleContent.List(list))
+                    | _ -> failwithf "Unknkown content for simple type %A" model
+           Type(Simple content)
        | :? XmlSchemaComplexType as t -> 
+           let model =
               match t.ContentModel with
-              null -> Type(Complex (ComplexType.Basic t))
-              | _ -> match t.ContentModel.Content with
+              null -> ComplexType.Basic t
+              | _ as model-> 
+                     match model.Content with
                      :? XmlSchemaComplexContentExtension as model -> 
-                         Type(Complex (ComplexType.Extended (t, Extension.Complex(model))))
+                         ComplexType.Extended (t, Extension.Complex(model))
                      | :? XmlSchemaComplexContentRestriction as model -> 
-                         Type(Complex (ComplexType.Restricted (t, Restriction.Complex(model))))
+                         ComplexType.Restricted (t, Restriction.Complex(model))
                      | :? XmlSchemaSimpleContentExtension as model -> 
-                         Type(Complex(ComplexType.Extended(t,Extension.Simple(model))))
+                         ComplexType.Extended(t,Extension.Simple(model))
                      | :? XmlSchemaSimpleContentRestriction as model -> 
-                         Type(Complex(ComplexType.Restricted(t,Restriction.Simple(model))))
+                         ComplexType.Restricted(t,Restriction.Simple(model))
                      | _ -> failwith "Invalid content model"
-              
+           Type(Complex (model))
        | :? XmlSchemaElement as e -> Element e
        | :? XmlSchemaSequence as sequence ->  Particle(Sequence(sequence))
        | :? XmlSchemaChoice as choice->  Particle(Choice(choice))
-       | :? XmlSchemaSimpleTypeRestriction as restriction -> Type(Simple restriction.BaseType)
-       | :? XmlSchemaComplexContentRestriction as restriction -> Restriction restriction
+       | :? XmlSchemaSimpleTypeRestriction 
+       | :? XmlSchemaComplexContentRestriction -> failwith "Restrictions not expected at this point"
        | :? XmlSchemaAttribute as attribute -> Attribute attribute
        | :? XmlSchema as schema -> Schema schema
        | _ as n -> Unknown n
@@ -129,7 +157,7 @@ module XsdBuilder =
             for i in getElementsFromObject item do
                yield i]
 
-    and private getElementsFromObject (item:XmlSchemaObject) =
+    and private getElementsFromObject (item:XmlSchemaObject) : XmlSchemaObject list =
         let fromParticle (particle:Particle) =
             match particle with
               Sequence sequence -> sequence.Items
@@ -153,8 +181,10 @@ module XsdBuilder =
                             ext.Attributes
                             |> Seq.cast<XmlSchemaObject>
                      |> List.ofSeq
-                 t.BaseXmlSchemaType 
-                 |> getElementsFromObject
+                 match t.BaseXmlSchemaType with
+                     null -> []
+                     | _ as bt -> 
+                         bt |> getElementsFromObject
                  |> Seq.append (match t.Particle with
                                 | Particle(p) -> fromParticle p
                                 | _ -> [] |> Seq.ofList)
@@ -329,7 +359,7 @@ module XsdBuilder =
     let private getName (typ:XmlType) =
         let typeDeclaration, name  =
             match typ with
-            Simple(typeDeclatation) -> typeDeclatation :> XmlSchemaType, typeDeclatation |> getSchemaTypeName
+            Simple(typ) -> typ.TypeDeclaration :> XmlSchemaType, typ.TypeDeclaration |> getSchemaTypeName
             | Complex(t) -> 
                   t.TypeDeclaration  :> XmlSchemaType, t.TypeDeclaration |> getSchemaTypeName
         let name = 
@@ -384,7 +414,7 @@ module XsdBuilder =
               | Type(t) ->
                   match t with
                   Complex  t -> t.TypeDeclaration :> XmlSchemaType
-                  | Simple t -> t :> XmlSchemaType
+                  | Simple t -> t.TypeDeclaration :> XmlSchemaType
               |_ -> failwithf "Expected an element or an attribute but got %A" el 
          let typeName, typ = 
               let typ =
@@ -398,7 +428,17 @@ module XsdBuilder =
          | _ ->
              let t = 
                  match typ with
-                 Simple(typeDeclaration) as t->
+                 Simple(SimpleType.Restricted(_,re)) ->
+                     match re with
+                     Restriction re ->
+                         match re.BaseType with
+                         null -> NativeTypes.[re.BaseTypeName |> qnToString]
+                         | _ as baseType -> baseType |> getTypeFromAnnotated
+                     | Union _ ->
+                         failwith "unions not supported"
+                     | List _ ->
+                         failwith "lists not supported"
+                 | Simple(SimpleType.Basic typeDeclaration) as t->
                       let name = t |> getName 
                       match name |> NativeTypes.TryFind with
                       None -> 
@@ -459,13 +499,16 @@ module XsdBuilder =
              t
     
     let generateType (schema:System.Xml.Schema.XmlSchemaSet) =
+
         schema.Compile()
+
         let getType el = getTypeFromAnnotated (new System.Collections.Generic.Dictionary<string,InferedType>()) el
         let createElements = createElements getType
         let parsedSchema = 
             schema 
             |> parseSchema
         
+          
         //define all the types of the schema
         let types =
            parsedSchema.Types
@@ -473,6 +516,7 @@ module XsdBuilder =
            |> List.map getType 
         //There can be zero or many elements defined as well as types
         //We'll essentially treat each as a type
+        //failwith "post-compile"
         let elements =
            parsedSchema.Elements
            |> createElements
@@ -492,6 +536,7 @@ module XsdBuilder =
                               let typ = InferedType.Record(Some (name),p,o)
                               typ::st
                           | _ -> failwithf "Elements must be represented with a record %A" t) []
+        
         types@elements
         |> List.filter (fun t -> 
                           match t with

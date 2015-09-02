@@ -22,6 +22,7 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.XmlProvider'
   let asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
+
   let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XsdProvider", Some typeof<obj>)
 
   let buildTypes (typeName:string) (args:obj[]) =
@@ -41,11 +42,13 @@ type public XsdProvider(cfg:TypeProviderConfig) as this =
         let parseList _ value = XDocument.Parse(value).Root.Elements() |> Array.ofSeq
         
         let getTypes sample =
+          
           match !types with
           StructuralTypes.InferedType.Top ->
             let read (reader:TextReader) = 
                 let schema = XmlSchema.Read(reader,(fun o (e:ValidationEventArgs) -> failwith e.Message))
                 reader.Dispose()
+
                 schema
             let ts =
               let path,reader = 
