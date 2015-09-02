@@ -34,58 +34,63 @@ let dumpAll inst =
     //dump false false Portable7 false inst
     dump false false Portable47 false inst
 
-Html { Sample = "doctor_who2.html"
-       PreferOptionals = false
-       IncludeLayoutTables = false
-       MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
-       Culture = "" 
-       Encoding = ""
-       ResolutionFolder = ""
-       EmbeddedResource = "" }
-|> dumpAll
+//Html { Sample = "doctor_who2.html"
+//       PreferOptionals = false
+//       IncludeLayoutTables = false
+//       MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
+//       Culture = "" 
+//       Encoding = ""
+//       ResolutionFolder = ""
+//       EmbeddedResource = "" }
+//|> dumpAll
 
-Json { Sample = "optionals.json"
-       SampleIsList = false
-       RootName = ""
-       Culture = ""
-       Encoding = ""
-       ResolutionFolder = ""
-       EmbeddedResource = ""
-       InferTypesFromValues = true }
-|> dumpAll
+//Json { Sample = "optionals.json"
+//       SampleIsList = false
+//       RootName = ""
+//       Culture = ""
+//       Encoding = ""
+//       ResolutionFolder = ""
+//       EmbeddedResource = ""
+//       InferTypesFromValues = true }
+//|> dumpAll
 
-Xml { Sample = "JsonInXml.xml"
-      SampleIsList = true
-      Global = false
-      Culture = ""
-      Encoding = ""
-      ResolutionFolder = ""
-      EmbeddedResource = ""
-      InferTypesFromValues = true }
-|> dumpAll
-
-Csv { Sample = "AirQuality.csv"
-      Separators = ";"
-      InferRows = Int32.MaxValue
-      Schema = ""
-      HasHeaders = true
-      IgnoreErrors = false
-      SkipRows = 0
-      AssumeMissingValues = false
-      PreferOptionals = false
-      Quote = '"'
-      MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
-      CacheRows = true
-      Culture = ""
-      Encoding = ""
-      ResolutionFolder = ""
-      EmbeddedResource = "" }
-|> dumpAll
+//Xml { Sample = "JsonInXml.xml"
+//      SampleIsList = true
+//      Global = false
+//      Culture = ""
+//      Encoding = ""
+//      ResolutionFolder = ""
+//      EmbeddedResource = ""
+//      InferTypesFromValues = true }
+//|> dumpAll
+//
+//Csv { Sample = "AirQuality.csv"
+//      Separators = ";"
+//      InferRows = Int32.MaxValue
+//      Schema = ""
+//      HasHeaders = true
+//      IgnoreErrors = false
+//      SkipRows = 0
+//      AssumeMissingValues = false
+//      PreferOptionals = false
+//      Quote = '"'
+//      MissingValues = "NaN,NA,N/A,#N/A,:,-,TBA,TBD"
+//      CacheRows = true
+//      Culture = ""
+//      Encoding = ""
+//      ResolutionFolder = ""
+//      EmbeddedResource = "" }
+//|> dumpAll
 
 let testCases =
     __SOURCE_DIRECTORY__ ++ ".." ++ "tests" ++ "FSharp.Data.DesignTime.Tests" ++ "SignatureTestCases.config"
     |> File.ReadAllLines
-    |> Array.map (TypeProviderInstantiation.Parse >> snd)
+    |> Array.fold ( 
+      fun lst line -> 
+         let _,res = TypeProviderInstantiation.Parse  line
+         match res with
+         Comment -> lst
+         | _ -> res::lst)[]
 
 for testCase in testCases do
     dump false false Net40 true testCase

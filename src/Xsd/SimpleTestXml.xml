@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<schema>
+  <root>
+    <elem>it starts with a number</elem>
+    <elem1>
+      <fooElem>false</fooElem>
+      <ISO639Code>dk-DA</ISO639Code>
+    </elem1>
+    <choice>
+      <language>Danish</language>
+    </choice>
+    <choice>
+      <country>1</country>
+    </choice>
+    <anonymousTyped attr="fish" windy="strong" >
+      <covert>True</covert>
+    </anonymousTyped>
+  </root>
+</schema>

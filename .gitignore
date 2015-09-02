@@ -18,3 +18,4 @@ paket-files
 *.ide
 *.bak
 .vs
+.vagrant
