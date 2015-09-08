@@ -8,119 +8,30 @@ open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
 
-let runningOnMono = Type.GetType("Mono.Runtime") <> null
-
-let private (++) a b = Path.Combine(a,b)
-
-let private referenceAssembliesPath = 
-    if runningOnMono
-    then "/Library/Frameworks/Mono.framework/Versions/CurrentVersion/lib/mono/"
-    else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
-    ++ "Reference Assemblies" 
-    ++ "Microsoft" 
-
-let private fsharp30Portable47AssembliesPath1 = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ "3.0" 
-    ++ "Runtime" 
-    ++ ".NETPortable"
-
-let private fsharp30Portable47AssembliesPath2 = 
-     referenceAssembliesPath
-     ++ "FSharp" 
-     ++ ".NETPortable" 
-     ++ "2.3.5.0"
-
-let private fsharp31Portable47AssembliesPath = 
-     referenceAssembliesPath
-     ++ "FSharp" 
-     ++ ".NETPortable" 
-     ++ "2.3.5.1"
-
-let private fsharp31Portable7AssembliesPath = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ ".NETCore" 
-    ++ "3.3.1.0" 
-
-let private fsharp30AssembliesPath1 = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ "3.0" 
-    ++ "Runtime" 
-    ++ "v4.0"
-
-let private fsharp30AssembliesPath2 = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ ".NETFramework" 
-    ++ "v4.0"
-    ++ "4.3.0.0"
-
-let private fsharp31AssembliesPath = 
-    referenceAssembliesPath
-    ++ "FSharp" 
-    ++ ".NETFramework" 
-    ++ "v4.0"
-    ++ "4.3.1.0"
-
-let private portable47AssembliesPath = 
-    referenceAssembliesPath
-    ++ "Framework" 
-    ++ ".NETPortable" 
-    ++ "v4.0" 
-    ++ "Profile" 
-    ++ "Profile47" 
-
 let private designTimeAssemblies = 
-    AppDomain.CurrentDomain.GetAssemblies()
-    |> Seq.map (fun asm -> asm.GetName().Name, asm)
-    // If there are dups, Map.ofSeq will take the last one. When the portable version
-    // is already loaded, it will be the last one and replace the full version on the
-    // map. We don't want that, so we use distinct to only keep the first version of
-    // each assembly (assumes CurrentDomain.GetAssemblies() returns assemblies in
-    // load order, must check if that's also true for Mono)
-    |> Seq.distinctBy fst 
-    |> Map.ofSeq
-
-let private safeFileExists path = 
-    try File.Exists path with _ -> false
-
-let private nullToOption x = match x with null -> None | _ -> Some x
-
-let private getAssembly (asmName:AssemblyName) reflectionOnly fsharpDataPaths = 
-    let folders = 
-        let version = 
-            if asmName.Version = null // version is null when trying to load the log4net assembly when running tests inside NUnit
-            then "" else asmName.Version.ToString()
-        match asmName.Name, version with
-        | "FSharp.Core", "4.3.0.0" -> [fsharp30AssembliesPath1; fsharp30AssembliesPath2]
-        | "FSharp.Core", "4.3.1.0" -> [fsharp31AssembliesPath]
-        | "FSharp.Core", "2.3.5.0" -> [fsharp30Portable47AssembliesPath1; fsharp30Portable47AssembliesPath2]
-        | "FSharp.Core", "2.3.5.1" -> [fsharp31Portable47AssembliesPath]
-        | "FSharp.Core", "3.3.1.0" -> [fsharp31Portable7AssembliesPath]
-        | "FSharp.Data", _ -> fsharpDataPaths
-        | _, "2.0.5.0" -> [portable47AssembliesPath]
-        | _, _ -> []
-    let asm = 
-        folders |> List.tryPick (fun folder -> 
-          try
-            let assemblyPath = folder ++ (asmName.Name + ".dll")
-            if safeFileExists assemblyPath then
-                if reflectionOnly then nullToOption (Assembly.ReflectionOnlyLoadFrom assemblyPath)
-                else nullToOption (Assembly.LoadFrom assemblyPath)
-            else None 
-          with _ -> None)
-    match asm with 
-    | Some asm -> asm
-    | None -> 
-        if reflectionOnly then 
-          let redirectedName = AppDomain.CurrentDomain.ApplyPolicy(asmName.FullName)
-          Assembly.ReflectionOnlyLoad redirectedName
-        else null
+    [ for asm in Assembly.GetExecutingAssembly().GetReferencedAssemblies() do
+         let asm = try Assembly.Load(asm) with _ -> null
+         if asm <> null then 
+            yield asm.GetName().Name, asm ]
 
 let mutable private initialized = false    
+
+type System.Object with 
+   member internal x.GetProperty(nm) = 
+       let ty = x.GetType()
+       let prop = ty.GetProperty(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+       let v = prop.GetValue(x)
+       v
+   member internal x.GetField(nm) = 
+       let ty = x.GetType()
+       let fld = ty.GetField(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+       let v = fld.GetValue(x)
+       v
+   member internal x.HasField(nm) = 
+       let ty = x.GetType()
+       let fld = ty.GetField(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+       fld <> null
+   member internal x.GetElements() = [ for v in (x :?> System.Collections.IEnumerable) do yield v ]
 
 [<RequireQualifiedAccess>]
 type FSharpDataRuntimeVersion =
@@ -132,86 +43,94 @@ type FSharpDataRuntimeVersion =
         | Net40 -> true
         | _ -> false
 
+
 let init (cfg : TypeProviderConfig) = 
 
-    let init (_:SaveOptions) = 
-        WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
-        AppDomain.CurrentDomain.add_AssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) false [])
-        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve(fun _ args -> getAssembly (AssemblyName args.Name) true [])
-        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
+    // This is a hack to get the set of referenced assemblies for this instance of the type provider.
+    // This information _should_ be provided in cfg.ReferencedAssemblies however that is missing a couple of crucial references (the mscorlib and FSharp.Core references).
+    // So we use reflection to access into the captured F# compiler closures to find the correct set of DLLs.  
+    // This is obviously not "right" but is reasonable considering that it's crucial to get this information.
+    // The aim is to have code that works correctly for all Visual F# Tools and F# open edition uses 
+    // of type providers for F# 3.0, 3.1 and 4.0.
+    
+    let referencedAssemblies = 
+        try 
+           let systemRuntimeContainsTypeObj = cfg.GetField("systemRuntimeContainsType") 
+           // Account for https://github.com/Microsoft/visualfsharp/pull/591
+           let systemRuntimeContainsTypeObj2 = 
+               if systemRuntimeContainsTypeObj.HasField("systemRuntimeContainsTypeRef") then 
+                   systemRuntimeContainsTypeObj.GetField("systemRuntimeContainsTypeRef").GetProperty("Value")
+               else
+                   systemRuntimeContainsTypeObj
+           let tcImportsObj = systemRuntimeContainsTypeObj2.GetField("tcImports")
+           [ for dllInfo in tcImportsObj.GetField("dllInfos").GetElements() -> (dllInfo.GetProperty("FileName") :?> string)
+             for dllInfo in tcImportsObj.GetProperty("Base").GetProperty("Value").GetField("dllInfos").GetElements() -> (dllInfo.GetProperty("FileName") :?> string) ]
+        with _ ->
+           []
+
+    let version = 
+        let fsCore = 
+             referencedAssemblies |> Seq.tryPick (fun asmPath -> 
+                 let simpleName = Path.GetFileNameWithoutExtension(asmPath)
+                 if simpleName = "FSharp.Core" then Some (Assembly.ReflectionOnlyLoadFrom(asmPath))
+                 else None)
+
+        match fsCore with 
+        | None -> FSharpDataRuntimeVersion.Net40
+        | Some asm -> 
+           let ver = asm.GetName().Version
+           match ver.Major, ver.Minor with 
+            | 2, 3 -> FSharpDataRuntimeVersion.Portable47 // 2.3.5.0, 2.3.5.1
+            | 4, _ -> FSharpDataRuntimeVersion.Net40 // 4.3.0.0, 4.3.1.0, 4.4.0.0
+            | 3, 47 -> FSharpDataRuntimeVersion.Net40 // 3.47.4.0
+            | 3, 7 -> FSharpDataRuntimeVersion.Portable7 // 3.7.4.0
+            | 3, 78 -> FSharpDataRuntimeVersion.Portable7 // 3.7.4.0
+            | 3, 259 -> FSharpDataRuntimeVersion.Portable7 // 3.7.4.0
+            | 3, 3 -> FSharpDataRuntimeVersion.Portable7 // 3.3.1.0
+            | _ -> FSharpDataRuntimeVersion.Net40
+
+    let runtimeAssemblies = 
+        [ for asmPath in referencedAssemblies do
+             let simpleName = Path.GetFileNameWithoutExtension(asmPath)
+             // Using ReflectionOnlyLoadFrom on mscorlib doesn't seem to work for mscorlib 4.0
+             if not (version = FSharpDataRuntimeVersion.Net40 && simpleName = "mscorlib") then  
+                yield simpleName, lazy (try Assembly.ReflectionOnlyLoadFrom(asmPath) with _ -> null) ]
+        |> Map.ofList
+
+    let getRuntimeAssembly (asmSimpleName:string) = 
+        match runtimeAssemblies.TryFind asmSimpleName with
+        | None -> null
+        | Some loader -> loader.Force()
+
+    let resolveRuntimeAssembly (asmName: AssemblyName) = 
+        let simpleName = asmName.Name
+        getRuntimeAssembly simpleName 
+
+    let _remover = 
+        let resolver = ResolveEventHandler(fun _ args ->  resolveRuntimeAssembly (AssemblyName args.Name))
+        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve resolver
+        { new IDisposable with member x.Dispose() = AppDomain.CurrentDomain.remove_ReflectionOnlyAssemblyResolve resolver }
 
     if not initialized then
         initialized <- true
         // the following parameter is just here to force System.Xml.Linq to load
-        init SaveOptions.None
+        WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
+        ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
+
+    let runtimeFSharpDataAssembly = Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
     
-    let useReflectionOnly = true
-
-    let runtimeAssembly = 
-        if useReflectionOnly then Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
-        else Assembly.LoadFrom cfg.RuntimeAssembly
-
-    let runtimeAssemblyName = runtimeAssembly.GetName()
-
-    let runtimeVersion =
-        match runtimeAssemblyName.Version.Revision with
-        | 0 -> FSharpDataRuntimeVersion.Net40
-        | 7 -> FSharpDataRuntimeVersion.Portable7
-        | 47 -> FSharpDataRuntimeVersion.Portable47
-        | _ -> failwithf "Unexpected version of %s.dll: %O [Looking for revision 0, 7 or 47]" runtimeAssemblyName.Name runtimeAssemblyName.Version
-
-    let runtimeAssemblyPair = Assembly.GetCallingAssembly(), runtimeAssembly
+    let runtimeFSharpDataAssemblyPair = Assembly.GetExecutingAssembly(), runtimeFSharpDataAssembly
 
     let referencedAssembliesPairs = 
-        runtimeAssembly.GetReferencedAssemblies()
-        |> Seq.filter (fun asmName -> asmName.Name <> "mscorlib")
-        |> Seq.choose (fun asmName -> 
-            let designTimeAsmName =
-                match asmName.Name with
-                | "FSharp.Data" -> "FSharp.Data.DesignTime" // this applies when this code is being used by another assembly that depends on FSharp.Data, like ApiaryProvider
-                | "System.Runtime" | "System.IO" | "System.Threading.Tasks" -> "mscorlib"
-                | "System.Xml.XDocument" -> "System.Xml.Linq"
-                | asmName -> asmName
-            designTimeAssemblies.TryFind designTimeAsmName
-            |> Option.bind (fun designTimeAsm ->
-                let targetAsm = 
-                    if asmName.Name = "FSharp.Data" then                        
-                        let runtimeAssemblyPath = Path.GetDirectoryName runtimeAssembly.Location
-                        let fsharpDataPaths = [ runtimeAssemblyPath
-                                                runtimeAssemblyPath.Replace(sprintf "%s.%d.%d.%d" runtimeAssemblyName.Name 
-                                                                                                  runtimeAssemblyName.Version.Major 
-                                                                                                  runtimeAssemblyName.Version.Minor 
-                                                                                                  runtimeAssemblyName.Version.Build,
-                                                                            sprintf "FSharp.Data.%d.%d.%d" asmName.Version.Major
-                                                                                                           asmName.Version.Minor
-                                                                                                           asmName.Version.Build) ]
-                        // for cases when there is a version mismatch
-                        let alternativeFsharpDataPaths = 
-                            let mutable packagesFolder = runtimeAssemblyPath
-                            let suffixes = ResizeArray<_>()
-                            while packagesFolder <> null && not ("packages".Equals(DirectoryInfo(packagesFolder).Name, StringComparison.OrdinalIgnoreCase)) do
-                                suffixes.Add (DirectoryInfo packagesFolder).Name
-                                let parent = Directory.GetParent packagesFolder
-                                packagesFolder <- if parent = null then null else parent.FullName
-                            if packagesFolder = null then [] 
-                            else
-                                let suffix = 
-                                    suffixes 
-                                    |> Seq.truncate (suffixes.Count - 1)
-                                    |> Seq.toArray
-                                    |> Array.rev 
-                                    |> String.concat (string Path.DirectorySeparatorChar)
-                                Directory.GetDirectories(packagesFolder, "FSharp.Data.*")
-                                |> Array.sort 
-                                |> Array.rev
-                                |> Array.map (fun fsharpDataFolder -> Path.Combine(fsharpDataFolder, suffix))
-                                |> Array.toList
-                        getAssembly asmName useReflectionOnly (fsharpDataPaths @ alternativeFsharpDataPaths)
-                    else
-                        getAssembly asmName useReflectionOnly []
-                if targetAsm <> null && (targetAsm.FullName <> designTimeAsm.FullName || targetAsm.ReflectionOnly <> designTimeAsm.ReflectionOnly) then 
-                    Some (designTimeAsm, targetAsm)
-                else None))
-        |> Seq.toList
-    
-    runtimeAssembly, runtimeVersion, AssemblyReplacer.create (runtimeAssemblyPair::referencedAssembliesPairs)
+        [ yield runtimeFSharpDataAssemblyPair
+          for (designTimeAsmSimpleName, designTimeAsm) in designTimeAssemblies do
+             match getRuntimeAssembly designTimeAsmSimpleName with 
+             | null -> ()
+             | runtimeAsm -> yield (designTimeAsm, runtimeAsm) ]
+
+    // Preload all the dependencies
+    for (_,runtimeAsm) in referencedAssembliesPairs do 
+        for refAsm in runtimeAsm.GetReferencedAssemblies() do
+            resolveRuntimeAssembly refAsm |> ignore
+
+    runtimeFSharpDataAssembly, version, AssemblyReplacer.create referencedAssembliesPairs
