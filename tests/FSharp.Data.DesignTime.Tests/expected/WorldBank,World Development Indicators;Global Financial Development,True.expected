@@ -1773,7 +1773,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("FM.AST.PRVT.ZG.M3")
 
     member ``Coal rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.COAL.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.COAL.RT.ZS")
 
     member ``Combustible renewables and waste (% of total energy)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.CRNW.ZS")
@@ -2457,7 +2457,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("AG.LND.FRST.K2")
 
     member ``Forest rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.FRST.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.FRST.RT.ZS")
 
     member ``Fossil fuel energy consumption (% of total)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("EG.USE.COMM.FO.ZS")
@@ -3519,7 +3519,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("MS.MIL.XPND.CN")
 
     member ``Mineral rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.MINR.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.MINR.RT.ZS")
 
     member ``Mobile cellular subscriptions``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("IT.CEL.SETS")
@@ -3588,7 +3588,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("GFDD.DI.07")
 
     member ``Natural gas rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.NGAS.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.NGAS.RT.ZS")
 
     member ``Net ODA received (% of GNI)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("DT.ODA.ODAT.GN.ZS")
@@ -3942,7 +3942,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("PA.NUS.FCRF")
 
     member ``Oil rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.PETR.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.PETR.RT.ZS")
 
     member ``Ores and metals exports (% of merchandise exports)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("TX.VAL.MMTL.ZS.UN")
@@ -5130,7 +5130,7 @@ class WorldBankDataProvider+ServiceTypes+Indicators : FDR.WorldBank.Indicators
     (this :> IIndicators).AsyncGetIndicator("GFDD.OI.18")
 
     member ``Total natural resources rents (% of GDP)``: FDR.WorldBank.Indicator async with get
-    (this :> IIndicators).AsyncGetIndicator("NY.GDP.TOTL.replacer.ZS")
+    (this :> IIndicators).AsyncGetIndicator("NY.GDP.TOTL.RT.ZS")
 
     member ``Total reserves (% of total external debt)``: FDR.WorldBank.Indicator async with get
     (this :> IIndicators).AsyncGetIndicator("FI.RES.TOTL.DT.ZS")
@@ -6122,7 +6122,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("FM.AST.PRVT.ZG.M3")
 
     member ``Coal rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.COAL.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.COAL.RT.ZS")
 
     member ``Combustible renewables and waste (% of total energy)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.CRNW.ZS")
@@ -6806,7 +6806,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("AG.LND.FRST.K2")
 
     member ``Forest rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.FRST.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.FRST.RT.ZS")
 
     member ``Fossil fuel energy consumption (% of total)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("EG.USE.COMM.FO.ZS")
@@ -7868,7 +7868,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("MS.MIL.XPND.CN")
 
     member ``Mineral rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MINR.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.MINR.RT.ZS")
 
     member ``Mobile cellular subscriptions``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("IT.CEL.SETS")
@@ -7937,7 +7937,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.DI.07")
 
     member ``Natural gas rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.NGAS.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.NGAS.RT.ZS")
 
     member ``Net ODA received (% of GNI)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("DT.ODA.ODAT.GN.ZS")
@@ -8291,7 +8291,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("PA.NUS.FCRF")
 
     member ``Oil rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.PETR.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.PETR.RT.ZS")
 
     member ``Ores and metals exports (% of merchandise exports)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("TX.VAL.MMTL.ZS.UN")
@@ -9479,7 +9479,7 @@ class WorldBankDataProvider+ServiceTypes+IndicatorsDescriptions : FDR.WorldBank.
     (this :> IIndicatorsDescriptions).GetIndicator("GFDD.OI.18")
 
     member ``Total natural resources rents (% of GDP)``: FDR.WorldBank.IndicatorDescription with get
-    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.TOTL.replacer.ZS")
+    (this :> IIndicatorsDescriptions).GetIndicator("NY.GDP.TOTL.RT.ZS")
 
     member ``Total reserves (% of total external debt)``: FDR.WorldBank.IndicatorDescription with get
     (this :> IIndicatorsDescriptions).GetIndicator("FI.RES.TOTL.DT.ZS")
