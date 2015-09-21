@@ -17,13 +17,12 @@ open ProviderImplementation.ProvidedTypes
 ///
 /// There are two possible uses:
 ///    typ?Name tyArgs args
-///    typ?Name args
 ///
-/// In the first case, tyArgs is a sequence of type arguments for method `Name`.
+/// tyArgs is a sequence of type arguments for method `Name`.
 /// Actual arguments can be either expression (Expr<'T>) or primitive values, whic
 /// are automatically wrapped using Expr.Value.
 ///
-let (?) (typ:Type) (operation:string) (args1:'T) : 'R = 
+let (?) (typ:Type) (operation:string) (args1:'T) (args2: 'U) : Expr = 
   // Arguments are either Expr or other type - in the second case,
   // we treat them as Expr.Value (which will only work for primitives)
   let convertValue (arg:obj) = 
@@ -67,11 +66,4 @@ let (?) (typ:Type) (operation:string) (args1:'T) : 'R =
         else Expr.PropertyGet(List.head args, pi, List.tail args)
     | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
-  // If the result is a function, we are called with two tuples as arguments
-  // and the first tuple represents type arguments for a generic function...
-  if FSharpType.IsFunction(typeof<'R>) then
-    let domTyp, res = FSharpType.GetFunctionElements(typeof<'R>)
-    if res <> typeof<Expr> then failwith "QuotationBuilder: The resulting type must be Expr!"
-    FSharpValue.MakeFunction(typeof<'R>, fun args2 ->
-      invokeOperation (args1, typeof<'T>) (args2, domTyp) |> box) |> unbox<'R>
-  else invokeOperation ((), typeof<unit>) (args1, typeof<'T>) |> unbox<'R>
+  invokeOperation (args1, typeof<'T>) (args2, typeof<'U>) 

@@ -253,7 +253,7 @@
 
 <script>
 	RT = window.RT || {};
-	RT.startTime = new Date().getTime();
+	replacer.startTime = new Date().getTime();
 </script>
 
 
@@ -594,7 +594,7 @@
 		console.error = function(msg){};
 	}
 	
-	RT.getCookie = function(c) {
+	replacer.getCookie = function(c) {
 		var d = document.cookie.indexOf(c + "=");
 		var a = d + c.length + 1;
 		if ((!d) && (c != document.cookie.substring(0, c.length))) {
@@ -609,10 +609,10 @@
 		}
 		return unescape(document.cookie.substring(a, b))
 	};
-	window.getCookie = RT.getCookie;
+	window.getCookie = replacer.getCookie;
 	
-	/* RT.setCookie(key, value, expires_days, path, domain, secure) */
-	RT.setCookie = function(c, e, a, h, d, g) {
+	/* replacer.setCookie(key, value, expires_days, path, domain, secure) */
+	replacer.setCookie = function(c, e, a, h, d, g) {
 		var b = new Date();
 		b.setTime(b.getTime());
 		if (a) {
@@ -624,44 +624,44 @@
 				+ ((h) ? ";path=" + h : "") + ((d) ? ";domain=" + d : "")
 				+ ((g) ? ";secure" : "")
 	}
-	window.setCookie = RT.setCookie;
+	window.setCookie = replacer.setCookie;
 	
-	RT.deleteCookie = function(a, c, b) {
+	replacer.deleteCookie = function(a, c, b) {
 		if (getCookie(a)) {
 			document.cookie = a + "=" + ((c) ? ";path=" + c : "")
 					+ ((b) ? ";domain=" + b : "")
 					+ ";expires=Thu, 01-Jan-1970 00:00:01 GMT"
 		}
 	}
-	window.deleteCookie = RT.deleteCookie;
+	window.deleteCookie = replacer.deleteCookie;
 	
-	RT.cookieHas = function(sKey) { 
+	replacer.cookieHas = function(sKey) { 
 		return (new RegExp("(?:^|;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\$&") + "\\s*\\=")).test(document.cookie); 
 	}
 	
 	/* Setup interstitial deferred (resolves if interstitial shown) */
-	RT.interstitialShown = $.Deferred();
+	replacer.interstitialShown = $.Deferred();
 		
-	RT.social_init = new $.Deferred(); // See http://trac.flixsterqa.com/wiki/Dev/header for detailed explanation of these 4 deferreds
-	RT.fb_ready = new $.Deferred();
-	RT.fb_connected = new $.Deferred();
+	replacer.social_init = new $.Deferred(); // See http://trac.flixsterqa.com/wiki/Dev/header for detailed explanation of these 4 deferreds
+	replacer.fb_ready = new $.Deferred();
+	replacer.fb_connected = new $.Deferred();
 
-	RT.ads=[];
+	replacer.ads=[];
 
 	/* Bring out legacy global vars */
-	window.social_init = RT.social_init;
-	window.fb_ready = RT.fb_ready;
-	window.fb_connected = RT.fb_connected;
+	window.social_init = replacer.social_init;
+	window.fb_ready = replacer.fb_ready;
+	window.fb_connected = replacer.fb_connected;
 
-	RT.StaticHost = 'http://images.rottentomatoescdn.com';
-	RT.Host = 'http://www.rottentomatoes.com';
+	replacer.StaticHost = 'http://images.rottentomatoescdn.com';
+	replacer.Host = 'http://www.rottentomatoes.com';
 	
 	/* Backbone Views and Models */
-	RT.Backbone = {};
-	RT.Backbone.Views={};
-	RT.Backbone.Models={};
-	RT.Backbone.Routers={};
-	RT.Backbone.Collections={};
+	replacer.Backbone = {};
+	replacer.Backbone.Views={};
+	replacer.Backbone.Models={};
+	replacer.Backbone.Routers={};
+	replacer.Backbone.Collections={};
 	
 	
 	/* Global actions to be taken after document.ready */
@@ -679,7 +679,7 @@
 
 <script>
 console.log("Storing preload data for LoginStatusModel");
-RT.LoginStatusModel=
+replacer.LoginStatusModel=
 
 
 
@@ -731,10 +731,10 @@ var dataLayer = dataLayer || [];
 var registration;
 
 // Registered up to 30 mins ago
-if(RT.LoginStatusModel.usertype != "anon" && Date.now() - Date.parse(RT.LoginStatusModel.registerDate > 1800000)){
-	dataLayer.push({'registration' : RT.LoginStatusModel.userType});
+if(replacer.LoginStatusModel.usertype != "anon" && Date.now() - Date.parse(replacer.LoginStatusModel.registerDate > 1800000)){
+	dataLayer.push({'registration' : replacer.LoginStatusModel.userType});
 } 
-dataLayer.push({'usertype' : RT.LoginStatusModel.userType});
+dataLayer.push({'usertype' : replacer.LoginStatusModel.userType});
 </script>
 
 
@@ -980,11 +980,11 @@ node.parentNode.insertBefore(gads, node);
 	                token_expires : response.authResponse.expiresIn
 	            }).success( function(flx_response, status) {
 	                $(function(){ // DOM ready required for backbone 
-	                    RT.LoginStatusModel.set(flx_response); 
-	                    console.log("fb_ajax returns. RT.social_init already resolved:" + RT.social_init.isResolved() + " RT.fb_connected already resolved:" + RT.fb_connected.isResolved());
+	                    replacer.LoginStatusModel.set(flx_response); 
+	                    console.log("fb_ajax returns. replacer.social_init already resolved:" + replacer.social_init.isResolved() + " replacer.fb_connected already resolved:" + replacer.fb_connected.isResolved());
 	                
-	                    RT.social_init.resolve();
-	                    RT.fb_connected.resolve();
+	                    replacer.social_init.resolve();
+	                    replacer.fb_connected.resolve();
 	                });
 	            });
 	              
@@ -1108,7 +1108,7 @@ node.parentNode.insertBefore(gads, node);
 
 
 <script type='text/javascript'>
-RT.ads.push("overlay_oop");
+replacer.ads.push("overlay_oop");
 googletag.cmd.push(function() {
 	
 	
@@ -7281,7 +7281,7 @@ tiny rotten"></span><span class="tMeterScore">56%</span>
 
 
 <script type='text/javascript'>
-RT.ads.push("box_office_buzz_ad");
+replacer.ads.push("box_office_buzz_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -13417,7 +13417,7 @@ tiny fresh"></span><span class="tMeterScore">82%</span>
 
 
 <script type='text/javascript'>
-RT.ads.push("spotlight_ad");
+replacer.ads.push("spotlight_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -13756,7 +13756,7 @@ googletag.cmd.push(function() {
 				    
 					<div id="friendsActivityWrapper"></div>
                     <script>
-                    RT.social_init.done(function(){
+                    replacer.social_init.done(function(){
                         $.ajax({ url : '/home/friendsActivity/', dataType : "html" }).success(function(response) {                
                             $("#friendsActivityWrapper").html(response);      
                         });
@@ -17011,7 +17011,7 @@ Don't trust anyone telling you this movie is overrated. It isn't!
 
 
 <script type='text/javascript'>
-RT.ads.push("medrec_top_ad");
+replacer.ads.push("medrec_top_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -17151,7 +17151,7 @@ googletag.cmd.push(function() {
 
 
 <script type='text/javascript'>
-RT.ads.push("iframePoll_ad");
+replacer.ads.push("iframePoll_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -17449,7 +17449,7 @@ googletag.cmd.push(function() {
 
 
 <script type='text/javascript'>
-RT.ads.push("sponsored_video_top_ad");
+replacer.ads.push("sponsored_video_top_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -17949,7 +17949,7 @@ googletag.cmd.push(function() {
 
 
 <script type='text/javascript'>
-RT.ads.push("sponsored_video_bottom_ad");
+replacer.ads.push("sponsored_video_bottom_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -18930,7 +18930,7 @@ googletag.cmd.push(function() {
 
 
 <script type='text/javascript'>
-RT.ads.push("fresh_links_ad");
+replacer.ads.push("fresh_links_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -19151,7 +19151,7 @@ googletag.cmd.push(function() {
 
 
 <script type='text/javascript'>
-RT.ads.push("medrec_bottom_ad");
+replacer.ads.push("medrec_bottom_ad");
 googletag.cmd.push(function() {
 	
 	
@@ -19402,7 +19402,7 @@ googletag.cmd.push(function() {
         <script>
         
         $(function(){
-        	var hoverBubbleView = new RT.Backbone.Views.HoverBubble({el : $("#homepageSidebar") });	
+        	var hoverBubbleView = new replacer.Backbone.Views.HoverBubble({el : $("#homepageSidebar") });	
         });        
 
         </script>
@@ -19675,7 +19675,7 @@ googletag.cmd.push(function() {
 	googletag.enableServices();	
 });
 
-$.each(RT.ads, function(idx, val){
+$.each(replacer.ads, function(idx, val){
 	googletag.cmd.push(function() { googletag.display(val); });	
 });
 </script>

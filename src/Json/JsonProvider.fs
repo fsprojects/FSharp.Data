@@ -20,7 +20,7 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   inherit DisposableTypeProviderForNamespaces()
 
   // Generate namespace and type 'FSharp.Data.JsonProvider'
-  let asm, version, replacer = AssemblyResolver.init cfg
+  let bindingCtxt, asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
   let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some typeof<obj>)
 
@@ -59,12 +59,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
       { GeneratedType = tpType
         RepresentationType = result.ConvertedType
         CreateFromTextReader = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.Create(%reader, cultureStr) @@>
+          result.Convert <@@ JsonDocument.Create(%reader, cultureStr) @@>
         CreateFromTextReaderForSampleList = fun reader -> 
-          result.GetConverter ctx <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
+          result.Convert <@@ JsonDocument.CreateList(%reader, cultureStr) @@> }
 
     generateType "JSON" sample sampleIsList parseSingle parseList getSpecFromSamples 
-                 version this cfg replacer encodingStr resolutionFolder resource typeName None
+                 version this cfg bindingCtxt replacer encodingStr resolutionFolder resource typeName None
 
   // Add static parameter that specifies the API we want to get (compile-time) 
   let parameters = 

@@ -1,4 +1,4 @@
-﻿module ProviderImplementation.AssemblyResolver
+﻿module internal ProviderImplementation.AssemblyResolver
 
 open System
 open System.IO
@@ -7,6 +7,7 @@ open System.Reflection
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
+open ProviderImplementation.ProvidedBindingContext
 
 let private designTimeAssemblies = 
     [ for asm in Assembly.GetExecutingAssembly().GetReferencedAssemblies() do
@@ -15,23 +16,6 @@ let private designTimeAssemblies =
             yield asm.GetName().Name, asm ]
 
 let mutable private initialized = false    
-
-type System.Object with 
-   member internal x.GetProperty(nm) = 
-       let ty = x.GetType()
-       let prop = ty.GetProperty(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
-       let v = prop.GetValue(x)
-       v
-   member internal x.GetField(nm) = 
-       let ty = x.GetType()
-       let fld = ty.GetField(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
-       let v = fld.GetValue(x)
-       v
-   member internal x.HasField(nm) = 
-       let ty = x.GetType()
-       let fld = ty.GetField(nm, BindingFlags.Instance ||| BindingFlags.Public ||| BindingFlags.NonPublic)
-       fld <> null
-   member internal x.GetElements() = [ for v in (x :?> System.Collections.IEnumerable) do yield v ]
 
 [<RequireQualifiedAccess>]
 type FSharpDataRuntimeVersion =
@@ -53,27 +37,10 @@ let init (cfg : TypeProviderConfig) =
     // The aim is to have code that works correctly for all Visual F# Tools and F# open edition uses 
     // of type providers for F# 3.0, 3.1 and 4.0.
     
-    let referencedAssemblies = 
-        try 
-           let systemRuntimeContainsTypeObj = cfg.GetField("systemRuntimeContainsType") 
-           // Account for https://github.com/Microsoft/visualfsharp/pull/591
-           let systemRuntimeContainsTypeObj2 = 
-               if systemRuntimeContainsTypeObj.HasField("systemRuntimeContainsTypeRef") then 
-                   systemRuntimeContainsTypeObj.GetField("systemRuntimeContainsTypeRef").GetProperty("Value")
-               else
-                   systemRuntimeContainsTypeObj
-           let tcImportsObj = systemRuntimeContainsTypeObj2.GetField("tcImports")
-           [ for dllInfo in tcImportsObj.GetField("dllInfos").GetElements() -> (dllInfo.GetProperty("FileName") :?> string)
-             for dllInfo in tcImportsObj.GetProperty("Base").GetProperty("Value").GetField("dllInfos").GetElements() -> (dllInfo.GetProperty("FileName") :?> string) ]
-        with _ ->
-           []
+    let bindingContext = cfg.GetBindingContext()
 
     let version = 
-        let fsCore = 
-             referencedAssemblies |> Seq.tryPick (fun asmPath -> 
-                 let simpleName = Path.GetFileNameWithoutExtension(asmPath)
-                 if simpleName = "FSharp.Core" then Some (Assembly.ReflectionOnlyLoadFrom(asmPath))
-                 else None)
+        let fsCore = bindingContext.TryGetFSharpCoreAssembly()
 
         match fsCore with 
         | None -> FSharpDataRuntimeVersion.Net40
@@ -89,27 +56,11 @@ let init (cfg : TypeProviderConfig) =
             | 3, 3 -> FSharpDataRuntimeVersion.Portable7 // 3.3.1.0
             | _ -> FSharpDataRuntimeVersion.Net40
 
-    let runtimeAssemblies = 
-        [ for asmPath in referencedAssemblies do
-             let simpleName = Path.GetFileNameWithoutExtension(asmPath)
-             // Using ReflectionOnlyLoadFrom on mscorlib doesn't seem to work for mscorlib 4.0
-             if not (version = FSharpDataRuntimeVersion.Net40 && simpleName = "mscorlib") then  
-                yield simpleName, lazy (try Assembly.ReflectionOnlyLoadFrom(asmPath) with _ -> null) ]
-        |> Map.ofList
 
     let getRuntimeAssembly (asmSimpleName:string) = 
-        match runtimeAssemblies.TryFind asmSimpleName with
+        match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
         | None -> null
-        | Some loader -> loader.Force()
-
-    let resolveRuntimeAssembly (asmName: AssemblyName) = 
-        let simpleName = asmName.Name
-        getRuntimeAssembly simpleName 
-
-    let _remover = 
-        let resolver = ResolveEventHandler(fun _ args ->  resolveRuntimeAssembly (AssemblyName args.Name))
-        AppDomain.CurrentDomain.add_ReflectionOnlyAssemblyResolve resolver
-        { new IDisposable with member x.Dispose() = AppDomain.CurrentDomain.remove_ReflectionOnlyAssemblyResolve resolver }
+        | Some loader -> (loader :> Assembly)
 
     if not initialized then
         initialized <- true
@@ -117,20 +68,15 @@ let init (cfg : TypeProviderConfig) =
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
-    let runtimeFSharpDataAssembly = Assembly.ReflectionOnlyLoadFrom cfg.RuntimeAssembly
+    let runtimeFSharpDataAssembly = getRuntimeAssembly (Path.GetFileNameWithoutExtension cfg.RuntimeAssembly)
     
-    let runtimeFSharpDataAssemblyPair = Assembly.GetExecutingAssembly(), runtimeFSharpDataAssembly
+    let fsharpDataAssemblyPair = Assembly.GetExecutingAssembly(), runtimeFSharpDataAssembly
 
     let referencedAssembliesPairs = 
-        [ yield runtimeFSharpDataAssemblyPair
+        [ yield fsharpDataAssemblyPair
           for (designTimeAsmSimpleName, designTimeAsm) in designTimeAssemblies do
              match getRuntimeAssembly designTimeAsmSimpleName with 
              | null -> ()
              | runtimeAsm -> yield (designTimeAsm, runtimeAsm) ]
 
-    // Preload all the dependencies
-    for (_,runtimeAsm) in referencedAssembliesPairs do 
-        for refAsm in runtimeAsm.GetReferencedAssemblies() do
-            resolveRuntimeAssembly refAsm |> ignore
-
-    runtimeFSharpDataAssembly, version, AssemblyReplacer.create referencedAssembliesPairs
+    bindingContext, runtimeFSharpDataAssembly, version, AssemblyReplacer referencedAssembliesPairs

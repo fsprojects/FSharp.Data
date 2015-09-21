@@ -20,7 +20,7 @@ open ProviderImplementation.ProvidedTypes
 // ----------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
-module PrimitiveInferedPropertyExtensions =
+module internal PrimitiveInferedPropertyExtensions =
 
     type PrimitiveInferedProperty with
     
@@ -32,10 +32,11 @@ module PrimitiveInferedPropertyExtensions =
               then ProvidedMeasureBuilder.Default.AnnotateType(x.RuntimeType, [unit])
               else failwithf "Units of measure not supported by type %s" x.RuntimeType.Name
 
+
 // ----------------------------------------------------------------------------------------------
 
 [<AutoOpen>]
-module ActivePatterns =
+module internal ActivePatterns =
 
     /// Helper active pattern that can be used when constructing InvokeCode
     /// (to avoid writing pattern matching or incomplete matches):
@@ -55,14 +56,14 @@ module ActivePatterns =
 
 // ----------------------------------------------------------------------------------------------
 
-module ReflectionHelpers = 
+module internal ReflectionHelpers = 
 
     open Microsoft.FSharp.Quotations
     
     let makeDelegate (exprfunc:Expr -> Expr) argType = 
         let var = Var("t", argType)
         let convBody = exprfunc (Expr.Var var)
-        Expr.NewDelegate(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
+        Expr.NewDelegateUnchecked(typedefof<Func<_,_>>.MakeGenericType(argType, convBody.Type), [var], convBody)
 
 // ----------------------------------------------------------------------------------------------
 
@@ -111,7 +112,7 @@ type DisposableTypeProviderForNamespaces() as x =
 
 // ----------------------------------------------------------------------------------------------
 
-module ProviderHelpers =
+module internal ProviderHelpers =
 
     open System.IO
     open Microsoft.FSharp.Reflection
@@ -124,18 +125,17 @@ module ProviderHelpers =
             member x.Product(measure1, measure2) = ProvidedMeasureBuilder.Default.Product(measure1, measure2)
             member x.Inverse(denominator): Type = ProvidedMeasureBuilder.Default.Inverse(denominator) }
 
-    let asyncMap (replacer:AssemblyReplacer) (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
+    let asyncMap (resultType:Type) (valueAsync:Expr<Async<'T>>) (body:Expr<'T>->Expr) =
         let (?) = ProviderImplementation.QuotationBuilder.(?)
         let convFunc = ReflectionHelpers.makeDelegate (Expr.Cast >> body) typeof<'T>      
         let f = Var("f", convFunc.Type)
-        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) :> Expr
-        Expr.Let(f, convFunc, body) |> replacer.ToRuntime
+        let body = typeof<TextRuntime>?AsyncMap (typeof<'T>, resultType) (valueAsync, Expr.Var f) 
+        Expr.Let(f, convFunc, body) 
 
     let some (typ:Type) arg =
-        let unionCase = 
-            FSharpType.GetUnionCases(typedefof<option<_>>.MakeGenericType typ)
-            |> Seq.find (fun x -> x.Name = "Some")
-        Expr.NewUnionCase(unionCase, [ arg ])
+        let unionType = typedefof<option<_>>.MakeGenericType typ
+        let meth = unionType.GetMethod("Some")
+        Expr.Call(meth, [arg])
 
     let private cacheDuration = TimeSpan.FromMinutes 30.0
     let private invalidChars = [ for c in "\"|<>{}[]," -> c ] @ [ for i in 0..31 -> char i ] |> set
@@ -147,43 +147,18 @@ module ProviderHelpers =
           SampleIsWebUri : bool
           SampleIsResource : bool }
 
-    type private EmbeddedResourceReader() =
-        inherit MarshalByRefObject()
-
-        static do
-            AppDomain.CurrentDomain.add_AssemblyResolve(ResolveEventHandler(fun _ args -> 
-                if args.Name = typeof<EmbeddedResourceReader>.Assembly.FullName then 
-                    typeof<EmbeddedResourceReader>.Assembly 
-                else 
-                    null))
-
-        member private __.ReadResource(referencedAssemblies, asmName, resourceName) =
+    let ReadResource(bindingCtxt: ProviderImplementation.ProvidedBindingContext.ProvidedBindingContext, resourceName:string) =
+        match resourceName.Split(',') with
+        | [| asmName; name |] -> 
+            let asmName = asmName.Trim()
+            let name = name.Trim()
             try
-                let asmLocation = 
-                    referencedAssemblies
-                    |> Array.tryFind (fun (x:string) -> x.EndsWith(asmName + ".dll", StringComparison.InvariantCultureIgnoreCase))
-                let asm = 
-                    match asmLocation with
-                    | Some asmLocation -> Assembly.LoadFrom(asmLocation)
-                    | None -> Assembly.Load(asmName)
-                use sr = new StreamReader(asm.GetManifestResourceStream(resourceName))
+                let asm = bindingCtxt.BindAssembly(AssemblyName(asmName))
+                use sr = new StreamReader(asm.GetManifestResourceStream(name))
                 Some(sr.ReadToEnd())
             with _ -> 
                 None
-
-        static member ReadResource(referencedAssemblies, resourceName:string) =
-            match resourceName.Split(',') with
-            | [| asmName; name |] ->
-                try 
-                    let domain = AppDomain.CreateDomain "Embedded Resource Reader"
-                    try
-                        let reader = domain.CreateInstanceFromAndUnwrap(Assembly.GetExecutingAssembly().Location,
-                                                                        typeof<EmbeddedResourceReader>.FullName) :?> EmbeddedResourceReader
-                        reader.ReadResource(referencedAssemblies, asmName.Trim(), name.Trim())
-                    finally
-                        AppDomain.Unload domain
-                with _ -> None
-            | _ -> None
+        | _ -> None
 
     /// Reads a sample parameter for a type provider, detecting if it is a uri and fetching it if needed
     /// Samples from the web are cached for 30 minutes
@@ -200,14 +175,14 @@ module ProviderHelpers =
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
-                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
+                                      (cfg:TypeProviderConfig) bindingContext encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
             if String.IsNullOrWhiteSpace(optResource)
             then None 
-            else EmbeddedResourceReader.ReadResource(cfg.ReferencedAssemblies, optResource)
+            else ReadResource(bindingContext, optResource)
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -296,7 +271,7 @@ module ProviderHelpers =
         { //the generated type
           GeneratedType : ProvidedTypeDefinition 
           //the representation type (what's returned from the constructors, may or may not be the same as Type)
-          RepresentationType : Type 
+          RepresentationType : Type
           // the constructor from a text reader to the representation
           CreateFromTextReader : Expr<TextReader> -> Expr
           // the constructor from a text reader to an array of the representation
@@ -337,7 +312,7 @@ module ProviderHelpers =
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
     let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
-                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
+                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) bindingCtxt (replacer:AssemblyReplacer) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         let isRunningInFSI = cfg.IsHostedExecution
@@ -352,56 +327,57 @@ module ProviderHelpers =
         getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
+        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg bindingCtxt encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
         
         let spec = getSpecFromSamples parseResult.TypedSamples
         
         let resultType = spec.RepresentationType
-        let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) |> replacer.ToRuntime
-        
+        let resultTypeAsync = typedefof<Async<_>>.MakeGenericType(resultType) 
+
         using (logTime "TypeGeneration" sampleOrSampleUri) <| fun _ ->
         
         [ // Generate static Parse method
-          let args = [ ProvidedParameter("text", typeof<string>) ]
-          let m = ProvidedMethod("Parse", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton text) -> 
-              <@ new StringReader(%%text) :> TextReader @>
-              |> spec.CreateFromTextReader 
+          let args = [ replacer.ProvidedParameter("text", typeof<string>) ]
+          let m = replacer.ProvidedMethod("Parse", args, resultType, isStatic = true,  
+                                    invokeCode  = fun (Singleton text) -> 
+                                        <@ new StringReader(%%text) :> TextReader @> 
+                                        |> spec.CreateFromTextReader )
           m.AddXmlDoc <| sprintf "Parses the specified %s string" formatName
           yield m :> MemberInfo
           
           // Generate static Load stream method
           let args = [ ProvidedParameter("stream", typeof<Stream>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton stream) ->       
-              <@ new StreamReader(%%stream:Stream) :> TextReader @>
-              |> spec.CreateFromTextReader 
+          let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true, 
+                                    invokeCode = fun (Singleton stream) ->   
+                                        <@ new StreamReader(%%stream:Stream) :> TextReader @> 
+                                        |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified stream" formatName
           yield m :> _
         
           // Generate static Load reader method
           let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton reader) -> 
-              reader |> Expr.Cast |> spec.CreateFromTextReader
+          let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true, 
+                                    invokeCode = fun (Singleton reader) ->  
+                                        let reader = reader |> Expr.Cast 
+                                        reader |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified reader" formatName
           yield m :> _
           
           // Generate static Load uri method
           let args = [ ProvidedParameter("uri", typeof<string>) ]
-          let m = ProvidedMethod("Load", args, resultType, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton uri) -> 
-              <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @>
-              |> spec.CreateFromTextReader 
+          let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true,  
+                                    invokeCode = fun (Singleton uri) -> 
+                                         <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @> 
+                                         |> spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
         
           // Generate static AsyncLoad uri method
           let args = [ ProvidedParameter("uri", typeof<string>) ]
-          let m = ProvidedMethod("AsyncLoad", args, resultTypeAsync, IsStaticMethod = true)
-          m.InvokeCode <- fun (Singleton uri) -> 
-              let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
-              asyncMap replacer resultType readerAsync spec.CreateFromTextReader
+          let m = replacer.ProvidedMethod("AsyncLoad", args, resultTypeAsync, isStatic = true,
+                                     invokeCode = fun (Singleton uri) -> 
+                                         let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
+                                         asyncMap resultType readerAsync spec.CreateFromTextReader)
           m.AddXmlDoc <| sprintf "Loads %s from the specified uri" formatName
           yield m :> _
           
@@ -415,48 +391,49 @@ module ProviderHelpers =
                   if not resultType.IsArray then
                   
                       let resultTypeArray = resultType.MakeArrayType()
-                      let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) |> replacer.ToRuntime
+                      let resultTypeArrayAsync = typedefof<Async<_>>.MakeGenericType(resultTypeArray) 
                       
                       // Generate static GetSamples method
-                      let m = ProvidedMethod("GetSamples", [], resultTypeArray, IsStaticMethod = true)
-                      m.InvokeCode <- fun _ -> 
-                          if parseResult.SampleIsUri 
-                          then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
-                          else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
-                          |> spec.CreateFromTextReaderForSampleList
+                      let m = replacer.ProvidedMethod("GetSamples", [], resultTypeArray, isStatic = true,
+                                                invokeCode = fun _ -> 
+                                                  if parseResult.SampleIsUri 
+                                                  then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
+                                                  else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
+                                                  |> spec.CreateFromTextReaderForSampleList)
                       yield m :> _
                               
                       if parseResult.SampleIsUri  then
                           // Generate static AsyncGetSamples method
-                          let m = ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, IsStaticMethod = true)
-                          m.InvokeCode <- fun _ -> 
-                              let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
-                              asyncMap replacer resultTypeArray readerAsync spec.CreateFromTextReaderForSampleList
+                          let m = replacer.ProvidedMethod("AsyncGetSamples", [], resultTypeArrayAsync, isStatic = true,
+                                                    invokeCode = fun _ -> 
+                                                      let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
+                                                      spec.CreateFromTextReaderForSampleList 
+                                                      |> asyncMap resultTypeArray readerAsync)
                           yield m :> _
               
               else 
               
                 let name = if resultType.IsArray then "GetSamples" else "GetSample"
-              
-                let getSampleCode = fun _ -> 
+                let getSampleCode _ =
                     if parseResult.SampleIsUri  
                     then <@ Async.RunSynchronously(asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri) @>
                     else <@ new StringReader(sampleOrSampleUri) :> TextReader @>
                     |> spec.CreateFromTextReader
-              
+
                 // Generate static GetSample method
-                yield ProvidedMethod(name, [], resultType, IsStaticMethod = true, InvokeCode = getSampleCode) :> _
+                yield replacer.ProvidedMethod(name, [], resultType, isStatic = true, 
+                                        invokeCode = getSampleCode) :> _
                           
                 if not sampleIsList && spec.GeneratedType :> Type = spec.RepresentationType then
                     // Generate default constructor
-                    yield ProvidedConstructor([], InvokeCode = getSampleCode) :> _
+                    yield replacer.ProvidedConstructor([], invokeCode = getSampleCode) :> _
               
                 if parseResult.SampleIsUri then
                     // Generate static AsyncGetSample method
-                    let m = ProvidedMethod("Async" + name, [], resultTypeAsync, IsStaticMethod = true)
-                    m.InvokeCode <- fun _ -> 
-                        let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
-                        asyncMap replacer resultType readerAsync spec.CreateFromTextReader
+                    let m = replacer.ProvidedMethod("Async" + name, [], resultTypeAsync, isStatic = true, 
+                                              invokeCode = fun _ -> 
+                                                let readerAsync = <@ asyncReadTextAtRuntimeWithDesignTimeRules defaultResolutionFolder resolutionFolder formatName encodingStr sampleOrSampleUri @>
+                                                asyncMap resultType readerAsync spec.CreateFromTextReader)
                     yield m :> _
         
         ] |> spec.GeneratedType.AddMembers

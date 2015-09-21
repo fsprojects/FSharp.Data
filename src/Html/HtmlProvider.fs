@@ -18,7 +18,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     inherit DisposableTypeProviderForNamespaces()
     
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
-    let asm, version, replacer = AssemblyResolver.init cfg
+    let bindingCtxt, asm, version, replacer = AssemblyResolver.init cfg
     let ns = "FSharp.Data"
     let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", Some typeof<obj>)
     
@@ -51,11 +51,11 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
 
             { GeneratedType = htmlType
               RepresentationType = htmlType
-              CreateFromTextReader = fun reader -> replacer.ToRuntime <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
+              CreateFromTextReader = fun reader -> <@@ HtmlDocument.Create(includeLayoutTables, %reader) @@>                    
               CreateFromTextReaderForSampleList = fun _ -> failwith "Not Applicable" }
 
         generateType "HTML" sample (*sampleIsList*)false (fun _ -> HtmlDocument.Parse) (fun _ _ -> failwith "Not Applicable")
-                     getSpecFromSamples version this cfg replacer encodingStr resolutionFolder resource typeName None
+                     getSpecFromSamples version this cfg bindingCtxt replacer encodingStr resolutionFolder resource typeName None
 
     // Add static parameter that specifies the API we want to get (compile-time) 
     let parameters = 

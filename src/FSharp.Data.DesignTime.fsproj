@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <Tailcalls>true</Tailcalls>
+    <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
@@ -63,6 +63,8 @@
     <Compile Include="CommonRuntime\NameUtils.fs" />
     <Compile Include="CommonRuntime\StructuralTypes.fs" />
     <Compile Include="CommonRuntime\StructuralInference.fs" />
+    <Compile Include="CommonProviderImplementation\AssemblyReader.fs" />
+    <Compile Include="CommonProviderImplementation\ProvidedBindingContext.fs" />
     <Compile Include="CommonProviderImplementation\QuotationBuilder.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyReplacer.fs" />
     <Compile Include="CommonProviderImplementation\AssemblyResolver.fs" />
