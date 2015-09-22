@@ -355,7 +355,7 @@ and ILTypeRef(enc: ILTypeRefScope, nsp: string option, name: string) =
 
     member tref.FullName = 
         match enc with 
-        | ILTypeRefScope.Top _ -> tref.Name
+        | ILTypeRefScope.Top _ -> joinILTypeName tref.Namespace tref.Name
         | ILTypeRefScope.Nested enc -> enc.FullName + "." + tref.Name
         
     member tref.BasicQualifiedName = 

@@ -7,13 +7,14 @@ open System.Reflection
 open System.Xml.Linq
 open Microsoft.FSharp.Core.CompilerServices
 open ProviderImplementation
-open ProviderImplementation.ProvidedBindingContext
+open ProviderImplementation.TypeProviderBindingContext
 
 let private designTimeAssemblies = 
-    [ for asm in Assembly.GetExecutingAssembly().GetReferencedAssemblies() do
+    [| yield Assembly.GetExecutingAssembly() 
+       for asm in Assembly.GetExecutingAssembly().GetReferencedAssemblies() do
          let asm = try Assembly.Load(asm) with _ -> null
          if asm <> null then 
-            yield asm.GetName().Name, asm ]
+            yield asm |]
 
 let mutable private initialized = false    
 
@@ -70,13 +71,7 @@ let init (cfg : TypeProviderConfig) =
 
     let runtimeFSharpDataAssembly = getRuntimeAssembly (Path.GetFileNameWithoutExtension cfg.RuntimeAssembly)
     
-    let fsharpDataAssemblyPair = Assembly.GetExecutingAssembly(), runtimeFSharpDataAssembly
+    let referencedAssemblies = bindingContext.ReferencedAssemblies
 
-    let referencedAssembliesPairs = 
-        [ yield fsharpDataAssemblyPair
-          for (designTimeAsmSimpleName, designTimeAsm) in designTimeAssemblies do
-             match getRuntimeAssembly designTimeAsmSimpleName with 
-             | null -> ()
-             | runtimeAsm -> yield (designTimeAsm, runtimeAsm) ]
+    bindingContext, runtimeFSharpDataAssembly, version, AssemblyReplacer (designTimeAssemblies, referencedAssemblies)
 
-    bindingContext, runtimeFSharpDataAssembly, version, AssemblyReplacer referencedAssembliesPairs

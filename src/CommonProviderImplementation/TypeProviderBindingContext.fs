@@ -64,7 +64,7 @@
 //        delegateType.IsSubclassOf([mscorlib 4.4.0.0]System.Delegate) - if typ is a delegate type then must return true
 //        delegateType.GetMethodImpl("Invoke",_,_,_,null,_) = must return the Invoke method
 
-module internal ProviderImplementation.ProvidedBindingContext
+module internal ProviderImplementation.TypeProviderBindingContext
 
 open System
 open System.IO
@@ -163,7 +163,7 @@ module Utils =
         elif ty1.IsArray then ty2.IsArray && ty1.GetArrayRank() = ty2.GetArrayRank() && eqType (ty1.GetElementType()) (ty2.GetElementType()) 
         elif ty1.IsPointer then ty2.IsPointer && eqType (ty1.GetElementType()) (ty2.GetElementType()) 
         elif ty1.IsByRef then ty2.IsByRef && eqType (ty1.GetElementType()) (ty2.GetElementType()) 
-        else ty1.Equals(ty2)
+        else ty1.Equals(box ty2)
 
     let hashILParameterTypes (ps: ILParameters) = 
        // This hash code doesn't need to be very good as hashing by name is sufficient to give decent hash granularity
@@ -222,7 +222,7 @@ module Utils =
         match ty2 with 
         | (ILType.Value(tspec2) | ILType.Boxed(tspec2))->
             if tspec2.GenericArgs.Length > 0 then 
-                ty1.IsGenericType && eqTypeAndILTypeRef (ty1.GetGenericTypeDefinition()) tspec2.TypeRef && eqTypesAndILTypes (ty1.GetGenericArguments()) tspec2.GenericArgs
+                ty1.IsGenericType && eqTypeAndILTypeRef (ty1.GetGenericTypeDefinition()) tspec2.TypeRef && eqTypesAndILTypesWithInst inst2 (ty1.GetGenericArguments()) tspec2.GenericArgs
             else 
                 not ty1.IsGenericType && eqTypeAndILTypeRef ty1 tspec2.TypeRef
         | ILType.Array(rank2, arg2) ->
@@ -258,19 +258,6 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
     let notRequired msg = 
         System.Diagnostics.Debugger.Break()
         failwith ("not required: " + msg)
-    let rec isEquivalentTo (thisTy: Type) (otherTy: Type) =
-        match thisTy, otherTy with
-        | (:? ContextTypeSymbol as thisTy), (:? ContextTypeSymbol as thatTy) -> (thisTy.Kind,thisTy.Args) = (thatTy.Kind, thatTy.Args)
-        | (:? ContextTypeSymbol as thisTy), otherTy | otherTy, (:? ContextTypeSymbol as thisTy) ->
-            match thisTy.Kind, thisTy.Args with
-            | ContextTypeSymbolKind.SDArray, [| ty |] 
-            | ContextTypeSymbolKind.Array _, [| ty |] when otherTy.IsArray-> ty.Equals(otherTy.GetElementType())
-            | ContextTypeSymbolKind.ByRef, [| ty |] when otherTy.IsByRef -> ty.Equals(otherTy.GetElementType())
-            | ContextTypeSymbolKind.Pointer, [| ty |] when otherTy.IsPointer -> ty.Equals(otherTy.GetElementType())
-            | ContextTypeSymbolKind.Generic baseTy, args -> otherTy.IsGenericType && isEquivalentTo baseTy (otherTy.GetGenericTypeDefinition()) && Array.forall2 isEquivalentTo args (otherTy.GetGenericArguments())
-            | _ -> false
-        | a, b -> a.Equals b
-
 
     override __.FullName =   
         match kind,args with 
@@ -278,18 +265,16 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
         | ContextTypeSymbolKind.Array _,[| arg |] -> arg.FullName + "[*]" 
         | ContextTypeSymbolKind.Pointer,[| arg |] -> arg.FullName + "*" 
         | ContextTypeSymbolKind.ByRef,[| arg |] -> arg.FullName + "&"
-        | ContextTypeSymbolKind.Generic gty, args -> gty.FullName + "[" + (args |> Array.map (fun arg -> arg.ToString()) |> String.concat ",") + "]"
+        | ContextTypeSymbolKind.Generic gtd, args -> gtd.FullName + "[" + (args |> Array.map (fun arg -> arg.FullName) |> String.concat ",") + "]"
         | _ -> failwith "unreachable"
-   
-    /// Although not strictly required by the type provider specification, this is required when doing basic operations like FullName on
-    /// .NET symbolic types made from this type, e.g. when building Nullable<SomeProvidedType[]>.FullName
+
     override __.DeclaringType =                                                                 
         match kind,args with 
-        | ContextTypeSymbolKind.SDArray,[| arg |] -> arg
-        | ContextTypeSymbolKind.Array _,[| arg |] -> arg
-        | ContextTypeSymbolKind.Pointer,[| arg |] -> arg
-        | ContextTypeSymbolKind.ByRef,[| arg |] -> arg
-        | ContextTypeSymbolKind.Generic gty,_ -> (gty :> Type)
+        | ContextTypeSymbolKind.SDArray,[| arg |] 
+        | ContextTypeSymbolKind.Array _,[| arg |] 
+        | ContextTypeSymbolKind.Pointer,[| arg |] 
+        | ContextTypeSymbolKind.ByRef,[| arg |] -> arg.DeclaringType
+        | ContextTypeSymbolKind.Generic gtd,_ -> gtd.DeclaringType
         | _ -> failwith "unreachable"
 
     override __.IsAssignableFrom(otherTy) = 
@@ -298,7 +283,7 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
             if otherTy.IsGenericType then
                 let otherGtd = otherTy.GetGenericTypeDefinition()
                 let otherArgs = otherTy.GetGenericArguments()
-                let yes = gtd.Equals(otherGtd) && Seq.forall2 isEquivalentTo args otherArgs
+                let yes = gtd.Equals(otherGtd) && Seq.forall2 eqType args otherArgs
                 yes
             else
                 base.IsAssignableFrom(otherTy)
@@ -316,7 +301,7 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
         | ContextTypeSymbolKind.Array _,[| arg |] -> arg.Name + "[*]" 
         | ContextTypeSymbolKind.Pointer,[| arg |] -> arg.Name + "*" 
         | ContextTypeSymbolKind.ByRef,[| arg |] -> arg.Name + "&"
-        | ContextTypeSymbolKind.Generic gty, args -> gty.FullName + "[" + String.concat "," [ for arg in args -> arg.ToString() ] + "]" 
+        | ContextTypeSymbolKind.Generic gtd, _args -> gtd.Name 
         | _ -> failwith "unreachable"
 
     override __.BaseType =
@@ -325,7 +310,25 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
         | ContextTypeSymbolKind.Array _ -> typeof<System.Array>
         | ContextTypeSymbolKind.Pointer -> typeof<System.ValueType>
         | ContextTypeSymbolKind.ByRef -> typeof<System.ValueType>
-        | ContextTypeSymbolKind.Generic gty  -> instType (args, [| |]) gty.BaseType
+        | ContextTypeSymbolKind.Generic gtd  -> instType (args, [| |]) gtd.BaseType
+        
+    override this.Assembly = 
+        match kind, args with 
+        | ContextTypeSymbolKind.SDArray,[| arg |] 
+        | ContextTypeSymbolKind.Array _,[| arg |] 
+        | ContextTypeSymbolKind.Pointer,[| arg |] 
+        | ContextTypeSymbolKind.ByRef,[| arg |] -> arg.Assembly
+        | ContextTypeSymbolKind.Generic gtd, _ -> gtd.Assembly
+        | _ -> notRequired "Assembly" this.Name
+
+    override this.Namespace = 
+        match kind, args with 
+        | ContextTypeSymbolKind.SDArray,[| arg |] 
+        | ContextTypeSymbolKind.Array _,[| arg |] 
+        | ContextTypeSymbolKind.Pointer,[| arg |] 
+        | ContextTypeSymbolKind.ByRef,[| arg |] -> arg.Namespace
+        | ContextTypeSymbolKind.Generic gtd, _ -> gtd.Namespace 
+        | _ -> failwith "unreachable"
 
     override __.GetArrayRank() = (match kind with ContextTypeSymbolKind.Array n -> n | ContextTypeSymbolKind.SDArray -> 1 | _ -> invalidOp "non-array type")
     override __.IsArrayImpl() = (match kind with ContextTypeSymbolKind.Array _ | ContextTypeSymbolKind.SDArray -> true | _ -> false)
@@ -333,21 +336,13 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
     override __.IsPointerImpl() = (match kind with ContextTypeSymbolKind.Pointer _ -> true | _ -> false)
     override __.IsPrimitiveImpl() = false
     override __.IsGenericType = (match kind with ContextTypeSymbolKind.Generic _ -> true | _ -> false)
-    override __.GetGenericArguments() = (match kind with ContextTypeSymbolKind.Generic _ -> args | _ -> invalidOp "non-generic type")
+    override __.GetGenericArguments() = (match kind with ContextTypeSymbolKind.Generic _ -> args | _ -> [| |])
     override __.GetGenericTypeDefinition() = (match kind with ContextTypeSymbolKind.Generic e -> (e :> Type) | _ -> invalidOp "non-generic type")
     override __.IsCOMObjectImpl() = false
     override __.HasElementTypeImpl() = (match kind with ContextTypeSymbolKind.Generic _ -> false | _ -> true)
     override __.GetElementType() = (match kind,args with (ContextTypeSymbolKind.Array _  | ContextTypeSymbolKind.SDArray | ContextTypeSymbolKind.ByRef | ContextTypeSymbolKind.Pointer),[| e |] -> e | _ -> invalidOp "%A, %A: not an array, pointer or byref type" kind args)
-    override this.ToString() = this.FullName
 
     override this.Module : Module = notRequired "Module" this.Name
-    override this.Assembly = 
-        match kind with 
-        | ContextTypeSymbolKind.Generic gty -> gty.Assembly
-        | _ -> notRequired "Assembly" this.Name
-    override this.Namespace = 
-        match kind with 
-        | _ -> notRequired "Namespace" this.Name
 
     override this.GetHashCode()                                                                    = 
         match kind,args with 
@@ -355,7 +350,7 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
         | ContextTypeSymbolKind.Array _,[| arg |] -> 163 + hash arg
         | ContextTypeSymbolKind.Pointer,[| arg |] -> 283 + hash arg
         | ContextTypeSymbolKind.ByRef,[| arg |] -> 43904 + hash arg
-        | ContextTypeSymbolKind.Generic gty,_ -> 9797 + hash gty + Array.sumBy hash args
+        | ContextTypeSymbolKind.Generic gtd,_ -> 9797 + hash gtd + Array.sumBy hash args
         | _ -> failwith "unreachable"
     
     override this.Equals(other: obj) =
@@ -379,8 +374,18 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
                     | [| |] -> failwith (sprintf "method %s not found" name)
                     | _ -> failwith (sprintf "multiple methods called '%s' found" name)
                 | _ -> 
-                    gtd.Metadata.Methods.FindByNameAndArity(name, types.Length)
-                    |> Array.find (fun md -> eqTypesAndILTypesWithInst types args md.ParameterTypes)
+                    match gtd.Metadata.Methods.FindByNameAndArity(name, types.Length) with
+                    | [| |] ->  failwith (sprintf "method %s not found with arity %d" name types.Length)
+                    | mds -> 
+                        match mds |> Array.filter (fun md -> eqTypesAndILTypesWithInst args types md.ParameterTypes) with 
+                        | [| |] -> 
+                            let md1 = mds.[0]
+                            ignore md1
+                            failwith (sprintf "no method %s with arity %d found with right types. Comparisons:" name types.Length
+                                      + ((types, md1.ParameterTypes) ||> Array.map2 (fun a pt -> eqTypeAndILTypeWithInst args a pt |> sprintf "%A") |> String.concat "\n"))
+                        | [| md |] -> md
+                        | _ -> failwith (sprintf "multiple methods %s with arity %d found with right types" name types.Length)
+
             gtd.MakeMethodInfo (this, md)
 
         | _ -> notRequired "ContextTypeSymbol: GetMethodImpl" this.Name
@@ -418,13 +423,7 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
     override this.GetAttributeFlagsImpl()                                                           = notRequired "GetAttributeFlagsImpl" this.Name
     
     // TODO: UnderlyingSystemType is called by the System.Type.Equals(other) implementation in mscorlib.dll.  The results are compared by reference equality.
-    override this.UnderlyingSystemType = 
-        match kind with 
-        | ContextTypeSymbolKind.SDArray
-        | ContextTypeSymbolKind.Array _
-        | ContextTypeSymbolKind.Pointer
-        | ContextTypeSymbolKind.ByRef -> notRequired "UnderlyingSystemType" this.Name
-        | ContextTypeSymbolKind.Generic gty -> gty.UnderlyingSystemType      
+    override this.UnderlyingSystemType = (this :> Type)
 
     override this.GetCustomAttributesData()                                                        =  ([| |] :> IList<_>)
     override this.MemberType                                                                       = notRequired "MemberType" this.Name
@@ -438,6 +437,8 @@ and ContextTypeSymbol(kind: ContextTypeSymbolKind, args: Type[]) =
     // FSharp.Data addition: this was added to support arrays of arrays
     override this.MakeArrayType() = ContextTypeSymbol(ContextTypeSymbolKind.SDArray, [| this |]) :> Type
     override this.MakeArrayType arg = ContextTypeSymbol(ContextTypeSymbolKind.Array arg, [| this |]) :> Type
+
+    override this.ToString() = this.FullName
 
 and ContextMethodSymbol(gmd: MethodInfo, gargs: Type[]) =
     inherit MethodInfo() 
@@ -457,10 +458,10 @@ and ContextMethodSymbol(gmd: MethodInfo, gargs: Type[]) =
         match that with 
         | :? MethodInfo as thatMI -> thatMI.IsGenericMethod && gmd.Equals(thatMI.GetGenericMethodDefinition()) && lengthsEqAndForall2 (gmd.GetGenericArguments()) (thatMI.GetGenericArguments()) (=)
         | _ -> false
+    override __.MetadataToken = gmd.MetadataToken
 
     override __.ToString() = gmd.ToString() + "@inst"
     
-    override __.MetadataToken = notRequired "MetadataToken"
     override __.MethodHandle = notRequired "MethodHandle"
     override __.ReturnParameter   = notRequired "ReturnParameter" 
     override __.IsDefined(_attributeType, _inherited)                   = notRequired "IsDefined"
@@ -474,7 +475,7 @@ and ContextMethodSymbol(gmd: MethodInfo, gargs: Type[]) =
 
 
 /// Clones namespaces, type providers, types and members provided by tp, renaming namespace nsp1 into namespace nsp2.
-and ProvidedBindingContext(refs : string list) as this = 
+and TypeProviderBindingContext(refs : string list) as this = 
     /// Find which assembly defines System.Object etc.
     let systemRuntimeScopeRef = 
         refs |> List.tryPick (fun r -> 
@@ -490,26 +491,33 @@ and ProvidedBindingContext(refs : string list) as this =
                     Some (ILScopeRef.Assembly assRef)
             else
                 None)
-        |> function None -> failwith "no reference to mscorlib.dll or Systtem.Runtime.dll found" | Some r -> r
+        |> function None -> failwith "no reference to mscorlib.dll or System.Runtime.dll found" | Some r -> r
  
     let ilGlobals = mkILGlobals systemRuntimeScopeRef
     let readers = 
-        [ for ref in refs do
-            let simpleName = Path.GetFileNameWithoutExtension ref 
-            yield simpleName, lazy ContextAssembly(this, OpenILModuleReaderAfterReadingAllBytes(ref, ilGlobals), ref) ]  
-        |> Map.ofList
+        [| for ref in refs do
+            let assOpt = try ContextAssembly(this, OpenILModuleReaderAfterReadingAllBytes(ref, ilGlobals), ref)  |> Some with _ -> None
+            match assOpt with 
+            | Some ass -> yield ass
+            | None -> () |]  
 
-    member __.TryBindAssembly(aref: ILAssemblyRef) = if readers.ContainsKey(aref.Name) then Some(readers.[aref.Name].Force()) else None
-    member __.TryBindAssembly(aref: AssemblyName) = if readers.ContainsKey(aref.Name) then Some(readers.[aref.Name].Force()) else None
+    let readersTable =  
+        readers 
+        |> Array.map (fun ass -> let simpleName = Path.GetFileNameWithoutExtension ass.Location in simpleName, ass) 
+        |> Map.ofArray
+
+    member __.TryBindAssembly(aref: ILAssemblyRef) = if readersTable.ContainsKey(aref.Name) then Some(readersTable.[aref.Name]) else None
+    member __.TryBindAssembly(aref: AssemblyName) = if readersTable.ContainsKey(aref.Name) then Some(readersTable.[aref.Name]) else None
     member x.BindAssembly(aref: ILAssemblyRef) = match x.TryBindAssembly(aref) with Some res -> res | None -> failwithf "couldn't bind assembly reference %A" aref
     member x.BindAssembly(aname : AssemblyName) = match x.TryBindAssembly(aname) with Some res -> res | None -> failwithf "couldn't bind assembly name %A" aname
     member __.SystemRuntimeScopeRef = systemRuntimeScopeRef
     member __.ILGlobals = ilGlobals
-    member __.ReferencedAssemblies = refs
+    member __.ReferencedAssemblyPaths = refs
+    member __.ReferencedAssemblies =  readers  |> Array.map (fun x -> x :> Assembly)
     member x.TryGetFSharpCoreAssembly() = x.TryBindAssembly(AssemblyName("FSharp.Core"))
 
 
-and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, revDeclTys: ContextTypeDefinition list, inp: ILTypeDef) = 
+and ContextTypeDefinition(ctxt: TypeProviderBindingContext, ass: ContextAssembly, declTyOpt: Type option, inp: ILTypeDef) = 
     inherit Type()
 
     // Note: For F# type providers we never need to view the custom attributes
@@ -658,7 +666,7 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
                     eqType this.DeclaringType thatPI.DeclaringType 
                 | _ -> false
 
-            override __.ToString() = sprintf "ctxt property %s(...) in type %s" inp.Name revDeclTys.Head.Name
+            override __.ToString() = sprintf "ctxt property %s(...) in type %s" inp.Name declTy.Name
 
             override __.GetValue(obj, invokeAttr, binder, index, culture)         = notRequired "GetValue"
             override __.SetValue(obj, _value, invokeAttr, binder, index, culture) = notRequired "SetValue"
@@ -792,77 +800,76 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
             else failwith (sprintf "generic parameter index our of range: %d" n)
 
     and TxILGenericParam pos (inp: ILGenericParameterDef) =
-            { new Type() with 
-                override __.Name = inp.Name 
-                override __.Assembly = (ass :> Assembly)
-                override __.FullName = inp.Name
-                override __.IsGenericParameter = true
-                override __.GenericParameterPosition = pos
+        { new Type() with 
+            override __.Name = inp.Name 
+            override __.Assembly = (ass :> Assembly)
+            override __.FullName = inp.Name
+            override __.IsGenericParameter = true
+            override __.GenericParameterPosition = pos
                     
-                override __.MemberType = enum 0
+            override __.MemberType = enum 0
 
-                override __.Namespace = null //notRequired "Namespace"
-                override __.DeclaringType = notRequired "DeclaringType"
-                override __.BaseType = notRequired "BaseType"
-                override __.GetInterfaces() = notRequired "GetInterfaces"
+            override __.Namespace = null //notRequired "Namespace"
+            override __.DeclaringType = notRequired "DeclaringType"
+            override __.BaseType = notRequired "BaseType"
+            override __.GetInterfaces() = notRequired "GetInterfaces"
 
-                override this.GetConstructors(bindingFlagsUnused) = notRequired "GetConstructors"
-                override this.GetMethods(bindingFlagsUnused) = notRequired "GetMethods"
-                override this.GetField(name, bindingFlagsUnused) = notRequired "GetField"
-                override this.GetFields(bindingFlagsUnused) = notRequired "GetFields"
-                override this.GetEvent(name, bindingFlagsUnused) = notRequired "GetEvent"
-                override this.GetEvents(bindingFlagsUnused) = notRequired "GetEvents"
-                override this.GetProperties(bindingFlagsUnused) = notRequired "GetProperties"
-                override this.GetMembers(bindingFlagsUnused) = notRequired "GetMembers"
-                override this.GetNestedTypes(bindingFlagsUnused) = notRequired "GetNestedTypes"
-                override this.GetNestedType(name, bindingFlagsUnused) = notRequired "GetNestedType"
-                override this.GetPropertyImpl(name, bindingFlagsUnused, binderUnused, returnTypeUnused, typesUnused, modifiersUnused) = notRequired "GetPropertyImpl"
-                override this.MakeGenericType(args) = notRequired "MakeGenericType"
-                override this.MakeArrayType() = ContextTypeSymbol(ContextTypeSymbolKind.SDArray, [| this |]) :> Type
-                override this.MakeArrayType arg = ContextTypeSymbol(ContextTypeSymbolKind.Array arg, [| this |]) :> Type
-                override this.MakePointerType() = ContextTypeSymbol(ContextTypeSymbolKind.Pointer, [| this |]) :> Type
-                override this.MakeByRefType() = ContextTypeSymbol(ContextTypeSymbolKind.ByRef, [| this |]) :> Type
+            override this.GetConstructors(bindingFlagsUnused) = notRequired "GetConstructors"
+            override this.GetMethods(bindingFlagsUnused) = notRequired "GetMethods"
+            override this.GetField(name, bindingFlagsUnused) = notRequired "GetField"
+            override this.GetFields(bindingFlagsUnused) = notRequired "GetFields"
+            override this.GetEvent(name, bindingFlagsUnused) = notRequired "GetEvent"
+            override this.GetEvents(bindingFlagsUnused) = notRequired "GetEvents"
+            override this.GetProperties(bindingFlagsUnused) = notRequired "GetProperties"
+            override this.GetMembers(bindingFlagsUnused) = notRequired "GetMembers"
+            override this.GetNestedTypes(bindingFlagsUnused) = notRequired "GetNestedTypes"
+            override this.GetNestedType(name, bindingFlagsUnused) = notRequired "GetNestedType"
+            override this.GetPropertyImpl(name, bindingFlagsUnused, binderUnused, returnTypeUnused, typesUnused, modifiersUnused) = notRequired "GetPropertyImpl"
+            override this.MakeGenericType(args) = notRequired "MakeGenericType"
+            override this.MakeArrayType() = ContextTypeSymbol(ContextTypeSymbolKind.SDArray, [| this |]) :> Type
+            override this.MakeArrayType arg = ContextTypeSymbol(ContextTypeSymbolKind.Array arg, [| this |]) :> Type
+            override this.MakePointerType() = ContextTypeSymbol(ContextTypeSymbolKind.Pointer, [| this |]) :> Type
+            override this.MakeByRefType() = ContextTypeSymbol(ContextTypeSymbolKind.ByRef, [| this |]) :> Type
 
-                override __.GetAttributeFlagsImpl() = TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Sealed 
+            override __.GetAttributeFlagsImpl() = TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Sealed 
 
-                override __.IsArrayImpl() = false
-                override __.IsByRefImpl() = false
-                override __.IsPointerImpl() = false
-                override __.IsPrimitiveImpl() = false
-                override __.IsCOMObjectImpl() = false
-                override __.IsGenericType = false
-                override __.IsGenericTypeDefinition = false
+            override __.IsArrayImpl() = false
+            override __.IsByRefImpl() = false
+            override __.IsPointerImpl() = false
+            override __.IsPrimitiveImpl() = false
+            override __.IsCOMObjectImpl() = false
+            override __.IsGenericType = false
+            override __.IsGenericTypeDefinition = false
 
-                override __.HasElementTypeImpl() = false
+            override __.HasElementTypeImpl() = false
 
-                override this.UnderlyingSystemType = typeof<System.Type> // Same as ProvidedTypes, never gets called
-                //override __.UnderlyingSystemType = inp.UnderlyingSystemType |> TxILTypeSymbol
-                override __.GetCustomAttributesData() = inp.CustomAttrs |> TxCustomAttributesData
+            override this.UnderlyingSystemType = this
+            override __.GetCustomAttributesData() = inp.CustomAttrs |> TxCustomAttributesData
 
-                override this.Equals(that:obj) = System.Object.ReferenceEquals (this, that) 
+            override this.Equals(that:obj) = System.Object.ReferenceEquals (this, that) 
 
-                override __.ToString() = sprintf "ctxt generic param %s" inp.Name 
+            override __.ToString() = sprintf "ctxt generic param %s" inp.Name 
 
-                override __.GetGenericArguments() = notRequired "GetGenericArguments"
-                override __.GetGenericTypeDefinition() = notRequired "GetGenericTypeDefinition"
-                override __.GetMember(name,mt,bindingFlagsUnused)                                                      = notRequired "TxILGenericParam: GetMember"
-                override __.GUID                                                                                      = notRequired "TxILGenericParam: GUID"
-                override __.GetMethodImpl(name, bindingFlagsUnused, binder, callConvention, types, modifiers)          = notRequired "TxILGenericParam: GetMethodImpl"
-                override __.GetConstructorImpl(bindingFlagsUnused, binder, callConvention, types, modifiers)           = notRequired "TxILGenericParam: GetConstructorImpl"
-                override __.GetCustomAttributes(inherited)                                                            = notRequired "TxILGenericParam: GetCustomAttributes"
-                override __.GetCustomAttributes(attributeType, inherited)                                             = notRequired "TxILGenericParam: GetCustomAttributes"
-                override __.IsDefined(attributeType, inherited)                                                       = notRequired "TxILGenericParam: IsDefined"
-                override __.GetInterface(name, ignoreCase)                                                            = notRequired "TxILGenericParam: GetInterface"
-                override __.Module                                                                                    = notRequired "TxILGenericParam: Module" : Module 
-                override __.GetElementType()                                                                          = notRequired "TxILGenericParam: GetElementType"
-                override __.InvokeMember(name, invokeAttr, binder, target, args, modifiers, culture, namedParameters) = notRequired "TxILGenericParam: InvokeMember"
-                override __.AssemblyQualifiedName                                                                     = notRequired "TxILGenericParam: AssemblyQualifiedName"
+            override __.GetGenericArguments() = notRequired "GetGenericArguments"
+            override __.GetGenericTypeDefinition() = notRequired "GetGenericTypeDefinition"
+            override __.GetMember(name,mt,bindingFlagsUnused)                                                      = notRequired "TxILGenericParam: GetMember"
+            override __.GUID                                                                                      = notRequired "TxILGenericParam: GUID"
+            override __.GetMethodImpl(name, bindingFlagsUnused, binder, callConvention, types, modifiers)          = notRequired "TxILGenericParam: GetMethodImpl"
+            override __.GetConstructorImpl(bindingFlagsUnused, binder, callConvention, types, modifiers)           = notRequired "TxILGenericParam: GetConstructorImpl"
+            override __.GetCustomAttributes(inherited)                                                            = notRequired "TxILGenericParam: GetCustomAttributes"
+            override __.GetCustomAttributes(attributeType, inherited)                                             = notRequired "TxILGenericParam: GetCustomAttributes"
+            override __.IsDefined(attributeType, inherited)                                                       = notRequired "TxILGenericParam: IsDefined"
+            override __.GetInterface(name, ignoreCase)                                                            = notRequired "TxILGenericParam: GetInterface"
+            override __.Module                                                                                    = notRequired "TxILGenericParam: Module" : Module 
+            override __.GetElementType()                                                                          = notRequired "TxILGenericParam: GetElementType"
+            override __.InvokeMember(name, invokeAttr, binder, target, args, modifiers, culture, namedParameters) = notRequired "TxILGenericParam: InvokeMember"
+            override __.AssemblyQualifiedName                                                                     = notRequired "TxILGenericParam: AssemblyQualifiedName"
 
-            }
+        }
 
     let gps = inp.GenericParams |> Array.mapi TxILGenericParam 
 
-    let isNested = (revDeclTys.Length <> 0)
+    let isNested = declTyOpt.IsSome
     let adjustTypeAttributes attributes = 
         let visibilityAttributes = 
             match attributes &&& TypeAttributes.VisibilityMask with 
@@ -880,14 +887,16 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
     override __.Name = inp.Name 
     override __.Assembly = (ass :> Assembly) 
     override __.FullName = 
-        if revDeclTys.Length = 0 then 
+        match declTyOpt with 
+        | None -> 
             match inp.Namespace with 
             | None -> inp.Name
             | Some nsp -> nsp + "." + inp.Name
-        else revDeclTys.[0].FullName + "+" + inp.Name
+        | Some declTy -> 
+            declTy.FullName + "+" + inp.Name
                     
     override __.Namespace = inp.Namespace |> optionToNull
-    override __.DeclaringType = match revDeclTys with [ ] -> null | h :: _rest -> (h :> Type)
+    override __.DeclaringType = declTyOpt |> optionToNull
     override __.MemberType = if isNested then MemberTypes.NestedType else MemberTypes.TypeInfo
 
     override __.BaseType = inp.Extends |> Option.map (TxILType (gps, [| |])) |> optionToNull
@@ -933,12 +942,12 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
  
     override this.GetNestedTypes(_bindingFlagsUnused) = 
         inp.NestedTypes.Elements 
-        |> Array.map (ass.TxILTypeDef (this::revDeclTys))
+        |> Array.map (ass.TxILTypeDef (Some (this :> Type)))
  
     override this.GetNestedType(name, _bindingFlagsUnused) = 
         //let declaredOnly = bindingFlagsUnused.HasFlag(BindingFlags.DeclaredOnly)
         //if declaredOnly then 
-            inp.NestedTypes.TryFindByName(None, name) |> Option.map (ass.TxILTypeDef (this::revDeclTys)) |> optionToNull
+            inp.NestedTypes.TryFindByName(None, name) |> Option.map (ass.TxILTypeDef (Some (this :> Type))) |> optionToNull
         //else
         //   notRequired "GetNestedType(declaredOnly = false)"
 
@@ -966,9 +975,13 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
     override this.MakeByRefType() = ContextTypeSymbol(ContextTypeSymbolKind.ByRef, [| this |]) :> Type
 
     override __.GetAttributeFlagsImpl() = 
-        let attr = TypeAttributes.Public ||| TypeAttributes.Class ||| TypeAttributes.Sealed 
+        let attr = TypeAttributes.Public ||| TypeAttributes.Class 
+        let attr = if inp.IsSealed then attr ||| TypeAttributes.Sealed else attr
+        let attr = if inp.IsInterface then attr ||| TypeAttributes.Interface else attr
+        let attr = if inp.IsSerializable then attr ||| TypeAttributes.Serializable else attr
         if isNested then adjustTypeAttributes attr else attr
 
+    override __.IsValueTypeImpl() = inp.IsStructOrEnum
     override __.IsArrayImpl() = false
     override __.IsByRefImpl() = false
     override __.IsPointerImpl() = false
@@ -979,14 +992,10 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
 
     override __.HasElementTypeImpl() = false
 
-    override __.UnderlyingSystemType = typeof<System.Type> // never gets called~(?)  TODO: check this
+    override this.UnderlyingSystemType = (this :> Type)
     override __.GetCustomAttributesData() = inp.CustomAttrs |> TxCustomAttributesData
 
-    override this.Equals(that:obj) = 
-        System.Object.ReferenceEquals (this, that)  ||
-        match that with 
-        | :? System.Type as that -> this.FullName = that.FullName // TODO: approximation that ignores assembly differences especially for System.Int32, System.String etc.
-        | _ -> false
+    override this.Equals(that:obj) = System.Object.ReferenceEquals (this, that)  
 
     override this.GetHashCode() =  hash (inp.Namespace, inp.Name)
 
@@ -1017,7 +1026,7 @@ and ContextTypeDefinition(ctxt: ProvidedBindingContext, ass: ContextAssembly, re
         member x.Value = inp
 
 
-and [<AllowNullLiteral>] ContextAssembly(ctxt: ProvidedBindingContext, reader: ILModuleReader, location: string) as ass =
+and [<AllowNullLiteral>] ContextAssembly(ctxt: TypeProviderBindingContext, reader: ILModuleReader, location: string) as ass =
     inherit Assembly()
     //let thisAssembly = typedefof<Utils.IWraps<_>>.Assembly
 
@@ -1027,16 +1036,18 @@ and [<AllowNullLiteral>] ContextAssembly(ctxt: ProvidedBindingContext, reader: I
     let txTable = TxTable<ILTypeDef, Type>()
 
 
-    member __.TxILTypeDef (revDeclTys: ContextTypeDefinition list) (inp: ILTypeDef) =
+    member __.TxILTypeDef (declTyOpt: Type option) (inp: ILTypeDef) =
       match inp.Namespace, inp.Name with 
       // These primmitives must not be translated
-      | Some "System", "Tuple`1" -> typedefof<System.Tuple<obj>>
-      | Some "System", "Tuple`2" -> typedefof<System.Tuple<obj,obj>>
-      | Some "System", "Tuple`3" -> typedefof<System.Tuple<obj,obj,obj>>
-      | Some "System", "Tuple`4" -> typedefof<System.Tuple<obj,obj,obj,obj>>
-      | Some "System", "Tuple`5" -> typedefof<System.Tuple<obj,obj,obj,obj,obj>>
-      | Some "System", "Tuple`6" -> typedefof<System.Tuple<obj,obj,obj,obj,obj,obj>>
-      | Some "System", "Tuple`7" -> typedefof<System.Tuple<obj,obj,obj,obj,obj,obj,obj>>
+      //| Some "System", "Tuple`1" -> typedefof<System.Tuple<obj>>
+      //| Some "System", "Tuple`2" -> typedefof<System.Tuple<obj,obj>>
+      //| Some "System", "Tuple`3" -> typedefof<System.Tuple<obj,obj,obj>>
+      //| Some "System", "Tuple`4" -> typedefof<System.Tuple<obj,obj,obj,obj>>
+      //| Some "System", "Tuple`5" -> typedefof<System.Tuple<obj,obj,obj,obj,obj>>
+      //| Some "System", "Tuple`6" -> typedefof<System.Tuple<obj,obj,obj,obj,obj,obj>>
+      //| Some "System", "Tuple`7" -> typedefof<System.Tuple<obj,obj,obj,obj,obj,obj,obj>>
+(*
+      | Some "System", "Object" -> typeof<System.Object>
       | Some "System", "String" -> typeof<System.String>
       | Some "System", "SByte" -> typeof<System.SByte>
       | Some "System", "Int16" -> typeof<System.Int16>
@@ -1049,28 +1060,33 @@ and [<AllowNullLiteral>] ContextAssembly(ctxt: ProvidedBindingContext, reader: I
       | Some "System", "IntPtr" -> typeof<System.IntPtr>
       | Some "System", "UIntPtr" -> typeof<System.UIntPtr>
       | Some "System", "Boolean" -> typeof<System.Boolean>
-      | Some "Microsoft.FSharp.Core", "FSharpFunc`2" -> typedefof<obj -> obj>
+      //| Some "Microsoft.FSharp.Core", "FSharpFunc`2" -> typedefof<obj -> obj>
       | Some "System", "Char" -> typeof<System.Char>
+*)
       | Some "System", "Void" -> typeof<System.Void>
+(*
       | Some "System", "Single" -> typeof<System.Single>
       | Some "System", "Double" -> typeof<System.Double>
+*)
       | _ -> 
-          txTable.Get inp <| fun () -> ContextTypeDefinition(ctxt, ass, revDeclTys, inp) :> System.Type
+          txTable.Get inp <| fun () -> ContextTypeDefinition(ctxt, ass, declTyOpt, inp) :> System.Type
 
-    override x.GetTypes () = [| for td in reader.ILModuleDef.TypeDefs.Elements -> x.TxILTypeDef [] td  |]
+    override x.GetTypes () = [| for td in reader.ILModuleDef.TypeDefs.Elements -> x.TxILTypeDef None td  |]
     override x.Location = location
 
     override x.GetType (nm:string) = 
         if nm.Contains("+") then 
             let i = nm.LastIndexOf("+")
             let enc,nm2 = nm.[0..i-1], nm.[i+1..]
-            x.GetType(enc).GetNestedType(nm2,BindingFlags.Public ||| BindingFlags.NonPublic)
+            match x.GetType(enc) with 
+            | null -> null
+            | t -> t.GetNestedType(nm2,BindingFlags.Public ||| BindingFlags.NonPublic)
         elif nm.Contains(".") then 
             let i = nm.LastIndexOf(".")
             let nsp,nm2 = nm.[0..i-1], nm.[i+1..]
-            x.BindType(Some nsp, nm2)
+            x.TryBindType(Some nsp, nm2) |> optionToNull
         else
-            x.BindType(None, nm)
+            x.TryBindType(None, nm) |> optionToNull
 
     override x.GetName () = reader.ILModuleDef.ManifestOfAssembly.GetName()
 
@@ -1091,14 +1107,16 @@ and [<AllowNullLiteral>] ContextAssembly(ctxt: ProvidedBindingContext, reader: I
 
     member x.TryBindType(nsp:string option, nm:string) = 
         match reader.ILModuleDef.TypeDefs.TryFindByName(nsp, nm) with 
-        | Some td -> ass.TxILTypeDef [] td |> Some
+        | Some td -> ass.TxILTypeDef None td |> Some
         | None -> 
         match reader.ILModuleDef.ManifestOfAssembly.ExportedTypes.TryFindByName(nsp, nm) with 
         | Some tref -> 
             match tref.ScopeRef with 
             | ILScopeRef.Assembly aref2 -> 
-                    let ass2 = ctxt.BindAssembly(aref2)
-                    ass2.TryBindType(nsp, nm)
+                let ass2opt = ctxt.TryBindAssembly(aref2)
+                match ass2opt with 
+                | None -> None 
+                | Some ass2 -> ass2.TryBindType(nsp, nm)
             | _ -> 
                 printfn "unexpected non-forwarder during binding"
                 None
@@ -1139,13 +1157,13 @@ type Microsoft.FSharp.Core.CompilerServices.TypeProviderConfig with
                  for dllInfo in tcImportsObj.GetProperty("Base").GetProperty("Value").GetField("dllInfos").GetElements() -> (dllInfo.GetProperty("FileName") :?> string) ]
             with _ ->
                []
-        ProvidedBindingContext(referencedAssemblies)
+        TypeProviderBindingContext(referencedAssemblies)
 
 (*
-let ctxt1 = ProvidedBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" ]
-let ctxt2 = ProvidedBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\mscorlib.dll" ]
+let ctxt1 = TypeProviderBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" ]
+let ctxt2 = TypeProviderBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\mscorlib.dll" ]
 let ctxt3 = 
-    ProvidedBindingContext
+    TypeProviderBindingContext
         [ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile7\mscorlib.dll";
           @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile7\System.Runtime.dll" ]
 

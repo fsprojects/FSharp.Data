@@ -147,7 +147,7 @@ module internal ProviderHelpers =
           SampleIsWebUri : bool
           SampleIsResource : bool }
 
-    let ReadResource(bindingCtxt: ProviderImplementation.ProvidedBindingContext.ProvidedBindingContext, resourceName:string) =
+    let ReadResource(bindingCtxt: ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext, resourceName:string) =
         match resourceName.Split(',') with
         | [| asmName; name |] -> 
             let asmName = asmName.Trim()
