@@ -95,7 +95,7 @@ module internal UncheckedQuotations =
             mkFEN.Invoke(null, [| box op; box args |]) :?> Expr
 
         static member NewArrayUnchecked (elementType: Type, elements : Expr list) =
-            let op = newObjectOp.Invoke(null, [| box elementType |])
+            let op = newArrayOp.Invoke(null, [| box elementType |])
             mkFEN.Invoke(null, [| box op; box elements |]) :?> Expr
 
         static member CallUnchecked (minfo: MethodInfo, args : Expr list) =
