@@ -58,6 +58,8 @@ module internal UncheckedQuotations =
     assert (staticCallOp <> null)
     let newObjectOp = qTy.GetMethod("NewNewObjectOp", BindingFlags.Static ||| BindingFlags.Public ||| BindingFlags.NonPublic)
     assert (newObjectOp <> null)
+    let newArrayOp = qTy.GetMethod("NewNewArrayOp", BindingFlags.Static ||| BindingFlags.Public ||| BindingFlags.NonPublic)
+    assert (newArrayOp <> null)
     let appOp = qTy.GetMethod("get_AppOp", BindingFlags.Static ||| BindingFlags.Public ||| BindingFlags.NonPublic)
     assert (appOp <> null)
     let instancePropGetOp = qTy.GetMethod("NewInstancePropGetOp", BindingFlags.Static ||| BindingFlags.Public ||| BindingFlags.NonPublic)
@@ -91,6 +93,10 @@ module internal UncheckedQuotations =
         static member NewObjectUnchecked (cinfo: ConstructorInfo, args : Expr list) =
             let op = newObjectOp.Invoke(null, [| box cinfo |])
             mkFEN.Invoke(null, [| box op; box args |]) :?> Expr
+
+        static member NewArrayUnchecked (elementType: Type, elements : Expr list) =
+            let op = newObjectOp.Invoke(null, [| box elementType |])
+            mkFEN.Invoke(null, [| box op; box elements |]) :?> Expr
 
         static member CallUnchecked (minfo: MethodInfo, args : Expr list) =
             let op = staticCallOp.Invoke(null, [| box minfo |])
@@ -151,6 +157,8 @@ module internal UncheckedQuotations =
         match e with 
         | Patterns.NewObject (cinfo, args) ->
             ShapeCombinationUnchecked (Shape (function args -> Expr.NewObjectUnchecked (cinfo, args)), args)
+        | Patterns.NewArray (ty, args) ->
+            ShapeCombinationUnchecked (Shape (function args -> Expr.NewArrayUnchecked (ty, args)), args)
         | Patterns.NewDelegate (t, vars, expr) ->
             ShapeCombinationUnchecked (Shape (function [expr] -> Expr.NewDelegateUnchecked (t, vars, expr) | _ -> invalidArg "expr" "invalid shape"), [expr])
         | Patterns.TupleGet (expr, n) ->

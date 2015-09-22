@@ -991,7 +991,7 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
         | SymbolKind.Pointer,[arg] -> arg.FullName + "*" 
         | SymbolKind.ByRef,[arg] -> arg.FullName + "&"
         | SymbolKind.Generic gty, args -> gty.FullName + "[" + (args |> List.map (fun arg -> arg.ToString()) |> String.concat ",") + "]"
-        | SymbolKind.FSharpTypeAbbreviation (_,nsp,path),args -> String.concat "." (Array.append [| nsp |] path) + args.ToString()
+        | SymbolKind.FSharpTypeAbbreviation (_,nsp,path),args -> String.concat "." (Array.append [| nsp |] path) + (match args with [] -> "" | _ -> args.ToString())
         | _ -> failwith "unreachable"
    
     /// Although not strictly required by the type provider specification, this is required when doing basic operations like FullName on
@@ -1080,7 +1080,8 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
 
     member this.Kind = kind
     member this.Args = args
-    
+    member this.IsFSharpTypeAbbreviation  = match this.Kind with FSharpTypeAbbreviation _ -> true | _ -> false
+
     override this.GetConstructors _bindingAttr                                                      = notRequired "GetConstructors" this.Name
     override this.GetMethodImpl(_name, _bindingAttr, _binderBinder, _callConvention, _types, _modifiers) = 
         match kind with

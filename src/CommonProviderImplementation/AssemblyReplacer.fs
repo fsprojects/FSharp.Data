@@ -101,13 +101,15 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
                 failwith msg
             | _ -> 
                 let msg = 
-                    if fwd then sprintf "The type '%O' utilized by a type provider was not found in reference assembly set '%A'. You may be referencing a portable profile which contains dewer types than those needed by the type provider you are using." t referencedAssemblies
-                    else sprintf "The runtime-time type '%O' utilized by a type provider was not found in the compilation-time assembly set '%A'. You may be referencing a portable profile which contains dewer types than those needed by the type provider you are using. Please report this problem to the project site for the type provider." t designTimeAssemblies
+                    if fwd then sprintf "The type '%O' utilized by a type provider was not found in reference assembly set '%A'. You may be referencing a portable profile which contains fewer types than those needed by the type provider you are using." t referencedAssemblies
+                    else sprintf "The runtime-time type '%O' utilized by a type provider was not found in the compilation-time assembly set '%A'. You may be referencing a portable profile which contains fewer types than those needed by the type provider you are using. Please report this problem to the project site for the type provider." t designTimeAssemblies
                 failwith msg
 
 
   let rec replaceType fwd (t:Type) =
       if t :? ProvidedTypeDefinition then t
+      // Don't try to translate F# abbreviations
+      elif t :? ProvidedSymbolType && (t :?> ProvidedSymbolType).IsFSharpTypeAbbreviation then t
       elif t.IsGenericType && not t.IsGenericTypeDefinition then 
           let genericType = t.GetGenericTypeDefinition()
           let newT = replaceTypeDefinition fwd genericType

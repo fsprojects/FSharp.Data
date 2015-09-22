@@ -239,6 +239,7 @@ type ProvidedSymbolType =
     /// Return the provided types used as arguments of this symbolic type
     member Args : list<System.Type>
 
+    member IsFSharpTypeAbbreviation: bool
 
 /// Provides symbolic provided types
 [<Class>]
