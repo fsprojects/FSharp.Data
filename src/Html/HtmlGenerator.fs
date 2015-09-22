@@ -113,9 +113,9 @@ module internal HtmlGenerator =
             Expr.NewDelegate(delegateType, [rowVar], body)
         
         let create (htmlDoc:Expr) =
-            let rowConverterVarR = Var("rowConverter", rowConverter.Type)
-            let bodyR = listTypeWithErasedType?Create () (Expr.Var rowConverterVarR, htmlDoc, list.Name)
-            Expr.Let(rowConverterVarR, rowConverter, bodyR)
+            let rowConverterVar = Var("rowConverter", rowConverter.Type)
+            let body = listTypeWithErasedType?Create () (Expr.Var rowConverterVar, htmlDoc, list.Name)
+            Expr.Let(rowConverterVar, rowConverter, body)
 
         let listType = replacer.ProvidedTypeDefinition(getListTypeName list.Name, listTypeWithErasedType, hideObjectMethods = true, nonNullable = true)
         create, listType
@@ -148,7 +148,7 @@ module internal HtmlGenerator =
                 let delegateType = 
                   typedefof<Func<_,_>>.MakeGenericType(typeof<string>, listItemType)
             
-                Expr.NewDelegateUnchecked(delegateType, [rowVar], body)
+                Expr.NewDelegate(delegateType, [rowVar], body)
             
             let create doc =
                 let rowConverterVar = Var("rowConverter", rowConverter.Type)
