@@ -38,13 +38,13 @@ let getBackConversionQuotation missingValuesStr cultureStr typ value : Expr<stri
 /// an expression of other type - the type is specified by `field`
 let convertStringValue missingValuesStr cultureStr (field:PrimitiveInferedProperty) = 
 
-  let returnTypeR = 
+  let returnType = 
     match field.TypeWrapper with
     | TypeWrapper.None -> field.TypeWithMeasure
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.TypeWithMeasure
     | TypeWrapper.Nullable -> typedefof<Nullable<_>>.MakeGenericType field.TypeWithMeasure
 
-  let returnTypeWithoutMeasureR = 
+  let returnTypeWithoutMeasure = 
     match field.TypeWrapper with
     | TypeWrapper.None -> field.RuntimeType
     | TypeWrapper.Option -> typedefof<option<_>>.MakeGenericType field.RuntimeType
@@ -71,4 +71,4 @@ let convertStringValue missingValuesStr cultureStr (field:PrimitiveInferedProper
       | TypeWrapper.Nullable -> typeof<TextRuntime>?NullableToOption field.RuntimeType value
     getBackConversionQuotation missingValuesStr cultureStr field.InferedType value  :> Expr
 
-  returnTypeR, returnTypeWithoutMeasureR, convert, convertBack
+  returnType, returnTypeWithoutMeasure, convert, convertBack

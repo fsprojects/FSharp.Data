@@ -80,34 +80,13 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
       match cache.TryGetValue(t) with
       | true, newT -> newT
       | false, _ -> 
-(*
-        if t = typeof<System.Object> ||
-           t = typeof<System.String> ||
-           t = typeof<System.SByte> ||
-           t = typeof<System.Int16> ||
-           t = typeof<System.Int32> ||
-           t = typeof<System.Int64> ||
-           t = typeof<System.Byte> ||
-           t = typeof<System.UInt16> ||
-           t = typeof<System.UInt32> ||
-           t = typeof<System.UInt64> ||
-           t = typeof<System.IntPtr> ||
-           t = typeof<System.UIntPtr> ||
-           t = typeof<System.Boolean> ||
-           t = typeof<System.Char> ||
-           t = typeof<System.Void> ||
-           t = typeof<System.Single> ||
-           t = typeof<System.Double> 
-        then 
-            cache.[t] <- t
-            t
-        else
-*)
             let asms = (if fwd then referencedAssemblies else designTimeAssemblies)
             let fullName = fixName t.FullName
 
-            // For type provider hosts like fsc.exe System.Void is a special case and is always indicated
-            // as [FSharp.Core 4.4.0.0]typeof<System.Void> 
+            // For normal type provider hosts like fsc.exe System.Void is a special case and these
+            // hosts expect it to always be provided as [FSharp.Core 4.4.0.0]typeof<System.Void>.  
+            // This is really a mistake in ExtensionTyping.fs in the F# compiler which calls 
+            // typeof<System.Void>.Equals(ty).
             if fullName = "System.Void" then typeof<System.Void> else
 
             match Array.choose (tryGetTypeFromAssembly fullName) asms |> Seq.distinct |> Seq.toArray with

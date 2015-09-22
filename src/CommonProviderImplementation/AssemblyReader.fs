@@ -564,7 +564,7 @@ type ILFieldInit =
   
 type ILParameter =
     { Name: string option;
-      Type: ILType;
+      ParameterType: ILType;
       Default: ILFieldInit option;  
       //Marshal: ILNativeType option; 
       IsIn: bool;
@@ -610,8 +610,8 @@ type MethodCodeKind =
     | Native
     | Runtime
 
-let typesOfILParamsRaw (ps:ILParameters) : ILTypes = ps |> Array.map (fun p -> p.Type) 
-let typesOfILParamsList (ps:ILParameter[]) = ps |> Array.map (fun p -> p.Type) 
+let typesOfILParamsRaw (ps:ILParameters) : ILTypes = ps |> Array.map (fun p -> p.ParameterType) 
+let typesOfILParamsList (ps:ILParameter[]) = ps |> Array.map (fun p -> p.ParameterType) 
 
 [<StructuralEquality; StructuralComparison>]
 type ILGenericVariance = 
@@ -723,7 +723,7 @@ type ILPropertyDef =
     member x.IsStatic = (match x.CallingConv with ILThisConvention.Static -> true | _ -> false)
     member x.IndexParameters = x.IndexParameterTypes |> Array.mapi (fun i ty -> 
         {  Name = Some("arg"+string i)
-           Type = ty
+           ParameterType = ty
            Default = None
            IsIn = false
            IsOptional = false
@@ -3157,13 +3157,13 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
         let paramsRes = 
             argtys 
             |> Array.map (fun ty ->  
-                { Name=None;
-                  Default=None;
-                  //Marshal=None;
-                  IsIn=false;
-                  IsOut=false;
-                  IsOptional=false;
-                  Type=ty;
+                { Name=None
+                  Default=None
+                  //Marshal=None
+                  IsIn=false
+                  IsOut=false
+                  IsOptional=false
+                  ParameterType=ty
                   CustomAttrs=ILCustomAttrs.Empty })
         for i = pidx1 to pidx2 - 1 do
             seekReadParamExtras (retRes,paramsRes) i
