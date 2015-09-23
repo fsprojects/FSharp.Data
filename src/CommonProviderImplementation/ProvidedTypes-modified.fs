@@ -1040,6 +1040,7 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
         | SymbolKind.FSharpTypeAbbreviation _ -> typeof<obj>
 
     override this.GetArrayRank() = (match kind with SymbolKind.Array n -> n | SymbolKind.SDArray -> 1 | _ -> invalidOp "non-array type")
+    override this.IsValueTypeImpl() = (match kind with SymbolKind.Generic gtd -> gtd.IsValueType | _ -> false)
     override this.IsArrayImpl() = (match kind with SymbolKind.Array _ | SymbolKind.SDArray -> true | _ -> false)
     override this.IsByRefImpl() = (match kind with SymbolKind.ByRef _ -> true | _ -> false)
     override this.IsPointerImpl() = (match kind with SymbolKind.Pointer _ -> true | _ -> false)
@@ -1604,6 +1605,7 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
 
     // Attributes, etc..
     override this.GetAttributeFlagsImpl() = adjustTypeAttributes attributes this.IsNested 
+    override this.IsValueTypeImpl() = this.BaseType.IsValueType
     override this.IsArrayImpl() = false
     override this.IsByRefImpl() = false
     override this.IsPointerImpl() = false
