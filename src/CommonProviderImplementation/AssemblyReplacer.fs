@@ -240,7 +240,7 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
     | Coerce (expr, t) ->
         Expr.Coerce (re expr, rt t)
     | NewArray (t, exprs) ->
-        Expr.NewArray (rt t, List.map re exprs)
+        Expr.NewArrayUnchecked (rt t, List.map re exprs)
     | NewTuple (exprs) ->
         Expr.NewTuple (List.map re exprs)
     | TupleGet (expr, i) ->
@@ -249,12 +249,12 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
         Expr.NewDelegateUnchecked (rt t, List.map rv vars, re expr)
     | FieldGet (obj, f) -> 
         match obj with
-        | Some obj -> Expr.FieldGet (re obj, rf f)
-        | None -> Expr.FieldGet (rf f)
+        | Some obj -> Expr.FieldGetUnchecked (re obj, rf f)
+        | None -> Expr.FieldGetUnchecked (rf f)
     | FieldSet (obj, f, value) -> 
         match obj with
-        | Some obj -> Expr.FieldSet (re obj, rf f, re value)
-        | None -> Expr.FieldSet (rf f, re value)
+        | Some obj -> Expr.FieldSetUnchecked (re obj, rf f, re value)
+        | None -> Expr.FieldSetUnchecked (rf f, re value)
     | Let (var, value, body) -> 
         Expr.LetUnchecked(rv var, re value, re body)
     | ShapeVar v -> 

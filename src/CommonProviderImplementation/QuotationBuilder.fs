@@ -53,17 +53,17 @@ let (?) (typ:Type) (operation:string) (args1:'T) (args2: 'U) : Expr =
         let mi = 
           if tyargs = [] then mi
           else mi.MakeGenericMethod(tyargs |> Array.ofList |> Array.map ProvidedTypeDefinition.EraseType)
-        if mi.IsStatic then Expr.Call(mi, args)
-        else Expr.Call(List.head args, mi, List.tail args)
+        if mi.IsStatic then Expr.CallUnchecked(mi, args)
+        else Expr.CallUnchecked(List.head args, mi, List.tail args)
     | [| :? ConstructorInfo as ci |] ->
         if tyargs <> [] then failwith "Constructor cannot be generic!"
-        Expr.NewObject(ci, args)
+        Expr.NewObjectUnchecked(ci, args)
     | [| :? PropertyInfo as pi |] ->
         let isStatic = 
           pi.CanRead && pi.GetGetMethod().IsStatic || 
           pi.CanWrite && pi.GetSetMethod().IsStatic
-        if isStatic then Expr.PropertyGet(pi, args)
-        else Expr.PropertyGet(List.head args, pi, List.tail args)
+        if isStatic then Expr.PropertyGetUnchecked(pi, args)
+        else Expr.PropertyGetUnchecked(List.head args, pi, List.tail args)
     | options -> failwithf "Constructing call of the '%s' operation failed. Got %A" operation options
 
   invokeOperation (args1, typeof<'T>) (args2, typeof<'U>) 

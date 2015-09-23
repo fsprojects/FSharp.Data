@@ -20,7 +20,7 @@ type public HtmlProvider(cfg:TypeProviderConfig) as this =
     // Generate namespace and type 'FSharp.Data.HtmlProvider'
     let bindingCtxt, asm, version, replacer = AssemblyResolver.init cfg
     let ns = "FSharp.Data"
-    let htmlProvTy = ProvidedTypeDefinition(asm, ns, "HtmlProvider", Some typeof<obj>)
+    let htmlProvTy = replacer.ProvidedTypeDefinition(asm, ns, "HtmlProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
     
     let buildTypes (typeName:string) (args:obj[]) =
 

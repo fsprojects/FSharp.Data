@@ -356,7 +356,7 @@ module JsonTypeBuilder =
 
             objectTy.AddMember <| 
                     replacer.ProvidedConstructor(
-                        [ProvidedParameter("jsonValue", ctx.JsonValueType)], 
+                        [replacer.ProvidedParameter("jsonValue", ctx.JsonValueType)], 
                         invokeCode = fun (Singleton arg) -> 
                             <@@ JsonDocument.Create((%%arg:JsonValue), "") @@> )
 

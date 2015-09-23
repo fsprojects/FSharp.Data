@@ -57,19 +57,17 @@ let init (cfg : TypeProviderConfig) =
             | 3, 3 -> FSharpDataRuntimeVersion.Portable7 // 3.3.1.0
             | _ -> FSharpDataRuntimeVersion.Net40
 
-
-    let getRuntimeAssembly (asmSimpleName:string) = 
-        match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
-        | None -> null
-        | Some loader -> (loader :> Assembly)
-
     if not initialized then
         initialized <- true
         // the following parameter is just here to force System.Xml.Linq to load
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
 
-    let runtimeFSharpDataAssembly = getRuntimeAssembly (Path.GetFileNameWithoutExtension cfg.RuntimeAssembly)
+    let runtimeFSharpDataAssembly = 
+        let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly
+        match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
+        | None -> null
+        | Some loader -> (loader :> Assembly)
     
     let referencedAssemblies = bindingContext.ReferencedAssemblies
 

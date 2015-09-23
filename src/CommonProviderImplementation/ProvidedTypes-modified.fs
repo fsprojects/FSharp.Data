@@ -353,7 +353,7 @@ module internal Misc =
                         for el in o do
                             yield converter el
                     ]
-                Quotations.Expr.NewArray(elemTy, elements)
+                Quotations.Expr.NewArrayUnchecked(elemTy, elements)
             and transList(o, ty : Type, nil, cons) =
                 let converter = getConverterForType (ty.GetGenericArguments().[0])
                 o

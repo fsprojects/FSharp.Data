@@ -22,12 +22,12 @@ type public JsonProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.JsonProvider'
   let bindingCtxt, asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let jsonProvTy = ProvidedTypeDefinition(asm, ns, "JsonProvider", Some typeof<obj>)
+  let jsonProvTy = replacer.ProvidedTypeDefinition(asm, ns, "JsonProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
+    let tpType = replacer.ProvidedTypeDefinition(asm, ns, typeName, typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool

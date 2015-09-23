@@ -21,12 +21,12 @@ type public XmlProvider(cfg:TypeProviderConfig) as this =
   // Generate namespace and type 'FSharp.Data.XmlProvider'
   let bindingCtxt, asm, version, replacer = AssemblyResolver.init cfg
   let ns = "FSharp.Data"
-  let xmlProvTy = ProvidedTypeDefinition(asm, ns, "XmlProvider", Some typeof<obj>)
+  let xmlProvTy = replacer.ProvidedTypeDefinition(asm, ns, "XmlProvider", typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
   let buildTypes (typeName:string) (args:obj[]) =
 
     // Generate the required type
-    let tpType = ProvidedTypeDefinition(asm, ns, typeName, Some typeof<obj>)
+    let tpType = replacer.ProvidedTypeDefinition(asm, ns, typeName, typeof<obj>, hideObjectMethods=true, nonNullable=true)
 
     let sample = args.[0] :?> string
     let sampleIsList = args.[1] :?> bool

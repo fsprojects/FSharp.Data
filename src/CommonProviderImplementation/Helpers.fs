@@ -346,7 +346,7 @@ module internal ProviderHelpers =
           yield m :> MemberInfo
           
           // Generate static Load stream method
-          let args = [ ProvidedParameter("stream", typeof<Stream>) ]
+          let args = [ replacer.ProvidedParameter("stream", typeof<Stream>) ]
           let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true, 
                                     invokeCode = fun (Singleton stream) ->   
                                         <@ new StreamReader(%%stream:Stream) :> TextReader @> 
@@ -355,7 +355,7 @@ module internal ProviderHelpers =
           yield m :> _
         
           // Generate static Load reader method
-          let args = [ ProvidedParameter("reader", typeof<TextReader>) ]
+          let args = [ replacer.ProvidedParameter("reader", typeof<TextReader>) ]
           let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true, 
                                     invokeCode = fun (Singleton reader) ->  
                                         let reader = reader |> Expr.Cast 
@@ -364,7 +364,7 @@ module internal ProviderHelpers =
           yield m :> _
           
           // Generate static Load uri method
-          let args = [ ProvidedParameter("uri", typeof<string>) ]
+          let args = [ replacer.ProvidedParameter("uri", typeof<string>) ]
           let m = replacer.ProvidedMethod("Load", args, resultType, isStatic = true,  
                                     invokeCode = fun (Singleton uri) -> 
                                          <@ Async.RunSynchronously(asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri) @> 
@@ -373,7 +373,7 @@ module internal ProviderHelpers =
           yield m :> _
         
           // Generate static AsyncLoad uri method
-          let args = [ ProvidedParameter("uri", typeof<string>) ]
+          let args = [ replacer.ProvidedParameter("uri", typeof<string>) ]
           let m = replacer.ProvidedMethod("AsyncLoad", args, resultTypeAsync, isStatic = true,
                                      invokeCode = fun (Singleton uri) -> 
                                          let readerAsync = <@ asyncReadTextAtRuntime isRunningInFSI defaultResolutionFolder resolutionFolder formatName encodingStr %%uri @>
