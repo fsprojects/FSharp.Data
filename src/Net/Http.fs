@@ -9,7 +9,7 @@ namespace System.Runtime.InteropServices
 open System
 
 [<AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)>]
-type OptionalAttribute() = 
+type internal OptionalAttribute() = 
     inherit Attribute()
 
 #endif
@@ -718,7 +718,7 @@ type Http private() =
             + String.concat "&" [ for k, v in query -> Uri.EscapeDataString k + "=" + Uri.EscapeDataString v ]
 
     static member private InnerRequest(url:string, toHttpResponse, [<Optional>] ?query, [<Optional>] ?headers:seq<_>, [<Optional>] ?httpMethod, [<Optional>] ?body, [<Optional>] ?cookies:seq<_>, [<Optional>] ?cookieContainer, 
-                                       ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
+                                       [<Optional>] ?silentHttpErrors, [<Optional>] ?responseEncodingOverride, [<Optional>] ?customizeHttpRequest) =
         let uri = 
             Uri(Http.AppendQueryToUrl(url, defaultArg query []))
             |> UriUtils.enableUriSlashes

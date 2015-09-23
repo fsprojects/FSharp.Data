@@ -123,3 +123,4 @@ type TextRuntime =
   /// Turn a sync operation into an async operation
   static member AsyncMap<'T, 'R>(valueAsync:Async<'T>, mapping:Func<'T, 'R>) = 
     async { let! value = valueAsync in return mapping.Invoke value }
+

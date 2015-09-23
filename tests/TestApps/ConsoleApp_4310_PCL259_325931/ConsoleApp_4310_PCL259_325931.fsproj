@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{d96a5016-bb2d-408f-8c53-f65024b04bfb}</ProjectGuid>
+    <ProjectGuid>{bbb1f100-2a57-483f-8607-33677e2be549}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ConsoleApp_4300_Library_4300</RootNamespace>
-    <AssemblyName>ConsoleApp_4310_PCL7_3310</AssemblyName>
+    <RootNamespace>ConsoleApp_4310_PCL259_325931</RootNamespace>
+    <AssemblyName>ConsoleApp_4310_PCL259_325931</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
-    <Name>ConsoleApp_4310_PCL7_3310</Name>
+    <Name>ConsoleApp_4310_PCL259_325931</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,9 +67,9 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PCL7_3310\PCL7_3310.fsproj">
-      <Name>PCL7_3310</Name>
-      <Project>{1b9b6630-f731-4f5f-ae8c-3972e7b32ed9}</Project>
+    <ProjectReference Include="..\PCL259_325931\PCL259_325931.fsproj">
+      <Name>PCL259_325931</Name>
+      <Project>{1b9b6630-f731-4f5f-ae8c-3972e7b32edA}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
