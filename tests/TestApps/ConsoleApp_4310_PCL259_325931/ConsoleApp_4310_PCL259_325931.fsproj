@@ -69,7 +69,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PCL259_325931\PCL259_325931.fsproj">
       <Name>PCL259_325931</Name>
-      <Project>{1b9b6630-f731-4f5f-ae8c-3972e7b32edA}</Project>
+      <Project>{d82bf26c-188a-4ee0-92f0-8f4cccbb2f2a}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

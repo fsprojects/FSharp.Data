@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{d82bf26c-188a-4ee0-92f0-8f4cccbb2f29}</ProjectGuid>
+    <ProjectGuid>d82bf26c-188a-4ee0-92f0-8f4cccbb2f2a</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>PCL259_325931</RootNamespace>
     <AssemblyName>PCL259_325931</AssemblyName>
@@ -41,7 +41,7 @@
       <HintPath>$(MSBuildExtensionsPath32)\..\Reference Assemblies\Microsoft\FSharp\.NETCore\$(TargetFSharpCoreVersion)\FSharp.Core.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Data">
-      <HintPath>..\..\..\bin\portable7\FSharp.Data.dll</HintPath>
+      <HintPath>..\..\..\bin\portable259\FSharp.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
