@@ -257,6 +257,27 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
         | None -> Expr.FieldSetUnchecked (rf f, re value)
     | Let (var, value, body) -> 
         Expr.LetUnchecked(rv var, re value, re body)
+
+    // Eliminate some F# constructs which do not cross-target well
+    | Application(f,e) -> 
+        re (Expr.CallUnchecked(f, f.Type.GetMethod "Invoke", [ e ]) )
+    | NewUnionCase(ci, es) ->
+        re (Expr.CallUnchecked(Reflection.FSharpValue.PreComputeUnionConstructorInfo ci, es) )
+    | NewRecord(ci, es) ->
+        re (Expr.NewObjectUnchecked(FSharpValue.PreComputeRecordConstructorInfo ci, es) )
+    | UnionCaseTest(e,uc) ->
+        let tagInfo = FSharpValue.PreComputeUnionTagMemberInfo uc.DeclaringType
+        let tagExpr = 
+            match tagInfo with 
+            | :? PropertyInfo as tagProp -> Expr.PropertyGetUnchecked(e,tagProp)
+            | :? MethodInfo as tagMeth -> 
+                    if tagMeth.IsStatic then Expr.CallUnchecked(tagMeth, [e])
+                    else Expr.CallUnchecked(e,tagMeth,[])
+            | _ -> failwith "unreachable: unexpected result from PreComputeUnionTagMemberInfo"
+        let tagNumber = uc.Tag
+        re <@@ (%%(tagExpr) : int) = tagNumber @@>
+
+    // Traverse remaining constructs
     | ShapeVar v -> 
         Expr.Var (rv v)
     | ShapeLambda _ -> 

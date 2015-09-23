@@ -114,11 +114,13 @@ module internal UncheckedQuotations =
             let op = staticPropGetOp.Invoke(null, [| box pinfo |])
             mkFEN.Invoke(null, [| box op; box args |]) :?> Expr
 
-        static member PropertyGetUnchecked (obj: Expr, pinfo: PropertyInfo, args : Expr list) =
+        static member PropertyGetUnchecked (obj: Expr, pinfo: PropertyInfo, ?args : Expr list) =
+            let args = defaultArg args []
             let op = instancePropGetOp.Invoke(null, [| box pinfo |])
             mkFEN.Invoke(null, [| box op; box (obj::args) |]) :?> Expr
 
-        static member PropertySetUnchecked (pinfo: PropertyInfo, value: Expr, args : Expr list) =
+        static member PropertySetUnchecked (pinfo: PropertyInfo, value: Expr, ?args : Expr list) =
+            let args = defaultArg args []
             let op = staticPropSetOp.Invoke(null, [| box pinfo |])
             mkFEN.Invoke(null, [| box op; box (args@[value]) |]) :?> Expr
 
