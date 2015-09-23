@@ -470,6 +470,7 @@ and ContextMethodSymbol(gmd: MethodInfo, gargs: Type[]) =
 and TypeProviderBindingContext(refs : string list) as this = 
     /// Find which assembly defines System.Object etc.
     let systemRuntimeScopeRef = 
+      lazy
         refs |> List.tryPick (fun r -> 
             let simpleName = Path.GetFileNameWithoutExtension r 
             if simpleName = "mscorlib" || simpleName = "System.Runtime" then 
@@ -487,27 +488,19 @@ and TypeProviderBindingContext(refs : string list) as this =
            | None -> ecmaMscorlibScopeRef // failwith "no reference to mscorlib.dll or System.Runtime.dll found" 
            | Some r -> r
  
-    let ilGlobals = mkILGlobals systemRuntimeScopeRef
-    let readers = 
-        [| for ref in refs do
-            let assOpt = try ContextAssembly(this, OpenILModuleReaderAfterReadingAllBytes(ref, ilGlobals), ref)  |> Some with _ -> None
-            match assOpt with 
-            | Some ass -> yield ass
-            | None -> () |]  
+    let ilGlobals = lazy mkILGlobals (systemRuntimeScopeRef.Force())
+    let readers = lazy [| for ref in refs -> ref, lazy ContextAssembly(this, OpenILModuleReaderAfterReadingAllBytes(ref, ilGlobals.Force()), ref)  |]  
+    let readersTable =  lazy (readers.Force() |> Array.map (fun (ref, ass) -> let simpleName = Path.GetFileNameWithoutExtension ref in simpleName, ass) |> Map.ofArray)
+    let referencedAssemblies = lazy (readers.Force()  |> Array.map (fun (_,ass) -> ass.Force() :> Assembly))
 
-    let readersTable =  
-        readers 
-        |> Array.map (fun ass -> let simpleName = Path.GetFileNameWithoutExtension ass.Location in simpleName, ass) 
-        |> Map.ofArray
-
-    member __.TryBindAssembly(aref: ILAssemblyRef) = if readersTable.ContainsKey(aref.Name) then Some(readersTable.[aref.Name]) else None
-    member __.TryBindAssembly(aref: AssemblyName) = if readersTable.ContainsKey(aref.Name) then Some(readersTable.[aref.Name]) else None
+    member __.TryBindAssembly(aref: ILAssemblyRef) = if readersTable.Force().ContainsKey(aref.Name) then Some(readersTable.Force().[aref.Name].Force()) else None
+    member __.TryBindAssembly(aref: AssemblyName) = if readersTable.Force().ContainsKey(aref.Name) then Some(readersTable.Force().[aref.Name].Force()) else None
     member x.BindAssembly(aref: ILAssemblyRef) = match x.TryBindAssembly(aref) with Some res -> res | None -> failwithf "couldn't bind assembly reference %A" aref
     member x.BindAssembly(aname : AssemblyName) = match x.TryBindAssembly(aname) with Some res -> res | None -> failwithf "couldn't bind assembly name %A" aname
-    member __.SystemRuntimeScopeRef = systemRuntimeScopeRef
-    member __.ILGlobals = ilGlobals
+    member __.SystemRuntimeScopeRef = systemRuntimeScopeRef.Force()
+    member __.ILGlobals = ilGlobals.Force()
     member __.ReferencedAssemblyPaths = refs
-    member __.ReferencedAssemblies =  readers  |> Array.map (fun x -> x :> Assembly)
+    member __.ReferencedAssemblies =  referencedAssemblies.Force()
     member x.TryGetFSharpCoreAssembly() = x.TryBindAssembly(AssemblyName("FSharp.Core"))
 
 
@@ -542,7 +535,6 @@ and ContextTypeDefinition(ctxt: TypeProviderBindingContext, ass: ContextAssembly
             override __.Attributes = 
                 (match inp.Default with None -> ParameterAttributes.None | Some _v -> ParameterAttributes.Optional) |||
                 (if inp.IsOut then ParameterAttributes.Out else ParameterAttributes.None)
-
 
             override __.GetCustomAttributesData() = inp.CustomAttrs  |> TxCustomAttributesData
 
@@ -1066,7 +1058,7 @@ type System.Object with
    member internal x.GetElements() = [ for v in (x :?> System.Collections.IEnumerable) do yield v ]
 
 type Microsoft.FSharp.Core.CompilerServices.TypeProviderConfig with
-    member cfg.GetBindingContext() = 
+    member cfg.GetTypeProviderBindingContext() = 
         let referencedAssemblies = 
             try 
                let systemRuntimeContainsTypeObj = cfg.GetField("systemRuntimeContainsType") 

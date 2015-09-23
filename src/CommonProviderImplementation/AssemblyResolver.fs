@@ -31,14 +31,7 @@ type FSharpDataRuntimeVersion =
 
 let init (cfg : TypeProviderConfig) = 
 
-    // This is a hack to get the set of referenced assemblies for this instance of the type provider.
-    // This information _should_ be provided in cfg.ReferencedAssemblies however that is missing a couple of crucial references (the mscorlib and FSharp.Core references).
-    // So we use reflection to access into the captured F# compiler closures to find the correct set of DLLs.  
-    // This is obviously not "right" but is reasonable considering that it's crucial to get this information.
-    // The aim is to have code that works correctly for all Visual F# Tools and F# open edition uses 
-    // of type providers for F# 3.0, 3.1 and 4.0.
-    
-    let bindingContext = cfg.GetBindingContext()
+    let bindingContext = cfg.GetTypeProviderBindingContext()
 
     let version = 
         let fsCore = bindingContext.TryGetFSharpCoreAssembly()
