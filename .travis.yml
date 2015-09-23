@@ -1,6 +1,7 @@
 language: csharp
 
 script: 
+  - ls -R /usr/lib/mono/
   - ./build.sh CleanInternetCaches && ./build.sh All
 
 branches:
