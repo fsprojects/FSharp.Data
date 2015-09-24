@@ -1,4 +1,4 @@
-class JsonProvider
+class JsonProvider : obj
     static member AsyncLoad: uri:string -> JsonProvider+Topic[] async
     let f = new Func<_,_>(fun (t:TextReader) -> JsonRuntime.ConvertArray(JsonDocument.Create(t, ""), new Func<_,_>(id))))
     TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "JSON" "" uri), f)

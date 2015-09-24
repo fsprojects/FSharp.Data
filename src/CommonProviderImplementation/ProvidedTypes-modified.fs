@@ -1082,6 +1082,8 @@ type ProvidedSymbolType(kind: SymbolKind, args: Type list) =
     member this.Kind = kind
     member this.Args = args
     member this.IsFSharpTypeAbbreviation  = match this.Kind with FSharpTypeAbbreviation _ -> true | _ -> false
+    // For example, int<kg>
+    member this.IsFSharpUnitAnnotated = match this.Kind with SymbolKind.Generic gtd -> not gtd.IsGenericTypeDefinition | _ -> false
 
     override this.GetConstructors _bindingAttr                                                      = notRequired "GetConstructors" this.Name
     override this.GetMethodImpl(_name, _bindingAttr, _binderBinder, _callConvention, _types, _modifiers) = 
@@ -1521,29 +1523,18 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
     // and we erase array of provided type to array of base type. In the
     // case of generics all the generic type arguments are also recursively
     // replaced with the erased-to types
-    static member EraseType(t:Type) =
+    static member EraseType(t:Type) : Type =
         match t with
-        | :? ProvidedTypeDefinition -> ProvidedTypeDefinition.EraseType t.BaseType 
-        | :? ProvidedSymbolType as sym ->
-            match sym.Kind, sym.Args with
-            | SymbolKind.SDArray, [typ] -> 
-                let (t:Type) = ProvidedTypeDefinition.EraseType typ
-                t.MakeArrayType()
-            | SymbolKind.Generic genericTypeDefinition, _ when not genericTypeDefinition.IsGenericTypeDefinition -> 
-                // Unit of measure parameters can match here, but not really generic types.
-                genericTypeDefinition.UnderlyingSystemType
-            | SymbolKind.Generic genericTypeDefinition, typeArgs ->
-                let genericArguments =
-                  typeArgs
-                  |> List.toArray
-                  |> Array.map ProvidedTypeDefinition.EraseType
-                genericTypeDefinition.MakeGenericType(genericArguments)
-            | _ -> failwith "getTypeErasedTo: Unsupported ProvidedSymbolType" 
+        | :? ProvidedTypeDefinition as ptd when ptd.IsErased -> ProvidedTypeDefinition.EraseType t.BaseType 
+        | t when t.IsArray -> 
+            let rank = t.GetArrayRank()
+            let et = ProvidedTypeDefinition.EraseType (t.GetElementType())
+            if rank = 0 then et.MakeArrayType() else et.MakeArrayType(rank)
+        | :? ProvidedSymbolType as sym when sym.IsFSharpUnitAnnotated -> 
+            t.UnderlyingSystemType
         | t when t.IsGenericType && not t.IsGenericTypeDefinition ->
             let genericTypeDefinition = t.GetGenericTypeDefinition()
-            let genericArguments = 
-              t.GetGenericArguments()
-              |> Array.map ProvidedTypeDefinition.EraseType
+            let genericArguments = t.GetGenericArguments() |> Array.map ProvidedTypeDefinition.EraseType
             genericTypeDefinition.MakeGenericType(genericArguments)
         | t -> t
 
@@ -1578,6 +1569,8 @@ type ProvidedTypeDefinition(container:TypeContainer,className : string, baseType
         else 
             // FSharp.Data change: just using this.BaseType is not enough in the case of CsvProvider,
             // because the base type is CsvRow<RowType>, so we have to erase recursively to CsvRow<TupleType>
+            //
+            // TODO: this is not a correct implementation.  It would be better to have FSharp.Data pass in DeclaredOnly.
             let baseMems = (ProvidedTypeDefinition.EraseType this.BaseType).GetMembers bindingAttr
             Array.append mems baseMems
 

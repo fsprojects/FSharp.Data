@@ -90,15 +90,18 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
             if fullName = "System.Void" then typeof<System.Void> else
 
             match Array.choose (tryGetTypeFromAssembly fullName) asms |> Seq.distinct |> Seq.toArray with
-            | [| (newT, canSave) |] -> 
-                 if canSave then cache.[t] <- newT
-                 //printfn "%s %A --> %A" (if fwd then "fwd" else "bwd") t newT
-                 newT
+            //| [| (newT, canSave) |] -> 
+            //     if canSave then cache.[t] <- newT
+            //     newT
+            //| r when r.Length > 1 -> 
+            //    let msg = 
+            //        if fwd then sprintf "The type '%O' utilized by a type provider was found in multiple assemblies in the reference assembly set '%A'. You may need to adjust your assembly references to avoid ambiguities." t referencedAssemblies
+            //        else sprintf "The type '%O' utilized by a type provider was not found in the assembly set '%A' used by the type provider itself. Please report this problem to the project site for the type provider." t designTimeAssemblies
+            //    failwith msg
             | r when r.Length > 0 -> 
-                let msg = 
-                    if fwd then sprintf "The type '%O' utilized by a type provider was found in multiple assemblies in the reference assembly set '%A'. You may need to adjust your assembly references to avoid ambiguities." t referencedAssemblies
-                    else sprintf "The type '%O' utilized by a type provider was not found in the assembly set '%A' used by the type provider itself. Please report this problem to the project site for the type provider." t designTimeAssemblies
-                failwith msg
+                 let (newT, canSave) = r.[0]
+                 if canSave then cache.[t] <- newT
+                 newT
             | _ -> 
                 let msg = 
                     if fwd then sprintf "The type '%O' utilized by a type provider was not found in reference assembly set '%A'. You may be referencing a portable profile which contains fewer types than those needed by the type provider you are using." t referencedAssemblies
@@ -110,6 +113,7 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
       if t :? ProvidedTypeDefinition then t
       // Don't try to translate F# abbreviations
       elif t :? ProvidedSymbolType && (t :?> ProvidedSymbolType).IsFSharpTypeAbbreviation then t
+      elif t :? ProvidedSymbolType && (t :?> ProvidedSymbolType).IsFSharpUnitAnnotated then t
       elif t.IsGenericType && not t.IsGenericTypeDefinition then 
           let genericType = t.GetGenericTypeDefinition()
           let newT = replaceTypeDefinition fwd genericType

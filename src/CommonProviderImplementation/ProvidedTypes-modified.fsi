@@ -239,7 +239,11 @@ type ProvidedSymbolType =
     /// Return the provided types used as arguments of this symbolic type
     member Args : list<System.Type>
 
+    /// For example, kg
     member IsFSharpTypeAbbreviation: bool
+
+    /// For example, int<kg> or int<kilogram>
+    member IsFSharpUnitAnnotated : bool
 
 /// Provides symbolic provided types
 [<Class>]

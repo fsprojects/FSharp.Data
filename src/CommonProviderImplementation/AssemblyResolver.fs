@@ -37,8 +37,8 @@ let init (cfg : TypeProviderConfig) =
         let fsCore = bindingContext.TryGetFSharpCoreAssembly()
 
         match fsCore with 
-        | None -> FSharpDataRuntimeVersion.Net40
-        | Some asm -> 
+        | Choice2Of2 _err -> FSharpDataRuntimeVersion.Net40
+        | Choice1Of2 asm -> 
            let ver = asm.GetName().Version
            match ver.Major, ver.Minor with 
             | 2, 3 -> FSharpDataRuntimeVersion.Portable47 // 2.3.5.0, 2.3.5.1
@@ -59,8 +59,8 @@ let init (cfg : TypeProviderConfig) =
     let runtimeFSharpDataAssembly = 
         let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly
         match bindingContext.TryBindAssembly(AssemblyName(asmSimpleName)) with
-        | None -> null
-        | Some loader -> (loader :> Assembly)
+        | Choice2Of2 err -> raise err
+        | Choice1Of2 loader -> (loader :> Assembly)
     
     let referencedAssemblies = bindingContext.ReferencedAssemblies
 

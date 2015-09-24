@@ -506,22 +506,10 @@ type ILFieldSpec(fieldRef: ILFieldRef, enclosingType: ILType) =
     member x.EnclosingTypeRef = fieldRef.EnclosingTypeRef
     override x.ToString() = x.FieldRef.ToString()
 
-
-// --------------------------------------------------------------------
-// Debug info.                                                     
-// -------------------------------------------------------------------- 
-
-type Guid =  byte[]
-
 type ILPlatform = 
     | X86
     | AMD64
     | IA64
-
-
-// --------------------------------------------------------------------
-// Custom attributes                                                     
-// -------------------------------------------------------------------- 
 
 type ILCustomAttrArg =  (ILType * obj)
 type ILCustomAttrNamedArg =  (string * ILType * bool * obj)
@@ -567,10 +555,11 @@ type ILParameter =
       ParameterType: ILType;
       Default: ILFieldInit option;  
       //Marshal: ILNativeType option; 
-      IsIn: bool;
-      IsOut: bool;
-      IsOptional: bool;
+      Attributes: ParameterAttributes
       CustomAttrs: ILCustomAttrs }
+    member x.IsIn = ((x.Attributes &&& ParameterAttributes.In) <> enum 0)
+    member x.IsOut = ((x.Attributes &&& ParameterAttributes.Out) <> enum 0)
+    member x.IsOptional = ((x.Attributes &&& ParameterAttributes.Optional) <> enum 0)
 
 type ILParameters = ILParameter[]
 
@@ -584,50 +573,20 @@ type ILOverridesSpec =
     member x.MethodRef = let (OverridesSpec(mr,_ty)) = x in mr
     member x.EnclosingType = let (OverridesSpec(_mr,ty)) = x in ty
 
-type ILMethodVirtualInfo = 
-    { IsFinal: bool
-      IsNewSlot: bool 
-      IsCheckAccessOnOverride: bool
-      IsAbstract: bool }
-
-type MethodKind =
-    | Static 
-    | Cctor 
-    | Ctor 
-    | NonVirtual 
-    | Virtual of ILMethodVirtualInfo
-
-[<RequireQualifiedAccess>]
-type ILMethodBody = 
-    | IL (* of ILMethodBody *) 
-    | PInvoke (* of PInvokeMethod *) 
-    | Abstract
-    | Native
-
-[<RequireQualifiedAccess>]
-type MethodCodeKind =
-    | IL
-    | Native
-    | Runtime
-
 let typesOfILParamsRaw (ps:ILParameters) : ILTypes = ps |> Array.map (fun p -> p.ParameterType) 
 let typesOfILParamsList (ps:ILParameter[]) = ps |> Array.map (fun p -> p.ParameterType) 
-
-[<StructuralEquality; StructuralComparison>]
-type ILGenericVariance = 
-    | NonVariant            
-    | CoVariant             
-    | ContraVariant         
 
 type ILGenericParameterDef =
     { Name: string
       Constraints: ILTypes
-      Variance: ILGenericVariance
-      HasReferenceTypeConstraint: bool
-      CustomAttrs : ILCustomAttrs
-      HasNotNullableValueTypeConstraint: bool
-      HasDefaultConstructorConstraint: bool }
+      Attributes: GenericParameterAttributes
+      CustomAttrs : ILCustomAttrs }
 
+    member x.HasReferenceTypeConstraint= (x.Attributes &&& GenericParameterAttributes.ReferenceTypeConstraint) <> enum 0
+    member x.HasNotNullableValueTypeConstraint= (x.Attributes &&& GenericParameterAttributes.NotNullableValueTypeConstraint) <> enum 0
+    member x.HasDefaultConstructorConstraint= (x.Attributes &&& GenericParameterAttributes.DefaultConstructorConstraint) <> enum 0
+    member x.IsCovariant = (x.Attributes &&& GenericParameterAttributes.Covariant) <> enum 0
+    member x.IsContravariant = (x.Attributes &&& GenericParameterAttributes.Contravariant) <> enum 0
     override x.ToString() = x.Name 
 
 type ILGenericParameterDefs = ILGenericParameterDef[]
@@ -636,42 +595,37 @@ type ILGenericParameterDefs = ILGenericParameterDef[]
 type ILMethodDef = 
     { MetadataToken: int32
       Name: string
-      Kind: MethodKind
       CallingConv: ILCallingConv
       Parameters: ILParameters
       Return: ILReturn
       Access: ILMemberAccess
-      mdBody: ILMethodBody   
-      mdCodeKind: MethodCodeKind   
-      IsInternalCall: bool
-      IsManaged: bool
-      IsForwardRef: bool
+      //mdBody: ILMethodBody   
+      ImplementationFlags : MethodImplAttributes
+      //IsInternalCall: bool
+      //IsManaged: bool
+      //IsForwardRef: bool
       //SecurityDecls: ILPermissions
-      HasSecurity: bool
+      //HasSecurity: bool
       IsEntryPoint:bool
-      IsReqSecObj: bool
-      IsHideBySig: bool
-      IsSpecialName: bool
-      IsUnmanagedExport: bool
-      IsSynchronized: bool
-      IsPreserveSig: bool
-      IsMustRun: bool
-      IsNoInline: bool
+      //IsSynchronized: bool
+      //IsPreserveSig: bool
+      //IsMustRun: bool
+      //IsNoInline: bool
+      Attributes : MethodAttributes
       GenericParams: ILGenericParameterDefs
       CustomAttrs: ILCustomAttrs }
     member x.ParameterTypes = typesOfILParamsRaw x.Parameters
-
-    member x.IsClassInitializer   = match x.Kind with | MethodKind.Cctor      -> true | _ -> false
-    member x.IsConstructor        = match x.Kind with | MethodKind.Ctor       -> true | _ -> false
-    member x.IsStatic             = match x.Kind with | MethodKind.Static     -> true | _ -> false
-    member x.IsNonVirtualInstance = match x.Kind with | MethodKind.NonVirtual -> true | _ -> false
-    member x.IsVirtual            = match x.Kind with | MethodKind.Virtual _  -> true | _ -> false
-
-    member x.IsFinal                = match x.Kind with | MethodKind.Virtual v -> v.IsFinal    | _ -> invalidOp "not virtual"
-    member x.IsNewSlot              = match x.Kind with | MethodKind.Virtual v -> v.IsNewSlot  | _ -> invalidOp "not virtual"
-    member x.IsCheckAccessOnOverride= match x.Kind with | MethodKind.Virtual v -> v.IsCheckAccessOnOverride   | _ -> invalidOp "not virtual"
-    member x.IsAbstract             = match x.Kind with | MethodKind.Virtual v -> v.IsAbstract | _ -> invalidOp "not virtual"
-
+    member x.IsStatic = x.Attributes &&& MethodAttributes.Static <> enum 0
+    member x.IsAbstract = x.Attributes &&& MethodAttributes.Abstract <> enum 0
+    member x.IsVirtual = x.Attributes &&& MethodAttributes.Virtual <> enum 0
+    member x.IsCheckAccessOnOverride = x.Attributes &&& MethodAttributes.CheckAccessOnOverride <> enum 0
+    member x.IsNewSlot = x.Attributes &&& MethodAttributes.NewSlot <> enum 0
+    member x.IsFinal = x.Attributes &&& MethodAttributes.Final <> enum 0
+    member x.IsSpecialName = x.Attributes &&& MethodAttributes.SpecialName <> enum 0
+    member x.IsRTSpecialName = x.Attributes &&& MethodAttributes.RTSpecialName <> enum 0
+    member x.IsHideBySig = x.Attributes &&& MethodAttributes.HideBySig <> enum 0
+    member x.IsClassInitializer   = x.Name = ".cctor"
+    member x.IsConstructor        = x.Name = ".ctor"
     member md.CallingSignature =  ILCallingSignature (md.CallingConv,md.ParameterTypes,md.Return.Type)
     override x.ToString() = "method " + x.Name
 
@@ -692,6 +646,7 @@ type ILEventDef =
       Name: string
       IsRTSpecialName: bool
       IsSpecialName: bool
+      Attributes : System.Reflection.EventAttributes
       AddMethod: ILMethodRef
       RemoveMethod: ILMethodRef
       //FireMethod: ILMethodRef option
@@ -711,8 +666,7 @@ type ILEventDefs =
 [<NoComparison; NoEquality>]
 type ILPropertyDef = 
     { Name: string
-      IsRTSpecialName: bool
-      IsSpecialName: bool
+      Attributes : System.Reflection.PropertyAttributes
       SetMethod: ILMethodRef option
       GetMethod: ILMethodRef option
       CallingConv: ILThisConvention
@@ -725,9 +679,7 @@ type ILPropertyDef =
         {  Name = Some("arg"+string i)
            ParameterType = ty
            Default = None
-           IsIn = false
-           IsOptional = false
-           IsOut = false 
+           Attributes  = ParameterAttributes.None
            CustomAttrs = ILCustomAttrs.Empty })
     override x.ToString() = "property " + x.Name
     
@@ -744,6 +696,7 @@ type ILFieldDef =
       FieldType: ILType
       IsStatic: bool
       Access: ILMemberAccess
+      Attributes : System.Reflection.FieldAttributes
       //Data:  byte[] option
       LiteralValue:  ILFieldInit option
       Offset:  int32 option
@@ -2700,22 +2653,12 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
                  tomdCompare (TaggedIndex(a,b)),
                  isSorted TableNames.GenericParam,
                  (fun (gpidx,seq,flags,_,nameIdx) -> 
-                     let flags = int32 flags
-                     let varianceFlags = flags &&& 0x0003
-                     let variance = 
-                         if varianceFlags = 0x0000 then NonVariant
-                         elif varianceFlags = 0x0001 then CoVariant
-                         elif varianceFlags = 0x0002 then ContraVariant 
-                         else NonVariant
                      let constraints = seekReadGenericParamConstraintsUncached numtypars gpidx
                      let cas = seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.GenericParam,gpidx))
                      seq, {Name=readStringHeap nameIdx
                            Constraints= constraints
-                           Variance=variance  
                            CustomAttrs=cas
-                           HasReferenceTypeConstraint= (flags &&& 0x0004) <> 0
-                           HasNotNullableValueTypeConstraint= (flags &&& 0x0008) <> 0
-                           HasDefaultConstructorConstraint=(flags &&& 0x0010) <> 0 }))
+                           Attributes = enum (int32 flags) }))
         pars |> Array.sortBy fst |> Array.map snd 
 
     and seekReadGenericParamConstraintsUncached numtypars gpidx =
@@ -2827,16 +2770,15 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
          let (flags,nameIdx,typeIdx) = seekReadFieldRow idx
          let nm = readStringHeap nameIdx
          let isStatic = (flags &&& 0x0010) <> 0
-         let fd = 
-           { Name = nm
-             FieldType = readBlobHeapAsFieldSig numtypars typeIdx
-             Access = memberAccessOfFlags flags
-             IsStatic = isStatic
-             IsInitOnly = (flags &&& 0x0020) <> 0
-             IsLiteral = (flags &&& 0x0040) <> 0
-             NotSerialized = (flags &&& 0x0080) <> 0
-             IsSpecialName = (flags &&& 0x0200) <> 0 || (flags &&& 0x0400) <> 0 (* REVIEW: RTSpecialName *)
-             LiteralValue = if (flags &&& 0x8000) = 0 then None else Some (seekReadConstant (TaggedIndex(HasConstantTag.FieldDef,idx)))
+         { Name = nm
+           FieldType = readBlobHeapAsFieldSig numtypars typeIdx
+           Access = memberAccessOfFlags flags
+           IsStatic = isStatic
+           IsInitOnly = (flags &&& 0x0020) <> 0
+           IsLiteral = (flags &&& 0x0040) <> 0
+           NotSerialized = (flags &&& 0x0080) <> 0
+           IsSpecialName = (flags &&& 0x0200) <> 0 || (flags &&& 0x0400) <> 0 (* REVIEW: RTSpecialName *)
+           LiteralValue = if (flags &&& 0x8000) = 0 then None else Some (seekReadConstant (TaggedIndex(HasConstantTag.FieldDef,idx)))
     (*
              Marshal = 
                  if (flags &&& 0x1000) = 0 then None else 
@@ -2851,12 +2793,12 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
                                                  snd,simpleIndexCompare idx,isSorted TableNames.FieldRVA,fst) 
                    Some (rvaToData "field" rva)
     *)
-             Offset = 
+           Attributes = enum<System.Reflection.FieldAttributes>(flags)
+           Offset = 
                  if hasLayout && not isStatic then 
                      Some (seekReadIndexedRow (getNumRows TableNames.FieldLayout,seekReadFieldLayoutRow,
                                                snd,simpleIndexCompare idx,isSorted TableNames.FieldLayout,fst)) else None 
-             CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.FieldDef,idx)) }
-         fd
+           CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.FieldDef,idx)) }
      
     and seekReadFields (numtypars, hasLayout) fidx1 fidx2 =
         mkILFieldsLazy 
@@ -3073,28 +3015,6 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
     and seekReadMethod numtypars (idx:int) =
          let (_codeRVA, implflags, flags, nameIdx, typeIdx, paramIdx) = seekReadMethodRow idx
          let nm = readStringHeap nameIdx
-         let isStatic = (flags &&& 0x0010) <> 0x0
-         let final = (flags &&& 0x0020) <> 0x0
-         let virt = (flags &&& 0x0040) <> 0x0
-         let strict = (flags &&& 0x0200) <> 0x0
-         let hidebysig = (flags &&& 0x0080) <> 0x0
-         let newslot = (flags &&& 0x0100) <> 0x0
-         let abstr = (flags &&& 0x0400) <> 0x0
-         let specialname = (flags &&& 0x0800) <> 0x0
-         let pinvoke = (flags &&& 0x2000) <> 0x0
-         let export = (flags &&& 0x0008) <> 0x0
-         let reqsecobj = (flags &&& 0x8000) <> 0x0
-         let hassec = (flags &&& 0x4000) <> 0x0
-         let codetype = implflags &&& 0x0003
-         let unmanaged = (implflags &&& 0x0004) <> 0x0
-         let forwardref = (implflags &&& 0x0010) <> 0x0
-         let preservesig = (implflags &&& 0x0080) <> 0x0
-         let internalcall = (implflags &&& 0x1000) <> 0x0
-         let synchronized = (implflags &&& 0x0020) <> 0x0
-         let noinline = (implflags &&& 0x0008) <> 0x0
-         let mustrun = (implflags &&& 0x0040) <> 0x0
-         let cctor = (nm = ".cctor")
-         let ctor = (nm = ".ctor")
          let _generic,_genarity,cc,retty,argtys,_varargs = readBlobHeapAsMethodSig numtypars typeIdx
      
          let endParamIdx =
@@ -3108,47 +3028,23 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
 
          { MetadataToken=idx // This value is not a strict metadata token but it's good enough (if needed we could get the real one pretty easily)
            Name=nm
-           Kind = 
-               (if cctor then MethodKind.Cctor 
-                elif ctor then MethodKind.Ctor 
-                elif isStatic then MethodKind.Static 
-                elif virt then 
-                 MethodKind.Virtual 
-                   { IsFinal=final 
-                     IsNewSlot=newslot 
-                     IsCheckAccessOnOverride=strict
-                     IsAbstract=abstr }
-                else MethodKind.NonVirtual)
            Access = memberAccessOfFlags flags
+           Attributes = enum<System.Reflection.MethodAttributes>(flags)
            //SecurityDecls=seekReadSecurityDecls (TaggedIndex(hds_MethodDef,idx))
-           HasSecurity=hassec
            IsEntryPoint= (fst entryPointToken = TableNames.Method && snd entryPointToken = idx)
-           IsReqSecObj=reqsecobj
-           IsHideBySig=hidebysig
-           IsSpecialName=specialname
-           IsUnmanagedExport=export
-           IsSynchronized=synchronized
-           IsNoInline=noinline
-           IsMustRun=mustrun
-           IsPreserveSig=preservesig
-           IsManaged = not unmanaged
-           IsInternalCall = internalcall
-           IsForwardRef = forwardref
-           mdCodeKind = (if (codetype = 0x00) then MethodCodeKind.IL elif (codetype = 0x01) then MethodCodeKind.Native elif (codetype = 0x03) then MethodCodeKind.Runtime else MethodCodeKind.Native)
+           ImplementationFlags= enum<MethodImplAttributes> implflags
            GenericParams=seekReadGenericParams numtypars (TypeOrMethodDefTag.MethodDef,idx)
            CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.MethodDef,idx)) 
            Parameters= ilParams
            CallingConv=cc
            Return=ret
-           mdBody=
-             if (codetype = 0x01) && pinvoke then 
-               ILMethodBody.Native
-             elif pinvoke then 
-               ILMethodBody.PInvoke
-             elif internalcall || abstr || unmanaged || (codetype <> 0x00) then 
-               ILMethodBody.Abstract
-             else 
-               ILMethodBody.IL   //seekReadMethodRVA (idx,nm,internalcall,noinline,numtypars) codeRVA   
+           //mdBody=
+           //  if (codetype = 0x01) then 
+           //    ILMethodBody.Native
+           //  elif (codetype <> 0x00) then 
+           //    ILMethodBody.Abstract
+           //  else 
+           //    ILMethodBody.IL   //seekReadMethodRVA (idx,nm,internalcall,noinline,numtypars) codeRVA   
          }
      
      
@@ -3160,9 +3056,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
                 { Name=None
                   Default=None
                   //Marshal=None
-                  IsIn=false
-                  IsOut=false
-                  IsOptional=false
+                  Attributes= ParameterAttributes.None
                   ParameterType=ty
                   CustomAttrs=ILCustomAttrs.Empty })
         for i = pidx1 to pidx2 - 1 do
@@ -3171,7 +3065,6 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
 
     and seekReadParamExtras (retRes,paramsRes) (idx:int) =
        let (flags,seq,nameIdx) = seekReadParamRow idx
-       let inOutMasked = (flags &&& 0x00FF)
        //let _hasMarshal = (flags &&& 0x2000) <> 0x0
        let hasDefault = (flags &&& 0x1000) <> 0x0
        //let fmReader idx = seekReadIndexedRow (getNumRows TableNames.FieldMarshal,seekReadFieldMarshalRow,fst,hfmCompare idx,isSorted TableNames.FieldMarshal,(snd >> readBlobHeapAsNativeType ctxt))
@@ -3183,13 +3076,11 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
        else 
            paramsRes.[seq - 1] <- 
               { paramsRes.[seq - 1] with 
-                   //Marshal=(if hasMarshal then Some (fmReader (TaggedIndex(hfm_ParamDef,idx))) else None);
-                   Default = (if hasDefault then Some (seekReadConstant (TaggedIndex(HasConstantTag.ParamDef,idx))) else None);
-                   Name = readStringHeapOption nameIdx;
-                   IsIn = ((inOutMasked &&& 0x0001) <> 0x0);
-                   IsOut = ((inOutMasked &&& 0x0002) <> 0x0);
-                   IsOptional = ((inOutMasked &&& 0x0010) <> 0x0);
-                   CustomAttrs =cas }
+                   //Marshal=(if hasMarshal then Some (fmReader (TaggedIndex(hfm_ParamDef,idx))) else None)
+                   Default = (if hasDefault then Some (seekReadConstant (TaggedIndex(HasConstantTag.ParamDef,idx))) else None)
+                   Name = readStringHeapOption nameIdx
+                   Attributes = enum<ParameterAttributes> flags
+                   CustomAttrs = cas }
           
     and seekReadMethodImpls numtypars tidx =
        ILMethodImplDefs
@@ -3230,14 +3121,15 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
 
     and seekReadEvent _numtypars idx =
        let (flags,nameIdx,_typIdx) = seekReadEventRow idx
-       { Name = readStringHeap nameIdx;
-         //EventHandlerType = seekReadOptionalTypeDefOrRef numtypars AsObject typIdx;
-         IsSpecialName  = (flags &&& 0x0200) <> 0x0; 
-         IsRTSpecialName = (flags &&& 0x0400) <> 0x0;
-         AddMethod= seekReadMethodSemantics (0x0008,TaggedIndex(HasSemanticsTag.Event, idx));
-         RemoveMethod=seekReadMethodSemantics (0x0010,TaggedIndex(HasSemanticsTag.Event,idx));
-         //FireMethod=seekReadOptionalMethodSemantics (0x0020,TaggedIndex(HasSemanticsTag.Event,idx));
-         //OtherMethods = seekReadMultipleMethodSemantics (0x0004, TaggedIndex(HasSemanticsTag.Event, idx));
+       { Name = readStringHeap nameIdx
+         //EventHandlerType = seekReadOptionalTypeDefOrRef numtypars AsObject typIdx
+         IsSpecialName  = (flags &&& 0x0200) <> 0x0
+         IsRTSpecialName = (flags &&& 0x0400) <> 0x0
+         Attributes = enum<System.Reflection.EventAttributes>(flags)
+         AddMethod= seekReadMethodSemantics (0x0008,TaggedIndex(HasSemanticsTag.Event, idx))
+         RemoveMethod=seekReadMethodSemantics (0x0010,TaggedIndex(HasSemanticsTag.Event,idx))
+         //FireMethod=seekReadOptionalMethodSemantics (0x0020,TaggedIndex(HasSemanticsTag.Event,idx))
+         //OtherMethods = seekReadMultipleMethodSemantics (0x0004, TaggedIndex(HasSemanticsTag.Event, idx))
          CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.Event,idx)) }
    
     and seekReadEvents numtypars tidx =
@@ -3268,10 +3160,9 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals) =
                match setter with 
                | Some mref ->  mref.CallingConv .ThisConv
                | None -> cc
-       { Name=readStringHeap nameIdx;
-         CallingConv = cc2;
-         IsRTSpecialName=(flags &&& 0x0400) <> 0x0; 
-         IsSpecialName= (flags &&& 0x0200) <> 0x0; 
+       { Name=readStringHeap nameIdx
+         CallingConv = cc2
+         Attributes = enum<System.Reflection.PropertyAttributes>(flags)
          SetMethod=setter;
          GetMethod=getter;
          PropertyType=retty;
@@ -3812,7 +3703,7 @@ let decodeILCustomAttribData ilg (ca: ILCustomAttr) : ILCustomAttrArg list  =
     fixedArgs
 
   
-let OpenILModuleReaderAfterReadingAllBytes (infile, systemRuntimeScopeRef) = 
+let ILModuleReaderAfterReadingAllBytes (infile, systemRuntimeScopeRef) = 
     let mc = ByteFile.OpenIn infile
     ILModuleReader(infile, mc, systemRuntimeScopeRef)
 
