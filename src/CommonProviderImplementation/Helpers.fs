@@ -281,7 +281,7 @@ module internal ProviderHelpers =
     
     // Caches the generated types by name for up to 30 minutes, the same duration of web caches
     // If there's a file invalidation, this cache is also invalidated
-    let internal getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeVersion) cacheDuration f =
+    let internal getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeInfo) cacheDuration f =
       
         let key = fullTypeName, runtimeVersion
 
