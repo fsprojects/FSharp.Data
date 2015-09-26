@@ -118,8 +118,9 @@ let doctorWho = new HtmlProvider<"http://en.wikipedia.org/wiki/List_of_Doctor_Wh
 // Get the average number of viewers for each doctor
 let viewersByDoctor = 
     doctorWho.Tables.Overview.Rows 
-    |> Seq.groupBy (fun season -> season.Doctor)
-    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> season.``Average viewers (millions)``))
+    |> Seq.groupBy (fun season -> season.``Doctor(s)``)
+    |> Seq.map (fun (doctor, seasons) -> doctor, seasons |> Seq.averageBy (fun season -> try float season.``Viewers (millions)`` with _ -> 0.0))
+    |> Seq.toArray
 
 // Visualize it
 (Chart.Column viewersByDoctor).WithYAxis(Title = "Millions")
