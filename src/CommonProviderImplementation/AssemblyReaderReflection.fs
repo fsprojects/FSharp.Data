@@ -1,4 +1,6 @@
-﻿//----------------------------------------------------------------------------
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
 // An implementation of reflection objects over on-disk assemblies, sufficient to give
 // System.Type, System.MethodInfo, System.ConstructorInfo etc. objects
 // that can be referred to in quotations and used as backing information for cross-

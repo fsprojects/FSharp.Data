@@ -1,6 +1,7 @@
-﻿// ----------------------------------------------------------------------------------------------
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
 // Utilities for building F# quotations without quotation literals
-// ----------------------------------------------------------------------------------------------
 
 module ProviderImplementation.QuotationBuilder
 

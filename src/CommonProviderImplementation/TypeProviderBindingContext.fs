@@ -1,4 +1,6 @@
-﻿//----------------------------------------------------------------------------
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
 // A binding context for cross-targeting type providers
 
 module internal ProviderImplementation.TypeProviderBindingContext
@@ -97,23 +99,4 @@ type Microsoft.FSharp.Core.CompilerServices.TypeProviderConfig with
             with _ ->
                []
         TypeProviderBindingContext(referencedAssemblies)
-
-(*
-let ctxt1 = TypeProviderBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" ]
-let ctxt2 = TypeProviderBindingContext[ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\mscorlib.dll" ]
-let ctxt3 = 
-    TypeProviderBindingContext
-        [ @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile7\mscorlib.dll";
-          @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile7\System.Runtime.dll" ]
-
-ctxt1.SystemRuntimeScopeRef
-ctxt2.SystemRuntimeScopeRef
-ctxt3.SystemRuntimeScopeRef
-ctxt1.BindAssembly (ILAssemblyRef.FromAssemblyName(AssemblyName("mscorlib"))) 
-ctxt2.BindAssembly (ILAssemblyRef.FromAssemblyName(AssemblyName("mscorlib"))) 
-ctxt3.BindAssembly (ILAssemblyRef.FromAssemblyName(AssemblyName("mscorlib"))) 
-ctxt1.BindAssembly(AssemblyName("mscorlib")).BindType([| |], "System.Object")
-ctxt3.BindAssembly(AssemblyName("mscorlib")).BindType([| |], "System.Object") // gets forwarded
-ctxt3.BindAssembly(AssemblyName("System.Runtime"))
-*)
 

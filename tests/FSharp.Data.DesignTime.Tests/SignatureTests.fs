@@ -75,6 +75,52 @@ let portableCoreFSharp31Refs profile =
       yield fsharp31PortableAssembliesPath profile ]
 
 
+[<Test>]
+let ``test basic binding context net40``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (net40FSharp31Refs)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable7``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (portableCoreFSharp31Refs 7)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("System.Runtime") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable47``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (portable47FSharp31Refs)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+
+[<Test>]
+let ``test basic binding context portable259``() = 
+   let ctxt1 = ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext (portableCoreFSharp31Refs 259)
+
+   ctxt1.SystemRuntimeScopeRef |> ignore
+   match ctxt1.TryBindAssembly("System.Runtime") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice2Of2 err -> raise err
+   match ctxt1.TryBindAssembly("mscorlib") with 
+   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice2Of2 err -> raise err
+
+
 let generateAllExpected() =
     if not <| Directory.Exists expectedDirectory then 
         Directory.CreateDirectory expectedDirectory |> ignore

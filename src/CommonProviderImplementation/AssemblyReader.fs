@@ -1,4 +1,7 @@
-﻿
+﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
+// Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
+//
+
 module internal ProviderImplementation.AssemblyReader
 
 open System
@@ -42,7 +45,9 @@ type LazyOrderedMultiMap<'Key,'Data when 'Key : equality>(keyf : 'Data -> 'Key, 
     let quickMap= 
         lazyItems |> lazyMap (fun entries -> 
             let t = new Dictionary<_,_>(entries.Length, HashIdentity.Structural)
-            do entries |> Array.iter (fun y -> let key = keyf y in t.[key] <- y :: (if t.ContainsKey(key) then t.[key] else [])) 
+            for y in entries do 
+                let key = keyf y 
+                t.[key] <- y :: (if t.ContainsKey(key) then t.[key] else [])
             t)
 
     member self.Entries() = lazyItems.Force()
