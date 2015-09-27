@@ -49,11 +49,16 @@ let normalize (str:string) =
   str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("@\"<RESOLUTION_FOLDER>\"", "\"<RESOLUTION_FOLDER>\"")
 
 [<TestCaseSource "testCases">]
+[<Test>]
+[<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
-    let expected = testCase.ExpectedPath expectedDirectory |> File.ReadAllText |> normalize
-    let output = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize
+    let path = testCase.ExpectedPath expectedDirectory 
+    let expected = path |> File.ReadAllText |> normalize
+    let outputRaw = testCase.Dump resolutionFolder "" runtimeAssembly (*signatureOnly*)false (*ignoreOutput*)false |> normalize
+    let output = outputRaw |> normalize
     if output <> expected then
-        printfn "Obtained Signature:\n%s" output
+        printfn "Obtained Signature:\n%s" outputRaw
+    //System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
     output |> should equal expected
 
 [<Test>]
