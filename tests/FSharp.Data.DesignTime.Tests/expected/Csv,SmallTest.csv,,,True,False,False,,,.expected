@@ -20,7 +20,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_ = row in t1))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv")), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv")), ",", '"', true, false, 0, false)
 
     static member AsyncGetSample: () -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -36,7 +36,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
                              CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv"), f)
 
     static member AsyncLoad: uri:string -> CsvProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> 
@@ -52,7 +52,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
                                                                         TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
                              CsvFile<_>.Create(stringArrayToRow, rowToStringArray, t, ",", '"', true, false, 0, false))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "CSV" "" uri), f)
 
     static member GetSample: () -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -66,7 +66,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_ = row in t1))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv")), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "CSV" "" "SmallTest.csv")), ",", '"', true, false, 0, false)
 
     static member Load: stream:System.IO.Stream -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
@@ -108,7 +108,7 @@ class CsvProvider : FDR.CsvFile<CsvProvider+Row>
                                             [| TextRuntime.ConvertStringBack(Some (let t1,_,_ = row in t1))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,t2,_ = row in t2))
                                                TextRuntime.ConvertDecimalBack("", Some (let _,_,t3 = row in t3)) |])
-    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false)
+    CsvFile<_>.Create(stringArrayToRow, rowToStringArray, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "CSV" "" uri)), ",", '"', true, false, 0, false)
 
     static member Parse: text:string -> CsvProvider
     let stringArrayToRow = new Func<_,_,_>(fun (parent:obj) (row:string[]) -> 
