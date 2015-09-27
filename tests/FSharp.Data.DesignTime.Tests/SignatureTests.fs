@@ -66,12 +66,12 @@ let net40FSharp31Refs = [net40AssembliesPath ++ "mscorlib.dll"; net40AssembliesP
 let portable47FSharp31Refs = [portableAssembliesPath 47 ++ "mscorlib.dll"; portableAssembliesPath 47 ++ "System.Xml.Linq.dll"; fsharp31PortableAssembliesPath 47]
 
 let portableCoreFSharp31Refs profile = 
-    [ for ass in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions"; 
+    [ for asm in [ "System.Runtime"; "mscorlib"; "System.Collections"; "System.Core"; "System"; "System.Globalization"; "System.IO"; "System.Linq"; "System.Linq.Expressions"; 
                    "System.Linq.Queryable"; "System.Net"; "System.Net.NetworkInformation"; "System.Net.Primitives"; "System.Net.Requests"; "System.ObjectModel"; "System.Reflection"; 
                    "System.Reflection.Extensions"; "System.Reflection.Primitives"; "System.Resources.ResourceManager"; "System.Runtime.Extensions"; 
                    "System.Runtime.InteropServices.WindowsRuntime"; "System.Runtime.Serialization"; "System.Threading"; "System.Threading.Tasks"; "System.Xml"; "System.Xml.Linq"; "System.Xml.XDocument";
                    "System.Runtime.Serialization.Json"; "System.Runtime.Serialization.Primitives"; "System.Windows" ] do 
-         yield portableAssembliesPath profile ++ ass + ".dll"
+         yield portableAssembliesPath profile ++ asm + ".dll"
       yield fsharp31PortableAssembliesPath profile ]
 
 
@@ -81,7 +81,7 @@ let ``test basic binding context net40``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -90,10 +90,10 @@ let ``test basic binding context portable7``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("System.Runtime") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -102,7 +102,7 @@ let ``test basic binding context portable47``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
 
 [<Test>]
@@ -111,13 +111,13 @@ let ``test basic binding context portable259``() =
 
    ctxt1.SystemRuntimeScopeRef |> ignore
    match ctxt1.TryBindAssembly("System.Runtime") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").FullName |> should equal "System.Object"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").FullName |> should equal "System.Object"
    | Choice2Of2 err -> raise err
    match ctxt1.TryBindAssembly("mscorlib") with 
-   | Choice1Of2 ass -> ass.BindType(Some "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
+   | Choice1Of2 asm -> asm.BindType(Some "System", "Object").Assembly.GetName().Name |> should equal "System.Runtime"
    | Choice2Of2 err -> raise err
 
 

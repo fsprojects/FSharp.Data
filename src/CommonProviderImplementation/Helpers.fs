@@ -17,6 +17,7 @@ open FSharp.Data.Runtime.StructuralTypes
 open FSharp.Data.Runtime.StructuralInference
 open ProviderImplementation
 open ProviderImplementation.ProvidedTypes
+open ProviderImplementation.TypeProviderBindingContext
 
 // ----------------------------------------------------------------------------------------------
 
@@ -148,12 +149,13 @@ module internal ProviderHelpers =
           SampleIsWebUri : bool
           SampleIsResource : bool }
 
-    let ReadResource(bindingCtxt: ProviderImplementation.TypeProviderBindingContext.TypeProviderBindingContext, resourceName:string) =
+    let ReadResource(cfg: TypeProviderConfig, resourceName:string) =
         match resourceName.Split(',') with
         | [| asmName; name |] -> 
             let asmName = asmName.Trim()
             let name = name.Trim()
             try
+                let bindingCtxt = cfg.GetTypeProviderBindingContext()
                 let asm = bindingCtxt.BindAssembly(AssemblyName(asmName))
                 use sr = new StreamReader(asm.GetManifestResourceStream(name))
                 Some(sr.ReadToEnd())
@@ -176,14 +178,14 @@ module internal ProviderHelpers =
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * resolutionFolder - if the type provider allows to override the resolutionFolder pass it here
     let private parseTextAtDesignTime sampleOrSampleUri parseFunc formatName (tp:IDisposableTypeProvider) 
-                                      (cfg:TypeProviderConfig) bindingContext encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
+                                      (cfg:TypeProviderConfig) encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         using (logTime "Loading" sampleOrSampleUri) <| fun _ ->
     
         let tryGetResource() = 
             if String.IsNullOrWhiteSpace(optResource)
             then None 
-            else ReadResource(bindingContext, optResource)
+            else ReadResource(cfg, optResource)
 
         let tryGetUri str =
             match Uri.TryCreate(str, UriKind.RelativeOrAbsolute) with
@@ -278,26 +280,30 @@ module internal ProviderHelpers =
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    let private providedTypesCache = Dictionary()
+    let (|WeakValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> (ProvidedTypeDefinition * System.DateTime))
+    let WeakValue (pair: ProvidedTypeDefinition * System.DateTime) = System.WeakReference (box pair)
+
+    let private providedTypesCache = Dictionary<_,WeakReference>()
     
-    // Caches the generated types by name for up to 30 minutes, the same duration of web caches
+    // Weakly caches the generated types by name for up to 30 minutes, the same duration of web caches
     // If there's a file invalidation, this cache is also invalidated
     let internal getOrCreateProvidedType (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeInfo) cacheDuration f =
       
         let key = fullTypeName, runtimeVersion
 
         match providedTypesCache.TryGetValue key with
-        | true, (providedType, time) when DateTime.Now - time < cacheDuration -> 
+        | true, WeakValue (providedType, time) when DateTime.Now - time < cacheDuration -> 
             log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 
             let providedType = f()
             log (sprintf "Creating cache for %s [%d]" fullTypeName tp.Id)
-            providedTypesCache.[key] <- (providedType, DateTime.Now)
+            providedTypesCache.[key] <- WeakValue (providedType, DateTime.Now)
             tp.AddDisposeAction fullTypeName <| fun () -> 
                 log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
                 providedTypesCache.Remove key |> ignore
             providedType
+
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
     /// * sampleOrSampleUri - the text which can be a sample or an uri for a sample
@@ -312,8 +318,8 @@ module internal ProviderHelpers =
     /// * optResource - when specified, we first try to treat read the sample from an embedded resource
     ///     (the value specified assembly and resource name e.g. "MyCompany.MyAssembly, some_resource.json")
     /// * typeName -> the full name of the type provider, this will be used for caching
-    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples runtimeVersion
-                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) bindingCtxt (replacer:AssemblyReplacer) 
+    let generateType formatName sampleOrSampleUri sampleIsList parseSingle parseList getSpecFromSamples (runtimeVersion: AssemblyResolver.FSharpDataRuntimeInfo)
+                     (tp:DisposableTypeProviderForNamespaces) (cfg:TypeProviderConfig) (replacer:AssemblyReplacer) 
                      encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows =
     
         let isRunningInFSI = cfg.IsHostedExecution
@@ -328,7 +334,7 @@ module internal ProviderHelpers =
         getOrCreateProvidedType tp fullTypeName runtimeVersion cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
-        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg bindingCtxt encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
+        let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
         
         let spec = getSpecFromSamples parseResult.TypedSamples
         

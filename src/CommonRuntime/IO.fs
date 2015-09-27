@@ -126,7 +126,7 @@ type internal IDisposableTypeProvider =
 
 type private Watcher(uri:Uri) =
 
-    let typeProviders = ResizeArray<IDisposableTypeProvider*string>()
+    let typeProviders = ResizeArray<System.WeakReference (* tp *) *string>()
 
     let getLastWrite() = File.GetLastWriteTime uri.OriginalString 
     let lastWrite = ref (getLastWrite())
@@ -144,18 +144,24 @@ type private Watcher(uri:Uri) =
             lastWrite := curr
             let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
-                tp.Invalidate typeName
+                match tp.Target with 
+                | null -> ()
+                | :? IDisposableTypeProvider as tp -> tp.Invalidate typeName
+                | _ -> ()
 
     do
         watcher.Changed.Add checkForChanges
         watcher.Renamed.Add checkForChanges
         watcher.Deleted.Add checkForChanges
 
-    member __.Add = typeProviders.Add
+    member __.Add(tp:IDisposableTypeProvider, typeName) = 
+        typeProviders.Add(System.WeakReference tp,typeName)
+
     member __.Remove (tp:IDisposableTypeProvider) typeName = 
         log (sprintf "Removing %s [%d] from watcher %s" typeName tp.Id uri.OriginalString) 
-        typeProviders.Remove (tp, typeName) |> ignore
-        if typeProviders.Count = 0 then
+        typeProviders.RemoveAll (Predicate(fun (wr, tn) -> obj.ReferenceEquals(wr.Target,tp) && tn = typeName)) |> ignore
+        let alive = typeProviders.Exists(Predicate(fun (wr, _tn) -> wr.IsAlive)) 
+        if not alive then
             log ("Disposing watcher " + uri.OriginalString) 
             watcher.Dispose()
             true

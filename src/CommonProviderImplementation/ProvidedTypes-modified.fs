@@ -2492,12 +2492,7 @@ module Local =
                 //             failwith (sprintf "Unknown type '%s' in namespace '%s' (contains %s)" typeName namespaceName typenames)    
         }
 
-
-#if FX_NO_LOCAL_FILESYSTEM
 type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) =
-#else
-type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<ProvidedTypeDefinition>)>) as this =
-#endif
     let otherNamespaces = ResizeArray<string * list<ProvidedTypeDefinition>>()
 
     let providedNamespaces = 
@@ -2510,49 +2505,15 @@ type TypeProviderForNamespaces(namespacesAndTypes : list<(string * list<Provided
 
     let disposing = Event<EventHandler,EventArgs>()
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
-    let probingFolders = ResizeArray()
-    let handler = ResolveEventHandler(fun _ args -> this.ResolveAssembly(args))
-    do AppDomain.CurrentDomain.add_AssemblyResolve handler
-#endif
-
     new (namespaceName:string,types:list<ProvidedTypeDefinition>) = new TypeProviderForNamespaces([(namespaceName,types)])
     new () = new TypeProviderForNamespaces([])
 
     [<CLIEvent>]
     member this.Disposing = disposing.Publish
 
-#if FX_NO_LOCAL_FILESYSTEM
     interface System.IDisposable with 
         member x.Dispose() = 
             disposing.Trigger(x, EventArgs.Empty)
-#else
-    abstract member ResolveAssembly : args : System.ResolveEventArgs -> Assembly
-    default this.ResolveAssembly(args) = 
-        let expectedName = (AssemblyName(args.Name)).Name + ".dll"
-        let expectedLocationOpt = 
-            probingFolders 
-            |> Seq.map (fun f -> IO.Path.Combine(f, expectedName))
-            |> Seq.tryFind IO.File.Exists
-        match expectedLocationOpt with
-        | Some f -> Assembly.LoadFrom f
-        | None -> null
-
-    member this.RegisterProbingFolder (folder) = 
-        // use GetFullPath to ensure that folder is valid
-        ignore(IO.Path.GetFullPath folder)
-        probingFolders.Add folder
-    member this.RegisterRuntimeAssemblyLocationAsProbingFolder (cfg : Core.CompilerServices.TypeProviderConfig) =  
-        cfg.RuntimeAssembly
-        |> IO.Path.GetDirectoryName
-        |> this.RegisterProbingFolder
-
-    interface System.IDisposable with 
-        member x.Dispose() = 
-            disposing.Trigger(x, EventArgs.Empty)
-            AppDomain.CurrentDomain.remove_AssemblyResolve handler
-#endif
 
     member __.AddNamespace (namespaceName,types:list<_>) = otherNamespaces.Add (namespaceName,types)
     // FSharp.Data addition: this method is used by Debug.fs

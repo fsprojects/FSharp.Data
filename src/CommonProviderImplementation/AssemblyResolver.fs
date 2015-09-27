@@ -14,6 +14,7 @@ open ProviderImplementation
 open ProviderImplementation.TypeProviderBindingContext
 
 let private designTimeAssemblies = 
+  lazy
     [| yield Assembly.GetExecutingAssembly() 
        for asm in Assembly.GetExecutingAssembly().GetReferencedAssemblies() do
          let asm = try Assembly.Load(asm) with _ -> null
@@ -34,23 +35,18 @@ type FSharpDataRuntimeInfo =
 
 let init (cfg : TypeProviderConfig) = 
 
-    let bindingContext = cfg.GetTypeProviderBindingContext()
-
-    let version = 
-        let fsCore = bindingContext.TryGetFSharpCoreAssembly()
-
-        match fsCore with 
-        | Choice2Of2 _err -> FSharpDataRuntimeInfo.Net40
-        | Choice1Of2 asm -> 
-           let ver = asm.GetName().Version
-           match ver.Major, ver.Minor with 
-            | 4, _ -> FSharpDataRuntimeInfo.Net40 // 4.3.0.0, 4.3.1.0, 4.4.0.0
-            | _ -> FSharpDataRuntimeInfo.Portable_47_7_259
-
     if not initialized then
         initialized <- true
         WebRequest.DefaultWebProxy.Credentials <- CredentialCache.DefaultNetworkCredentials
         ProvidedTypes.ProvidedTypeDefinition.Logger := Some FSharp.Data.Runtime.IO.log
+
+    let bindingContext = cfg.GetTypeProviderBindingContext()
+
+    let runtimeFSharpCoreVersion = bindingContext.TryGetFSharpCoreAssemblyVersion()
+
+    let versionInfo = 
+        if runtimeFSharpCoreVersion >= Version(4,0,0,0) then FSharpDataRuntimeInfo.Net40 // 4.3.0.0, 4.3.1.0, 4.4.0.0
+        else FSharpDataRuntimeInfo.Portable_47_7_259
 
     let runtimeFSharpDataAssembly = 
         let asmSimpleName = Path.GetFileNameWithoutExtension cfg.RuntimeAssembly
@@ -58,7 +54,7 @@ let init (cfg : TypeProviderConfig) =
         | Choice2Of2 err -> raise err
         | Choice1Of2 loader -> (loader :> Assembly)
     
-    let referencedAssemblies = bindingContext.ReferencedAssemblies
+    let replacer = AssemblyReplacer (designTimeAssemblies, bindingContext.ReferencedAssemblies)
 
-    bindingContext, runtimeFSharpDataAssembly, version, AssemblyReplacer (designTimeAssemblies, referencedAssemblies)
+    runtimeFSharpDataAssembly, versionInfo, replacer
 

@@ -39,7 +39,7 @@ open ProviderImplementation.ProvidedTypes
 ///    replacer.ProvidedConstructor, 
 ///    replacer.ProvidedMethod 
 /// 
-type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
+type AssemblyReplacer(designTimeAssemblies: Lazy<Assembly[]>, referencedAssemblies: Lazy<Assembly[]>) =
 
   /// When translating quotations, Expr.Var's are translated to new variable respecting reference equality.
   let varTable = Dictionary<Var, Var>()
@@ -76,7 +76,7 @@ type AssemblyReplacer(designTimeAssemblies, referencedAssemblies) =
       match cache.TryGetValue(t) with
       | true, newT -> newT
       | false, _ -> 
-            let asms = (if fwd then referencedAssemblies else designTimeAssemblies)
+            let asms = (if fwd then referencedAssemblies.Force() else designTimeAssemblies.Force())
             let fullName = fixName t.FullName
 
             // For normal type provider hosts like fsc.exe System.Void is a special case and these

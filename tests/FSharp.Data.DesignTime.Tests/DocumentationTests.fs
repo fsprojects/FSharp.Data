@@ -45,6 +45,7 @@ let processFile file =
   fsiEvaluator.EvaluationFailed |> Event.add evaluationErrors.Add
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file), fsiEvaluator = fsiEvaluator)
 #else
+  //let fsiEvaluator = FsiEvaluator(fsiObj=FsiEvaluatorConfig.CreateNoOpFsiObject())
   let literateDoc = Literate.ParseScriptFile(Path.Combine(sources, file))
 #endif
   Seq.append

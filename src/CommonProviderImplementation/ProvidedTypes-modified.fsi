@@ -431,19 +431,6 @@ type TypeProviderForNamespaces =
     /// Invalidate the information provided by the provider
     member Invalidate : unit -> unit
 
-#if FX_NO_LOCAL_FILESYSTEM
-#else
-    /// AssemblyResolve handler. Default implementation searches <assemblyname>.dll file in registered folders 
-    abstract ResolveAssembly : System.ResolveEventArgs -> Assembly
-    default ResolveAssembly : System.ResolveEventArgs -> Assembly
-
-    /// Registers custom probing path that can be used for probing assemblies
-    member RegisterProbingFolder : folder : string -> unit
-    /// Registers location of RuntimeAssembly (from TypeProviderConfig) as probing folder
-    member RegisterRuntimeAssemblyLocationAsProbingFolder : cfg : Core.CompilerServices.TypeProviderConfig -> unit
-
-#endif
-
     [<CLIEvent>]
     member Disposing : IEvent<EventHandler,EventArgs>
 

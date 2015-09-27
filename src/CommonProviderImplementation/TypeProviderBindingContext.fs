@@ -40,10 +40,27 @@ type TypeProviderBindingContext(referencedAssemblyPaths : string list) as this =
            | None -> ecmaMscorlibScopeRef // failwith "no reference to mscorlib.dll or System.Runtime.dll found" 
            | Some r -> r
  
+    let fsharpCoreRefVersion = 
+      lazy
+        referencedAssemblyPaths |> List.tryPick (fun path -> 
+          try
+            let simpleName = Path.GetFileNameWithoutExtension path
+            if simpleName = "FSharp.Core" then 
+                let reader = ILModuleReaderAfterReadingAllBytes (path, mkILGlobals ecmaMscorlibScopeRef, true)
+                match reader.ILModuleDef.Manifest with 
+                | Some m -> m.Version
+                | None -> None
+            else
+                None
+          with _ -> None )
+        |> function 
+           | None -> typeof<int list>.Assembly.GetName().Version // failwith "no reference to FSharp.Core found" 
+           | Some r -> r
+ 
     let ilGlobals = lazy mkILGlobals (systemRuntimeScopeRef.Force())
     let readers = lazy ([| for ref in referencedAssemblyPaths -> ref, lazy (try Choice1Of2(ContextAssembly(ilGlobals.Force(), this.TryBindAssembly, ILModuleReaderAfterReadingAllBytes(ref, ilGlobals.Force(), lowMem), ref)) with err -> Choice2Of2 err) |])
-    let readersTable =  lazy ([| for (ref, ass) in readers.Force() do let simpleName = Path.GetFileNameWithoutExtension ref in yield simpleName, ass |] |> Map.ofArray)
-    let referencedAssemblies = lazy ([| for (_,ass) in readers.Force() do match ass.Force() with Choice2Of2 _ -> () | Choice1Of2 ass -> yield ass :> Assembly |])
+    let readersTable =  lazy ([| for (ref, asm) in readers.Force() do let simpleName = Path.GetFileNameWithoutExtension ref in yield simpleName, asm |] |> Map.ofArray)
+    let referencedAssemblies = lazy ([| for (_,asm) in readers.Force() do match asm.Force() with Choice2Of2 _ -> () | Choice1Of2 asm -> yield asm :> Assembly |])
 
     member __.TryBindAssembly(simpleName:string) : Choice<ContextAssembly, exn> = 
         if readersTable.Force().ContainsKey(simpleName) then readersTable.Force().[simpleName].Force() 
@@ -55,8 +72,8 @@ type TypeProviderBindingContext(referencedAssemblyPaths : string list) as this =
     member __.SystemRuntimeScopeRef = systemRuntimeScopeRef.Force()
     member __.ILGlobals = ilGlobals.Force()
     member __.ReferencedAssemblyPaths = referencedAssemblyPaths
-    member __.ReferencedAssemblies =  referencedAssemblies.Force()
-    member x.TryGetFSharpCoreAssembly() = x.TryBindAssembly(AssemblyName("FSharp.Core"))
+    member __.ReferencedAssemblies =  referencedAssemblies
+    member x.TryGetFSharpCoreAssemblyVersion() = fsharpCoreRefVersion.Force()
 
 type System.Object with 
    member private x.GetProperty(nm) = 

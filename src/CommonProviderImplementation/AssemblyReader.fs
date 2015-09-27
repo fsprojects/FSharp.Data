@@ -171,8 +171,6 @@ let sha1HashBytes s = SHA1.sha1HashBytes s
 // 
 // -------------------------------------------------------------------- 
 
-type ILVersionInfo = uint16 * uint16 * uint16 * uint16
-
 [<StructuralEquality; StructuralComparison>]
 type PublicKey =
     | PublicKey of byte[]
@@ -189,7 +187,7 @@ type PublicKey =
     static member KeyAsToken(k) = PublicKeyToken(PublicKey(k).ToToken())
 
 [<Sealed>]
-type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey option, retargetable: bool, version: ILVersionInfo option, locale: string option)  =  
+type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey option, retargetable: bool, version: Version option, locale: string option)  =  
     member x.Name=name
     member x.Hash=hash
     member x.PublicKey=publicKey
@@ -210,7 +208,7 @@ type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey optio
         let version = 
            match aname.Version with 
            | null -> None
-           | v -> Some (uint16 v.Major,uint16 v.Minor,uint16 v.Build,uint16 v.Revision)
+           | v -> Some (Version(v.Major,v.Minor,v.Build,v.Revision))
            
         let retargetable = aname.Flags = System.Reflection.AssemblyNameFlags.Retargetable
 
@@ -223,15 +221,15 @@ type ILAssemblyRef(name: string, hash: byte[] option, publicKey: PublicKey optio
         add(aref.Name);
         match aref.Version with 
         | None -> ()
-        | Some (a,b,c,d) -> 
+        | Some v -> 
             add ", Version=";
-            add (string (int a))
+            add (string v.Major)
             add ".";
-            add (string (int b))
+            add (string v.Minor)
             add ".";
-            add (string (int c))
+            add (string v.Build)
             add ".";
-            add (string (int d))
+            add (string v.Revision)
             add ", Culture="
             match aref.Locale with 
             | None -> add "neutral"
@@ -886,7 +884,7 @@ type ILAssemblyManifest =
     { Name: string
       //SecurityDecls: ILPermissions;
       PublicKey: byte[] option
-      Version: ILVersionInfo option
+      Version: Version option
       Locale: string option
       CustomAttrs: ILCustomAttrs
       //DisableJitOptimizations: bool
@@ -897,7 +895,7 @@ type ILAssemblyManifest =
     member x.GetName() = 
         let asmName = AssemblyName(Name=x.Name)
         x.PublicKey |> Option.iter (fun bytes -> asmName.SetPublicKey(bytes))
-        x.Version |> Option.iter (fun (major,minor,build,rev) -> asmName.Version <- Version (int32 major,int32 minor,int32 build, int32 rev))
+        x.Version |> Option.iter (fun v -> asmName.Version <- v)
         asmName.CultureInfo <- System.Globalization.CultureInfo.InvariantCulture;
         asmName
     override x.ToString() = "manifest " + x.Name
@@ -2458,7 +2456,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
         { Name= name; 
           //SecurityDecls= seekReadSecurityDecls (TaggedIndex(hds_Assembly,idx));
           PublicKey= pubkey;  
-          Version= Some (v1,v2,v3,v4);
+          Version= Some (Version(int v1,int v2,int v3,int v4));
           Locale= readStringHeapOption localeIdx;
           CustomAttrs = seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.Assembly,idx));
           ExportedTypes= seekReadTopExportedTypes ();
@@ -2482,7 +2480,7 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
              hash=readBlobHeapOption hashValueIdx, 
              publicKey=publicKey,
              retargetable=((flags &&& 0x0100) <> 0x0), 
-             version=Some(v1,v2,v3,v4), 
+             version=Some(Version(int v1,int v2,int v3,int v4)), 
              locale=readStringHeapOption localeIdx;)
 
     and seekReadModuleRef idx =

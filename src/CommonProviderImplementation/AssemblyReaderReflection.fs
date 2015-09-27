@@ -470,7 +470,7 @@ and ContextMethodSymbol(gmd: MethodInfo, gargs: Type[]) =
 /// Clones namespaces, type providers, types and members provided by tp, renaming namespace nsp1 into namespace nsp2.
 
 /// Makes a type definition read from a binary available as a System.Type. Not all methods are implemented.
-and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef -> Choice<ContextAssembly,exn>, ass: ContextAssembly, declTyOpt: Type option, inp: ILTypeDef) = 
+and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef -> Choice<ContextAssembly,exn>, asm: ContextAssembly, declTyOpt: Type option, inp: ILTypeDef) = 
     inherit Type()
 
     // Note: For F# type providers we never need to view the custom attributes
@@ -679,9 +679,9 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     /// Bind a reference to an assembly
     and TxScopeRef(sref: ILScopeRef) = 
         match sref with 
-        | ILScopeRef.Assembly aref -> match tryBindAssembly aref with Choice1Of2 ass -> ass | Choice2Of2 exn -> raise exn
-        | ILScopeRef.Local -> ass
-        | ILScopeRef.Module _ -> ass
+        | ILScopeRef.Assembly aref -> match tryBindAssembly aref with Choice1Of2 asm -> asm | Choice2Of2 exn -> raise exn
+        | ILScopeRef.Local -> asm
+        | ILScopeRef.Module _ -> asm
 
     /// Bind a reference to a type
     and TxILTypeRef(tref: ILTypeRef) : Type = 
@@ -734,7 +734,7 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     and TxILGenericParam gpsf pos (inp: ILGenericParameterDef) =
         { new Type() with 
             override __.Name = inp.Name 
-            override __.Assembly = (ass :> Assembly)
+            override __.Assembly = (asm :> Assembly)
             override __.FullName = inp.Name
             override __.IsGenericParameter = true
             override __.GenericParameterPosition = pos
@@ -805,7 +805,7 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     let isNested = declTyOpt.IsSome
 
     override __.Name = inp.Name 
-    override __.Assembly = (ass :> Assembly) 
+    override __.Assembly = (asm :> Assembly) 
     override __.DeclaringType = declTyOpt |> optionToNull
     override __.MemberType = if isNested then MemberTypes.NestedType else MemberTypes.TypeInfo
 
@@ -861,11 +861,11 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
  
     override this.GetNestedTypes(_bindingFlags) = 
         inp.NestedTypes.Elements 
-        |> Array.map (ass.TxILTypeDef (Some (this :> Type)))
+        |> Array.map (asm.TxILTypeDef (Some (this :> Type)))
  
     // GetNestedType is used for linking to the binding context
     override this.GetNestedType(name, _bindingFlags) = 
-        inp.NestedTypes.TryFindByName(None, name) |> Option.map (ass.TxILTypeDef (Some (this :> Type))) |> optionToNull
+        inp.NestedTypes.TryFindByName(None, name) |> Option.map (asm.TxILTypeDef (Some (this :> Type))) |> optionToNull
 
     override this.GetPropertyImpl(name, _bindingFlags, _binder, _returnType, _types, _modifiers) = 
         inp.Properties.Elements 
@@ -935,7 +935,7 @@ and ContextTypeDefinition(ilGlobals: ILGlobals, tryBindAssembly : ILAssemblyRef 
     member x.MakeConstructorInfo (declTy,md) = TxILConstructorDef declTy md
 
 
-and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyRef -> Choice<ContextAssembly,exn>, reader: ILModuleReader, location: string) as ass =
+and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyRef -> Choice<ContextAssembly,exn>, reader: ILModuleReader, location: string) as asm =
     inherit Assembly()
     //let thisAssembly = typedefof<Utils.IWraps<_>>.Assembly
 
@@ -946,7 +946,7 @@ and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyR
 
 
     member __.TxILTypeDef (declTyOpt: Type option) (inp: ILTypeDef) =
-        txTable.Get inp (fun () -> ContextTypeDefinition(ilGlobals, tryBindAssembly, ass, declTyOpt, inp) :> System.Type)
+        txTable.Get inp (fun () -> ContextTypeDefinition(ilGlobals, tryBindAssembly, asm, declTyOpt, inp) :> System.Type)
 
     override x.GetTypes () = [| for td in reader.ILModuleDef.TypeDefs.Elements -> x.TxILTypeDef None td  |]
     override x.Location = location
@@ -979,12 +979,12 @@ and [<AllowNullLiteral>] ContextAssembly(ilGlobals, tryBindAssembly: ILAssemblyR
 
     member x.BindType(nsp:string option, nm:string) = 
         match x.TryBindType(nsp, nm) with 
-        | None -> failwithf "failed to bind type %s in assembly %s" nm ass.FullName
+        | None -> failwithf "failed to bind type %s in assembly %s" nm asm.FullName
         | Some res -> res
 
     member x.TryBindType(nsp:string option, nm:string) : Type option = 
         match reader.ILModuleDef.TypeDefs.TryFindByName(nsp, nm) with 
-        | Some td -> ass.TxILTypeDef None td |> Some
+        | Some td -> asm.TxILTypeDef None td |> Some
         | None -> 
         match reader.ILModuleDef.ManifestOfAssembly.ExportedTypes.TryFindByName(nsp, nm) with 
         | Some tref -> 
