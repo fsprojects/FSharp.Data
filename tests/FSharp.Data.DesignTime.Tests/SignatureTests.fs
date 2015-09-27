@@ -136,8 +136,6 @@ let normalize (str:string) =
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Test>]
-[<TestCaseSource "testCases">]
 let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) = 
     let path = testCase.ExpectedPath expectedDirectory 
     let expected = path |> File.ReadAllText |> normalize
