@@ -1,17 +1,17 @@
 class HtmlProvider : FDR.BaseTypes.HtmlDocument
     new : () -> HtmlProvider
-    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
 
     static member AsyncGetSample: () -> HtmlProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm"), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm"), f)
 
     static member AsyncLoad: uri:string -> HtmlProvider async
     let f = new Func<_,_>(fun (t:TextReader) -> HtmlDocument.Create(false, t))
-    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
+    TextRuntime.AsyncMap((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri), f)
 
     static member GetSample: () -> HtmlProvider
-    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules @"<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntimeWithDesignTimeRules "<RESOLUTION_FOLDER>" "" "HTML" "" "imdb_chart.htm")))
 
     member Lists: HtmlProvider+ListsContainer with get
     this
@@ -23,7 +23,7 @@ class HtmlProvider : FDR.BaseTypes.HtmlDocument
     HtmlDocument.Create(false, reader)
 
     static member Load: uri:string -> HtmlProvider
-    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false @"<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
+    HtmlDocument.Create(false, FSharpAsync.RunSynchronously((IO.asyncReadTextAtRuntime false "<RESOLUTION_FOLDER>" "" "HTML" "" uri)))
 
     static member Parse: text:string -> HtmlProvider
     HtmlDocument.Create(false, ((new StringReader(text)) :> TextReader))
