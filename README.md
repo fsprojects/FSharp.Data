@@ -53,3 +53,4 @@ The library is available under Apache 2.0. For more information see the [License
  [1]: https://github.com/fsharp/FSharp.Data/blob/master/LICENSE.md
  [2]: https://github.com/fsharp/FSharp.Data/tree/master/docs/content
  [3]: http://fsharp.github.io/FSharp.Data/
+
