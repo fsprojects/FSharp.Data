@@ -58,7 +58,7 @@ let ``Validate signature didn't change `` (testCase:TypeProviderInstantiation) =
     let output = outputRaw |> normalize
     if output <> expected then
         printfn "Obtained Signature:\n%s" outputRaw
-    System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
+    //System.IO.File.WriteAllText(path, outputRaw.Replace("\r\n", "\n"))
     output |> should equal expected
 
 [<Test>]
