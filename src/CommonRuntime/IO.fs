@@ -117,8 +117,8 @@ let inline internal logTime (_:string) (_:string) = dummyDisposable
 #endif
 
 type internal IDisposableTypeProvider =
-    abstract Invalidate : string -> unit
-    abstract AddDisposeAction : string -> (unit -> unit) -> unit
+    abstract InvalidateOneType : string -> unit
+    abstract AddDisposeAction : (string option -> unit) -> unit
     abstract Id : int
 
 #if FX_NO_LOCAL_FILESYSTEM
@@ -152,7 +152,7 @@ type private Watcher(uri:Uri) =
             let typeProviders = typeProviders.ToArray()
             for tp, typeName in typeProviders do
                 match tp with 
-                | TypeProviderReference tp -> tp.Invalidate typeName
+                | TypeProviderReference tp -> tp.InvalidateOneType typeName
                 | _ -> ()
 
     do
@@ -199,10 +199,11 @@ let private watchForChanges (uri:Uri) (((tp:IDisposableTypeProvider), typeName) 
 
     watcher.Add key
     
-    tp.AddDisposeAction typeName <| fun () -> 
+    tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
 
-        if watcher.Remove tp typeName then
-            watchers.Remove uri.OriginalString |> ignore
+        if (match typeNameBeingDisposedOpt with None -> true | Some typeNameBeingDisposed -> typeName = typeNameBeingDisposed) then 
+            if watcher.Remove tp typeName then
+                watchers.Remove uri.OriginalString |> ignore
             
 #endif
     

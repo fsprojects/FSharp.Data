@@ -7,6 +7,7 @@ namespace ProviderImplementation
 
 open System
 open System.Collections.Generic
+open System.Collections.Concurrent
 open System.Reflection
 open System.Text
 open Microsoft.FSharp.Core.CompilerServices
@@ -72,7 +73,7 @@ module internal ReflectionHelpers =
 type DisposableTypeProviderForNamespaces() as x =
     inherit TypeProviderForNamespaces()
   
-    let mutable disposeActionsByTypeName = Dictionary()
+    let disposeActions = ResizeArray()
   
     static let idCount = ref 0
   
@@ -81,35 +82,25 @@ type DisposableTypeProviderForNamespaces() as x =
     do incr idCount 
   
     do log (sprintf "Creating TypeProviderForNamespaces %O [%d]" x id)
-  
-    let addDisposeAction typeName action = lock disposeActionsByTypeName <| fun () ->
-        match disposeActionsByTypeName.TryGetValue typeName with
-        | false, _ -> 
-            let disposeActions = ResizeArray()
-            disposeActions.Add action
-            disposeActionsByTypeName.Add(typeName, disposeActions)
-        | true, disposeActions -> disposeActions.Add action
 
-    let dispose typeName = lock disposeActionsByTypeName <| fun () ->
+    let addDisposeAction action = lock disposeActions <| fun () -> disposeActions.Add action
+
+    let dispose typeName = lock disposeActions <| fun () -> 
         log (sprintf "Disposing %s in TypeProviderForNamespaces %O [%d]" typeName x id)
-        match disposeActionsByTypeName.TryGetValue typeName with
-        | true, disposeActions ->
-            disposeActionsByTypeName.Remove typeName |> ignore
-            for action in disposeActions do
-                action()
-        | false, _ -> ()
+        for dispose in disposeActions do
+            dispose (Some typeName)
 
-    let disposeAll() = lock disposeActionsByTypeName <| fun () ->
+    let disposeAll() = lock disposeActions <| fun () ->
         log (sprintf "Disposing all types in TypeProviderForNamespaces %O [%d]" x id)
-        for typeName in Seq.toArray disposeActionsByTypeName.Keys do
-            dispose typeName
+        for dispose in disposeActions do
+            dispose None
 
     do
         x.Disposing.Add(fun _ -> disposeAll())
               
     interface IDisposableTypeProvider with
-        member __.Invalidate typeName = dispose typeName; ``base``.Invalidate()
-        member __.AddDisposeAction typeName action = addDisposeAction typeName action
+        member __.InvalidateOneType typeName = dispose typeName; ``base``.Invalidate()
+        member __.AddDisposeAction action = addDisposeAction action
         member __.Id = id
 
 // ----------------------------------------------------------------------------------------------
@@ -280,35 +271,42 @@ module internal ProviderHelpers =
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    type CacheValue = (ProvidedTypeDefinition * (string * string * string * Version) * System.DateTime)
+    type CacheValue = ProvidedTypeDefinition * (string * string * string * Version) 
     //let (|CacheValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> CacheValue)
     //let CacheValue (pair: CacheValue) = System.WeakReference (box pair)
     //let private providedTypesCache = Dictionary<_,WeakReference>()
 
     let (|CacheValue|_|) (x: CacheValue) = Some x
     let CacheValue (pair: CacheValue) = pair
-    let private providedTypesCache = Dictionary<_,CacheValue>()
+    let private providedTypesCache = ConcurrentDictionary<_,CacheValue>()
     
-    // Weakly caches the generated types by name for up to 30 minutes, the same duration of web caches
-    // If there's a file invalidation, this cache is also invalidated
-    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) cacheDuration f =
+    // Cache generated types temporarily during incremental invalidation of a different type.
+    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) f =
       
       // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful
-      if cfg.IsInvalidationSupported then 
+      if cfg.IsInvalidationSupported  then 
         let key = fullTypeName
         let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
 
         match providedTypesCache.TryGetValue key with
-        | true, CacheValue (providedType, fullKey2, time) when fullKey = fullKey2 && DateTime.Now - time < cacheDuration -> 
-            log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
+        | true, CacheValue (providedType, fullKey2) when fullKey = fullKey2 -> 
+            log (sprintf "Reusing saved generation of type %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 
             let providedType = f()
-            log (sprintf "Creating cache for %s [%d]" fullTypeName tp.Id)
-            providedTypesCache.[key] <- CacheValue (providedType, fullKey, DateTime.Now)
-            tp.AddDisposeAction fullTypeName <| fun () -> 
-                log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
-                providedTypesCache.Remove key |> ignore
+
+            // On disposal of one of the types, temporarily save the type if we know for sure that a different type is being invalidated.
+            tp.AddDisposeAction <| fun typeNameBeingDisposedOpt -> 
+                match typeNameBeingDisposedOpt with 
+                | None -> ()
+                | Some typeNameBeingDisposed -> 
+                    // Check if a different type is being invalidated
+                    if fullTypeName <> typeNameBeingDisposed then
+                        log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
+                        providedTypesCache.[key] <- CacheValue (providedType, fullKey)
+                        // Remove the cache entry in 10 seconds
+                        async { do! Async.Sleep (10000)
+                                providedTypesCache.TryRemove(key) |> ignore } |> Async.StartImmediate
             providedType
       else 
           f() 
@@ -340,7 +338,7 @@ module internal ProviderHelpers =
             else
                 [| parseSingle extension value |]
         
-        getOrCreateProvidedType cfg tp fullTypeName cacheDuration <| fun () ->
+        getOrCreateProvidedType cfg tp fullTypeName <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
