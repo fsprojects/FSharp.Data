@@ -81,8 +81,9 @@ let dump signatureOnly ignoreOutput platform saveToFileSystem (inst:TypeProvider
 
 let dumpAll inst =
     dump false false Net40 false inst
-    //dump false false Portable7 false inst
+    dump false false Portable7 false inst
     dump false false Portable47 false inst
+    dump false false Portable259 false inst
 
 Html { Sample = "doctor_who2.html"
        PreferOptionals = false
