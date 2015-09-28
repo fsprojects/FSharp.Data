@@ -280,7 +280,7 @@ module internal ProviderHelpers =
           // the constructor from a text reader to an array of the representation
           CreateFromTextReaderForSampleList : Expr<TextReader> -> Expr }
     
-    type CacheValue = (ProvidedTypeDefinition * System.DateTime)
+    type CacheValue = (ProvidedTypeDefinition * (string * string * string * Version) * System.DateTime)
     //let (|CacheValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> CacheValue)
     //let CacheValue (pair: CacheValue) = System.WeakReference (box pair)
     //let private providedTypesCache = Dictionary<_,WeakReference>()
@@ -291,25 +291,27 @@ module internal ProviderHelpers =
     
     // Weakly caches the generated types by name for up to 30 minutes, the same duration of web caches
     // If there's a file invalidation, this cache is also invalidated
-    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) (runtimeVersion:AssemblyResolver.FSharpDataRuntimeInfo) cacheDuration f =
+    let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) cacheDuration f =
       
-      // The fsi.exe process never invalidates, so caching's not useful
-      if cfg.IsHostedExecution then f() 
-      else
-        let key = fullTypeName, runtimeVersion
+      // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful
+      if cfg.IsInvalidationSupported then 
+        let key = fullTypeName
+        let fullKey = (fullTypeName, cfg.RuntimeAssembly, cfg.ResolutionFolder, cfg.SystemRuntimeAssemblyVersion)
 
         match providedTypesCache.TryGetValue key with
-        | true, CacheValue (providedType, time) when DateTime.Now - time < cacheDuration -> 
+        | true, CacheValue (providedType, fullKey2, time) when fullKey = fullKey2 && DateTime.Now - time < cacheDuration -> 
             log (sprintf "Reusing cache for %s [%d]" fullTypeName tp.Id)
             providedType
         | _ -> 
             let providedType = f()
             log (sprintf "Creating cache for %s [%d]" fullTypeName tp.Id)
-            providedTypesCache.[key] <- CacheValue (providedType, DateTime.Now)
+            providedTypesCache.[key] <- CacheValue (providedType, fullKey, DateTime.Now)
             tp.AddDisposeAction fullTypeName <| fun () -> 
                 log (sprintf "Invalidating cache for %s [%d]" fullTypeName tp.Id )
                 providedTypesCache.Remove key |> ignore
             providedType
+      else 
+          f() 
 
     
     /// Creates all the constructors for a type provider: (Async)Parse, (Async)Load, (Async)GetSample(s), and default constructor
@@ -338,7 +340,7 @@ module internal ProviderHelpers =
             else
                 [| parseSingle extension value |]
         
-        getOrCreateProvidedType cfg tp fullTypeName runtimeVersion cacheDuration <| fun () ->
+        getOrCreateProvidedType cfg tp fullTypeName cacheDuration <| fun () ->
 
         // Infer the schema from a specified uri or inline text
         let parseResult = parseTextAtDesignTime sampleOrSampleUri parse formatName tp cfg encodingStr resolutionFolder optResource fullTypeName maxNumberOfRows
