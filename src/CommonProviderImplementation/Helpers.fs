@@ -280,7 +280,7 @@ module internal ProviderHelpers =
     let CacheValue (pair: CacheValue) = pair
     let private providedTypesCache = ConcurrentDictionary<_,CacheValue>()
     
-    // Cache generated types temporarily during incremental invalidation of a different type.
+    // Cache generated types temporarily during partial invalidation of a type provider.
     let internal getOrCreateProvidedType (cfg: TypeProviderConfig) (tp:IDisposableTypeProvider) (fullTypeName:string) f =
       
       // The fsc.exe and fsi.exe processes don't invalidate, so caching is not useful

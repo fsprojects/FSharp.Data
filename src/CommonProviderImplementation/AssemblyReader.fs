@@ -3658,7 +3658,7 @@ let decodeILCustomAttribData ilg (ca: ILCustomAttr) : ILCustomAttrArg list  =
 
 type CacheValue = ILModuleReader 
 let (|CacheValue|_|) (wr: WeakReference) = match wr.Target with null -> None | v -> Some (v :?> CacheValue)
-let CacheValue (pair: CacheValue) = System.WeakReference (box pair)
+let CacheValue (reader: CacheValue) = System.WeakReference reader
 
 // Amortize readers weakly - this is enough that all the type providers in this DLL will at least share
 // resources when all instantiated at the ame time.
@@ -3667,7 +3667,8 @@ let readersWeakCache = ConcurrentDictionary<string, WeakReference>()
 let ILModuleReaderAfterReadingAllBytes  (file, ilGlobals: ILGlobals, lowMem) = 
     let bytes = File.ReadAllBytes file
     match readersWeakCache.TryGetValue file with 
-    | true, CacheValue mr2  when bytes = mr2.Bytes && ilGlobals.systemRuntimeScopeRef.QualifiedName = mr2.ILGlobals.systemRuntimeScopeRef.QualifiedName -> mr2
+    | true, CacheValue mr2  when bytes = mr2.Bytes ->
+        mr2 // throw away the bytes we just read and recycle the existing ILModuleReader
     | _ -> 
         let mr = ILModuleReader(file, ByteFile(bytes), ilGlobals, lowMem)
         readersWeakCache.[file] <- CacheValue (mr)
