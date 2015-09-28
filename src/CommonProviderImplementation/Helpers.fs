@@ -301,7 +301,9 @@ module internal ProviderHelpers =
                 | None -> ()
                 | Some typeNameBeingDisposed -> 
                     // Check if a different type is being invalidated
-                    if fullTypeName <> typeNameBeingDisposed then
+                    if fullTypeName = typeNameBeingDisposed then
+                        providedTypesCache.TryRemove key |> ignore
+                    else
                         log (sprintf "Saving generation of type %s for 10 seconds awaiting incremental recreation [%d]" fullTypeName tp.Id)
                         providedTypesCache.[key] <- CacheValue (providedType, fullKey)
                         // Remove the cache entry in 10 seconds
