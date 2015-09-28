@@ -24,7 +24,7 @@ let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
 let referenceAssembliesPath = 
     if runningOnMono
-    then "/Library/Frameworks/Mono.framework/Versions/CurrentVersion/lib/mono/"
+    then "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/"
     else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
     ++ "Reference Assemblies" 
     ++ "Microsoft" 
