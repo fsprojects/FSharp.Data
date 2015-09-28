@@ -38,10 +38,11 @@ let portableRuntimeAssembly profile = sourceDirectory ++ ".." ++ ".." ++ "bin" +
 
 let runningOnMono = Type.GetType("Mono.Runtime") <> null
 
+// Assumes OSX
+let monoRoot = "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono"
+
 let referenceAssembliesPath = 
-    if runningOnMono
-    then "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/"
-    else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86 
+    (if runningOnMono then monoRoot else Environment.GetFolderPath Environment.SpecialFolder.ProgramFilesX86)
     ++ "Reference Assemblies" 
     ++ "Microsoft" 
 
@@ -54,13 +55,16 @@ let fsharp31PortableAssembliesPath profile =
 
 let fsharp31AssembliesPath = referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
 
-let net40AssembliesPath = referenceAssembliesPath ++ "Framework" ++ ".NETFramework" ++ "v4.5" 
+let net40AssembliesPath = 
+    if runningOnMono then monoRoot ++ "4.5"
+    else referenceAssembliesPath ++ "Framework" ++ ".NETFramework" ++ "v4.5" 
 
 let portableAssembliesPath profile = 
+    let portableRoot = if runningOnMono then monoRoot ++ "xbuild-frameworks" else referenceAssembliesPath ++ "Framework"
     match profile with 
-    | 47 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.0" ++ "Profile" ++ "Profile47" 
-    | 7 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile7" 
-    | 259 -> referenceAssembliesPath ++ "Framework" ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile259" 
+    | 47 -> portableRoot ++ ".NETPortable" ++ "v4.0" ++ "Profile" ++ "Profile47" 
+    | 7 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile7" 
+    | 259 -> portableRoot ++ ".NETPortable" ++ "v4.5" ++ "Profile" ++ "Profile259" 
     | _ -> failwith "unimplemented portable profile"
 
 let net40FSharp31Refs = [net40AssembliesPath ++ "mscorlib.dll"; net40AssembliesPath ++ "System.Xml.dll"; net40AssembliesPath ++ "System.Core.dll"; net40AssembliesPath ++ "System.Xml.Linq.dll"; net40AssembliesPath ++ "System.dll"; fsharp31AssembliesPath ++ "FSharp.Core.dll"]
