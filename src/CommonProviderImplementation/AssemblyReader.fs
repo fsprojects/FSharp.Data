@@ -1,6 +1,8 @@
 ﻿// Copyright 2011-2015, Tomas Petricek (http://tomasp.net), Gustavo Guerra (http://functionalflow.co.uk), and other contributors
 // Licensed under the Apache License, Version 2.0, see LICENSE.md in this project
 //
+// A lightweight .NET assembly reader that fits in a single F# file.  Based on the well-tested Abstract IL 
+// binary reader code.  Used by the type provider to read referenced asssemblies.
 
 module internal ProviderImplementation.AssemblyReader
 
@@ -44,13 +46,6 @@ let joinILTypeName (nspace: string uoption) (nm:string) =
     match nspace with 
     | UNone -> nm
     | USome ns -> ns + "." + nm
-
-// -------------------------------------------------------------------- 
-// Ordered lists with a lookup table
-// --------------------------------------------------------------------
-
-let lazyMap f (x:Lazy<_>) =  if x.IsValueCreated then Lazy.CreateFromValue (f (x.Force())) else lazy (f (x.Force()))
-
 
 //---------------------------------------------------------------------
 // SHA1 hash-signing algorithm.  Used to get the public key token from
@@ -819,10 +814,6 @@ and ILTypeDefs(larr : Lazy<(string uoption * string * Lazy<ILTypeDef>)[]>) =
         else
             None
         
-/// keyed first on namespace then on type name.  The namespace is often a unique key for a given type map.
-and ILTypeDefsMap = 
-     Map<string,Lazy<ILTypeDef>>
-
 type ILNestedExportedType =
     { Name: string
       Access: ILMemberAccess
@@ -841,15 +832,23 @@ and [<NoComparison; NoEquality>]
       Namespace : string uoption
       Name: string
       IsForwarder: bool
-      Access: ILTypeDefAccess
-      Nested: ILNestedExportedTypesAndForwarders
-      CustomAttrs: ILCustomAttrs } 
+      //Access: ILTypeDefAccess
+      //Nested: ILNestedExportedTypesAndForwarders
+      //CustomAttrs: ILCustomAttrs
+       } 
     override x.ToString() = "fwd " + x.Name
 
 and ILExportedTypesAndForwarders(larr:Lazy<ILExportedTypeOrForwarder[]>) =
-    let lmap = lazy ((Map.empty, larr.Force()) ||> Array.fold (fun m x -> m.Add((x.Namespace, x.Name),x)))
+    let mutable lmap = null
+    let getmap() = 
+        if lmap = null then 
+            lmap <- Dictionary()
+            for ltd in larr.Force() do 
+                let key = ltd.Namespace, ltd.Name
+                lmap.[key] <- ltd
+        lmap
     member x.Elements = larr.Force()
-    member x.TryFindByName (nsp,nm) = lmap.Force().TryFind (nsp,nm)
+    member x.TryFindByName (nsp,nm) = match getmap().TryGetValue ((nsp,nm)) with true,v -> Some v | false, _ -> None
 
 [<RequireQualifiedAccess>]
 type ILResourceAccess = 
@@ -3256,10 +3255,10 @@ type ILModuleReader(infile: string, is: ByteFile, ilg: ILGlobals, lowMem: bool) 
                          { ScopeRef=scoref
                            Namespace=nsp
                            Name=nm
-                           IsForwarder =   ((flags &&& 0x00200000) <> 0)
-                           Access=typeAccessOfFlags flags
-                           Nested=seekReadNestedExportedTypes i
-                           CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.ExportedType, i)) } 
+                           IsForwarder =   ((flags &&& 0x00200000) <> 0) }
+                          // Access=typeAccessOfFlags flags
+                          // Nested=seekReadNestedExportedTypes i
+                          // CustomAttrs=seekReadCustomAttrs (TaggedIndex(HasCustomAttributeTag.ExportedType, i)) } 
                        yield entry |])
 
      
@@ -3662,16 +3661,17 @@ let CacheValue (reader: CacheValue) = System.WeakReference reader
 
 // Amortize readers weakly - this is enough that all the type providers in this DLL will at least share
 // resources when all instantiated at the ame time.
-let readersWeakCache = ConcurrentDictionary<string, WeakReference>()
+let readersWeakCache = ConcurrentDictionary<(string * string), WeakReference>()
 
-let ILModuleReaderAfterReadingAllBytes  (file, ilGlobals: ILGlobals, lowMem) = 
+let ILModuleReaderAfterReadingAllBytes  (file:string, ilGlobals: ILGlobals, lowMem) = 
     let bytes = File.ReadAllBytes file
-    match readersWeakCache.TryGetValue file with 
+    let key = (file, ilGlobals.systemRuntimeScopeRef.QualifiedName)
+    match readersWeakCache.TryGetValue (key) with 
     | true, CacheValue mr2  when bytes = mr2.Bytes ->
         mr2 // throw away the bytes we just read and recycle the existing ILModuleReader
     | _ -> 
         let mr = ILModuleReader(file, ByteFile(bytes), ilGlobals, lowMem)
-        readersWeakCache.[file] <- CacheValue (mr)
+        readersWeakCache.[key] <- CacheValue (mr)
         mr
 
 
