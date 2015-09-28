@@ -160,13 +160,11 @@ let ``Generating expressions works in portable profile 47 `` (testCase:TypeProvi
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 7 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 7, portableCoreFSharp31Refs 7, signatureOnly=false, ignoreOutput=true) |> ignore
 
 
 [<Test>]
 [<TestCaseSource "testCases">]
-[<Platform "Net">]
 let ``Generating expressions works in portable profile 259 `` (testCase:TypeProviderInstantiation) = 
     testCase.Dump(resolutionFolder, "", portableRuntimeAssembly 259, portableCoreFSharp31Refs 259, signatureOnly=false, ignoreOutput=true) |> ignore
