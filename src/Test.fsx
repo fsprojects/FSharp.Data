@@ -37,7 +37,9 @@ let fsharp31PortableAssembliesPath profile =
      | 259 -> referenceAssembliesPath ++ "FSharp" ++ ".NETCore" ++ "3.259.3.1" ++ "FSharp.Core.dll"
      | _ -> failwith "unimplemented portable profile"
 
-let fsharp31AssembliesPath = referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
+let fsharp31AssembliesPath = 
+    if runningOnMono then monoRoot ++ "gac" ++ "FSharp.Core" ++ "4.3.1.0__b03f5f7f11d50a3a"
+    else referenceAssembliesPath ++ "FSharp" ++ ".NETFramework" ++ "v4.0" ++ "4.3.1.0"
 
 let net45AssembliesPath = 
     if runningOnMono then monoRoot ++ "4.5"
